@@ -229,20 +229,22 @@ export class OrderStateUtils {
         let traderAddress;
         let assetData;
         let assetAmount;
+        let feeAssetData;
         let feeAmount;
         if (isMakerSide) {
             traderAddress = signedOrder.makerAddress;
             assetData = signedOrder.makerAssetData;
             assetAmount = signedOrder.makerAssetAmount;
+            feeAssetData = signedOrder.makerFeeAssetData;
             feeAmount = signedOrder.makerFee;
         } else {
             traderAddress = takerAddress;
             assetData = signedOrder.takerAssetData;
             assetAmount = signedOrder.takerAssetAmount;
+            feeAssetData = signedOrder.takerFeeAssetData;
             feeAmount = signedOrder.takerFee;
         }
-        const zrxAssetData = this._orderFilledCancelledFetcher.getZRXAssetData();
-        const isAssetZRX = assetData === zrxAssetData;
+        const isPercentageFee = assetData === feeAssetData;
 
         const traderBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
         const traderIndividualBalances = await this._getAssetBalancesAsync(assetData, traderAddress);
@@ -252,11 +254,11 @@ export class OrderStateUtils {
         );
         const traderIndividualProxyAllowances = await this._getAssetProxyAllowancesAsync(assetData, traderAddress);
         const traderFeeBalance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
-            zrxAssetData,
+            feeAssetData,
             traderAddress,
         );
         const traderFeeProxyAllowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
-            zrxAssetData,
+            feeAssetData,
             traderAddress,
         );
 
@@ -279,7 +281,7 @@ export class OrderStateUtils {
         const remainingFillableCalculator = new RemainingFillableCalculator(
             feeAmount,
             assetAmount,
-            isAssetZRX,
+            isPercentageFee,
             transferrableTraderAssetAmount,
             transferrableFeeAssetAmount,
             remainingAssetAmount,

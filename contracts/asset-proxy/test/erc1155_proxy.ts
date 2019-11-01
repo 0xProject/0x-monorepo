@@ -17,7 +17,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
@@ -72,16 +72,8 @@ describe('ERC1155Proxy', () => {
         const usedAddresses = ([owner, notAuthorized, authorized, spender, receiver] = _.slice(accounts, 0, 5));
         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            authorized,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            erc1155Proxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(erc1155Proxy.address, { from: owner });
         // deploy & configure ERC1155 tokens and receiver
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
         erc1155Contract = erc1155Wrapper.getContract();
@@ -696,25 +688,18 @@ describe('ERC1155Proxy', () => {
             const tokenUri = '';
             for (const tokenToCreate of tokensToCreate) {
                 // create token
-                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    tokenUri,
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .createWithType.awaitTransactionSuccessAsync(tokenToCreate, tokenUri, {
                         from: owner,
-                    },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                    });
 
                 // mint balance for spender
-                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    [spender],
-                    [spenderInitialBalance],
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .mintFungible.awaitTransactionSuccessAsync(tokenToCreate, [spender], [spenderInitialBalance], {
                         from: owner,
-                    },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                    });
             }
             ///// Step 2/5 /////
             // Check balances before transfer
@@ -805,25 +790,18 @@ describe('ERC1155Proxy', () => {
             const tokenUri = '';
             for (const tokenToCreate of tokensToCreate) {
                 // create token
-                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    tokenUri,
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .createWithType.awaitTransactionSuccessAsync(tokenToCreate, tokenUri, {
                         from: owner,
-                    },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                    });
 
                 // mint balance for spender
-                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    [spender],
-                    [spenderInitialBalance],
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .mintFungible.awaitTransactionSuccessAsync(tokenToCreate, [spender], [spenderInitialBalance], {
                         from: owner,
-                    },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                    });
             }
             ///// Step 2/5 /////
             // Check balances before transfer
@@ -937,25 +915,18 @@ describe('ERC1155Proxy', () => {
             const tokenUri = '';
             for (const tokenToCreate of tokensToCreate) {
                 // create token
-                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    tokenUri,
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .createWithType.awaitTransactionSuccessAsync(tokenToCreate, tokenUri, {
                         from: owner,
-                    },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                    });
 
                 // mint balance for spender
-                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    [spender],
-                    [spenderInitialBalance],
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .mintFungible.awaitTransactionSuccessAsync(tokenToCreate, [spender], [spenderInitialBalance], {
                         from: owner,
-                    },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                    });
             }
             ///// Step 2/5 /////
             // Check balances before transfer
@@ -1667,13 +1638,9 @@ describe('ERC1155Proxy', () => {
         it('should propagate revert reason from erc1155 contract failure', async () => {
             // disable transfers
             const shouldRejectTransfer = true;
-            await erc1155Receiver.setRejectTransferFlag.awaitTransactionSuccessAsync(
-                shouldRejectTransfer,
-                {
-                    from: owner,
-                },
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            await erc1155Receiver.setRejectTransferFlag.awaitTransactionSuccessAsync(shouldRejectTransfer, {
+                from: owner,
+            });
             // setup test parameters
             const tokenHolders = [spender, receiverContract];
             const tokensToTransfer = fungibleTokens.slice(0, 1);
@@ -1748,9 +1715,14 @@ describe('ERC1155Proxy', () => {
                 nftNotOwnerBalance,
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
+                maxUintValue,
+                valueMultiplier,
+            );
             // execute transfer
             // note - this will overflow because we are trying to transfer `maxUintValue * 2` of the 2nd token
-            await expectTransactionFailedAsync(
+            await expect(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiver,
@@ -1761,8 +1733,7 @@ describe('ERC1155Proxy', () => {
                     receiverCallbackData,
                     authorized,
                 ),
-                RevertReason.Uint256Overflow,
-            );
+            ).to.revertWith(expectedError);
         });
         it('should revert if transferring > 1 instances of a non-fungible token (valueMultiplier field >1)', async () => {
             // setup test parameters
@@ -1832,20 +1803,23 @@ describe('ERC1155Proxy', () => {
             // check balances before transfer
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromAsync(
-                    spender,
-                    receiver,
-                    erc1155Contract.address,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    valueMultiplier,
-                    receiverCallbackData,
-                    authorized,
-                ),
-                RevertReason.Uint256Underflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
+                spenderInitialFungibleBalance,
+                valuesToTransfer[0].times(valueMultiplier),
             );
+            // execute transfer
+            const tx = erc1155ProxyWrapper.transferFromAsync(
+                spender,
+                receiver,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should revert if sender allowance is insufficient', async () => {
             // dremove allowance for ERC1155 proxy

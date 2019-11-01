@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,19 +16,21 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
-import "../interfaces/ITransactions.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/ITransactions.sol";
 
 
+// solhint-disable var-name-mixedcase
 contract LibConstants {
 
-     // solhint-disable-next-line var-name-mixedcase
+    // The 0x Exchange contract.
     ITransactions internal EXCHANGE;
 
-    constructor (address _exchange)
+    /// @param exchange Address of the 0x Exchange contract.
+    constructor (address exchange)
         public
     {
-        EXCHANGE = ITransactions(_exchange);
+        EXCHANGE = ITransactions(exchange);
     }
 }

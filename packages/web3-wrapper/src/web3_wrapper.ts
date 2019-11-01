@@ -88,14 +88,13 @@ export class Web3Wrapper {
      * @param   decimals    The number of decimal places the unit amount has.
      * @return  The amount in baseUnits.
      */
-    public static toBaseUnitAmount(amount: BigNumber, decimals: number): BigNumber {
-        assert.isBigNumber('amount', amount);
+    public static toBaseUnitAmount(amount: BigNumber | number, decimals: number): BigNumber {
         assert.isNumber('decimals', decimals);
         const unit = new BigNumber(BASE_TEN).pow(decimals);
-        const baseUnitAmount = amount.times(unit);
+        const baseUnitAmount = unit.times(amount);
         const hasDecimals = baseUnitAmount.decimalPlaces() !== 0;
         if (hasDecimals) {
-            throw new Error(`Invalid unit amount: ${amount.toString()} - Too many decimal places`);
+            throw new Error(`Invalid unit amount: ${amount.toString(BASE_TEN)} - Too many decimal places`);
         }
         return baseUnitAmount;
     }
@@ -208,6 +207,15 @@ export class Web3Wrapper {
         const networkIdStr = await this.sendRawPayloadAsync<string>({ method: 'net_version' });
         const networkId = _.parseInt(networkIdStr);
         return networkId;
+    }
+    /**
+     * Fetches the chainId of the backing Ethereum node
+     * @returns The chain id
+     */
+    public async getChainIdAsync(): Promise<number> {
+        const chainIdStr = await this.sendRawPayloadAsync<string>({ method: 'eth_chainId' });
+        const chainId = _.parseInt(chainIdStr);
+        return chainId;
     }
     /**
      * Retrieves the transaction receipt for a given transaction hash if found

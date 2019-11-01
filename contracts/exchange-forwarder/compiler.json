@@ -22,6 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": ["src/Forwarder.sol"]
+    }
 }

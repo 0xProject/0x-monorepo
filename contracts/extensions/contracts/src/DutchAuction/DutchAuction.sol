@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
 
-contract DutchAuction is
-    SafeMath
-{
+contract DutchAuction {
+
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
@@ -120,8 +120,8 @@ contract DutchAuction is
             address token = assetData.readAddress(16);
             // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
             // amount than the calculated current amount
-            uint256 buyerExcessAmount = safeSub(buyOrder.makerAssetAmount, auctionDetails.currentAmount);
-            uint256 sellerExcessAmount = safeSub(leftMakerAssetSpreadAmount, buyerExcessAmount);
+            uint256 buyerExcessAmount = buyOrder.makerAssetAmount.safeSub(auctionDetails.currentAmount);
+            uint256 sellerExcessAmount = leftMakerAssetSpreadAmount.safeSub(buyerExcessAmount);
             // Return the difference between auctionDetails.currentAmount and sellOrder.takerAssetAmount
             // to the seller
             if (sellerExcessAmount > 0) {
@@ -190,12 +190,8 @@ contract DutchAuction is
             // Auction end time is guaranteed by 0x Exchange due to the order expiration
             auctionDetails.currentAmount = minAmount;
         } else {
-            auctionDetails.currentAmount = safeAdd(
-                minAmount,
-                safeDiv(
-                    safeMul(remainingDurationSeconds, amountDelta),
-                    auctionDurationSeconds
-                )
+            auctionDetails.currentAmount = minAmount.safeAdd(
+                remainingDurationSeconds.safeMul(amountDelta).safeDiv(auctionDurationSeconds)
             );
         }
         return auctionDetails;

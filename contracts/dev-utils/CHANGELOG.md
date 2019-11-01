@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.1.0-beta.0 - _October 3, 2019_
+
+    * Use built in selectors instead of hard coded constants (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+    * Add `marketBuy/SellOrdersNoThrow` and `marketBuy/SellOrdersFillOrKill` to `LibTransactionDecoder`. (#2075)
+    * `run_mocha` package script runs with `UNLIMITED_CONTRACT_SIZE=true` environment variable. (#2075)
+
 ## v0.0.10 - _September 17, 2019_
 
     * Dependencies updated
@@ -53,3 +60,5 @@ CHANGELOG
     * Refactor `LibAssetData` balance/allowance checks to never revert (#1848)
     * Refactor `OrderValidationUtils` to calculate `fillableTakerAssetAmount` (#1848)
     * Add support for StaticCallProxy (#1863)
+    * Add `OrderTransferSimulationUtils` contract for simulating order transfers on-chain (#1868)
+    * Updated to use the new rich error pattern from @0x/contracts-exchange (#1913)

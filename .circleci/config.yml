@@ -47,19 +47,39 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-dev-utils
-    test-contracts-geth:
+            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-tests @0x/contracts-staking
+    test-exchange-ganache-3.0:
+        resource_class: medium+
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
-            - image: 0xorg/devnet
         working_directory: ~/repo
         steps:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
-            # initialized
-            - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-dev-utils
+            - run: yarn wsrun test:circleci @0x/contracts-exchange
+    test-integrations-ganache-3.0:
+        resource_class: medium+
+        docker:
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-integrations
+    test-contracts-rest-ganache-3.0:
+        resource_class: medium+
+        docker:
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-tests @0x/contracts-staking @0x/contracts-coordinator
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - run: yarn wsrun test:circleci @0x/contracts-extensions
     test-publish:
         resource_class: medium+
         docker:
@@ -70,7 +90,9 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn test:publish:circleci
+            - run:
+                command: yarn test:publish:circleci
+                no_output_timeout: 1800
     test-doc-generation:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -79,7 +101,9 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn test:generate_docs:circleci
+            - run:
+                command: yarn test:generate_docs:circleci
+                no_output_timeout: 1200
     test-rest:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -90,11 +114,13 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
-            - run: yarn wsrun test:circleci @0x/asset-buyer
+            # TODO (xianny): Needs to be updated for 3.0
+            # - run: yarn wsrun test:circleci @0x/asset-buyer
             - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
-            - run: yarn wsrun test:circleci @0x/connect
+            # TODO (xianny): Needs to be updated for 3.0
+            # - run: yarn wsrun test:circleci @0x/connect
             - run: yarn wsrun test:circleci @0x/contract-wrappers
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
@@ -373,14 +399,15 @@ workflows:
     main:
         jobs:
             - build
-            - test-contracts-ganache:
+            - test-exchange-ganache-3.0:
                   requires:
                       - build
-            # TODO(albrow): Tests always fail on Geth right now because our fork
-            # is outdated. Uncomment once we have updated our Geth fork.
-            # - test-contracts-geth:
-            #       requires:
-            #           - build
+            - test-integrations-ganache-3.0:
+                  requires:
+                      - build
+            - test-contracts-rest-ganache-3.0:
+                  requires:
+                      - build
             - test-rest:
                   requires:
                       - build
@@ -395,13 +422,16 @@ workflows:
                       - build
             - submit-coverage:
                   requires:
+                      - test-contracts-rest-ganache-3.0
+                      - test-exchange-ganache-3.0
                       - test-rest
-                      - test-python
-            - static-tests-python:
-                  requires:
-                      - test-python
-            - test-python:
-                  requires:
-                      - build
+                      - static-tests
+            # - test-python:
+            #       requires:
+            #           - build
+            #           - test-rest
+            # - static-tests-python:
+            #       requires:
+            #           - test-python
             # skip python tox run for now, as we don't yet have multiple test environments to support.
-            #- test-rest-python
+            # - test-rest-python

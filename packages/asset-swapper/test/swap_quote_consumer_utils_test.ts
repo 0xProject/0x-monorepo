@@ -6,9 +6,8 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { SwapQuote } from '../src';
-import { ConsumerType } from '../src/types';
-import { swapQuoteConsumerUtils } from '../src/utils/swap_quote_consumer_utils';
+import { SwapQuote, SwapQuoteConsumer } from '../src';
+import { ExtensionContractType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -39,6 +38,7 @@ describe('swapQuoteConsumerUtils', () => {
     let takerAssetData: string;
     let wethAssetData: string;
     let contractAddresses: ContractAddresses;
+    let swapQuoteConsumer: SwapQuoteConsumer;
 
     const networkId = TESTRPC_NETWORK_ID;
     before(async () => {
@@ -57,6 +57,10 @@ describe('swapQuoteConsumerUtils', () => {
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
             assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
+
+        swapQuoteConsumer = new SwapQuoteConsumer(provider, {
+            networkId,
+        });
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -127,44 +131,36 @@ describe('swapQuoteConsumerUtils', () => {
         });
 
         it('should return exchange consumer if takerAsset is not wEth', async () => {
-            const consumerType = await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
+            const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 exchangeSwapQuote,
-                contractWrappers,
-                provider,
                 { takerAddress },
             );
-            expect(consumerType).to.equal(ConsumerType.Exchange);
+            expect(extensionContractType).to.equal(ExtensionContractType.None);
         });
         it('should return forwarder consumer if takerAsset is wEth and have enough eth balance', async () => {
-            const consumerType = await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
+            const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 forwarderSwapQuote,
-                contractWrappers,
-                provider,
                 { takerAddress },
             );
-            expect(consumerType).to.equal(ConsumerType.Forwarder);
+            expect(extensionContractType).to.equal(ExtensionContractType.Forwarder);
         });
         it('should return exchange consumer if takerAsset is wEth and taker has enough weth', async () => {
             const etherInWei = new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI);
             await contractWrappers.weth9.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
-            const consumerType = await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
+            const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 forwarderSwapQuote,
-                contractWrappers,
-                provider,
                 { takerAddress },
             );
-            expect(consumerType).to.equal(ConsumerType.Exchange);
+            expect(extensionContractType).to.equal(ExtensionContractType.None);
         });
         it('should return forwarder consumer if takerAsset is wEth and takerAddress has no available balance in either weth or eth (defaulting behavior)', async () => {
             const etherInWei = new BigNumber(50).multipliedBy(ONE_ETH_IN_WEI);
             await contractWrappers.weth9.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
-            const consumerType = await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
+            const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 largeForwarderSwapQuote,
-                contractWrappers,
-                provider,
                 { takerAddress },
             );
-            expect(consumerType).to.equal(ConsumerType.Forwarder);
+            expect(extensionContractType).to.equal(ExtensionContractType.Forwarder);
         });
     });
 });

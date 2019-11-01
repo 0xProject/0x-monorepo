@@ -13,27 +13,31 @@ import { constants } from './constants';
 import { env, EnvVars } from './env';
 
 export interface Web3Config {
+    total_accounts?: number; // default: 10
     hasAddresses?: boolean; // default: true
     shouldUseInProcessGanache?: boolean; // default: false
     shouldThrowErrorsOnGanacheRPCResponse?: boolean; // default: true
     rpcUrl?: string; // default: localhost:8545
     shouldUseFakeGasEstimate?: boolean; // default: true
     ganacheDatabasePath?: string; // default: undefined, creates a tmp dir
+    shouldAllowUnlimitedContractSize?: boolean;
 }
 
 export const web3Factory = {
     getRpcProvider(config: Web3Config = {}): Web3ProviderEngine {
         const provider = new Web3ProviderEngine();
+
         const hasAddresses = config.hasAddresses === undefined || config.hasAddresses;
-        config.shouldUseFakeGasEstimate =
+        const shouldUseFakeGasEstimate =
             config.shouldUseFakeGasEstimate === undefined || config.shouldUseFakeGasEstimate;
+
         if (!hasAddresses) {
             provider.addProvider(new EmptyWalletSubprovider());
         }
-
-        if (config.shouldUseFakeGasEstimate) {
+        if (shouldUseFakeGasEstimate) {
             provider.addProvider(new FakeGasEstimateSubprovider(constants.GAS_LIMIT));
         }
+
         const logger = {
             log: (arg: any) => {
                 fs.appendFileSync('ganache.log', `${arg}\n`);
@@ -42,11 +46,9 @@ export const web3Factory = {
         const shouldUseInProcessGanache = !!config.shouldUseInProcessGanache;
         if (shouldUseInProcessGanache) {
             if (config.rpcUrl !== undefined) {
-                throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
+                throw new Error('Cannot use both GanacheSubprovider and RPCSubprovider');
             }
-            const shouldThrowErrorsOnGanacheRPCResponse =
-                config.shouldThrowErrorsOnGanacheRPCResponse === undefined ||
-                config.shouldThrowErrorsOnGanacheRPCResponse;
+
             if (config.ganacheDatabasePath !== undefined) {
                 const doesDatabaseAlreadyExist = fs.existsSync(config.ganacheDatabasePath);
                 if (!doesDatabaseAlreadyExist) {
@@ -54,10 +56,17 @@ export const web3Factory = {
                     fs.mkdirSync(config.ganacheDatabasePath);
                 }
             }
+
+            const shouldThrowErrorsOnGanacheRPCResponse =
+                config.shouldThrowErrorsOnGanacheRPCResponse === undefined ||
+                config.shouldThrowErrorsOnGanacheRPCResponse;
+
             provider.addProvider(
                 new GanacheSubprovider({
+                    total_accounts: config.total_accounts,
                     vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
                     db_path: config.ganacheDatabasePath,
+                    allowUnlimitedContractSize: config.shouldAllowUnlimitedContractSize,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),

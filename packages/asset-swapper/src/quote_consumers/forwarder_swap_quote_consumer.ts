@@ -185,7 +185,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const quoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(quote, feePercentage);
 
-        const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
+        const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee; // tslint:disable-line:no-unused-variable
 
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
@@ -197,12 +197,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             let txHash: string;
             if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
-                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
+                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
-                    feeOrders,
-                    feeOrders.map(o => o.signature),
                     formattedFeePercentage,
                     feeRecipient,
                     {
@@ -213,11 +211,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     },
                 );
             } else {
-                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.validateAndSendTransactionAsync(
+                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.sendTransactionAsync(
                     orders,
                     orders.map(o => o.signature),
-                    feeOrders,
-                    feeOrders.map(o => o.signature),
                     formattedFeePercentage,
                     feeRecipient,
                     {

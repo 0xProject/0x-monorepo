@@ -9,10 +9,12 @@ import { signingUtils } from './signing_utils';
 export class OrderFactory {
     private readonly _defaultOrderParams: Partial<Order>;
     private readonly _privateKey: Buffer;
+
     constructor(privateKey: Buffer, defaultOrderParams: Partial<Order>) {
         this._defaultOrderParams = defaultOrderParams;
         this._privateKey = privateKey;
     }
+
     public async newSignedOrderAsync(
         customOrderParams: Partial<Order> = {},
         signatureType: SignatureType = SignatureType.EthSign,
@@ -20,10 +22,10 @@ export class OrderFactory {
         const tenMinutesInSeconds = 10 * 60;
         const currentBlockTimestamp = await getLatestBlockTimestampAsync();
         const order = ({
+            takerAddress: constants.NULL_ADDRESS,
             senderAddress: constants.NULL_ADDRESS,
             expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds),
             salt: generatePseudoRandomSalt(),
-            takerAddress: constants.NULL_ADDRESS,
             ...this._defaultOrderParams,
             ...customOrderParams,
         } as any) as Order;

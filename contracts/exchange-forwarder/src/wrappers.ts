@@ -4,3 +4,12 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/forwarder';
+export * from '../generated-wrappers/i_assets';
+export * from '../generated-wrappers/i_forwarder';
+export * from '../generated-wrappers/i_forwarder_core';
+export * from '../generated-wrappers/lib_constants';
+export * from '../generated-wrappers/lib_forwarder_rich_errors';
+export * from '../generated-wrappers/mixin_assets';
+export * from '../generated-wrappers/mixin_exchange_wrapper';
+export * from '../generated-wrappers/mixin_forwarder_core';
+export * from '../generated-wrappers/mixin_weth';

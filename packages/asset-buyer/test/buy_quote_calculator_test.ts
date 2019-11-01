@@ -24,6 +24,7 @@ describe('buyQuoteCalculator', () => {
         let ordersAndFillableAmounts: OrdersAndFillableAmounts;
         let smallFeeOrderAndFillableAmount: OrdersAndFillableAmounts;
         let allFeeOrdersAndFillableAmounts: OrdersAndFillableAmounts;
+        const chainId = 1;
         beforeEach(() => {
             // generate two orders for our desired maker asset
             // the first order has a rate of 4 makerAsset / WETH with a takerFee of 200 ZRX and has only 200 / 400 makerAsset units left to fill (half fillable)
@@ -34,12 +35,14 @@ describe('buyQuoteCalculator', () => {
                 makerAssetAmount: new BigNumber(400),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(200),
+                chainId,
             });
             firstRemainingFillAmount = new BigNumber(200);
             secondOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: new BigNumber(200),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(100),
+                chainId,
             });
             secondRemainingFillAmount = secondOrder.makerAssetAmount;
             ordersAndFillableAmounts = {
@@ -49,6 +52,7 @@ describe('buyQuoteCalculator', () => {
             const smallFeeOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: new BigNumber(100),
                 takerAssetAmount: new BigNumber(100),
+                chainId,
             });
             smallFeeOrderAndFillableAmount = {
                 orders: [smallFeeOrder],
@@ -58,6 +62,7 @@ describe('buyQuoteCalculator', () => {
                 makerAssetAmount: new BigNumber(113),
                 takerAssetAmount: new BigNumber(200),
                 takerFee: new BigNumber(11),
+                chainId,
             });
             allFeeOrdersAndFillableAmounts = {
                 orders: [smallFeeOrder, largeFeeOrder],
@@ -133,6 +138,7 @@ describe('buyQuoteCalculator', () => {
                     makerAssetAmount: new BigNumber(123),
                     takerAssetAmount: new BigNumber(100),
                     takerFee: new BigNumber(200),
+                    chainId,
                 });
                 const completelyFillableOrdersAndFillableAmount: OrdersAndFillableAmounts = {
                     orders: [completelyFillableOrder],
@@ -155,6 +161,7 @@ describe('buyQuoteCalculator', () => {
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
                     takerFee: new BigNumber(0),
+                    chainId,
                 });
                 const errorFunction = () => {
                     buyQuoteCalculator.calculate(
@@ -173,6 +180,7 @@ describe('buyQuoteCalculator', () => {
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
                     takerFee: new BigNumber(0),
+                    chainId,
                 });
                 const errorFunction = () => {
                     buyQuoteCalculator.calculate(

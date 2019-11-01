@@ -4,9 +4,11 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/DevUtils.json",
+        "generated-artifacts/EthBalanceChecker.json",
         "generated-artifacts/LibAssetData.json",
         "generated-artifacts/LibTransactionDecoder.json",
-        "generated-artifacts/EthBalanceChecker.json"
+        "generated-artifacts/OrderTransferSimulationUtils.json",
+        "generated-artifacts/OrderValidationUtils.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

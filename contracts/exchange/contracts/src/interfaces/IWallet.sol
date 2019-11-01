@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,21 +16,23 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 contract IWallet {
 
-    /// @dev Verifies that a signature is valid.
+    /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
-    /// @return Magic bytes4 value if the signature is valid.
-    ///         Magic value is bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
+    /// @return magicValue `bytes4(0xb0671381)` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
         bytes calldata signature
     )
         external
         view
-        returns (bytes4);
+        returns (bytes4 magicValue);
 }

@@ -1,0 +1,2 @@
+# solhint can't parse `abi.decode` syntax.
+contracts/src/ERC1155Proxy.sol

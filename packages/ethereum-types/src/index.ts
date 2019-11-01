@@ -77,7 +77,7 @@ export interface EIP1193Provider {
 
 export type ContractAbi = AbiDefinition[];
 
-export type AbiDefinition = FunctionAbi | EventAbi;
+export type AbiDefinition = FunctionAbi | EventAbi | RevertErrorAbi;
 
 export type FunctionAbi = MethodAbi | ConstructorAbi | FallbackAbi;
 
@@ -114,6 +114,12 @@ export interface FallbackAbi {
 
 export interface EventParameter extends DataItem {
     indexed: boolean;
+}
+
+export interface RevertErrorAbi {
+    type: 'error';
+    name: string;
+    arguments?: DataItem[];
 }
 
 export interface EventAbi {
@@ -429,6 +435,8 @@ export interface LogEntry {
     data: string;
     topics: string[];
 }
+
+export type DecodedLogs = Array<LogWithDecodedArgs<DecodedLogArgs>>;
 
 export interface TxDataPayable extends TxData {
     value?: BigNumber;

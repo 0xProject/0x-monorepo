@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,18 +19,18 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
-import "./MixinAuthorizable.sol";
+import "../archive/MixinAuthorizable.sol";
 import "./interfaces/IAssetProxy.sol";
 
 
 contract ERC1155Proxy is
     MixinAuthorizable,
-    SafeMath,
     IAssetProxy
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     // Id of this proxy.
     bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
@@ -69,9 +69,9 @@ contract ERC1155Proxy is
         for (uint256 i = 0; i != length; i++) {
             // We write the scaled values to an unused location in memory in order
             // to avoid copying over `ids` or `data`. This is possible if they are
-            // identical to `values` and the offsets for each are pointing to the 
+            // identical to `values` and the offsets for each are pointing to the
             // same location in the ABI encoded calldata.
-            scaledValues[i] = safeMul(values[i], amount);
+            scaledValues[i] = values[i].safeMul(amount);
         }
 
         // Execute `safeBatchTransferFrom` call

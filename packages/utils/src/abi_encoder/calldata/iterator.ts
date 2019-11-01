@@ -84,7 +84,7 @@ abstract class BaseIterator implements Iterable<CalldataBlock> {
                 }
                 return {
                     done: true,
-                    value: new BlobCalldataBlock('', '', '', new Buffer('')),
+                    value: new BlobCalldataBlock('', '', '', Buffer.from('')),
                 };
             },
         };

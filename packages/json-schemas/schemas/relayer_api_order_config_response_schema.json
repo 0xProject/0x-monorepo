@@ -2,10 +2,31 @@
     "id": "/relayerApiOrderConfigResponseSchema",
     "type": "object",
     "properties": {
-        "makerFee": { "$ref": "/wholeNumberSchema" },
-        "takerFee": { "$ref": "/wholeNumberSchema" },
-        "feeRecipientAddress": { "$ref": "/addressSchema" },
-        "senderAddress": { "$ref": "/addressSchema" }
+        "makerFee": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "takerFee": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "feeRecipientAddress": {
+            "$ref": "/addressSchema"
+        },
+        "senderAddress": {
+            "$ref": "/addressSchema"
+        },
+        "makerFeeAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "takerFeeAssetData": {
+            "$ref": "/hexSchema"
+        }
     },
-    "required": ["makerFee", "takerFee", "feeRecipientAddress", "senderAddress"]
+    "required": [
+        "makerFee",
+        "takerFee",
+        "feeRecipientAddress",
+        "senderAddress",
+        "makerFeeAssetData",
+        "takerFeeAssetData"
+    ]
 }

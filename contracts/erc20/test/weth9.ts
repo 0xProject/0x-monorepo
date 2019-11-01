@@ -20,7 +20,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('EtherToken', () => {
     let account: string;
-    const gasPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(20), 9);
+    const gasPrice = new BigNumber(constants.DEFAULT_GAS_PRICE);
     let etherToken: WETH9Contract;
 
     before(async () => {
@@ -50,7 +50,7 @@ describe('EtherToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('deposit', () => {
-        it('should throw if caller attempts to deposit more Ether than caller balance', async () => {
+        it('should revert if caller attempts to deposit more Ether than caller balance', async () => {
             const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
@@ -79,7 +79,7 @@ describe('EtherToken', () => {
     });
 
     describe('withdraw', () => {
-        it('should throw if caller attempts to withdraw greater than caller balance', async () => {
+        it('should revert if caller attempts to withdraw greater than caller balance', async () => {
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance.plus(1);
 

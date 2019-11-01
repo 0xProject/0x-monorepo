@@ -1,9 +1,7 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
 import { BaseContract{{#if events}},
-    EventCallback,
-    IndexedFilterValues,
     SubscriptionManager{{/if}},PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
@@ -22,7 +20,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import { AwaitTransactionSuccessOpts, EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -50,6 +48,15 @@ export enum {{contractName}}Events {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class {{contractName}}Contract extends BaseContract {
+    /**
+     * @ignore
+     */
+    {{#ifEquals this.deployedBytecode undefined~}}
+    public static deployedBytecode: string | undefined;
+    {{else~}}
+    public static deployedBytecode = '{{this.deployedBytecode}}';
+    {{/ifEquals~}}
+
 {{#each methods}}
     {{#if this.devdoc.details}}
     /**
@@ -65,7 +72,7 @@ export class {{contractName}}Contract extends BaseContract {
         {{else}}
         {{> method_call contractName=../contractName}}
         {{/ifEquals}}
-        {{> method_abi_helper contractName=../contractName}}
+        {{> method_abi_helper contractName=../contractName debug=../debug}}
     };
 {{/each}}
 {{#if events}}private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
@@ -231,8 +238,14 @@ export class {{contractName}}Contract extends BaseContract {
         );
         return logs;
     }{{/if}}
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
-        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = {{contractName}}Contract.deployedBytecode,
+    ) {
+        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);{{#if events}}
         this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
             {{contractName}}Contract.ABI(),

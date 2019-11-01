@@ -1,5 +1,51 @@
 [
     {
+        "version": "2.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Add chainId to domain separator",
+                "pr": 1742
+            },
+            {
+                "note": "Inherit Exchange domain constants from `exchange-libs` to reduce code duplication",
+                "pr": 1742
+            },
+            {
+                "note": "Update domain separator",
+                "pr": 1742
+            },
+            {
+                "note": "Refactor contract to use new ITransactions interface",
+                "pr": 1753
+            },
+            {
+                "note": "Add verifyingContractIfExists arg to LibEIP712CoordinatorDomain constructor",
+                "pr": 1753
+            },
+            {
+                "note": "Remove LibZeroExTransaction contract",
+                "pr": 1753
+            },
+            {
+                "note": "Update tests for arbitrary fee tokens (ZEIP-28).",
+                "pr": 1819
+            },
+            {
+                "note": "Update for new `marketXOrders` consolidation.",
+                "pr": 2042
+            },
+            {
+                "note": "Use built in selectors instead of hard coded constants",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "2.0.13",
         "changes": [

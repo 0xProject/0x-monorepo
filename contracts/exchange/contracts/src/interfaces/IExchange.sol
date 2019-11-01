@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,23 +16,27 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "./IExchangeCore.sol";
+import "./IProtocolFees.sol";
 import "./IMatchOrders.sol";
 import "./ISignatureValidator.sol";
 import "./ITransactions.sol";
 import "./IAssetProxyDispatcher.sol";
 import "./IWrapperFunctions.sol";
+import "./ITransferSimulator.sol";
 
 
 // solhint-disable no-empty-blocks
 contract IExchange is
+    IProtocolFees,
     IExchangeCore,
     IMatchOrders,
     ISignatureValidator,
     ITransactions,
     IAssetProxyDispatcher,
+    ITransferSimulator,
     IWrapperFunctions
 {}

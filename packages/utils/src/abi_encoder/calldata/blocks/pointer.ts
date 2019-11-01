@@ -6,8 +6,8 @@ import { constants } from '../../utils/constants';
 import { CalldataBlock } from '../calldata_block';
 
 export class PointerCalldataBlock extends CalldataBlock {
-    public static readonly RAW_DATA_START = new Buffer('<');
-    public static readonly RAW_DATA_END = new Buffer('>');
+    public static readonly RAW_DATA_START = Buffer.from('<');
+    public static readonly RAW_DATA_END = Buffer.from('>');
     private static readonly _DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
     private static readonly _EMPTY_HEADER_SIZE = 0;
     private readonly _parent: CalldataBlock;

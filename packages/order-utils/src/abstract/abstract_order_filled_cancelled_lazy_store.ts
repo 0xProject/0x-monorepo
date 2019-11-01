@@ -9,5 +9,4 @@ export abstract class AbstractOrderFilledCancelledLazyStore {
     public abstract setIsCancelled(orderHash: string, isCancelled: boolean): void;
     public abstract deleteIsCancelled(orderHash: string): void;
     public abstract deleteAll(): void;
-    public abstract getZRXAssetData(): string;
 }

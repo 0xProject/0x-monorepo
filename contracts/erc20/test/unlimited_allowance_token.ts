@@ -55,7 +55,7 @@ describe('UnlimitedAllowanceToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('transfer', () => {
-        it('should throw if owner has insufficient balance', async () => {
+        it('should revert if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
             return expectContractCallFailedAsync(
@@ -90,7 +90,7 @@ describe('UnlimitedAllowanceToken', () => {
     });
 
     describe('transferFrom', () => {
-        it('should throw if owner has insufficient balance', async () => {
+        it('should revert if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
@@ -105,7 +105,7 @@ describe('UnlimitedAllowanceToken', () => {
             );
         });
 
-        it('should throw if spender has insufficient allowance', async () => {
+        it('should revert if spender has insufficient allowance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance;
 

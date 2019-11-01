@@ -20,6 +20,37 @@ export const signTypedDataUtils = {
             ]),
         );
     },
+    /**
+     * Generates the EIP712 Typed Data hash for a typed data object without using the domain field. This
+     * makes hashing easier for non-EIP712 data.
+     * @param   typedData An object that conforms to the EIP712TypedData interface
+     * @return  A Buffer containing the hash of the typed data.
+     */
+    generateTypedDataHashWithoutDomain(typedData: EIP712TypedData): Buffer {
+        return signTypedDataUtils._structHash(typedData.primaryType, typedData.message, typedData.types);
+    },
+    /**
+     * Generates the hash of a EIP712 Domain with the default schema
+     * @param  domain An EIP712 domain with the default schema containing a name, version, chain id,
+     *                and verifying address.
+     * @return A buffer that contains the hash of the domain.
+     */
+    generateDomainHash(domain: EIP712Object): Buffer {
+        return signTypedDataUtils._structHash(
+            'EIP712Domain',
+            domain,
+            // HACK(jalextowle): When we consolidate our testing packages into test-utils, we can use a constant
+            // to eliminate code duplication. At the moment, there isn't a good way to do that because of cyclic-dependencies.
+            {
+                EIP712Domain: [
+                    { name: 'name', type: 'string' },
+                    { name: 'version', type: 'string' },
+                    { name: 'chainId', type: 'uint256' },
+                    { name: 'verifyingContract', type: 'address' },
+                ],
+            },
+        );
+    },
     _findDependencies(primaryType: string, types: EIP712Types, found: string[] = []): string[] {
         if (found.includes(primaryType) || types[primaryType] === undefined) {
             return found;
@@ -71,8 +102,14 @@ export const signTypedDataUtils = {
         return ethers.utils.defaultAbiCoder.encode(encodedTypes, encodedValues);
     },
     _normalizeValue(type: string, value: any): EIP712ObjectValue {
-        const normalizedValue = type === 'uint256' && BigNumber.isBigNumber(value) ? value.toString() : value;
-        return normalizedValue;
+        const STRING_BASE = 10;
+        if (type === 'uint256') {
+            if (BigNumber.isBigNumber(value)) {
+                return value.toString(STRING_BASE);
+            }
+            return new BigNumber(value).toString(STRING_BASE);
+        }
+        return value;
     },
     _typeHash(primaryType: string, types: EIP712Types): Buffer {
         return ethUtil.sha3(signTypedDataUtils._encodeType(primaryType, types));

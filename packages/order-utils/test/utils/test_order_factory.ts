@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { constants } from '../../src/constants';
 import { orderFactory } from '../../src/order_factory';
 
+const CHAIN_ID = 1337;
 const BASE_TEST_ORDER: Order = orderFactory.createOrder(
     constants.NULL_ADDRESS,
     constants.ZERO_AMOUNT,
@@ -11,6 +12,7 @@ const BASE_TEST_ORDER: Order = orderFactory.createOrder(
     constants.ZERO_AMOUNT,
     constants.NULL_ERC20_ASSET_DATA,
     constants.NULL_ADDRESS,
+    CHAIN_ID,
 );
 const BASE_TEST_SIGNED_ORDER: SignedOrder = {
     ...BASE_TEST_ORDER,

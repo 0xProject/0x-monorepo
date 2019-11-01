@@ -9,7 +9,6 @@ import {
     SignedZeroExTransaction,
     ZeroExTransaction,
 } from '@0x/types';
-import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -30,7 +29,7 @@ export const eip712Utils = {
         message: EIP712Object,
         domain: EIP712DomainWithDefaultSchema,
     ): EIP712TypedData => {
-        assert.isETHAddressHex('verifyingContractAddress', domain.verifyingContractAddress);
+        assert.isETHAddressHex('verifyingContract', domain.verifyingContract);
         assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
@@ -40,7 +39,8 @@ export const eip712Utils = {
             domain: {
                 name: domain.name === undefined ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
                 version: domain.version === undefined ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
-                verifyingContract: domain.verifyingContractAddress,
+                chainId: domain.chainId,
+                verifyingContract: domain.verifyingContract,
             },
             message,
             primaryType,
@@ -58,14 +58,17 @@ export const eip712Utils = {
         const normalizedOrder = _.mapValues(order, value => {
             return !_.isString(value) ? value.toString() : value;
         });
-        const domain = {
-            verifyingContractAddress: order.exchangeAddress,
+        const partialDomain = {
+            chainId: order.chainId,
+            verifyingContract: order.exchangeAddress,
         };
+        // Since we are passing in the EXCHANGE_ORDER_SCHEMA
+        // order paramaters that are not in there get ignored at hashing time
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ORDER_SCHEMA.name,
             { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
             normalizedOrder,
-            domain,
+            partialDomain,
         );
         return typedData;
     },
@@ -76,47 +79,43 @@ export const eip712Utils = {
      * @return  A typed data object
      */
     createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
-        assert.isETHAddressHex('verifyingContractAddress', zeroExTransaction.verifyingContractAddress);
+        assert.isNumber('domain.chainId', zeroExTransaction.domain.chainId);
+        assert.isETHAddressHex('domain.verifyingContract', zeroExTransaction.domain.verifyingContract);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
         });
-        const domain = {
-            verifyingContractAddress: zeroExTransaction.verifyingContractAddress,
-        };
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name,
             { ZeroExTransaction: constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.parameters },
             normalizedTransaction,
-            domain,
+            zeroExTransaction.domain,
         );
         return typedData;
     },
     /**
-     * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
+     * Creates an Coordinator typedData EIP712TypedData object for use with the Coordinator extension contract
      * @param   transaction A 0x transaction
-     * @param   verifyingContractAddress The coordinator extension contract address that will be verifying the typedData
+     * @param   verifyingContract The coordinator extension contract address that will be verifying the typedData
      * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
-     * @param   approvalExpirationTimeSeconds The approvals expiration time
      * @return  A typed data object
      */
     createCoordinatorApprovalTypedData: (
         transaction: SignedZeroExTransaction,
-        verifyingContractAddress: string,
+        verifyingContract: string,
         txOrigin: string,
-        approvalExpirationTimeSeconds: BigNumber,
     ): EIP712TypedData => {
         const domain = {
+            ...transaction.domain,
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
-            verifyingContractAddress,
+            verifyingContract,
         };
         const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
         const approval = {
             txOrigin,
             transactionHash,
             transactionSignature: transaction.signature,
-            approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
         };
         const typedData = eip712Utils.createTypedData(
             constants.COORDINATOR_APPROVAL_SCHEMA.name,

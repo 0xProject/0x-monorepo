@@ -1,5 +1,36 @@
 [
     {
+        "version": "2.5.0-beta.1",
+        "changes": [
+            {
+                "note": "Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers",
+                "pr": 2243
+            }
+        ]
+    },
+    {
+        "version": "2.5.0-beta.0",
+        "changes": [
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
+                "pr": 2031
+            },
+            {
+                "note": "Add status types for Staking contracts",
+                "pr": 1910
+            },
+            {
+                "note": "Add `ERC20Bridge` to `AssetProxyId`",
+                "pr": 2220
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "2.4.3",
         "changes": [
@@ -46,6 +77,46 @@
             {
                 "note": "Add `InvalidStaticCallDataOffset`, `TargetNotEven`, `UnexpectedStaticCallResult`, and `InvalidAssetDataEnd` to `RevertReason` enum",
                 "pr": 1863
+            },
+            {
+                "note": "Add `domain` field to `Order`, `ZeroExTransaction`",
+                "pr": 1742
+            },
+            {
+                "note": "Rename OrderWithoutExchangeAddress to OrderWithoutDomain",
+                "pr": 1742
+            },
+            {
+                "note": "Add `chainId` field to `EIP712DomainWithDefaultSchema`",
+                "pr": 1742
+            },
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `SignatureType.OrderValidator` and `SignatureType.WalletOrderValidator`",
+                "pr": 1774
+            },
+            {
+                "note": "Update `Order` type for arbitrary fee tokens (ZEIP-28).",
+                "pr": 1819
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` type",
+                "pr": 1832
+            },
+            {
+                "note": "Add `TransfersSuccessful` revert reason and `OrderTransferResults` enum",
+                "pr": 1868
+            },
+            {
+                "note": "Consolidate all Validator `SignatureType`s to just `Validator`",
+                "pr": 1885
+            },
+            {
+                "note": "Add `EIP1271Wallet` to `SignatureType`",
+                "pr": 1885
             }
         ]
     },

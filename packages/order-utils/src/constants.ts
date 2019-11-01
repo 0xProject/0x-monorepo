@@ -100,12 +100,13 @@ export const constants = {
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
     ZERO_AMOUNT: new BigNumber(0),
     EXCHANGE_DOMAIN_NAME: '0x Protocol',
-    EXCHANGE_DOMAIN_VERSION: '2',
+    EXCHANGE_DOMAIN_VERSION: '3.0.0',
     DEFAULT_DOMAIN_SCHEMA: {
         name: 'EIP712Domain',
         parameters: [
             { name: 'name', type: 'string' },
             { name: 'version', type: 'string' },
+            { name: 'chainId', type: 'uint256' },
             { name: 'verifyingContract', type: 'address' },
         ],
     },
@@ -124,25 +125,28 @@ export const constants = {
             { name: 'salt', type: 'uint256' },
             { name: 'makerAssetData', type: 'bytes' },
             { name: 'takerAssetData', type: 'bytes' },
+            { name: 'makerFeeAssetData', type: 'bytes' },
+            { name: 'takerFeeAssetData', type: 'bytes' },
         ],
     },
     EXCHANGE_ZEROEX_TRANSACTION_SCHEMA: {
         name: 'ZeroExTransaction',
         parameters: [
             { name: 'salt', type: 'uint256' },
+            { name: 'expirationTimeSeconds', type: 'uint256' },
+            { name: 'gasPrice', type: 'uint256' },
             { name: 'signerAddress', type: 'address' },
             { name: 'data', type: 'bytes' },
         ],
     },
     COORDINATOR_DOMAIN_NAME: '0x Protocol Coordinator',
-    COORDINATOR_DOMAIN_VERSION: '1.0.0',
+    COORDINATOR_DOMAIN_VERSION: '3.0.0',
     COORDINATOR_APPROVAL_SCHEMA: {
         name: 'CoordinatorApproval',
         parameters: [
             { name: 'txOrigin', type: 'address' },
             { name: 'transactionHash', type: 'bytes32' },
             { name: 'transactionSignature', type: 'bytes' },
-            { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
         ],
     },
     ERC20_METHOD_ABI,

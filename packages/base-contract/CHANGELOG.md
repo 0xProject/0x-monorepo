@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.5.0-beta.0 - _October 3, 2019_
+
+    * Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult` (#1761)
+    * Remove dependency on ethers.js (#1761)
+    * Add more RevertError decoding functions (#1819)
+    * Make the Promise returned by `awaitTransactionSuccessAsync` compatible with base Promise type (#1885)
+    * Properly encode `BigNumber` indexed filter values in `getTopicsForIndexedArgs()` (#2155)
+
 ## v5.4.0 - _September 17, 2019_
 
     * Add `evmExecAsync` to use local EVM instead of eth_call for pure functions (#2108)

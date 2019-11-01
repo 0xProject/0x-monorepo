@@ -18,8 +18,11 @@ export const relayerApiOrdersResponse = {
                 makerAssetData: '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498',
                 takerAssetData:
                     '0x02571792000000000000000000000000371b13d97f4bf77d724e78c16b7dc74099f40e840000000000000000000000000000000000000000000000000000000000000063',
+                makerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+                takerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
                 exchangeAddress: '0x12459c951127e0c374ff9105dda097662a027093',
                 signature: '0x012761a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
+                chainId: 1,
             },
             metaData: {},
         },

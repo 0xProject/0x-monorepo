@@ -1,5 +1,43 @@
 [
     {
+        "version": "2.3.0-beta.0",
+        "changes": [
+            {
+                "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",
+                "pr": 2019
+            },
+            {
+                "note": "Remove `LibAssetProxyIds` contract",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            },
+            {
+                "note": "Remove unused dependency on IAuthorizable in IAssetProxy",
+                "pr": 1910
+            },
+            {
+                "note": "Add `ERC20BridgeProxy`",
+                "pr": 2220
+            },
+            {
+                "note": "Add `Eth2DaiBridge`",
+                "pr": 2221
+            },
+            {
+                "note": "Add `UniswapBridge`",
+                "pr": 2233
+            },
+            {
+                "note": "Replaced `SafeMath` with `LibSafeMath`",
+                "pr": 2254
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "2.2.8",
         "changes": [
@@ -123,6 +161,18 @@
             {
                 "note": "Update tests to use contract-built-in `awaitTransactionSuccessAsync`",
                 "pr": 1797
+            },
+            {
+                "note": "Make `ERC721Wrapper.setApprovalForAll()` take an owner address instead of a token ID",
+                "pr": 1819
+            },
+            {
+                "note": "Automatically set unlimited proxy allowances in `ERC721.setBalancesAndAllowancesAsync()`",
+                "pr": 1819
+            },
+            {
+                "note": "Add `setProxyAllowanceForAllAsync()` to `ERC1155ProxyWrapper`.",
+                "pr": 1819
             }
         ],
         "timestamp": 1557507213

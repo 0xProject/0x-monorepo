@@ -11,6 +11,8 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('EIP712 Utils', () => {
+    const CHAIN_ID = 1337;
+
     describe('createTypedData', () => {
         it('adds in the EIP712DomainSeparator with default values', () => {
             const primaryType = 'Test';
@@ -18,7 +20,7 @@ describe('EIP712 Utils', () => {
                 primaryType,
                 { Test: [{ name: 'testValue', type: 'uint256' }] },
                 { testValue: '1' },
-                { verifyingContractAddress: constants.NULL_ADDRESS },
+                { chainId: CHAIN_ID, verifyingContract: constants.NULL_ADDRESS },
             );
             expect(typedData.domain).to.not.be.undefined();
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
@@ -36,7 +38,12 @@ describe('EIP712 Utils', () => {
                 primaryType,
                 { Test: [{ name: 'testValue', type: 'uint256' }] },
                 { testValue: '1' },
-                { name: domainName, version: domainVersion, verifyingContractAddress: constants.NULL_ADDRESS },
+                {
+                    name: domainName,
+                    version: domainVersion,
+                    chainId: CHAIN_ID,
+                    verifyingContract: constants.NULL_ADDRESS,
+                },
             );
             expect(typedData.domain).to.not.be.undefined();
             expect(typedData.types.EIP712Domain).to.not.be.undefined();
@@ -50,10 +57,15 @@ describe('EIP712 Utils', () => {
     describe('createZeroExTransactionTypedData', () => {
         it('adds in the EIP712DomainSeparator', () => {
             const typedData = eip712Utils.createZeroExTransactionTypedData({
-                salt: new BigNumber('0'),
+                salt: new BigNumber(0),
+                expirationTimeSeconds: new BigNumber(0),
+                gasPrice: new BigNumber(0),
                 data: constants.NULL_BYTES,
                 signerAddress: constants.NULL_ADDRESS,
-                verifyingContractAddress: constants.NULL_ADDRESS,
+                domain: {
+                    verifyingContract: constants.NULL_ADDRESS,
+                    chainId: CHAIN_ID,
+                },
             });
             expect(typedData.primaryType).to.eq(constants.EXCHANGE_ZEROEX_TRANSACTION_SCHEMA.name);
             expect(typedData.types.EIP712Domain).to.not.be.undefined();

@@ -1,4 +1,4 @@
-import { constants, LogDecoder } from '@0x/contracts-test-utils';
+import { LogDecoder } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -80,20 +80,27 @@ export class Erc1155Wrapper {
         );
         // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
-        const token = createFungibleTokenLog.args.id;
+        const tokenId = createFungibleTokenLog.args.id;
+        await this.mintKnownFungibleTokensAsync(tokenId, beneficiaries, tokenAmounts);
+        return tokenId;
+    }
+    public async mintKnownFungibleTokensAsync(
+        tokenId: BigNumber,
+        beneficiaries: string[],
+        tokenAmounts: BigNumber | BigNumber[],
+    ): Promise<void> {
         const tokenAmountsAsArray = _.isArray(tokenAmounts) ? tokenAmounts : [];
         if (!_.isArray(tokenAmounts)) {
             _.each(_.range(0, beneficiaries.length), () => {
                 tokenAmountsAsArray.push(tokenAmounts);
             });
         }
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await this._erc1155Contract.mintFungible.sendTransactionAsync(token, beneficiaries, tokenAmountsAsArray, {
-                from: this._contractOwner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
+        await this._erc1155Contract.mintFungible.awaitTransactionSuccessAsync(
+            tokenId,
+            beneficiaries,
+            tokenAmountsAsArray,
+            { from: this._contractOwner },
         );
-        return token;
     }
     public async mintNonFungibleTokensAsync(beneficiaries: string[]): Promise<[BigNumber, BigNumber[]]> {
         const tokenUri = 'dummyNonFungibleToken';
@@ -106,12 +113,9 @@ export class Erc1155Wrapper {
         // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
         const token = createFungibleTokenLog.args.id;
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await this._erc1155Contract.mintNonFungible.sendTransactionAsync(token, beneficiaries, {
-                from: this._contractOwner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await this._erc1155Contract.mintNonFungible.awaitTransactionSuccessAsync(token, beneficiaries, {
+            from: this._contractOwner,
+        });
         const encodedNftIds: BigNumber[] = [];
         const nftIdBegin = 1;
         const nftIdEnd = beneficiaries.length + 1;
@@ -155,5 +159,20 @@ export class Erc1155Wrapper {
         _.each(balances, (balance: BigNumber, i: number) => {
             expect(balance, `${ownersExtended[i]}${tokensExtended[i]}`).to.be.bignumber.equal(expectedBalances[i]);
         });
+    }
+    public async isNonFungibleItemAsync(tokenId: BigNumber): Promise<boolean> {
+        return this._erc1155Contract.isNonFungibleItem.callAsync(tokenId);
+    }
+    public async isFungibleItemAsync(tokenId: BigNumber): Promise<boolean> {
+        return !(await this.isNonFungibleItemAsync(tokenId));
+    }
+    public async getOwnerOfAsync(tokenId: BigNumber): Promise<string> {
+        return this._erc1155Contract.ownerOf.callAsync(tokenId);
+    }
+    /**
+     * @dev Get the balance of an ERC1155 token for a given owner and token ID.
+     */
+    public async getBalanceAsync(ownerAddress: string, tokenId: BigNumber): Promise<BigNumber> {
+        return this._erc1155Contract.balanceOf.callAsync(ownerAddress, tokenId);
     }
 }

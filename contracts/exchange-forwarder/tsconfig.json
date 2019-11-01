@@ -2,6 +2,17 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": ["generated-artifacts/Forwarder.json"],
+    "files": [
+        "generated-artifacts/Forwarder.json",
+        "generated-artifacts/IAssets.json",
+        "generated-artifacts/IForwarder.json",
+        "generated-artifacts/IForwarderCore.json",
+        "generated-artifacts/LibConstants.json",
+        "generated-artifacts/LibForwarderRichErrors.json",
+        "generated-artifacts/MixinAssets.json",
+        "generated-artifacts/MixinExchangeWrapper.json",
+        "generated-artifacts/MixinForwarderCore.json",
+        "generated-artifacts/MixinWeth.json"
+    ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

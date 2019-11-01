@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0-beta.0 - _October 3, 2019_
+
+    * Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling. (#2170)
+
 ## v3.2.0 - _September 17, 2019_
 
     * Added `getNetworkIdByExchangeAddressOrThrow` (#2096)

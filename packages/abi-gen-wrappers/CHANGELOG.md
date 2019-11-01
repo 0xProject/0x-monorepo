@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.0-beta.0 - _October 3, 2019_
+
+    * Use V3 contracts (#2181)
+    * Hardcode bytecode for local EVM execution (#2198)
+
 ## v5.3.2 - _September 17, 2019_
 
     * Redirect `callAsync` to use local EVM instead of eth_call for pure functions (#2108)
@@ -47,7 +52,9 @@ CHANGELOG
 
 ## v4.3.0 - _May 10, 2019_
 
+    * Update Coordinator and Exchange wrappers (#1742)
     * Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods (#1797)
+    * Update wrappers to automatically throw `RevertError` types when possible. (#1819)
 
 ## v4.2.0 - _April 11, 2019_
 

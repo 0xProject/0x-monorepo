@@ -1,35 +1,15 @@
-import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { artifacts as libsArtifacts, TestLibsContract } from '@0x/contracts-exchange-libs';
 import {
-    AllowanceAmountScenario,
-    AssetDataScenario,
-    BalanceAmountScenario,
-    chaiSetup,
-    constants,
-    expectTransactionFailedAsync,
-    ExpirationTimeSecondsScenario,
-    FeeRecipientAddressScenario,
-    FillScenario,
-    OrderAssetAmountScenario,
-    orderUtils,
-    signingUtils,
-    TakerAssetFillAmountScenario,
-    TakerScenario,
-    TraderStateScenario,
-    Web3ProviderEngine,
-} from '@0x/contracts-test-utils';
-import {
-    assetDataUtils,
-    BalanceAndProxyAllowanceLazyStore,
-    ExchangeTransferSimulator,
-    orderHashUtils,
-    OrderStateUtils,
-    OrderValidationUtils,
-} from '@0x/order-utils';
-import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, errorUtils, logUtils, providerUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
+    artifacts as assetProxyArtifacts,
+    ERC1155ProxyWrapper,
+    ERC20Wrapper,
+    ERC721Wrapper,
+    MultiAssetProxyContract,
+} from '@0x/contracts-asset-proxy';
+import { constants, expect, LogDecoder, orderUtils, signingUtils } from '@0x/contracts-test-utils';
+import { BalanceAndProxyAllowanceLazyStore, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
+import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
@@ -37,14 +17,37 @@ import 'make-promises-safe';
 import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
 
 import { AssetWrapper } from './asset_wrapper';
-import { dependencyArtifacts } from './dependency_artifacts';
 import { ExchangeWrapper } from './exchange_wrapper';
+import {
+    AllowanceAmountScenario,
+    AssetDataScenario,
+    BalanceAmountScenario,
+    ExpirationTimeSecondsScenario,
+    FeeAssetDataScenario,
+    FeeRecipientAddressScenario,
+    FillScenario,
+    OrderAssetAmountScenario,
+    OrderScenario,
+    TakerAssetFillAmountScenario,
+    TakerScenario,
+} from './fill_order_scenarios';
+import { FillOrderError, FillOrderSimulator } from './fill_order_simulator';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
-import { SimpleOrderFilledCancelledFetcher } from './simple_order_filled_cancelled_fetcher';
 
-chaiSetup.configure();
-const expect = chai.expect;
+const EMPTY_FILL_RESULTS = {
+    takerAssetFilledAmount: constants.ZERO_AMOUNT,
+    makerAssetFilledAmount: constants.ZERO_AMOUNT,
+    makerFeePaid: constants.ZERO_AMOUNT,
+    takerFeePaid: constants.ZERO_AMOUNT,
+    protocolFeePaid: constants.ZERO_AMOUNT,
+};
+
+enum TestOutlook {
+    Any,
+    Success,
+    Failure,
+}
 
 /**
  * Instantiates a new instance of FillOrderCombinatorialUtils. Since this method has some
@@ -59,35 +62,30 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
 ): Promise<FillOrderCombinatorialUtils> {
     const accounts = await web3Wrapper.getAvailableAddressesAsync();
     const userAddresses = _.slice(accounts, 0, 5);
-    const [ownerAddress, makerAddress, takerAddress] = userAddresses;
+    const [ownerAddress, makerAddress, takerAddress, burnerAddress] = userAddresses;
     const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
 
     const supportedProvider = web3Wrapper.getProvider();
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
+    const chainId = await providerUtils.getChainIdAsync(provider);
     const erc20Wrapper = new ERC20Wrapper(provider, userAddresses, ownerAddress);
     const erc721Wrapper = new ERC721Wrapper(provider, userAddresses, ownerAddress);
+    const erc1155Wrapper = new ERC1155ProxyWrapper(provider, userAddresses, ownerAddress);
 
-    const erc20EighteenDecimalTokenCount = 3;
+    const erc20EighteenDecimalTokenCount = 4;
     const eighteenDecimals = new BigNumber(18);
-    const [
-        erc20EighteenDecimalTokenA,
-        erc20EighteenDecimalTokenB,
-        zrxToken,
-    ] = await erc20Wrapper.deployDummyTokensAsync(erc20EighteenDecimalTokenCount, eighteenDecimals);
-    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+    const erc20EighteenDecimalTokens = await erc20Wrapper.deployDummyTokensAsync(
+        erc20EighteenDecimalTokenCount,
+        eighteenDecimals,
+    );
 
-    const erc20FiveDecimalTokenCount = 2;
+    const erc20FiveDecimalTokenCount = 4;
     const fiveDecimals = new BigNumber(5);
-    const [erc20FiveDecimalTokenA, erc20FiveDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
-        erc20FiveDecimalTokenCount,
-        fiveDecimals,
-    );
+    const erc20FiveDecimalTokens = await erc20Wrapper.deployDummyTokensAsync(erc20FiveDecimalTokenCount, fiveDecimals);
+
+    const erc20ZeroDecimalTokenCount = 4;
     const zeroDecimals = new BigNumber(0);
-    const erc20ZeroDecimalTokenCount = 2;
-    const [erc20ZeroDecimalTokenA, erc20ZeroDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
-        erc20ZeroDecimalTokenCount,
-        zeroDecimals,
-    );
+    const erc20ZeroDecimalTokens = await erc20Wrapper.deployDummyTokensAsync(erc20ZeroDecimalTokenCount, zeroDecimals);
     const erc20Proxy = await erc20Wrapper.deployProxyAsync();
     await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -96,74 +94,106 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     await erc721Wrapper.setBalancesAndAllowancesAsync();
     const erc721Balances = await erc721Wrapper.getBalancesAsync();
 
-    const assetWrapper = new AssetWrapper([erc20Wrapper, erc721Wrapper]);
+    const [erc1155Token] = (await erc1155Wrapper.deployDummyContractsAsync()).map(w => w.getContract());
+    const erc1155Proxy = await erc1155Wrapper.deployProxyAsync();
+    await erc1155Wrapper.setBalancesAndAllowancesAsync();
+    const erc1155Holdings = await erc1155Wrapper.getBalancesAsync();
+
+    const multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.MultiAssetProxy,
+        provider,
+        txDefaults,
+        {},
+    );
+
+    const assetWrapper = new AssetWrapper([erc20Wrapper, erc721Wrapper, erc1155Wrapper], burnerAddress);
 
     const exchangeContract = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
         txDefaults,
-        dependencyArtifacts,
-        zrxAssetData,
+        {},
+        new BigNumber(chainId),
     );
-    const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
+
+    const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+    const exchangeWrapper = new ExchangeWrapper(exchangeContract);
     await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
     await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, ownerAddress);
+    await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, ownerAddress);
+    await exchangeWrapper.registerAssetProxyAsync(multiAssetProxy.address, ownerAddress);
 
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {
-            from: ownerAddress,
-        }),
-        constants.AWAIT_TRANSACTION_MINED_MS,
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {
-            from: ownerAddress,
-        }),
-        constants.AWAIT_TRANSACTION_MINED_MS,
-    );
+    await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+        from: ownerAddress,
+    });
+
+    await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+        from: ownerAddress,
+    });
+
+    await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+        from: ownerAddress,
+    });
+
+    await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+        from: ownerAddress,
+    });
+
+    await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: ownerAddress });
+
+    await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+        from: ownerAddress,
+    });
+
+    await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+        from: ownerAddress,
+    });
+
+    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: ownerAddress });
+
+    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, { from: ownerAddress });
+
+    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address, { from: ownerAddress });
 
     const orderFactory = new OrderFactoryFromScenario(
         userAddresses,
-        zrxToken.address,
-        [erc20EighteenDecimalTokenA.address, erc20EighteenDecimalTokenB.address],
-        [erc20FiveDecimalTokenA.address, erc20FiveDecimalTokenB.address],
-        [erc20ZeroDecimalTokenA.address, erc20ZeroDecimalTokenB.address],
-        erc721Token,
+        erc20EighteenDecimalTokens.map(token => token.address),
+        erc20FiveDecimalTokens.map(token => token.address),
+        erc20ZeroDecimalTokens.map(token => token.address),
+        erc721Token.address,
+        erc1155Token.address,
         erc721Balances,
+        erc1155Holdings,
         exchangeContract.address,
-    );
-
-    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-        libsArtifacts.TestLibs,
-        provider,
-        txDefaults,
-        dependencyArtifacts,
+        chainId,
     );
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
+        web3Wrapper.getProvider(),
         orderFactory,
         ownerAddress,
         makerAddress,
         makerPrivateKey,
         takerAddress,
-        zrxAssetData,
         exchangeWrapper,
         assetWrapper,
-        testLibsContract,
+        logDecoder,
     );
     return fillOrderCombinatorialUtils;
 }
 
 export class FillOrderCombinatorialUtils {
+    public provider: SupportedProvider;
     public orderFactory: OrderFactoryFromScenario;
     public ownerAddress: string;
     public makerAddress: string;
     public makerPrivateKey: Buffer;
     public takerAddress: string;
-    public zrxAssetData: string;
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
-    public testLibsContract: TestLibsContract;
+    public logDecoder: LogDecoder;
+    public balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher;
+
     public static generateFillOrderCombinations(): FillScenario[] {
         const takerScenarios = [
             TakerScenario.Unspecified,
@@ -172,6 +202,8 @@ export class FillOrderCombinatorialUtils {
         ];
         const feeRecipientScenarios = [
             FeeRecipientAddressScenario.EthUserAddress,
+            FeeRecipientAddressScenario.MakerAddress,
+            FeeRecipientAddressScenario.TakerAddress,
             // FeeRecipientAddressScenario.BurnAddress,
         ];
         const makerAssetAmountScenario = [
@@ -196,68 +228,104 @@ export class FillOrderCombinatorialUtils {
         ];
         const expirationTimeSecondsScenario = [
             ExpirationTimeSecondsScenario.InFuture,
-            ExpirationTimeSecondsScenario.InPast,
+            // ExpirationTimeSecondsScenario.InPast,
         ];
         const makerAssetDataScenario = [
-            AssetDataScenario.ERC20FiveDecimals,
-            AssetDataScenario.ERC20NonZRXEighteenDecimals,
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // AssetDataScenario.ERC20FiveDecimals,
+            AssetDataScenario.ERC20EighteenDecimals,
             AssetDataScenario.ERC721,
-            AssetDataScenario.ZRXFeeToken,
+            AssetDataScenario.ERC1155Fungible,
+            AssetDataScenario.ERC1155NonFungible,
+            AssetDataScenario.MultiAssetERC20,
         ];
         const takerAssetDataScenario = [
-            AssetDataScenario.ERC20FiveDecimals,
-            AssetDataScenario.ERC20NonZRXEighteenDecimals,
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // AssetDataScenario.ERC20FiveDecimals,
+            AssetDataScenario.ERC20EighteenDecimals,
             AssetDataScenario.ERC721,
-            AssetDataScenario.ZRXFeeToken,
+            AssetDataScenario.ERC1155Fungible,
+            AssetDataScenario.ERC1155NonFungible,
+            AssetDataScenario.MultiAssetERC20,
+        ];
+        const makerFeeAssetDataScenario = [
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // FeeAssetDataScenario.ERC20FiveDecimals,
+            FeeAssetDataScenario.ERC20EighteenDecimals,
+            FeeAssetDataScenario.ERC721,
+            FeeAssetDataScenario.ERC1155Fungible,
+            FeeAssetDataScenario.ERC1155NonFungible,
+            FeeAssetDataScenario.MultiAssetERC20,
+            FeeAssetDataScenario.MakerToken,
+            FeeAssetDataScenario.TakerToken,
+        ];
+        const takerFeeAssetDataScenario = [
+            // FeeAssetDataScenario.ERC20ZeroDecimals,
+            // FeeAssetDataScenario.ERC20FiveDecimals,
+            FeeAssetDataScenario.ERC20EighteenDecimals,
+            FeeAssetDataScenario.ERC721,
+            FeeAssetDataScenario.ERC1155Fungible,
+            FeeAssetDataScenario.ERC1155NonFungible,
+            FeeAssetDataScenario.MultiAssetERC20,
+            FeeAssetDataScenario.MakerToken,
+            FeeAssetDataScenario.TakerToken,
         ];
         const takerAssetFillAmountScenario = [
-            TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount,
-            // TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount,
-            // TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount,
+            TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
+            // TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
+            // TakerAssetFillAmountScenario.LessThanTakerAssetAmount,
         ];
         const makerAssetBalanceScenario = [
             BalanceAmountScenario.Higher,
             // BalanceAmountScenario.Exact,
             // BalanceAmountScenario.TooLow,
+            // BalanceAmountScenario.Zero,
         ];
         const makerAssetAllowanceScenario = [
-            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Higher,
             // AllowanceAmountScenario.Exact,
             // AllowanceAmountScenario.TooLow,
-            // AllowanceAmountScenario.Unlimited,
+            AllowanceAmountScenario.Unlimited,
+            // AllowanceAmountScenario.Zero,
         ];
-        const makerZRXBalanceScenario = [
+        const makerFeeBalanceScenario = [
             BalanceAmountScenario.Higher,
             // BalanceAmountScenario.Exact,
             // BalanceAmountScenario.TooLow,
+            // BalanceAmountScenario.Zero,
         ];
-        const makerZRXAllowanceScenario = [
-            AllowanceAmountScenario.Higher,
+        const makerFeeAllowanceScenario = [
+            // AllowanceAmountScenario.Higher,
             // AllowanceAmountScenario.Exact,
             // AllowanceAmountScenario.TooLow,
-            // AllowanceAmountScenario.Unlimited,
+            AllowanceAmountScenario.Unlimited,
+            // AllowanceAmountScenario.Zero,
         ];
         const takerAssetBalanceScenario = [
             BalanceAmountScenario.Higher,
             // BalanceAmountScenario.Exact,
             // BalanceAmountScenario.TooLow,
+            // BalanceAmountScenario.Zero,
         ];
         const takerAssetAllowanceScenario = [
-            AllowanceAmountScenario.Higher,
+            // AllowanceAmountScenario.Higher,
             // AllowanceAmountScenario.Exact,
             // AllowanceAmountScenario.TooLow,
-            // AllowanceAmountScenario.Unlimited,
+            AllowanceAmountScenario.Unlimited,
+            // AllowanceAmountScenario.Zero,
         ];
-        const takerZRXBalanceScenario = [
+        const takerFeeBalanceScenario = [
             BalanceAmountScenario.Higher,
             // BalanceAmountScenario.Exact,
             // BalanceAmountScenario.TooLow,
+            // BalanceAmountScenario.Zero,
         ];
-        const takerZRXAllowanceScenario = [
-            AllowanceAmountScenario.Higher,
+        const takerFeeAllowanceScenario = [
+            // AllowanceAmountScenario.Higher,
             // AllowanceAmountScenario.Exact,
             // AllowanceAmountScenario.TooLow,
-            // AllowanceAmountScenario.Unlimited,
+            AllowanceAmountScenario.Unlimited,
+            // AllowanceAmountScenario.Zero,
         ];
         const fillScenarioArrays = FillOrderCombinatorialUtils._getAllCombinations([
             takerScenarios,
@@ -269,15 +337,17 @@ export class FillOrderCombinatorialUtils {
             expirationTimeSecondsScenario,
             makerAssetDataScenario,
             takerAssetDataScenario,
+            makerFeeAssetDataScenario,
+            takerFeeAssetDataScenario,
             takerAssetFillAmountScenario,
             makerAssetBalanceScenario,
             makerAssetAllowanceScenario,
-            makerZRXBalanceScenario,
-            makerZRXAllowanceScenario,
+            makerFeeBalanceScenario,
+            makerFeeAllowanceScenario,
             takerAssetBalanceScenario,
             takerAssetAllowanceScenario,
-            takerZRXBalanceScenario,
-            takerZRXAllowanceScenario,
+            takerFeeBalanceScenario,
+            takerFeeAllowanceScenario,
         ]);
 
         const fillScenarios = _.map(fillScenarioArrays, fillScenarioArray => {
@@ -293,19 +363,21 @@ export class FillOrderCombinatorialUtils {
                     expirationTimeSecondsScenario: fillScenarioArray[6] as ExpirationTimeSecondsScenario,
                     makerAssetDataScenario: fillScenarioArray[7] as AssetDataScenario,
                     takerAssetDataScenario: fillScenarioArray[8] as AssetDataScenario,
+                    makerFeeAssetDataScenario: fillScenarioArray[9] as FeeAssetDataScenario,
+                    takerFeeAssetDataScenario: fillScenarioArray[10] as FeeAssetDataScenario,
                 },
-                takerAssetFillAmountScenario: fillScenarioArray[9] as TakerAssetFillAmountScenario,
+                takerAssetFillAmountScenario: fillScenarioArray[11] as TakerAssetFillAmountScenario,
                 makerStateScenario: {
-                    traderAssetBalance: fillScenarioArray[10] as BalanceAmountScenario,
-                    traderAssetAllowance: fillScenarioArray[11] as AllowanceAmountScenario,
-                    zrxFeeBalance: fillScenarioArray[12] as BalanceAmountScenario,
-                    zrxFeeAllowance: fillScenarioArray[13] as AllowanceAmountScenario,
+                    traderAssetBalance: fillScenarioArray[12] as BalanceAmountScenario,
+                    traderAssetAllowance: fillScenarioArray[13] as AllowanceAmountScenario,
+                    feeBalance: fillScenarioArray[14] as BalanceAmountScenario,
+                    feeAllowance: fillScenarioArray[15] as AllowanceAmountScenario,
                 },
                 takerStateScenario: {
-                    traderAssetBalance: fillScenarioArray[14] as BalanceAmountScenario,
-                    traderAssetAllowance: fillScenarioArray[15] as AllowanceAmountScenario,
-                    zrxFeeBalance: fillScenarioArray[16] as BalanceAmountScenario,
-                    zrxFeeAllowance: fillScenarioArray[17] as AllowanceAmountScenario,
+                    traderAssetBalance: fillScenarioArray[16] as BalanceAmountScenario,
+                    traderAssetAllowance: fillScenarioArray[17] as AllowanceAmountScenario,
+                    feeBalance: fillScenarioArray[18] as BalanceAmountScenario,
+                    feeAllowance: fillScenarioArray[19] as AllowanceAmountScenario,
                 },
             };
             // tslint:enable:custom-no-magic-numbers
@@ -314,6 +386,7 @@ export class FillOrderCombinatorialUtils {
 
         return fillScenarios;
     }
+
     /**
      * Recursive implementation of generating all combinations of the supplied
      * string-containing arrays.
@@ -339,339 +412,278 @@ export class FillOrderCombinatorialUtils {
             return result;
         }
     }
+
     constructor(
+        provider: SupportedProvider,
         orderFactory: OrderFactoryFromScenario,
         ownerAddress: string,
         makerAddress: string,
         makerPrivateKey: Buffer,
         takerAddress: string,
-        zrxAssetData: string,
         exchangeWrapper: ExchangeWrapper,
         assetWrapper: AssetWrapper,
-        testLibsContract: TestLibsContract,
+        logDecoder: LogDecoder,
     ) {
+        this.provider = provider;
         this.orderFactory = orderFactory;
         this.ownerAddress = ownerAddress;
         this.makerAddress = makerAddress;
         this.makerPrivateKey = makerPrivateKey;
         this.takerAddress = takerAddress;
-        this.zrxAssetData = zrxAssetData;
         this.exchangeWrapper = exchangeWrapper;
         this.assetWrapper = assetWrapper;
-        this.testLibsContract = testLibsContract;
+        this.logDecoder = logDecoder;
+        this.balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(assetWrapper);
     }
-    public async testFillOrderScenarioAsync(
-        provider: Web3ProviderEngine,
-        fillScenario: FillScenario,
-        isVerbose: boolean = false,
-    ): Promise<void> {
-        // 1. Generate order
-        const order = this.orderFactory.generateOrder(fillScenario.orderScenario);
 
-        // 2. Sign order
+    public async testFillOrderScenarioAsync(fillScenario: FillScenario): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario);
+    }
+
+    public async testFillOrderScenarioSuccessAsync(fillScenario: FillScenario): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success);
+    }
+
+    public async testFillOrderScenarioFailureAsync(
+        fillScenario: FillScenario,
+        fillErrorIfExists?: FillOrderError,
+    ): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, fillErrorIfExists);
+    }
+
+    private async _testFillOrderScenarioAsync(
+        fillScenario: FillScenario,
+        expectedTestResult: TestOutlook = TestOutlook.Any,
+        fillErrorIfExists?: FillOrderError,
+    ): Promise<void> {
+        const lazyStore = new BalanceAndProxyAllowanceLazyStore(this.balanceAndProxyAllowanceFetcher);
+        const signedOrder = await this._generateSignedOrder(fillScenario.orderScenario);
+        const takerAssetFillAmount = getTakerAssetFillAmount(signedOrder, fillScenario);
+
+        await this._modifyTraderStateAsync(fillScenario, signedOrder, takerAssetFillAmount);
+
+        let expectedFillResults = EMPTY_FILL_RESULTS;
+        let _fillErrorIfExists = fillErrorIfExists;
+        if (expectedTestResult !== TestOutlook.Failure || fillErrorIfExists === undefined) {
+            try {
+                expectedFillResults = await this._simulateFillOrderAsync(signedOrder, takerAssetFillAmount, lazyStore);
+            } catch (err) {
+                _fillErrorIfExists = err.message;
+                if (expectedTestResult === TestOutlook.Success) {
+                    throw new Error(`Expected fillOrder() to succeed, but would fail with ${err.message}`);
+                }
+            }
+        }
+
+        await this._fillOrderAndAssertOutcomeAsync(
+            signedOrder,
+            takerAssetFillAmount,
+            lazyStore,
+            expectedFillResults,
+            _fillErrorIfExists as any,
+        );
+    }
+
+    private _generateSignedOrder(orderScenario: OrderScenario): SignedOrder {
+        const order = this.orderFactory.generateOrder(orderScenario);
         const orderHashBuff = orderHashUtils.getOrderHashBuffer(order);
         const signature = signingUtils.signMessage(orderHashBuff, this.makerPrivateKey, SignatureType.EthSign);
         const signedOrder = {
             ...order,
             signature: `0x${signature.toString('hex')}`,
         };
-
-        const balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(this.assetWrapper);
-        const orderFilledCancelledFetcher = new SimpleOrderFilledCancelledFetcher(
-            this.exchangeWrapper,
-            this.zrxAssetData,
-        );
-
-        // 3. Figure out fill amount
-        const takerAssetFillAmount = await this._getTakerAssetFillAmountAsync(
-            signedOrder,
-            fillScenario.takerAssetFillAmountScenario,
-            balanceAndProxyAllowanceFetcher,
-            orderFilledCancelledFetcher,
-        );
-
-        // 4. Permutate the maker and taker balance/allowance scenarios
-        await this._modifyTraderStateAsync(
-            fillScenario.makerStateScenario,
-            fillScenario.takerStateScenario,
-            signedOrder,
-            takerAssetFillAmount,
-        );
-
-        // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts expected?
-        const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher, provider);
-        const lazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAndProxyAllowanceFetcher);
-        const exchangeTransferSimulator = new ExchangeTransferSimulator(lazyStore);
-
-        let fillRevertReasonIfExists;
-        try {
-            await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
-                exchangeTransferSimulator,
-                provider,
-                signedOrder,
-                takerAssetFillAmount,
-                this.takerAddress,
-                this.zrxAssetData,
-            );
-            if (isVerbose) {
-                logUtils.log(`Expecting fillOrder to succeed.`);
-            }
-        } catch (err) {
-            fillRevertReasonIfExists = err.message;
-            if (isVerbose) {
-                logUtils.log(`Expecting fillOrder to fail with:`);
-                logUtils.log(err);
-            }
-        }
-
-        // 6. Fill the order
-        await this._fillOrderAndAssertOutcomeAsync(
-            signedOrder,
-            takerAssetFillAmount,
-            lazyStore,
-            fillRevertReasonIfExists,
-        );
-
-        await this._abiEncodeFillOrderAndAssertOutcomeAsync(signedOrder, takerAssetFillAmount);
+        return signedOrder;
     }
+
+    private async _simulateFillOrderAsync(
+        signedOrder: SignedOrder,
+        takerAssetFillAmount: BigNumber,
+        lazyStore: BalanceAndProxyAllowanceLazyStore,
+    ): Promise<FillResults> {
+        const simulator = new FillOrderSimulator(lazyStore);
+        return simulator.simulateFillOrderAsync(signedOrder, this.takerAddress, takerAssetFillAmount);
+    }
+
     private async _fillOrderAndAssertOutcomeAsync(
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
-        fillRevertReasonIfExists: RevertReason | undefined,
+        expectedFillResults: FillResults,
+        fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
-        if (fillRevertReasonIfExists !== undefined) {
-            return expectTransactionFailedAsync(
-                this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount }),
-                fillRevertReasonIfExists,
-            );
+        if (fillErrorIfExists !== undefined) {
+            const tx = this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, { takerAssetFillAmount });
+            const revertError = fillErrorToRevertError(signedOrder, fillErrorIfExists);
+            return expect(tx).to.revertWith(revertError);
         }
 
         const makerAddress = signedOrder.makerAddress;
         const makerAssetData = signedOrder.makerAssetData;
         const takerAssetData = signedOrder.takerAssetData;
+        const makerFeeAssetData = signedOrder.makerAssetData;
+        const takerFeeAssetData = signedOrder.takerAssetData;
         const feeRecipient = signedOrder.feeRecipientAddress;
 
-        const expMakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(makerAssetData, makerAddress);
-        const expMakerAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(makerAssetData, makerAddress);
-        const expTakerAssetBalanceOfMaker = await lazyStore.getBalanceAsync(takerAssetData, makerAddress);
-        const expZRXAssetBalanceOfMaker = await lazyStore.getBalanceAsync(this.zrxAssetData, makerAddress);
-        const expZRXAssetAllowanceOfMaker = await lazyStore.getProxyAllowanceAsync(this.zrxAssetData, makerAddress);
-        const expTakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(takerAssetData, this.takerAddress);
-        const expTakerAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(takerAssetData, this.takerAddress);
-        const expMakerAssetBalanceOfTaker = await lazyStore.getBalanceAsync(makerAssetData, this.takerAddress);
-        const expZRXAssetBalanceOfTaker = await lazyStore.getBalanceAsync(this.zrxAssetData, this.takerAddress);
-        const expZRXAssetAllowanceOfTaker = await lazyStore.getProxyAllowanceAsync(
-            this.zrxAssetData,
-            this.takerAddress,
-        );
-        const expZRXAssetBalanceOfFeeRecipient = await lazyStore.getBalanceAsync(this.zrxAssetData, feeRecipient);
+        const [
+            expMakerAssetBalanceOfMaker,
+            expMakerAssetAllowanceOfMaker,
+            expTakerAssetBalanceOfMaker,
+            expMakerFeeAssetBalanceOfMaker,
+            expTakerFeeAssetBalanceOfMaker,
+            expMakerFeeAssetAllowanceOfMaker,
+            expTakerAssetBalanceOfTaker,
+            expTakerAssetAllowanceOfTaker,
+            expMakerAssetBalanceOfTaker,
+            expMakerFeeAssetBalanceOfTaker,
+            expTakerFeeAssetBalanceOfTaker,
+            expTakerFeeAssetAllowanceOfTaker,
+            expMakerFeeAssetBalanceOfFeeRecipient,
+            expTakerFeeAssetBalanceOfFeeRecipient,
+        ] = await Promise.all([
+            lazyStore.getBalanceAsync(makerAssetData, makerAddress),
+            lazyStore.getProxyAllowanceAsync(makerAssetData, makerAddress),
+            lazyStore.getBalanceAsync(takerAssetData, makerAddress),
+            lazyStore.getBalanceAsync(makerFeeAssetData, makerAddress),
+            lazyStore.getBalanceAsync(takerFeeAssetData, makerAddress),
+            lazyStore.getProxyAllowanceAsync(makerFeeAssetData, makerAddress),
+            lazyStore.getBalanceAsync(takerAssetData, this.takerAddress),
+            lazyStore.getProxyAllowanceAsync(takerAssetData, this.takerAddress),
+            lazyStore.getBalanceAsync(makerAssetData, this.takerAddress),
+            lazyStore.getBalanceAsync(makerFeeAssetData, this.takerAddress),
+            lazyStore.getBalanceAsync(takerFeeAssetData, this.takerAddress),
+            lazyStore.getProxyAllowanceAsync(takerFeeAssetData, this.takerAddress),
+            lazyStore.getBalanceAsync(makerFeeAssetData, feeRecipient),
+            lazyStore.getBalanceAsync(takerFeeAssetData, feeRecipient),
+        ]);
 
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const alreadyFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-        const remainingTakerAmountToFill = signedOrder.takerAssetAmount.minus(alreadyFilledTakerAmount);
-        const expFilledTakerAmount = takerAssetFillAmount.gt(remainingTakerAmountToFill)
-            ? remainingTakerAmountToFill
-            : alreadyFilledTakerAmount.plus(takerAssetFillAmount);
+        const expFilledTakerAmount = expectedFillResults.takerAssetFilledAmount;
+        const expFilledMakerAmount = expectedFillResults.makerAssetFilledAmount;
+        const expMakerFeePaid = expectedFillResults.makerFeePaid;
+        const expTakerFeePaid = expectedFillResults.takerFeePaid;
 
-        const expFilledMakerAmount = orderUtils.getPartialAmountFloor(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerAssetAmount,
-        );
-        const expMakerFeePaid = orderUtils.getPartialAmountFloor(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerFee,
-        );
-        const expTakerFeePaid = orderUtils.getPartialAmountFloor(
-            expFilledTakerAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
-        );
         const fillResults = await this.exchangeWrapper.getFillOrderResultsAsync(signedOrder, this.takerAddress, {
             takerAssetFillAmount,
         });
-        expect(fillResults.takerAssetFilledAmount).to.be.bignumber.equal(
+
+        expect(fillResults.takerAssetFilledAmount, 'takerAssetFilledAmount').to.be.bignumber.equal(
             expFilledTakerAmount,
-            'takerAssetFilledAmount',
         );
-        expect(fillResults.makerAssetFilledAmount).to.be.bignumber.equal(
+        expect(fillResults.makerAssetFilledAmount, 'makerAssetFilledAmount').to.be.bignumber.equal(
             expFilledMakerAmount,
-            'makerAssetFilledAmount',
         );
-        expect(fillResults.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'takerFeePaid');
-        expect(fillResults.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'makerFeePaid');
+        expect(fillResults.takerFeePaid, 'takerFeePaid').to.be.bignumber.equal(expTakerFeePaid);
+        expect(fillResults.makerFeePaid, 'makerFeePaid').to.be.bignumber.equal(expMakerFeePaid);
 
         // - Let's fill the order!
         const txReceipt = await this.exchangeWrapper.fillOrderAsync(signedOrder, this.takerAddress, {
             takerAssetFillAmount,
         });
 
-        const actFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-        expect(actFilledTakerAmount).to.be.bignumber.equal(expFilledTakerAmount, 'filledTakerAmount');
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const [
+            actFilledTakerAmount,
+            actMakerAssetBalanceOfMaker,
+            actMakerAssetAllowanceOfMaker,
+            actTakerAssetBalanceOfMaker,
+            actMakerFeeAssetBalanceOfMaker,
+            actMakerFeeAssetAllowanceOfMaker,
+            actTakerFeeAssetBalanceOfMaker,
+            actTakerAssetBalanceOfTaker,
+            actTakerAssetAllowanceOfTaker,
+            actMakerAssetBalanceOfTaker,
+            actMakerFeeAssetBalanceOfTaker,
+            actTakerFeeAssetBalanceOfTaker,
+            actTakerFeeAssetAllowanceOfTaker,
+            actMakerFeeAssetBalanceOfFeeRecipient,
+            actTakerFeeAssetBalanceOfFeeRecipient,
+        ] = await Promise.all([
+            this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash),
+            this.assetWrapper.getBalanceAsync(makerAddress, makerAssetData),
+            this.assetWrapper.getProxyAllowanceAsync(makerAddress, makerAssetData),
+            this.assetWrapper.getBalanceAsync(makerAddress, takerAssetData),
+            this.assetWrapper.getBalanceAsync(makerAddress, makerFeeAssetData),
+            this.assetWrapper.getProxyAllowanceAsync(makerAddress, makerFeeAssetData),
+            this.assetWrapper.getBalanceAsync(makerAddress, takerFeeAssetData),
+            this.assetWrapper.getBalanceAsync(this.takerAddress, takerAssetData),
+            this.assetWrapper.getProxyAllowanceAsync(this.takerAddress, takerAssetData),
+            this.assetWrapper.getBalanceAsync(this.takerAddress, makerAssetData),
+            this.assetWrapper.getBalanceAsync(this.takerAddress, makerFeeAssetData),
+            this.assetWrapper.getBalanceAsync(this.takerAddress, takerFeeAssetData),
+            this.assetWrapper.getProxyAllowanceAsync(this.takerAddress, takerFeeAssetData),
+            this.assetWrapper.getBalanceAsync(feeRecipient, makerFeeAssetData),
+            this.assetWrapper.getBalanceAsync(feeRecipient, takerFeeAssetData),
+        ]);
+
+        expect(actFilledTakerAmount, 'filledTakerAmount').to.be.bignumber.equal(expFilledTakerAmount);
 
         const exchangeLogs = _.filter(
             txReceipt.logs,
-            txLog => txLog.address === this.exchangeWrapper.getExchangeAddress(),
+            txLog => txLog.address === this.exchangeWrapper.exchangeContract.address,
         );
         expect(exchangeLogs.length).to.be.equal(1, 'logs length');
         // tslint:disable-next-line:no-unnecessary-type-assertion
-        const log = txReceipt.logs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
-        expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');
-        expect(log.args.takerAddress).to.be.equal(this.takerAddress, 'log.args.this.takerAddress');
-        expect(log.args.feeRecipientAddress).to.be.equal(feeRecipient, 'log.args.feeRecipientAddress');
-        expect(log.args.makerAssetFilledAmount).to.be.bignumber.equal(
+        const log = exchangeLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
+        expect(log.args.makerAddress, 'log.args.makerAddress').to.be.equal(makerAddress);
+        expect(log.args.takerAddress, 'log.args.takerAddress').to.be.equal(this.takerAddress);
+        expect(log.args.feeRecipientAddress, 'log.args.feeRecipientAddress').to.be.equal(feeRecipient);
+        expect(log.args.makerAssetFilledAmount, 'log.args.makerAssetFilledAmount').to.be.bignumber.equal(
             expFilledMakerAmount,
-            'log.args.makerAssetFilledAmount',
         );
-        expect(log.args.takerAssetFilledAmount).to.be.bignumber.equal(
+        expect(log.args.takerAssetFilledAmount, 'log.args.takerAssetFilledAmount').to.be.bignumber.equal(
             expFilledTakerAmount,
-            'log.args.takerAssetFilledAmount',
         );
-        expect(log.args.makerFeePaid).to.be.bignumber.equal(expMakerFeePaid, 'log.args.makerFeePaid');
-        expect(log.args.takerFeePaid).to.be.bignumber.equal(expTakerFeePaid, 'logs.args.takerFeePaid');
-        expect(log.args.orderHash).to.be.equal(orderHash, 'log.args.orderHash');
-        expect(log.args.makerAssetData).to.be.equal(makerAssetData, 'log.args.makerAssetData');
-        expect(log.args.takerAssetData).to.be.equal(takerAssetData, 'log.args.takerAssetData');
+        expect(log.args.makerFeePaid, 'log.args.makerFeePaid').to.be.bignumber.equal(expMakerFeePaid);
+        expect(log.args.takerFeePaid, 'logs.args.takerFeePaid').to.be.bignumber.equal(expTakerFeePaid);
+        expect(log.args.orderHash, 'log.args.orderHash').to.be.equal(orderHash);
+        expect(log.args.makerAssetData, 'log.args.makerAssetData').to.be.equal(makerAssetData);
+        expect(log.args.takerAssetData, 'log.args.takerAssetData').to.be.equal(takerAssetData);
 
-        const actMakerAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, makerAssetData);
-        expect(actMakerAssetBalanceOfMaker).to.be.bignumber.equal(
+        expect(actMakerAssetBalanceOfMaker, 'makerAssetBalanceOfMaker').to.be.bignumber.equal(
             expMakerAssetBalanceOfMaker,
-            'makerAssetBalanceOfMaker',
         );
-
-        const actMakerAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
-            makerAddress,
-            makerAssetData,
-        );
-        expect(actMakerAssetAllowanceOfMaker).to.be.bignumber.equal(
+        expect(actMakerAssetAllowanceOfMaker, 'makerAssetAllowanceOfMaker').to.be.bignumber.equal(
             expMakerAssetAllowanceOfMaker,
-            'makerAssetAllowanceOfMaker',
         );
-
-        const actTakerAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, takerAssetData);
-        expect(actTakerAssetBalanceOfMaker).to.be.bignumber.equal(
+        expect(actTakerAssetBalanceOfMaker, 'takerAssetBalanceOfMaker').to.be.bignumber.equal(
             expTakerAssetBalanceOfMaker,
-            'takerAssetBalanceOfMaker',
         );
-
-        const actZRXAssetBalanceOfMaker = await this.assetWrapper.getBalanceAsync(makerAddress, this.zrxAssetData);
-        expect(actZRXAssetBalanceOfMaker).to.be.bignumber.equal(expZRXAssetBalanceOfMaker, 'ZRXAssetBalanceOfMaker');
-
-        const actZRXAssetAllowanceOfMaker = await this.assetWrapper.getProxyAllowanceAsync(
-            makerAddress,
-            this.zrxAssetData,
+        expect(actMakerFeeAssetBalanceOfMaker, 'makerFeeAssetBalanceOfMaker').to.be.bignumber.equal(
+            expMakerFeeAssetBalanceOfMaker,
         );
-        expect(actZRXAssetAllowanceOfMaker).to.be.bignumber.equal(
-            expZRXAssetAllowanceOfMaker,
-            'ZRXAssetAllowanceOfMaker',
+        expect(actMakerFeeAssetAllowanceOfMaker, 'makerFeeAssetAllowanceOfMaker').to.be.bignumber.equal(
+            expMakerFeeAssetAllowanceOfMaker,
         );
-
-        const actTakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, takerAssetData);
-        expect(actTakerAssetBalanceOfTaker).to.be.bignumber.equal(
+        expect(actTakerFeeAssetBalanceOfMaker, 'takerFeeAssetBalanceOfMaker').to.be.bignumber.equal(
+            expTakerFeeAssetBalanceOfMaker,
+        );
+        expect(actTakerAssetBalanceOfTaker, 'TakerAssetBalanceOfTaker').to.be.bignumber.equal(
             expTakerAssetBalanceOfTaker,
-            'TakerAssetBalanceOfTaker',
         );
-
-        const actTakerAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
-            this.takerAddress,
-            takerAssetData,
-        );
-
-        expect(actTakerAssetAllowanceOfTaker).to.be.bignumber.equal(
+        expect(actTakerAssetAllowanceOfTaker, 'takerAssetAllowanceOfTaker').to.be.bignumber.equal(
             expTakerAssetAllowanceOfTaker,
-            'TakerAssetAllowanceOfTaker',
         );
-
-        const actMakerAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, makerAssetData);
-        expect(actMakerAssetBalanceOfTaker).to.be.bignumber.equal(
+        expect(actMakerAssetBalanceOfTaker, 'makerAssetBalanceOfTaker').to.be.bignumber.equal(
             expMakerAssetBalanceOfTaker,
-            'MakerAssetBalanceOfTaker',
         );
-
-        const actZRXAssetBalanceOfTaker = await this.assetWrapper.getBalanceAsync(this.takerAddress, this.zrxAssetData);
-        expect(actZRXAssetBalanceOfTaker).to.be.bignumber.equal(expZRXAssetBalanceOfTaker, 'ZRXAssetBalanceOfTaker');
-
-        const actZRXAssetAllowanceOfTaker = await this.assetWrapper.getProxyAllowanceAsync(
-            this.takerAddress,
-            this.zrxAssetData,
+        expect(actMakerFeeAssetBalanceOfTaker, 'makerFeeAssetBalanceOfTaker').to.be.bignumber.equal(
+            expMakerFeeAssetBalanceOfTaker,
         );
-        expect(actZRXAssetAllowanceOfTaker).to.be.bignumber.equal(
-            expZRXAssetAllowanceOfTaker,
-            'ZRXAssetAllowanceOfTaker',
+        expect(actTakerFeeAssetBalanceOfTaker, 'takerFeeAssetBalanceOfTaker').to.be.bignumber.equal(
+            expTakerFeeAssetBalanceOfTaker,
         );
-
-        const actZRXAssetBalanceOfFeeRecipient = await this.assetWrapper.getBalanceAsync(
-            feeRecipient,
-            this.zrxAssetData,
+        expect(actTakerFeeAssetAllowanceOfTaker, 'takerFeeAssetAllowanceOfTaker').to.be.bignumber.equal(
+            expTakerFeeAssetAllowanceOfTaker,
         );
-        expect(actZRXAssetBalanceOfFeeRecipient).to.be.bignumber.equal(
-            expZRXAssetBalanceOfFeeRecipient,
-            'ZRXAssetBalanceOfFeeRecipient',
+        expect(actMakerFeeAssetBalanceOfFeeRecipient, 'makerFeeAssetBalanceOfFeeRecipient').to.be.bignumber.equal(
+            expMakerFeeAssetBalanceOfFeeRecipient,
+        );
+        expect(actTakerFeeAssetBalanceOfFeeRecipient, 'takerFeeAssetBalanceOfFeeRecipient').to.be.bignumber.equal(
+            expTakerFeeAssetBalanceOfFeeRecipient,
         );
     }
-    private async _abiEncodeFillOrderAndAssertOutcomeAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmount: BigNumber,
-    ): Promise<void> {
-        const params = orderUtils.createFill(signedOrder, takerAssetFillAmount);
-        const abiDataEncodedByContract = await this.testLibsContract.publicAbiEncodeFillOrder.callAsync(
-            params.order,
-            params.takerAssetFillAmount,
-            params.signature,
-        );
-        const paramsDecodedByClient = this.exchangeWrapper.abiDecodeFillOrder(abiDataEncodedByContract);
-        expect(paramsDecodedByClient).to.be.deep.equal(params, 'ABIEncodedFillOrderData');
-    }
-    private async _getTakerAssetFillAmountAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmountScenario: TakerAssetFillAmountScenario,
-        balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher,
-        orderFilledCancelledFetcher: SimpleOrderFilledCancelledFetcher,
-    ): Promise<BigNumber> {
-        const orderStateUtils = new OrderStateUtils(balanceAndProxyAllowanceFetcher, orderFilledCancelledFetcher);
-        const fillableTakerAssetAmount = await orderStateUtils.getMaxFillableTakerAssetAmountAsync(
-            signedOrder,
-            this.takerAddress,
-        );
 
-        let takerAssetFillAmount;
-        switch (takerAssetFillAmountScenario) {
-            case TakerAssetFillAmountScenario.Zero:
-                takerAssetFillAmount = new BigNumber(0);
-                break;
-
-            case TakerAssetFillAmountScenario.ExactlyRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount;
-                break;
-
-            case TakerAssetFillAmountScenario.GreaterThanRemainingFillableTakerAssetAmount:
-                takerAssetFillAmount = fillableTakerAssetAmount.plus(1);
-                break;
-
-            case TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount:
-                const takerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.takerAssetData);
-                const makerAssetProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
-                const isEitherAssetERC721 =
-                    takerAssetProxyId === AssetProxyId.ERC721 || makerAssetProxyId === AssetProxyId.ERC721;
-                if (isEitherAssetERC721) {
-                    throw new Error(
-                        'Cannot test `TakerAssetFillAmountScenario.LessThanRemainingFillableTakerAssetAmount` together with ERC721 assets since orders involving ERC721 must always be filled exactly.',
-                    );
-                }
-                takerAssetFillAmount = fillableTakerAssetAmount.div(2).integerValue(BigNumber.ROUND_FLOOR);
-                break;
-
-            default:
-                throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', takerAssetFillAmountScenario);
-        }
-
-        return takerAssetFillAmount;
-    }
     private async _modifyTraderStateAsync(
-        makerStateScenario: TraderStateScenario,
-        takerStateScenario: TraderStateScenario,
+        fillScenario: FillScenario,
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
@@ -680,7 +692,21 @@ export class FillOrderCombinatorialUtils {
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
-        switch (makerStateScenario.traderAssetBalance) {
+
+        const makerFee = orderUtils.getPartialAmountFloor(
+            takerAssetFillAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerFee,
+        );
+
+        const takerFee = orderUtils.getPartialAmountFloor(
+            takerAssetFillAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.takerFee,
+        );
+
+        let makerAssetBalance;
+        switch (fillScenario.makerStateScenario.traderAssetBalance) {
             case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
@@ -688,131 +714,33 @@ export class FillOrderCombinatorialUtils {
                 if (makerAssetFillAmount.eq(0)) {
                     throw new Error(`Cannot set makerAssetBalanceOfMaker TooLow if makerAssetFillAmount is 0`);
                 }
-                const tooLowBalance = makerAssetFillAmount.minus(1);
-                await this.assetWrapper.setBalanceAsync(
-                    signedOrder.makerAddress,
-                    signedOrder.makerAssetData,
-                    tooLowBalance,
-                );
+                makerAssetBalance = makerAssetFillAmount.minus(1);
                 break;
 
             case BalanceAmountScenario.Exact:
-                const exactBalance = makerAssetFillAmount;
-                await this.assetWrapper.setBalanceAsync(
-                    signedOrder.makerAddress,
-                    signedOrder.makerAssetData,
-                    exactBalance,
-                );
+                makerAssetBalance = makerAssetFillAmount;
+                break;
+
+            case BalanceAmountScenario.Zero:
+                makerAssetBalance = constants.ZERO_AMOUNT;
                 break;
 
             default:
                 throw errorUtils.spawnSwitchErr(
                     'makerStateScenario.traderAssetBalance',
-                    makerStateScenario.traderAssetBalance,
+                    fillScenario.makerStateScenario.traderAssetBalance,
                 );
         }
-
-        const makerFee = orderUtils.getPartialAmountFloor(
-            takerAssetFillAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.makerFee,
-        );
-        switch (makerStateScenario.zrxFeeBalance) {
-            case BalanceAmountScenario.Higher:
-                break; // Noop since this is already the default
-
-            case BalanceAmountScenario.TooLow:
-                if (makerFee.eq(0)) {
-                    throw new Error(`Cannot set zrxAsserBalanceOfMaker TooLow if makerFee is 0`);
-                }
-                const tooLowBalance = makerFee.minus(1);
-                await this.assetWrapper.setBalanceAsync(signedOrder.makerAddress, this.zrxAssetData, tooLowBalance);
-                break;
-
-            case BalanceAmountScenario.Exact:
-                const exactBalance = makerFee;
-                await this.assetWrapper.setBalanceAsync(signedOrder.makerAddress, this.zrxAssetData, exactBalance);
-                break;
-
-            default:
-                throw errorUtils.spawnSwitchErr('makerStateScenario.zrxFeeBalance', makerStateScenario.zrxFeeBalance);
+        if (makerAssetBalance !== undefined) {
+            await this.assetWrapper.setUnscaledBalanceAsync(
+                signedOrder.makerAddress,
+                signedOrder.makerAssetData,
+                makerAssetBalance,
+            );
         }
 
-        switch (makerStateScenario.traderAssetAllowance) {
-            case AllowanceAmountScenario.Higher:
-                break; // Noop since this is already the default
-
-            case AllowanceAmountScenario.TooLow:
-                const tooLowAllowance = makerAssetFillAmount.minus(1);
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.makerAddress,
-                    signedOrder.makerAssetData,
-                    tooLowAllowance,
-                );
-                break;
-
-            case AllowanceAmountScenario.Exact:
-                const exactAllowance = makerAssetFillAmount;
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.makerAddress,
-                    signedOrder.makerAssetData,
-                    exactAllowance,
-                );
-                break;
-
-            case AllowanceAmountScenario.Unlimited:
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.makerAddress,
-                    signedOrder.makerAssetData,
-                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-                );
-                break;
-
-            default:
-                throw errorUtils.spawnSwitchErr(
-                    'makerStateScenario.traderAssetAllowance',
-                    makerStateScenario.traderAssetAllowance,
-                );
-        }
-
-        switch (makerStateScenario.zrxFeeAllowance) {
-            case AllowanceAmountScenario.Higher:
-                break; // Noop since this is already the default
-
-            case AllowanceAmountScenario.TooLow:
-                const tooLowAllowance = makerFee.minus(1);
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.makerAddress,
-                    this.zrxAssetData,
-                    tooLowAllowance,
-                );
-                break;
-
-            case AllowanceAmountScenario.Exact:
-                const exactAllowance = makerFee;
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.makerAddress,
-                    this.zrxAssetData,
-                    exactAllowance,
-                );
-                break;
-
-            case AllowanceAmountScenario.Unlimited:
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    signedOrder.makerAddress,
-                    this.zrxAssetData,
-                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-                );
-                break;
-
-            default:
-                throw errorUtils.spawnSwitchErr(
-                    'makerStateScenario.zrxFeeAllowance',
-                    makerStateScenario.zrxFeeAllowance,
-                );
-        }
-
-        switch (takerStateScenario.traderAssetBalance) {
+        let takerAssetBalance;
+        switch (fillScenario.takerStateScenario.traderAssetBalance) {
             case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
@@ -820,112 +748,291 @@ export class FillOrderCombinatorialUtils {
                 if (takerAssetFillAmount.eq(0)) {
                     throw new Error(`Cannot set takerAssetBalanceOfTaker TooLow if takerAssetFillAmount is 0`);
                 }
-                const tooLowBalance = takerAssetFillAmount.minus(1);
-                await this.assetWrapper.setBalanceAsync(this.takerAddress, signedOrder.takerAssetData, tooLowBalance);
+                takerAssetBalance = takerAssetFillAmount.minus(1);
                 break;
 
             case BalanceAmountScenario.Exact:
-                const exactBalance = takerAssetFillAmount;
-                await this.assetWrapper.setBalanceAsync(this.takerAddress, signedOrder.takerAssetData, exactBalance);
+                takerAssetBalance = takerAssetFillAmount;
+                break;
+
+            case BalanceAmountScenario.Zero:
+                takerAssetBalance = constants.ZERO_AMOUNT;
                 break;
 
             default:
                 throw errorUtils.spawnSwitchErr(
                     'takerStateScenario.traderAssetBalance',
-                    takerStateScenario.traderAssetBalance,
+                    fillScenario.takerStateScenario.traderAssetBalance,
                 );
         }
+        if (takerAssetBalance !== undefined) {
+            await this.assetWrapper.setUnscaledBalanceAsync(
+                this.takerAddress,
+                signedOrder.takerAssetData,
+                takerAssetBalance,
+            );
+        }
 
-        const takerFee = orderUtils.getPartialAmountFloor(
-            takerAssetFillAmount,
-            signedOrder.takerAssetAmount,
-            signedOrder.takerFee,
-        );
-        switch (takerStateScenario.zrxFeeBalance) {
+        const isMakerFeeAssetMakerAsset =
+            fillScenario.orderScenario.makerFeeAssetDataScenario === FeeAssetDataScenario.MakerToken;
+        let makerFeeBalance;
+        switch (fillScenario.makerStateScenario.feeBalance) {
+            case BalanceAmountScenario.Higher:
+                break; // Noop since this is already the default
+
+            case BalanceAmountScenario.TooLow:
+                if (makerFee.eq(0)) {
+                    throw new Error(`Cannot set makerFeeBalanceOfMaker TooLow if makerFee is 0`);
+                }
+                makerFeeBalance = makerFee.minus(1);
+                break;
+
+            case BalanceAmountScenario.Exact:
+                makerFeeBalance = makerFee;
+                break;
+
+            case BalanceAmountScenario.Zero:
+                makerFeeBalance = constants.ZERO_AMOUNT;
+                break;
+
+            default:
+                throw errorUtils.spawnSwitchErr(
+                    'makerStateScenario.feeBalance',
+                    fillScenario.makerStateScenario.feeBalance,
+                );
+        }
+        if (isMakerFeeAssetMakerAsset && makerFeeBalance !== undefined) {
+            await this.assetWrapper.setUnscaledBalanceAsync(
+                signedOrder.makerAddress,
+                signedOrder.makerFeeAssetData,
+                makerFeeBalance,
+            );
+        }
+
+        const isTakerFeeAssetTakerAsset =
+            fillScenario.orderScenario.takerFeeAssetDataScenario === FeeAssetDataScenario.TakerToken;
+        let takerFeeBalance;
+        switch (fillScenario.takerStateScenario.feeBalance) {
             case BalanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
             case BalanceAmountScenario.TooLow:
                 if (takerFee.eq(0)) {
-                    throw new Error(`Cannot set zrxAssetBalanceOfTaker TooLow if takerFee is 0`);
+                    throw new Error(`Cannot set takerFeeBalanceOfTaker TooLow if takerFee is 0`);
                 }
-                const tooLowBalance = takerFee.minus(1);
-                await this.assetWrapper.setBalanceAsync(this.takerAddress, this.zrxAssetData, tooLowBalance);
+                takerFeeBalance = takerFee.minus(1);
                 break;
 
             case BalanceAmountScenario.Exact:
-                const exactBalance = takerFee;
-                await this.assetWrapper.setBalanceAsync(this.takerAddress, this.zrxAssetData, exactBalance);
+                takerFeeBalance = takerFee;
+                break;
+
+            case BalanceAmountScenario.Zero:
+                takerFeeBalance = constants.ZERO_AMOUNT;
                 break;
 
             default:
-                throw errorUtils.spawnSwitchErr('takerStateScenario.zrxFeeBalance', takerStateScenario.zrxFeeBalance);
+                throw errorUtils.spawnSwitchErr(
+                    'takerStateScenario.feeBalance',
+                    fillScenario.takerStateScenario.feeBalance,
+                );
+        }
+        if (isTakerFeeAssetTakerAsset && takerFeeBalance !== undefined) {
+            await this.assetWrapper.setUnscaledBalanceAsync(
+                this.takerAddress,
+                signedOrder.takerFeeAssetData,
+                takerFeeBalance,
+            );
         }
 
-        switch (takerStateScenario.traderAssetAllowance) {
+        let makerAssetAllowance;
+        switch (fillScenario.makerStateScenario.traderAssetAllowance) {
             case AllowanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
             case AllowanceAmountScenario.TooLow:
-                const tooLowAllowance = takerAssetFillAmount.minus(1);
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    this.takerAddress,
-                    signedOrder.takerAssetData,
-                    tooLowAllowance,
-                );
+                makerAssetAllowance = makerAssetFillAmount.minus(1);
                 break;
 
             case AllowanceAmountScenario.Exact:
-                const exactAllowance = takerAssetFillAmount;
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    this.takerAddress,
-                    signedOrder.takerAssetData,
-                    exactAllowance,
-                );
+                makerAssetAllowance = makerAssetFillAmount;
                 break;
 
             case AllowanceAmountScenario.Unlimited:
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    this.takerAddress,
-                    signedOrder.takerAssetData,
-                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                makerAssetAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+                break;
+
+            case AllowanceAmountScenario.Zero:
+                makerAssetAllowance = constants.ZERO_AMOUNT;
+                break;
+
+            default:
+                throw errorUtils.spawnSwitchErr(
+                    'makerStateScenario.traderAssetAllowance',
+                    fillScenario.makerStateScenario.traderAssetAllowance,
                 );
+        }
+        if (makerAssetAllowance !== undefined) {
+            await this.assetWrapper.setProxyAllowanceAsync(
+                signedOrder.makerAddress,
+                signedOrder.makerAssetData,
+                makerAssetAllowance,
+            );
+        }
+
+        let takerAssetAllowance;
+        switch (fillScenario.takerStateScenario.traderAssetAllowance) {
+            case AllowanceAmountScenario.Higher:
+                break; // Noop since this is already the default
+
+            case AllowanceAmountScenario.TooLow:
+                takerAssetAllowance = takerAssetFillAmount.minus(1);
+                break;
+
+            case AllowanceAmountScenario.Exact:
+                takerAssetAllowance = takerAssetFillAmount;
+                break;
+
+            case AllowanceAmountScenario.Unlimited:
+                takerAssetAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+                break;
+
+            case AllowanceAmountScenario.Zero:
+                takerAssetAllowance = constants.ZERO_AMOUNT;
                 break;
 
             default:
                 throw errorUtils.spawnSwitchErr(
                     'takerStateScenario.traderAssetAllowance',
-                    takerStateScenario.traderAssetAllowance,
+                    fillScenario.takerStateScenario.traderAssetAllowance,
                 );
         }
+        if (takerAssetAllowance !== undefined) {
+            await this.assetWrapper.setProxyAllowanceAsync(
+                this.takerAddress,
+                signedOrder.takerAssetData,
+                takerAssetAllowance,
+            );
+        }
 
-        switch (takerStateScenario.zrxFeeAllowance) {
+        let makerFeeAllowance;
+        switch (fillScenario.makerStateScenario.feeAllowance) {
             case AllowanceAmountScenario.Higher:
                 break; // Noop since this is already the default
 
             case AllowanceAmountScenario.TooLow:
-                const tooLowAllowance = takerFee.minus(1);
-                await this.assetWrapper.setProxyAllowanceAsync(this.takerAddress, this.zrxAssetData, tooLowAllowance);
+                makerFeeAllowance = makerFee.minus(1);
                 break;
 
             case AllowanceAmountScenario.Exact:
-                const exactAllowance = takerFee;
-                await this.assetWrapper.setProxyAllowanceAsync(this.takerAddress, this.zrxAssetData, exactAllowance);
+                makerFeeAllowance = makerFee;
                 break;
 
             case AllowanceAmountScenario.Unlimited:
-                await this.assetWrapper.setProxyAllowanceAsync(
-                    this.takerAddress,
-                    this.zrxAssetData,
-                    constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-                );
+                makerFeeAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+                break;
+
+            case AllowanceAmountScenario.Zero:
+                makerFeeAllowance = constants.ZERO_AMOUNT;
                 break;
 
             default:
                 throw errorUtils.spawnSwitchErr(
-                    'takerStateScenario.zrxFeeAllowance',
-                    takerStateScenario.zrxFeeAllowance,
+                    'makerStateScenario.feeAllowance',
+                    fillScenario.makerStateScenario.feeAllowance,
                 );
         }
+        if (isMakerFeeAssetMakerAsset && makerFeeAllowance !== undefined) {
+            await this.assetWrapper.setProxyAllowanceAsync(
+                signedOrder.makerAddress,
+                signedOrder.makerFeeAssetData,
+                makerFeeAllowance,
+            );
+        }
+
+        let takerFeeAllowance;
+        switch (fillScenario.takerStateScenario.feeAllowance) {
+            case AllowanceAmountScenario.Higher:
+                break; // Noop since this is already the default
+
+            case AllowanceAmountScenario.TooLow:
+                takerFeeAllowance = takerFee.minus(1);
+                break;
+
+            case AllowanceAmountScenario.Exact:
+                takerFeeAllowance = takerFee;
+                break;
+
+            case AllowanceAmountScenario.Unlimited:
+                takerFeeAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+                break;
+
+            case AllowanceAmountScenario.Zero:
+                takerFeeAllowance = constants.ZERO_AMOUNT;
+                break;
+
+            default:
+                throw errorUtils.spawnSwitchErr(
+                    'takerStateScenario.feeAllowance',
+                    fillScenario.takerStateScenario.feeAllowance,
+                );
+        }
+        if (isTakerFeeAssetTakerAsset && takerFeeAllowance !== undefined) {
+            await this.assetWrapper.setProxyAllowanceAsync(
+                this.takerAddress,
+                signedOrder.takerFeeAssetData,
+                takerFeeAllowance,
+            );
+        }
     }
-} // tslint:disable:max-file-line-count
+}
+
+function getTakerAssetFillAmount(signedOrder: SignedOrder, fillScenario: FillScenario): BigNumber {
+    let takerAssetFillAmount;
+    switch (fillScenario.takerAssetFillAmountScenario) {
+        case TakerAssetFillAmountScenario.Zero:
+            takerAssetFillAmount = new BigNumber(0);
+            break;
+
+        case TakerAssetFillAmountScenario.ExactlyTakerAssetAmount:
+            takerAssetFillAmount = signedOrder.takerAssetAmount;
+            break;
+
+        case TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount:
+            takerAssetFillAmount = signedOrder.takerAssetAmount.plus(1);
+            break;
+
+        case TakerAssetFillAmountScenario.LessThanTakerAssetAmount:
+            takerAssetFillAmount = signedOrder.takerAssetAmount.div(2).integerValue(BigNumber.ROUND_FLOOR);
+            break;
+
+        default:
+            throw errorUtils.spawnSwitchErr('TakerAssetFillAmountScenario', fillScenario.takerAssetFillAmountScenario);
+    }
+
+    return takerAssetFillAmount;
+}
+
+function fillErrorToRevertError(order: Order, error: FillOrderError): RevertError {
+    const orderHash = orderHashUtils.getOrderHashHex(order);
+    switch (error) {
+        case FillOrderError.InvalidTaker:
+            return new ExchangeRevertErrors.ExchangeInvalidContextError(
+                ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidTaker,
+                orderHash,
+            );
+        case FillOrderError.InvalidMakerAmount:
+        case FillOrderError.OrderUnfillable:
+            return new ExchangeRevertErrors.OrderStatusError(orderHash);
+        case FillOrderError.InvalidTakerAmount:
+            return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.InvalidTakerAmount, orderHash);
+        case FillOrderError.InvalidFillPrice:
+            return new ExchangeRevertErrors.FillError(ExchangeRevertErrors.FillErrorCode.InvalidFillPrice, orderHash);
+        case FillOrderError.TransferFailed:
+            return new ExchangeRevertErrors.AssetProxyTransferError(orderHash);
+        default:
+            return new StringRevertError(error);
+    }
+}
+
+// tslint:disable:max-file-line-count

@@ -5,6 +5,7 @@ import * as blockRangeSchema from '../schemas/block_range_schema.json';
 import * as callDataSchema from '../schemas/call_data_schema.json';
 import * as ecSignatureParameterSchema from '../schemas/ec_signature_parameter_schema.json';
 import * as ecSignatureSchema from '../schemas/ec_signature_schema.json';
+import * as eip712DomainSchema from '../schemas/eip712_domain_schema.json';
 import * as eip712TypedDataSchema from '../schemas/eip712_typed_data_schema.json';
 import * as hexSchema from '../schemas/hex_schema.json';
 import * as indexFilterValuesSchema from '../schemas/index_filter_values_schema.json';
@@ -50,6 +51,7 @@ export const schemas = {
     hexSchema,
     ecSignatureParameterSchema,
     ecSignatureSchema,
+    eip712DomainSchema,
     eip712TypedDataSchema,
     indexFilterValuesSchema,
     orderCancellationRequestsSchema,

@@ -23,6 +23,14 @@ export interface CreateOrderOpts {
     feeRecipientAddress?: string;
     salt?: BigNumber;
     expirationTimeSeconds?: BigNumber;
+    makerFeeAssetData?: string;
+    takerFeeAssetData?: string;
+}
+
+export interface ValidateOrderFillableOpts {
+    expectedFillTakerTokenAmount?: BigNumber;
+    validateRemainingOrderAmountIsFillable?: boolean;
+    simulationTakerAddress?: string;
 }
 
 export interface ValidateOrderFillableOpts {

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,34 +16,28 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./MixinWeth.sol";
 import "./MixinForwarderCore.sol";
 import "./libs/LibConstants.sol";
-import "./MixinAssets.sol";
-import "./MixinExchangeWrapper.sol";
 
 
 // solhint-disable no-empty-blocks
+// MixinAssets, MixinExchangeWrapper, and MixinWeth are all inherited via
+// MixinForwarderCore.
 contract Forwarder is
     LibConstants,
-    MixinWeth,
-    MixinAssets,
-    MixinExchangeWrapper,
     MixinForwarderCore
 {
     constructor (
         address _exchange,
-        bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )
         public
         Ownable()
         LibConstants(
             _exchange,
-            _zrxAssetData,
             _wethAssetData
         )
         MixinForwarderCore()

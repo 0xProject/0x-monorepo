@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,14 +17,18 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
 import "../src/MixinAssetProxyDispatcher.sol";
+import "../src/MixinTransferSimulator.sol";
 
 
-contract TestAssetProxyDispatcher is 
-    MixinAssetProxyDispatcher
+contract TestAssetProxyDispatcher is
+    MixinAssetProxyDispatcher,
+    MixinTransferSimulator
 {
-    function publicDispatchTransferFrom(
+    function dispatchTransferFrom(
+        bytes32 orderHash,
         bytes memory assetData,
         address from,
         address to,
@@ -32,6 +36,6 @@ contract TestAssetProxyDispatcher is
     )
         public
     {
-        dispatchTransferFrom(assetData, from, to, amount);
+        _dispatchTransferFrom(orderHash, assetData, from, to, amount);
     }
 }

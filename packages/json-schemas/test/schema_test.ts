@@ -10,6 +10,7 @@ chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const CHAIN_ID = 1337;
 const {
     numberSchema,
     addressSchema,
@@ -213,10 +214,13 @@ describe('Schema', () => {
             takerAssetAmount: '2',
             makerAssetData: NULL_ADDRESS,
             takerAssetData: NULL_ADDRESS,
+            makerFeeAssetData: NULL_ADDRESS,
+            takerFeeAssetData: NULL_ADDRESS,
             salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
             feeRecipientAddress: NULL_ADDRESS,
-            exchangeAddress: NULL_ADDRESS,
             expirationTimeSeconds: '42',
+            exchangeAddress: NULL_ADDRESS,
+            chainId: CHAIN_ID,
         };
         const relayerApiOrder = {
             order,
@@ -474,6 +478,8 @@ describe('Schema', () => {
                                 takerFee: '30000000000000000',
                                 feeRecipientAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 senderAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                makerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+                                takerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema);

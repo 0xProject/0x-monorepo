@@ -47,6 +47,7 @@ These packages are all under development. See [/contracts/README.md](/contracts/
 | [`@0x/contracts-utils`](/contracts/utils)                           | [![npm](https://img.shields.io/npm/v/@0x/contracts-utils.svg)](https://www.npmjs.com/package/@0x/contracts-utils)                           | Generic libraries and utilities used throughout all of the contracts                                                                                                                                                                                  |
 | [`@0x/contracts-coordinator`](/contracts/coordinator)               | [![npm](https://img.shields.io/npm/v/@0x/contracts-coordinator.svg)](https://www.npmjs.com/package/@0x/contracts-coordinator)               | A contract that allows users to execute 0x transactions with permission from a Coordinator                                                                                                                                                            |
 | [`@0x/contracts-dev-utils`](/contracts/dev-utils)                   | [![npm](https://img.shields.io/npm/v/@0x/contracts-dev-utils.svg)](https://www.npmjs.com/package/@0x/contracts-dev-utils)                   | A contract contains utility functions for developers (such as validating many orders using a single eth_call)                                                                                                                                         |
+| [`@0x/contracts-staking`](/contracts/staking)                       | [![npm](https://img.shields.io/npm/v/@0x/contracts-staking.svg)](https://www.npmjs.com/package/@0x/contracts-staking)                       | Implements the stake-based liquidity incentives defined by [`ZEIP-31`](https://github.com/0xProject/ZEIPs/issues/31)                                                                                                                                  |
 
 ### TypeScript/Javascript Packages
 
@@ -92,7 +93,6 @@ These packages are all under development. See [/contracts/README.md](/contracts/
 | [`@0x/assert`](/packages/assert)                         | [![npm](https://img.shields.io/npm/v/@0x/assert.svg)](https://www.npmjs.com/package/@0x/assert)                         | Type and schema assertions used by our packages                 |
 | [`@0x/base-contract`](/packages/base-contract)           | [![npm](https://img.shields.io/npm/v/@0x/base-contract.svg)](https://www.npmjs.com/package/@0x/base-contract)           | BaseContract used by auto-generated `abi-gen` wrapper contracts |
 | [`@0x/dev-utils`](/packages/dev-utils)                   | [![npm](https://img.shields.io/npm/v/@0x/dev-utils.svg)](https://www.npmjs.com/package/@0x/dev-utils)                   | Dev utils to be shared across 0x packages                       |
-| [`@0x/fill-scenarios`](/packages/fill-scenarios)         | [![npm](https://img.shields.io/npm/v/@0x/fill-scenarios.svg)](https://www.npmjs.com/package/@0x/fill-scenarios)         | 0x order fill scenario generator                                |
 
 #### Private Packages
 

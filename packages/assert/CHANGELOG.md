@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.0-beta.0 - _October 3, 2019_
+
+    * Dependencies updated
+
 ## v2.1.6 - _September 17, 2019_
 
     * Dependencies updated
@@ -32,6 +36,7 @@ CHANGELOG
 ## v2.1.0 - _July 13, 2019_
 
     * Add new assertions: `isArray`, `isBlockParam` and `isNumberOrBigNumber` (#1823)
+    * Add `isNumberLike()` assertion (#1819)
 
 ## v2.0.10 - _May 10, 2019_
 

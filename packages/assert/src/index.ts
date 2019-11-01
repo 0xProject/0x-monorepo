@@ -10,6 +10,11 @@ export const assert = {
         const isBigNumber = BigNumber.isBigNumber(value);
         assert.assert(isBigNumber, assert.typeAssertionMessage(variableName, 'BigNumber', value));
     },
+    isNumberLike(variableName: string, value: BigNumber | number): void {
+        const isBigNumber = BigNumber.isBigNumber(value);
+        const isNumber = typeof value === 'number';
+        assert.assert(isBigNumber || isNumber, assert.typeAssertionMessage(variableName, 'BigNumber | number', value));
+    },
     isValidBaseUnitAmount(variableName: string, value: BigNumber): void {
         assert.isBigNumber(variableName, value);
         const isNegative = value.isLessThan(0);

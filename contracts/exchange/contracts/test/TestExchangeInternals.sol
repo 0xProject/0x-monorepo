@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/Exchange.sol";
 
 
@@ -26,166 +28,103 @@ import "../src/Exchange.sol";
 contract TestExchangeInternals is
     Exchange
 {
-    constructor ()
+    event DispatchTransferFromCalled(
+        bytes32 orderHash,
+        bytes assetData,
+        address from,
+        address to,
+        uint256 amount
+    );
+
+    constructor (uint256 chainId)
         public
-        Exchange("")
+        Exchange(chainId)
     {}
 
-    /// @dev Adds properties of both FillResults instances.
-    ///      Modifies the first FillResults instance specified.
-    ///      Note that this function has been modified from the original
-    //       internal version to return the FillResults.
-    /// @param totalFillResults Fill results instance that will be added onto.
-    /// @param singleFillResults Fill results instance that will be added to totalFillResults.
-    /// @return newTotalFillResults The result of adding singleFillResults to totalFilResults.
-    function publicAddFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
-        public
-        pure
-        returns (FillResults memory)
-    {
-        addFillResults(totalFillResults, singleFillResults);
-        return totalFillResults;
-    }
-
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function publicCalculateFillResults(
-        Order memory order,
-        uint256 takerAssetFilledAmount
+    function assertValidMatch(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder
     )
         public
-        pure
-        returns (FillResults memory fillResults)
+        view
     {
-        return calculateFillResults(order, takerAssetFilledAmount);
+        _assertValidMatch(
+            leftOrder,
+            rightOrder,
+            leftOrder.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH),
+            rightOrder.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH)
+        );
     }
 
-    /// @dev Calculates partial value given a numerator and denominator.
-    ///      Reverts if rounding error is >= 0.1%
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function publicSafeGetPartialAmountFloor(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (uint256 partialAmount)
-    {
-        return safeGetPartialAmountFloor(numerator, denominator, target);
-    }
-
-    /// @dev Calculates partial value given a numerator and denominator.
-    ///      Reverts if rounding error is >= 0.1%
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function publicSafeGetPartialAmountCeil(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (uint256 partialAmount)
-    {
-        return safeGetPartialAmountCeil(numerator, denominator, target);
-    }
-
-    /// @dev Calculates partial value given a numerator and denominator.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function publicGetPartialAmountFloor(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (uint256 partialAmount)
-    {
-        return getPartialAmountFloor(numerator, denominator, target);
-    }
-
-    /// @dev Calculates partial value given a numerator and denominator.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
-    function publicGetPartialAmountCeil(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (uint256 partialAmount)
-    {
-        return getPartialAmountCeil(numerator, denominator, target);
-    }
-
-    /// @dev Checks if rounding error >= 0.1%.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to multiply with numerator/denominator.
-    /// @return Rounding error is present.
-    function publicIsRoundingErrorFloor(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (bool isError)
-    {
-        return isRoundingErrorFloor(numerator, denominator, target);
-    }
-
-    /// @dev Checks if rounding error >= 0.1%.
-    /// @param numerator Numerator.
-    /// @param denominator Denominator.
-    /// @param target Value to multiply with numerator/denominator.
-    /// @return Rounding error is present.
-    function publicIsRoundingErrorCeil(
-        uint256 numerator,
-        uint256 denominator,
-        uint256 target
-    )
-        public
-        pure
-        returns (bool isError)
-    {
-        return isRoundingErrorCeil(numerator, denominator, target);
-    }
- 
-    /// @dev Updates state with results of a fill order.
-    /// @param order that was filled.
-    /// @param takerAddress Address of taker who filled the order.
-    /// @param orderTakerAssetFilledAmount Amount of order already filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function publicUpdateFilledState(
-        Order memory order,
+    /// @dev Call `_updateFilledState()` but first set `filled[order]` to
+    ///      `orderTakerAssetFilledAmount`.
+    function testUpdateFilledState(
+        LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
         uint256 orderTakerAssetFilledAmount,
-        FillResults memory fillResults
+        LibFillResults.FillResults memory fillResults
     )
         public
+        payable
     {
-        updateFilledState(
+        filled[LibOrder.getTypedDataHash(order, EIP712_EXCHANGE_DOMAIN_HASH)] = orderTakerAssetFilledAmount;
+        _updateFilledState(
             order,
             takerAddress,
             orderHash,
             orderTakerAssetFilledAmount,
             fillResults
+        );
+    }
+
+    function settleOrder(
+        bytes32 orderHash,
+        LibOrder.Order memory order,
+        address takerAddress,
+        LibFillResults.FillResults memory fillResults
+    )
+        public
+    {
+        _settleOrder(orderHash, order, takerAddress, fillResults);
+    }
+
+    function settleMatchOrders(
+        bytes32 leftOrderHash,
+        bytes32 rightOrderHash,
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        address takerAddress,
+        LibFillResults.MatchedFillResults memory matchedFillResults
+    )
+        public
+    {
+        _settleMatchedOrders(
+            leftOrderHash,
+            rightOrderHash,
+            leftOrder,
+            rightOrder,
+            takerAddress,
+            matchedFillResults
+        );
+    }
+
+    /// @dev Overidden to only log arguments so we can test `_settleOrder()`.
+    function _dispatchTransferFrom(
+        bytes32 orderHash,
+        bytes memory assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
+        internal
+    {
+        emit DispatchTransferFromCalled(
+            orderHash,
+            assetData,
+            from,
+            to,
+            amount
         );
     }
 }

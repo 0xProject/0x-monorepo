@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,14 +18,17 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "../src/MintableERC20Token.sol";
 
 
-contract DummyERC20Token is 
+contract DummyERC20Token is
     Ownable,
     MintableERC20Token
 {
+    using LibSafeMath for uint256;
+
     string public name;
     string public symbol;
     uint256 public decimals;
@@ -55,9 +58,9 @@ contract DummyERC20Token is
     {
         uint256 currBalance = balances[_target];
         if (_value < currBalance) {
-            _totalSupply = safeSub(_totalSupply, safeSub(currBalance, _value));
+            _totalSupply = _totalSupply.safeSub(currBalance.safeSub(_value));
         } else {
-            _totalSupply = safeAdd(_totalSupply, safeSub(_value, currBalance));
+            _totalSupply = _totalSupply.safeAdd(_value.safeSub(currBalance));
         }
         balances[_target] = _value;
     }

@@ -8,7 +8,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -21,7 +21,6 @@ import {
 } from '../src';
 
 import { Erc1155Wrapper } from './utils/erc1155_wrapper';
-
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -169,24 +168,28 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
         });
-        it('should throw if transfer reverts', async () => {
+        it('should revert if transfer reverts', async () => {
             // setup test parameters
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155Contract.safeTransferFrom.sendTransactionAsync(
-                    spender,
-                    receiver,
-                    tokenToTransfer,
-                    valueToTransfer,
-                    receiverCallbackData,
-                    { from: spender },
-                ),
-                RevertReason.Uint256Underflow,
+            // create the expected error (a uint256 underflow)
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
+                spenderInitialFungibleBalance,
+                valueToTransfer,
             );
+            // execute transfer
+            const tx = erc1155Contract.safeTransferFrom.sendTransactionAsync(
+                spender,
+                receiver,
+                tokenToTransfer,
+                valueToTransfer,
+                receiverCallbackData,
+                { from: spender },
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
-        it('should throw if callback reverts', async () => {
+        it('should revert if callback reverts', async () => {
             // setup test parameters
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = fungibleValueToTransfer;
@@ -341,24 +344,28 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
-        it('should throw if transfer reverts', async () => {
+        it('should revert if transfer reverts', async () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
-                    spender,
-                    receiver,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                    { from: spender },
-                ),
-                RevertReason.Uint256Underflow,
+            // create the expected error (a uint256 underflow)
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
+                spenderInitialFungibleBalance,
+                valuesToTransfer[0],
             );
+            // execute transfer
+            const tx = erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
+                spender,
+                receiver,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+                { from: spender },
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
-        it('should throw if callback reverts', async () => {
+        it('should revert if callback reverts', async () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [fungibleValueToTransfer];
@@ -412,7 +419,7 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
         });
-        it('should throw if trying to transfer tokens via safeTransferFrom by an unapproved account', async () => {
+        it('should revert if trying to transfer tokens via safeTransferFrom by an unapproved account', async () => {
             // check approval not set
             const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
             expect(isApprovedForAllCheck).to.be.false();
@@ -465,7 +472,7 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
-        it('should throw if trying to transfer tokens via safeBatchTransferFrom by an unapproved account', async () => {
+        it('should revert if trying to transfer tokens via safeBatchTransferFrom by an unapproved account', async () => {
             // check approval not set
             const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
             expect(isApprovedForAllCheck).to.be.false();
@@ -491,4 +498,5 @@ describe('ERC1155Token', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count
 // tslint:enable:no-unnecessary-type-assertion

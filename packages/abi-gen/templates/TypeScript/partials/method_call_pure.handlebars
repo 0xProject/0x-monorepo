@@ -26,9 +26,16 @@ async callAsync(
     const self = this as any as {{contractName}}Contract;
     const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
     const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+    let rawCallResult;
+    try {
+        rawCallResult = await self._evmExecAsync(encodedDataBytes);
+    } catch (err) {
+        BaseContract._throwIfThrownErrorIsRevertError(err);
+        throw err;
+    }
+    BaseContract._throwIfCallResultIsRevertError(rawCallResult);
     
-    const rawCallResult = await self.evmExecAsync(encodedDataBytes);
-    BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
     const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
     // tslint:disable boolean-naming
     const result = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);

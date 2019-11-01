@@ -1,6 +1,6 @@
 {
     "name": "@0x/migrations",
-    "version": "4.3.2",
+    "version": "4.4.0-beta.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,7 +30,7 @@
     "config": {
         "s3_snapshot_bucket": "s3://ganache-snapshots.0x.org",
         "docker_snapshot_name": "0xorg/ganache-cli",
-        "snapshot_name": "0x_ganache_snapshot",
+        "snapshot_name": "0x_ganache_snapshot-v3-beta",
         "postpublish": {
             "assets": []
         }
@@ -40,10 +40,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0x/dev-utils": "^2.3.3",
+        "@0x/dev-utils": "^2.4.0-beta.0",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^3.0.1",
-        "@0x/types": "^2.4.3",
+        "@0x/types": "^2.5.0-beta.0",
         "@types/yargs": "^11.0.0",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
@@ -55,18 +55,26 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.3.2",
-        "@0x/base-contract": "^5.4.0",
-        "@0x/contract-addresses": "^3.2.0",
-        "@0x/contract-artifacts": "^2.2.2",
-        "@0x/sol-compiler": "^3.1.15",
-        "@0x/subproviders": "^5.0.4",
-        "@0x/typescript-typings": "^4.3.0",
-        "@0x/utils": "^4.5.2",
-        "@0x/web3-wrapper": "^6.0.13",
+        "@0x/contracts-asset-proxy": "2.3.0-beta.0",
+        "@0x/contracts-exchange-forwarder": "3.1.0-beta.0",
+        "@0x/contracts-dev-utils": "0.1.0-beta.0",
+        "@0x/contracts-coordinator": "2.1.0-beta.0",
+        "@0x/contracts-multisig": "^3.2.0-beta.0",
+        "@0x/contracts-staking": "^1.1.0-beta.0",
+        "@0x/contracts-exchange": "^2.2.0-beta.0",
+        "@0x/contracts-utils": "^3.3.0-beta.0",
+        "@0x/abi-gen-wrappers": "^5.4.0-beta.0",
+        "@0x/base-contract": "^5.5.0-beta.0",
+        "@0x/contract-addresses": "^3.3.0-beta.0",
+        "@0x/contract-artifacts": "^2.3.0-beta.0",
+        "@0x/sol-compiler": "^3.2.0-beta.0",
+        "@0x/subproviders": "^5.1.0-beta.0",
+        "@0x/typescript-typings": "^4.4.0-beta.0",
+        "@0x/utils": "^4.6.0-beta.0",
+        "@0x/web3-wrapper": "^6.1.0-beta.0",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@types/web3-provider-engine": "^14.0.0",
-        "ethereum-types": "^2.1.6",
+        "ethereum-types": "^2.2.0-beta.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"
     },

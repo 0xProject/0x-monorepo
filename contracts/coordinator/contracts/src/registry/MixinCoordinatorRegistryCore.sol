@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "./interfaces/ICoordinatorRegistryCore.sol";
 
@@ -29,7 +29,7 @@ contract MixinCoordinatorRegistryCore is
     mapping (address => string) internal coordinatorEndpoints;
 
     /// @dev Called by a Coordinator operator to set the endpoint of their Coordinator.
-    /// @param coordinatorEndpoint endpoint of the Coordinator.
+    /// @param coordinatorEndpoint Endpoint of the Coordinator as a string.
     function setCoordinatorEndpoint(string calldata coordinatorEndpoint) external {
         address coordinatorOperator = msg.sender;
         coordinatorEndpoints[coordinatorOperator] = coordinatorEndpoint;
@@ -37,7 +37,8 @@ contract MixinCoordinatorRegistryCore is
     }
 
     /// @dev Gets the endpoint for a Coordinator.
-    /// @param coordinatorOperator operator of the Coordinator endpoint.
+    /// @param coordinatorOperator Operator of the Coordinator endpoint.
+    /// @return coordinatorEndpoint Endpoint of the Coordinator as a string.
     function getCoordinatorEndpoint(address coordinatorOperator)
         external
         view

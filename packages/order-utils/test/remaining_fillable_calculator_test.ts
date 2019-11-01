@@ -20,11 +20,14 @@ describe('RemainingFillableCalculator', () => {
     let makerAmount: BigNumber;
     let takerAmount: BigNumber;
     let makerFeeAmount: BigNumber;
-    let isMakeAssetZRX: boolean;
+    let isPercentageFee: boolean;
     const makerAssetData: string = '0x1';
     const takerAssetData: string = '0x2';
+    const makerFeeAssetData: string = '0x03';
+    const takerFeeAssetData: string = '0x04';
     const decimals: number = 4;
     const zero: BigNumber = new BigNumber(0);
+    const chainId: number = 1337;
     const zeroAddress = '0x0';
     const signature: string =
         '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
@@ -42,7 +45,6 @@ describe('RemainingFillableCalculator', () => {
     function buildSignedOrder(): SignedOrder {
         return {
             signature,
-            exchangeAddress: zeroAddress,
             feeRecipientAddress: zeroAddress,
             senderAddress: zeroAddress,
             makerAddress: zeroAddress,
@@ -53,13 +55,17 @@ describe('RemainingFillableCalculator', () => {
             takerAssetAmount: takerAmount,
             makerAssetData,
             takerAssetData,
+            makerFeeAssetData,
+            takerFeeAssetData,
             salt: zero,
             expirationTimeSeconds: zero,
+            exchangeAddress: zeroAddress,
+            chainId,
         };
     }
-    describe('Maker token is NOT ZRX', () => {
+    describe('Maker asset is not fee asset', () => {
         before(async () => {
-            isMakeAssetZRX = false;
+            isPercentageFee = false;
         });
         it('calculates the correct amount when unfilled and funds available', () => {
             signedOrder = buildSignedOrder();
@@ -67,7 +73,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -80,7 +86,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -94,7 +100,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -109,7 +115,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -132,7 +138,7 @@ describe('RemainingFillableCalculator', () => {
                 calculator = new RemainingFillableCalculator(
                     signedOrder.makerFee,
                     signedOrder.makerAssetAmount,
-                    isMakeAssetZRX,
+                    isPercentageFee,
                     transferrableMakeAssetAmount,
                     transferrableMakerFeeTokenAmount,
                     remainingMakeAssetAmount,
@@ -140,7 +146,7 @@ describe('RemainingFillableCalculator', () => {
                 expect(calculator.computeRemainingFillable()).to.be.bignumber.equal(transferrableMakeAssetAmount);
             });
         });
-        describe('Ratio is not evenly divisble', () => {
+        describe('Ratio is not evenly divisible', () => {
             beforeEach(async () => {
                 [makerAmount, takerAmount, makerFeeAmount] = [
                     Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals),
@@ -156,7 +162,7 @@ describe('RemainingFillableCalculator', () => {
                 calculator = new RemainingFillableCalculator(
                     signedOrder.makerFee,
                     signedOrder.makerAssetAmount,
-                    isMakeAssetZRX,
+                    isPercentageFee,
                     transferrableMakeAssetAmount,
                     transferrableMakerFeeTokenAmount,
                     remainingMakeAssetAmount,
@@ -170,9 +176,9 @@ describe('RemainingFillableCalculator', () => {
             });
         });
     });
-    describe('Maker Token is ZRX', () => {
+    describe('Maker asset is fee asset', () => {
         before(async () => {
-            isMakeAssetZRX = true;
+            isPercentageFee = true;
         });
         it('calculates the correct amount when unfilled and funds available', () => {
             signedOrder = buildSignedOrder();
@@ -182,7 +188,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -195,7 +201,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -210,7 +216,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,
@@ -229,7 +235,7 @@ describe('RemainingFillableCalculator', () => {
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
-                isMakeAssetZRX,
+                isPercentageFee,
                 transferrableMakeAssetAmount,
                 transferrableMakerFeeTokenAmount,
                 remainingMakeAssetAmount,

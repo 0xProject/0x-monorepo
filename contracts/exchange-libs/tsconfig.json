@@ -1,16 +1,21 @@
 {
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
-    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "include": ["./src/**/*", "./test/**/*", "./scripts/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/LibAbiEncoder.json",
-        "generated-artifacts/LibAssetProxyErrors.json",
-        "generated-artifacts/LibConstants.json",
-        "generated-artifacts/LibEIP712.json",
+        "generated-artifacts/IWallet.json",
+        "generated-artifacts/LibEIP712ExchangeDomain.json",
+        "generated-artifacts/LibExchangeRichErrors.json",
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
+        "generated-artifacts/LibMathRichErrors.json",
         "generated-artifacts/LibOrder.json",
-        "generated-artifacts/TestLibs.json"
+        "generated-artifacts/LibZeroExTransaction.json",
+        "generated-artifacts/TestLibEIP712ExchangeDomain.json",
+        "generated-artifacts/TestLibFillResults.json",
+        "generated-artifacts/TestLibMath.json",
+        "generated-artifacts/TestLibOrder.json",
+        "generated-artifacts/TestLibZeroExTransaction.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

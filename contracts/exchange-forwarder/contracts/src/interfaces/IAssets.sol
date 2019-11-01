@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 
 contract IAssets {
@@ -29,6 +29,17 @@ contract IAssets {
     function withdrawAsset(
         bytes calldata assetData,
         uint256 amount
+    )
+        external;
+
+        /// @dev Approves the respective proxy for a given asset to transfer tokens on the Forwarder contract's behalf.
+        ///      This is necessary because an order fee denominated in the maker asset (i.e. a percentage fee) is sent by the
+        ///      Forwarder contract to the fee recipient.
+        ///      This method needs to be called before forwarding orders of a maker asset that hasn't
+        ///      previously been approved.
+        /// @param assetData Byte array encoded for the respective asset proxy.
+    function approveMakerAssetProxy(
+        bytes calldata assetData
     )
         external;
 }

@@ -13,6 +13,7 @@ import * as IERC20Token from '../generated-artifacts/IERC20Token.json';
 import * as IEtherToken from '../generated-artifacts/IEtherToken.json';
 import * as MintableERC20Token from '../generated-artifacts/MintableERC20Token.json';
 import * as UnlimitedAllowanceERC20Token from '../generated-artifacts/UnlimitedAllowanceERC20Token.json';
+import * as UntransferrableDummyERC20Token from '../generated-artifacts/UntransferrableDummyERC20Token.json';
 import * as WETH9 from '../generated-artifacts/WETH9.json';
 import * as ZRXToken from '../generated-artifacts/ZRXToken.json';
 export const artifacts = {
@@ -26,4 +27,5 @@ export const artifacts = {
     DummyERC20Token: DummyERC20Token as ContractArtifact,
     DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,
     DummyNoReturnERC20Token: DummyNoReturnERC20Token as ContractArtifact,
+    UntransferrableDummyERC20Token: UntransferrableDummyERC20Token as ContractArtifact,
 };

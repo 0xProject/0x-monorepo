@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,30 +16,42 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
+
+import "./LibReentrancyGuardRichErrors.sol";
+import "./LibRichErrors.sol";
 
 
 contract ReentrancyGuard {
 
-    // Locked state of mutex
-    bool private locked = false;
+    // Locked state of mutex.
+    bool private _locked = false;
 
     /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
     ///      before function execution and unlocked after.
     modifier nonReentrant() {
-        // Ensure mutex is unlocked
-        require(
-            !locked,
-            "REENTRANCY_ILLEGAL"
-        );
-
-        // Lock mutex before function call
-        locked = true;
-
-        // Perform function call
+        _lockMutexOrThrowIfAlreadyLocked();
         _;
+        _unlockMutex();
+    }
 
-        // Unlock mutex after function call
-        locked = false;
+    function _lockMutexOrThrowIfAlreadyLocked()
+        internal
+    {
+        // Ensure mutex is unlocked.
+        if (_locked) {
+            LibRichErrors.rrevert(
+                LibReentrancyGuardRichErrors.IllegalReentrancyError()
+            );
+        }
+        // Lock mutex.
+        _locked = true;
+    }
+
+    function _unlockMutex()
+        internal
+    {
+        // Unlock mutex.
+        _locked = false;
     }
 }
