@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import ChevronRightSvg from '../assets/icons/chevronRight.svg';
 import { ColorOption } from '../style/theme';
 
 import { Container } from './ui/container';
@@ -48,7 +49,7 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
                 </Text>
             </Container>
             <Container position="relative" top="2px" display={display}>
-                <Icon width={13} icon="chevronRight" stroke="#AAAAAA" />
+                <ChevronRightSvg />
             </Container>
         </Flex>
     </Container>
