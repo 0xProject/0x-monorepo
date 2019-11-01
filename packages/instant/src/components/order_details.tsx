@@ -6,7 +6,7 @@ import { oc } from 'ts-optchain';
 
 import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { ColorOption } from '../style/theme';
-import { BaseCurrency } from '../types';
+import {Account, AccountState, BaseCurrency} from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
@@ -25,16 +25,22 @@ export interface OrderDetailsProps {
     baseCurrency: BaseCurrency;
     onBaseCurrencySwitchEth: () => void;
     onBaseCurrencySwitchUsd: () => void;
+    account: Account;
 }
 export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     public render(): React.ReactNode {
         const shouldShowUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
-        return (
-            <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
-                <Container marginBottom="10px">{this._renderHeader()}</Container>
-                {shouldShowUsdError ? this._renderErrorFetchingUsdPrice() : this._renderRows()}
-            </Container>
-        );
+        const { state } = this.props.account;
+        if (state === AccountState.None) {
+            return null;
+        } else {
+            return (
+                <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
+                    <Container marginBottom="10px">{this._renderHeader()}</Container>
+                    {shouldShowUsdError ? this._renderErrorFetchingUsdPrice() : this._renderRows()}
+                </Container>
+            );
+        }
     }
 
     private _renderRows(): React.ReactNode {
