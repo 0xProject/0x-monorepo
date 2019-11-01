@@ -1,13 +1,13 @@
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
     artifacts,
-    StakingProxyStakingContractAttachedToProxyEventArgs,
+    StakingProxyEvents,
     TestProxyDestinationContract,
-    TestProxyDestinationInitCalledEventArgs,
+    TestProxyDestinationEvents,
     TestStakingProxyUnitContract,
 } from '../../src';
 
@@ -90,15 +90,26 @@ blockchainTests.resets('StakingProxy unit tests', env => {
             );
 
             // Validate `ContractAttachedToProxy` event
-            expect(txReceipt.logs.length).to.be.gte(1);
-            const contractAttachedEvent: StakingProxyStakingContractAttachedToProxyEventArgs = (txReceipt
-                .logs[0] as any).args;
-            expect(contractAttachedEvent.newStakingContractAddress).to.equal(testContract2.address);
+            verifyEventsFromLogs(
+                txReceipt.logs,
+                [
+                    {
+                        newStakingContractAddress: testContract2.address,
+                    },
+                ],
+                StakingProxyEvents.StakingContractAttachedToProxy,
+            );
 
             // Check that `init` was called on destination contract
-            expect(txReceipt.logs.length).to.be.gte(2);
-            const initCalledEvent: TestProxyDestinationInitCalledEventArgs = (txReceipt.logs[1] as any).args;
-            expect(initCalledEvent.initCalled).to.be.true();
+            verifyEventsFromLogs(
+                txReceipt.logs,
+                [
+                    {
+                        initCalled: true,
+                    },
+                ],
+                TestProxyDestinationEvents.InitCalled,
+            );
 
             // Validate new staking contract address
             const finalStakingContractAddress = await testProxyContract.stakingContract.callAsync();
@@ -133,7 +144,7 @@ blockchainTests.resets('StakingProxy unit tests', env => {
             });
 
             // Validate that event was emitted
-            expect(txReceipt.logs.length).to.eq(1);
+            verifyEventsFromLogs(txReceipt.logs, [{}], StakingProxyEvents.StakingContractDetachedFromProxy);
 
             // Validate staking contract address was unset
             const finalStakingContractAddress = await testProxyContract.stakingContract.callAsync();
@@ -186,14 +197,23 @@ blockchainTests.resets('StakingProxy unit tests', env => {
                 testContract.doMath.getABIEncodedTransactionData(new BigNumber(2), new BigNumber(1)),
             ];
             const tx = testProxyContract.batchExecute.callAsync(calls);
-            const expectedError = 'Goodbye, World!';
+            const expectedError = testRevertString;
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert if no staking contract is attached', async () => {
+            await testProxyContract.detachStakingContract.awaitTransactionSuccessAsync({ from: authorizedAddress });
+            const calls = [testContract.echo.getABIEncodedTransactionData(testString)];
+
+            const tx = testProxyContract.batchExecute.callAsync(calls);
+            const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
             return expect(tx).to.revertWith(expectedError);
         });
     });
 
     describe('assertValidStorageParams', () => {
         const validStorageParams = {
-            epochDurationInSeconds: new BigNumber(5 * 24 * 60 * 60), // 5 days
+            epochDurationInSeconds: new BigNumber(stakingConstants.ONE_DAY_IN_SECONDS * 5),
             cobbDouglasAlphaNumerator: new BigNumber(1),
             cobbDouglasAlphaDenominator: new BigNumber(1),
             rewardDelegatedStakeWeight: constants.PPM_DENOMINATOR,
@@ -218,7 +238,7 @@ blockchainTests.resets('StakingProxy unit tests', env => {
         it('should revert if `epochDurationInSeconds` is greater than 30 days', async () => {
             const invalidStorageParams = {
                 ...validStorageParams,
-                epochDurationInSeconds: new BigNumber(31 * 24 * 60 * 60), // 31 days
+                epochDurationInSeconds: new BigNumber(stakingConstants.ONE_DAY_IN_SECONDS * 31),
             };
             await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
             const tx = testProxyContract.assertValidStorageParams.callAsync();

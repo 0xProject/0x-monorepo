@@ -112,7 +112,7 @@ contract StakingProxy is
         address staking = stakingContract;
 
         // Ensure that a staking contract has been attached to the proxy.
-        if (staking == address(0)) {
+        if (staking == NIL_ADDRESS) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.ProxyDestinationCannotBeNilError()
             );
