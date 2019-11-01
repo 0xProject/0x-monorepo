@@ -47,6 +47,25 @@ contract TestMixinStakingPoolRewards is
     // Rewards returned by `_getUnfinalizedPoolRewards()`, indexed by pool ID.
     mapping (bytes32 => UnfinalizedPoolReward) private _unfinalizedPoolRewards;
 
+    // Set pool `rewardsByPoolId`.
+    function setPoolRewards(
+        bytes32 poolId,
+        uint256 _rewardsByPoolId
+    )
+        external
+    {
+        rewardsByPoolId[poolId] = _rewardsByPoolId;
+    }
+
+    // Set `wethReservedForPoolRewards`.
+    function setWethReservedForPoolRewards(
+        uint256 _wethReservedForPoolRewards
+    )
+        external
+    {
+        wethReservedForPoolRewards = _wethReservedForPoolRewards;
+    }
+
     // Set the rewards returned by a call to `_computeMemberRewardOverInterval()`.
     function setMemberRewardsOverInterval(
         bytes32 poolId,
@@ -80,9 +99,30 @@ contract TestMixinStakingPoolRewards is
         );
     }
 
-    // Advance the epoch.
-    function advanceEpoch() external {
-        currentEpoch += 1;
+    // Set `currentEpoch`.
+    function setCurrentEpoch(uint256 epoch) external {
+        currentEpoch = epoch;
+    }
+
+    // Expose `_syncPoolRewards()` for testing.
+    function syncPoolRewards(
+        bytes32 poolId,
+        uint256 reward,
+        uint256 membersStake
+    )
+        external
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        return _syncPoolRewards(poolId, reward, membersStake);
+    }
+
+    // Access `_delegatedStakeToPoolByOwner`
+    function delegatedStakeToPoolByOwner(address member, bytes32 poolId)
+        external
+        view
+        returns (IStructs.StoredBalance memory balance)
+    {
+        return _delegatedStakeToPoolByOwner[member][poolId];
     }
 
     // Set `_delegatedStakeToPoolByOwner`
@@ -138,6 +178,16 @@ contract TestMixinStakingPoolRewards is
             _unfinalizedPoolRewards[poolId].reward,
             _unfinalizedPoolRewards[poolId].membersStake
         );
+    }
+
+    // Overridden to just increase `currentEpoch`.
+    function _loadCurrentBalance(IStructs.StoredBalance storage balancePtr)
+        internal
+        view
+        returns (IStructs.StoredBalance memory balance)
+    {
+        balance = balancePtr;
+        balance.currentEpoch += 1;
     }
 
     // Overridden to revert if a pool has unfinalized rewards.
