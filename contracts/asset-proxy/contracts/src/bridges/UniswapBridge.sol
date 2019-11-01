@@ -21,8 +21,8 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
-import "@0x/contracts-utils/contracts/src/LibERC20Token.sol";
 import "../interfaces/IUniswapExchangeFactory.sol";
 import "../interfaces/IUniswapExchange.sol";
 import "../interfaces/IERC20Bridge.sol";

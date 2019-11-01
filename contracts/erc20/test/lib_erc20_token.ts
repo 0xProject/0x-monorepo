@@ -2,21 +2,14 @@ import {
     blockchainTests,
     constants,
     expect,
-    filterLogsToArguments,
     getRandomInteger,
     hexLeftPad,
     randomAddress,
+    verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { RawRevertError, StringRevertError } from '@0x/utils';
 
-import {
-    artifacts,
-    TestLibERC20TokenContract,
-    TestLibERC20TokenTargetApproveCalledEventArgs as ApproveCalled,
-    TestLibERC20TokenTargetEvents,
-    TestLibERC20TokenTargetTransferCalledEventArgs as TransferCalled,
-    TestLibERC20TokenTargetTransferFromCalledEventArgs as TransferFromCalled,
-} from '../src';
+import { artifacts, TestLibERC20TokenContract, TestLibERC20TokenTargetEvents } from '../src';
 
 blockchainTests('LibERC20Token', env => {
     let testContract: TestLibERC20TokenContract;
@@ -52,11 +45,7 @@ blockchainTests('LibERC20Token', env => {
                 allowance,
             );
             expect(logs).to.be.length(1);
-            const [event] = filterLogsToArguments<ApproveCalled>(logs, TestLibERC20TokenTargetEvents.ApproveCalled);
-            expect(event).to.deep.eq({
-                spender,
-                allowance,
-            });
+            verifyEventsFromLogs(logs, [{ spender, allowance }], TestLibERC20TokenTargetEvents.ApproveCalled);
         });
 
         it('succeeds if the target returns true', async () => {
@@ -178,11 +167,7 @@ blockchainTests('LibERC20Token', env => {
                 amount,
             );
             expect(logs).to.be.length(1);
-            const [event] = filterLogsToArguments<TransferCalled>(logs, TestLibERC20TokenTargetEvents.TransferCalled);
-            expect(event).to.deep.eq({
-                to,
-                amount,
-            });
+            verifyEventsFromLogs(logs, [{ to, amount }], TestLibERC20TokenTargetEvents.TransferCalled);
         });
 
         it('succeeds if the target returns true', async () => {
@@ -306,15 +291,7 @@ blockchainTests('LibERC20Token', env => {
                 amount,
             );
             expect(logs).to.be.length(1);
-            const [event] = filterLogsToArguments<TransferFromCalled>(
-                logs,
-                TestLibERC20TokenTargetEvents.TransferFromCalled,
-            );
-            expect(event).to.deep.eq({
-                from: owner,
-                to,
-                amount,
-            });
+            verifyEventsFromLogs(logs, [{ from: owner, to, amount }], TestLibERC20TokenTargetEvents.TransferFromCalled);
         });
 
         it('succeeds if the target returns true', async () => {

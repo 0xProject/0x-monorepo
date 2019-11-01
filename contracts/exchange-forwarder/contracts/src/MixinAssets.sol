@@ -19,10 +19,10 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";

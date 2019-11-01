@@ -18,6 +18,10 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "../src/interfaces/IERC20Token.sol";
+
 
 library LibERC20Token {
 
@@ -35,7 +39,7 @@ library LibERC20Token {
         internal
     {
         bytes memory callData = abi.encodeWithSelector(
-            0x095ea7b3,
+            IERC20Token(0).approve.selector,
             spender,
             allowance
         );
@@ -56,7 +60,7 @@ library LibERC20Token {
         internal
     {
         bytes memory callData = abi.encodeWithSelector(
-            0xa9059cbb,
+            IERC20Token(0).transfer.selector,
             to,
             amount
         );
@@ -79,7 +83,7 @@ library LibERC20Token {
         internal
     {
         bytes memory callData = abi.encodeWithSelector(
-            0x23b872dd,
+            IERC20Token(0).transferFrom.selector,
             from,
             to,
             amount
@@ -104,13 +108,12 @@ library LibERC20Token {
                 return;
             }
             if (resultData.length == 32) {
-                uint256 result;
-                assembly { result := mload(add(resultData, 0x20)) }
+                uint256 result = LibBytes.readUint256(resultData, 0);
                 if (result == 1) {
                     return;
                 }
             }
         }
-        assembly { revert(add(resultData, 0x20), mload(resultData)) }
+        LibRichErrors.rrevert(resultData);
     }
 }

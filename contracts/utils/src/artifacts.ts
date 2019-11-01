@@ -16,7 +16,6 @@ import * as LibBytes from '../generated-artifacts/LibBytes.json';
 import * as LibBytesRichErrors from '../generated-artifacts/LibBytesRichErrors.json';
 import * as LibEIP1271 from '../generated-artifacts/LibEIP1271.json';
 import * as LibEIP712 from '../generated-artifacts/LibEIP712.json';
-import * as LibERC20Token from '../generated-artifacts/LibERC20Token.json';
 import * as LibFractions from '../generated-artifacts/LibFractions.json';
 import * as LibOwnableRichErrors from '../generated-artifacts/LibOwnableRichErrors.json';
 import * as LibReentrancyGuardRichErrors from '../generated-artifacts/LibReentrancyGuardRichErrors.json';
@@ -30,8 +29,6 @@ import * as TestLibAddress from '../generated-artifacts/TestLibAddress.json';
 import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
 import * as TestLibEIP712 from '../generated-artifacts/TestLibEIP712.json';
-import * as TestLibERC20Token from '../generated-artifacts/TestLibERC20Token.json';
-import * as TestLibERC20TokenTarget from '../generated-artifacts/TestLibERC20TokenTarget.json';
 import * as TestLibRichErrors from '../generated-artifacts/TestLibRichErrors.json';
 import * as TestLibSafeMath from '../generated-artifacts/TestLibSafeMath.json';
 import * as TestLogDecoding from '../generated-artifacts/TestLogDecoding.json';
@@ -50,7 +47,6 @@ export const artifacts = {
     LibBytesRichErrors: LibBytesRichErrors as ContractArtifact,
     LibEIP1271: LibEIP1271 as ContractArtifact,
     LibEIP712: LibEIP712 as ContractArtifact,
-    LibERC20Token: LibERC20Token as ContractArtifact,
     LibFractions: LibFractions as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,
     LibReentrancyGuardRichErrors: LibReentrancyGuardRichErrors as ContractArtifact,
@@ -66,8 +62,6 @@ export const artifacts = {
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,
     TestLibEIP712: TestLibEIP712 as ContractArtifact,
-    TestLibERC20Token: TestLibERC20Token as ContractArtifact,
-    TestLibERC20TokenTarget: TestLibERC20TokenTarget as ContractArtifact,
     TestLibRichErrors: TestLibRichErrors as ContractArtifact,
     TestLibSafeMath: TestLibSafeMath as ContractArtifact,
     TestLogDecoding: TestLogDecoding as ContractArtifact,
