@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IEth2Dai.sol";
@@ -57,7 +58,7 @@ contract Eth2DaiBridge is
 
         IEth2Dai exchange = _getEth2DaiContract();
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        IERC20Token(fromTokenAddress).approve(address(exchange), uint256(-1));
+        LibERC20Token.approve(fromTokenAddress, address(exchange), uint256(-1));
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
         uint256 boughtAmount = _getEth2DaiContract().sellAllAmount(
@@ -67,7 +68,7 @@ contract Eth2DaiBridge is
             amount
         );
         // Transfer the converted `toToken`s to `to`.
-        _transferERC20Token(toTokenAddress, to, boughtAmount);
+        LibERC20Token.transfer(toTokenAddress, to, boughtAmount);
         return BRIDGE_SUCCESS;
     }
 
@@ -93,50 +94,5 @@ contract Eth2DaiBridge is
         returns (IEth2Dai exchange)
     {
         return IEth2Dai(ETH2DAI_ADDRESS);
-    }
-
-    /// @dev Permissively transfers an ERC20 token that may not adhere to
-    ///      specs.
-    /// @param tokenAddress The token contract address.
-    /// @param to The token recipient.
-    /// @param amount The amount of tokens to transfer.
-    function _transferERC20Token(
-        address tokenAddress,
-        address to,
-        uint256 amount
-    )
-        private
-    {
-        // Transfer tokens.
-        // We do a raw call so we can check the success separate
-        // from the return data.
-        (bool didSucceed, bytes memory returnData) = tokenAddress.call(
-            abi.encodeWithSelector(
-                IERC20Token(0).transfer.selector,
-                to,
-                amount
-            )
-        );
-        if (!didSucceed) {
-            assembly { revert(add(returnData, 0x20), mload(returnData)) }
-        }
-
-        // Check return data.
-        // If there is no return data, we assume the token incorrectly
-        // does not return a bool. In this case we expect it to revert
-        // on failure, which was handled above.
-        // If the token does return data, we require that it is a single
-        // value that evaluates to true.
-        assembly {
-            if returndatasize {
-                didSucceed := 0
-                if eq(returndatasize, 32) {
-                    // First 64 bytes of memory are reserved scratch space
-                    returndatacopy(0, 0, 32)
-                    didSucceed := mload(0)
-                }
-            }
-        }
-        require(didSucceed, "ERC20_TRANSFER_FAILED");
     }
 }
