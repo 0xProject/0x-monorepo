@@ -18,4 +18,5 @@ export const constants = {
         cobbDouglasAlphaDenominator: new BigNumber(3),
     },
     PPM,
+    ONE_DAY_IN_SECONDS: 24 * 60 * 60,
 };

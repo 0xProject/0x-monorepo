@@ -47,9 +47,11 @@
         "generated-artifacts/TestMixinStakeStorage.json",
         "generated-artifacts/TestMixinStakingPool.json",
         "generated-artifacts/TestProtocolFees.json",
+        "generated-artifacts/TestProxyDestination.json",
         "generated-artifacts/TestStaking.json",
         "generated-artifacts/TestStakingNoWETH.json",
         "generated-artifacts/TestStakingProxy.json",
+        "generated-artifacts/TestStakingProxyUnit.json",
         "generated-artifacts/TestStorageLayoutAndConstants.json",
         "generated-artifacts/ZrxVault.json"
     ],

@@ -11,7 +11,7 @@ import {
     TransactionHelper,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, RawRevertError } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -179,14 +179,14 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
             return expect(tx).to.revertWith(opts.toTokentransferRevertReason);
         });
 
-        it('fails if `toTokenAddress.transfer()` returns falsey', async () => {
+        it('fails if `toTokenAddress.transfer()` returns false', async () => {
             const opts = createWithdrawToOpts({ toTokenTransferReturnData: hexLeftPad(0) });
             const tx = withdrawToAsync(opts);
-            return expect(tx).to.revertWith('ERC20_TRANSFER_FAILED');
+            return expect(tx).to.revertWith(new RawRevertError(hexLeftPad(0)));
         });
 
-        it('succeeds if `toTokenAddress.transfer()` returns truthy', async () => {
-            await withdrawToAsync({ toTokenTransferReturnData: hexLeftPad(100) });
+        it('succeeds if `toTokenAddress.transfer()` returns true', async () => {
+            await withdrawToAsync({ toTokenTransferReturnData: hexLeftPad(1) });
         });
     });
 });

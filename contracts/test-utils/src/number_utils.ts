@@ -3,6 +3,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
 
 import { expect } from './chai_setup';
+import { constants } from './constants';
 import { Numberish } from './types';
 
 /**
@@ -85,4 +86,13 @@ export function toBaseUnitAmount(amount: Numberish): BigNumber {
     const amountAsBigNumber = new BigNumber(amount);
     const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
     return baseUnitAmount;
+}
+
+/**
+ * Computes a percentage of `value`, first converting `percentage` to be expressed in 18 digits.
+ */
+export function getPercentageOfValue(value: Numberish, percentage: Numberish): BigNumber {
+    const numerator = constants.PERCENTAGE_DENOMINATOR.times(percentage).dividedToIntegerBy(100);
+    const newValue = numerator.times(value).dividedToIntegerBy(constants.PERCENTAGE_DENOMINATOR);
+    return newValue;
 }

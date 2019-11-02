@@ -30,6 +30,8 @@
         "./artifacts/Coordinator.json",
         "./artifacts/EthBalanceChecker.json",
         "./artifacts/ERC1155Proxy.json",
-        "./artifacts/StaticCallProxy.json"
+        "./artifacts/StaticCallProxy.json",
+        "./artifacts/Staking.json",
+        "./artifacts/StakingProxy.json"
     ]
 }

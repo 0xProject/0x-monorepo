@@ -42,6 +42,18 @@ export class LocalBalanceStore extends BalanceStore {
     }
 
     /**
+     * Converts some amount of the ETH balance of an address to WETH balance to simulate wrapping ETH.
+     * @param senderAddress Address whose ETH to wrap.
+     * @param amount Amount to wrap.
+     */
+    public wrapEth(senderAddress: string, wethAddress: string, amount: Numberish): void {
+        this._balances.eth[senderAddress] = this._balances.eth[senderAddress].minus(amount);
+        _.update(this._balances.erc20, [senderAddress, wethAddress], balance =>
+            (balance || constants.ZERO_AMOUNT).plus(amount),
+        );
+    }
+
+    /**
      * Sends ETH from `fromAddress` to `toAddress`.
      * @param fromAddress Sender of ETH.
      * @param toAddress Receiver of ETH.
