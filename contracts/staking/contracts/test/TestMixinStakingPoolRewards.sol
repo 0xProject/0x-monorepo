@@ -33,7 +33,7 @@ contract TestMixinStakingPoolRewards is
 
     event WithdrawAndSyncDelegatorRewards(
         bytes32 poolId,
-        address member
+        address delegator
     );
 
     struct UnfinalizedPoolReward {
