@@ -119,7 +119,11 @@ blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
     describe('withdrawDelegatorRewards()', () => {
         it('calls `_withdrawAndSyncDelegatorRewards()` with the sender as the member', async () => {
             const { logs } = await testContract.withdrawDelegatorRewards.awaitTransactionSuccessAsync(POOL_ID);
-            verifyEventsFromLogs(logs, [{ poolId: POOL_ID, delegator: caller }], Events.WithdrawAndSyncDelegatorRewards);
+            verifyEventsFromLogs(
+                logs,
+                [{ poolId: POOL_ID, delegator: caller }],
+                Events.WithdrawAndSyncDelegatorRewards,
+            );
         });
     });
 
