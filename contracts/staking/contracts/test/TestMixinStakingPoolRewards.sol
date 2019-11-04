@@ -116,6 +116,23 @@ contract TestMixinStakingPoolRewards is
         return _syncPoolRewards(poolId, reward, membersStake);
     }
 
+    // Expose `_computePoolRewardsSplit()` for testing.
+    function computePoolRewardsSplit(
+        uint32 operatorShare,
+        uint256 totalReward,
+        uint256 membersStake
+    )
+        external
+        pure
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        return _computePoolRewardsSplit(
+            operatorShare,
+            totalReward,
+            membersStake
+        );
+    }
+
     // Access `_delegatedStakeToPoolByOwner`
     function delegatedStakeToPoolByOwner(address member, bytes32 poolId)
         external

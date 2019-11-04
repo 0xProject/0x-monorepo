@@ -417,5 +417,68 @@ blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
             verifyEventsFromLogs(logs, [], Events.Transfer);
         });
     });
+
+    describe('_computePoolRewardsSplit', () => {
+        it("gives all rewards to operator if members' stake is zero", async () => {
+            const operatorShare = getRandomPortion(constants.PPM_100_PERCENT);
+            const totalReward = getRandomInteger(1, 1e18);
+            const membersStake = constants.ZERO_AMOUNT;
+            const [operatorReward, membersReward] = await testContract.computePoolRewardsSplit.callAsync(
+                operatorShare,
+                totalReward,
+                membersStake,
+            );
+            expect(operatorReward).to.bignumber.eq(totalReward);
+            expect(membersReward).to.bignumber.eq(0);
+        });
+        it("gives all rewards to operator if members' stake is zero and operator share is zero", async () => {
+            const operatorShare = constants.ZERO_AMOUNT;
+            const totalReward = getRandomInteger(1, 1e18);
+            const membersStake = constants.ZERO_AMOUNT;
+            const [operatorReward, membersReward] = await testContract.computePoolRewardsSplit.callAsync(
+                operatorShare,
+                totalReward,
+                membersStake,
+            );
+            expect(operatorReward).to.bignumber.eq(totalReward);
+            expect(membersReward).to.bignumber.eq(0);
+        });
+        it('gives all rewards to operator if operator share is 100%', async () => {
+            const operatorShare = constants.PPM_100_PERCENT;
+            const totalReward = getRandomInteger(1, 1e18);
+            const membersStake = getRandomInteger(1, 1e18);
+            const [operatorReward, membersReward] = await testContract.computePoolRewardsSplit.callAsync(
+                operatorShare,
+                totalReward,
+                membersStake,
+            );
+            expect(operatorReward).to.bignumber.eq(totalReward);
+            expect(membersReward).to.bignumber.eq(0);
+        });
+        it('gives all rewards to members if operator share is 0%', async () => {
+            const operatorShare = constants.ZERO_AMOUNT;
+            const totalReward = getRandomInteger(1, 1e18);
+            const membersStake = getRandomInteger(1, 1e18);
+            const [operatorReward, membersReward] = await testContract.computePoolRewardsSplit.callAsync(
+                operatorShare,
+                totalReward,
+                membersStake,
+            );
+            expect(operatorReward).to.bignumber.eq(0);
+            expect(membersReward).to.bignumber.eq(totalReward);
+        });
+        it('splits rewards between operator and members based on operator share', async () => {
+            const operatorShare = getRandomPortion(constants.PPM_100_PERCENT);
+            const totalReward = getRandomInteger(1, 1e18);
+            const membersStake = getRandomInteger(1, 1e18);
+            const [operatorReward, membersReward] = await testContract.computePoolRewardsSplit.callAsync(
+                operatorShare,
+                totalReward,
+                membersStake,
+            );
+            expect(operatorReward).to.bignumber.eq(toOperatorPortion(operatorShare, totalReward));
+            expect(membersReward).to.bignumber.eq(toMembersPortion(operatorShare, totalReward));
+        });
+    });
 });
 // tslint:disable: max-file-line-count
