@@ -8,7 +8,7 @@ import {
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { artifacts as stakingArtifacts, toBaseUnitAmount } from '@0x/contracts-staking';
+import { artifacts as stakingArtifacts } from '@0x/contracts-staking';
 import {
     blockchainTests,
     constants,
@@ -16,6 +16,7 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     Numberish,
+    toBaseUnitAmount,
     TransactionHelper,
     verifyEvents,
 } from '@0x/contracts-test-utils';
