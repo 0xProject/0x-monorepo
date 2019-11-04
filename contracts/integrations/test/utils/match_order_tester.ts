@@ -1,9 +1,8 @@
-import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
-import { constants, ERC1155HoldingsByOwner, expect, OrderStatus } from '@0x/contracts-test-utils';
+import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
+import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -11,13 +10,6 @@ import * as _ from 'lodash';
 import { DeploymentManager } from './deployment_manager';
 
 const ZERO = new BigNumber(0);
-
-export interface IndividualERC1155Holdings {
-    fungible: {
-        [tokenId: string]: BigNumber;
-    };
-    nonFungible: BigNumber[];
-}
 
 export interface FillEventArgs {
     orderHash: string;
@@ -27,6 +19,7 @@ export interface FillEventArgs {
     takerAssetFilledAmount: BigNumber;
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
+    protocolFeePaid: BigNumber;
 }
 
 export interface MatchTransferAmounts {
@@ -35,17 +28,18 @@ export interface MatchTransferAmounts {
     rightMakerAssetSoldByRightMakerAmount: BigNumber; // rightMakerAssetBoughtByLeftMakerAmount if omitted.
     rightMakerAssetBoughtByLeftMakerAmount: BigNumber; // rightMakerAssetSoldByRightMakerAmount if omitted.
     leftMakerAssetBoughtByRightMakerAmount: BigNumber; // leftMakerAssetSoldByLeftMakerAmount if omitted.
-
     // Taker profit.
     leftMakerAssetReceivedByTakerAmount: BigNumber; // 0 if omitted.
     rightMakerAssetReceivedByTakerAmount: BigNumber; // 0 if omitted.
-
     // Maker fees.
     leftMakerFeeAssetPaidByLeftMakerAmount: BigNumber; // 0 if omitted.
     rightMakerFeeAssetPaidByRightMakerAmount: BigNumber; // 0 if omitted.
     // Taker fees.
     leftTakerFeeAssetPaidByTakerAmount: BigNumber; // 0 if omitted.
     rightTakerFeeAssetPaidByTakerAmount: BigNumber; // 0 if omitted.
+    // Protocol fees.
+    leftProtocolFeePaidByTakerAmount: BigNumber; // 0 if omitted
+    rightProtocolFeePaidByTakerAmount: BigNumber; // 0 if omitted
 }
 
 export interface MatchResults {
@@ -58,31 +52,6 @@ export interface BatchMatchResults {
     filledAmounts: Array<[SignedOrder, BigNumber, string]>;
     leftFilledResults: FillEventArgs[];
     rightFilledResults: FillEventArgs[];
-}
-
-export interface ERC1155Holdings {
-    [owner: string]: {
-        [contract: string]: {
-            fungible: {
-                [tokenId: string]: BigNumber;
-            };
-            nonFungible: BigNumber[];
-        };
-    };
-}
-
-export interface TokenBalances {
-    erc20: {
-        [owner: string]: {
-            [contract: string]: BigNumber;
-        };
-    };
-    erc721: {
-        [owner: string]: {
-            [contract: string]: BigNumber[];
-        };
-    };
-    erc1155: ERC1155Holdings;
 }
 
 export interface BatchMatchedOrders {
@@ -100,21 +69,18 @@ export interface MatchedOrders {
 }
 
 export class MatchOrderTester {
-    // FIXME - Should this be public
-    public deployment: DeploymentManager;
-    protected _devUtils: DevUtilsContract;
+    private readonly _devUtils: DevUtilsContract;
+    private readonly _deployment: DeploymentManager;
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;
-    private readonly _localBalanceStore: LocalBalanceStore;
 
     constructor(
         deployment: DeploymentManager,
         devUtils: DevUtilsContract,
         blockchainBalanceStore: BlockchainBalanceStore,
     ) {
-        this.deployment = deployment;
+        this._deployment = deployment;
         this._devUtils = devUtils;
         this._blockchainBalanceStore = blockchainBalanceStore;
-        this._localBalanceStore = LocalBalanceStore.create(blockchainBalanceStore);
     }
 
     /**
@@ -133,10 +99,10 @@ export class MatchOrderTester {
     public async batchMatchOrdersAndAssertEffectsAsync(
         orders: BatchMatchedOrders,
         takerAddress: string,
+        value: BigNumber,
         matchPairs: Array<[number, number]>,
         expectedTransferAmounts: Array<Partial<MatchTransferAmounts>>,
         withMaximalFill: boolean,
-        initialTokenBalances?: TokenBalances,
     ): Promise<BatchMatchResults> {
         // Ensure that the provided input is valid.
         expect(matchPairs.length).to.be.eq(expectedTransferAmounts.length);
@@ -144,52 +110,56 @@ export class MatchOrderTester {
         expect(orders.rightOrders.length).to.be.eq(orders.rightOrdersTakerAssetFilledAmounts.length);
 
         // Ensure that the exchange is in the expected state.
-        await assertBatchOrderStatesAsync(orders, this.deployment.exchange);
+        await assertBatchOrderStatesAsync(orders, this._deployment.exchange);
 
-        // Get the token balances before executing `batchMatchOrders()`.
+        // Update the blockchain balance store and create a new local balance store
+        // with the same initial balances.
         await this._blockchainBalanceStore.updateBalancesAsync();
+        const localBalanceStore = LocalBalanceStore.create(this._blockchainBalanceStore);
 
         // Execute `batchMatchOrders()`
         let actualBatchMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
-            actualBatchMatchResults = await this.deployment.exchange.batchMatchOrdersWithMaximalFill.callAsync(
+            actualBatchMatchResults = await this._deployment.exchange.batchMatchOrdersWithMaximalFill.callAsync(
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
                 orders.rightOrders.map(order => order.signature),
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
-            transactionReceipt = await this.deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
+            transactionReceipt = await this._deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
                 orders.rightOrders.map(order => order.signature),
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         } else {
-            actualBatchMatchResults = await this.deployment.exchange.batchMatchOrders.callAsync(
+            actualBatchMatchResults = await this._deployment.exchange.batchMatchOrders.callAsync(
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
                 orders.rightOrders.map(order => order.signature),
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
-            transactionReceipt = await this.deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
+            transactionReceipt = await this._deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
                 orders.rightOrders.map(order => order.signature),
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         }
+        localBalanceStore.burnGas(takerAddress, constants.DEFAULT_GAS_PRICE * transactionReceipt.gasUsed);
 
         // Simulate the batch order match.
         const expectedBatchMatchResults = await simulateBatchMatchOrdersAsync(
             orders,
             takerAddress,
+            this._deployment.staking.stakingProxy.address,
             this._blockchainBalanceStore,
-            this._localBalanceStore,
+            localBalanceStore,
             matchPairs,
             expectedTransferAmounts,
             this._devUtils,
@@ -202,8 +172,8 @@ export class MatchOrderTester {
             expectedBatchMatchResults,
             transactionReceipt,
             this._blockchainBalanceStore,
-            this._localBalanceStore,
-            this.deployment.exchange,
+            localBalanceStore,
+            this._deployment.exchange,
         );
         return expectedBatchMatchResults;
     }
@@ -221,56 +191,63 @@ export class MatchOrderTester {
      */
     public async matchOrdersAndAssertEffectsAsync(
         orders: MatchedOrders,
-        takerAddress: string,
         expectedTransferAmounts: Partial<MatchTransferAmounts>,
+        takerAddress: string,
+        value: BigNumber,
         withMaximalFill: boolean,
-        initialTokenBalances?: TokenBalances,
     ): Promise<MatchResults> {
-        await assertInitialOrderStatesAsync(orders, this.deployment.exchange);
+        await assertInitialOrderStatesAsync(orders, this._deployment.exchange);
+
+        // Update the blockchain balance store and create a new local balance store
+        // with the same initial balances.
+        await this._blockchainBalanceStore.updateBalancesAsync();
+        const localBalanceStore = LocalBalanceStore.create(this._blockchainBalanceStore);
 
         // Execute `matchOrders()`
         let actualMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
-            actualMatchResults = await this.deployment.exchange.matchOrdersWithMaximalFill.callAsync(
+            actualMatchResults = await this._deployment.exchange.matchOrdersWithMaximalFill.callAsync(
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
                 orders.rightOrder.signature,
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
-            transactionReceipt = await this.deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
+            transactionReceipt = await this._deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
                 orders.rightOrder.signature,
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         } else {
-            actualMatchResults = await this.deployment.exchange.matchOrders.callAsync(
+            actualMatchResults = await this._deployment.exchange.matchOrders.callAsync(
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
                 orders.rightOrder.signature,
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
-            transactionReceipt = await this.deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
+            transactionReceipt = await this._deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
                 orders.rightOrder.signature,
-                { from: takerAddress },
+                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         }
+        localBalanceStore.burnGas(takerAddress, constants.DEFAULT_GAS_PRICE * transactionReceipt.gasUsed);
 
         // Simulate the fill.
         const expectedMatchResults = await simulateMatchOrdersAsync(
             orders,
             takerAddress,
+            this._deployment.staking.stakingProxy.address,
             this._blockchainBalanceStore,
             toFullMatchTransferAmounts(expectedTransferAmounts),
             this._devUtils,
-            this._localBalanceStore,
+            localBalanceStore,
         );
         const expectedResults = convertToMatchResults(expectedMatchResults);
         expect(actualMatchResults).to.be.eql(expectedResults);
@@ -279,9 +256,9 @@ export class MatchOrderTester {
         await assertMatchResultsAsync(
             expectedMatchResults,
             transactionReceipt,
-            this._localBalanceStore,
+            localBalanceStore,
             this._blockchainBalanceStore,
-            this.deployment.exchange,
+            this._deployment.exchange,
         );
         return expectedMatchResults;
     }
@@ -321,6 +298,10 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
             partial.leftTakerFeeAssetPaidByTakerAmount || ZERO,
         rightTakerFeeAssetPaidByTakerAmount:
             partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
+        leftProtocolFeePaidByTakerAmount:
+            partial.leftProtocolFeePaidByTakerAmount || ZERO,
+        rightProtocolFeePaidByTakerAmount:
+            partial.rightProtocolFeePaidByTakerAmount || ZERO,
     };
 }
 
@@ -336,6 +317,7 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
 async function simulateBatchMatchOrdersAsync(
     orders: BatchMatchedOrders,
     takerAddress: string,
+    stakingProxyAddress: string,
     blockchainBalanceStore: BlockchainBalanceStore,
     localBalanceStore: LocalBalanceStore,
     matchPairs: Array<[number, number]>,
@@ -401,6 +383,7 @@ async function simulateBatchMatchOrdersAsync(
             await simulateMatchOrdersAsync(
                 matchedOrders,
                 takerAddress,
+                stakingProxyAddress,
                 blockchainBalanceStore,
                 toFullMatchTransferAmounts(transferAmounts[i]),
                 devUtils,
@@ -464,6 +447,7 @@ async function simulateBatchMatchOrdersAsync(
 async function simulateMatchOrdersAsync(
     orders: MatchedOrders,
     takerAddress: string,
+    stakingProxyAddress: string,
     blockchainBalanceStore: BlockchainBalanceStore, // FIXME - Is this right?
     transferAmounts: MatchTransferAmounts,
     devUtils: DevUtilsContract,
@@ -485,6 +469,7 @@ async function simulateMatchOrdersAsync(
         },
         fills: simulateFillEvents(orders, takerAddress, transferAmounts),
     };
+
     // Right maker asset -> left maker
     localBalanceStore.transferAsset(
         orders.rightOrder.makerAddress,
@@ -492,6 +477,7 @@ async function simulateMatchOrdersAsync(
         transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
         orders.rightOrder.makerAssetData,
     );
+
     // FIXME - Is this a necessary condition?
     if (orders.leftOrder.makerAddress !== orders.leftOrder.feeRecipientAddress) {
         // Left maker fees
@@ -502,6 +488,8 @@ async function simulateMatchOrdersAsync(
             orders.leftOrder.makerFeeAssetData,
         );
     }
+
+    // FIXME - Is this a necessary condition?
     // Left maker asset -> right maker
     localBalanceStore.transferAsset(
         orders.leftOrder.makerAddress,
@@ -509,6 +497,7 @@ async function simulateMatchOrdersAsync(
         transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
         orders.leftOrder.makerAssetData,
     );
+
     // FIXME - Is this a necessary condition?
     if (orders.rightOrder.makerAddress !== orders.rightOrder.feeRecipientAddress) {
         // Right maker fees
@@ -519,6 +508,7 @@ async function simulateMatchOrdersAsync(
             orders.rightOrder.makerFeeAssetData,
         );
     }
+
     // Left taker profit
     localBalanceStore.transferAsset(
         orders.leftOrder.makerAddress,
@@ -526,6 +516,7 @@ async function simulateMatchOrdersAsync(
         transferAmounts.leftMakerAssetReceivedByTakerAmount,
         orders.leftOrder.makerAssetData,
     );
+
     // Right taker profit
     localBalanceStore.transferAsset(
         orders.rightOrder.makerAddress,
@@ -533,6 +524,7 @@ async function simulateMatchOrdersAsync(
         transferAmounts.rightMakerAssetReceivedByTakerAmount,
         orders.rightOrder.makerAssetData,
     );
+
     // Left taker fees
     localBalanceStore.transferAsset(
         takerAddress,
@@ -540,12 +532,20 @@ async function simulateMatchOrdersAsync(
         transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
         orders.leftOrder.takerFeeAssetData,
     );
+
     // Right taker fees
     localBalanceStore.transferAsset(
         takerAddress,
         orders.rightOrder.feeRecipientAddress,
         transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
         orders.rightOrder.takerFeeAssetData,
+    );
+
+    // Protocol Fee
+    localBalanceStore.sendEth(
+        takerAddress,
+        stakingProxyAddress,
+        transferAmounts.leftProtocolFeePaidByTakerAmount.plus(transferAmounts.rightProtocolFeePaidByTakerAmount),
     );
 
     return matchResults;
@@ -574,6 +574,9 @@ async function assertBatchMatchResultsAsync(
         transactionReceipt,
     );
 
+    // Update the blockchain balance store balances.
+    await blockchainBalanceStore.updateBalancesAsync();
+
     // Ensure that the actual and expected token balances are equivalent.
     localBalanceStore.assertEquals(blockchainBalanceStore);
 
@@ -597,6 +600,9 @@ async function assertMatchResultsAsync(
 ): Promise<void> {
     // Check the fill events.
     assertFillEvents(matchResults.fills, transactionReceipt);
+
+    // Update the blockchain balance store balances.
+    await blockchainBalanceStore.updateBalancesAsync();
 
     // Check the token balances.
     localBalanceStore.assertEquals(blockchainBalanceStore);
@@ -654,6 +660,7 @@ function simulateFillEvents(
             takerAssetFilledAmount: transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
             makerFeePaid: transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
             takerFeePaid: transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
+            protocolFeePaid: transferAmounts.leftProtocolFeePaidByTakerAmount,
         },
         // Right order Fill
         {
@@ -664,10 +671,12 @@ function simulateFillEvents(
             takerAssetFilledAmount: transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
             makerFeePaid: transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
             takerFeePaid: transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
+            protocolFeePaid: transferAmounts.rightProtocolFeePaidByTakerAmount,
         },
     ];
 }
 
+// FIXME - Refactor this to use filterToLogsArguments
 /**
  * Extract `Fill` events from a transaction receipt.
  */
@@ -680,6 +689,7 @@ function extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs
         takerAssetFilledAmount: string;
         makerFeePaid: string;
         takerFeePaid: string;
+        protocolFeePaid: string;
     }
     const actualFills = (_.filter(receipt.logs, ['event', 'Fill']) as any) as Array<
         LogWithDecodedArgs<RawFillEventArgs>
@@ -693,16 +703,8 @@ function extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs
         takerAssetFilledAmount: new BigNumber(fill.args.takerAssetFilledAmount),
         makerFeePaid: new BigNumber(fill.args.makerFeePaid),
         takerFeePaid: new BigNumber(fill.args.takerFeePaid),
+        protocolFeePaid: new BigNumber(fill.args.protocolFeePaid),
     }));
-}
-
-/**
- * Asserts that all expected token holdings match the actual holdings.
- * @param expectedBalances Expected balances.
- * @param actualBalances Actual balances.
- */
-function assertBalances(expectedBalances: TokenBalances, actualBalances: TokenBalances): void {
-    expect(encodeTokenBalances(actualBalances)).to.deep.equal(encodeTokenBalances(expectedBalances));
 }
 
 /**
@@ -820,64 +822,6 @@ async function assertOrderFilledAmountAsync(
 }
 
 /**
- * Retrieve the current token balances of all known addresses.
- * @param erc20Wrapper The ERC20Wrapper instance.
- * @param erc721Wrapper The ERC721Wrapper instance.
- * @param erc1155Wrapper The ERC1155ProxyWrapper instance.
- * @return A promise that resolves to a `TokenBalances`.
- */
-export async function getTokenBalancesAsync(
-    erc20Wrapper: ERC20Wrapper,
-    erc721Wrapper: ERC721Wrapper,
-    erc1155ProxyWrapper: ERC1155ProxyWrapper,
-): Promise<TokenBalances> {
-    const [erc20, erc721, erc1155] = await Promise.all([
-        erc20Wrapper.getBalancesAsync(),
-        erc721Wrapper.getBalancesAsync(),
-        erc1155ProxyWrapper.getBalancesAsync(),
-    ]);
-    return {
-        erc20,
-        erc721,
-        erc1155: transformERC1155Holdings(erc1155),
-    };
-}
-
-/**
- * Restructures `ERC1155HoldingsByOwner` to be compatible with `TokenBalances.erc1155`.
- * @param erc1155HoldingsByOwner Holdings returned by `ERC1155ProxyWrapper.getBalancesAsync()`.
- */
-function transformERC1155Holdings(erc1155HoldingsByOwner: ERC1155HoldingsByOwner): ERC1155Holdings {
-    const result = {};
-    for (const owner of _.keys(erc1155HoldingsByOwner.fungible)) {
-        for (const contract of _.keys(erc1155HoldingsByOwner.fungible[owner])) {
-            _.set(result as any, [owner, contract, 'fungible'], erc1155HoldingsByOwner.fungible[owner][contract]);
-        }
-    }
-    for (const owner of _.keys(erc1155HoldingsByOwner.nonFungible)) {
-        for (const contract of _.keys(erc1155HoldingsByOwner.nonFungible[owner])) {
-            const tokenIds = _.flatten(_.values(erc1155HoldingsByOwner.nonFungible[owner][contract]));
-            _.set(result as any, [owner, contract, 'nonFungible'], _.uniqBy(tokenIds, v => v.toString(10)));
-        }
-    }
-    return result;
-}
-
-function encodeTokenBalances(obj: any): any {
-    if (!_.isPlainObject(obj)) {
-        if (BigNumber.isBigNumber(obj)) {
-            return obj.toString(10);
-        }
-        if (_.isArray(obj)) {
-            return _.sortBy(obj, v => encodeTokenBalances(v));
-        }
-        return obj;
-    }
-    const keys = _.keys(obj).sort();
-    return _.zip(keys, keys.map(k => encodeTokenBalances(obj[k])));
-}
-
-/**
  * Gets the last match in a BatchMatchResults object.
  * @param batchMatchResults The BatchMatchResults object.
  * @return The last match of the results.
@@ -886,6 +830,7 @@ function getLastMatch(batchMatchResults: BatchMatchResults): MatchResults {
     return batchMatchResults.matches[batchMatchResults.matches.length - 1];
 }
 
+// FIXME - This can probably be removed in favor of the reference functions.
 /**
  * Add a new fill results object to a total fill results object destructively.
  * @param total The total fill results that should be updated.
@@ -901,81 +846,7 @@ function addFillResults(total: FillEventArgs, fill: FillEventArgs): void {
     total.takerAssetFilledAmount = total.takerAssetFilledAmount.plus(fill.takerAssetFilledAmount);
     total.makerFeePaid = total.makerFeePaid.plus(fill.makerFeePaid);
     total.takerFeePaid = total.takerFeePaid.plus(fill.takerFeePaid);
-}
-
-/**
- * Takes a `totalBalances`, a `balances`, and an `initialBalances`, subtracts the `initialBalances
- * from the `balances`, and then adds the result to `totalBalances`.
- * @param totalBalances A set of balances to be updated with new results.
- * @param balances A new set of results that deviate from the `initialBalances` by one matched
- *                 order. Subtracting away the `initialBalances` leaves behind a diff of the
- *                 matched orders effect on the `initialBalances`.
- * @param initialBalances The token balances from before the call to `batchMatchOrders()`.
- * @return The updated total balances using the derived balance difference.
- */
-function aggregateBalances(
-    totalBalances: TokenBalances,
-    balances: TokenBalances,
-    initialBalances: TokenBalances,
-): TokenBalances {
-    // ERC20
-    for (const owner of _.keys(totalBalances.erc20)) {
-        for (const contract of _.keys(totalBalances.erc20[owner])) {
-            const difference = balances.erc20[owner][contract].minus(initialBalances.erc20[owner][contract]);
-            totalBalances.erc20[owner][contract] = totalBalances.erc20[owner][contract].plus(difference);
-        }
-    }
-    // ERC721
-    for (const owner of _.keys(totalBalances.erc721)) {
-        for (const contract of _.keys(totalBalances.erc721[owner])) {
-            totalBalances.erc721[owner][contract] = _.zipWith(
-                totalBalances.erc721[owner][contract],
-                balances.erc721[owner][contract],
-                initialBalances.erc721[owner][contract],
-                (a: BigNumber, b: BigNumber, c: BigNumber) => a.plus(b.minus(c)),
-            );
-        }
-    }
-    // ERC1155
-    for (const owner of _.keys(totalBalances.erc1155)) {
-        for (const contract of _.keys(totalBalances.erc1155[owner])) {
-            // Fungible
-            for (const tokenId of _.keys(totalBalances.erc1155[owner][contract].fungible)) {
-                const difference = balances.erc1155[owner][contract].fungible[tokenId].minus(
-                    initialBalances.erc1155[owner][contract].fungible[tokenId],
-                );
-                totalBalances.erc1155[owner][contract].fungible[tokenId] = totalBalances.erc1155[owner][
-                    contract
-                ].fungible[tokenId].plus(difference);
-            }
-
-            // Nonfungible
-            let isDuplicate = false;
-            for (const value of balances.erc1155[owner][contract].nonFungible) {
-                // If the value is in the initial balances or the total balances, skip the
-                // value since it will already be added.
-                for (const val of totalBalances.erc1155[owner][contract].nonFungible) {
-                    if (value.isEqualTo(val)) {
-                        isDuplicate = true;
-                    }
-                }
-
-                if (!isDuplicate) {
-                    for (const val of initialBalances.erc1155[owner][contract].nonFungible) {
-                        if (value.isEqualTo(val)) {
-                            isDuplicate = true;
-                        }
-                    }
-                }
-
-                if (!isDuplicate) {
-                    totalBalances.erc1155[owner][contract].nonFungible.push(value);
-                }
-                isDuplicate = false;
-            }
-        }
-    }
-    return totalBalances;
+    total.protocolFeePaid = total.protocolFeePaid.plus(fill.protocolFeePaid);
 }
 
 /**
@@ -1042,14 +913,14 @@ function convertToMatchResults(result: MatchResults): MatchedFillResults {
             takerAssetFilledAmount: result.fills[0].takerAssetFilledAmount,
             makerFeePaid: result.fills[0].makerFeePaid,
             takerFeePaid: result.fills[0].takerFeePaid,
-            protocolFeePaid: constants.ZERO_AMOUNT,
+            protocolFeePaid: result.fills[0].protocolFeePaid,
         },
         right: {
             makerAssetFilledAmount: result.fills[1].makerAssetFilledAmount,
             takerAssetFilledAmount: result.fills[1].takerAssetFilledAmount,
             makerFeePaid: result.fills[1].makerFeePaid,
             takerFeePaid: result.fills[1].takerFeePaid,
-            protocolFeePaid: constants.ZERO_AMOUNT,
+            protocolFeePaid: result.fills[1].protocolFeePaid,
         },
         profitInLeftMakerAsset,
         profitInRightMakerAsset,
@@ -1068,7 +939,7 @@ function convertToFillResults(result: FillEventArgs): FillResults {
         takerAssetFilledAmount: result.takerAssetFilledAmount,
         makerFeePaid: result.makerFeePaid,
         takerFeePaid: result.takerFeePaid,
-        protocolFeePaid: constants.ZERO_AMOUNT,
+        protocolFeePaid: result.protocolFeePaid,
     };
     return fillResults;
 }
@@ -1082,10 +953,11 @@ function emptyFillEventArgs(): FillEventArgs {
         orderHash: '',
         makerAddress: '',
         takerAddress: '',
-        makerAssetFilledAmount: new BigNumber(0),
-        takerAssetFilledAmount: new BigNumber(0),
-        makerFeePaid: new BigNumber(0),
-        takerFeePaid: new BigNumber(0),
+        makerAssetFilledAmount: constants.ZERO_AMOUNT,
+        takerAssetFilledAmount: constants.ZERO_AMOUNT,
+        makerFeePaid: constants.ZERO_AMOUNT,
+        takerFeePaid: constants.ZERO_AMOUNT,
+        protocolFeePaid: constants.ZERO_AMOUNT,
     };
     return empty;
 }

@@ -110,6 +110,7 @@ export function assertIntegerRoughlyEquals(actual: Numberish, expected: Numberis
  */
 export function toBaseUnitAmount(amount: Numberish, decimals?: number): BigNumber {
     const amountAsBigNumber = new BigNumber(amount);
-    const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals || 18);
+    const baseDecimals = decimals !== undefined ? decimals : 18;
+    const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, baseDecimals);
     return baseUnitAmount;
 }
