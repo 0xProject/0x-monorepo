@@ -17,6 +17,7 @@ export interface WalletPromptProps {
     alignText?: string;
     marginLeft?: string;
     fontWeight?: string;
+    padding?: string;
 }
 
 export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
@@ -30,9 +31,10 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
     alignText,
     marginLeft = '10px',
     fontWeight = '500',
+    padding = '10px',
 }) => (
     <Container
-        padding="10px"
+        padding={padding}
         border={`1px solid`}
         borderColor={ColorOption.feintGrey}
         backgroundColor={secondaryColor}

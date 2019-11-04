@@ -90,6 +90,7 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                             alignText={'flex-start'}
                             marginLeft="16px"
                             fontWeight="normal"
+                            padding="15px 18px"
                             image={
                                 <Container position="relative" display="flex">
                                     {metamaskLogo}
@@ -101,9 +102,10 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                         </WalletPrompt>
                         <WalletPrompt
                             onClick={onUnlockFormatic}
-                            marginTop="5px"
+                            marginTop="14px"
                             marginLeft="19px"
                             fontWeight="normal"
+                            padding="15px 18px"
                             image={
                                 <Container position="relative" display="flex">
                                     <PhoneIconSvg />
@@ -119,14 +121,15 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
             case AccountState.None:
                 return (
                     <Flex direction="column" justify="space-between" height="100%">
-                        <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors} fontWeight="normal" marginLeft="19px">
+                        <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors} fontWeight="normal" marginLeft="19px" padding="15px 18px">
                             {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                         </WalletPrompt>
                         <WalletPrompt
                             onClick={onUnlockFormatic}
-                            marginTop="5px"
+                            marginTop="14px"
                             fontWeight="normal"
                             marginLeft="19px"
+                            padding="15px 18px"
                             image={
                                 <Container position="relative" display="flex">
                                     <PhoneIconSvg />
