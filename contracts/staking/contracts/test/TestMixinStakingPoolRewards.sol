@@ -26,8 +26,14 @@ import "./TestStakingNoWETH.sol";
 contract TestMixinStakingPoolRewards is
     TestStakingNoWETH
 {
+    // solhint-disable no-simple-event-func-name
     event UpdateCumulativeReward(
         bytes32 poolId
+    );
+
+    event WithdrawAndSyncDelegatorRewards(
+        bytes32 poolId,
+        address member
     );
 
     struct UnfinalizedPoolReward {
@@ -116,6 +122,19 @@ contract TestMixinStakingPoolRewards is
         return _syncPoolRewards(poolId, reward, membersStake);
     }
 
+    // Expose `_withdrawAndSyncDelegatorRewards()` for testing.
+    function withdrawAndSyncDelegatorRewards(
+        bytes32 poolId,
+        address member
+    )
+        external
+    {
+        return _withdrawAndSyncDelegatorRewards(
+            poolId,
+            member
+        );
+    }
+
     // Expose `_computePoolRewardsSplit()` for testing.
     function computePoolRewardsSplit(
         uint32 operatorShare,
@@ -161,6 +180,20 @@ contract TestMixinStakingPoolRewards is
         public
     {
         _poolById[poolId] = pool;
+    }
+
+    // Overridden to emit an event.
+    function _withdrawAndSyncDelegatorRewards(
+        bytes32 poolId,
+        address member
+    )
+        internal
+    {
+        emit WithdrawAndSyncDelegatorRewards(poolId, member);
+        return MixinStakingPoolRewards._withdrawAndSyncDelegatorRewards(
+            poolId,
+            member
+        );
     }
 
     // Overridden to use `_memberRewardsOverInterval`

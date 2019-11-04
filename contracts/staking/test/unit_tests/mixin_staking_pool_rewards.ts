@@ -117,59 +117,67 @@ blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
     }
 
     describe('withdrawDelegatorRewards()', () => {
+        it('calls `_withdrawAndSyncDelegatorRewards()` with the sender as the member', async () => {
+            const { logs } = await testContract.withdrawDelegatorRewards.awaitTransactionSuccessAsync(POOL_ID);
+            verifyEventsFromLogs(logs, [{ poolId: POOL_ID, member: caller }], Events.WithdrawAndSyncDelegatorRewards);
+        });
+    });
+
+    describe('_withdrawAndSyncDelegatorRewards()', () => {
         const POOL_REWARD = getRandomInteger(1, 100e18);
         const WETH_RESERVED_FOR_POOL_REWARDS = POOL_REWARD.plus(getRandomInteger(1, 100e18));
+        const DELEGATOR = randomAddress();
         let stake: StoredBalance;
 
         before(async () => {
-            stake = await setStakeAsync(POOL_ID, caller);
+            stake = await setStakeAsync(POOL_ID, DELEGATOR);
             await testContract.setPoolRewards.awaitTransactionSuccessAsync(POOL_ID, POOL_REWARD);
             await testContract.setWethReservedForPoolRewards.awaitTransactionSuccessAsync(
                 WETH_RESERVED_FOR_POOL_REWARDS,
             );
         });
 
-        async function withdrawDelegatorRewardsAsync(): Promise<TransactionReceiptWithDecodedLogs> {
-            return testContract.withdrawDelegatorRewards.awaitTransactionSuccessAsync(POOL_ID);
+        async function withdrawAndSyncDelegatorRewardsAsync(): Promise<TransactionReceiptWithDecodedLogs> {
+            return testContract.withdrawAndSyncDelegatorRewards.awaitTransactionSuccessAsync(POOL_ID, DELEGATOR);
         }
 
         it('reverts if the pool is not finalized', async () => {
             await setUnfinalizedPoolRewardsAsync(POOL_ID, 0, 1);
-            const tx = withdrawDelegatorRewardsAsync();
+            const tx = withdrawAndSyncDelegatorRewardsAsync();
             return expect(tx).to.revertWith('POOL_NOT_FINALIZED');
         });
         it('calls `_updateCumulativeReward()`', async () => {
-            const { logs } = await withdrawDelegatorRewardsAsync();
+            const { logs } = await withdrawAndSyncDelegatorRewardsAsync();
             verifyEventsFromLogs(logs, [{ poolId: POOL_ID }], Events.UpdateCumulativeReward);
         });
         it('transfers finalized rewards to the sender', async () => {
             const finalizedReward = getRandomPortion(POOL_REWARD);
-            await setComputeDelegatorRewardStateAsync(POOL_ID, caller, finalizedReward);
-            const { logs } = await withdrawDelegatorRewardsAsync();
+            await setComputeDelegatorRewardStateAsync(POOL_ID, DELEGATOR, finalizedReward);
+            const { logs } = await withdrawAndSyncDelegatorRewardsAsync();
             verifyEventsFromLogs(
                 logs,
-                [{ _from: testContract.address, _to: caller, _value: finalizedReward }],
+                [{ _from: testContract.address, _to: DELEGATOR, _value: finalizedReward }],
                 Events.Transfer,
             );
         });
         it('reduces `rewardsByPoolId` for the pool', async () => {
             const finalizedReward = getRandomPortion(POOL_REWARD);
-            await setComputeDelegatorRewardStateAsync(POOL_ID, caller, finalizedReward);
-            await withdrawDelegatorRewardsAsync();
+            await setComputeDelegatorRewardStateAsync(POOL_ID, DELEGATOR, finalizedReward);
+            await withdrawAndSyncDelegatorRewardsAsync();
             const poolReward = await testContract.rewardsByPoolId.callAsync(POOL_ID);
             expect(poolReward).to.bignumber.eq(POOL_REWARD.minus(finalizedReward));
         });
         it('reduces `wethReservedForPoolRewards` for the pool', async () => {
             const finalizedReward = getRandomPortion(POOL_REWARD);
-            await setComputeDelegatorRewardStateAsync(POOL_ID, caller, finalizedReward);
-            await withdrawDelegatorRewardsAsync();
+            await setComputeDelegatorRewardStateAsync(POOL_ID, DELEGATOR, finalizedReward);
+            await withdrawAndSyncDelegatorRewardsAsync();
             const wethReserved = await testContract.wethReservedForPoolRewards.callAsync();
             expect(wethReserved).to.bignumber.eq(WETH_RESERVED_FOR_POOL_REWARDS.minus(finalizedReward));
         });
         it('syncs `_delegatedStakeToPoolByOwner`', async () => {
-            await setComputeDelegatorRewardStateAsync(POOL_ID, caller, getRandomPortion(POOL_REWARD));
-            await withdrawDelegatorRewardsAsync();
-            const stakeAfter = await testContract.delegatedStakeToPoolByOwner.callAsync(caller, POOL_ID);
+            await setComputeDelegatorRewardStateAsync(POOL_ID, DELEGATOR, getRandomPortion(POOL_REWARD));
+            await withdrawAndSyncDelegatorRewardsAsync();
+            const stakeAfter = await testContract.delegatedStakeToPoolByOwner.callAsync(DELEGATOR, POOL_ID);
             // `_loadCurrentBalance` is overridden to just increment `currentEpoch`.
             expect(stakeAfter).to.deep.eq({
                 currentEpoch: stake.currentEpoch.plus(1),
@@ -178,15 +186,15 @@ blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
             });
         });
         it('does not transfer zero rewards', async () => {
-            await setComputeDelegatorRewardStateAsync(POOL_ID, caller, 0);
-            const { logs } = await withdrawDelegatorRewardsAsync();
+            await setComputeDelegatorRewardStateAsync(POOL_ID, DELEGATOR, 0);
+            const { logs } = await withdrawAndSyncDelegatorRewardsAsync();
             verifyEventsFromLogs(logs, [], Events.Transfer);
         });
         it('no rewards if the delegated stake epoch == current epoch', async () => {
             // Set some finalized rewards that should be ignored.
-            await setComputeDelegatorRewardStateAsync(POOL_ID, caller, getRandomInteger(1, POOL_REWARD));
+            await setComputeDelegatorRewardStateAsync(POOL_ID, DELEGATOR, getRandomInteger(1, POOL_REWARD));
             await testContract.setCurrentEpoch.awaitTransactionSuccessAsync(stake.currentEpoch);
-            const { logs } = await withdrawDelegatorRewardsAsync();
+            const { logs } = await withdrawAndSyncDelegatorRewardsAsync();
             // There will be no Transfer events if computed rewards are zero.
             verifyEventsFromLogs(logs, [], Events.Transfer);
         });
