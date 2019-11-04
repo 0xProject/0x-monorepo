@@ -48,6 +48,7 @@ import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
 import * as TestMixinStakeBalances from '../generated-artifacts/TestMixinStakeBalances.json';
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
 import * as TestMixinStakingPool from '../generated-artifacts/TestMixinStakingPool.json';
+import * as TestMixinStakingPoolRewards from '../generated-artifacts/TestMixinStakingPoolRewards.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestProxyDestination from '../generated-artifacts/TestProxyDestination.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
@@ -101,6 +102,7 @@ export const artifacts = {
     TestMixinStakeBalances: TestMixinStakeBalances as ContractArtifact,
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,
     TestMixinStakingPool: TestMixinStakingPool as ContractArtifact,
+    TestMixinStakingPoolRewards: TestMixinStakingPoolRewards as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestProxyDestination: TestProxyDestination as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
