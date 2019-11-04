@@ -25,7 +25,7 @@ export class LocalBalanceStore extends BalanceStore {
      * Note that parameters are given {} defaults because `LocalBalanceStore`s will typically
      * be initialized via `create`.
      */
-    public constructor(
+    protected constructor(
         tokenOwnersByName: TokenOwnersByName = {},
         tokenContractsByName: Partial<TokenContractsByName> = {},
     ) {
