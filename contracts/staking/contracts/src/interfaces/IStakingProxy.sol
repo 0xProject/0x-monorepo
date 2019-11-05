@@ -33,12 +33,6 @@ contract IStakingProxy {
     /// @dev Emitted by StakingProxy when a staking contract is detached.
     event StakingContractDetachedFromProxy();
 
-    /// @dev Emitted by StakingProxy when read-only mode is set.
-    event ReadOnlyModeSet(
-        bool readOnlyMode,
-        uint96 timestamp
-    );
-
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// Note that this is callable only by an authorized address.
     /// @param _stakingContract Address of staking contract.
@@ -50,9 +44,12 @@ contract IStakingProxy {
     function detachStakingContract()
         external;
 
-    /// @dev Gets state of stakingProxy read-only mode.
-    function readOnlyState()
+    /// @dev Asserts that an epoch is between 5 and 30 days long.
+    //       Asserts that 0 < cobb douglas alpha value <= 1.
+    //       Asserts that a stake weight is <= 100%.
+    //       Asserts that pools allow >= 1 maker.
+    //       Asserts that all addresses are initialized.
+    function assertValidStorageParams()
         external
-        view
-        returns (IStructs.ReadOnlyState memory);
+        view;
 }

@@ -22,6 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
+import "../interfaces/IStakingProxy.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
@@ -53,6 +54,10 @@ contract MixinParams is
             _cobbDouglasAlphaNumerator,
             _cobbDouglasAlphaDenominator
         );
+
+        // Let the staking proxy enforce that these parameters are within
+        // acceptable ranges.
+        IStakingProxy(address(this)).assertValidStorageParams();
     }
 
     /// @dev Retrieves all configurable parameter values.
@@ -87,13 +92,18 @@ contract MixinParams is
         _assertParamsNotInitialized();
 
         // Set up defaults.
-        // These cannot be set to variables, or we go over the stack variable limit.
+        uint256 _epochDurationInSeconds = 10 days;
+        uint32 _rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100;
+        uint256 _minimumPoolStake = 100 * MIN_TOKEN_VALUE;
+        uint32 _cobbDouglasAlphaNumerator = 2;
+        uint32 _cobbDouglasAlphaDenominator = 3;
+
         _setParams(
-            10 days,                       // epochDurationInSeconds
-            (90 * PPM_DENOMINATOR) / 100,  // rewardDelegatedStakeWeight
-            100 * MIN_TOKEN_VALUE,         // minimumPoolStake
-            1,                             // cobbDouglasAlphaNumerator
-            2                              // cobbDouglasAlphaDenominator
+            _epochDurationInSeconds,
+            _rewardDelegatedStakeWeight,
+            _minimumPoolStake,
+            _cobbDouglasAlphaNumerator,
+            _cobbDouglasAlphaDenominator
         );
     }
 

@@ -37,14 +37,6 @@ contract MultiSigWalletWithTimeLock is
 
     mapping (uint256 => uint256) public confirmationTimes;
 
-    modifier notFullyConfirmed(uint256 transactionId) {
-        require(
-            !isConfirmed(transactionId),
-            "TX_FULLY_CONFIRMED"
-        );
-        _;
-    }
-
     modifier fullyConfirmed(uint256 transactionId) {
         require(
             isConfirmed(transactionId),
@@ -93,11 +85,13 @@ contract MultiSigWalletWithTimeLock is
         ownerExists(msg.sender)
         transactionExists(transactionId)
         notConfirmed(transactionId, msg.sender)
-        notFullyConfirmed(transactionId)
     {
+        bool isTxFullyConfirmedBeforeConfirmation = isConfirmed(transactionId);
+
         confirmations[transactionId][msg.sender] = true;
         emit Confirmation(msg.sender, transactionId);
-        if (isConfirmed(transactionId)) {
+
+        if (!isTxFullyConfirmedBeforeConfirmation && isConfirmed(transactionId)) {
             _setConfirmationTime(transactionId, block.timestamp);
         }
     }

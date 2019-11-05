@@ -1,4 +1,6 @@
-import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import { LogEntry, LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+
+import { expect } from './chai_setup';
 
 // tslint:disable no-unnecessary-type-assertion
 
@@ -14,4 +16,30 @@ export function filterLogs<TEventArgs>(logs: LogEntry[], event: string): Array<L
  */
 export function filterLogsToArguments<TEventArgs>(logs: LogEntry[], event: string): TEventArgs[] {
     return filterLogs<TEventArgs>(logs, event).map(log => log.args);
+}
+
+/**
+ * Verifies that a transaction emitted the expected events of a particular type.
+ */
+export function verifyEvents<TEventArgs>(
+    txReceipt: TransactionReceiptWithDecodedLogs,
+    expectedEvents: TEventArgs[],
+    eventName: string,
+): void {
+    return verifyEventsFromLogs(txReceipt.logs, expectedEvents, eventName);
+}
+
+/**
+ * Given a collection of logs, verifies that matching events are identical.
+ */
+export function verifyEventsFromLogs<TEventArgs>(
+    logs: LogEntry[],
+    expectedEvents: TEventArgs[],
+    eventName: string,
+): void {
+    const _logs = filterLogsToArguments<TEventArgs>(logs, eventName);
+    expect(_logs.length).to.eq(expectedEvents.length);
+    _logs.forEach((log, index) => {
+        expect(log).to.deep.equal(expectedEvents[index]);
+    });
 }

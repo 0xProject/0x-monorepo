@@ -31,7 +31,6 @@
         "generated-artifacts/MixinStakingPool.json",
         "generated-artifacts/MixinStakingPoolRewards.json",
         "generated-artifacts/MixinStorage.json",
-        "generated-artifacts/ReadOnlyProxy.json",
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingProxy.json",
         "generated-artifacts/TestAssertStorageParams.json",
@@ -45,15 +44,16 @@
         "generated-artifacts/TestLibProxy.json",
         "generated-artifacts/TestLibProxyReceiver.json",
         "generated-artifacts/TestLibSafeDowncast.json",
+        "generated-artifacts/TestMixinParams.json",
         "generated-artifacts/TestMixinStake.json",
         "generated-artifacts/TestMixinStakeStorage.json",
+        "generated-artifacts/TestMixinStakingPool.json",
         "generated-artifacts/TestProtocolFees.json",
         "generated-artifacts/TestStaking.json",
         "generated-artifacts/TestStakingNoWETH.json",
         "generated-artifacts/TestStakingProxy.json",
         "generated-artifacts/TestStorageLayoutAndConstants.json",
-        "generated-artifacts/ZrxVault.json",
-        "generated-artifacts/ZrxVaultBackstop.json"
+        "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

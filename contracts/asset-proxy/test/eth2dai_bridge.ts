@@ -45,7 +45,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
         });
     });
 
-    describe('withdrawTo()', () => {
+    describe('bridgeTransferFrom()', () => {
         interface WithdrawToOpts {
             toTokenAddress?: string;
             fromTokenAddress?: string;
@@ -103,9 +103,9 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 _opts.toTokentransferRevertReason,
                 _opts.toTokenTransferReturnData,
             );
-            // Call withdrawTo().
+            // Call bridgeTransferFrom().
             const [result, { logs }] = await txHelper.getResultAndReceiptAsync(
-                testContract.withdrawTo,
+                testContract.bridgeTransferFrom,
                 // "to" token address
                 _opts.toTokenAddress,
                 // Random from address.

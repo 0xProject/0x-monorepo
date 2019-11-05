@@ -14,11 +14,6 @@ export enum OperatorShareErrorCodes {
     CanOnlyDecreaseOperatorShare,
 }
 
-export enum ProtocolFeePaymentErrorCodes {
-    ZeroProtocolFeePaid,
-    MismatchedFeeAndPayment,
-}
-
 export enum InvalidParamValueErrorCodes {
     InvalidCobbDouglasAlpha,
     InvalidRewardDelegatedStakeWeight,
@@ -144,14 +139,13 @@ export class InvalidParamValueError extends RevertError {
 
 export class InvalidProtocolFeePaymentError extends RevertError {
     constructor(
-        errorCode?: ProtocolFeePaymentErrorCodes,
         expectedProtocolFeePaid?: BigNumber | number | string,
         actualProtocolFeePaid?: BigNumber | number | string,
     ) {
         super(
             'InvalidProtocolFeePaymentError',
-            'InvalidProtocolFeePaymentError(uint8 errorCode, uint256 expectedProtocolFeePaid, uint256 actualProtocolFeePaid)',
-            { errorCode, expectedProtocolFeePaid, actualProtocolFeePaid },
+            'InvalidProtocolFeePaymentError(uint256 expectedProtocolFeePaid, uint256 actualProtocolFeePaid)',
+            { expectedProtocolFeePaid, actualProtocolFeePaid },
         );
     }
 }
@@ -178,6 +172,12 @@ export class PreviousEpochNotFinalizedError extends RevertError {
     }
 }
 
+export class PoolNotFinalizedError extends RevertError {
+    constructor(poolId: string, epoch: BigNumber | number | string) {
+        super('PoolNotFinalizedError', 'PoolNotFinalizedError(bytes32 poolId, uint256 epoch)', { poolId, epoch });
+    }
+}
+
 const types = [
     BlockTimestampTooLowError,
     ExchangeManagerError,
@@ -195,6 +195,7 @@ const types = [
     PoolExistenceError,
     PreviousEpochNotFinalizedError,
     ProxyDestinationCannotBeNilError,
+    PoolNotFinalizedError,
 ];
 
 // Register the types we've defined.

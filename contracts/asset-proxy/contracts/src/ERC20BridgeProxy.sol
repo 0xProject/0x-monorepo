@@ -73,7 +73,7 @@ contract ERC20BridgeProxy is
         uint256 balanceBefore = balanceOf(tokenAddress, to);
         // Call the bridge, who should transfer `amount` of `tokenAddress` to
         // `to`.
-        bytes4 success = IERC20Bridge(bridgeAddress).withdrawTo(
+        bytes4 success = IERC20Bridge(bridgeAddress).bridgeTransferFrom(
             tokenAddress,
             from,
             to,

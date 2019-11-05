@@ -52,7 +52,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         });
     });
 
-    describe('withdrawTo()', () => {
+    describe('bridgeTransferFrom()', () => {
         interface WithdrawToOpts {
             fromTokenAddress: string;
             toTokenAddress: string;
@@ -115,9 +115,9 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             await testContract.setTokenBalance.awaitTransactionSuccessAsync(_opts.fromTokenAddress, {
                 value: new BigNumber(_opts.fromTokenBalance),
             });
-            // Call withdrawTo().
+            // Call bridgeTransferFrom().
             const [result, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.withdrawTo,
+                testContract.bridgeTransferFrom,
                 // The "to" token address.
                 _opts.toTokenAddress,
                 // The "from" address.
@@ -203,7 +203,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             });
 
             it('fails if "from" token does not exist', async () => {
-                const tx = testContract.withdrawTo.awaitTransactionSuccessAsync(
+                const tx = testContract.bridgeTransferFrom.awaitTransactionSuccessAsync(
                     randomAddress(),
                     randomAddress(),
                     randomAddress(),
@@ -275,7 +275,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             });
 
             it('fails if "from" token does not exist', async () => {
-                const tx = testContract.withdrawTo.awaitTransactionSuccessAsync(
+                const tx = testContract.bridgeTransferFrom.awaitTransactionSuccessAsync(
                     randomAddress(),
                     randomAddress(),
                     randomAddress(),
@@ -333,7 +333,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             });
 
             it('fails if "to" token does not exist', async () => {
-                const tx = testContract.withdrawTo.awaitTransactionSuccessAsync(
+                const tx = testContract.bridgeTransferFrom.awaitTransactionSuccessAsync(
                     wethTokenAddress,
                     randomAddress(),
                     randomAddress(),

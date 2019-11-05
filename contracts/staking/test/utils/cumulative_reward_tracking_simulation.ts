@@ -24,7 +24,7 @@ interface TestLog {
 
 export class CumulativeRewardTrackingSimulation {
     private readonly _amountToStake = toBaseUnitAmount(100);
-    private readonly _protocolFeeAmount = new BigNumber(10);
+    private readonly _protocolFee = new BigNumber(10);
     private readonly _stakingApiWrapper: StakingApiWrapper;
     private readonly _staker: string;
     private readonly _poolOperator: string;
@@ -141,8 +141,8 @@ export class CumulativeRewardTrackingSimulation {
                     receipt = await this._stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
                         this._poolOperator,
                         this._takerAddress,
-                        this._protocolFeeAmount,
-                        { from: this._exchangeAddress, value: this._protocolFeeAmount },
+                        this._protocolFee,
+                        { from: this._exchangeAddress, value: this._protocolFee },
                     );
                     break;
 

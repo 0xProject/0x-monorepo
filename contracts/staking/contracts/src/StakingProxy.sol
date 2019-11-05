@@ -37,16 +37,10 @@ contract StakingProxy is
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
-    /// @param _readOnlyProxy The address of the read only proxy.
-    constructor(
-        address _stakingContract,
-        address _readOnlyProxy
-    )
+    constructor(address _stakingContract)
         public
         MixinStorage()
     {
-        readOnlyProxy = _readOnlyProxy;
-
         // Deployer address must be authorized in order to call `init`
         _addAuthorizedAddress(msg.sender);
 
@@ -87,29 +81,6 @@ contract StakingProxy is
     {
         stakingContract = NIL_ADDRESS;
         emit StakingContractDetachedFromProxy();
-    }
-
-    /// @dev Set read-only mode (state cannot be changed).
-    function setReadOnlyMode(bool shouldSetReadOnlyMode)
-        external
-        onlyAuthorized
-    {
-        // solhint-disable-next-line not-rely-on-time
-        uint96 timestamp = block.timestamp.downcastToUint96();
-        if (shouldSetReadOnlyMode) {
-            stakingContract = readOnlyProxy;
-            readOnlyState = IStructs.ReadOnlyState({
-                isReadOnlyModeSet: true,
-                lastSetTimestamp: timestamp
-            });
-        } else {
-            stakingContract = readOnlyProxyCallee;
-            readOnlyState.isReadOnlyModeSet = false;
-        }
-        emit ReadOnlyModeSet(
-            shouldSetReadOnlyMode,
-            timestamp
-        );
     }
 
     /// @dev Batch executes a series of calls to the staking contract.
@@ -157,8 +128,8 @@ contract StakingProxy is
     //       Asserts that a stake weight is <= 100%.
     //       Asserts that pools allow >= 1 maker.
     //       Asserts that all addresses are initialized.
-    function _assertValidStorageParams()
-        internal
+    function assertValidStorageParams()
+        public
         view
     {
         // Epoch length must be between 5 and 30 days long
@@ -202,7 +173,7 @@ contract StakingProxy is
         internal
     {
         // Attach the staking contract
-        stakingContract = readOnlyProxyCallee = _stakingContract;
+        stakingContract = _stakingContract;
         emit StakingContractAttachedToProxy(_stakingContract);
 
         // Call `init()` on the staking contract to initialize storage.
@@ -216,6 +187,6 @@ contract StakingProxy is
         }
 
         // Assert initialized storage values are valid
-        _assertValidStorageParams();
+        assertValidStorageParams();
     }
 }

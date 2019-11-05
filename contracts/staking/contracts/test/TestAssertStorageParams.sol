@@ -35,10 +35,7 @@ contract TestAssertStorageParams is
 
     constructor()
         public
-        StakingProxy(
-            NIL_ADDRESS,
-            NIL_ADDRESS
-        )
+        StakingProxy(NIL_ADDRESS)
     {}
 
     function setAndAssertParams(StorageParams memory params)
@@ -49,7 +46,7 @@ contract TestAssertStorageParams is
         minimumPoolStake = params.minimumPoolStake;
         cobbDouglasAlphaNumerator = params.cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = params.cobbDouglasAlphaDenominator;
-        _assertValidStorageParams();
+        assertValidStorageParams();
     }
 
     function _attachStakingContract(address)

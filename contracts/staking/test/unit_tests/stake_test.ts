@@ -373,7 +373,7 @@ blockchainTests.resets('MixinStake unit tests', env => {
             expect(increaseNextBalanceEvents).to.be.length(0);
         });
 
-        it('moves the owner stake between the same pointer when both are undelegated', async () => {
+        it('does nothing when moving the owner stake from undelegated to undelegated', async () => {
             const amount = getRandomInteger(0, 100e18);
             const { logs } = await testContract.moveStake.awaitTransactionSuccessAsync(
                 { status: StakeStatus.Undelegated, poolId: VALID_POOL_IDS[0] },
@@ -381,10 +381,18 @@ blockchainTests.resets('MixinStake unit tests', env => {
                 amount,
             );
             const events = filterLogsToArguments<MoveStakeStorageEventArgs>(logs, StakeEvents.MoveStakeStorage);
-            expect(events).to.be.length(1);
-            expect(events[0].fromBalanceSlot).to.eq(stakerUndelegatedStakeSlot);
-            expect(events[0].toBalanceSlot).to.eq(stakerUndelegatedStakeSlot);
-            expect(events[0].amount).to.bignumber.eq(amount);
+            expect(events).to.be.length(0);
+        });
+
+        it('does nothing when moving zero stake', async () => {
+            const amount = new BigNumber(0);
+            const { logs } = await testContract.moveStake.awaitTransactionSuccessAsync(
+                { status: StakeStatus.Delegated, poolId: VALID_POOL_IDS[0] },
+                { status: StakeStatus.Delegated, poolId: VALID_POOL_IDS[1] },
+                amount,
+            );
+            const events = filterLogsToArguments<MoveStakeStorageEventArgs>(logs, StakeEvents.MoveStakeStorage);
+            expect(events).to.be.length(0);
         });
 
         it('moves the owner stake between the same pointer when both are delegated', async () => {

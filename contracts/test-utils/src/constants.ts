@@ -32,6 +32,7 @@ export const constants = {
     BASE_16: 16,
     INVALID_OPCODE: 'invalid opcode',
     TESTRPC_NETWORK_ID: 50,
+    TESTRPC_CHAIN_ID: 1337,
     // Note(albrow): In practice V8 and most other engines limit the minimum
     // interval for setInterval to 10ms. We still set it to 0 here in order to
     // ensure we always use the minimum interval.

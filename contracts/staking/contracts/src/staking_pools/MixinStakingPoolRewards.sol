@@ -31,25 +31,13 @@ contract MixinStakingPoolRewards is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Syncs rewards for a delegator. This includes transferring WETH
-    ///      rewards to the delegator, and adding/removing
-    ///      dependencies on cumulative rewards.
-    ///      This is used by a delegator when they want to sync their rewards
-    ///      without delegating/undelegating. It's effectively the same as
-    ///      delegating zero stake.
+    /// @dev Withdraws the caller's WETH rewards that have accumulated
+    ///      until the last epoch.
     /// @param poolId Unique id of pool.
     function withdrawDelegatorRewards(bytes32 poolId)
         external
     {
-        address member = msg.sender;
-
-        _withdrawAndSyncDelegatorRewards(
-            poolId,
-            member
-        );
-
-        _delegatedStakeToPoolByOwner[member][poolId] =
-            _loadCurrentBalance(_delegatedStakeToPoolByOwner[member][poolId]);
+        _withdrawAndSyncDelegatorRewards(poolId, msg.sender);
     }
 
     /// @dev Computes the reward balance in ETH of the operator of a pool.
@@ -105,8 +93,8 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    /// @dev Syncs rewards for a delegator. This includes transferring rewards
-    ///      withdrawing rewards and adding/removing dependencies on cumulative rewards.
+    /// @dev Syncs rewards for a delegator. This includes withdrawing rewards
+    ///      rewards and adding/removing dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
     function _withdrawAndSyncDelegatorRewards(
@@ -116,7 +104,7 @@ contract MixinStakingPoolRewards is
         internal
     {
         // Ensure the pool is finalized.
-        finalizePool(poolId);
+        _assertPoolFinalizedLastEpoch(poolId);
 
         // Compute balance owed to delegator
         uint256 balance = _computeDelegatorReward(
@@ -127,6 +115,12 @@ contract MixinStakingPoolRewards is
             0,
             0
         );
+
+        // Sync the delegated stake balance. This will ensure future calls of
+        // `_computeDelegatorReward` during this epoch will return 0, 
+        // preventing a delegator from withdrawing more than once an epoch.
+        _delegatedStakeToPoolByOwner[member][poolId] =
+            _loadCurrentBalance(_delegatedStakeToPoolByOwner[member][poolId]);
 
         // Withdraw non-0 balance
         if (balance != 0) {
@@ -211,7 +205,7 @@ contract MixinStakingPoolRewards is
                 PPM_DENOMINATOR,
                 totalReward
             );
-            membersReward = totalReward - operatorReward;
+            membersReward = totalReward.safeSub(operatorReward);
         }
         return (operatorReward, membersReward);
     }
@@ -232,19 +226,13 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
-        // There can be no rewards in epoch 0 because there is no delegated
-        // stake.
-        uint256 _currentEpoch = currentEpoch;
-        if (_currentEpoch == 0) {
-            return 0;
-        }
-
+        uint256 currentEpoch_ = currentEpoch;
         IStructs.StoredBalance memory delegatedStake = _delegatedStakeToPoolByOwner[member][poolId];
 
         // There can be no rewards if the last epoch when stake was stored is
         // equal to the current epoch, because all prior rewards, including
         // rewards finalized this epoch have been claimed.
-        if (delegatedStake.currentEpoch == _currentEpoch) {
+        if (delegatedStake.currentEpoch == currentEpoch_) {
             return 0;
         }
 
@@ -253,7 +241,7 @@ contract MixinStakingPoolRewards is
         // 1/3 Unfinalized rewards earned in `currentEpoch - 1`.
         reward = _computeUnfinalizedDelegatorReward(
             delegatedStake,
-            _currentEpoch,
+            currentEpoch_,
             unfinalizedMembersReward,
             unfinalizedMembersStake
         );
@@ -275,7 +263,7 @@ contract MixinStakingPoolRewards is
                 poolId,
                 delegatedStake.nextEpochBalance,
                 delegatedStakeNextEpoch,
-                _currentEpoch
+                currentEpoch_
             )
         );
 

@@ -5,6 +5,10 @@
             {
                 "note": "Consolidated FixedMathRevertErrors",
                 "pr": 2255
+            },
+            {
+                "note": "Changed provider_utils.providerUtils.getChainIdAsync() to invoke RPC method eth_chainId rather than net_version",
+                "pr": 2270
             }
         ]
     },

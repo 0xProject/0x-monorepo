@@ -34,4 +34,5 @@ export enum ExchangeFunctionName {
     TransferOwnership = 'transferOwnership',
     SetProtocolFeeMultiplier = 'setProtocolFeeMultiplier',
     SetProtocolFeeCollectorAddress = 'setProtocolFeeCollectorAddress',
+    DetachProtocolFeeCollector = 'detachProtocolFeeCollector',
 }
