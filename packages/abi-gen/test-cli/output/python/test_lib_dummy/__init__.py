@@ -197,7 +197,7 @@ class TestLibDummy:
             web3 = Web3(web3_or_provider)
         elif isinstance(web3_or_provider, Web3):
             web3 = web3_or_provider
-        if web3 is None:
+        else:
             raise TypeError(
                 "Expected parameter 'web3_or_provider' to be an instance of either"
                 + " Web3 or BaseProvider"
