@@ -111,5 +111,5 @@
     "publishConfig": {
         "access": "public"
     },
-    "files": ["templates/*"]
+    "files": ["templates/*", "*.js", "*.ts", "*.map"]
 }
