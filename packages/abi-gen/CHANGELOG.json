@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.1-beta.0",
+        "changes": [
+            {
+                "note": "Fix templates not being included in published tarball",
+                "pr": 2315
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.0",
         "changes": [
             {
