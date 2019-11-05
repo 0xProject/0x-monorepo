@@ -51,10 +51,6 @@ library LibForwarderRichErrors {
     bytes4 internal constant OVERSPENT_WETH_ERROR_SELECTOR =
         0xcdcbed5d;
 
-    // bytes4(keccak256("TransferFailedError(bytes)"))
-    bytes4 internal constant TRANSFER_FAILED_ERROR_SELECTOR =
-        0x5e7eb60f;
-
     // bytes4(keccak256("DefaultFunctionWethContractOnlyError(address)"))
     bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
         0x08b18698;
@@ -157,19 +153,6 @@ library LibForwarderRichErrors {
             OVERSPENT_WETH_ERROR_SELECTOR,
             wethSpent,
             msgValue
-        );
-    }
-
-    function TransferFailedError(
-        bytes memory errorData
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            TRANSFER_FAILED_ERROR_SELECTOR,
-            errorData
         );
     }
 

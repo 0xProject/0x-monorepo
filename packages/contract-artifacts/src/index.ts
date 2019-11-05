@@ -19,6 +19,8 @@ import * as IValidator from '../artifacts/IValidator.json';
 import * as IWallet from '../artifacts/IWallet.json';
 import * as MultiAssetProxy from '../artifacts/MultiAssetProxy.json';
 import * as OrderValidator from '../artifacts/OrderValidator.json';
+import * as Staking from '../artifacts/Staking.json';
+import * as StakingProxy from '../artifacts/StakingProxy.json';
 import * as StaticCallProxy from '../artifacts/StaticCallProxy.json';
 import * as WETH9 from '../artifacts/WETH9.json';
 import * as ZRXToken from '../artifacts/ZRXToken.json';
@@ -48,4 +50,6 @@ export {
     Coordinator,
     CoordinatorRegistry,
     EthBalanceChecker,
+    Staking,
+    StakingProxy,
 };

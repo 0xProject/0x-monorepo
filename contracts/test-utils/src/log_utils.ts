@@ -38,8 +38,8 @@ export function verifyEventsFromLogs<TEventArgs>(
     eventName: string,
 ): void {
     const _logs = filterLogsToArguments<TEventArgs>(logs, eventName);
-    expect(_logs.length).to.eq(expectedEvents.length);
+    expect(_logs.length, `Number of ${eventName} events emitted`).to.eq(expectedEvents.length);
     _logs.forEach((log, index) => {
-        expect(log).to.deep.equal(expectedEvents[index]);
+        expect(log, `${eventName} event ${index}`).to.deep.equal(expectedEvents[index]);
     });
 }

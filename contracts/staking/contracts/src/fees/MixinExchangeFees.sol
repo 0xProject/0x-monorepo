@@ -82,7 +82,6 @@ contract MixinExchangeFees is
         }
 
         // Look up the pool stats and aggregated stats for this epoch.
-
         uint256 currentEpoch_ = currentEpoch;
         IStructs.PoolStats storage poolStatsPtr = poolStatsByEpoch[poolId][currentEpoch_];
         IStructs.AggregatedStats storage aggregatedStatsPtr = aggregatedStatsByEpoch[currentEpoch_];

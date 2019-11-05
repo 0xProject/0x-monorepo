@@ -25,7 +25,7 @@ export class LocalBalanceStore extends BalanceStore {
      * Note that parameters are given {} defaults because `LocalBalanceStore`s will typically
      * be initialized via `create`.
      */
-    public constructor(
+    protected constructor(
         private readonly _devUtils: DevUtilsContract,
         tokenOwnersByName: TokenOwnersByName = {},
         tokenContractsByName: Partial<TokenContractsByName> = {},
@@ -40,6 +40,18 @@ export class LocalBalanceStore extends BalanceStore {
      */
     public burnGas(senderAddress: string, amount: Numberish): void {
         this._balances.eth[senderAddress] = this._balances.eth[senderAddress].minus(amount);
+    }
+
+    /**
+     * Converts some amount of the ETH balance of an address to WETH balance to simulate wrapping ETH.
+     * @param senderAddress Address whose ETH to wrap.
+     * @param amount Amount to wrap.
+     */
+    public wrapEth(senderAddress: string, wethAddress: string, amount: Numberish): void {
+        this._balances.eth[senderAddress] = this._balances.eth[senderAddress].minus(amount);
+        _.update(this._balances.erc20, [senderAddress, wethAddress], balance =>
+            (balance || constants.ZERO_AMOUNT).plus(amount),
+        );
     }
 
     /**

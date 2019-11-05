@@ -13,15 +13,6 @@ blockchainTests('Deployment Manager', env => {
         deploymentManager = await DeploymentManager.deployAsync(env);
     });
 
-    async function batchAssertAuthoritiesAsync(
-        authorities: string[],
-        authorizedContracts: Authorizable[],
-    ): Promise<void> {
-        for (const authorized of authorizedContracts) {
-            expect(await authorized.getAuthorizedAddresses.callAsync()).to.be.deep.eq(authorities);
-        }
-    }
-
     async function batchAssertAuthorizedAsync(
         authorizedAddress: string,
         authorizedContracts: Authorizable[],
@@ -79,14 +70,24 @@ blockchainTests('Deployment Manager', env => {
 
             // The other asset proxies should have the exchange and the multi-asset proxy in their
             // authorities list.
-            await batchAssertAuthoritiesAsync(
-                [deploymentManager.assetProxies.multiAssetProxy.address, deploymentManager.exchange.address],
-                [
-                    deploymentManager.assetProxies.erc1155Proxy,
-                    deploymentManager.assetProxies.erc20Proxy,
-                    deploymentManager.assetProxies.erc721Proxy,
-                ],
-            );
+            const erc20ProxyAuthorities = await deploymentManager.assetProxies.erc20Proxy.getAuthorizedAddresses.callAsync();
+            expect(erc20ProxyAuthorities).to.deep.eq([
+                deploymentManager.staking.zrxVault.address,
+                deploymentManager.assetProxies.multiAssetProxy.address,
+                deploymentManager.exchange.address,
+            ]);
+
+            const erc1155ProxyAuthorities = await deploymentManager.assetProxies.erc1155Proxy.getAuthorizedAddresses.callAsync();
+            expect(erc1155ProxyAuthorities).to.deep.eq([
+                deploymentManager.assetProxies.multiAssetProxy.address,
+                deploymentManager.exchange.address,
+            ]);
+
+            const erc721ProxyAuthorities = await deploymentManager.assetProxies.erc721Proxy.getAuthorizedAddresses.callAsync();
+            expect(erc721ProxyAuthorities).to.deep.eq([
+                deploymentManager.assetProxies.multiAssetProxy.address,
+                deploymentManager.exchange.address,
+            ]);
         });
     });
 

@@ -1,7 +1,6 @@
 import { CoordinatorContract, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
 import {
     BlockchainBalanceStore,
-    LocalBalanceStore,
     constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -9,19 +8,21 @@ import {
     ExchangeEvents,
     ExchangeFillEventArgs,
     ExchangeFunctionName,
+    LocalBalanceStore,
 } from '@0x/contracts-exchange';
-import { blockchainTests, expect, hexConcat, hexSlice, verifyEvents } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, hexConcat, hexSlice, verifyEvents } from '@0x/contracts-test-utils';
 import { assetDataUtils, CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { deployCoordinatorAsync } from './deploy_coordinator';
 import { DeploymentManager } from '../utils/deployment_manager';
 
+import { deployCoordinatorAsync } from './deploy_coordinator';
+
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Coordinator tests', env => {
+blockchainTests.resets('Coordinator integration tests', env => {
     let deployment: DeploymentManager;
     let coordinator: CoordinatorContract;
     let balanceStore: BlockchainBalanceStore;
@@ -59,11 +60,11 @@ blockchainTests.resets('Coordinator tests', env => {
             },
         });
 
-        taker.configureERC20TokenAsync(takerToken);
-        taker.configureERC20TokenAsync(takerFeeToken);
-        taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
-        maker.configureERC20TokenAsync(makerToken);
-        maker.configureERC20TokenAsync(makerFeeToken);
+        await taker.configureERC20TokenAsync(takerToken);
+        await taker.configureERC20TokenAsync(takerFeeToken);
+        await taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
+        await maker.configureERC20TokenAsync(makerToken);
+        await maker.configureERC20TokenAsync(makerFeeToken);
 
         balanceStore = new BlockchainBalanceStore(
             {
@@ -79,8 +80,9 @@ blockchainTests.resets('Coordinator tests', env => {
     function simulateFills(
         orders: SignedOrder[],
         txReceipt: TransactionReceiptWithDecodedLogs,
-        msgValue: BigNumber = new BigNumber(0),
+        msgValue?: BigNumber,
     ): LocalBalanceStore {
+        let remainingValue = msgValue || constants.ZERO_AMOUNT;
         const localBalanceStore = LocalBalanceStore.create(balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
@@ -106,13 +108,13 @@ blockchainTests.resets('Coordinator tests', env => {
             );
 
             // Protocol fee
-            if (msgValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
+            if (remainingValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
                 localBalanceStore.sendEth(
                     txReceipt.from,
                     deployment.staking.stakingProxy.address,
                     DeploymentManager.protocolFee,
                 );
-                msgValue = msgValue.minus(DeploymentManager.protocolFee);
+                remainingValue = remainingValue.minus(DeploymentManager.protocolFee);
             } else {
                 localBalanceStore.transferAsset(
                     taker.address,

@@ -8,6 +8,7 @@ export interface ContractAddresses {
     exchangeV2: string;
     exchange: string;
     assetProxyOwner: string;
+    zeroExGovernor: string;
     forwarder: string;
     orderValidator: string;
     dutchAuction: string;
@@ -20,6 +21,7 @@ export interface ContractAddresses {
     zrxVault: string;
     staking: string;
     stakingProxy: string;
+    erc20BridgeProxy: string;
 }
 
 export enum NetworkId {
@@ -42,7 +44,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         orderValidator: NULL_ADDRESS,
         zrxToken: '0xe41d2489571d322189246dafa5ebde1f4699f498',
         etherToken: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        assetProxyOwner: NULL_ADDRESS,
+        assetProxyOwner: '0xdffe798c7172dd6deb32baee68af322e8f495ce0',
+        zeroExGovernor: NULL_ADDRESS,
         dutchAuction: NULL_ADDRESS,
         coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
         coordinator: NULL_ADDRESS,
@@ -53,6 +56,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         staking: NULL_ADDRESS,
         stakingProxy: NULL_ADDRESS,
         devUtils: NULL_ADDRESS,
+        erc20BridgeProxy: NULL_ADDRESS,
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -60,41 +64,45 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         zrxToken: '0xff67881f8d12f372d91baae9752eb3631ff0ed00',
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
         exchangeV2: '0xbff9493f92a3df4b0429b6d00743b3cfb4c85831',
-        exchange: '0x725bc2f8c85ed0289d3da79cde3125d33fc1d7e6',
-        assetProxyOwner: '0xdcf20f7b447d51f2b3e5499b7f6cbbf7295a5d26',
-        forwarder: '0x31c3890769ed3bb30b2781fd238a5bb7ecfeb7c8',
+        exchange: '0xc56388332ddfc98701fefed94535100c6166956c',
+        assetProxyOwner: NULL_ADDRESS,
+        zeroExGovernor: '0xdcf20f7b447d51f2b3e5499b7f6cbbf7295a5d26',
+        forwarder: '0xe66ae6162b3e9067d6ce9e5b9799cca1ba0d09f8',
         orderValidator: NULL_ADDRESS,
         dutchAuction: NULL_ADDRESS,
         coordinatorRegistry: '0x403cc23e88c17c4652fb904784d1af640a6722d9',
-        coordinator: NULL_ADDRESS,
+        coordinator: '0xad8464022213a618c96a1178a927a5ed15ad6949',
         multiAssetProxy: '0xab8fbd189c569ccdee3a4d929bb7f557be4028f6',
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
-        devUtils: '0x3dfd5157eec10eb1a357c1074de30787ce92cb43',
+        devUtils: '0x9a8590eebcfc53f0cc7ab5ebb8c079e9e7d4e0f5',
         zrxVault: '0xffd161026865ad8b4ab28a76840474935eec4dfa',
-        staking: '0xb2ca5824630e526f0f3181a4ea0447c795a84411',
-        stakingProxy: '0x5d751aa855a1aee5fe44cf5350ed25b5727b66ae',
+        staking: '0x3f46b98061a3e1e1f41dff296ec19402c298f8a9',
+        stakingProxy: '0xfaabcee42ab6b9c649794ac6c133711071897ee9',
+        erc20BridgeProxy: '0x599b340b5045436a99b1f0c718d30f5a0c8519dd',
     },
     4: {
         exchangeV2: '0xbff9493f92a3df4b0429b6d00743b3cfb4c85831',
-        exchange: '0x8e1dfaf747b804d041adaed79d68dcef85b8de85',
+        exchange: '0x3afe8aa355e086d898447732cfa5d931cfb2a792',
         erc20Proxy: '0x2f5ae4f6106e89b4147651688a92256885c5f410',
         erc721Proxy: '0x7656d773e11ff7383a14dcf09a9c50990481cd10',
         zrxToken: '0x8080c7e4b81ecf23aa6f877cfbfd9b0c228c6ffa',
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
-        assetProxyOwner: '0x5d751aa855a1aee5fe44cf5350ed25b5727b66ae',
-        forwarder: '0xc6db36aeb96a2eb52079c342c3a980c83dea8e3c',
+        assetProxyOwner: NULL_ADDRESS,
+        zeroExGovernor: '0x5d751aa855a1aee5fe44cf5350ed25b5727b66ae',
+        forwarder: '0xf36eabdfe986b35b62c8fd5a98a7f2aebb79b291',
         orderValidator: NULL_ADDRESS,
         dutchAuction: NULL_ADDRESS,
         coordinatorRegistry: '0x1084b6a398e47907bae43fec3ff4b677db6e4fee',
-        coordinator: NULL_ADDRESS,
+        coordinator: '0x9ae7a6e4e4d58c36b7aa573fc06ce46dd3cb0d44',
         multiAssetProxy: '0xb34cde0ad3a83d04abebc0b66e75196f22216621',
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
-        devUtils: '0xcfc66b8e75e8f075c3e1d61e6487d73dfe35d808',
+        devUtils: '0xfcbb258112485f18dd68f4b1016e48c23542fdc5',
         zrxVault: '0xa5bf6ac73bc40790fc6ffc9dbbbce76c9176e224',
-        staking: '0x8ec5a989a06432dace637c8d592727627a45a592',
-        stakingProxy: '0xb2ca5824630e526f0f3181a4ea0447c795a84411',
+        staking: '0x344d4f661a82afdd84d31456c291822d90d5dc3a',
+        stakingProxy: '0xc6ad5277ea225ac05e271eb14a7ebb480cd9dd9f',
+        erc20BridgeProxy: '0x31b8653642110f17bdb1f719901d7e7d49b08141',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -102,20 +110,22 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         zrxToken: '0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa',
         etherToken: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
         exchangeV2: '0x30589010550762d2f0d06f650d8e8b6ade6dbf4b',
-        exchange: '0x617602cd3f734cf1e028c96b3f54c0489bed8022',
-        assetProxyOwner: '0x3654e5363cd75c8974c76208137df9691e820e97',
-        forwarder: '0x4c4edb103a6570fa4b58a309d7ff527b7d9f7cf2',
+        exchange: '0xca8b1626b3b7a0da722ca9f264c4630c7d34d3b8',
+        assetProxyOwner: NULL_ADDRESS,
+        zeroExGovernor: '0x3654e5363cd75c8974c76208137df9691e820e97',
+        forwarder: '0xd6330f9d2073e1889a295dd1dd2e28d42dec4bff',
         orderValidator: NULL_ADDRESS,
         dutchAuction: NULL_ADDRESS,
         coordinatorRegistry: '0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5',
-        coordinator: NULL_ADDRESS,
+        coordinator: '0x10e0b1c2e6065ec7f290c7e3731264f9a2bf2b2d',
         multiAssetProxy: '0xf6313a772c222f51c28f2304c0703b8cf5428fd8',
         staticCallProxy: '0x48e94bdb9033640d45ea7c721e25f380f8bffa43',
         erc1155Proxy: '0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f',
-        devUtils: '0xb1863ac46ae23ec55d6eeb8ecc8815655ee638a8',
+        devUtils: '0x58c4fbdf9222f10ad2bef8f4d374f209135e71a5',
         zrxVault: '0xf36eabdfe986b35b62c8fd5a98a7f2aebb79b291',
-        staking: '0xd67f2f346f6e85db70632d9f18f50e04192ab54d',
-        stakingProxy: '0x9e7eef766702c3d9056a3de779e5d9d976bc3bdb',
+        staking: '0x89150f5eed50b3528f79bfb539f29d727f92821c',
+        stakingProxy: '0xbab9145f1d57cd4bb0c9aa2d1ece0a5b6e734d34',
+        erc20BridgeProxy: '0xfb2dd2a1366de37f7241c83d47da58fd503e2c64',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
@@ -126,6 +136,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         etherToken: '0x0b1ba0af832d7c05fd64161e0db78e85978e8082',
         exchangeV2: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
         exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+        zeroExGovernor: NULL_ADDRESS,
         assetProxyOwner: NULL_ADDRESS,
         forwarder: NULL_ADDRESS,
         orderValidator: NULL_ADDRESS,
@@ -138,6 +149,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         zrxVault: NULL_ADDRESS,
         staking: NULL_ADDRESS,
         stakingProxy: NULL_ADDRESS,
+        erc20BridgeProxy: NULL_ADDRESS,
     },
 };
 

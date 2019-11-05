@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0-beta.1",
+        "changes": [
+            {
+                "note": "Create `LibERC20Token`",
+                "pr": 2309
+            }
+        ]
+    },
+    {
         "version": "2.3.0-beta.0",
         "changes": [
             {

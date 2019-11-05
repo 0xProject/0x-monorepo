@@ -184,14 +184,14 @@ blockchainTests('LibFixedMath unit tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('mulDiv(MIN_FIXED, int(-1), int(1)) throws', async () => {
-            const [a, n, d] = [MIN_FIXED_VALUE, -1, 1];
+        it('mulDiv(int(-1), MIN_FIXED, int(1)) throws', async () => {
+            const [a, n, d] = [-1, MIN_FIXED_VALUE, 1];
             const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
                 n,
             );
-            const tx = testContract.mulDiv.callAsync(a, new BigNumber(n), new BigNumber(d));
+            const tx = testContract.mulDiv.callAsync(new BigNumber(a), n, new BigNumber(d));
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -503,6 +503,17 @@ blockchainTests('LibFixedMath unit tests', env => {
                 b,
             );
             const tx = testContract.mul.callAsync(a, new BigNumber(b));
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('int(-1) * MIN_FIXED throws', async () => {
+            const [a, b] = [-1, MIN_FIXED_VALUE];
+            const expectedError = new FixedMathRevertErrors.BinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
+                a,
+                b,
+            );
+            const tx = testContract.mul.callAsync(new BigNumber(a), b);
             return expect(tx).to.revertWith(expectedError);
         });
 
