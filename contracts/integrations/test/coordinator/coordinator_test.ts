@@ -1,4 +1,5 @@
 import { CoordinatorContract, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     BlockchainBalanceStore,
     constants as exchangeConstants,
@@ -10,8 +11,16 @@ import {
     ExchangeFunctionName,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
-import { blockchainTests, constants, expect, hexConcat, hexSlice, verifyEvents } from '@0x/contracts-test-utils';
-import { assetDataUtils, CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    hexConcat,
+    hexSlice,
+    provider,
+    verifyEvents,
+} from '@0x/contracts-test-utils';
+import { CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -26,6 +35,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
     let deployment: DeploymentManager;
     let coordinator: CoordinatorContract;
     let balanceStore: BlockchainBalanceStore;
+    let devUtils: DevUtilsContract;
 
     let maker: Maker;
     let taker: Actor;
@@ -38,6 +48,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
             numErc1155TokensToDeploy: 0,
         });
         coordinator = await deployCoordinatorAsync(deployment, env);
+        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 
         const [makerToken, takerToken, makerFeeToken, takerFeeToken] = deployment.tokens.erc20;
 
@@ -53,10 +64,10 @@ blockchainTests.resets('Coordinator integration tests', env => {
             orderConfig: {
                 senderAddress: coordinator.address,
                 feeRecipientAddress: feeRecipient.address,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(makerToken.address),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken.address),
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(takerFeeToken.address),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerToken.address),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(takerToken.address),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(makerFeeToken.address),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(takerFeeToken.address),
             },
         });
 
@@ -77,30 +88,40 @@ blockchainTests.resets('Coordinator integration tests', env => {
         );
     });
 
-    function simulateFills(
+    async function simulateFillsAsync(
         orders: SignedOrder[],
         txReceipt: TransactionReceiptWithDecodedLogs,
         msgValue?: BigNumber,
-    ): LocalBalanceStore {
+    ): Promise<LocalBalanceStore> {
         let remainingValue = msgValue || constants.ZERO_AMOUNT;
-        const localBalanceStore = LocalBalanceStore.create(balanceStore);
+        const localBalanceStore = LocalBalanceStore.create(devUtils, balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
 
         for (const order of orders) {
             // Taker -> Maker
-            localBalanceStore.transferAsset(taker.address, maker.address, order.takerAssetAmount, order.takerAssetData);
+            await localBalanceStore.transferAssetAsync(
+                taker.address,
+                maker.address,
+                order.takerAssetAmount,
+                order.takerAssetData,
+            );
             // Maker -> Taker
-            localBalanceStore.transferAsset(maker.address, taker.address, order.makerAssetAmount, order.makerAssetData);
+            await localBalanceStore.transferAssetAsync(
+                maker.address,
+                taker.address,
+                order.makerAssetAmount,
+                order.makerAssetData,
+            );
             // Taker -> Fee Recipient
-            localBalanceStore.transferAsset(
+            await localBalanceStore.transferAssetAsync(
                 taker.address,
                 feeRecipient.address,
                 order.takerFee,
                 order.takerFeeAssetData,
             );
             // Maker -> Fee Recipient
-            localBalanceStore.transferAsset(
+            await localBalanceStore.transferAssetAsync(
                 maker.address,
                 feeRecipient.address,
                 order.makerFee,
@@ -116,11 +137,11 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 );
                 remainingValue = remainingValue.minus(DeploymentManager.protocolFee);
             } else {
-                localBalanceStore.transferAsset(
+                await localBalanceStore.transferAssetAsync(
                     taker.address,
                     deployment.staking.stakingProxy.address,
                     DeploymentManager.protocolFee,
-                    assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address),
+                    await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address),
                 );
             }
         }
@@ -174,7 +195,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: taker.address, value: DeploymentManager.protocolFee },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt, DeploymentManager.protocolFee);
+                const expectedBalances = await simulateFillsAsync([order], txReceipt, DeploymentManager.protocolFee);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -189,7 +210,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: feeRecipient.address, value: DeploymentManager.protocolFee },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt, DeploymentManager.protocolFee);
+                const expectedBalances = await simulateFillsAsync([order], txReceipt, DeploymentManager.protocolFee);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -204,7 +225,11 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: feeRecipient.address, value: DeploymentManager.protocolFee.plus(1) },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt, DeploymentManager.protocolFee.plus(1));
+                const expectedBalances = await simulateFillsAsync(
+                    [order],
+                    txReceipt,
+                    DeploymentManager.protocolFee.plus(1),
+                );
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -219,7 +244,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: feeRecipient.address },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt);
+                const expectedBalances = await simulateFillsAsync([order], txReceipt);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -234,7 +259,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: feeRecipient.address, value: new BigNumber(1) },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt, new BigNumber(1));
+                const expectedBalances = await simulateFillsAsync([order], txReceipt, new BigNumber(1));
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -318,7 +343,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: taker.address, value },
                 );
 
-                const expectedBalances = simulateFills(orders, txReceipt, value);
+                const expectedBalances = await simulateFillsAsync(orders, txReceipt, value);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);
@@ -334,7 +359,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: feeRecipient.address, value },
                 );
 
-                const expectedBalances = simulateFills(orders, txReceipt, value);
+                const expectedBalances = await simulateFillsAsync(orders, txReceipt, value);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);
@@ -350,7 +375,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     { from: feeRecipient.address, value },
                 );
 
-                const expectedBalances = simulateFills(orders, txReceipt, value);
+                const expectedBalances = await simulateFillsAsync(orders, txReceipt, value);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);

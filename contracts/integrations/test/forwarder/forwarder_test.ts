@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
@@ -13,9 +14,10 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     getPercentageOfValue,
+    provider,
     toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
+import { ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
@@ -23,6 +25,8 @@ import { DeploymentManager } from '../utils/deployment_manager';
 
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
+
+const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 
 blockchainTests('Forwarder integration tests', env => {
     let deployment: DeploymentManager;
@@ -53,8 +57,8 @@ blockchainTests('Forwarder integration tests', env => {
 
         [makerToken, makerFeeToken, anotherErc20Token] = deployment.tokens.erc20;
         [erc721Token] = deployment.tokens.erc721;
-        wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
-        makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken.address);
+        wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address);
+        makerAssetData = await devUtils.encodeERC20AssetData.callAsync(makerToken.address);
 
         taker = new Actor({ name: 'Taker', deployment });
         orderFeeRecipient = new FeeRecipient({
@@ -75,7 +79,7 @@ blockchainTests('Forwarder integration tests', env => {
                 makerAssetData,
                 takerAssetData: wethAssetData,
                 takerFee: constants.ZERO_AMOUNT,
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(makerFeeToken.address),
                 takerFeeAssetData: wethAssetData,
             },
         });
@@ -106,6 +110,7 @@ blockchainTests('Forwarder integration tests', env => {
             taker,
             orderFeeRecipient,
             forwarderFeeRecipient,
+            devUtils,
         );
     });
 
@@ -166,7 +171,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync(orders, 1.34);
         });
         it('should fail to fill an order with a percentage fee if the asset proxy is not yet approved', async () => {
-            const unapprovedAsset = assetDataUtils.encodeERC20AssetData(anotherErc20Token.address);
+            const unapprovedAsset = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
             const order = await maker.signOrderAsync({
                 makerAssetData: unapprovedAsset,
                 takerFee: toBaseUnitAmount(2),
@@ -186,7 +191,7 @@ blockchainTests('Forwarder integration tests', env => {
                 },
             );
 
-            const expectedBalances = LocalBalanceStore.create(balanceStore);
+            const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
             expectedBalances.burnGas(tx.from, DeploymentManager.gasPrice.times(tx.gasUsed));
 
             // Verify balances
@@ -236,7 +241,7 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should fill orders with different makerAssetData', async () => {
             const firstOrder = await maker.signOrderAsync();
-            const secondOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(anotherErc20Token.address);
+            const secondOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
             const secondOrder = await maker.signOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
@@ -245,7 +250,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync(orders, 1.5);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = assetDataUtils.encodeERC20AssetData(anotherErc20Token.address);
+            const takerFeeAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
@@ -336,7 +341,7 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should buy exactly makerAssetBuyAmount in orders with different makerAssetData', async () => {
             const firstOrder = await maker.signOrderAsync();
-            const secondOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(anotherErc20Token.address);
+            const secondOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
             const secondOrder = await maker.signOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
@@ -385,7 +390,7 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset from a single order', async () => {
             const erc721Order = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, nftId),
+                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, nftId),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721Order], 1);
@@ -393,14 +398,14 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset and pay a WETH fee', async () => {
             const erc721orderWithWethFee = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, nftId),
+                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, nftId),
                 takerFee: toBaseUnitAmount(1),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721orderWithWethFee], 1);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = assetDataUtils.encodeERC20AssetData(anotherErc20Token.address);
+            const takerFeeAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
@@ -491,11 +496,21 @@ blockchainTests('Forwarder integration tests', env => {
             );
 
             // Compute expected balances
-            const expectedBalances = LocalBalanceStore.create(balanceStore);
-            expectedBalances.transferAsset(maker.address, taker.address, makerAssetFillAmount, makerAssetData);
+            const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
+            await expectedBalances.transferAssetAsync(
+                maker.address,
+                taker.address,
+                makerAssetFillAmount,
+                makerAssetData,
+            );
             expectedBalances.wrapEth(taker.address, deployment.tokens.weth.address, ethValue);
-            expectedBalances.transferAsset(taker.address, maker.address, primaryTakerAssetFillAmount, wethAssetData);
-            expectedBalances.transferAsset(
+            await expectedBalances.transferAssetAsync(
+                taker.address,
+                maker.address,
+                primaryTakerAssetFillAmount,
+                wethAssetData,
+            );
+            await expectedBalances.transferAssetAsync(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,
@@ -537,15 +552,15 @@ blockchainTests('Forwarder integration tests', env => {
             );
 
             // Compute expected balances
-            const expectedBalances = LocalBalanceStore.create(balanceStore);
-            expectedBalances.transferAsset(maker.address, taker.address, makerAssetFillAmount, makerAssetData);
+            const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
+            expectedBalances.transferAssetAsync(maker.address, taker.address, makerAssetFillAmount, makerAssetData);
             expectedBalances.wrapEth(
                 taker.address,
                 deployment.tokens.weth.address,
                 takerAssetFillAmount.plus(DeploymentManager.protocolFee),
             );
-            expectedBalances.transferAsset(taker.address, maker.address, takerAssetFillAmount, wethAssetData);
-            expectedBalances.transferAsset(
+            expectedBalances.transferAssetAsync(taker.address, maker.address, takerAssetFillAmount, wethAssetData);
+            expectedBalances.transferAssetAsync(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,
