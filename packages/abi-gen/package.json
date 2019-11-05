@@ -110,5 +110,6 @@
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "files": ["templates/*"]
 }
