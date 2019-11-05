@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 - TBD
+
+-   Addresses are now indexed by chain ID rather than by network ID.
+
 ## 2.2.0 - 2019-08-08
 
 -   Added ERC1155Proxy address
