@@ -1,25 +1,21 @@
-import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import * as _ from 'lodash';
 
-import { artifacts, TestMixinSchedulerContract, TestMixinSchedulerGoToNextEpochTestInfoEventArgs } from '../../src';
+import {
+    artifacts,
+    TestMixinSchedulerContract,
+    TestMixinSchedulerEvents,
+    TestMixinSchedulerGoToNextEpochTestInfoEventArgs,
+} from '../../src';
 
 import { constants as stakingConstants } from '../utils/constants';
 
 blockchainTests.resets('MixinScheduler unit tests', env => {
-    let accounts: string[];
-    let owner: string;
-    let authorizedAddress: string;
-    let notAuthorizedAddresses: string[];
     let testContract: TestMixinSchedulerContract;
 
     before(async () => {
-        // Create accounts
-        accounts = await env.getAccountAddressesAsync();
-        [owner, authorizedAddress, ...notAuthorizedAddresses] = accounts;
-
         // Deploy contracts
         testContract = await TestMixinSchedulerContract.deployFrom0xArtifactAsync(
             artifacts.TestMixinScheduler,
@@ -45,7 +41,7 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
 
     describe('_initMixinScheduler', () => {
         it('Should succeed if scheduler is not yet initialized (`currentEpochStartTimeInSeconds == 0`)', async () => {
-            const initCurrentEpochStartTimeInSeconds = new BigNumber(0);
+            const initCurrentEpochStartTimeInSeconds = constants.ZERO_AMOUNT;
             const txReceipt = await testContract.initMixinSchedulerTest.awaitTransactionSuccessAsync(
                 initCurrentEpochStartTimeInSeconds,
             );
@@ -75,18 +71,22 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
         it('Should succeed if epoch end time is strictly less than to block timestamp', async () => {
             const epochEndTimeDelta = new BigNumber(-10);
             const txReceipt = await testContract.goToNextEpochTest.awaitTransactionSuccessAsync(epochEndTimeDelta);
-            // tslint:disable-next-line no-unnecessary-type-assertion
-            const testLog: TestMixinSchedulerGoToNextEpochTestInfoEventArgs = (txReceipt.logs[0] as LogWithDecodedArgs<
-                TestMixinSchedulerGoToNextEpochTestInfoEventArgs
-            >).args;
             const currentEpoch = await testContract.currentEpoch.callAsync();
             const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds.callAsync();
-            expect(currentEpoch).to.bignumber.equal(testLog.oldEpoch.plus(1));
-            expect(currentEpochStartTimeInSeconds).to.bignumber.equal(testLog.blockTimestamp);
+            verifyEventsFromLogs(
+                txReceipt.logs,
+                [
+                    {
+                        oldEpoch: currentEpoch.minus(1),
+                        blockTimestamp: currentEpochStartTimeInSeconds,
+                    },
+                ],
+                TestMixinSchedulerEvents.GoToNextEpochTestInfo,
+            );
         });
 
         it('Should succeed if epoch end time is equal to block timestamp', async () => {
-            const epochEndTimeDelta = new BigNumber(0);
+            const epochEndTimeDelta = constants.ZERO_AMOUNT;
             const txReceipt = await testContract.goToNextEpochTest.awaitTransactionSuccessAsync(epochEndTimeDelta);
             // tslint:disable-next-line no-unnecessary-type-assertion
             const testLog: TestMixinSchedulerGoToNextEpochTestInfoEventArgs = (txReceipt.logs[0] as LogWithDecodedArgs<
