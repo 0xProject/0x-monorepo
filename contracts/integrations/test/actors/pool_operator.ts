@@ -1,4 +1,13 @@
+import { constants } from '@0x/contracts-staking';
+import { getRandomInteger } from '@0x/contracts-test-utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
+
+import {
+    validCreateStakingPoolAssertion,
+    validDecreaseStakingPoolOperatorShareAssertion,
+} from '../function-assertions';
+import { AssertionResult } from '../utils/function_assertions';
 
 import { Actor, Constructor } from './base';
 
@@ -33,6 +42,15 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+
+            // Register this mixin's assertion generators
+            if (this.actor.simulation !== undefined) {
+                this.actor.simulationActions = {
+                    ...this.actor.simulationActions,
+                    validCreateStakingPool: this._validCreateStakingPool().next,
+                    validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare().next,
+                };
+            }
         }
 
         /**
@@ -69,6 +87,27 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                 newOperatorShare,
                 { from: this.actor.address },
             );
+        }
+
+        private async *_validCreateStakingPool(): AsyncIterableIterator<AssertionResult> {
+            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, this);
+            while (true) {
+                const operatorShare = getRandomInteger(0, constants.PPM);
+                yield assertion.executeAsync(operatorShare, false, { from: this.actor.address });
+            }
+        }
+
+        private async *_validDecreaseStakingPoolOperatorShare(): AsyncIterableIterator<AssertionResult | void> {
+            const assertion = validDecreaseStakingPoolOperatorShareAssertion(this.actor.deployment, this);
+            while (true) {
+                const poolId = _.sample(Object.keys(this.operatorShares));
+                if (poolId === undefined) {
+                    yield undefined;
+                } else {
+                    const operatorShare = getRandomInteger(0, this.operatorShares[poolId]);
+                    yield assertion.executeAsync(poolId, operatorShare, { from: this.actor.address });
+                }
+            }
         }
     };
 }

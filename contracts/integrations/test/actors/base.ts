@@ -26,7 +26,7 @@ export class Actor {
     public readonly deployment: DeploymentManager;
     public readonly simulation?: Simulation;
     public simulationActions: {
-        [action: string]: (...args: any[]) => Promise<IteratorResult<AssertionResult>>;
+        [action: string]: (...args: any[]) => Promise<IteratorResult<AssertionResult | void>>;
     } = {};
     protected readonly _transactionFactory: TransactionFactory;
 

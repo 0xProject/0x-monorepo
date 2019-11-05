@@ -2,7 +2,7 @@ import { BlockchainBalanceStore } from '@0x/contracts-exchange';
 import { blockchainTests } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
-import { Staker } from '../actors';
+import { PoolOperator, Staker } from '../actors';
 import { DeploymentManager } from '../utils/deployment_manager';
 import { AssertionResult } from '../utils/function_assertions';
 
@@ -18,7 +18,14 @@ class PoolManagementSimulation extends Simulation {
         await staker.configureERC20TokenAsync(this._deployment.tokens.zrx);
         this.balanceStore.registerTokenOwner(staker.address, staker.name);
 
-        const actions = [staker.simulationActions.validStake, staker.simulationActions.validUnstake];
+        const operator = new PoolOperator({ name: 'Operator', deployment: this._deployment, simulation: this });
+
+        const actions = [
+            staker.simulationActions.validStake,
+            staker.simulationActions.validUnstake,
+            operator.simulationActions.validCreateStakingPool,
+            operator.simulationActions.validDecreaseStakingPoolOperatorShare,
+        ];
         while (true) {
             const action = _.sample(actions);
             await action!();
@@ -26,7 +33,7 @@ class PoolManagementSimulation extends Simulation {
     }
 }
 
-blockchainTests.skip('Pool management fuzz test', env => {
+blockchainTests.only('Pool management fuzz test', env => {
     it('fuzz', async () => {
         const deployment = await DeploymentManager.deployAsync(env, {
             numErc20TokensToDeploy: 0,

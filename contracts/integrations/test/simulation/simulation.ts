@@ -5,6 +5,7 @@ import { DeploymentManager } from '../utils/deployment_manager';
 import { AssertionResult } from '../utils/function_assertions';
 
 export abstract class Simulation {
+    public poolIds = [];
     private readonly _generator = this._assertionGenerator();
 
     protected constructor(

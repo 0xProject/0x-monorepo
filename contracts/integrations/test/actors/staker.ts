@@ -3,8 +3,8 @@ import { getRandomInteger } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 import { validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
-import { AssertionResult } from '../utils/function_assertions';
 import { Simulation } from '../simulation/simulation';
+import { AssertionResult } from '../utils/function_assertions';
 
 import { Actor, Constructor } from './base';
 
