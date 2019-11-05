@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { TokenAddresses, TokenContractsByName, TokenOwnersByName } from './types';
 
 export class BalanceStore {
-    protected _balances: TokenBalances;
+    public balances: TokenBalances;
     protected _tokenAddresses: TokenAddresses;
     protected _ownerAddresses: string[];
     private _addressNames: {
@@ -19,7 +19,7 @@ export class BalanceStore {
      * @param tokenContractsByName Contracts of tokens to track balances of.
      */
     public constructor(tokenOwnersByName: TokenOwnersByName, tokenContractsByName: Partial<TokenContractsByName>) {
-        this._balances = { erc20: {}, erc721: {}, erc1155: {}, eth: {} };
+        this.balances = { erc20: {}, erc721: {}, erc1155: {}, eth: {} };
         this._ownerAddresses = Object.values(tokenOwnersByName);
 
         _.defaults(tokenContractsByName, { erc20: {}, erc721: {}, erc1155: {} });
@@ -34,6 +34,17 @@ export class BalanceStore {
             erc721: Object.values(tokenContractsByName.erc721 || {}).map(contract => contract.address),
             erc1155: Object.values(tokenContractsByName.erc1155 || {}).map(contract => contract.address),
         };
+    }
+
+    /**
+     * Registers the given token owner in this balance store. The token owner's balane will be
+     * tracked in subsequent operations.
+     * @param address Address of the token owner
+     * @param name Name of the token owner
+     */
+    public registerTokenOwner(address: string, name: string): void {
+        this._ownerAddresses.push(address);
+        this._addressNames[address] = name;
     }
 
     /**
@@ -52,7 +63,7 @@ export class BalanceStore {
      * @param balanceStore to copy from.
      */
     public cloneFrom(balanceStore: BalanceStore): void {
-        this._balances = _.cloneDeep(balanceStore._balances);
+        this.balances = _.cloneDeep(balanceStore.balances);
         this._tokenAddresses = _.cloneDeep(balanceStore._tokenAddresses);
         this._ownerAddresses = _.cloneDeep(balanceStore._ownerAddresses);
         this._addressNames = _.cloneDeep(balanceStore._addressNames);
@@ -72,8 +83,8 @@ export class BalanceStore {
      */
     private _assertEthBalancesEqual(rhs: BalanceStore): void {
         for (const ownerAddress of [...this._ownerAddresses, ...rhs._ownerAddresses]) {
-            const thisBalance = _.get(this._balances.eth, [ownerAddress], new BigNumber(0));
-            const rhsBalance = _.get(rhs._balances.eth, [ownerAddress], new BigNumber(0));
+            const thisBalance = _.get(this.balances.eth, [ownerAddress], new BigNumber(0));
+            const rhsBalance = _.get(rhs.balances.eth, [ownerAddress], new BigNumber(0));
             expect(thisBalance, `${this._readableAddressName(ownerAddress)} ETH balance`).to.bignumber.equal(
                 rhsBalance,
             );
@@ -87,8 +98,8 @@ export class BalanceStore {
     private _assertErc20BalancesEqual(rhs: BalanceStore): void {
         for (const ownerAddress of [...this._ownerAddresses, ...rhs._ownerAddresses]) {
             for (const tokenAddress of [...this._tokenAddresses.erc20, ...rhs._tokenAddresses.erc20]) {
-                const thisBalance = _.get(this._balances.erc20, [ownerAddress, tokenAddress], new BigNumber(0));
-                const rhsBalance = _.get(rhs._balances.erc20, [ownerAddress, tokenAddress], new BigNumber(0));
+                const thisBalance = _.get(this.balances.erc20, [ownerAddress, tokenAddress], new BigNumber(0));
+                const rhsBalance = _.get(rhs.balances.erc20, [ownerAddress, tokenAddress], new BigNumber(0));
                 expect(
                     thisBalance,
                     `${this._readableAddressName(ownerAddress)} ${this._readableAddressName(tokenAddress)} balance`,
@@ -104,8 +115,8 @@ export class BalanceStore {
     private _assertErc721BalancesEqual(rhs: BalanceStore): void {
         for (const ownerAddress of [...this._ownerAddresses, ...rhs._ownerAddresses]) {
             for (const tokenAddress of [...this._tokenAddresses.erc721, ...rhs._tokenAddresses.erc721]) {
-                const thisBalance = _.get(this._balances.erc721, [ownerAddress, tokenAddress], []);
-                const rhsBalance = _.get(rhs._balances.erc721, [ownerAddress, tokenAddress], []);
+                const thisBalance = _.get(this.balances.erc721, [ownerAddress, tokenAddress], []);
+                const rhsBalance = _.get(rhs.balances.erc721, [ownerAddress, tokenAddress], []);
                 expect(
                     thisBalance,
                     `${this._readableAddressName(ownerAddress)} ${this._readableAddressName(tokenAddress)} balance`,
@@ -121,8 +132,8 @@ export class BalanceStore {
     private _assertErc1155BalancesEqual(rhs: BalanceStore): void {
         for (const ownerAddress of [...this._ownerAddresses, ...rhs._ownerAddresses]) {
             for (const tokenAddress of [...this._tokenAddresses.erc1155, ...rhs._tokenAddresses.erc1155]) {
-                const thisBalance = _.get(this._balances.erc1155, [ownerAddress, tokenAddress], {});
-                const rhsBalance = _.get(rhs._balances.erc1155, [ownerAddress, tokenAddress], {});
+                const thisBalance = _.get(this.balances.erc1155, [ownerAddress, tokenAddress], {});
+                const rhsBalance = _.get(rhs.balances.erc1155, [ownerAddress, tokenAddress], {});
                 expect(
                     thisBalance,
                     `${this._readableAddressName(ownerAddress)} ${this._readableAddressName(tokenAddress)} balance`,

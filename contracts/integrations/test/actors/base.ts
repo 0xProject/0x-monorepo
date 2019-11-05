@@ -5,13 +5,16 @@ import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/t
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { Simulation } from '../simulation/simulation';
 import { DeploymentManager } from '../deployment_manager';
+import { AssertionResult } from '../../src/function_assertions';
 
 export type Constructor<T = {}> = new (...args: any[]) => T;
 
 export interface ActorConfig {
     name?: string;
     deployment: DeploymentManager;
+    simulation?: Simulation;
     [mixinProperty: string]: any;
 }
 
@@ -21,6 +24,10 @@ export class Actor {
     public readonly name: string;
     public readonly privateKey: Buffer;
     public readonly deployment: DeploymentManager;
+    public readonly simulation?: Simulation;
+    public simulationActions: {
+        [action: string]: (...args: any[]) => Promise<IteratorResult<AssertionResult>>;
+    } = {};
     protected readonly _transactionFactory: TransactionFactory;
 
     constructor(config: ActorConfig) {
@@ -29,6 +36,7 @@ export class Actor {
         this.name = config.name || this.address;
         this.deployment = config.deployment;
         this.privateKey = constants.TESTRPC_PRIVATE_KEYS[config.deployment.accounts.indexOf(this.address)];
+        this.simulation = config.simulation;
         this._transactionFactory = new TransactionFactory(
             this.privateKey,
             config.deployment.exchange.address,

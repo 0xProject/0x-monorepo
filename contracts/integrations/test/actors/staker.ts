@@ -1,5 +1,10 @@
 import { StakeInfo, StakeStatus } from '@0x/contracts-staking';
+import { getRandomInteger } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+
+import { validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
+import { AssertionResult } from '../utils/function_assertions';
+import { Simulation } from '../simulation/simulation';
 
 import { Actor, Constructor } from './base';
 
@@ -24,6 +29,15 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+
+            // Register this mixin's assertion generators
+            if (this.actor.simulation !== undefined) {
+                this.actor.simulationActions = {
+                    ...this.actor.simulationActions,
+                    validStake: this._validStake(this.actor.simulation).next,
+                    validUnstake: this._validUnstake(this.actor.simulation).next,
+                };
+            }
         }
 
         /**
@@ -42,6 +56,39 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     amount,
                     { from: this.actor.address },
                 );
+            }
+        }
+
+        private async *_validStake(simulation: Simulation): AsyncIterableIterator<AssertionResult> {
+            const { zrx } = this.actor.deployment.tokens;
+            const assertion = validStakeAssertion(this.actor.deployment, simulation.balanceStore);
+
+            while (true) {
+                await simulation.balanceStore.updateErc20BalancesAsync();
+                const zrxBalance = simulation.balanceStore.balances.erc20[this.actor.address][zrx.address];
+                const amount = getRandomInteger(0, zrxBalance);
+                console.log(`stake(${amount})`);
+                yield assertion.executeAsync(amount, { from: this.actor.address });
+            }
+        }
+
+        private async *_validUnstake(simulation: Simulation): AsyncIterableIterator<AssertionResult> {
+            const { stakingWrapper } = this.actor.deployment.staking;
+            const assertion = validUnstakeAssertion(this.actor.deployment, simulation.balanceStore);
+
+            while (true) {
+                await simulation.balanceStore.updateErc20BalancesAsync();
+                const undelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
+                    this.actor.address,
+                    StakeStatus.Undelegated,
+                );
+                const withdrawableStake = BigNumber.min(
+                    undelegatedStake.currentEpochBalance,
+                    undelegatedStake.nextEpochBalance,
+                );
+                const amount = getRandomInteger(0, withdrawableStake);
+                console.log(`unstake(${amount})`);
+                yield assertion.executeAsync(amount, { from: this.actor.address });
             }
         }
     };
