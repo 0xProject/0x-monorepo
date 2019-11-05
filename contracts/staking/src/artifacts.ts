@@ -44,6 +44,7 @@ import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
 import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
+import * as TestMixinScheduler from '../generated-artifacts/TestMixinScheduler.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
 import * as TestMixinStakeBalances from '../generated-artifacts/TestMixinStakeBalances.json';
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
@@ -98,6 +99,7 @@ export const artifacts = {
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
     TestMixinParams: TestMixinParams as ContractArtifact,
+    TestMixinScheduler: TestMixinScheduler as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
     TestMixinStakeBalances: TestMixinStakeBalances as ContractArtifact,
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,

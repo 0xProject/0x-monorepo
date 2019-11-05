@@ -42,6 +42,7 @@
         "generated-artifacts/TestLibFixedMath.json",
         "generated-artifacts/TestLibSafeDowncast.json",
         "generated-artifacts/TestMixinParams.json",
+        "generated-artifacts/TestMixinScheduler.json",
         "generated-artifacts/TestMixinStake.json",
         "generated-artifacts/TestMixinStakeBalances.json",
         "generated-artifacts/TestMixinStakeStorage.json",
