@@ -138,7 +138,6 @@ Constructing an order
 ...     ),
 ...     makerFeeAssetData='0x',
 ...     takerFeeAssetData='0x',
-...     chain_id=Web3(ganache).eth.chainId,
 ... )
 
 For this order to be valid, our Maker must sign a hash of it:
