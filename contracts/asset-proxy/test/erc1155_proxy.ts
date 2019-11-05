@@ -23,7 +23,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, ERC1155ProxyContract, ERC1155ProxyWrapper } from '../src';
+import { artifacts, ERC1155ProxyContract, ERC1155ProxyWrapper, IAssetDataContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -677,7 +677,7 @@ describe('ERC1155Proxy', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
-        it.skip('should successfully transfer if token ids and values are abi encoded to same entry in calldata', async () => {
+        it('should successfully transfer if token ids and values are abi encoded to same entry in calldata', async () => {
             /**
              * Suppose the `tokensToTransfer` and `valuesToTransfer` are identical; their offsets in
              * the ABI-encoded asset data may be the same. E.g. token IDs [1, 2] and values [1, 2].
@@ -736,19 +736,16 @@ describe('ERC1155Proxy', () => {
             const tokensToTransfer = [new BigNumber(1), new BigNumber(2)];
             const valuesToTransfer = tokensToTransfer;
             const valueMultiplier = new BigNumber(2);
-            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155ContractAddress,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            // remove the function selector and contract address from check, as these change on each test
-            const offsetToTokenIds = 74;
-            const assetDataWithoutContractAddress = assetData.substr(offsetToTokenIds);
-            // TODO (xianny): This check is failing after changing from assetDataUtils to DevUtils
-            const expectedAssetDataWithoutContractAddress =
+
+            // hand encode optimized assetData because our tooling (based on LibAssetData.sol/encodeERC1155AssetData) does not use optimized encoding
+            const assetDataContract = new IAssetDataContract(constants.NULL_ADDRESS, provider);
+            const selector = assetDataContract.ERC1155Assets.getSelector();
+            const assetDataWithoutContractAddress =
                 '0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000';
-            expect(assetDataWithoutContractAddress).to.be.equal(expectedAssetDataWithoutContractAddress);
+            const assetData = `${selector}000000000000000000000000${erc1155ContractAddress.substr(
+                2,
+            )}${assetDataWithoutContractAddress}`;
+
             ///// Step 4/5 /////
             // Transfer token IDs [1, 2] and amounts [1, 2] with a multiplier of 2;
             // the expected trade will be token IDs [1, 2] and amounts [2, 4]
