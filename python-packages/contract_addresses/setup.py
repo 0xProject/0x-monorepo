@@ -8,7 +8,7 @@
 
 import subprocess  # nosec
 from shutil import copyfile, rmtree
-from os import environ, path, remove
+from os import environ, path
 from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from distutils.command.clean import clean
@@ -32,10 +32,6 @@ class PreInstallCommand(distutils.command.build_py.build_py):
             pkgdir, "src", "zero_ex", "contract_addresses"
         )
 
-        try:
-            remove(path.join(destination_path, "addresses.json"))
-        except FileNotFoundError:
-            pass
         copyfile(
             path.join(
                 pkgdir,
