@@ -170,6 +170,7 @@ setup(
             "black",
             "coverage",
             "coveralls",
+            "eth_utils",
             "mypy",
             "mypy_extensions",
             "pycodestyle",
