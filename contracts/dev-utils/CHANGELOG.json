@@ -1,5 +1,18 @@
 [
     {
+        "version": "0.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Add `encodeStaticCallAssetData` and `decodeStaticCallAssetData` in LibAssetData",
+                "pr": 2034
+            },
+            {
+                "note": "Add `revertIfInvalidAssetData` in LibAssetData",
+                "pr": 2034
+            }
+        ]
+    },
+    {
         "version": "0.1.0-beta.0",
         "changes": [
             {

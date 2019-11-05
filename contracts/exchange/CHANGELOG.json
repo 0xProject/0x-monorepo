@@ -1,5 +1,26 @@
 [
     {
+        "version": "2.2.0-beta.1",
+        "changes": [
+            {
+                "note": "LocalBalanceStore.create and constructor now require an instance of DevUtilsContract",
+                "pr": 2304
+            },
+            {
+                "note": "In LocalBalanceStore, `transferAsset` is now `transferAssetAsync`",
+                "pr": 2304
+            },
+            {
+                "note": "Test utility classes AssetWrapper, MatchOrderTester, and OrderFactoryFromScenario constructors now require an instance of DevUtilsContract",
+                "pr": 2304
+            },
+            {
+                "note": "In OrderFactoryFromScenario, `generateOrder` is now `generateOrderAsync`",
+                "pr": 2304
+            }
+        ]
+    },
+    {
         "version": "2.2.0-beta.0",
         "changes": [
             {
