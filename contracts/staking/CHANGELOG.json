@@ -29,6 +29,10 @@
             {
                 "note": "Unit tests for MixinScheduler",
                 "pr": 2314
+            },
+            {
+                "note": "Unit tests for MixinCumulativeRewards",
+                "pr": 2316
             }
         ]
     },
