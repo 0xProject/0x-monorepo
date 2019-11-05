@@ -43,6 +43,7 @@ import * as TestFinalizer from '../generated-artifacts/TestFinalizer.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
+import * as TestMixinCumulativeRewards from '../generated-artifacts/TestMixinCumulativeRewards.json';
 import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
 import * as TestMixinScheduler from '../generated-artifacts/TestMixinScheduler.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
@@ -98,6 +99,7 @@ export const artifacts = {
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
+    TestMixinCumulativeRewards: TestMixinCumulativeRewards as ContractArtifact,
     TestMixinParams: TestMixinParams as ContractArtifact,
     TestMixinScheduler: TestMixinScheduler as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
