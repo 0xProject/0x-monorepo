@@ -1,9 +1,9 @@
+import { BlockchainBalanceStore } from '@0x/contracts-exchange';
 import { StakeInfo, StakeStatus } from '@0x/contracts-staking';
 import { getRandomInteger } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 import { validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
-import { Simulation } from '../simulation/simulation';
 import { AssertionResult } from '../utils/function_assertions';
 
 import { Actor, Constructor } from './base';
@@ -31,11 +31,12 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             this.actor = (this as any) as Actor;
 
             // Register this mixin's assertion generators
-            if (this.actor.simulation !== undefined) {
+            if (this.actor.simulationEnvironment !== undefined) {
+                const { balanceStore } = this.actor.simulationEnvironment;
                 this.actor.simulationActions = {
                     ...this.actor.simulationActions,
-                    validStake: this._validStake(this.actor.simulation).next,
-                    validUnstake: this._validUnstake(this.actor.simulation).next,
+                    validStake: this._validStake(balanceStore).next,
+                    validUnstake: this._validUnstake(balanceStore).next,
                 };
             }
         }
@@ -59,25 +60,25 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             }
         }
 
-        private async *_validStake(simulation: Simulation): AsyncIterableIterator<AssertionResult> {
+        private async *_validStake(balanceStore: BlockchainBalanceStore): AsyncIterableIterator<AssertionResult> {
             const { zrx } = this.actor.deployment.tokens;
-            const assertion = validStakeAssertion(this.actor.deployment, simulation.balanceStore);
+            const assertion = validStakeAssertion(this.actor.deployment, balanceStore);
 
             while (true) {
-                await simulation.balanceStore.updateErc20BalancesAsync();
-                const zrxBalance = simulation.balanceStore.balances.erc20[this.actor.address][zrx.address];
+                await balanceStore.updateErc20BalancesAsync();
+                const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
                 const amount = getRandomInteger(0, zrxBalance);
                 console.log(`stake(${amount})`);
                 yield assertion.executeAsync(amount, { from: this.actor.address });
             }
         }
 
-        private async *_validUnstake(simulation: Simulation): AsyncIterableIterator<AssertionResult> {
+        private async *_validUnstake(balanceStore: BlockchainBalanceStore): AsyncIterableIterator<AssertionResult> {
             const { stakingWrapper } = this.actor.deployment.staking;
-            const assertion = validUnstakeAssertion(this.actor.deployment, simulation.balanceStore);
+            const assertion = validUnstakeAssertion(this.actor.deployment, balanceStore);
 
             while (true) {
-                await simulation.balanceStore.updateErc20BalancesAsync();
+                await balanceStore.updateErc20BalancesAsync();
                 const undelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
                     this.actor.address,
                     StakeStatus.Undelegated,

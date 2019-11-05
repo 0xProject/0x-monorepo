@@ -4,14 +4,15 @@ import * as _ from 'lodash';
 import { DeploymentManager } from '../utils/deployment_manager';
 import { AssertionResult } from '../utils/function_assertions';
 
+export interface SimulationEnvironment {
+    balanceStore: BlockchainBalanceStore;
+    deployment: DeploymentManager;
+}
+
 export abstract class Simulation {
-    public poolIds = [];
     private readonly _generator = this._assertionGenerator();
 
-    protected constructor(
-        public readonly balanceStore: BlockchainBalanceStore,
-        protected readonly _deployment: DeploymentManager,
-    ) {}
+    protected constructor(public readonly environment: SimulationEnvironment) {}
 
     public async stepAsync(): Promise<void> {
         await this._generator.next();

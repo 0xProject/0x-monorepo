@@ -6,19 +6,24 @@ import { PoolOperator, Staker } from '../actors';
 import { DeploymentManager } from '../utils/deployment_manager';
 import { AssertionResult } from '../utils/function_assertions';
 
-import { Simulation } from './simulation';
+import { Simulation, SimulationEnvironment } from './simulation';
 
 class PoolManagementSimulation extends Simulation {
-    constructor(balanceStore: BlockchainBalanceStore, deployment: DeploymentManager) {
-        super(balanceStore, deployment);
+    constructor(environment: SimulationEnvironment) {
+        super(environment);
     }
 
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult> {
-        const staker = new Staker({ name: 'Staker', deployment: this._deployment, simulation: this });
-        await staker.configureERC20TokenAsync(this._deployment.tokens.zrx);
-        this.balanceStore.registerTokenOwner(staker.address, staker.name);
+        const { deployment, balanceStore } = this.environment;
+        const staker = new Staker({ name: 'Staker', deployment, simulationEnvironment: this.environment });
+        await staker.configureERC20TokenAsync(deployment.tokens.zrx);
+        balanceStore.registerTokenOwner(staker.address, staker.name);
 
-        const operator = new PoolOperator({ name: 'Operator', deployment: this._deployment, simulation: this });
+        const operator = new PoolOperator({
+            name: 'Operator',
+            deployment,
+            simulationEnvironment: this.environment,
+        });
 
         const actions = [
             staker.simulationActions.validStake,
@@ -49,7 +54,7 @@ blockchainTests.only('Pool management fuzz test', env => {
             { erc20: { ZRX: deployment.tokens.zrx } },
         );
 
-        const sim = new PoolManagementSimulation(balanceStore, deployment);
+        const sim = new PoolManagementSimulation({ balanceStore, deployment });
         return sim.fuzzAsync();
     });
 });

@@ -44,7 +44,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             this.actor = (this as any) as Actor;
 
             // Register this mixin's assertion generators
-            if (this.actor.simulation !== undefined) {
+            if (this.actor.simulationEnvironment !== undefined) {
                 this.actor.simulationActions = {
                     ...this.actor.simulationActions,
                     validCreateStakingPool: this._validCreateStakingPool().next,
