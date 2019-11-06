@@ -1,6 +1,6 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.33",
+    "version": "1.0.32",
     "engines": {
         "node": ">=6.12"
     },
@@ -43,19 +43,19 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.1",
+        "@0x/assert": "^2.2.0-beta.0",
         "@0x/asset-buyer": "6.1.8",
-        "@0x/json-schemas": "^4.1.0-beta.1",
-        "@0x/order-utils": "^8.5.0-beta.1",
-        "@0x/subproviders": "^5.1.0-beta.1",
-        "@0x/types": "^2.5.0-beta.1",
-        "@0x/typescript-typings": "^4.4.0-beta.1",
-        "@0x/utils": "^4.6.0-beta.1",
-        "@0x/web3-wrapper": "^6.1.0-beta.1",
+        "@0x/json-schemas": "^4.1.0-beta.0",
+        "@0x/order-utils": "^8.5.0-beta.0",
+        "@0x/subproviders": "^5.1.0-beta.0",
+        "@0x/types": "^2.5.0-beta.0",
+        "@0x/typescript-typings": "^4.4.0-beta.0",
+        "@0x/utils": "^4.6.0-beta.0",
+        "@0x/web3-wrapper": "^6.1.0-beta.0",
         "babel-runtime": "^6.26.0",
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",
-        "ethereum-types": "^2.2.0-beta.1",
+        "ethereum-types": "^2.2.0-beta.0",
         "lodash": "^4.17.11",
         "polished": "^1.9.2",
         "react": "^16.5.2",
@@ -68,7 +68,7 @@
         "ts-optchain": "^0.1.1"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^3.1.0-beta.0",
+        "@0x/tslint-config": "^3.0.1",
         "@static/discharge": "https://github.com/0xProject/discharge.git",
         "@types/enzyme": "^3.1.14",
         "@types/enzyme-adapter-react-16": "^1.0.3",

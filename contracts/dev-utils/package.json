@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-dev-utils",
-    "version": "0.1.0-beta.1",
+    "version": "0.1.0-beta.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,10 +36,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/dev-utils/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^4.4.0-beta.1",
-        "@0x/contracts-gen": "^1.1.0-beta.1",
-        "@0x/sol-compiler": "^3.2.0-beta.1",
-        "@0x/tslint-config": "^3.1.0-beta.0",
+        "@0x/abi-gen": "^4.3.0-beta.0",
+        "@0x/contracts-gen": "^1.1.0-beta.0",
+        "@0x/sol-compiler": "^3.2.0-beta.0",
+        "@0x/tslint-config": "^3.0.1",
         "@types/node": "*",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -49,14 +49,14 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.1",
-        "@0x/base-contract": "^5.5.0-beta.1",
-        "@0x/contract-addresses": "^3.3.0-beta.1",
-        "@0x/json-schemas": "^4.1.0-beta.1",
-        "@0x/types": "^2.5.0-beta.1",
-        "@0x/utils": "^4.6.0-beta.1",
-        "@0x/web3-wrapper": "^6.1.0-beta.1",
-        "ethereum-types": "^2.2.0-beta.1",
+        "@0x/assert": "^2.2.0-beta.0",
+        "@0x/base-contract": "^5.5.0-beta.0",
+        "@0x/contract-addresses": "^3.3.0-beta.0",
+        "@0x/json-schemas": "^4.1.0-beta.0",
+        "@0x/types": "^2.5.0-beta.0",
+        "@0x/utils": "^4.6.0-beta.0",
+        "@0x/web3-wrapper": "^6.1.0-beta.0",
+        "ethereum-types": "^2.2.0-beta.0",
         "ethers": "~4.0.4"
     },
     "publishConfig": {

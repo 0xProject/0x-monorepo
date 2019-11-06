@@ -1,6 +1,6 @@
 {
     "name": "@0x/connect",
-    "version": "5.1.0-beta.1",
+    "version": "5.1.0-beta.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -48,12 +48,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.1",
-        "@0x/json-schemas": "^4.1.0-beta.1",
-        "@0x/order-utils": "^8.5.0-beta.1",
-        "@0x/types": "^2.5.0-beta.1",
-        "@0x/typescript-typings": "^4.4.0-beta.1",
-        "@0x/utils": "^4.6.0-beta.1",
+        "@0x/assert": "^2.2.0-beta.0",
+        "@0x/json-schemas": "^4.1.0-beta.0",
+        "@0x/order-utils": "^8.5.0-beta.0",
+        "@0x/types": "^2.5.0-beta.0",
+        "@0x/typescript-typings": "^4.4.0-beta.0",
+        "@0x/utils": "^4.6.0-beta.0",
         "lodash": "^4.17.11",
         "query-string": "^6.0.0",
         "sinon": "^4.0.0",
@@ -62,7 +62,7 @@
     },
     "devDependencies": {
         "@0x/ts-doc-gen": "^0.0.22",
-        "@0x/tslint-config": "^3.1.0-beta.0",
+        "@0x/tslint-config": "^3.0.1",
         "@types/fetch-mock": "^6.0.3",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
