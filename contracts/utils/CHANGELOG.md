@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.3.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
 ## v3.3.0-beta.0 - _October 3, 2019_
 
     * Change ReentrancyGuard implementation to cheaper one (#1699)
@@ -26,9 +22,6 @@ CHANGELOG
     * Compile and export all contracts, artifacts, and wrappers by default (#2055)
     * Added LibFractions (#2118)
     * Introduce automatic normalization and some zero-value shortcuts in `LibFractions`. (#2155)
-    * Emit an event in `transferOwnership` (#2253)
-    * Removed `deepCopyBytes`, `popLast20Bytes`, `readBytesWithLength`, and `writeBytesWithLength` in `LibBytes`. (#2265)
-    * Replaced `SafeMath` with `LibSafeMath` (#2254)
 
 ## v3.2.4 - _September 17, 2019_
 

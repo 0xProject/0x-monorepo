@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v4.4.0-beta.1 - _November 6, 2019_
-
-    * Update all contract deployments to pass the actual chain ID (rather than the network ID) via the newly modified @0x/utils/provider_utils (#2270)
-
 ## v4.4.0-beta.0 - _October 3, 2019_
 
     * Update Coordinator and Exchange deployments to pass `chainId` (#1742)

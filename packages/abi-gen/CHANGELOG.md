@@ -5,14 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v4.4.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
-## v4.4.0-beta.0 - _Invalid date_
-
-    * Add `getSelector` method to all functions (#2224)
-
 ## v4.3.0-beta.0 - _October 3, 2019_
 
     * Dependencies updated

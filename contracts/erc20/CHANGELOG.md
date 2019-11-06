@@ -5,14 +5,9 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.3.0-beta.1 - _November 6, 2019_
-
-    * Create `LibERC20Token` (#2309)
-
 ## v2.3.0-beta.0 - _October 3, 2019_
 
     * Dependencies updated
-    * Replaced `SafeMath` with `LibSafeMath` (#2254)
 
 ## v2.2.14 - _September 17, 2019_
 

@@ -6,8 +6,7 @@
                 "note": "Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers",
                 "pr": 2243
             }
-        ],
-        "timestamp": 1573001598
+        ]
     },
     {
         "version": "2.5.0-beta.0",

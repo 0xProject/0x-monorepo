@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.1.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
 ## v2.1.0-beta.0 - _October 3, 2019_
 
     * Add chainId to domain separator (#1742)

@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.2.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
 ## v3.2.0-beta.0 - _October 3, 2019_
 
     * Add `chainId` to `TransactionFactory` constructor (#1742)
@@ -35,7 +31,6 @@ CHANGELOG
     * Add `hexHash()` to `hex_utils` (#2155)
     * Add `shortZip()` to `lang_utils.ts` (#2155)
     * Add `number_utils.ts` and `hexSize()` (#2220)
-    * Add `verifyEventsFromLogs()` (#2287)
 
 ## v3.1.16 - _September 17, 2019_
 

@@ -34,8 +34,7 @@
                 "note": "Unit tests for MixinCumulativeRewards",
                 "pr": 2316
             }
-        ],
-        "timestamp": 1573001598
+        ]
     },
     {
         "version": "1.1.0-beta.0",

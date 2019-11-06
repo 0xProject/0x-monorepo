@@ -6,8 +6,7 @@
                 "note": "Create `LibERC20Token`",
                 "pr": 2309
             }
-        ],
-        "timestamp": 1573001598
+        ]
     },
     {
         "version": "2.3.0-beta.0",

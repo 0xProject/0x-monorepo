@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v12.2.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
 ## v12.2.0-beta.0 - _October 3, 2019_
 
     * Use new `Order` and `ZeroExTransaction` structures with `domain` field (#1742)

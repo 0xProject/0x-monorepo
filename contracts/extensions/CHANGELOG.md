@@ -5,14 +5,9 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v4.1.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
 ## v4.1.0-beta.0 - _October 3, 2019_
 
     * Dependencies updated
-    * Replaced the use of `SafeMath` with `LibSafeMath` (#2254)
 
 ## v4.0.8 - _September 17, 2019_
 

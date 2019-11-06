@@ -5,17 +5,9 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.3.0-beta.1 - _November 6, 2019_
-
-    * Remove `readOnlyProxy` from addresses interface (#2295)
-    * Add `zeroExGovernor` and `erc20BridgeProxy` to addresses interface (#2296)
-    * Update `exchange`, `staking`, `stakingProxy`, `zeroExGovernor`, `assetProxyOwner`, and `erc20BridgeProxy` addresses for each tesnet (#2296)
-
 ## v3.3.0-beta.0 - _October 3, 2019_
 
     * Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling. (#2170)
-    * Add `zrxVault`, `readOnlyProxy`, `staking`, and `stakingProxy` schema with addresses for each tesnet (#2224)
-    * Update `assetProxyOwner` address for each testnet (#2224)
 
 ## v3.2.0 - _September 17, 2019_
 

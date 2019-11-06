@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.1.0-beta.1 - _November 6, 2019_
-
-    * Dependencies updated
-
 ## v3.1.0-beta.0 - _October 3, 2019_
 
     * Break up `LibEIP712` into reusable components (#1742)
@@ -37,7 +33,6 @@ CHANGELOG
     * Remove `_hashEIP712ExchangeMessage` from `LibEIP712ExchangeDomain` (#2055)
     * Compile and export all contracts, artifacts, and wrappers by default (#2055)
     * Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields. (#2075)
-    * Move `IWallet.sol` from `asset-proxy` and `exchange` packages to here. (#2233)
 
 ## v3.0.8 - _September 17, 2019_
 

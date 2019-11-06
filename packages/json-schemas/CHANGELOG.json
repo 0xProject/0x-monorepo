@@ -1,14 +1,5 @@
 [
     {
-        "version": "4.1.0-beta.1",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ],
-        "timestamp": 1573001598
-    },
-    {
         "version": "4.1.0-beta.0",
         "changes": [
             {
