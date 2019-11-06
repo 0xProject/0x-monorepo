@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.5.0-beta.0",
+        "version": "4.4.0-beta.0",
         "changes": [
             {
                 "note": "In Python wrappers, accept string arguments to bytes parameters",
@@ -19,17 +19,16 @@
                 "pr": 2284
             },
             {
-                "note": "Command-line argument network-id has changed to chain-id",
-                "pr": 2313
-            }
-        ]
-    },
-    {
-        "version": "4.4.0-beta.0",
-        "changes": [
-            {
                 "note": "Add `getSelector` method to all functions",
                 "pr": 2224
+            },
+            {
+                "note": "Command-line argument network-id has changed to chain-id",
+                "pr": 2313
+            },
+            {
+                "note": "Fix templates not being included in published tarball",
+                "pr": 2315
             }
         ]
     },
