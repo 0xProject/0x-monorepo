@@ -1,7 +1,7 @@
 import { BlockchainBalanceStore } from '@0x/contracts-exchange';
 import { StakeInfo, StakeStatus } from '@0x/contracts-staking';
 import { getRandomInteger } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 
 import { validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
 import { AssertionResult } from '../utils/function_assertions';
@@ -68,7 +68,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 await balanceStore.updateErc20BalancesAsync();
                 const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
                 const amount = getRandomInteger(0, zrxBalance);
-                console.log(`stake(${amount})`);
+                logUtils.log(`stake(${amount})`);
                 yield assertion.executeAsync(amount, { from: this.actor.address });
             }
         }
@@ -88,7 +88,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.nextEpochBalance,
                 );
                 const amount = getRandomInteger(0, withdrawableStake);
-                console.log(`unstake(${amount})`);
+                logUtils.log(`unstake(${amount})`);
                 yield assertion.executeAsync(amount, { from: this.actor.address });
             }
         }

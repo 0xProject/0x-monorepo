@@ -6,6 +6,11 @@ import { TxData } from 'ethereum-types';
 import { DeploymentManager } from '../utils/deployment_manager';
 import { FunctionAssertion } from '../utils/function_assertions';
 
+/**
+ * Returns a FunctionAssertion for `unstake` which assumes valid input is provided. The
+ * FunctionAssertion checks that the staker and zrxVault's balances of ZRX increase and decrease,
+ * respectively, by the input amount.
+ */
 export function validUnstakeAssertion(
     deployment: DeploymentManager,
     balanceStore: BlockchainBalanceStore,

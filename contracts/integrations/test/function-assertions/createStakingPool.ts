@@ -1,9 +1,15 @@
 import { expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 
 import { DeploymentManager } from '../utils/deployment_manager';
 import { FunctionAssertion, FunctionResult } from '../utils/function_assertions';
 
+// tslint:disable:no-unnecessary-type-assertion
+
+/**
+ * Returns a FunctionAssertion for `createStakingPool` which assumes valid input is provided. The
+ * FunctionAssertion checks that the new poolId is one more than the last poolId.
+ */
 export function validCreateStakingPoolAssertion(
     deployment: DeploymentManager,
     context?: any,
@@ -24,10 +30,10 @@ export function validCreateStakingPoolAssertion(
             operatorShare: number,
             addOperatorAsMaker: boolean,
         ) => {
-            const log = result.receipt!.logs[0];
+            const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
             const actualPoolId = (log as any).args.poolId;
             expect(actualPoolId).to.equal(expectedPoolId);
-            console.log(`createStakingPool(${operatorShare}, ${addOperatorAsMaker}) => ${actualPoolId}`);
+            logUtils.log(`createStakingPool(${operatorShare}, ${addOperatorAsMaker}) => ${actualPoolId}`);
             if (context !== undefined) {
                 context.operatorShares[actualPoolId] = operatorShare;
             }

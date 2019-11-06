@@ -22,7 +22,7 @@ export class StakeManagementSimulation extends Simulation {
         const actions = [staker.simulationActions.validStake, staker.simulationActions.validUnstake];
         while (true) {
             const action = _.sample(actions);
-            yield (await action!.next()).value;
+            yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }
 }

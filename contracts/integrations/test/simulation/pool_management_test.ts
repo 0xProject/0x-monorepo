@@ -27,7 +27,7 @@ export class PoolManagementSimulation extends Simulation {
         ];
         while (true) {
             const action = _.sample(actions);
-            yield (await action!.next()).value;
+            yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }
 }
