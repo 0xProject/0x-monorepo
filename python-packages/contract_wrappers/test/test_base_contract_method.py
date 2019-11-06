@@ -2,7 +2,7 @@
 
 import pytest
 
-from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+from zero_ex.contract_addresses import network_to_addresses, NetworkId
 from zero_ex.contract_wrappers.bases import ContractMethod
 
 
@@ -10,6 +10,6 @@ from zero_ex.contract_wrappers.bases import ContractMethod
 def contract_wrapper(ganache_provider):
     """Get a ContractMethod instance for testing."""
     return ContractMethod(
-        provider=ganache_provider,
-        contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
+        web3_or_provider=ganache_provider,
+        contract_address=network_to_addresses(NetworkId.GANACHE).ether_token,
     )

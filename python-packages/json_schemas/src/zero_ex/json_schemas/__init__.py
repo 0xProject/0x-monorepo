@@ -60,36 +60,38 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     Raises an exception if validation fails.
 
     >>> from zero_ex.json_schemas import assert_valid
-    >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-    >>> from zero_ex.contract_wrappers.exchange.types import (
-    ...     Order, order_to_jsdict
-    ... )
-    >>> from zero_ex.order_utils import asset_data_utils
+    >>> from zero_ex.contract_addresses import network_to_addresses, NetworkId
     >>> from eth_utils import remove_0x_prefix
     >>> import random
     >>> from datetime import datetime, timedelta
-    >>> example_order = Order(
-    ...     makerAddress='0x5409ed021d9299bf6814279a6a1411a7e866a631',
-    ...     takerAddress='0x0000000000000000000000000000000000000000',
-    ...     senderAddress='0x0000000000000000000000000000000000000000',
-    ...     exchangeAddress='0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
-    ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-    ...     makerAssetData=asset_data_utils.encode_erc20(
-    ...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
-    ...     ),
-    ...     takerAssetData=asset_data_utils.encode_erc20(
-    ...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
-    ...     ),
-    ...     salt=random.randint(1, 100000000000000000),
-    ...     makerFee=0,
-    ...     takerFee=0,
-    ...     makerAssetAmount=1000000000000000000,
-    ...     takerAssetAmount=500000000000000000000,
-    ...     expirationTimeSeconds=round(
-    ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
-    ...     )
+    >>> assert_valid(
+    ...     {'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
+    ...      'takerAddress': '0x0000000000000000000000000000000000000000',
+    ...      'senderAddress': '0x0000000000000000000000000000000000000000',
+    ...      'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
+    ...      'feeRecipientAddress': (
+    ...          '0x0000000000000000000000000000000000000000'
+    ...      ),
+    ...      'makerAssetData': (
+    ...          network_to_addresses(NetworkId.MAINNET).zrx_token
+    ...      ),
+    ...      'takerAssetData': (
+    ...          network_to_addresses(NetworkId.MAINNET).ether_token
+    ...      ),
+    ...      'salt': random.randint(1, 100000000000000000),
+    ...      'makerFee': 0,
+    ...      'makerFeeAssetData': '0x' + '00'*20,
+    ...      'takerFee': 0,
+    ...      'takerFeeAssetData': '0x' + '00'*20,
+    ...      'makerAssetAmount': 1000000000000000000,
+    ...      'takerAssetAmount': 500000000000000000000,
+    ...      'expirationTimeSeconds': round(
+    ...          (datetime.utcnow() + timedelta(days=1)).timestamp()
+    ...      ),
+    ...      'chainId': 50
+    ...     },
+    ...     "/orderSchema"
     ... )
-    >>> assert_valid(order_to_jsdict(example_order), "/orderSchema")
     """
     _, schema = _LOCAL_RESOLVER.resolve(schema_id)
     jsonschema.validate(data, schema, resolver=_LOCAL_RESOLVER)

@@ -2,12 +2,16 @@
 
 """setuptools module for json_schemas package."""
 
+# pylint: disable=import-outside-toplevel
+# we import things outside of top-level because 3rd party libs may not yet be
+# installed when you invoke this script
+
 import distutils.command.build_py
 from distutils.command.clean import clean
 import subprocess  # nosec
 from shutil import copytree, rmtree
 from os import environ, path
-from sys import argv
+from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
@@ -139,7 +143,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-json-schemas",
-    version="1.1.0",
+    version="1.1.1",
     description="JSON schemas for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -162,11 +166,11 @@ setup(
     extras_require={
         "dev": [
             "0x-contract-addresses",
-            "0x-contract-wrappers",
             "bandit",
             "black",
             "coverage",
             "coveralls",
+            "eth_utils",
             "mypy",
             "mypy_extensions",
             "pycodestyle",

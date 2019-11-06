@@ -19,7 +19,7 @@ Python zero_ex.contract_addresses
    :members:
    :show-inheritance:
 
-.. autodata:: zero_ex.contract_addresses.NETWORK_TO_ADDRESSES
+.. autodata:: zero_ex.contract_addresses.network_to_addresses
    :annotation: : Dict[NetworkId, ContractAddresses]
 
 Indices and tables

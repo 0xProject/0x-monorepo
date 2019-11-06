@@ -22,7 +22,7 @@ $ ./parallel pip uninstall $(basename $(pwd))
 
 from concurrent.futures import ProcessPoolExecutor, wait
 from os import chdir
-from subprocess import CalledProcessError, check_output
+from subprocess import CalledProcessError, check_output, STDOUT
 from sys import argv
 
 PACKAGES = [
@@ -38,11 +38,14 @@ PACKAGES = [
 def run_cmd_on_package(package: str):
     """cd to the package dir, ./setup.py lint, cd .."""
     chdir(package)
+    command = f"{' '.join(argv[1:])}"
     try:
-        check_output(f"{' '.join(argv[1:])}".split())
+        check_output(command.split(), stderr=STDOUT)
     except CalledProcessError as error:
-        print(f"standard output from command:\n{error.output.decode('utf-8')}")
-        raise RuntimeError(f"Above exception raised in {package}, ") from error
+        raise RuntimeError(
+            f"Failure return code received from command `{command}` in package"
+            + f" {package}, which produced the following output:\n"
+            + f"{error.output.decode('utf-8')}") from error
     finally:
         chdir("..")
 

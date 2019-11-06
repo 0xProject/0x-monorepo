@@ -192,14 +192,33 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
-            - image: 0xorg/ganache-cli:2.2.2
-            - image: 0xorg/launch-kit-backend:74bcc39
+            - image: 0xorg/ganache-cli:4.4.0-beta.1
               environment:
-                  RPC_URL: http://localhost:8545
+                  VERSION: 4.4.0-beta.1
+                  SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta
+            - image: 0xorg/mesh:6.0.0-beta-0xv3
+              environment:
+                  ETHEREUM_RPC_URL: 'http://localhost:8545'
+                  ETHEREUM_NETWORK_ID: '50'
+                  ETHEREUM_CHAIN_ID: '1337'
+                  USE_BOOTSTRAP_LIST: 'true'
+                  VERBOSITY: 3
+                  PRIVATE_KEY_PATH: ''
+                  BLOCK_POLLING_INTERVAL: '5s'
+                  P2P_LISTEN_PORT: '60557'
+              command: |
+                  sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && ./mesh"
+            - image: 0xorg/launch-kit-backend:v3
+              environment:
+                  RPC_URL: 'http://localhost:8545'
                   NETWORK_ID: 50
                   WHITELIST_ALL_TOKENS: True
+                  FEE_RECIPIENT: '0x0000000000000000000000000000000000000001'
+                  MAKER_FEE_UNIT_AMOUNT: 0
+                  TAKER_FEE_UNIT_AMOUNT: 0
+                  MESH_ENDPOINT: 'ws://localhost:60557'
               command: |
-                  sh -c "until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
+                  sh -c "waitForMesh () { sleep 5; }; waitForMesh && node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - restore_cache:
@@ -221,8 +240,14 @@ jobs:
             - run:
                   command: |
                       cd python-packages
-                      ./parallel_without_sra_client coverage run setup.py test
+                      ./parallel coverage run setup.py test
                       ./build_docs
+            - run:
+                  command: |
+                      # copy generated wrappers into contract_wrappers/build,
+                      # JUST so CircleCI will persist them as build artifacts.
+                      cd python-packages/contract_wrappers/src/zero_ex
+                      for i in contract_wrappers/[^__]*/; do mkdir -p ../../build/$i; cp $i/__init__.py ../../build/$i; done
             - save_cache:
                   key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -247,8 +272,6 @@ jobs:
                   key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
             - store_artifacts:
                   path: ~/repo/python-packages/contract_addresses/build
             - store_artifacts:
@@ -426,12 +449,11 @@ workflows:
                       - test-exchange-ganache-3.0
                       - test-rest
                       - static-tests
-            # - test-python:
-            #       requires:
-            #           - build
-            #           - test-rest
-            # - static-tests-python:
-            #       requires:
-            #           - test-python
+            - test-python:
+                  requires:
+                      - build
+            - static-tests-python:
+                  requires:
+                      - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             # - test-rest-python
