@@ -1,4 +1,4 @@
-import { schemas, SchemaValidator } from '@0x/json-schemas';
+import { schemas } from '@0x/json-schemas';
 import { Order, SignedOrder } from '@0x/types';
 import { signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
@@ -10,21 +10,6 @@ import { eip712Utils } from './eip712_utils';
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
 
 export const orderHashUtils = {
-    /**
-     * Checks if the supplied hex encoded order hash is valid.
-     * Note: Valid means it has the expected format, not that an order with the orderHash exists.
-     * Use this method when processing orderHashes submitted as user input.
-     * @param   orderHash    Hex encoded orderHash.
-     * @return  Whether the supplied orderHash has the expected format.
-     */
-    isValidOrderHash(orderHash: string): boolean {
-        // Since this method can be called to check if any arbitrary string conforms to an orderHash's
-        // format, we only assert that we were indeed passed a string.
-        assert.isString('orderHash', orderHash);
-        const schemaValidator = new SchemaValidator();
-        const isValid = schemaValidator.validate(orderHash, schemas.orderHashSchema).valid;
-        return isValid;
-    },
     /**
      * Computes the orderHash for a supplied order.
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.

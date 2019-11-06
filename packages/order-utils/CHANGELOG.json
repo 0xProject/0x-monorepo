@@ -13,6 +13,10 @@
             {
                 "note": "Removed many functions from export signatureUtils",
                 "pr": 2321
+            },
+            {
+                "note": "Removed function isValidOrderHash from export orderHashUtils",
+                "pr": 2321
             }
         ]
     },
