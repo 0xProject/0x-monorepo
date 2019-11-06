@@ -101,20 +101,7 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
         it('Should revert if epoch end time is strictly greater than block timestamp', async () => {
             const epochEndTimeDelta = new BigNumber(10);
             const tx = testContract.goToNextEpochTest.awaitTransactionSuccessAsync(epochEndTimeDelta);
-            try {
-                await tx;
-                // tslint:disable-next-line no-empty
-            } catch (e) {}
-
-            // Mine the block that this tx would've been in.
-            await env.web3Wrapper.mineBlockAsync();
-            const blockNumber = await env.web3Wrapper.getBlockNumberAsync();
-            const blockTimestampAsNumber = await env.web3Wrapper.getBlockTimestampAsync(blockNumber);
-            const blockTimestamp = new BigNumber(blockTimestampAsNumber);
-            const epochEndTime = blockTimestamp.plus(epochEndTimeDelta);
-            return expect(tx).to.revertWith(
-                new StakingRevertErrors.BlockTimestampTooLowError(epochEndTime, blockTimestamp),
-            );
+            return expect(tx).to.revertWith(new StakingRevertErrors.BlockTimestampTooLowError());
         });
     });
 });
