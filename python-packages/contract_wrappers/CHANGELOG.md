@@ -8,6 +8,7 @@
 -   Expanded documentation examples.
 -   Moved methods `jsdict_to_order()` and `order_to_jsdict()` from `zero_ex.contract_wrappers.exchange.types` to `zero_ex.contract_wrappers.order_conversions`.
 -   Changed field name `zero_ex.contract_wrappers.tx_params.TxParams.gasPrice` to `.gas_price`.
+-   Migrated to new version of 0x-contract-addresses.
 
 ## 1.1.0 - 2019-08-14
 

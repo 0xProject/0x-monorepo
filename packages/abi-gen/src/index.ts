@@ -28,7 +28,7 @@ import { utils } from './utils';
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
 const ABI_TYPE_EVENT = 'event';
-const DEFAULT_NETWORK_ID = 50;
+const DEFAULT_CHAIN_ID = 1337;
 const DEFAULT_BACKEND = 'web3';
 
 const args = yargs
@@ -65,10 +65,10 @@ const args = yargs
         choices: [ContractsBackend.Web3, ContractsBackend.Ethers],
         default: DEFAULT_BACKEND,
     })
-    .option('network-id', {
-        describe: 'ID of the network where contract ABIs are nested in artifacts',
+    .option('chain-id', {
+        describe: 'ID of the chain where contract ABIs are nested in artifacts',
         type: 'number',
-        default: DEFAULT_NETWORK_ID,
+        default: DEFAULT_CHAIN_ID,
     })
     .option('language', {
         describe: 'Language of output file to generate',

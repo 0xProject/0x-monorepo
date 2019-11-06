@@ -5,12 +5,12 @@ import { MethodAbi } from 'ethereum-types';
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
- * networkId: The networkId that the desired orders should be for.
+ * chainId: The chainId that the desired orders should be for.
  */
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    networkId: number;
+    chainId: number;
 }
 
 /**
@@ -148,10 +148,10 @@ export interface SwapQuoteConsumerBase<T> {
 }
 
 /**
- * networkId: The networkId that the desired orders should be for.
+ * chainId: The chainId that the desired orders should be for.
  */
 export interface SwapQuoteConsumerOpts {
-    networkId: number;
+    chainId: number;
 }
 
 /**
@@ -271,12 +271,12 @@ export interface SwapQuoteRequestOpts {
 }
 
 /**
- * networkId: The ethereum network id. Defaults to 1 (mainnet).
+ * chainId: The ethereum chain id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
 export interface SwapQuoterOpts {
-    networkId: number;
+    chainId: number;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
 }

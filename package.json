@@ -39,7 +39,7 @@
         "contracts:watch": "wsrun watch $PKG --parallel --exclude-missing",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
-        "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
+        "test": "wsrun test $PKG --fast-exit --serial --exclude-missing --exclude @0x/asset-swapper --exclude @0x/orderbook --exclude @0x/contracts-extensions",
         "test:contracts": "wsrun test -p ${npm_package_config_contractsPackages} -c --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate.js",
         "upload_md_docs": "aws s3 rm --recursive s3://docs-markdown; wsrun s3:sync_md_docs --exclude-missing",

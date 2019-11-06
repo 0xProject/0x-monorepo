@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from zero_ex.contract_addresses import network_to_addresses, NetworkId
+from zero_ex.contract_addresses import chain_to_addresses, ChainId
 from zero_ex.contract_wrappers import TxParams
 from zero_ex.contract_wrappers.erc20_token import ERC20Token
 
@@ -16,7 +16,7 @@ MAX_ALLOWANCE = int("{:.0f}".format(Decimal(2) ** 256 - 1))
 def erc20_wrapper(ganache_provider):
     """Get an instance of ERC20Token wrapper class for testing."""
     return ERC20Token(
-        ganache_provider, network_to_addresses(NetworkId.GANACHE).ether_token
+        ganache_provider, chain_to_addresses(ChainId.GANACHE).ether_token
     )
 
 

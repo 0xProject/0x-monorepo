@@ -1,7 +1,7 @@
 export const ContractWrappersConfigSchema = {
     id: '/ContractWrappersConfig',
     properties: {
-        networkId: {
+        chainId: {
             type: 'number',
         },
         gasPrice: { $ref: '/numberSchema' },
@@ -21,5 +21,5 @@ export const ContractWrappersConfigSchema = {
         blockPollingIntervalMs: { type: 'number' },
     },
     type: 'object',
-    required: ['networkId'],
+    required: ['chainId'],
 };

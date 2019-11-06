@@ -38,7 +38,7 @@ import { _getDefaultContractAddresses } from './utils/contract_addresses';
  */
 export class ContractWrappers {
     /**
-     * An index of the default contract addresses for this network.
+     * An index of the default contract addresses for this chain.
      */
     public contractAddresses: ContractAddresses;
     /**
@@ -113,7 +113,7 @@ export class ContractWrappers {
         });
         const contractAddresses =
             config.contractAddresses === undefined
-                ? _getDefaultContractAddresses(config.networkId)
+                ? _getDefaultContractAddresses(config.chainId)
                 : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyContract(contractAddresses.erc20Proxy, this.getProvider());
         this.erc721Proxy = new ERC721ProxyContract(contractAddresses.erc721Proxy, this.getProvider());
@@ -125,7 +125,7 @@ export class ContractWrappers {
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorWrapper(
             this.getProvider(),
-            config.networkId,
+            config.chainId,
             contractAddresses.coordinator,
             contractAddresses.exchange,
             contractAddresses.coordinatorRegistry,

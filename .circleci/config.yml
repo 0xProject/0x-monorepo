@@ -78,7 +78,9 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-tests @0x/contracts-staking @0x/contracts-coordinator
-            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # TODO(dorothy-zbornak): Re-enable after updating this package for
+            # 3.0. At that time, also remove exclusion from monorepo
+            # package.json's test script.
             # - run: yarn wsrun test:circleci @0x/contracts-extensions
     test-publish:
         resource_class: medium+
@@ -116,6 +118,9 @@ jobs:
             - run: yarn wsrun test:circleci @0x/abi-gen
             # TODO (xianny): Needs to be updated for 3.0
             # - run: yarn wsrun test:circleci @0x/asset-buyer
+            # TODO: Needs to be updated for 3.0.  At that time, also remove
+            # exclusion from monorepo package.json's test script.
+            # - run: yarn wsrun test:circleci @0x/asset-swapper
             - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
@@ -125,6 +130,9 @@ jobs:
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
             - run: yarn wsrun test:circleci @0x/order-utils
+            # TODO: Needs to be updated for 3.0. At that time, also remove
+            # exclusion from monorepo package.json's test script.
+            # - run: yarn wsrun test:circleci @0x/orderbook
             - run: yarn wsrun test:circleci @0x/sol-compiler
             - run: yarn wsrun test:circleci @0x/sol-tracing-utils
             - run: yarn wsrun test:circleci @0x/sol-doc

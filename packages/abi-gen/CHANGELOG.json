@@ -19,12 +19,16 @@
                 "pr": 2284
             },
             {
-                "note": "Fix templates not being included in published tarball",
-                "pr": 2315
-            },
-            {
                 "note": "Add `getSelector` method to all functions",
                 "pr": 2224
+            },
+            {
+                "note": "Command-line argument network-id has changed to chain-id",
+                "pr": 2313
+            },
+            {
+                "note": "Fix templates not being included in published tarball",
+                "pr": 2315
             }
         ]
     },

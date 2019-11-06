@@ -11,12 +11,12 @@ import {
 
 const NULL_BYTES = '0x';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-const MAINNET_NETWORK_ID = 1;
+const MAINNET_CHAIN_ID = 1;
 const ONE_SECOND_MS = 1000;
 const DEFAULT_PER_PAGE = 1000;
 
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
-    networkId: MAINNET_NETWORK_ID,
+    chainId: MAINNET_CHAIN_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
     expiryBufferMs: 120000, // 2 minutes
 };
@@ -42,7 +42,7 @@ export const constants = {
     NULL_BYTES,
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
-    MAINNET_NETWORK_ID,
+    MAINNET_CHAIN_ID,
     ETHER_TOKEN_DECIMALS: 18,
     ONE_AMOUNT: new BigNumber(1),
     ONE_SECOND_MS,

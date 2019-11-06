@@ -69,7 +69,7 @@ export class SwapQuoter {
             httpEndpoint: sraApiUrl,
             pollingIntervalMs:
                 options.orderRefreshIntervalMs || constants.DEFAULT_SWAP_QUOTER_OPTS.orderRefreshIntervalMs,
-            networkId: options.networkId || constants.DEFAULT_SWAP_QUOTER_OPTS.networkId,
+            chainId: options.chainId || constants.DEFAULT_SWAP_QUOTER_OPTS.chainId,
             perPage: options.perPage || constants.DEFAULT_PER_PAGE,
         });
         const swapQuoter = new SwapQuoter(provider, orderbook, options);
@@ -97,7 +97,7 @@ export class SwapQuoter {
         const orderbook = Orderbook.getOrderbookForWebsocketProvider({
             httpEndpoint: sraApiUrl,
             websocketEndpoint: sraWebsocketAPIUrl,
-            networkId: options.networkId,
+            chainId: options.chainId,
         });
         const swapQuoter = new SwapQuoter(provider, orderbook, options);
         return swapQuoter;
@@ -134,16 +134,16 @@ export class SwapQuoter {
      * @return  An instance of SwapQuoter
      */
     constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
-        const { networkId, expiryBufferMs } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        const { chainId, expiryBufferMs } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
-        assert.isNumber('networkId', networkId);
+        assert.isNumber('chainId', chainId);
         assert.isNumber('expiryBufferMs', expiryBufferMs);
         this.provider = provider;
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this._contractWrappers = new ContractWrappers(this.provider, {
-            networkId,
+            chainId,
         });
     }
     /**
@@ -394,7 +394,7 @@ export class SwapQuoter {
 
     /**
      * Get the assetData that represents the ZRX token.
-     * Will throw if ZRX does not exist for the current network.
+     * Will throw if ZRX does not exist for the current chain.
      */
     private _getZrxTokenAssetDataOrThrow(): string {
         return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken);

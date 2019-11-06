@@ -99,7 +99,7 @@ export const providerUtils = {
     /**
      * Retrieve the chain ID from a supported provider.
      * @param supportedProvider A supported provider instance.
-     * @return A promise thar resolves to the chain ID of the network the provider
+     * @return A promise that resolves to the chain ID of the network the provider
      * is connected to.
      */
     async getChainIdAsync(supportedProvider: SupportedProvider): Promise<number> {

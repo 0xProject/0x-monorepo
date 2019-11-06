@@ -1,7 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
 export const constants = {
-    networkId: 0,
     optimizerEnabled: false,
     gasPrice: new BigNumber(20000000000),
     timeoutMs: 30000,

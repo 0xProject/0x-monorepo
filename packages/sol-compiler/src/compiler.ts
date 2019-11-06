@@ -405,7 +405,7 @@ export class Compiler {
                 schemaVersion: constants.LATEST_ARTIFACT_VERSION,
                 contractName,
                 ...contractVersion,
-                networks: {},
+                chains: {},
             };
         }
 

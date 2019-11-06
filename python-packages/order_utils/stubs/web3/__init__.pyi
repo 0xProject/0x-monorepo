@@ -21,10 +21,13 @@ class Web3:
         version: str
         ...
 
-    class eth:
+    class Eth:
         @staticmethod
         def contract(address: str, abi: Dict) -> Contract: ...
+        chainId: int
         ...
+
+    eth: Eth
 
     class geth:
         class personal:

@@ -24,24 +24,24 @@ import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
 export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractParams> {
     public readonly provider: ZeroExProvider;
-    public readonly networkId: number;
+    public readonly chainId: number;
 
     private readonly _exchangeConsumer: ExchangeSwapQuoteConsumer;
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
     private readonly _contractWrappers: ContractWrappers;
 
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
-        const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
-        assert.isNumber('networkId', networkId);
+        const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        assert.isNumber('chainId', chainId);
 
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
-        this.networkId = networkId;
+        this.chainId = chainId;
 
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
         this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
         this._contractWrappers = new ContractWrappers(this.provider, {
-            networkId,
+            chainId,
         });
     }
 

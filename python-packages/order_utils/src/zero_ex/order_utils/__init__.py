@@ -29,7 +29,7 @@ import web3.exceptions
 from web3.providers.base import BaseProvider
 from web3.contract import Contract
 
-from zero_ex.contract_addresses import network_to_addresses, NetworkId
+from zero_ex.contract_addresses import chain_to_addresses, ChainId
 import zero_ex.contract_artifacts
 from zero_ex.contract_wrappers.exchange import Exchange
 from zero_ex.contract_wrappers.exchange.types import Order
@@ -127,9 +127,9 @@ def generate_order_hash_hex(
     ...         takerFeeAssetData=((0).to_bytes(1, byteorder='big') * 20),
     ...     ),
     ...     exchange_address="0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
-    ...     chain_id=50
+    ...     chain_id=1337
     ... )
-    '331cb7e07a757bae130702da6646c26531798c92bcfaf671817268fd2c188531'
+    'cb36e4fedb36508fb707e2c05e21bffc7a72766ccae93f8ff096693fff7f1714'
     """  # noqa: E501 (line too long)
     assert_is_address(exchange_address, "exchange_address")
     assert_valid(
@@ -211,9 +211,9 @@ def is_valid_signature(
 
     return Exchange(
         provider,
-        network_to_addresses(
-            NetworkId(
-                int(Web3(provider).net.version)  # pylint: disable=no-member
+        chain_to_addresses(
+            ChainId(
+                int(Web3(provider).eth.chainId)  # pylint: disable=no-member
             )
         ).exchange,
     ).is_valid_hash_signature.call(

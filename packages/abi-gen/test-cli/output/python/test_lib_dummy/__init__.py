@@ -119,7 +119,7 @@ class PublicAddOneMethod(ContractMethod):
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
         self.validator.assert_valid(
-            method_name="publicAddOne", parameter_name="x", argument_value=x
+            method_name="publicAddOne", parameter_name="x", argument_value=x,
         )
         # safeguard against fractional inputs
         x = int(x)
@@ -212,7 +212,7 @@ class TestLibDummy:
             try:
                 for middleware in MIDDLEWARE:
                     web3.middleware_onion.inject(
-                        middleware["function"], layer=middleware["layer"]
+                        middleware["function"], layer=middleware["layer"],
                     )
             except ValueError as value_error:
                 if value_error.args == (
@@ -245,7 +245,7 @@ class TestLibDummy:
     def abi():
         """Return the ABI to the underlying contract."""
         return json.loads(
-            '[{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"publicAddConstant","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"publicAddOne","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"}]'  # noqa: E501 (line-too-long)
+            '[{"constant":true,"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"publicAddConstant","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"publicAddOne","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"}]'  # noqa: E501 (line-too-long)
         )
 
 

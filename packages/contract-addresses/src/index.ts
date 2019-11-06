@@ -26,27 +26,27 @@ export interface ContractAddresses {
     erc20BridgeProxy: string;
 }
 
-export enum NetworkId {
+export enum ChainId {
     Mainnet = 1,
     Ropsten = 3,
     Rinkeby = 4,
     Kovan = 42,
-    Ganache = 50,
+    Ganache = 1337,
 }
 
 /**
  * Used to get addresses of contracts that have been deployed to either the
  * Ethereum mainnet or a supported testnet. Throws if there are no known
- * contracts deployed on the corresponding network.
- * @param networkId The desired networkId.
+ * contracts deployed on the corresponding chain.
+ * @param chainId The desired chainId.
  * @returns The set of addresses for contracts which have been deployed on the
- * given networkId.
+ * given chainId.
  */
-export function getContractAddressesForNetworkOrThrow(networkId: NetworkId): ContractAddresses {
-    const networkToAddresses: { [networkId: number]: ContractAddresses } = addresses;
+export function getContractAddressesForChainOrThrow(chainId: ChainId): ContractAddresses {
+    const chainToAddresses: { [chainId: number]: ContractAddresses } = addresses;
 
-    if (networkToAddresses[networkId] === undefined) {
-        throw new Error(`Unknown network id (${networkId}). No known 0x contracts have been deployed on this network.`);
+    if (chainToAddresses[chainId] === undefined) {
+        throw new Error(`Unknown chain id (${chainId}). No known 0x contracts have been deployed on this chain.`);
     }
-    return networkToAddresses[networkId];
+    return chainToAddresses[chainId];
 }

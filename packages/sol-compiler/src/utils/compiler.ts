@@ -14,10 +14,10 @@ import { fsWrapper } from './fs_wrapper';
 import { BinaryPaths, CompilationError } from './types';
 
 /**
- * Gets contract data on network or returns if an artifact does not exist.
+ * Gets contract data or returns if an artifact does not exist.
  * @param artifactsDir Path to the artifacts directory.
  * @param contractName Name of contract.
- * @return Contract data on network or undefined.
+ * @return Contract data or undefined.
  */
 export async function getContractArtifactIfExistsAsync(
     artifactsDir: string,

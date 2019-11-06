@@ -53,7 +53,7 @@ export class HttpClient {
     }
     /**
      * Retrieve assetData pair info from the API
-     * @param   requestOpts     Options specifying assetData information to retrieve, page information, and network id.
+     * @param   requestOpts     Options specifying assetData information to retrieve, page information, and chain id.
      * @return  The resulting AssetPairsResponse that match the request
      */
     public async getAssetPairsAsync(
@@ -73,7 +73,7 @@ export class HttpClient {
     }
     /**
      * Retrieve orders from the API
-     * @param   requestOpts     Options specifying orders to retrieve and page information, page information, and network id.
+     * @param   requestOpts     Options specifying orders to retrieve and page information, page information, and chain id.
      * @return  The resulting OrdersResponse that match the request
      */
     public async getOrdersAsync(
@@ -111,7 +111,7 @@ export class HttpClient {
     /**
      * Retrieve an orderbook from the API
      * @param   request         An OrderbookRequest instance describing the specific orderbook to retrieve
-     * @param   requestOpts     Options specifying page information, and network id.
+     * @param   requestOpts     Options specifying page information, and chain id.
      * @return  The resulting OrderbookResponse that matches the request
      */
     public async getOrderbookAsync(
@@ -133,7 +133,7 @@ export class HttpClient {
     /**
      * Retrieve fee information from the API
      * @param   request         A OrderConfigRequest instance describing the specific fees to retrieve
-     * @param   requestOpts     Options specifying network id.
+     * @param   requestOpts     Options specifying chain id.
      * @return  The resulting OrderConfigResponse that matches the request
      */
     public async getOrderConfigAsync(
@@ -154,7 +154,7 @@ export class HttpClient {
     }
     /**
      * Retrieve the list of fee recipient addresses used by the relayer.
-     * @param   requestOpts     Options specifying page information, and network id.
+     * @param   requestOpts     Options specifying page information, and chain id.
      * @return  The resulting FeeRecipientsResponse
      */
     public async getFeeRecipientsAsync(requestOpts?: RequestOpts & PagedRequestOpts): Promise<FeeRecipientsResponse> {
@@ -172,7 +172,7 @@ export class HttpClient {
     /**
      * Submit a signed order to the API
      * @param   signedOrder     A SignedOrder instance to submit
-     * @param   requestOpts     Options specifying network id.
+     * @param   requestOpts     Options specifying chain id.
      */
     public async submitOrderAsync(signedOrder: SignedOrder, requestOpts?: RequestOpts): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
