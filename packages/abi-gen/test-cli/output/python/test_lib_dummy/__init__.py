@@ -119,7 +119,7 @@ class PublicAddOneMethod(ContractMethod):
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
         self.validator.assert_valid(
-            method_name="publicAddOne", parameter_name="x", argument_value=x
+            method_name="publicAddOne", parameter_name="x", argument_value=x,
         )
         # safeguard against fractional inputs
         x = int(x)
@@ -212,7 +212,7 @@ class TestLibDummy:
             try:
                 for middleware in MIDDLEWARE:
                     web3.middleware_onion.inject(
-                        middleware["function"], layer=middleware["layer"]
+                        middleware["function"], layer=middleware["layer"],
                     )
             except ValueError as value_error:
                 if value_error.args == (

@@ -43,11 +43,14 @@ import * as TestFinalizer from '../generated-artifacts/TestFinalizer.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
+import * as TestMixinCumulativeRewards from '../generated-artifacts/TestMixinCumulativeRewards.json';
 import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
+import * as TestMixinScheduler from '../generated-artifacts/TestMixinScheduler.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
 import * as TestMixinStakeBalances from '../generated-artifacts/TestMixinStakeBalances.json';
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
 import * as TestMixinStakingPool from '../generated-artifacts/TestMixinStakingPool.json';
+import * as TestMixinStakingPoolRewards from '../generated-artifacts/TestMixinStakingPoolRewards.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestProxyDestination from '../generated-artifacts/TestProxyDestination.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
@@ -96,11 +99,14 @@ export const artifacts = {
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
+    TestMixinCumulativeRewards: TestMixinCumulativeRewards as ContractArtifact,
     TestMixinParams: TestMixinParams as ContractArtifact,
+    TestMixinScheduler: TestMixinScheduler as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
     TestMixinStakeBalances: TestMixinStakeBalances as ContractArtifact,
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,
     TestMixinStakingPool: TestMixinStakingPool as ContractArtifact,
+    TestMixinStakingPoolRewards: TestMixinStakingPoolRewards as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestProxyDestination: TestProxyDestination as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,

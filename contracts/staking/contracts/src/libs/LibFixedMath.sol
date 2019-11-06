@@ -349,7 +349,7 @@ library LibFixedMath {
             return 0;
         }
         c = a * b;
-        if (c / a != b) {
+        if (c / a != b || c / b != a) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,
                 a,
