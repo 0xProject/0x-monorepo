@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Removed dependency on @0x/order-utils",
+                "pr": 2321
+            }
+        ]
+    },
+    {
         "version": "5.1.0-beta.1",
         "changes": [
             {
