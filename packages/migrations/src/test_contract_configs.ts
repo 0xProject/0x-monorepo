@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as wrappers from '@0x/abi-gen-wrappers';
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
+import { ERC1155ProxyContract, ERC20ProxyContract, ERC721ProxyContract, MultiAssetProxyContract, StaticCallProxyContract } from '@0x/contracts-asset-proxy';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { ZeroExGovernorContract } from '@0x/contracts-multisig';
 import { StakingContract, StakingProxyContract, ZrxVaultContract } from '@0x/contracts-staking';
@@ -34,11 +34,11 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
 
     const exchange = new ExchangeContract(addresses.exchange, provider);
     const exchangeV2 = new ExchangeContract(addresses.exchangeV2, provider);
-    const erc20Proxy = new wrappers.ERC20ProxyContract(addresses.erc20Proxy, provider);
-    const erc721Proxy = new wrappers.ERC721ProxyContract(addresses.erc721Proxy, provider);
-    const erc1155Proxy = new wrappers.ERC1155ProxyContract(addresses.erc1155Proxy, provider);
-    const multiAssetProxy = new wrappers.MultiAssetProxyContract(addresses.multiAssetProxy, provider);
-    const erc20BridgeProxy = new wrappers.ERC20ProxyContract(addresses.erc20BridgeProxy, provider);
+    const erc20Proxy = new ERC20ProxyContract(addresses.erc20Proxy, provider);
+    const erc721Proxy = new ERC721ProxyContract(addresses.erc721Proxy, provider);
+    const erc1155Proxy = new ERC1155ProxyContract(addresses.erc1155Proxy, provider);
+    const multiAssetProxy = new MultiAssetProxyContract(addresses.multiAssetProxy, provider);
+    const erc20BridgeProxy = new ERC20ProxyContract(addresses.erc20BridgeProxy, provider);
     const governor = new ZeroExGovernorContract(addresses.zeroExGovernor, provider);
     const stakingProxy = new StakingProxyContract(addresses.stakingProxy, provider);
     const stakingContract = new StakingContract(addresses.stakingProxy, provider);

@@ -77,7 +77,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
         const UNLIMITED_ALLOWANCE = UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
-        erc20ProxyAddress = contractWrappers.erc20Proxy.address;
+        erc20ProxyAddress = contractAddresses.erc20Proxy;
 
         const totalFillableAmount = FILLABLE_AMOUNTS.reduce(
             (a: BigNumber, c: BigNumber) => a.plus(c),

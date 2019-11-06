@@ -1,8 +1,5 @@
 import {
     DevUtilsContract,
-    DutchAuctionContract,
-    ERC20ProxyContract,
-    ERC721ProxyContract,
     ExchangeContract,
     ForwarderContract,
     OrderValidatorContract,
@@ -13,9 +10,7 @@ import {
     Coordinator,
     DevUtils,
     DutchAuction,
-    ERC20Proxy,
     ERC20Token,
-    ERC721Proxy,
     ERC721Token,
     Exchange,
     Forwarder,
@@ -46,16 +41,6 @@ export class ContractWrappers {
      */
     public exchange: ExchangeContract;
     /**
-     * An instance of the ERC20ProxyContract class containing methods for interacting with the
-     * erc20Proxy smart contract.
-     */
-    public erc20Proxy: ERC20ProxyContract;
-    /**
-     * An instance of the ERC721ProxyContract class containing methods for interacting with the
-     * erc721Proxy smart contract.
-     */
-    public erc721Proxy: ERC721ProxyContract;
-    /**
      * An instance of the WETH9Contract class containing methods for interacting with the
      * WETH9 smart contract.
      */
@@ -64,14 +49,11 @@ export class ContractWrappers {
      * An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
      */
     public forwarder: ForwarderContract;
+    // TODO(fabio): Remove orderValidator after @0x/asset-buyer is deleted
     /**
      * An instance of the OrderValidatorContract class containing methods for interacting with any OrderValidator smart contract.
      */
     public orderValidator: OrderValidatorContract;
-    /**
-     * An instance of the DutchAuctionContract class containing methods for interacting with any DutchAuction smart contract.
-     */
-    public dutchAuction: DutchAuctionContract;
     /**
      * An instance of the DevUtilsContract class containing methods for interacting with the DevUtils smart contract.
      */
@@ -99,9 +81,7 @@ export class ContractWrappers {
             Coordinator,
             DevUtils,
             DutchAuction,
-            ERC20Proxy,
             ERC20Token,
-            ERC721Proxy,
             ERC721Token,
             Exchange,
             Forwarder,
@@ -115,13 +95,10 @@ export class ContractWrappers {
             config.contractAddresses === undefined
                 ? _getDefaultContractAddresses(config.chainId)
                 : config.contractAddresses;
-        this.erc20Proxy = new ERC20ProxyContract(contractAddresses.erc20Proxy, this.getProvider());
-        this.erc721Proxy = new ERC721ProxyContract(contractAddresses.erc721Proxy, this.getProvider());
         this.weth9 = new WETH9Contract(contractAddresses.etherToken, this.getProvider());
         this.exchange = new ExchangeContract(contractAddresses.exchange, this.getProvider());
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
         this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
-        this.dutchAuction = new DutchAuctionContract(contractAddresses.dutchAuction, this.getProvider());
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorWrapper(
             this.getProvider(),
@@ -137,8 +114,6 @@ export class ContractWrappers {
      */
     public unsubscribeAll(): void {
         this.exchange.unsubscribeAll();
-        this.erc20Proxy.unsubscribeAll();
-        this.erc721Proxy.unsubscribeAll();
         this.weth9.unsubscribeAll();
     }
     /**
