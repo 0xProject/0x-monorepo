@@ -34,7 +34,7 @@ zero_ex.contract_wrappers.coordinator_registry
 
 
 zero_ex.contract_wrappers.dev_utils
-=======================================
+===================================
 
 .. automodule:: zero_ex.contract_wrappers.dev_utils
    :members:
@@ -45,6 +45,22 @@ zero_ex.contract_wrappers.dutch_auction
 =======================================
 
 .. automodule:: zero_ex.contract_wrappers.dutch_auction
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc1155_mintable
+==========================================
+
+.. automodule:: zero_ex.contract_wrappers.erc1155_mintable
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc1155_proxy
+=======================================
+
+.. automodule:: zero_ex.contract_wrappers.erc1155_proxy
    :members:
    :special-members:
 
@@ -145,6 +161,14 @@ zero_ex.contract_wrappers.order_validator
    :special-members:
 
 
+zero_ex.contract_wrappers.static_call_proxy
+===========================================
+
+.. automodule:: zero_ex.contract_wrappers.static_call_proxy
+   :members:
+   :special-members:
+
+
 zero_ex.contract_wrappers.weth9
 ===============================
 
@@ -180,24 +204,30 @@ zero_ex.contract_wrappers.exchange.types
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.types.MatchedFillResults
 
+.. autoclass:: zero_ex.contract_wrappers.exchange.types.ZeroExTransaction
+
 zero_ex.contract_wrappers.exchange: Generated Tuples
 ====================================================
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x260219a2
+.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x6ca34a6f
 
     This is the generated class representing `the Order struct <https://0x.org/docs/contracts#structs-Order>`_.
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0xbb41e5b3
+.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x735c43e3
 
     This is the generated class representing `the FillResults struct <https://0x.org/docs/contracts#structs-FillResults>`_.
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x054ca44e
+.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x4c5ca29b
 
     This is the generated class representing `the MatchedFillResults struct <https://0x.org/docs/contracts#structs-MatchedFillResults>`_.
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0xb1e4a1ae
 
     This is the generated class representing `the OrderInfo struct <https://0x.org/docs/contracts#structs-OrderInfo>`_.
+
+.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0xdabc15fe
+
+    This is the generated class representing `the ZeroExTransaction struct <https://0x.org/docs/contracts#structs-ZeroExTransaction>`_.
 
 Indices and tables
 ==================

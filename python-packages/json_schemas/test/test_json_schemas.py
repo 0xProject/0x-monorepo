@@ -15,11 +15,14 @@ EMPTY_ORDER = {
     "takerAssetData": NULL_ADDRESS,
     "salt": "0",
     "makerFee": "0",
+    "makerFeeAssetData": NULL_ADDRESS,
     "takerFee": "0",
+    "takerFeeAssetData": NULL_ADDRESS,
     "makerAssetAmount": "0",
     "takerAssetAmount": "0",
     "expirationTimeSeconds": "0",
     "exchangeAddress": NULL_ADDRESS,
+    "chainId": 50,
 }
 
 

@@ -1,5 +1,26 @@
 [
     {
+        "version": "4.5.0-beta.0",
+        "changes": [
+            {
+                "note": "In Python wrappers, accept string arguments to bytes parameters",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, support module-local, Web3.py-compatible middleware",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, allow contracts to be instantiated with EITHER a Web3.py BaseProvider OR a Web3 client object",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, fix bug with casting some bytes objects using bytes.fromhex()",
+                "pr": 2284
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.0",
         "changes": [
             {

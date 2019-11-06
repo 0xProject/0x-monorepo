@@ -5,7 +5,7 @@ from eth_utils import to_checksum_address
 from web3 import Web3
 
 from zero_ex.order_utils import asset_data_utils
-from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+from zero_ex.contract_addresses import network_to_addresses, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 
 
@@ -36,14 +36,14 @@ def accounts(web3_eth):  # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="module")
 def erc20_proxy_address():
     """Get the 0x ERC20 Proxy address."""
-    return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
+    return network_to_addresses(NetworkId.GANACHE).erc20_proxy
 
 
 @pytest.fixture(scope="module")
 def weth_asset_data():  # pylint: disable=redefined-outer-name
     """Get 0x asset data for Wrapped Ether (WETH) token."""
     return asset_data_utils.encode_erc20(
-        NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+        network_to_addresses(NetworkId.GANACHE).ether_token
     )
 
 
@@ -52,7 +52,7 @@ def weth_instance(web3_eth):  # pylint: disable=redefined-outer-name
     """Get an instance of the WrapperEther contract."""
     return web3_eth.contract(
         address=to_checksum_address(
-            NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+            network_to_addresses(NetworkId.GANACHE).ether_token
         ),
         abi=abi_by_name("WETH9"),
     )
@@ -61,7 +61,7 @@ def weth_instance(web3_eth):  # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="module")
 def zrx_address():
     """Get address of ZRX token for Ganache network."""
-    return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
+    return network_to_addresses(NetworkId.GANACHE).zrx_token
 
 
 @pytest.fixture(scope="module")

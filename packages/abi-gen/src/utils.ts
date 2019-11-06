@@ -115,7 +115,7 @@ export const utils = {
                 { regex: '^address$', pyType: 'str' },
                 { regex: '^bool$', pyType: 'bool' },
                 { regex: '^u?int\\d*$', pyType: 'int' },
-                { regex: '^bytes\\d*$', pyType: 'bytes' },
+                { regex: '^bytes\\d*$', pyType: 'Union[bytes, str]' },
             ];
             for (const regexAndTxType of solTypeRegexToPyType) {
                 const { regex, pyType } = regexAndTxType;
