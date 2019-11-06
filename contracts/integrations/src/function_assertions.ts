@@ -44,8 +44,8 @@ export interface Assertion {
     executeAsync: (...args: any[]) => Promise<any>;
 }
 
-export interface AssertionResult {
-    beforeInfo: any;
+export interface AssertionResult<TBefore = unknown> {
+    beforeInfo: TBefore;
     afterInfo: any;
 }
 
@@ -73,7 +73,7 @@ export class FunctionAssertion<TBefore> implements Assertion {
      * Runs the wrapped function and fails if the before or after assertions fail.
      * @param ...args The args to the contract wrapper function.
      */
-    public async executeAsync(...args: any[]): Promise<AssertionResult> {
+    public async executeAsync(...args: any[]): Promise<AssertionResult<TBefore>> {
         // Call the before condition.
         const beforeInfo = await this.condition.before(...args);
 

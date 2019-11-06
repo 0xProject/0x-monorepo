@@ -35,8 +35,8 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 const { balanceStore } = this.actor.simulationEnvironment;
                 this.actor.simulationActions = {
                     ...this.actor.simulationActions,
-                    validStake: this._validStake(balanceStore).next,
-                    validUnstake: this._validUnstake(balanceStore).next,
+                    validStake: this._validStake(balanceStore),
+                    validUnstake: this._validUnstake(balanceStore),
                 };
             }
         }

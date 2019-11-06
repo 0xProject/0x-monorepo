@@ -47,8 +47,8 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             if (this.actor.simulationEnvironment !== undefined) {
                 this.actor.simulationActions = {
                     ...this.actor.simulationActions,
-                    validCreateStakingPool: this._validCreateStakingPool().next,
-                    validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare().next,
+                    validCreateStakingPool: this._validCreateStakingPool(),
+                    validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare(),
                 };
             }
         }

@@ -20,7 +20,9 @@ export abstract class Simulation {
 
     public async fuzzAsync(steps?: number): Promise<void> {
         if (steps !== undefined) {
-            _.times(steps, async () => await this.stepAsync());
+            for (let i = 0; i < steps; i++) {
+                await this.stepAsync();
+            }
         } else {
             while (true) {
                 await this.stepAsync();
@@ -28,5 +30,5 @@ export abstract class Simulation {
         }
     }
 
-    protected abstract _assertionGenerator(): AsyncIterableIterator<AssertionResult>;
+    protected abstract _assertionGenerator(): AsyncIterableIterator<AssertionResult | void>;
 }
