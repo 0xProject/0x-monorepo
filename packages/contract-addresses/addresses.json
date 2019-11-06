@@ -91,7 +91,7 @@
         "stakingProxy": "0xbab9145f1d57cd4bb0c9aa2d1ece0a5b6e734d34",
         "erc20BridgeProxy": "0xfb2dd2a1366de37f7241c83d47da58fd503e2c64"
     },
-    "50": {
+    "1337": {
         "erc20Proxy": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
         "erc721Proxy": "0x1d7022f5b17d2f8b695918fb48fa1089c9f85401",
         "erc1155Proxy": "0x6a4a62e5a7ed13c361b176a5f62c2ee620ac0df8",

@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.4.0-beta.0",
+        "version": "4.0.0-beta.0",
         "changes": [
             {
                 "note": "Remove `readOnlyProxy` from addresses interface",
@@ -13,6 +13,10 @@
             {
                 "note": "Update `exchange`, `staking`, `stakingProxy`, `zeroExGovernor`, `assetProxyOwner`, and `erc20BridgeProxy` addresses for each tesnet",
                 "pr": 2296
+            },
+            {
+                "note": "Contract addresses are no longer indexed by network ID.  Now they're indexed by chain ID.",
+                "pr": 2313
             }
         ]
     },

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 export enum ContractError {
-    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    ContractNotDeployedOnChain = 'CONTRACT_NOT_DEPLOYED_ON_CHAIN',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
     InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',

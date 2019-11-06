@@ -28,7 +28,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      * @param orderStore The `OrderStore` where orders are added and removed from
      */
     constructor(opts: SRAWebsocketOrderProviderOpts, orderStore: OrderStore) {
-        super(orderStore, opts.httpEndpoint, PER_PAGE_DEFAULT, opts.networkId);
+        super(orderStore, opts.httpEndpoint, PER_PAGE_DEFAULT, opts.chainId);
         assert.isUri('websocketEndpoint', opts.websocketEndpoint);
         this._websocketEndpoint = opts.websocketEndpoint;
     }

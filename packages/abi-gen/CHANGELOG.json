@@ -17,6 +17,10 @@
             {
                 "note": "In Python wrappers, fix bug with casting some bytes objects using bytes.fromhex()",
                 "pr": 2284
+            },
+            {
+                "note": "Command-line argument network-id has changed to chain-id",
+                "pr": 2313
             }
         ]
     },

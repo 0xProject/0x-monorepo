@@ -83,13 +83,13 @@ class ContractAddresses(NamedTuple):
     """Address of the ERC20BridgeProxy contract."""
 
 
-class NetworkId(Enum):
-    """Network names correlated to their network identification numbers.
+class ChainId(Enum):
+    """Chain names correlated to their chain identification numbers.
 
-    >>> NetworkId.MAINNET
-    <NetworkId.MAINNET: 1>
+    >>> ChainId.MAINNET
+    <ChainId.MAINNET: 1>
 
-    >>> NetworkId.MAINNET.value
+    >>> ChainId.MAINNET.value
     1
     """
 
@@ -97,7 +97,7 @@ class NetworkId(Enum):
     ROPSTEN = 3
     RINKEBY = 4
     KOVAN = 42
-    GANACHE = 50
+    GANACHE = 1337
 
 
 class _AddressCache:
@@ -106,35 +106,35 @@ class _AddressCache:
     # pylint: disable=too-few-public-methods
 
     # class data, not instance:
-    _network_to_addresses: Dict[str, ContractAddresses] = {}
+    _chain_to_addresses: Dict[str, ContractAddresses] = {}
 
     @classmethod
-    def network_to_addresses(cls, network_id: NetworkId):
-        """Return the addresses for the given network ID.
+    def chain_to_addresses(cls, chain_id: ChainId):
+        """Return the addresses for the given chain ID.
 
         First tries to get data from the class level storage
-        `_network_to_addresses`.  If it's not there, loads it from disk, stores
+        `_chain_to_addresses`.  If it's not there, loads it from disk, stores
         it in the class data (for the next caller), and then returns it.
         """
         try:
-            return cls._network_to_addresses[str(network_id.value)]
+            return cls._chain_to_addresses[str(chain_id.value)]
         except KeyError:
-            cls._network_to_addresses = json.loads(
+            cls._chain_to_addresses = json.loads(
                 resource_string("zero_ex.contract_addresses", "addresses.json")
             )
-            return cls._network_to_addresses[str(network_id.value)]
+            return cls._chain_to_addresses[str(chain_id.value)]
 
 
-def network_to_addresses(network_id: NetworkId) -> ContractAddresses:
-    """Map a NetworkId to an instance of ContractAddresses.
+def chain_to_addresses(chain_id: ChainId) -> ContractAddresses:
+    """Map a ChainId to an instance of ContractAddresses.
 
-    Addresses under NetworkId.Ganache are from our Ganache snapshot generated
+    Addresses under ChainId.Ganache are from our Ganache snapshot generated
     from npm package @0x/migrations.
 
-    >>> network_to_addresses(NetworkId.MAINNET).exchange
+    >>> chain_to_addresses(ChainId.MAINNET).exchange
     '0x...'
     """
-    addresses = _AddressCache.network_to_addresses(network_id)
+    addresses = _AddressCache.chain_to_addresses(chain_id)
 
     return ContractAddresses(
         erc20_proxy=addresses["erc20Proxy"],

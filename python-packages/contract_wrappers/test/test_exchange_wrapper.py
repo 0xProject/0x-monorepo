@@ -5,7 +5,7 @@ import random
 import pytest
 from eth_utils import remove_0x_prefix
 
-from zero_ex.contract_addresses import network_to_addresses, NetworkId
+from zero_ex.contract_addresses import chain_to_addresses, ChainId
 from zero_ex.contract_wrappers import TxParams
 from zero_ex.contract_wrappers.exchange import Exchange
 from zero_ex.contract_wrappers.exchange.types import Order
@@ -22,7 +22,7 @@ def exchange_wrapper(ganache_provider):
     """Get an Exchange wrapper instance."""
     return Exchange(
         web3_or_provider=ganache_provider,
-        contract_address=network_to_addresses(NetworkId.GANACHE).exchange,
+        contract_address=chain_to_addresses(ChainId.GANACHE).exchange,
     )
 
 
@@ -161,8 +161,8 @@ def test_two_instantiations_with_web3_objects(web3_instance):
     again."  Test that that bug isn't occurring.
     """
     exchange = Exchange(  # pylint: disable=unused-variable
-        web3_instance, network_to_addresses(NetworkId.GANACHE).exchange
+        web3_instance, chain_to_addresses(ChainId.GANACHE).exchange
     )
     exchange2 = Exchange(  # pylint: disable=unused-variable
-        web3_instance, network_to_addresses(NetworkId.GANACHE).exchange
+        web3_instance, chain_to_addresses(ChainId.GANACHE).exchange
     )

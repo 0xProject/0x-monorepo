@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as wrappers from '@0x/abi-gen-wrappers';
-import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { ZeroExGovernorContract } from '@0x/contracts-multisig';
 import { StakingContract, StakingProxyContract, ZrxVaultContract } from '@0x/contracts-staking';
@@ -23,12 +23,12 @@ const networkIdToRpcUrl = {
 // tslint:disable:custom-no-magic-numbers
 async function testContractConfigsAsync(provider: SupportedProvider): Promise<void> {
     const web3Wrapper = new Web3Wrapper(provider);
-    const networkId = await web3Wrapper.getNetworkIdAsync();
-    const addresses = getContractAddressesForNetworkOrThrow(networkId);
+    const chainId = await web3Wrapper.getChainIdAsync();
+    const addresses = getContractAddressesForChainOrThrow(chainId);
 
     function warnIfMismatch(actual: any, expected: any, message: string): void {
         if (actual !== expected) {
-            logUtils.warn(`${message}: actual: ${actual}, expected: ${expected}, networkId: ${networkId}`);
+            logUtils.warn(`${message}: actual: ${actual}, expected: ${expected}, chainId: ${chainId}`);
         }
     }
 

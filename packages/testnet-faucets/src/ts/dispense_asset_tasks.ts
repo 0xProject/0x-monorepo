@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { configs } from './configs';
-import { TOKENS_BY_NETWORK } from './tokens';
+import { TOKENS_BY_CHAIN } from './tokens';
 
 const DISPENSE_AMOUNT_ETHER = 0.1;
 const DISPENSE_AMOUNT_TOKEN = 1;
@@ -36,13 +36,13 @@ export const dispenseAssetTasks = {
     dispenseTokenTask(
         recipientAddress: string,
         tokenSymbol: string,
-        networkId: number,
+        chainId: number,
         provider: SupportedProvider,
     ): AsyncTask {
         return async () => {
             logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);
-            const tokenIfExists = _.get(TOKENS_BY_NETWORK, [networkId, tokenSymbol]);
+            const tokenIfExists = _.get(TOKENS_BY_CHAIN, [chainId, tokenSymbol]);
             if (tokenIfExists === undefined) {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }

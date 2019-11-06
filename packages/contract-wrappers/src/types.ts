@@ -13,7 +13,7 @@ export enum ForwarderError {
 }
 
 export enum ContractError {
-    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    ContractNotDeployedOnChain = 'CONTRACT_NOT_DEPLOYED_ON_CHAIN',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
     InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
@@ -28,13 +28,13 @@ export enum ContractError {
 }
 
 /**
- * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
+ * chainId: The id of the underlying ethereum chain your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 1337-testrpc)
  * gasPrice: Gas price to use with every transaction
- * contractAddresses: The address of all contracts to use. Defaults to the known addresses based on networkId.
+ * contractAddresses: The address of all contracts to use. Defaults to the known addresses based on chainId.
  * blockPollingIntervalMs: The interval to use for block polling in event watching methods (defaults to 1000)
  */
 export interface ContractWrappersConfig {
-    networkId: number;
+    chainId: number;
     gasPrice?: BigNumber;
     contractAddresses?: ContractAddresses;
     blockPollingIntervalMs?: number;

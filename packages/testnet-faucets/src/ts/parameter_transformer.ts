@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { constants } from './constants';
 import { rpcUrls } from './rpc_urls';
 
-const DEFAULT_NETWORK_ID = 42; // kovan
+const DEFAULT_CHAIN_ID = 42; // kovan
 
 export const parameterTransformer = {
     transform(req: Request, res: Response, next: NextFunction): void {
@@ -16,13 +16,13 @@ export const parameterTransformer = {
         }
         const lowerCaseRecipientAddress = recipientAddress.toLowerCase();
         req.params.recipient = lowerCaseRecipientAddress;
-        const networkId = _.get(req.query, 'networkId', DEFAULT_NETWORK_ID);
-        const rpcUrlIfExists = _.get(rpcUrls, networkId);
+        const chainId = _.get(req.query, 'chainId', DEFAULT_CHAIN_ID);
+        const rpcUrlIfExists = _.get(rpcUrls, chainId);
         if (rpcUrlIfExists === undefined) {
-            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
+            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_CHAIN_ID');
             return;
         }
-        req.params.networkId = networkId;
+        req.params.chainId = chainId;
         next();
     },
 };
