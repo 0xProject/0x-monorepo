@@ -9,6 +9,10 @@
             {
                 "note": "Removed export orderParsingUtils",
                 "pr": 2321
+            },
+            {
+                "note": "Removed many functions from export signatureUtils",
+                "pr": 2321
             }
         ]
     },

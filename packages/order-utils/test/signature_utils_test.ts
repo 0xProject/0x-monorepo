@@ -9,7 +9,7 @@ import 'mocha';
 
 import { generatePseudoRandomSalt, orderHashUtils, transactionHashUtils } from '../src';
 import { constants } from '../src/constants';
-import { signatureUtils } from '../src/signature_utils';
+import { isValidECSignature, signatureUtils } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
@@ -56,78 +56,6 @@ describe('Signature utils', () => {
             gasPrice: new BigNumber(0),
         };
     });
-    describe('#isValidSignatureAsync', () => {
-        let dataHex = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
-        const ethSignSignature =
-            '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
-        let address = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
-
-        it("should return false if the data doesn't pertain to the signature & address", async () => {
-            const bytes32Zeros = '0x0000000000000000000000000000000000000000000000000000000000000000';
-            expect(
-                await signatureUtils.isValidSignatureAsync(provider, bytes32Zeros, ethSignSignature, address),
-            ).to.be.false();
-        });
-        it("should return false if the address doesn't pertain to the signature & data", async () => {
-            const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';
-            expect(
-                await signatureUtils.isValidSignatureAsync(provider, dataHex, ethSignSignature, validUnrelatedAddress),
-            ).to.be.false();
-        });
-        it("should return false if the signature doesn't pertain to the dataHex & address", async () => {
-            const signatureArray = ethSignSignature.split('');
-            // tslint:disable-next-line:custom-no-magic-numbers
-            signatureArray[5] = 'C'; // V = 28, instead of 27
-            const wrongSignature = signatureArray.join('');
-            expect(
-                await signatureUtils.isValidSignatureAsync(provider, dataHex, wrongSignature, address),
-            ).to.be.false();
-        });
-
-        it('should throw if signatureType is invalid', () => {
-            const signatureArray = ethSignSignature.split('');
-            signatureArray[3] = '9'; // SignatureType w/ index 9 doesn't exist
-            const signatureWithInvalidType = signatureArray.join('');
-            expect(
-                signatureUtils.isValidSignatureAsync(provider, dataHex, signatureWithInvalidType, address),
-            ).to.be.rejected();
-        });
-
-        it('should return true for a valid Ecrecover (EthSign) signature', async () => {
-            const isValidSignatureLocal = await signatureUtils.isValidSignatureAsync(
-                provider,
-                dataHex,
-                ethSignSignature,
-                address,
-            );
-            expect(isValidSignatureLocal).to.be.true();
-        });
-
-        it('should return true for a valid EIP712 signature', async () => {
-            dataHex = '0xa1d7403bcbbcd75ec233cfd6584ff8dabed677d0e9bb32c2bea94e9dd8a109da';
-            address = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
-            const eip712Signature =
-                '0x1bdde07aac4bf12c12ddbb155919c43eba4146a2cfcf904a862950dbebe332554c6674975603eb5a4eaf8fd7f2e06350267e5b36cda9851a89f8bb49fe2fc9afe202';
-            const isValidSignatureLocal = await signatureUtils.isValidSignatureAsync(
-                provider,
-                dataHex,
-                eip712Signature,
-                address,
-            );
-            expect(isValidSignatureLocal).to.be.true();
-        });
-
-        it('should return false if entry not found in `preSigned` mapping', async () => {
-            const preSignedSignature = '0x06';
-            const isValidPreSignature = await signatureUtils.isValidSignatureAsync(
-                provider,
-                dataHex,
-                preSignedSignature,
-                address,
-            );
-            expect(isValidPreSignature).to.be.false();
-        });
-    });
     describe('#isValidECSignature', () => {
         const signature = {
             v: 27,
@@ -138,18 +66,18 @@ describe('Signature utils', () => {
         const address = '0x0e5cb767cce09a7f3ca594df118aa519be5e2b5a';
 
         it("should return false if the data doesn't pertain to the signature & address", async () => {
-            expect(signatureUtils.isValidECSignature('0x0', signature, address)).to.be.false();
+            expect(isValidECSignature('0x0', signature, address)).to.be.false();
         });
         it("should return false if the address doesn't pertain to the signature & data", async () => {
             const validUnrelatedAddress = '0x8b0292b11a196601ed2ce54b665cafeca0347d42';
-            expect(signatureUtils.isValidECSignature(data, signature, validUnrelatedAddress)).to.be.false();
+            expect(isValidECSignature(data, signature, validUnrelatedAddress)).to.be.false();
         });
         it("should return false if the signature doesn't pertain to the data & address", async () => {
             const wrongSignature = _.assign({}, signature, { v: 28 });
-            expect(signatureUtils.isValidECSignature(data, wrongSignature, address)).to.be.false();
+            expect(isValidECSignature(data, wrongSignature, address)).to.be.false();
         });
         it('should return true if the signature does pertain to the data & address', async () => {
-            const isValidSignatureLocal = signatureUtils.isValidECSignature(data, signature, address);
+            const isValidSignatureLocal = isValidECSignature(data, signature, address);
             expect(isValidSignatureLocal).to.be.true();
         });
     });
@@ -342,16 +270,12 @@ describe('Signature utils', () => {
             expect(ecSignature).to.equal(expectedSignature);
         });
         it('should return a valid signature', async () => {
+            const expectedSignature =
+                '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03';
+
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
             const ecSignature = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
-
-            const isValidSignature = await signatureUtils.isValidSignatureAsync(
-                provider,
-                orderHash,
-                ecSignature,
-                makerAddress,
-            );
-            expect(isValidSignature).to.be.true();
+            expect(ecSignature).to.equal(expectedSignature);
         });
     });
     describe('#ecSignTypedDataOrderAsync', () => {
@@ -371,14 +295,7 @@ describe('Signature utils', () => {
             ]);
             const signatureHex = `0x${signatureBuffer.toString('hex')}`;
             const signedOrder = await signatureUtils.ecSignTypedDataOrderAsync(provider, order, makerAddress);
-            const isValidSignature = await signatureUtils.isValidSignatureAsync(
-                provider,
-                orderHashHex,
-                signedOrder.signature,
-                makerAddress,
-            );
             expect(signatureHex).to.eq(signedOrder.signature);
-            expect(isValidSignature).to.eq(true);
         });
         it('should return the correct signature for signatureHex concatenated as R + S + V', async () => {
             const expectedSignature =
@@ -423,14 +340,7 @@ describe('Signature utils', () => {
                 transaction,
                 makerAddress,
             );
-            const isValidSignature = await signatureUtils.isValidSignatureAsync(
-                provider,
-                transactionHashHex,
-                signedTransaction.signature,
-                makerAddress,
-            );
             expect(signatureHex).to.eq(signedTransaction.signature);
-            expect(isValidSignature).to.eq(true);
         });
         it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
             const fakeProvider = {
