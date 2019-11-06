@@ -5,9 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.2.0-beta.1 - _November 6, 2019_
+
+    * Dependencies updated
+
 ## v1.2.0-beta.0 - _October 3, 2019_
 
     * Add `mintKnownFungibleTokensAsync()`, `isNonFungibleItemAsync()`, `isFungibleItemAsync()`, `getOwnerOfAsync()`, `getBalanceAsync()` to `Erc1155Wrapper`. (#1819)
+    * Replaced `SafeMath` with `LibSafeMath` (#2254)
 
 ## v1.1.15 - _September 17, 2019_
 

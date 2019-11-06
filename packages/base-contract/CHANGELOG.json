@@ -10,7 +10,8 @@
                 "note": "Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback`",
                 "pr": 2243
             }
-        ]
+        ],
+        "timestamp": 1573001598
     },
     {
         "version": "5.5.0-beta.0",

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0-beta.1 - _November 6, 2019_
+
+    * Dependencies updated
+
 ## v3.2.0-beta.0 - _October 3, 2019_
 
     * Convert `getContractNamesToCompile` to public function of `Compiler` class (#2055)

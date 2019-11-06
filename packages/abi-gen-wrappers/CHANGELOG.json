@@ -18,7 +18,8 @@
                 "note": "Remove `validateAndSendTransactionAsync`. Replaced with `shouldValidate` key in TxOpts. Defaults to true",
                 "pr": 2243
             }
-        ]
+        ],
+        "timestamp": 1573001598
     },
     {
         "version": "5.4.0-beta.0",

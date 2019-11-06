@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.1 - _November 6, 2019_
+
+    * Dependencies updated
+
 ## v2.3.0-beta.0 - _October 3, 2019_
 
     * Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable (#2019)
@@ -13,6 +17,8 @@ CHANGELOG
     * Remove unused dependency on IAuthorizable in IAssetProxy (#1910)
     * Add `ERC20BridgeProxy` (#2220)
     * Add `Eth2DaiBridge` (#2221)
+    * Add `UniswapBridge` (#2233)
+    * Replaced `SafeMath` with `LibSafeMath` (#2254)
 
 ## v2.2.8 - _September 17, 2019_
 

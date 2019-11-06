@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.4.0-beta.0",
+        "version": "3.3.0-beta.1",
         "changes": [
             {
                 "note": "Remove `readOnlyProxy` from addresses interface",
@@ -14,7 +14,8 @@
                 "note": "Update `exchange`, `staking`, `stakingProxy`, `zeroExGovernor`, `assetProxyOwner`, and `erc20BridgeProxy` addresses for each tesnet",
                 "pr": 2296
             }
-        ]
+        ],
+        "timestamp": 1573001598
     },
     {
         "version": "3.3.0-beta.0",

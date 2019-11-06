@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.5.0-beta.1 - _November 6, 2019_
+
+    * Make `evmExecAsync` protected and rename to `_evmExecAsync` (#2243)
+    * Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback` (#2243)
+
 ## v5.5.0-beta.0 - _October 3, 2019_
 
     * Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult` (#1761)

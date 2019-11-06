@@ -10,7 +10,8 @@
                 "note": "Changed provider_utils.providerUtils.getChainIdAsync() to invoke RPC method eth_chainId rather than net_version",
                 "pr": 2270
             }
-        ]
+        ],
+        "timestamp": 1573001598
     },
     {
         "version": "4.6.0-beta.0",
