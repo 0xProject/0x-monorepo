@@ -334,7 +334,7 @@ export class Compiler {
                 }
                 if (this._shouldSaveStandardInput) {
                     await fsWrapper.writeFileAsync(
-                        `${this._contractsDir}/${contractName}.input.json`,
+                        `${this._artifactsDir}/${contractName}.input.json`,
                         utils.stringifyWithFormatting(input.standardInput),
                     );
                 }
