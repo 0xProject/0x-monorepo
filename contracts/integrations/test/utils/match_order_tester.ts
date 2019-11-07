@@ -1,6 +1,6 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
-import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
+import { constants, expect, OrderStatus, TransactionHelper } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -244,9 +244,9 @@ export class MatchOrderTester {
             orders,
             takerAddress,
             this._deployment.staking.stakingProxy.address,
-            this._blockchainBalanceStore,
             toFullMatchTransferAmounts(expectedTransferAmounts),
             this._devUtils,
+            this._blockchainBalanceStore,
             localBalanceStore,
         );
         const expectedResults = convertToMatchResults(expectedMatchResults);
@@ -377,16 +377,15 @@ async function simulateBatchMatchOrdersAsync(
             }
         }
 
-        // FIXME - These arguments should be reordered
         // Add the latest match to the batch match results
         batchMatchResults.matches.push(
             await simulateMatchOrdersAsync(
                 matchedOrders,
                 takerAddress,
                 stakingProxyAddress,
-                blockchainBalanceStore,
                 toFullMatchTransferAmounts(transferAmounts[i]),
                 devUtils,
+                blockchainBalanceStore,
                 localBalanceStore,
             ),
         );
@@ -434,7 +433,6 @@ async function simulateBatchMatchOrdersAsync(
     return batchMatchResults;
 }
 
-// FIXME - Is it possible to remove `transferAmounts`
 /**
  * Simulates matching two orders by transferring amounts defined in
  * `transferAmounts` and returns the results.
@@ -448,9 +446,9 @@ async function simulateMatchOrdersAsync(
     orders: MatchedOrders,
     takerAddress: string,
     stakingProxyAddress: string,
-    blockchainBalanceStore: BlockchainBalanceStore, // FIXME - Is this right?
     transferAmounts: MatchTransferAmounts,
     devUtils: DevUtilsContract,
+    blockchainBalanceStore: BlockchainBalanceStore,
     localBalanceStore: LocalBalanceStore,
 ): Promise<MatchResults> {
     // prettier-ignore
@@ -478,7 +476,6 @@ async function simulateMatchOrdersAsync(
         orders.rightOrder.makerAssetData,
     );
 
-    // FIXME - Is this a necessary condition?
     if (orders.leftOrder.makerAddress !== orders.leftOrder.feeRecipientAddress) {
         // Left maker fees
         localBalanceStore.transferAsset(
@@ -489,7 +486,6 @@ async function simulateMatchOrdersAsync(
         );
     }
 
-    // FIXME - Is this a necessary condition?
     // Left maker asset -> right maker
     localBalanceStore.transferAsset(
         orders.leftOrder.makerAddress,
@@ -498,7 +494,6 @@ async function simulateMatchOrdersAsync(
         orders.leftOrder.makerAssetData,
     );
 
-    // FIXME - Is this a necessary condition?
     if (orders.rightOrder.makerAddress !== orders.rightOrder.feeRecipientAddress) {
         // Right maker fees
         localBalanceStore.transferAsset(
@@ -676,7 +671,6 @@ function simulateFillEvents(
     ];
 }
 
-// FIXME - Refactor this to use filterToLogsArguments
 /**
  * Extract `Fill` events from a transaction receipt.
  */
@@ -830,7 +824,6 @@ function getLastMatch(batchMatchResults: BatchMatchResults): MatchResults {
     return batchMatchResults.matches[batchMatchResults.matches.length - 1];
 }
 
-// FIXME - This can probably be removed in favor of the reference functions.
 /**
  * Add a new fill results object to a total fill results object destructively.
  * @param total The total fill results that should be updated.
@@ -841,6 +834,7 @@ function addFillResults(total: FillEventArgs, fill: FillEventArgs): void {
     expect(total.orderHash).to.be.eq(fill.orderHash);
     expect(total.makerAddress).to.be.eq(fill.makerAddress);
     expect(total.takerAddress).to.be.eq(fill.takerAddress);
+
     // Add the fill results together
     total.makerAssetFilledAmount = total.makerAssetFilledAmount.plus(fill.makerAssetFilledAmount);
     total.takerAssetFilledAmount = total.takerAssetFilledAmount.plus(fill.takerAssetFilledAmount);

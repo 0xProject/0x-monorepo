@@ -1,5 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { BlockchainBalanceStore } from '@0x/contracts-exchange';
+import { BlockchainBalanceStore, TokenIds } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { toBaseUnitAmount } from '@0x/contracts-staking';
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
@@ -17,23 +17,29 @@ const { isRoundingErrorCeil, isRoundingErrorFloor } = LibReferenceFunctions;
 
 const ZERO = constants.ZERO_AMOUNT;
 
-blockchainTests.resets.only('matchOrders', env => {
+blockchainTests.resets('matchOrders', env => {
+    // The fee recipient addresses.
     let feeRecipientLeft: Actor;
     let feeRecipientRight: Actor;
 
+    // The address that should be responsible for matching orders.
     let matcher: Actor;
 
+    // Market makers who have opposite maker and taker assets.
     let makerLeft: Maker;
     let makerRight: Maker;
 
+    // The addresses of important assets for testing.
     let makerAssetAddressLeft: string;
     let makerAssetAddressRight: string;
     let feeAssetAddress: string;
 
+    let deployment: DeploymentManager;
     let matchOrderTester: MatchOrderTester;
 
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider, txDefaults);
-    let deployment: DeploymentManager;
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
+    let leftId: BigNumber;
+    let rightId: BigNumber;
 
     const PROTOCOL_FEE = DeploymentManager.protocolFeeMultiplier.times(constants.DEFAULT_GAS_PRICE);
 
@@ -99,6 +105,13 @@ blockchainTests.resets.only('matchOrders', env => {
             feeRecipientRight.configureERC20TokenAsync(deployment.tokens.weth),
         ]);
 
+        leftId = await makerLeft.configureERC1155TokenAsync(deployment.tokens.erc1155[0]);
+        [rightId] = await makerRight.configureERC721TokenAsync(deployment.tokens.erc721[0]);
+
+        const tokenIds: TokenIds = { erc721: {}, erc1155: {} };
+        tokenIds.erc1155[deployment.tokens.erc1155[0].address] = { fungible: [leftId], nonFungible: [] };
+        tokenIds.erc721[deployment.tokens.erc721[0].address] = [rightId];
+
         const blockchainBalanceStore = new BlockchainBalanceStore(
             {
                 feeRecipientLeft: feeRecipientLeft.address,
@@ -115,8 +128,14 @@ blockchainTests.resets.only('matchOrders', env => {
                     feeToken: deployment.tokens.erc20[2],
                     weth: deployment.tokens.weth,
                 },
+                erc721: {
+                    token: deployment.tokens.erc721[0],
+                },
+                erc1155: {
+                    token: deployment.tokens.erc1155[0],
+                },
             },
-            {},
+            tokenIds,
         );
 
         matchOrderTester = new MatchOrderTester(deployment, blockchainBalanceStore);
@@ -2418,39 +2437,6 @@ blockchainTests.resets.only('matchOrders', env => {
         });
     });
 
-    /* FIXME
-                const leftMakerAssetAmount = _.includes(fungibleTypes, combo.leftMaker)
-                    ? toBaseUnitAmount(15, 18)
-                    : toBaseUnitAmount(1, 0);
-                const leftTakerAssetAmount = _.includes(fungibleTypes, combo.rightMaker)
-                    ? toBaseUnitAmount(30, 18)
-                    : toBaseUnitAmount(1, 0);
-                const rightMakerAssetAmount = _.includes(fungibleTypes, combo.rightMaker)
-                    ? toBaseUnitAmount(30, 18)
-                    : toBaseUnitAmount(1, 0);
-                const rightTakerAssetAmount = _.includes(fungibleTypes, combo.leftMaker)
-                    ? toBaseUnitAmount(14, 18)
-                    : toBaseUnitAmount(1, 0);
-                const leftMakerFeeAssetAmount = _.includes(fungibleTypes, combo.leftMakerFee)
-                    ? toBaseUnitAmount(8, 12)
-                    : toBaseUnitAmount(1, 0);
-                const rightMakerFeeAssetAmount = _.includes(fungibleTypes, combo.rightMakerFee)
-                    ? toBaseUnitAmount(7, 12)
-                    : toBaseUnitAmount(1, 0);
-                const leftTakerFeeAssetAmount = _.includes(fungibleTypes, combo.leftTakerFee)
-                    ? toBaseUnitAmount(6, 12)
-                    : toBaseUnitAmount(1, 0);
-                const rightTakerFeeAssetAmount = _.includes(fungibleTypes, combo.rightTakerFee)
-                    ? toBaseUnitAmount(5, 12)
-                    : toBaseUnitAmount(1, 0);
-                const leftMakerAssetReceivedByTakerAmount = _.includes(fungibleTypes, combo.leftMaker)
-                    ? leftMakerAssetAmount.minus(rightTakerAssetAmount)
-                    : toBaseUnitAmount(0, 0);
-                const rightMakerAssetReceivedByTakerAmount = _.includes(fungibleTypes, combo.leftMaker)
-                    ? rightMakerAssetAmount.minus(leftTakerAssetAmount)
-                    : toBaseUnitAmount(0, 0);
-                    */
-
     describe('batchMatchOrders and batchMatchOrdersWithMaximalFill rich errors', async () => {
         it('should fail if there are zero leftOrders with the ZeroLeftOrders rich error reason', async () => {
             const leftOrders: SignedOrder[] = [];
@@ -3146,6 +3132,59 @@ blockchainTests.resets.only('matchOrders', env => {
                 [[0, 0], [1, 0], [1, 1]],
                 expectedTransferAmounts,
                 true,
+            );
+        });
+    });
+
+    describe('token sanity checks', () => {
+        it('should be able to match ERC721 tokens with ERC1155 tokens', async () => {
+            const leftMakerAssetData = assetDataUtils.encodeERC1155AssetData(
+                deployment.tokens.erc1155[0].address,
+                [leftId],
+                [new BigNumber(1)],
+                '0x',
+            );
+            const rightMakerAssetData = assetDataUtils.encodeERC721AssetData(
+                deployment.tokens.erc721[0].address,
+                rightId,
+            );
+
+            const signedOrderLeft = await makerLeft.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(100, 0),
+                takerAssetAmount: toBaseUnitAmount(1, 0),
+                makerAssetData: leftMakerAssetData,
+                takerAssetData: rightMakerAssetData,
+            });
+            const signedOrderRight = await makerRight.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(1, 0),
+                takerAssetAmount: toBaseUnitAmount(100, 0),
+                makerAssetData: rightMakerAssetData,
+                takerAssetData: leftMakerAssetData,
+            });
+
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(100, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(1, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                leftProtocolFeePaidByTakerAmount: PROTOCOL_FEE,
+                rightProtocolFeePaidByTakerAmount: PROTOCOL_FEE,
+            };
+
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                expectedTransferAmounts,
+                matcher.address,
+                PROTOCOL_FEE.times(2),
+                false,
             );
         });
     });

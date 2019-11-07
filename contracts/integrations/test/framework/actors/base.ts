@@ -1,3 +1,4 @@
+import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { constants, getRandomInteger, TransactionFactory } from '@0x/contracts-test-utils';
@@ -93,6 +94,37 @@ export class Actor {
                 from: this.address,
             });
         return tokenIds;
+    }
+
+    /**
+     * Mints some number of ERC1115 fungible tokens and approves a spender (defaults to the ERC1155 asset proxy)
+     * to transfer the token.
+     */
+    public async configureERC1155TokenAsync(
+        token: ERC1155MintableContract,
+        spender?: string,
+        amount?: BigNumber,
+    ): Promise<BigNumber> {
+        // Create a fungible token.
+        const id = await token.create.callAsync('', false, { from: this.address });
+        await token.create.awaitTransactionSuccessAsync('', false, { from: this.address });
+
+        // Mint the token
+        await token.mintFungible.awaitTransactionSuccessAsync(
+            id,
+            [this.address],
+            [amount || constants.INITIAL_ERC20_BALANCE],
+            { from: this.address },
+        );
+
+        // Set approval for all token types for the spender.
+        await token.setApprovalForAll.awaitTransactionSuccessAsync(
+            spender || this.deployment.assetProxies.erc1155Proxy.address,
+            true,
+            { from: this.address },
+        );
+
+        return id;
     }
 
     /**
