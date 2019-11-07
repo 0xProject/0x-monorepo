@@ -9,10 +9,6 @@ import { AssertionResult } from '../utils/function_assertions';
 import { Simulation, SimulationEnvironment } from './simulation';
 
 export class PoolManagementSimulation extends Simulation {
-    constructor(environment: SimulationEnvironment) {
-        super(environment);
-    }
-
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
         const { deployment } = this.environment;
         const operator = new PoolOperator({
@@ -41,7 +37,8 @@ blockchainTests.skip('Pool management fuzz test', env => {
         });
         const balanceStore = new BlockchainBalanceStore({}, {});
 
-        const sim = new PoolManagementSimulation({ balanceStore, deployment });
-        return sim.fuzzAsync();
+        const simulationEnv = new SimulationEnvironment(deployment, balanceStore);
+        const simulation = new PoolManagementSimulation(simulationEnv);
+        return simulation.fuzzAsync();
     });
 });

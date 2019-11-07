@@ -1,8 +1,8 @@
-import { Numberish } from '@0x/contracts-test-utils';
+import { constants, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
-import { constants } from './constants';
+import { constants as stakingConstants } from './constants';
 
 export interface StakingParams {
     epochDurationInSeconds: Numberish;
@@ -57,10 +57,12 @@ export interface EndOfEpochInfo {
     totalWeightedStake: BigNumber;
 }
 
-export interface StoredBalance {
-    currentEpoch: BigNumber;
-    currentEpochBalance: BigNumber;
-    nextEpochBalance: BigNumber;
+export class StoredBalance {
+    constructor(
+        public currentEpoch: BigNumber = stakingConstants.INITIAL_EPOCH,
+        public currentEpochBalance: BigNumber = constants.ZERO_AMOUNT,
+        public nextEpochBalance: BigNumber = constants.ZERO_AMOUNT,
+    ) {}
 }
 
 export interface StakeBalanceByPool {
@@ -73,13 +75,7 @@ export enum StakeStatus {
 }
 
 export class StakeInfo {
-    public status: StakeStatus;
-    public poolId: string;
-
-    constructor(status: StakeStatus, poolId?: string) {
-        this.status = status;
-        this.poolId = poolId !== undefined ? poolId : constants.NIL_POOL_ID;
-    }
+    constructor(public status: StakeStatus, public poolId: string = stakingConstants.NIL_POOL_ID) {}
 }
 
 export interface StakeBalances {
@@ -128,3 +124,33 @@ export interface DelegatorsByPoolId {
 }
 
 export type DecodedLogs = Array<LogWithDecodedArgs<DecodedLogArgs>>;
+
+// mapping (uint8 => IStructs.StoredBalance) internal _globalStakeByStatus;
+export interface GlobalStakeByStatus {
+    [StakeStatus.Undelegated]: StoredBalance;
+    [StakeStatus.Delegated]: StoredBalance;
+}
+
+/*
+ * A combination of:
+ * mapping (uint8 => mapping (address => IStructs.StoredBalance)) internal _ownerStakeByStatus;
+ * and
+ * mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
+ */
+export interface OwnerStakeByStatus {
+    [StakeStatus.Undelegated]: StoredBalance;
+    [StakeStatus.Delegated]: {
+        total: StoredBalance;
+        [poolId: string]: StoredBalance;
+    };
+}
+
+export interface StakingPool {
+    operator: string;
+    operatorShare: number;
+    delegatedStake: StoredBalance;
+}
+
+export interface StakingPoolById {
+    [poolId: string]: StakingPool;
+}

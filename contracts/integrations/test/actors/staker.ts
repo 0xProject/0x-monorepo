@@ -1,9 +1,10 @@
-import { BlockchainBalanceStore } from '@0x/contracts-exchange';
-import { StakeInfo, StakeStatus } from '@0x/contracts-staking';
+import { OwnerStakeByStatus, StakeInfo, StakeStatus, StoredBalance } from '@0x/contracts-staking';
 import { getRandomInteger } from '@0x/contracts-test-utils';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
-import { validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
+import { validMoveStakeAssertion, validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
+import { SimulationEnvironment } from '../simulation/simulation';
 import { AssertionResult } from '../utils/function_assertions';
 
 import { Actor, Constructor } from './base';
@@ -18,6 +19,7 @@ export interface StakerInterface {
  */
 export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<StakerInterface> {
     return class extends Base {
+        public stake: OwnerStakeByStatus;
         public readonly actor: Actor;
 
         /**
@@ -29,14 +31,18 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.stake = {
+                [StakeStatus.Undelegated]: new StoredBalance(),
+                [StakeStatus.Delegated]: { total: new StoredBalance() },
+            };
 
             // Register this mixin's assertion generators
             if (this.actor.simulationEnvironment !== undefined) {
-                const { balanceStore } = this.actor.simulationEnvironment;
                 this.actor.simulationActions = {
                     ...this.actor.simulationActions,
-                    validStake: this._validStake(balanceStore),
-                    validUnstake: this._validUnstake(balanceStore),
+                    validStake: this._validStake(this.actor.simulationEnvironment),
+                    validUnstake: this._validUnstake(this.actor.simulationEnvironment),
+                    validMoveStake: this._validMoveStake(this.actor.simulationEnvironment),
                 };
             }
         }
@@ -60,25 +66,30 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             }
         }
 
-        private async *_validStake(balanceStore: BlockchainBalanceStore): AsyncIterableIterator<AssertionResult> {
+        private async *_validStake(
+            simulationEnvironment: SimulationEnvironment,
+        ): AsyncIterableIterator<AssertionResult> {
             const { zrx } = this.actor.deployment.tokens;
-            const assertion = validStakeAssertion(this.actor.deployment, balanceStore);
+            const { deployment, balanceStore, globalStake } = simulationEnvironment;
+            const assertion = validStakeAssertion(deployment, balanceStore, globalStake, this.stake);
 
             while (true) {
-                await balanceStore.updateErc20BalancesAsync();
-                const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
+                await simulationEnvironment.balanceStore.updateErc20BalancesAsync();
+                const zrxBalance = simulationEnvironment.balanceStore.balances.erc20[this.actor.address][zrx.address];
                 const amount = getRandomInteger(0, zrxBalance);
-                logUtils.log(`stake(${amount})`);
                 yield assertion.executeAsync(amount, { from: this.actor.address });
             }
         }
 
-        private async *_validUnstake(balanceStore: BlockchainBalanceStore): AsyncIterableIterator<AssertionResult> {
+        private async *_validUnstake(
+            simulationEnvironment: SimulationEnvironment,
+        ): AsyncIterableIterator<AssertionResult> {
             const { stakingWrapper } = this.actor.deployment.staking;
-            const assertion = validUnstakeAssertion(this.actor.deployment, balanceStore);
+            const { deployment, balanceStore, globalStake } = simulationEnvironment;
+            const assertion = validUnstakeAssertion(deployment, balanceStore, globalStake, this.stake);
 
             while (true) {
-                await balanceStore.updateErc20BalancesAsync();
+                await simulationEnvironment.balanceStore.updateErc20BalancesAsync();
                 const undelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
                     this.actor.address,
                     StakeStatus.Undelegated,
@@ -88,8 +99,43 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.nextEpochBalance,
                 );
                 const amount = getRandomInteger(0, withdrawableStake);
-                logUtils.log(`unstake(${amount})`);
                 yield assertion.executeAsync(amount, { from: this.actor.address });
+            }
+        }
+
+        private async *_validMoveStake(
+            simulationEnvironment: SimulationEnvironment,
+        ): AsyncIterableIterator<AssertionResult> {
+            const { deployment, globalStake } = simulationEnvironment;
+            const assertion = validMoveStakeAssertion(
+                deployment,
+                globalStake,
+                this.stake,
+                simulationEnvironment.stakingPools,
+            );
+
+            while (true) {
+                const fromPoolId = _.sample(Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])));
+                const fromStatus =
+                    fromPoolId === undefined
+                        ? StakeStatus.Undelegated
+                        : (_.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                const from = new StakeInfo(fromStatus, fromPoolId);
+
+                const toPoolId = _.sample(Object.keys(simulationEnvironment.stakingPools));
+                const toStatus =
+                    toPoolId === undefined
+                        ? StakeStatus.Undelegated
+                        : (_.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                const to = new StakeInfo(toStatus, toPoolId);
+
+                const moveableStake =
+                    from.status === StakeStatus.Undelegated
+                        ? this.stake[StakeStatus.Undelegated].nextEpochBalance
+                        : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
+                const amount = getRandomInteger(0, moveableStake);
+
+                yield assertion.executeAsync(from, to, amount, { from: this.actor.address });
             }
         }
     };

@@ -1,3 +1,4 @@
+import { StakingPoolById } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { logUtils } from '@0x/utils';
 
@@ -10,18 +11,17 @@ import { FunctionAssertion, FunctionResult } from '../utils/function_assertions'
  */
 export function validDecreaseStakingPoolOperatorShareAssertion(
     deployment: DeploymentManager,
-    context?: any,
+    pools: StakingPoolById,
 ): FunctionAssertion<{}> {
     const { stakingWrapper } = deployment.staking;
 
     return new FunctionAssertion<{}>(stakingWrapper.decreaseStakingPoolOperatorShare, {
         after: async (_beforeInfo, _result: FunctionResult, poolId: string, expectedOperatorShare: number) => {
+            logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
+
             const { operatorShare } = await stakingWrapper.getStakingPool.callAsync(poolId);
             expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
-            logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
-            if (context !== undefined) {
-                context.operatorShares[poolId] = operatorShare;
-            }
+            pools[poolId].operatorShare = operatorShare;
         },
     });
 }

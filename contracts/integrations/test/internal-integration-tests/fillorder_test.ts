@@ -35,6 +35,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
     let delegator: StakerKeeper;
 
     let poolId: string;
+    let operatorShare: number;
 
     before(async () => {
         deployment = await DeploymentManager.deployAsync(env, {
@@ -79,7 +80,8 @@ blockchainTests.resets('fillOrder integration tests', env => {
         await delegator.configureERC20TokenAsync(deployment.tokens.zrx);
 
         // Create a staking pool with the operator as a maker.
-        poolId = await operator.createStakingPoolAsync(stakingConstants.PPM * 0.95, true);
+        operatorShare = stakingConstants.PPM * 0.95;
+        poolId = await operator.createStakingPoolAsync(operatorShare, true);
         // A vanilla maker joins the pool as well.
         await maker.joinStakingPoolAsync(poolId);
 
@@ -283,7 +285,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
 
         // The rewards are split between the operator and delegator based on the pool's operatorShare
         const operatorReward = rewardsAvailable
-            .times(operator.operatorShares[poolId])
+            .times(operatorShare)
             .dividedToIntegerBy(constants.PPM_DENOMINATOR);
         const delegatorReward = rewardsAvailable.minus(operatorReward);
 
@@ -364,7 +366,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
 
         // The rewards are split between the operator and delegator based on the pool's operatorShare
         const operatorReward = rewardsAvailable
-            .times(operator.operatorShares[poolId])
+            .times(operatorShare)
             .dividedToIntegerBy(constants.PPM_DENOMINATOR);
 
         // Finalize the pool. This should automatically pay the operator in WETH.

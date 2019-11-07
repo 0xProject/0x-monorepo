@@ -1,5 +1,7 @@
+import { StakingPoolById, StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
+import { TxData } from 'ethereum-types';
 
 import { DeploymentManager } from '../utils/deployment_manager';
 import { FunctionAssertion, FunctionResult } from '../utils/function_assertions';
@@ -12,7 +14,7 @@ import { FunctionAssertion, FunctionResult } from '../utils/function_assertions'
  */
 export function validCreateStakingPoolAssertion(
     deployment: DeploymentManager,
-    context?: any,
+    pools: StakingPoolById,
 ): FunctionAssertion<string> {
     const { stakingWrapper } = deployment.staking;
 
@@ -29,14 +31,18 @@ export function validCreateStakingPoolAssertion(
             result: FunctionResult,
             operatorShare: number,
             addOperatorAsMaker: boolean,
+            txData: Partial<TxData>,
         ) => {
+            logUtils.log(`createStakingPool(${operatorShare}, ${addOperatorAsMaker}) => ${expectedPoolId}`);
+
             const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
             const actualPoolId = (log as any).args.poolId;
             expect(actualPoolId).to.equal(expectedPoolId);
-            logUtils.log(`createStakingPool(${operatorShare}, ${addOperatorAsMaker}) => ${actualPoolId}`);
-            if (context !== undefined) {
-                context.operatorShares[actualPoolId] = operatorShare;
-            }
+            pools[actualPoolId] = {
+                operator: txData.from as string,
+                operatorShare,
+                delegatedStake: new StoredBalance(),
+            };
         },
     });
 }
