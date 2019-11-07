@@ -14,6 +14,10 @@ export interface ConfigsByChain {
 }
 
 // tslint:disable custom-no-magic-numbers
+/**
+ * Gets configs that correspond to the given chainId.
+ * @param chainId Id of the netowrk.
+ */
 export function getConfigsByChainId(chainId: number): ConfigsByChain {
     const mainnetConfigs = {
         zeroExGovernor: {

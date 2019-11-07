@@ -150,11 +150,18 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     logUtils.log('ERC20BridgeProxy configured!');
 
     logUtils.log('Configuring ZrxVault...');
+    await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
+    await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address);
+    await zrxVault.removeAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
     await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
     await zrxVault.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('ZrxVault configured!');
 
     logUtils.log('Configuring StakingProxy...');
+    await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
+    const staking = new StakingContract(stakingProxy.address, provider, txDefaults);
+    await staking.addExchangeAddress.awaitTransactionSuccessAsync(exchange.address);
+    await stakingProxy.removeAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
     await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
     await stakingProxy.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('StakingProxy configured!');
@@ -189,16 +196,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     logUtils.log('Ownership transferred!');
 
     const functionCalls = [
-        // ZrxVault configs
-        {
-            destination: zrxVault.address,
-            data: zrxVault.setStakingProxy.getABIEncodedTransactionData(stakingProxy.address),
-        },
-        // Staking configs
-        {
-            destination: stakingProxy.address,
-            data: stakingLogic.addExchangeAddress.getABIEncodedTransactionData(exchange.address),
-        },
         // AssetProxy configs
         {
             destination: deployedAddresses.erc20Proxy,

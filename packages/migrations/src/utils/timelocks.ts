@@ -14,6 +14,10 @@ export interface TimelockRegistration {
     secondsTimeLocked: BigNumber;
 }
 
+/**
+ * Gets the custom timelock configs that correspond the the network of the given provider.
+ * @param provider Web3 provider instance.
+ */
 export async function getTimelockRegistrationsAsync(provider: SupportedProvider): Promise<TimelockRegistration[]> {
     const web3Wrapper = new Web3Wrapper(provider);
     const chainId = await web3Wrapper.getChainIdAsync();
