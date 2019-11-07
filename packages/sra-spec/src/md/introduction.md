@@ -34,26 +34,26 @@ All endpoints that are paginated should return a `total`, `page`, `perPage` and 
 
 These requests include the [`/v3/asset_pairs`](#operation/getAssetPairs), [`/v3/orders`](#operation/getOrders), [`/v3/fee_recipients`](#operation/getFeeRecipients) and [`/v3/orderbook`](#operation/getOrderbook) endpoints.
 
-# Network Id
+# Chain Id
 
-All requests should be able to specify a **?networkId** query param for all supported networks. For example:
+All requests should be able to specify a **?chainId** query param for all supported chains. For example:
 
 ```bash
-$ curl https://api.example-relayer.com/v3/asset_pairs?networkId=1
+$ curl https://api.example-relayer.com/v3/asset_pairs?chainId=1
 ```
 
 If the query param is not provided, it should default to **1** (mainnet).
 
-Networks and their Ids:
+Chains and their Ids:
 
-| Network Id | Network Name |
-| ---------- | ------------ |
-| 1          | Mainnet      |
-| 42         | Kovan        |
-| 3          | Ropsten      |
-| 4          | Rinkeby      |
+| Chain Id | Chain Name |
+| -------- | ---------- |
+| 1        | Mainnet    |
+| 42       | Kovan      |
+| 3        | Ropsten    |
+| 4        | Rinkeby    |
 
-If a certain network is not supported, the response should **400** as specified in the [error response](#section/Errors) section. For example:
+If a certain chain is not supported, the response should **400** as specified in the [error response](#section/Errors) section. For example:
 
 ```json
 {
@@ -61,9 +61,9 @@ If a certain network is not supported, the response should **400** as specified 
     "reason": "Validation failed",
     "validationErrors": [
         {
-            "field": "networkId",
+            "field": "chainId",
             "code": 1006,
-            "reason": "Network id 42 is not supported"
+            "reason": "Chain id 42 is not supported"
         }
     ]
 }

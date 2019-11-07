@@ -2,11 +2,15 @@
 
 """setuptools module for order_utils package."""
 
+# pylint: disable=import-outside-toplevel
+# we import things outside of top-level because 3rd party libs may not yet be
+# installed when you invoke this script
+
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path
 from pathlib import Path
-from sys import argv
+from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from distutils.command.clean import clean
 import distutils.command.build_py
@@ -152,7 +156,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-order-utils",
-    version="3.0.1",
+    version="4.0.0",
     description="Order utilities for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",

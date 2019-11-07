@@ -19,7 +19,7 @@ Install the package with pip::
     pip install 0x-sra-client
 
 To interact with a 0x Relayer, you need the HTTP endpoint of the Relayer you'd
-like to connect to (eg https://api.radarrelay.com/0x/v2).
+like to connect to (eg https://api.radarrelay.com/0x/v3).
 
 For testing one can use the `0x-launch-kit-backend
 <https://github.com/0xProject/0x-launch-kit-backend#table-of-contents/>`_ to host
@@ -69,10 +69,10 @@ To start, connect to the Ethereum network:
 >>> from web3 import HTTPProvider, Web3
 >>> eth_node = HTTPProvider("http://localhost:8545")
 
-What network is it?
+What chain are we on?
 
->>> from zero_ex.contract_addresses import NetworkId
->>> network_id = NetworkId.GANACHE  # you might use .MAINNET or .KOVAN
+>>> from zero_ex.contract_addresses import ChainId
+>>> chain_id = ChainId.GANACHE  # you might use .MAINNET or .KOVAN
 
 For our Maker role, we'll just use the first address available in the node:
 
@@ -83,8 +83,8 @@ for this account, so the example orders below have the maker trading away ZRX.
 Before such an order can be valid, though, the maker must give the 0x contracts
 permission to trade their ZRX tokens:
 
->>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES
->>> contract_addresses = NETWORK_TO_ADDRESSES[network_id]
+>>> from zero_ex.contract_addresses import chain_to_addresses
+>>> contract_addresses = chain_to_addresses(chain_id)
 >>>
 >>> from zero_ex.contract_artifacts import abi_by_name
 >>> zrx_token_contract = Web3(eth_node).eth.contract(
@@ -105,7 +105,8 @@ Post Order
 
 Post an order for our Maker to trade ZRX for WETH:
 
->>> from zero_ex.contract_wrappers.exchange.types import Order, order_to_jsdict
+>>> from zero_ex.contract_wrappers.exchange.types import Order
+>>> from zero_ex.contract_wrappers.order_conversions import order_to_jsdict
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
 ...     sign_hash)
@@ -120,9 +121,11 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     makerAssetData=asset_data_utils.encode_erc20(
 ...         contract_addresses.zrx_token
 ...     ),
+...     makerFeeAssetData=asset_data_utils.encode_erc20('0x'+'00'*20),
 ...     takerAssetData=asset_data_utils.encode_erc20(
 ...         contract_addresses.ether_token
 ...     ),
+...     takerFeeAssetData=asset_data_utils.encode_erc20('0x'+'00'*20),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -135,16 +138,17 @@ Post an order for our Maker to trade ZRX for WETH:
 
 >>> from zero_ex.order_utils import generate_order_hash_hex
 >>> order_hash_hex = generate_order_hash_hex(
-...     order, contract_addresses.exchange
+...     order, contract_addresses.exchange, Web3(eth_node).eth.chainId
 ... )
 >>> relayer.post_order_with_http_info(
-...     network_id=network_id.value,
+...     chain_id=chain_id.value,
 ...     signed_order_schema=order_to_jsdict(
 ...         order=order,
 ...         exchange_address=contract_addresses.exchange,
 ...         signature=sign_hash(
 ...             eth_node, Web3.toChecksumAddress(maker_address), order_hash_hex
-...         )
+...         ),
+...         chain_id=Web3(eth_node).eth.chainId,
 ...     )
 ... )[1]
 200
@@ -152,24 +156,35 @@ Post an order for our Maker to trade ZRX for WETH:
 Get Order
 ---------
 
+(But first sleep for a moment, to give the test relayer a chance to start up.
+
+>>> from time import sleep
+>>> sleep(0.2)
+
+This is necessary for automated verification of these examples.)
+
 Retrieve the order we just posted:
 
 >>> relayer.get_order("0x" + order_hash_hex)
-{'meta_data': {},
- 'order': {'exchangeAddress': '0x...',
+{'meta_data': {'orderHash': '0x...',
+               'remainingFillableTakerAssetAmount': '2'},
+ 'order': {'chainId': 50,
+           'exchangeAddress': '0x...',
            'expirationTimeSeconds': '...',
            'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
            'makerAddress': '0x...',
            'makerAssetAmount': '2',
            'makerAssetData': '0xf47261b0000000000000000000000000...',
            'makerFee': '0',
+           'makerFeeAssetData': '0xf47261b0000000000000000000000000...',
            'salt': '...',
            'senderAddress': '0x0000000000000000000000000000000000000000',
            'signature': '0x...',
            'takerAddress': '0x0000000000000000000000000000000000000000',
            'takerAssetAmount': '2',
            'takerAssetData': '0xf47261b0000000000000000000000000...',
-           'takerFee': '0'}}
+           'takerFee': '0',
+           'takerFeeAssetData': '0xf47261b0000000000000000000000000...'}}
 
 Get Orders
 -----------
@@ -178,21 +193,25 @@ Retrieve all of the Relayer's orders, a set which at this point consists solely
 of the one we just posted:
 
 >>> relayer.get_orders()
-{'records': [{'meta_data': {},
-              'order': {'exchangeAddress': '0x...',
+{'records': [{'meta_data': {'orderHash': '0x...',
+                            'remainingFillableTakerAssetAmount': '2'},
+              'order': {'chainId': 50,
+                        'exchangeAddress': '0x...',
                         'expirationTimeSeconds': '...',
                         'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
                         'makerAddress': '0x...',
                         'makerAssetAmount': '2',
                         'makerAssetData': '0xf47261b000000000000000000000000...',
                         'makerFee': '0',
+                        'makerFeeAssetData': '0xf47261b000000000000000000000000...',
                         'salt': '...',
                         'senderAddress': '0x0000000000000000000000000000000000000000',
                         'signature': '0x...',
                         'takerAddress': '0x0000000000000000000000000000000000000000',
                         'takerAssetAmount': '2',
                         'takerAssetData': '0xf47261b0000000000000000000000000...',
-                        'takerFee': '0'}}]}
+                        'takerFee': '0',
+                        'takerFeeAssetData': '0xf47261b0000000000000000000000000...'}}...]}
 
 Get Asset Pairs
 ---------------
@@ -233,43 +252,50 @@ consists just of our order):
 ...     ).hex(),
 ... )
 >>> orderbook
-{'asks': {'records': []},
- 'bids': {'records': [{'meta_data': {},
-                       'order': {'exchangeAddress': '0x...',
+{'asks': {'records': [...]},
+ 'bids': {'records': [{'meta_data': {'orderHash': '0x...',
+                                     'remainingFillableTakerAssetAmount': '2'},
+                       'order': {'chainId': 50,
+                                 'exchangeAddress': '0x...',
                                  'expirationTimeSeconds': '...',
                                  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
                                  'makerAddress': '0x...',
                                  'makerAssetAmount': '2',
                                  'makerAssetData': '0xf47261b0000000000000000000000000...',
                                  'makerFee': '0',
+                                 'makerFeeAssetData': '0xf47261b0000000000000000000000000...',
                                  'salt': '...',
                                  'senderAddress': '0x0000000000000000000000000000000000000000',
                                  'signature': '0x...',
                                  'takerAddress': '0x0000000000000000000000000000000000000000',
                                  'takerAssetAmount': '2',
                                  'takerAssetData': '0xf47261b0000000000000000000000000...',
-                                 'takerFee': '0'}}]}}
+                                 'takerFee': '0',
+                                 'takerFeeAssetData': '0xf47261b0000000000000000000000000...'}}...]}}
 
 Select an order from the orderbook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
->>> from zero_ex.contract_wrappers.exchange.types import jsdict_to_order
+>>> from zero_ex.contract_wrappers.order_conversions import jsdict_to_order
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)
-{'expirationTimeSeconds': ...,
+{'chainId': 50,
+ 'expirationTimeSeconds': ...,
  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',
  'makerAssetAmount': 2,
  'makerAssetData': b...
  'makerFee': 0,
+ 'makerFeeAssetData': b...
  'salt': ...,
  'senderAddress': '0x0000000000000000000000000000000000000000',
  'signature': '0x...',
  'takerAddress': '0x0000000000000000000000000000000000000000',
  'takerAssetAmount': 2,
- 'takerAssetData': b...
- 'takerFee': 0}
+ 'takerAssetData': b...,
+ 'takerFee': 0,
+ 'takerFeeAssetData': b...}
 
 Filling or Cancelling an Order
 ------------------------------
@@ -319,8 +345,8 @@ book.  Now let's have the taker fill it:
 >>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> from zero_ex.order_utils import Order
 >>> exchange = Exchange(
-...     provider=eth_node,
-...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+...     web3_or_provider=eth_node,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).exchange
 ... )
 
 (Due to `an Issue with the Launch Kit Backend
@@ -331,7 +357,7 @@ checksum the address in the order before filling it.)
 >>> exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
-...     signature=order['signature'].replace('0x', '').encode('utf-8'),
+...     signature=bytes.fromhex(order['signature'].replace('0x', '')),
 ...     tx_params=TxParams(from_=taker_address)
 ... )
 HexBytes('0x...')

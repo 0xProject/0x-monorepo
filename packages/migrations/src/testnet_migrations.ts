@@ -1,4 +1,4 @@
-import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { artifacts as assetProxyArtifacts, ERC20BridgeProxyContract } from '@0x/contracts-asset-proxy';
 import { artifacts as coordinatorArtifacts, CoordinatorContract } from '@0x/contracts-coordinator';
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
@@ -17,7 +17,6 @@ import {
 } from '@0x/contracts-staking';
 import { IAuthorizableContract, IOwnableContract } from '@0x/contracts-utils';
 import { AbiEncoder, BigNumber, logUtils, providerUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs, SupportedProvider, TxData } from 'ethereum-types';
 
 import { constants } from './utils/constants';
@@ -47,10 +46,8 @@ async function submitAndExecuteTransactionAsync(
  */
 export async function runMigrationsAsync(supportedProvider: SupportedProvider, txDefaults: TxData): Promise<void> {
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
-    const web3Wrapper = new Web3Wrapper(provider);
-    const networkId = await web3Wrapper.getNetworkIdAsync();
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
-    const deployedAddresses = getContractAddressesForNetworkOrThrow(networkId);
+    const deployedAddresses = getContractAddressesForChainOrThrow(chainId.toNumber());
 
     // NOTE: This must be deployed before running these migrations, since its address is hard coded in the
     // staking logic contract.

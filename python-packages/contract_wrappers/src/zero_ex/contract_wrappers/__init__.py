@@ -48,14 +48,14 @@ Contract Addresses
 
 The `0x-contract-addresses`:code: package (which is used by
 `0x-contract-wrappers`:code: and thus gets installed along with it) provides
-the addresses of the 0x contracts on each network, including those that come
+the addresses of the 0x contracts on each chain, including those that come
 pre-deployed deployed in the `0xorg/ganache-cli`:code: docker image.  Let's
 capture the addresses we'll use throughout the examples below:
 
->>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
->>> weth_address     = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
->>> zrx_address      = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+>>> from zero_ex.contract_addresses import chain_to_addresses, ChainId
+>>> weth_address     = chain_to_addresses(ChainId.GANACHE).ether_token
+>>> zrx_address      = chain_to_addresses(ChainId.GANACHE).zrx_token
+>>> exchange_address = chain_to_addresses(ChainId.GANACHE).exchange
 
 Wrapping ETH
 ------------
@@ -92,15 +92,15 @@ balance:
 
 >>> from zero_ex.contract_wrappers.erc20_token import ERC20Token
 >>> zrx_token = ERC20Token(
-...     provider=ganache,
-...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
+...     web3_or_provider=ganache,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).zrx_token,
 ... )
 >>> weth_token = ERC20Token(
-...     provider=ganache,
-...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
+...     web3_or_provider=ganache,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).ether_token,
 ... )
 
->>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
+>>> erc20_proxy_addr = chain_to_addresses(ChainId.GANACHE).erc20_proxy
 
 >>> tx = zrx_token.approve.send_transaction(
 ...     erc20_proxy_addr,
@@ -135,16 +135,20 @@ Constructing an order
 ...     takerAssetAmount=to_wei(0.1, 'ether'),
 ...     expirationTimeSeconds=round(
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
-...     )
+...     ),
+...     makerFeeAssetData='0x',
+...     takerFeeAssetData='0x',
 ... )
 
 For this order to be valid, our Maker must sign a hash of it:
 
 >>> from zero_ex.order_utils import generate_order_hash_hex
->>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
+>>> order_hash_hex = generate_order_hash_hex(
+...     order, exchange_address, Web3(ganache).eth.chainId
+... )
 
->>> from zero_ex.order_utils import sign_hash_to_bytes
->>> maker_signature = sign_hash_to_bytes(
+>>> from zero_ex.order_utils import sign_hash
+>>> maker_signature = sign_hash(
 ...     ganache, Web3.toChecksumAddress(maker_address), order_hash_hex
 ... )
 
@@ -156,16 +160,37 @@ more information on working with Relayers, see `the documentation for
 Filling an order
 ----------------
 
-Now our Taker will fill the order.  The `takerAssetAmount`:code: parameter
-specifies the amount of tokens (in this case WETH) that the taker wants to
-fill.  This example fills the order completely, but partial fills are possible
-too.
+Now we'll have our Taker fill the order.
 
 >>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> exchange = Exchange(
-...     provider=ganache,
-...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
+...     web3_or_provider=ganache,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).exchange,
 ... )
+
+But before filling an order, one may wish to check that it's actually fillable:
+
+>>> from zero_ex.contract_wrappers.exchange.types import OrderStatus
+>>> OrderStatus(exchange.get_order_info.call(order)[0])
+<OrderStatus.FILLABLE: 3>
+
+The `takerAssetAmount`:code: parameter specifies the amount of tokens (in this
+case WETH) that the taker wants to fill.  This example fills the order
+completely, but partial fills are possible too.
+
+One may wish to first call the method in a read-only way, to ensure that it
+will not revert, and to validate that the return data is as expected:
+
+>>> exchange.fill_order.call(
+...     order=order,
+...     taker_asset_fill_amount=order["takerAssetAmount"],
+...     signature=maker_signature,
+...     tx_params=TxParams(from_=taker_address)
+... )
+(100000000000000000, 100000000000000000, 0, 0, 0)
+
+Finally, submit the transaction:
+
 >>> tx_hash = exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
@@ -184,12 +209,15 @@ the exchange wrapper:
  'makerAddress': '0x...',
  'makerAssetData': b...,
  'makerAssetFilledAmount': 100000000000000000,
+ 'makerFeeAssetData': b...,
  'makerFeePaid': 0,
  'orderHash': b...,
+ 'protocolFeePaid': ...,
  'senderAddress': '0x...',
  'takerAddress': '0x...',
  'takerAssetData': b...,
  'takerAssetFilledAmount': 100000000000000000,
+ 'takerFeeAssetData': b...,
  'takerFeePaid': 0}
 >>> exchange.get_fill_event(tx_hash)[0].args.takerAssetFilledAmount
 100000000000000000
@@ -206,7 +234,9 @@ A Maker can cancel an order that has yet to be filled.
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
 ...     makerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     makerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     takerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -248,7 +278,9 @@ is an example where the taker fills two orders in one transaction:
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
 ...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     makerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     takerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -258,10 +290,12 @@ is an example where the taker fills two orders in one transaction:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> signature_1 = sign_hash_to_bytes(
+>>> signature_1 = sign_hash(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
-...     generate_order_hash_hex(order_1, exchange.contract_address)
+...     generate_order_hash_hex(
+...         order_1, exchange.contract_address, Web3(ganache).eth.chainId
+...     ),
 ... )
 >>> order_2 = Order(
 ...     makerAddress=maker_address,
@@ -269,7 +303,9 @@ is an example where the taker fills two orders in one transaction:
 ...     senderAddress='0x0000000000000000000000000000000000000000',
 ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
 ...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+...     makerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...     takerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...     salt=random.randint(1, 100000000000000000),
 ...     makerFee=0,
 ...     takerFee=0,
@@ -279,10 +315,12 @@ is an example where the taker fills two orders in one transaction:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> signature_2 = sign_hash_to_bytes(
+>>> signature_2 = sign_hash(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
-...     generate_order_hash_hex(order_2, exchange.contract_address)
+...     generate_order_hash_hex(
+...         order_2, exchange.contract_address, Web3(ganache).eth.chainId
+...     ),
 ... )
 
 Fill order_1 and order_2 together:
@@ -308,7 +346,9 @@ will be consumed.
 ...         senderAddress='0x0000000000000000000000000000000000000000',
 ...         feeRecipientAddress='0x0000000000000000000000000000000000000000',
 ...         makerAssetData=asset_data_utils.encode_erc20(weth_address),
+...         makerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...         takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...         takerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
 ...         salt=random.randint(1, 100000000000000000),
 ...         makerFee=0,
 ...         takerFee=0,
@@ -320,7 +360,7 @@ will be consumed.
 ...     ),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
-73...
+74...
 """
 
 from .tx_params import TxParams

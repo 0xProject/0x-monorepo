@@ -64,7 +64,7 @@ describe.skip('CoordinatorWrapper', () => {
         const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const config = {
-            networkId: constants.TESTRPC_NETWORK_ID,
+            chainId: constants.TESTRPC_CHAIN_ID,
             contractAddresses,
             blockPollingIntervalMs: 10,
         };
@@ -110,7 +110,8 @@ describe.skip('CoordinatorWrapper', () => {
         const coordinatorServerConfigs = {
             HTTP_PORT: 3000, // Only used in default instantiation in 0x-coordinator-server/server.js; not used here
             NETWORK_ID_TO_SETTINGS: {
-                [config.networkId]: {
+                // TODO: change to CHAIN_ID_TO_SETTINGS when @0x/coordinator-server is ready
+                [config.chainId]: {
                     FEE_RECIPIENTS: [
                         {
                             ADDRESS: feeRecipientAddressOne,
@@ -137,7 +138,8 @@ describe.skip('CoordinatorWrapper', () => {
                 },
             },
             NETWORK_ID_TO_CONTRACT_ADDRESSES: {
-                [config.networkId]: contractAddresses,
+                // TODO: change to CHAIN_ID_TO_CONTRACT_ADDRESSES when @0x/coordinator-server is ready
+                [config.chainId]: contractAddresses,
             },
             // Optional selective delay on fill requests
             SELECTIVE_DELAY_MS: 0,
@@ -145,7 +147,7 @@ describe.skip('CoordinatorWrapper', () => {
         };
         coordinatorServerApp = await getAppAsync(
             {
-                [config.networkId]: provider,
+                [config.chainId]: provider,
             },
             coordinatorServerConfigs,
             {
@@ -165,7 +167,7 @@ describe.skip('CoordinatorWrapper', () => {
 
         anotherCoordinatorServerApp = await getAppAsync(
             {
-                [config.networkId]: provider,
+                [config.chainId]: provider,
             },
             coordinatorServerConfigs,
             {
@@ -453,7 +455,7 @@ describe.skip('CoordinatorWrapper', () => {
             nock(`${coordinatorEndpoint}${coordinatorPort}`)
                 .post('/v1/request_transaction', () => true)
                 .query({
-                    networkId: 50,
+                    chainId: 1337,
                 })
                 .reply(400, serverValidationError);
         });
@@ -502,7 +504,7 @@ describe.skip('CoordinatorWrapper', () => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
                 .post('/v1/request_transaction', () => true)
                 .query({
-                    networkId: 50,
+                    chainId: 1337,
                 })
                 .reply(200, serverCancellationSuccess);
 
@@ -530,7 +532,7 @@ describe.skip('CoordinatorWrapper', () => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
                 .post('/v1/request_transaction', () => true)
                 .query({
-                    networkId: 50,
+                    chainId: 1337,
                 })
                 .reply(400, serverValidationError);
 
@@ -609,7 +611,7 @@ describe.skip('CoordinatorWrapper', () => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
                 .post('/v1/request_transaction', () => true)
                 .query({
-                    networkId: 50,
+                    chainId: 1337,
                 })
                 .reply(200, serverApprovalSuccess);
 
@@ -638,7 +640,7 @@ describe.skip('CoordinatorWrapper', () => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
                 .post('/v1/request_transaction', () => true)
                 .query({
-                    networkId: 50,
+                    chainId: 1337,
                 })
                 .reply(400, serverValidationError);
 

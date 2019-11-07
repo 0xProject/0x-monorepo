@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.0.0-beta.0",
+        "changes": [
+            {
+                "note": "Exported intefaces changed: from getContractAddressesForNetworkOrThrow to getContractAddressesForChainOrThrow, from NetworkId to ChainId, from ContractNetworks to ContractChains, and from ContractNetworkData to ContractChainData.",
+                "pr": 2313
+            }
+        ]
+    },
+    {
         "version": "7.1.0-beta.0",
         "changes": [
             {

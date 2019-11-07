@@ -18,7 +18,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
-const TESTRPC_NETWORK_ID = 50;
+const TESTRPC_CHAIN_ID = 1337;
 const FILLABLE_AMOUNTS = [new BigNumber(3), new BigNumber(2), new BigNumber(5)].map(value =>
     value.multipliedBy(ONE_ETH_IN_WEI),
 );
@@ -40,7 +40,7 @@ describe('SwapQuoteConsumer', () => {
     let wethAssetData: string;
     let contractAddresses: ContractAddresses;
 
-    const networkId = TESTRPC_NETWORK_ID;
+    const chainId = TESTRPC_CHAIN_ID;
 
     let orders: SignedOrder[];
     let marketSellSwapQuote: SwapQuote;
@@ -52,7 +52,7 @@ describe('SwapQuoteConsumer', () => {
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         const config = {
-            networkId,
+            chainId,
             contractAddresses,
         };
         contractWrappers = new ContractWrappers(provider, config);
@@ -103,7 +103,7 @@ describe('SwapQuoteConsumer', () => {
         );
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {
-            networkId,
+            chainId,
         });
     });
     afterEach(async () => {

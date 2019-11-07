@@ -1,4 +1,4 @@
-import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { Coordinator } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
@@ -32,7 +32,7 @@ import { getAbiEncodedTransactionData } from './utils/getAbiEncodedTransactionDa
  */
 export class CoordinatorWrapper {
     public abi: ContractAbi = Coordinator.compilerOutput.abi;
-    public networkId: number;
+    public chainId: number;
     public address: string;
     public exchangeAddress: string;
     public registryAddress: string;
@@ -45,23 +45,23 @@ export class CoordinatorWrapper {
     /**
      * Instantiate CoordinatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
-     * @param networkId Desired networkId.
+     * @param chainId Desired chainId.
      * @param address The address of the Coordinator contract. If undefined, will
-     * default to the known address corresponding to the networkId.
+     * default to the known address corresponding to the chainId.
      * @param exchangeAddress The address of the Exchange contract. If undefined, will
-     * default to the known address corresponding to the networkId.
+     * default to the known address corresponding to the chainId.
      * @param registryAddress The address of the CoordinatorRegistry contract. If undefined, will
-     * default to the known address corresponding to the networkId.
+     * default to the known address corresponding to the chainId.
      */
     constructor(
         provider: SupportedProvider,
-        networkId: number,
+        chainId: number,
         address?: string,
         exchangeAddress?: string,
         registryAddress?: string,
     ) {
-        this.networkId = networkId;
-        const contractAddresses = getContractAddressesForNetworkOrThrow(networkId);
+        this.chainId = chainId;
+        const contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this.address = address === undefined ? contractAddresses.coordinator : address;
         this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
         this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
@@ -711,7 +711,7 @@ export class CoordinatorWrapper {
             signedTransaction,
             txOrigin,
         };
-        const response = await fetchAsync(`${endpoint}/v1/request_transaction?networkId=${this.networkId}`, {
+        const response = await fetchAsync(`${endpoint}/v1/request_transaction?chainId=${this.chainId}`, {
             body: JSON.stringify(requestPayload),
             method: 'POST',
             headers: {

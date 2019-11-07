@@ -25,6 +25,14 @@
             {
                 "note": "Fix overflow w/ `LibFixedMath._mul(-1, -2*255)",
                 "pr": 2311
+            },
+            {
+                "note": "Unit tests for MixinScheduler",
+                "pr": 2314
+            },
+            {
+                "note": "Unit tests for MixinCumulativeRewards",
+                "pr": 2316
             }
         ]
     },

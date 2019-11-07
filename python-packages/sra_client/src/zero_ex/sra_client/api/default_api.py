@@ -42,7 +42,7 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -71,7 +71,7 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str asset_data_a: The assetData value for the first asset in the pair.
         :param str asset_data_b: The assetData value for the second asset in the pair.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -86,7 +86,7 @@ class DefaultApi(object):
         all_params = [
             "asset_data_a",
             "asset_data_b",
-            "network_id",
+            "chain_id",
             "page",
             "per_page",
         ]
@@ -117,8 +117,8 @@ class DefaultApi(object):
             query_params.append(
                 ("assetDataB", local_var_params["asset_data_b"])
             )
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
         if "page" in local_var_params:
             query_params.append(("page", local_var_params["page"]))
         if "per_page" in local_var_params:
@@ -139,7 +139,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/asset_pairs",
+            "/v3/asset_pairs",
             "GET",
             path_params,
             query_params,
@@ -170,7 +170,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -196,7 +196,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -208,7 +208,7 @@ class DefaultApi(object):
 
         local_var_params = locals()
 
-        all_params = ["network_id", "page", "per_page"]
+        all_params = ["chain_id", "page", "per_page"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -228,8 +228,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
         if "page" in local_var_params:
             query_params.append(("page", local_var_params["page"]))
         if "per_page" in local_var_params:
@@ -250,7 +250,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/fee_recipients",
+            "/v3/fee_recipients",
             "GET",
             path_params,
             query_params,
@@ -281,7 +281,7 @@ class DefaultApi(object):
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
 
         :return: :class:`RelayerApiOrderSchema`.
             If the method is called asynchronously, returns the request thread.
@@ -305,7 +305,7 @@ class DefaultApi(object):
 
         :param bool async_req: Whether request should be asynchronous.
         :param str order_hash: The hash of the desired 0x order. (required)
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
 
         :return: A tuple consisting of a
             :class:`RelayerApiOrderSchema`, an HTTP status code integer, and a
@@ -315,7 +315,7 @@ class DefaultApi(object):
 
         local_var_params = locals()
 
-        all_params = ["order_hash", "network_id"]
+        all_params = ["order_hash", "chain_id"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -345,8 +345,8 @@ class DefaultApi(object):
             path_params["orderHash"] = local_var_params["order_hash"]
 
         query_params = []
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
 
         header_params = {}
 
@@ -363,7 +363,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/order/{orderHash}",
+            "/v3/order/{orderHash}",
             "GET",
             path_params,
             query_params,
@@ -401,7 +401,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param relayer_api_order_config_payload_schema: instance of
             :class:`RelayerApiOrderConfigPayloadSchema`. The fields of a 0x
             order the relayer may want to decide what configuration to send
@@ -436,7 +436,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param relayer_api_order_config_payload_schema: instance of
             :class: `RelayerApiOrderConfigPayloadSchema`. The fields of a 0x
             order the relayer may want to decide what configuration to send
@@ -450,7 +450,7 @@ class DefaultApi(object):
 
         local_var_params = locals()
 
-        all_params = ["network_id", "relayer_api_order_config_payload_schema"]
+        all_params = ["chain_id", "relayer_api_order_config_payload_schema"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -470,8 +470,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
 
         header_params = {}
 
@@ -497,7 +497,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/order_config",
+            "/v3/order_config",
             "POST",
             path_params,
             query_params,
@@ -545,7 +545,7 @@ class DefaultApi(object):
         :param str quote_asset_data: assetData (makerAssetData or
             takerAssetData) designated as the quote currency in the currency
             pair calculation of price. (required)
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -594,7 +594,7 @@ class DefaultApi(object):
         :param str quote_asset_data: assetData (makerAssetData or
             takerAssetData) designated as the quote currency in the currency
             pair calculation of price. (required)
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -609,7 +609,7 @@ class DefaultApi(object):
         all_params = [
             "base_asset_data",
             "quote_asset_data",
-            "network_id",
+            "chain_id",
             "page",
             "per_page",
         ]
@@ -658,8 +658,8 @@ class DefaultApi(object):
             query_params.append(
                 ("quoteAssetData", local_var_params["quote_asset_data"])
             )
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
         if "page" in local_var_params:
             query_params.append(("page", local_var_params["page"]))
         if "per_page" in local_var_params:
@@ -680,7 +680,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/orderbook",
+            "/v3/orderbook",
             "GET",
             path_params,
             query_params,
@@ -718,51 +718,49 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
             `asset proxy id
-            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#enumeration-assetproxyid>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str taker_asset_proxy_id: The taker asset
             `asset proxy id
-            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#enumeration-assetproxyid>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str maker_asset_address: The contract address for the maker asset.
         :param str taker_asset_address: The contract address for the taker asset.
-        :param str exchange_address: Same as exchangeAddress in the
-            `0x Protocol v2 Specification
-            <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+        :param str exchange_address: Contract address for the exchange
+            contract.
         :param str sender_address: Same as senderAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str maker_asset_data: Same as makerAssetData in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str taker_asset_data: Same as takerAssetData in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str trader_asset_data: Same as traderAssetData in the [0x
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str maker_address: Same as makerAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str taker_address: Same as takerAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str trader_address: Same as traderAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str fee_recipient_address: Same as feeRecipientAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
-        :param int network_id: The id of the Ethereum network
+            master/v3/v3-specification.md#order-message-format>`__
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -795,51 +793,51 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
             `asset proxy id
-            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#enumeration-assetproxyid>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str taker_asset_proxy_id: The taker asset
             `asset proxy id
-            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#enumeration-assetproxyid>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str maker_asset_address: The contract address for the maker asset.
         :param str taker_asset_address: The contract address for the taker asset.
         :param str exchange_address: Same as exchangeAddress in the [0x
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str sender_address: Same as senderAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str maker_asset_data: Same as makerAssetData in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str taker_asset_data: Same as takerAssetData in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str trader_asset_data: Same as traderAssetData in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str maker_address: Same as makerAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str taker_address: Same as takerAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str trader_address: Same as traderAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
+            master/v3/v3-specification.md#order-message-format>`__
         :param str fee_recipient_address: Same as feeRecipientAddress in the
-            `0x Protocol v2 Specification
+            `0x Protocol v3 Specification
             <https://github.com/0xProject/0x-protocol-specification/blob/
-            master/v2/v2-specification.md#order-message-format>`__
-        :param int network_id: The id of the Ethereum network
+            master/v3/v3-specification.md#order-message-format>`__
+        :param int chain_id: The id of the Ethereum chain
         :param int page: The number of the page to request in the collection.
         :param int per_page: The number of records to return per page.
 
@@ -865,7 +863,7 @@ class DefaultApi(object):
             "taker_address",
             "trader_address",
             "fee_recipient_address",
-            "network_id",
+            "chain_id",
             "page",
             "per_page",
         ]
@@ -943,8 +941,8 @@ class DefaultApi(object):
                     local_var_params["fee_recipient_address"],
                 )
             )
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
         if "page" in local_var_params:
             query_params.append(("page", local_var_params["page"]))
         if "per_page" in local_var_params:
@@ -965,7 +963,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/orders",
+            "/v3/orders",
             "GET",
             path_params,
             query_params,
@@ -995,7 +993,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param signed_order_schema: Instance of :class:`SignedOrderSchema`.
             A valid signed 0x order based on the schema.
 
@@ -1020,7 +1018,7 @@ class DefaultApi(object):
         >>> result = thread.get() # doctest: +SKIP
 
         :param bool async_req: Whether request should be asynchronous.
-        :param int network_id: The id of the Ethereum network
+        :param int chain_id: The id of the Ethereum chain
         :param signed_order_schema: Instance of :class:`SignedOrderSchema`
             A valid signed 0x order based on the schema.
 
@@ -1032,7 +1030,7 @@ class DefaultApi(object):
 
         local_var_params = locals()
 
-        all_params = ["network_id", "signed_order_schema"]
+        all_params = ["chain_id", "signed_order_schema"]
         all_params.append("async_req")
         all_params.append("_return_http_data_only")
         all_params.append("_preload_content")
@@ -1052,8 +1050,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
-        if "network_id" in local_var_params:
-            query_params.append(("networkId", local_var_params["network_id"]))
+        if "chain_id" in local_var_params:
+            query_params.append(("chainId", local_var_params["chain_id"]))
 
         header_params = {}
 
@@ -1077,7 +1075,7 @@ class DefaultApi(object):
         auth_settings = []
 
         return self.api_client.call_api(
-            "/v2/order",
+            "/v3/order",
             "POST",
             path_params,
             query_params,

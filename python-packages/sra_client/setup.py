@@ -3,10 +3,15 @@
 
 """setuptools module for sra_client package."""
 
+# pylint: disable=import-outside-toplevel
+# we import things outside of top-level because 3rd party libs may not yet be
+# installed when you invoke this script
+
 import subprocess  # nosec
 import distutils.command.build_py
 from distutils.command.clean import clean
 from shutil import rmtree
+from sys import exit  # pylint: disable=redefined-builtin
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -14,7 +19,7 @@ from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
 
 NAME = "0x-sra-client"
-VERSION = "3.0.0"
+VERSION = "4.0.0"
 # To install the library, run the following
 #
 # python setup.py install
@@ -41,6 +46,12 @@ class CleanCommandExtension(clean):
         rmtree("0x_sra_client.egg-info", ignore_errors=True)
         rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
+        subprocess.check_call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml down").split()
+        )
+        subprocess.check_call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml rm").split()
+        )
 
 
 class TestCommandExtension(TestCommand):
@@ -85,12 +96,15 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
             ("docker-compose -f test/relayer/docker-compose.yml up -d").split()
         )
         launch_kit_ready = False
-        print("Waiting for relayer to start accepting connections...", end="")
+        print(
+            "Waiting for Launch Kit Backend to start accepting connections...",
+            flush=True,
+        )
         while not launch_kit_ready:
             try:
                 launch_kit_ready = (
                     urlopen(  # nosec
-                        "http://localhost:3000/v2/asset_pairs"
+                        "http://localhost:3000/v3/asset_pairs"
                     ).getcode()
                     == 200
                 )

@@ -1,6 +1,6 @@
 """Base wrapper class for accessing ethereum smart contracts."""
 
-from typing import Any
+from typing import Any, Union
 
 from eth_utils import is_address, to_checksum_address
 from web3 import Web3
@@ -12,7 +12,11 @@ from .tx_params import TxParams
 class Validator:
     """Base class for validating inputs to methods."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str):
+    def __init__(
+        self,
+        web3_or_provider: Union[Web3, BaseProvider],
+        contract_address: str,
+    ):
         """Initialize the instance."""
 
     def assert_valid(
@@ -32,7 +36,7 @@ class ContractMethod:
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         validator: Validator = None,
     ):
@@ -42,9 +46,20 @@ class ContractMethod:
         :param contract_address: Where the contract has been deployed to.
         :param validator: Used to validate method inputs.
         """
-        self._web3_eth = Web3(provider).eth  # pylint: disable=no-member
+        web3 = None
+        if isinstance(web3_or_provider, BaseProvider):
+            web3 = Web3(web3_or_provider)
+        elif isinstance(web3_or_provider, Web3):
+            web3 = web3_or_provider
+        if web3 is None:
+            raise TypeError(
+                "Expected parameter 'web3_or_provider' to be an instance of either"
+                + " Web3 or BaseProvider"
+            )
+
+        self._web3_eth = web3.eth  # pylint: disable=no-member
         if validator is None:
-            validator = Validator(provider, contract_address)
+            validator = Validator(web3_or_provider, contract_address)
         self.validator = validator
 
     @staticmethod
@@ -59,8 +74,13 @@ class ContractMethod:
         if not tx_params:
             tx_params = TxParams()
         if not tx_params.from_:
-            tx_params.from_ = (
-                self._web3_eth.defaultAccount or self._web3_eth.accounts[0]
+            tx_params.from_ = self._web3_eth.defaultAccount or (
+                self._web3_eth.accounts[0]
+                if len(self._web3_eth.accounts) > 0
+                else None
             )
-        tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
+        if tx_params.from_:
+            tx_params.from_ = self.validate_and_checksum_address(
+                tx_params.from_
+            )
         return tx_params

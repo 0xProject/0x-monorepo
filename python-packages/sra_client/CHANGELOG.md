@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0 - TBD
+
+-   Migrated from v2 to v3 of the 0x protocol.
+
 ## 3.0.0 - 2019-08-08
 
 -   Migrated from v4 to v5 of Web3.py.

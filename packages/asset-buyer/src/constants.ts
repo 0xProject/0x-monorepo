@@ -4,10 +4,10 @@ import { BigNumber } from '@0x/utils';
 import { AssetBuyerOpts, BuyQuoteExecutionOpts, BuyQuoteRequestOpts, OrdersAndFillableAmounts } from './types';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-const MAINNET_NETWORK_ID = 1;
+const MAINNET_CHAIN_ID = 1;
 
 const DEFAULT_ASSET_BUYER_OPTS: AssetBuyerOpts = {
-    networkId: MAINNET_NETWORK_ID,
+    chainId: MAINNET_CHAIN_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
     expiryBufferSeconds: 120, // 2 minutes
 };
@@ -31,7 +31,7 @@ const EMPTY_ORDERS_AND_FILLABLE_AMOUNTS: OrdersAndFillableAmounts = {
 export const constants = {
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
-    MAINNET_NETWORK_ID,
+    MAINNET_CHAIN_ID,
     ETHER_TOKEN_DECIMALS: 18,
     DEFAULT_ASSET_BUYER_OPTS,
     DEFAULT_BUY_QUOTE_EXECUTION_OPTS,

@@ -24,7 +24,7 @@ class RelayerApiOrdersChannelSubscribePayloadSchema(object):
     openapi_types = {
         "maker_asset_proxy_id": "str",
         "taker_asset_proxy_id": "str",
-        "network_id": "float",
+        "chain_id": "float",
         "maker_asset_address": "str",
         "taker_asset_address": "str",
         "maker_asset_data": "str",
@@ -35,7 +35,7 @@ class RelayerApiOrdersChannelSubscribePayloadSchema(object):
     attribute_map = {
         "maker_asset_proxy_id": "makerAssetProxyId",
         "taker_asset_proxy_id": "takerAssetProxyId",
-        "network_id": "networkId",
+        "chain_id": "chainId",
         "maker_asset_address": "makerAssetAddress",
         "taker_asset_address": "takerAssetAddress",
         "maker_asset_data": "makerAssetData",
@@ -47,7 +47,7 @@ class RelayerApiOrdersChannelSubscribePayloadSchema(object):
         self,
         maker_asset_proxy_id=None,
         taker_asset_proxy_id=None,
-        network_id=None,
+        chain_id=None,
         maker_asset_address=None,
         taker_asset_address=None,
         maker_asset_data=None,
@@ -58,7 +58,7 @@ class RelayerApiOrdersChannelSubscribePayloadSchema(object):
 
         self._maker_asset_proxy_id = None
         self._taker_asset_proxy_id = None
-        self._network_id = None
+        self._chain_id = None
         self._maker_asset_address = None
         self._taker_asset_address = None
         self._maker_asset_data = None
@@ -70,8 +70,8 @@ class RelayerApiOrdersChannelSubscribePayloadSchema(object):
             self.maker_asset_proxy_id = maker_asset_proxy_id
         if taker_asset_proxy_id is not None:
             self.taker_asset_proxy_id = taker_asset_proxy_id
-        if network_id is not None:
-            self.network_id = network_id
+        if chain_id is not None:
+            self.chain_id = chain_id
         if maker_asset_address is not None:
             self.maker_asset_address = maker_asset_address
         if taker_asset_address is not None:
@@ -138,25 +138,25 @@ class RelayerApiOrdersChannelSubscribePayloadSchema(object):
         self._taker_asset_proxy_id = taker_asset_proxy_id
 
     @property
-    def network_id(self):
-        """Gets the network_id of this RelayerApiOrdersChannelSubscribePayloadSchema.  # noqa: E501
+    def chain_id(self):
+        """Gets the chain_id of this RelayerApiOrdersChannelSubscribePayloadSchema.  # noqa: E501
 
 
-        :return: The network_id of this RelayerApiOrdersChannelSubscribePayloadSchema.  # noqa: E501
+        :return: The chain_id of this RelayerApiOrdersChannelSubscribePayloadSchema.  # noqa: E501
         :rtype: float
         """
-        return self._network_id
+        return self._chain_id
 
-    @network_id.setter
-    def network_id(self, network_id):
-        """Sets the network_id of this RelayerApiOrdersChannelSubscribePayloadSchema.
+    @chain_id.setter
+    def chain_id(self, chain_id):
+        """Sets the chain_id of this RelayerApiOrdersChannelSubscribePayloadSchema.
 
 
-        :param network_id: The network_id of this RelayerApiOrdersChannelSubscribePayloadSchema.  # noqa: E501
+        :param chain_id: The chain_id of this RelayerApiOrdersChannelSubscribePayloadSchema.  # noqa: E501
         :type: float
         """
 
-        self._network_id = network_id
+        self._chain_id = chain_id
 
     @property
     def maker_asset_address(self):

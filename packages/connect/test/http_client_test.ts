@@ -53,9 +53,9 @@ describe('HttpClient', () => {
                 assetDataA: assetData,
                 page: 3,
                 perPage: 50,
-                networkdId: 42,
+                chainId: 42,
             };
-            const urlWithQuery = `${url}?assetDataA=${assetData}&networkdId=42&page=3&perPage=50`;
+            const urlWithQuery = `${url}?assetDataA=${assetData}&chainId=42&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
             const assetDataPairs = await relayerClient.getAssetPairsAsync(assetPairsRequestOpts);
             expect(assetDataPairs).to.be.deep.equal(assetDataPairsResponse);
@@ -78,9 +78,9 @@ describe('HttpClient', () => {
                 assetDataAddress,
                 page: 3,
                 perPage: 50,
-                networkdId: 42,
+                chainId: 42,
             };
-            const urlWithQuery = `${url}?assetDataAddress=${assetDataAddress}&networkdId=42&page=3&perPage=50`;
+            const urlWithQuery = `${url}?assetDataAddress=${assetDataAddress}&chainId=42&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);
@@ -120,12 +120,12 @@ describe('HttpClient', () => {
         it('gets orderbook with specified page options', async () => {
             const urlWithQuery = `${url}?baseAssetData=${
                 request.baseAssetData
-            }&networkId=42&page=3&perPage=50&quoteAssetData=${request.quoteAssetData}`;
+            }&chainId=42&page=3&perPage=50&quoteAssetData=${request.quoteAssetData}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const pagedRequestOptions = {
                 page: 3,
                 perPage: 50,
-                networkId: 42,
+                chainId: 42,
             };
             const orderbook = await relayerClient.getOrderbookAsync(request, pagedRequestOptions);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
@@ -175,12 +175,12 @@ describe('HttpClient', () => {
             expect(feeRecipients).to.be.deep.equal(feeRecipientsResponse);
         });
         it('gets fee recipient with specified page options', async () => {
-            const urlWithQuery = `${url}?networkId=42&page=3&perPage=50`;
+            const urlWithQuery = `${url}?chainId=42&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, feeRecipientsResponseJSON);
             const pagedRequestOptions = {
                 page: 3,
                 perPage: 50,
-                networkId: 42,
+                chainId: 42,
             };
             const feeRecipients = await relayerClient.getFeeRecipientsAsync(pagedRequestOptions);
             expect(feeRecipients).to.be.deep.equal(feeRecipientsResponse);

@@ -130,6 +130,7 @@ contracts/erc1155/generated-wrappers/
 contracts/extensions/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dev_utils/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/asset_proxy_owner/__init__.py
@@ -138,6 +139,8 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/coordinator_regi
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dummy_erc20_token/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dummy_erc721_token/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dutch_auction/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc1155_mintable/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc1155_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc721_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc721_token/__init__.py
@@ -148,6 +151,7 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_validator/__in
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_wallet/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/multi_asset_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/order_validator/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/static_call_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/weth9/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_token/__init__.py
 
@@ -164,10 +168,14 @@ __pycache__
 python-packages/*/src/*.egg-info
 python-packages/*/.coverage
 
-# python keeps package-local copies of json schemas
+# python keeps package-local copies of json schemas and contract addresses
 python-packages/json_schemas/src/zero_ex/json_schemas/schemas
+python-packages/contract_addresses/src/zero_ex/contract_addresses/addresses.json
 
 # Doc README copy
 packages/*/docs/README.md
 
 .DS_Store
+
+# the snapshot that gets built for migrations sure does have a ton of files
+packages/migrations/0x_ganache_snapshot*

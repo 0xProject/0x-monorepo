@@ -22,7 +22,7 @@ describe('ABI Decoding Calldata', () => {
     const defaultERC20MakerAssetAddress = addressUtils.generatePseudoRandomAddress();
     const matchOrdersSignature =
         'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes,bytes)';
-    const chainId: number = constants.TESTRPC_NETWORK_ID;
+    const chainId: number = constants.TESTRPC_CHAIN_ID;
     let signedOrderLeft: SignedOrder;
     let signedOrderRight: SignedOrder;
     let orderLeft = {};
@@ -42,10 +42,11 @@ describe('ABI Decoding Calldata', () => {
             exchangeAddress,
             chainId,
         };
+
         contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const config = {
-            networkId: constants.TESTRPC_NETWORK_ID,
+            chainId: constants.TESTRPC_CHAIN_ID,
             contractAddresses,
             blockPollingIntervalMs: 10,
         };

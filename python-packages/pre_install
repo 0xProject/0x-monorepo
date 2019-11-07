@@ -12,6 +12,7 @@ from sys import argv
 
 PACKAGES = [
     "contract_wrappers",
+    "contract_addresses",
     "contract_artifacts",
     "json_schemas",
 ]

@@ -40,18 +40,24 @@ except ImportError:
         """No-op input validator."""
 
 
+try:
+    from .middleware import MIDDLEWARE  # type: ignore
+except ImportError:
+    pass
+
+
 class PublicAddConstantMethod(ContractMethod):
     """Various interfaces to the publicAddConstant method."""
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -101,19 +107,19 @@ class PublicAddOneMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
         self.validator.assert_valid(
-            method_name="publicAddOne", parameter_name="x", argument_value=x
+            method_name="publicAddOne", parameter_name="x", argument_value=x,
         )
         # safeguard against fractional inputs
         x = int(x)
@@ -166,24 +172,55 @@ class TestLibDummy:
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         validator: TestLibDummyValidator = None,
     ):
         """Get an instance of wrapper for smart contract.
 
-        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param web3_or_provider: Either an instance of `web3.Web3`:code: or
+            `web3.providers.base.BaseProvider`:code:
         :param contract_address: where the contract has been deployed
         :param validator: for validation of method inputs.
         """
+        # pylint: disable=too-many-statements
+
         self.contract_address = contract_address
 
         if not validator:
-            validator = TestLibDummyValidator(provider, contract_address)
+            validator = TestLibDummyValidator(
+                web3_or_provider, contract_address
+            )
 
-        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
-            provider
-        ).eth
+        web3 = None
+        if isinstance(web3_or_provider, BaseProvider):
+            web3 = Web3(web3_or_provider)
+        elif isinstance(web3_or_provider, Web3):
+            web3 = web3_or_provider
+        else:
+            raise TypeError(
+                "Expected parameter 'web3_or_provider' to be an instance of either"
+                + " Web3 or BaseProvider"
+            )
+
+        # if any middleware was imported, inject it
+        try:
+            MIDDLEWARE
+        except NameError:
+            pass
+        else:
+            try:
+                for middleware in MIDDLEWARE:
+                    web3.middleware_onion.inject(
+                        middleware["function"], layer=middleware["layer"],
+                    )
+            except ValueError as value_error:
+                if value_error.args == (
+                    "You can't add the same un-named instance twice",
+                ):
+                    pass
+
+        self._web3_eth = web3.eth
 
         functions = self._web3_eth.contract(
             address=to_checksum_address(contract_address),
@@ -191,18 +228,24 @@ class TestLibDummy:
         ).functions
 
         self.public_add_constant = PublicAddConstantMethod(
-            provider, contract_address, functions.publicAddConstant, validator
+            web3_or_provider,
+            contract_address,
+            functions.publicAddConstant,
+            validator,
         )
 
         self.public_add_one = PublicAddOneMethod(
-            provider, contract_address, functions.publicAddOne, validator
+            web3_or_provider,
+            contract_address,
+            functions.publicAddOne,
+            validator,
         )
 
     @staticmethod
     def abi():
         """Return the ABI to the underlying contract."""
         return json.loads(
-            '[{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"publicAddConstant","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"publicAddOne","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"}]'  # noqa: E501 (line-too-long)
+            '[{"constant":true,"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"publicAddConstant","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"publicAddOne","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"}]'  # noqa: E501 (line-too-long)
         )
 
 

@@ -1,5 +1,5 @@
 import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-gen-wrappers';
-import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,
@@ -120,8 +120,8 @@ export const signatureUtils = {
             exchangeContract = new ExchangeContract(exchangeAddress, provider);
         } else {
             const web3Wrapper = new Web3Wrapper(provider);
-            const networkId = await web3Wrapper.getNetworkIdAsync();
-            const addresses = getContractAddressesForNetworkOrThrow(networkId);
+            const chainId = await web3Wrapper.getChainIdAsync();
+            const addresses = getContractAddressesForChainOrThrow(chainId);
             exchangeContract = new ExchangeContract(addresses.exchange, provider);
         }
 
@@ -183,8 +183,8 @@ export const signatureUtils = {
             exchangeContract = new ExchangeContract(exchangeAddress, provider);
         } else {
             const web3Wrapper = new Web3Wrapper(provider);
-            const networkId = await web3Wrapper.getNetworkIdAsync();
-            const addresses = getContractAddressesForNetworkOrThrow(networkId);
+            const chainId = await web3Wrapper.getChainIdAsync();
+            const addresses = getContractAddressesForChainOrThrow(chainId);
             exchangeContract = new ExchangeContract(addresses.exchange, provider);
         }
 

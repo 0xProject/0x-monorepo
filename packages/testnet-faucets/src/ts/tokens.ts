@@ -1,5 +1,5 @@
-interface TokensByNetwork {
-    [networkId: number]: { [tokenSymbol: string]: { address: string; decimals: number } };
+interface TokensByChain {
+    [chainId: number]: { [tokenSymbol: string]: { address: string; decimals: number } };
 }
 
 export const tokens = {
@@ -10,7 +10,7 @@ export const tokens = {
         decimals: 18,
     },
 };
-export const TOKENS_BY_NETWORK: TokensByNetwork = {
+export const TOKENS_BY_CHAIN: TokensByChain = {
     3: {
         ZRX: {
             ...tokens.ZRX,
