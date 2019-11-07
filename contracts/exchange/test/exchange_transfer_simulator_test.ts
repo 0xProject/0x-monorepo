@@ -2,7 +2,6 @@ import { artifacts as assetProxyArtifacts, ERC20ProxyContract } from '@0x/contra
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, ERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, chaiSetup, constants } from '@0x/contracts-test-utils';
-import { TradeSide, TransferType } from '@0x/order-utils';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -10,6 +9,7 @@ import * as chai from 'chai';
 import { ExchangeTransferSimulator } from './utils/exchange_transfer_simulator';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
 import { BalanceAndProxyAllowanceLazyStore } from './utils/store/balance_and_proxy_allowance_lazy_store';
+import { TradeSide, TransferType } from './utils/types';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -1,10 +1,11 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants } from '@0x/contracts-test-utils';
-import { SupportedProvider, TradeSide, TransferType } from '@0x/order-utils';
+import { SupportedProvider} from '@0x/order-utils';
 import { AssetProxyId, ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { TradeSide, TransferType } from './types';
 
 enum FailureReason {
     Balance = 'balance',
