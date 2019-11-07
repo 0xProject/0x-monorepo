@@ -1,3 +1,4 @@
+import { OrderValidatorContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import {
@@ -183,13 +184,15 @@ export async function runMigrationsAsync(
         encodeERC20AssetData(etherToken.address),
     );
 
+    // TODO(fabio): Remove orderValidator after @0x/asset-buyer is deleted
     // OrderValidator
-    const orderValidator = await OrderValidationUtilsContract.deployFrom0xArtifactAsync(
+    const orderValidator = await OrderValidatorContract.deployFrom0xArtifactAsync(
         artifacts.OrderValidator,
         provider,
         txDefaults,
         artifacts,
         exchange.address,
+        zrxAssetData,
     );
 
     // TODO(fabio): Uncomment dutchAuction once the @0x/contracts-extensions is refactored
