@@ -19,8 +19,10 @@ import { IAuthorizableContract, IOwnableContract } from '@0x/contracts-utils';
 import { AbiEncoder, BigNumber, logUtils, providerUtils } from '@0x/utils';
 import { LogWithDecodedArgs, SupportedProvider, TxData } from 'ethereum-types';
 
+import { getConfigsByChainId } from './utils/configs_by_chain';
 import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
+import { getTimelockRegistrationsAsync } from './utils/timelocks';
 
 async function submitAndExecuteTransactionAsync(
     governor: ZeroExGovernorContract,
@@ -48,6 +50,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
     const deployedAddresses = getContractAddressesForChainOrThrow(chainId.toNumber());
+    const configs = getConfigsByChainId(chainId.toNumber());
 
     // NOTE: This must be deployed before running these migrations, since its address is hard coded in the
     // staking logic contract.
@@ -113,157 +116,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider, txDefaults);
     const ownableInterface = new IOwnableContract(constants.NULL_ADDRESS, provider, txDefaults);
 
-    const customTimeLocks = [
-        // AssetProxy timelocks
-        {
-            destination: deployedAddresses.erc20Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc20Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc721Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc721Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc1155Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc1155Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.multiAssetProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.multiAssetProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: erc20BridgeProxy.address,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: erc20BridgeProxy.address,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        // ZrxVault timelocks
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.enterCatastrophicFailure.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.setStakingProxy.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.setZrxProxy.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: ownableInterface.transferOwnership.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.addAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        // StakingProxy timelocks
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.attachStakingContract.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.detachStakingContract.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.setParams.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 10 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.addExchangeAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.removeExchangeAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: ownableInterface.transferOwnership.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.addAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        // Exchange timelocks
-        {
-            destination: exchange.address,
-            functionSelector: exchange.setProtocolFeeMultiplier.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 10 days on mainnet
-        },
-        {
-            destination: exchange.address,
-            functionSelector: exchange.setProtocolFeeCollectorAddress.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: exchange.address,
-            functionSelector: exchange.detachProtocolFeeCollector.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-    ];
+    const customTimeLocks = await getTimelockRegistrationsAsync(provider);
 
     const governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
         multisigArtifacts.ZeroExGovernor,
@@ -273,9 +126,9 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         customTimeLocks.map(timeLockInfo => timeLockInfo.functionSelector),
         customTimeLocks.map(timeLockInfo => timeLockInfo.destination),
         customTimeLocks.map(timeLockInfo => timeLockInfo.secondsTimeLocked),
-        constants.ASSET_PROXY_OWNER_OWNERS,
-        constants.ASSET_PROXY_OWNER_CONFIRMATIONS,
-        constants.ASSET_PROXY_OWNER_TIMELOCK,
+        configs.zeroExGovernor.owners,
+        configs.zeroExGovernor.required,
+        configs.zeroExGovernor.secondsTimeLocked,
     );
 
     logUtils.log('Configuring Exchange...');
@@ -426,7 +279,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const networkId = 4;
     const rpcUrl = 'https://rinkeby.infura.io/v3/';
     const provider = await providerFactory.getLedgerProviderAsync(networkId, rpcUrl);
-    await runMigrationsAsync(provider, { from: constants.ASSET_PROXY_OWNER_OWNERS[0], gasPrice: 60000000000 });
+    await runMigrationsAsync(provider, { from: '0x9df8137872ac09a8fee71d0da5c7539923fb9bf0', gasPrice: 60000000000 });
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);
