@@ -9,7 +9,7 @@ import {
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
 import { CoordinatorContract, CoordinatorRegistryContract } from '@0x/contracts-coordinator';
-import { DevUtilsContract, OrderValidationUtilsContract } from '@0x/contracts-dev-utils';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract, ZRXTokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
