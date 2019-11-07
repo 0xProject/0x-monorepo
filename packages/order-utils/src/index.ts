@@ -36,8 +36,6 @@ export {
 export {
     SignedOrder,
     Order,
-    OrderRelevantState,
-    OrderState,
     ECSignature,
     AssetData,
     SingleAssetData,
@@ -50,10 +48,6 @@ export {
     MultiAssetDataWithRecursiveDecoding,
     AssetProxyId,
     SignatureType,
-    ObjectMap,
-    OrderStateValid,
-    OrderStateInvalid,
-    ExchangeContractErrs,
     EIP712Parameter,
     EIP712TypedData,
     EIP712Types,
@@ -67,8 +61,6 @@ export {
 
 export {
     TypedDataError,
-    TradeSide,
-    TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FindOrdersThatCoverTakerAssetFillAmountOpts,
