@@ -20,7 +20,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "0x.js": "^7.1.0-beta.0",
-        "@0x/contract-addresses": "^3.3.0-beta.0",
+        "@0x/contract-addresses": "^3.3.0-beta.1",
         "@0x/contract-wrappers": "^12.2.0-beta.0",
         "@0x/subproviders": "^5.1.0-beta.0",
         "@0x/typescript-typings": "^4.4.0-beta.0",
