@@ -1,6 +1,5 @@
 import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -53,9 +52,9 @@ describe('swapQuoteConsumerUtils', () => {
         [takerAddress, makerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
-            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
         ];
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {

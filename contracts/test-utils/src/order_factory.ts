@@ -19,12 +19,12 @@ export class OrderFactory {
         customOrderParams: Partial<Order> = {},
         signatureType: SignatureType = SignatureType.EthSign,
     ): Promise<SignedOrder> {
-        const tenMinutesInSeconds = 10 * 60;
+        const fifteenMinutesInSeconds = 15 * 60;
         const currentBlockTimestamp = await getLatestBlockTimestampAsync();
         const order = ({
             takerAddress: constants.NULL_ADDRESS,
             senderAddress: constants.NULL_ADDRESS,
-            expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds),
+            expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(fifteenMinutesInSeconds),
             salt: generatePseudoRandomSalt(),
             ...this._defaultOrderParams,
             ...customOrderParams,

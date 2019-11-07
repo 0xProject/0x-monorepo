@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0-beta.1",
+        "changes": [
+            {
+                "note": "ERC20Wrapper and ERC1155ProxyWrapper constructors now require an instance of DevUtilsContract",
+                "pr": 2034
+            }
+        ]
+    },
+    {
         "version": "2.3.0-beta.0",
         "changes": [
             {

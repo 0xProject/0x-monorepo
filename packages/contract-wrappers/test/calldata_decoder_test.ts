@@ -1,6 +1,5 @@
 import { constants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { addressUtils, BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -43,36 +42,62 @@ describe('ABI Decoding Calldata', () => {
             exchangeAddress,
             chainId,
         };
+
+        contractAddresses = await migrateOnceAsync();
+        await blockchainLifecycle.startAsync();
+        const config = {
+            chainId: constants.TESTRPC_CHAIN_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
+        contractWrappers = new ContractWrappers(provider, config);
+
         // Create orders to match.
         // Values are arbitrary, with the exception of maker addresses (generated above).
         orderLeft = {
             makerAddress: makerAddressLeft,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            makerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
             makerAssetAmount: new BigNumber(10),
             takerAddress: '0x0000000000000000000000000000000000000000',
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            takerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
             takerAssetAmount: new BigNumber(1),
             feeRecipientAddress,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            makerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
+            takerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
             senderAddress: '0x0000000000000000000000000000000000000000',
             expirationTimeSeconds: new BigNumber(1549498915),
             salt: new BigNumber(217),
         };
         orderRight = {
             makerAddress: makerAddressRight,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            makerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
             makerAssetAmount: new BigNumber(1),
             takerAddress: '0x0000000000000000000000000000000000000000',
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            takerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
             takerAssetAmount: new BigNumber(8),
             feeRecipientAddress,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+            makerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
+            takerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                defaultERC20MakerAssetAddress,
+            ),
             senderAddress: '0x0000000000000000000000000000000000000000',
             expirationTimeSeconds: new BigNumber(1549498915),
             salt: new BigNumber(50010),
@@ -82,14 +107,6 @@ describe('ABI Decoding Calldata', () => {
         const orderFactoryRight = new OrderFactory(privateKeyRight, orderRight);
         signedOrderRight = await orderFactoryRight.newSignedOrderAsync(domainInfo);
         // Encode match orders transaction
-        contractAddresses = await migrateOnceAsync();
-        await blockchainLifecycle.startAsync();
-        const config = {
-            chainId: constants.TESTRPC_CHAIN_ID,
-            contractAddresses,
-            blockPollingIntervalMs: 10,
-        };
-        contractWrappers = new ContractWrappers(provider, config);
         matchOrdersTxData = getAbiEncodedTransactionData(
             contractWrappers.exchange,
             'matchOrders',

@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     artifacts as erc1155Artifacts,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
@@ -15,7 +16,6 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
@@ -23,7 +23,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, ERC1155ProxyContract, ERC1155ProxyWrapper } from '../src';
+import { artifacts, ERC1155ProxyContract, ERC1155ProxyWrapper, IAssetDataContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -59,6 +59,8 @@ describe('ERC1155Proxy', () => {
     // tokens
     let fungibleTokens: BigNumber[];
     let nonFungibleTokensOwnedBySpender: BigNumber[];
+    // devUtils for encoding and decoding assetData
+    let devUtils: DevUtilsContract;
     // tests
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -95,6 +97,8 @@ describe('ERC1155Proxy', () => {
                 tokenBalances.nonFungible[spender][erc1155Contract.address][nonFungibleTokenAsString][0];
             nonFungibleTokensOwnedBySpender.push(nonFungibleTokenHeldBySpender);
         });
+        // set up devUtils
+        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider, { from: owner });
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -630,7 +634,7 @@ describe('ERC1155Proxy', () => {
                 return value.times(valueMultiplier);
             });
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -732,18 +736,16 @@ describe('ERC1155Proxy', () => {
             const tokensToTransfer = [new BigNumber(1), new BigNumber(2)];
             const valuesToTransfer = tokensToTransfer;
             const valueMultiplier = new BigNumber(2);
-            const assetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155ContractAddress,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            // remove the function selector and contract address from check, as these change on each test
-            const offsetToTokenIds = 74;
-            const assetDataWithoutContractAddress = assetData.substr(offsetToTokenIds);
-            const expectedAssetDataWithoutContractAddress =
+
+            // hand encode optimized assetData because our tooling (based on LibAssetData.sol/encodeERC1155AssetData) does not use optimized encoding
+            const assetDataContract = new IAssetDataContract(constants.NULL_ADDRESS, provider);
+            const selector = assetDataContract.ERC1155Assets.getSelector();
+            const assetDataWithoutContractAddress =
                 '0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000';
-            expect(assetDataWithoutContractAddress).to.be.equal(expectedAssetDataWithoutContractAddress);
+            const assetData = `${selector}000000000000000000000000${erc1155ContractAddress.substr(
+                2,
+            )}${assetDataWithoutContractAddress}`;
+
             ///// Step 4/5 /////
             // Transfer token IDs [1, 2] and amounts [1, 2] with a multiplier of 2;
             // the expected trade will be token IDs [1, 2] and amounts [2, 4]
@@ -845,7 +847,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [new BigNumber(2), new BigNumber(2)];
             const valueMultiplier = new BigNumber(2);
             // create callback data that is the encoded version of `valuesToTransfer`
-            const generatedAssetData = assetDataUtils.encodeERC1155AssetData(
+            const generatedAssetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -967,7 +969,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [new BigNumber(1), new BigNumber(2)];
             const valueMultiplier = new BigNumber(2);
             // create callback data that is the encoded version of `valuesToTransfer`
-            const generatedAssetData = assetDataUtils.encodeERC1155AssetData(
+            const generatedAssetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1030,7 +1032,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1077,7 +1079,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1128,7 +1130,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1179,7 +1181,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1230,7 +1232,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1282,7 +1284,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1329,7 +1331,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1380,7 +1382,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1427,7 +1429,7 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
@@ -1478,13 +1480,13 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
                 receiverCallbackData,
             );
-            const txData = erc1155ProxyWrapper.getTransferFromAbiEncodedTxData(
+            const txData = await erc1155ProxyWrapper.getTransferFromAbiEncodedTxDataAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -1509,13 +1511,13 @@ describe('ERC1155Proxy', () => {
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
+            const assetData = await devUtils.encodeERC1155AssetData.callAsync(
                 erc1155ContractAddress,
                 tokensToTransfer,
                 valuesToTransfer,
                 receiverCallbackData,
             );
-            const txData = erc1155ProxyWrapper.getTransferFromAbiEncodedTxData(
+            const txData = await erc1155ProxyWrapper.getTransferFromAbiEncodedTxDataAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,

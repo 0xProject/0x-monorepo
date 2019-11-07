@@ -1,4 +1,5 @@
 import { artifacts as assetProxyArtifacts } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
@@ -16,11 +17,12 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     Numberish,
+    provider,
     toBaseUnitAmount,
     TransactionHelper,
     verifyEvents,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -32,6 +34,7 @@ import { DeploymentManager } from '../utils/deployment_manager';
 
 const { addFillResults, safeGetPartialAmountFloor } = ReferenceFunctions;
 
+const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Exchange wrappers', env => {
     let maker: Maker;
@@ -67,10 +70,10 @@ blockchainTests.resets('Exchange wrappers', env => {
             name: 'market maker',
             deployment,
             orderConfig: {
-                makerAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[0].address),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[1].address),
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.erc20[0].address),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.erc20[1].address),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.erc20[2].address),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.erc20[2].address),
                 feeRecipientAddress: feeRecipient,
             },
         });
@@ -106,9 +109,9 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         await blockchainBalances.updateBalancesAsync();
 
-        initialLocalBalances = LocalBalanceStore.create(blockchainBalances);
+        initialLocalBalances = LocalBalanceStore.create(devUtils, blockchainBalances);
 
-        wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
+        wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address);
 
         txHelper = new TransactionHelper(env.web3Wrapper, {
             ...assetProxyArtifacts,
@@ -118,7 +121,7 @@ blockchainTests.resets('Exchange wrappers', env => {
     });
 
     beforeEach(async () => {
-        localBalances = LocalBalanceStore.create(initialLocalBalances);
+        localBalances = LocalBalanceStore.create(devUtils, initialLocalBalances);
     });
 
     interface SignedOrderWithValidity {
@@ -126,9 +129,13 @@ blockchainTests.resets('Exchange wrappers', env => {
         isValid: boolean;
     }
 
-    function simulateFill(signedOrder: SignedOrder, expectedFillResults: FillResults, shouldUseWeth: boolean): void {
+    async function simulateFillAsync(
+        signedOrder: SignedOrder,
+        expectedFillResults: FillResults,
+        shouldUseWeth: boolean,
+    ): Promise<void> {
         // taker -> maker
-        localBalances.transferAsset(
+        await localBalances.transferAssetAsync(
             taker.address,
             maker.address,
             expectedFillResults.takerAssetFilledAmount,
@@ -136,7 +143,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // maker -> taker
-        localBalances.transferAsset(
+        await localBalances.transferAssetAsync(
             maker.address,
             taker.address,
             expectedFillResults.makerAssetFilledAmount,
@@ -144,7 +151,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // maker -> feeRecipient
-        localBalances.transferAsset(
+        await localBalances.transferAssetAsync(
             maker.address,
             feeRecipient,
             expectedFillResults.makerFeePaid,
@@ -152,7 +159,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // taker -> feeRecipient
-        localBalances.transferAsset(
+        await localBalances.transferAssetAsync(
             taker.address,
             feeRecipient,
             expectedFillResults.takerFeePaid,
@@ -161,7 +168,7 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         // taker -> protocol fees
         if (shouldUseWeth) {
-            localBalances.transferAsset(
+            await localBalances.transferAssetAsync(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 expectedFillResults.protocolFeePaid,
@@ -332,7 +339,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             const shouldPayWethFees = DeploymentManager.protocolFee.gt(value);
 
             // Simulate filling the order
-            simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
+            await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
 
             // Ensure that the correct logs were emitted and that the balances are accurate.
             await assertResultsAsync(receipt, [{ signedOrder, expectedFillResults, shouldPayWethFees }]);
@@ -430,7 +437,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
 
                     fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
-                    simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
+                    await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                 }
 
                 const [fillResults, receipt] = await txHelper.getResultAndReceiptAsync(
@@ -492,7 +499,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
 
                     fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
-                    simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
+                    await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                 }
 
                 const [fillResults, receipt] = await txHelper.getResultAndReceiptAsync(
@@ -583,7 +590,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         }
 
                         fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
-                        simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
+                        await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                     } else {
                         totalFillResults.push(nullFillResults);
                     }
@@ -696,7 +703,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                                 takerFillAmount,
                             );
 
-                            simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
+                            await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                             fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
 
                             totalFillResults = addFillResults(totalFillResults, expectedFillResults);
@@ -774,7 +781,9 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same takerAssetAddress (eth protocol fee)', async () => {
-                const differentTakerAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address);
+                const differentTakerAssetData = await devUtils.encodeERC20AssetData.callAsync(
+                    deployment.tokens.erc20[2].address,
+                );
 
                 signedOrders = [
                     await maker.signOrderAsync(),
@@ -795,7 +804,9 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same takerAssetAddress (weth protocol fee)', async () => {
-                const differentTakerAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address);
+                const differentTakerAssetData = await devUtils.encodeERC20AssetData.callAsync(
+                    deployment.tokens.erc20[2].address,
+                );
 
                 signedOrders = [
                     await maker.signOrderAsync(),
@@ -890,7 +901,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                                 makerAssetBought,
                             );
 
-                            simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
+                            await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                             fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
 
                             totalFillResults = addFillResults(totalFillResults, expectedFillResults);
@@ -968,7 +979,9 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same makerAssetAddress (eth protocol fee)', async () => {
-                const differentMakerAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address);
+                const differentMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(
+                    deployment.tokens.erc20[2].address,
+                );
 
                 signedOrders = [
                     await maker.signOrderAsync(),
@@ -990,7 +1003,9 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same makerAssetAddress (weth protocol fee)', async () => {
-                const differentMakerAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address);
+                const differentMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(
+                    deployment.tokens.erc20[2].address,
+                );
 
                 signedOrders = [
                     await maker.signOrderAsync(),

@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     blockchainTests,
     constants,
@@ -10,13 +11,7 @@ import {
     randomAddress,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import {
-    assetDataUtils,
-    ExchangeRevertErrors,
-    orderHashUtils,
-    signatureUtils,
-    transactionHashUtils,
-} from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -42,6 +37,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
 
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     const eip1271Data = new IEIP1271DataContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     before(async () => {
         chainId = await env.getChainIdAsync();
@@ -174,7 +170,9 @@ blockchainTests.resets('MixinSignatureValidator', env => {
         it('should return true when SignatureType=EthSign and signature is valid', async () => {
             // Create EthSign signature
             const hashHex = getCurrentHashHex();
-            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(hashHex);
+            const orderHashWithEthSignPrefixHex = ethUtil.bufferToHex(
+                ethUtil.hashPersonalMessage(ethUtil.toBuffer(hashHex)),
+            );
             const signatureHex = hexConcat(
                 signDataHex(orderHashWithEthSignPrefixHex, signerPrivateKey),
                 SignatureType.EthSign,
@@ -429,10 +427,10 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 ...constants.STATIC_ORDER_PARAMS,
                 makerAddress,
                 feeRecipientAddress: randomAddress(),
-                makerAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(randomAddress()),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(randomAddress()),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(randomAddress()),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(randomAddress()),
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
                 exchangeAddress: signatureValidator.address,

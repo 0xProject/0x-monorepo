@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     constants,
@@ -24,67 +25,7 @@ import {
 } from '../../src';
 
 export class FillOrderWrapper {
-    private readonly _exchange: ExchangeContract;
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;
-
-    /**
-     * Locally simulates filling an order.
-     * @param txReceipt Transaction receipt from the actual fill, needed to update eth balance
-     * @param signedOrder The order being filled.
-     * @param takerAddress Address of taker (the address who matched the two orders)
-     * @param opts Optionally specifies the amount to fill.
-     * @param initBalanceStore Account balances prior to the fill.
-     * @return The expected account balances, fill results, and fill events.
-     */
-    public static simulateFillOrder(
-        txReceipt: TransactionReceiptWithDecodedLogs,
-        signedOrder: SignedOrder,
-        takerAddress: string,
-        initBalanceStore: BalanceStore,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
-    ): [FillResults, FillEventArgs, BalanceStore] {
-        const balanceStore = LocalBalanceStore.create(initBalanceStore);
-        const takerAssetFillAmount =
-            opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
-        // TODO(jalextowle): Change this if the integration tests take protocol fees into account.
-        const fillResults = LibReferenceFunctions.calculateFillResults(
-            signedOrder,
-            takerAssetFillAmount,
-            constants.ZERO_AMOUNT,
-            constants.ZERO_AMOUNT,
-        );
-        const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
-        // Taker -> Maker
-        balanceStore.transferAsset(
-            takerAddress,
-            signedOrder.makerAddress,
-            fillResults.takerAssetFilledAmount,
-            signedOrder.takerAssetData,
-        );
-        // Maker -> Taker
-        balanceStore.transferAsset(
-            signedOrder.makerAddress,
-            takerAddress,
-            fillResults.makerAssetFilledAmount,
-            signedOrder.makerAssetData,
-        );
-        // Taker -> Fee Recipient
-        balanceStore.transferAsset(
-            takerAddress,
-            signedOrder.feeRecipientAddress,
-            fillResults.takerFeePaid,
-            signedOrder.takerFeeAssetData,
-        );
-        // Maker -> Fee Recipient
-        balanceStore.transferAsset(
-            signedOrder.makerAddress,
-            signedOrder.feeRecipientAddress,
-            fillResults.makerFeePaid,
-            signedOrder.makerFeeAssetData,
-        );
-        balanceStore.burnGas(txReceipt.from, constants.DEFAULT_GAS_PRICE * txReceipt.gasUsed);
-        return [fillResults, fillEvent, balanceStore];
-    }
 
     /**
      *  Simulates the event emitted by the exchange contract when an order is filled.
@@ -120,6 +61,65 @@ export class FillOrderWrapper {
     }
 
     /**
+     * Locally simulates filling an order.
+     * @param txReceipt Transaction receipt from the actual fill, needed to update eth balance
+     * @param signedOrder The order being filled.
+     * @param takerAddress Address of taker (the address who matched the two orders)
+     * @param opts Optionally specifies the amount to fill.
+     * @param initBalanceStore Account balances prior to the fill.
+     * @return The expected account balances, fill results, and fill events.
+     */
+    public async simulateFillOrderAsync(
+        txReceipt: TransactionReceiptWithDecodedLogs,
+        signedOrder: SignedOrder,
+        takerAddress: string,
+        initBalanceStore: BalanceStore,
+        opts: { takerAssetFillAmount?: BigNumber } = {},
+    ): Promise<[FillResults, FillEventArgs, BalanceStore]> {
+        const balanceStore = LocalBalanceStore.create(this._devUtils, initBalanceStore);
+        const takerAssetFillAmount =
+            opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
+        // TODO(jalextowle): Change this if the integration tests take protocol fees into account.
+        const fillResults = LibReferenceFunctions.calculateFillResults(
+            signedOrder,
+            takerAssetFillAmount,
+            constants.ZERO_AMOUNT,
+            constants.ZERO_AMOUNT,
+        );
+        const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
+        // Taker -> Maker
+        await balanceStore.transferAssetAsync(
+            takerAddress,
+            signedOrder.makerAddress,
+            fillResults.takerAssetFilledAmount,
+            signedOrder.takerAssetData,
+        );
+        // Maker -> Taker
+        await balanceStore.transferAssetAsync(
+            signedOrder.makerAddress,
+            takerAddress,
+            fillResults.makerAssetFilledAmount,
+            signedOrder.makerAssetData,
+        );
+        // Taker -> Fee Recipient
+        await balanceStore.transferAssetAsync(
+            takerAddress,
+            signedOrder.feeRecipientAddress,
+            fillResults.takerFeePaid,
+            signedOrder.takerFeeAssetData,
+        );
+        // Maker -> Fee Recipient
+        await balanceStore.transferAssetAsync(
+            signedOrder.makerAddress,
+            signedOrder.feeRecipientAddress,
+            fillResults.makerFeePaid,
+            signedOrder.makerFeeAssetData,
+        );
+        balanceStore.burnGas(txReceipt.from, constants.DEFAULT_GAS_PRICE * txReceipt.gasUsed);
+        return [fillResults, fillEvent, balanceStore];
+    }
+
+    /**
      * Constructor.
      * @param exchangeContract Instance of the deployed exchange contract.
      * @param tokenOwnersByName The addresses of token owners to assert the balances of.
@@ -127,12 +127,12 @@ export class FillOrderWrapper {
      * @param tokenIds The tokenIds of ERC721 and ERC1155 assets to assert the balances of.
      */
     public constructor(
-        exchangeContract: ExchangeContract,
+        private readonly _exchange: ExchangeContract,
+        private readonly _devUtils: DevUtilsContract,
         tokenOwnersByName: TokenOwnersByName,
         tokenContractsByName: Partial<TokenContractsByName>,
         tokenIds: Partial<TokenIds>,
     ) {
-        this._exchange = exchangeContract;
         this._blockchainBalanceStore = new BlockchainBalanceStore(tokenOwnersByName, tokenContractsByName, tokenIds);
     }
 
@@ -168,7 +168,7 @@ export class FillOrderWrapper {
             simulatedFillResults,
             simulatedFillEvent,
             simulatedFinalBalanceStore,
-        ] = FillOrderWrapper.simulateFillOrder(txReceipt, signedOrder, from, this._blockchainBalanceStore, opts);
+        ] = await this.simulateFillOrderAsync(txReceipt, signedOrder, from, this._blockchainBalanceStore, opts);
         // Assert state transition
         expect(simulatedFillResults, 'Fill Results').to.be.deep.equal(fillResults);
         expect(simulatedFillEvent, 'Fill Events').to.be.deep.equal(fillEvent);

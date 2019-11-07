@@ -1,4 +1,5 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
@@ -59,6 +60,8 @@ describe(ContractName.DutchAuction, () => {
     let dutchAuctionTestWrapper: DutchAuctionTestWrapper;
     let defaultERC20MakerAssetData: string;
 
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
+
     before(async () => {
         await blockchainLifecycle.startAsync();
 
@@ -86,7 +89,7 @@ describe(ContractName.DutchAuction, () => {
         wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults, artifacts);
         erc20Wrapper.addDummyTokenContract(wethContract as any);
 
-        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+        const zrxAssetData = await devUtils.encodeERC20AssetData.callAsync(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
@@ -153,11 +156,11 @@ describe(ContractName.DutchAuction, () => {
             // taker address or sender address should be set to the ducth auction contract
             takerAddress: dutchAuctionContract.address,
             makerAssetData: assetDataUtils.encodeDutchAuctionAssetData(
-                assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
                 auctionBeginTimeSeconds,
                 auctionBeginAmount,
             ),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
             takerAssetAmount: auctionEndAmount,
             expirationTimeSeconds: auctionEndTimeSeconds,
@@ -179,7 +182,7 @@ describe(ContractName.DutchAuction, () => {
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         sellerOrderFactory = new OrderFactory(makerPrivateKey, sellerDefaultOrderParams);
         buyerOrderFactory = new OrderFactory(takerPrivateKey, buyerDefaultOrderParams);
-        defaultERC20MakerAssetData = assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress);
+        defaultERC20MakerAssetData = await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -318,7 +321,7 @@ describe(ContractName.DutchAuction, () => {
         });
         it('asset data contains auction parameters', async () => {
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
             });
             const tx = dutchAuctionTestWrapper.matchOrdersAsync(buyOrder, sellOrder, takerAddress);
             return expect(tx).to.revertWith(RevertReason.InvalidAssetData);
@@ -327,7 +330,10 @@ describe(ContractName.DutchAuction, () => {
         describe('ERC721', () => {
             it('should match orders when ERC721', async () => {
                 const makerAssetId = erc721MakerAssetIds[0];
-                const erc721MakerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId);
+                const erc721MakerAssetData = await devUtils.encodeERC721AssetData.callAsync(
+                    erc721Token.address,
+                    makerAssetId,
+                );
                 const makerAssetData = assetDataUtils.encodeDutchAuctionAssetData(
                     erc721MakerAssetData,
                     auctionBeginTimeSeconds,

@@ -19,7 +19,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { orderHashUtils } from '@0x/order-utils';
 import { OrderTransferResults, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
@@ -79,7 +79,6 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
 
-        feeAssetData = assetDataUtils.encodeERC20AssetData(feeErc20Token.address);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
             provider,
@@ -109,9 +108,10 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             exchange.address,
         );
 
-        erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
-        erc20AssetData2 = assetDataUtils.encodeERC20AssetData(erc20Token2.address);
-        erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, tokenId);
+        feeAssetData = await devUtils.encodeERC20AssetData.callAsync(feeErc20Token.address);
+        erc20AssetData = await devUtils.encodeERC20AssetData.callAsync(erc20Token.address);
+        erc20AssetData2 = await devUtils.encodeERC20AssetData.callAsync(erc20Token2.address);
+        erc721AssetData = await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, tokenId);
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
@@ -162,7 +162,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             expect(transferableAmount).to.bignumber.equal(allowance);
         });
         it('should return the correct transferable amount for multiAssetData', async () => {
-            const multiAssetData = assetDataUtils.encodeMultiAssetData(
+            const multiAssetData = await devUtils.encodeMultiAssetData.callAsync(
                 [new BigNumber(1), new BigNumber(1)],
                 [erc20AssetData, erc20AssetData2],
             );
@@ -227,7 +227,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should return a fillableTakerAssetAmount of 0 when balances/allowances of one asset within a multiAssetData are insufficient', async () => {
-            const multiAssetData = assetDataUtils.encodeMultiAssetData(
+            const multiAssetData = await devUtils.encodeMultiAssetData.callAsync(
                 [new BigNumber(1), new BigNumber(1)],
                 [erc20AssetData, erc20AssetData2],
             );
@@ -285,7 +285,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             );
         });
         it('should return the correct fillableTakerAssetAmount when balances/allowances of one asset within a multiAssetData are partially sufficient', async () => {
-            const multiAssetData = assetDataUtils.encodeMultiAssetData(
+            const multiAssetData = await devUtils.encodeMultiAssetData.callAsync(
                 [new BigNumber(1), new BigNumber(1)],
                 [erc20AssetData, erc20AssetData2],
             );

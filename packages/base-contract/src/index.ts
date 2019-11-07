@@ -80,9 +80,9 @@ export class BaseContract {
     public address: string;
     public contractName: string;
     public constructorArgs: any[] = [];
+    public _deployedBytecodeIfExists?: Buffer;
     private _evmIfExists?: VM;
     private _evmAccountIfExists?: Buffer;
-    private _deployedBytecodeIfExists?: Buffer;
     protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],

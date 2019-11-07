@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc1155Artifacts, ERC1155MintableContract, Erc1155Wrapper } from '@0x/contracts-erc1155';
 import {
     constants,
@@ -7,7 +8,6 @@ import {
     LogDecoder,
     txDefaults,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -26,6 +26,7 @@ export class ERC1155ProxyWrapper {
     private readonly _logDecoder: LogDecoder;
     private readonly _dummyTokenWrappers: Erc1155Wrapper[];
     private readonly _assetProxyInterface: IAssetProxyContract;
+    private readonly _devUtils: DevUtilsContract;
     private _proxyContract?: ERC1155ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC1155HoldingsByOwner = { fungible: {}, nonFungible: {} };
@@ -37,6 +38,7 @@ export class ERC1155ProxyWrapper {
         this._logDecoder = new LogDecoder(this._web3Wrapper, allArtifacts);
         this._dummyTokenWrappers = [];
         this._assetProxyInterface = new IAssetProxyContract(constants.NULL_ADDRESS, provider);
+        this._devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
         this._fungibleTokenIds = [];
@@ -95,7 +97,7 @@ export class ERC1155ProxyWrapper {
      * @param extraData extra data to append to `transferFrom` transaction. Optional.
      * @return abi encoded tx data.
      */
-    public getTransferFromAbiEncodedTxData(
+    public async getTransferFromAbiEncodedTxDataAsync(
         from: string,
         to: string,
         contractAddress: string,
@@ -105,11 +107,11 @@ export class ERC1155ProxyWrapper {
         receiverCallbackData: string,
         authorizedSender: string,
         assetData_?: string,
-    ): string {
+    ): Promise<string> {
         this._validateProxyContractExistsOrThrow();
         const assetData =
             assetData_ === undefined
-                ? assetDataUtils.encodeERC1155AssetData(
+                ? await this._devUtils.encodeERC1155AssetData.callAsync(
                       contractAddress,
                       tokensToTransfer,
                       valuesToTransfer,
@@ -169,7 +171,7 @@ export class ERC1155ProxyWrapper {
         this._validateProxyContractExistsOrThrow();
         const assetData =
             assetData_ === undefined
-                ? assetDataUtils.encodeERC1155AssetData(
+                ? await this._devUtils.encodeERC1155AssetData.callAsync(
                       contractAddress,
                       tokensToTransfer,
                       valuesToTransfer,

@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { constants, expect, getPercentageOfValue, OrderStatus } from '@0x/contracts-test-utils';
@@ -33,6 +34,7 @@ export class ForwarderTestFactory {
         private readonly _taker: Actor,
         private readonly _orderFeeRecipient: FeeRecipient,
         private readonly _forwarderFeeRecipient: FeeRecipient,
+        private readonly _devUtils: DevUtilsContract,
     ) {}
 
     public async marketBuyTestAsync(
@@ -157,7 +159,7 @@ export class ForwarderTestFactory {
         options: Partial<MarketBuyOptions>,
     ): Promise<ForwarderFillState> {
         await this._balanceStore.updateBalancesAsync();
-        const balances = LocalBalanceStore.create(this._balanceStore);
+        const balances = LocalBalanceStore.create(this._devUtils, this._balanceStore);
         const currentTotal = {
             wethSpentAmount: constants.ZERO_AMOUNT,
             makerAssetAcquiredAmount: constants.ZERO_AMOUNT,
@@ -173,7 +175,7 @@ export class ForwarderTestFactory {
                 continue;
             }
 
-            const { wethSpentAmount, makerAssetAcquiredAmount } = this._simulateSingleFill(
+            const { wethSpentAmount, makerAssetAcquiredAmount } = await this._simulateSingleFillAsync(
                 balances,
                 order,
                 ordersInfoBefore[i].orderTakerAssetFilledAmount,
@@ -197,12 +199,12 @@ export class ForwarderTestFactory {
         return { ...currentTotal, balances };
     }
 
-    private _simulateSingleFill(
+    private async _simulateSingleFillAsync(
         balances: LocalBalanceStore,
         order: SignedOrder,
         takerAssetFilled: BigNumber,
         fillFraction: number,
-    ): ForwarderFillState {
+    ): Promise<ForwarderFillState> {
         let { makerAssetAmount, takerAssetAmount, makerFee, takerFee } = order;
         makerAssetAmount = makerAssetAmount.times(fillFraction).integerValue(BigNumber.ROUND_CEIL);
         takerAssetAmount = takerAssetAmount.times(fillFraction).integerValue(BigNumber.ROUND_CEIL);
@@ -236,27 +238,42 @@ export class ForwarderTestFactory {
         // (In reality this is done all at once, but we simulate it order by order)
 
         // Maker -> Forwarder
-        balances.transferAsset(this._maker.address, this._forwarder.address, makerAssetAmount, order.makerAssetData);
+        await balances.transferAssetAsync(
+            this._maker.address,
+            this._forwarder.address,
+            makerAssetAmount,
+            order.makerAssetData,
+        );
         // Maker -> Order fee recipient
-        balances.transferAsset(this._maker.address, this._orderFeeRecipient.address, makerFee, order.makerFeeAssetData);
+        await balances.transferAssetAsync(
+            this._maker.address,
+            this._orderFeeRecipient.address,
+            makerFee,
+            order.makerFeeAssetData,
+        );
         // Forwarder -> Maker
-        balances.transferAsset(this._forwarder.address, this._maker.address, takerAssetAmount, order.takerAssetData);
+        await balances.transferAssetAsync(
+            this._forwarder.address,
+            this._maker.address,
+            takerAssetAmount,
+            order.takerAssetData,
+        );
         // Forwarder -> Order fee recipient
-        balances.transferAsset(
+        await balances.transferAssetAsync(
             this._forwarder.address,
             this._orderFeeRecipient.address,
             takerFee,
             order.takerFeeAssetData,
         );
         // Forwarder pays the protocol fee in WETH
-        balances.transferAsset(
+        await balances.transferAssetAsync(
             this._forwarder.address,
             this._deployment.staking.stakingProxy.address,
             DeploymentManager.protocolFee,
             order.takerAssetData,
         );
         // Forwarder gives acquired maker asset to taker
-        balances.transferAsset(
+        await balances.transferAssetAsync(
             this._forwarder.address,
             this._taker.address,
             makerAssetAcquiredAmount,

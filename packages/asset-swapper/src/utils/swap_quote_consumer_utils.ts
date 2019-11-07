@@ -1,5 +1,4 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
@@ -85,7 +84,9 @@ export const swapQuoteConsumerUtils = {
         provider: Provider,
         opts: Partial<GetExtensionContractTypeOpts>,
     ): Promise<ExtensionContractType> {
-        const wethAssetData = assetDataUtils.encodeERC20AssetData(contractWrappers.contractAddresses.etherToken);
+        const wethAssetData = await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+            contractWrappers.contractAddresses.etherToken,
+        );
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);

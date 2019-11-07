@@ -1,11 +1,15 @@
-import { DummyERC20TokenContract, ERC20ProxyContract, ERC20TokenContract } from '@0x/abi-gen-wrappers';
+import {
+    DevUtilsContract,
+    DummyERC20TokenContract,
+    ERC20ProxyContract,
+    ERC20TokenContract,
+} from '@0x/abi-gen-wrappers';
 import * as artifacts from '@0x/contract-artifacts';
 import { BlockchainLifecycle, devConstants } from '@0x/dev-utils';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { assetDataUtils } from '../src/asset_data_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
@@ -30,6 +34,7 @@ describe('ExchangeTransferSimulator', async () => {
     let exchangeTransferSimulator: ExchangeTransferSimulator;
     let txHash: string;
     let erc20ProxyAddress: string;
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
     before(async function(): Promise<void> {
         const mochaTestTimeoutMs = 20000;
         this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
@@ -67,7 +72,7 @@ describe('ExchangeTransferSimulator', async () => {
             totalSupply,
         );
 
-        exampleAssetData = assetDataUtils.encodeERC20AssetData(dummyERC20Token.address);
+        exampleAssetData = await devUtils.encodeERC20AssetData.callAsync(dummyERC20Token.address);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
