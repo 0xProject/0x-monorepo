@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-multisig",
-    "version": "3.2.0-beta.0",
+    "version": "3.2.0-beta.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -47,12 +47,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/multisig/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^4.3.0-beta.0",
-        "@0x/contracts-gen": "^1.1.0-beta.0",
-        "@0x/contracts-test-utils": "^3.2.0-beta.0",
-        "@0x/dev-utils": "^2.4.0-beta.0",
-        "@0x/sol-compiler": "^3.2.0-beta.0",
-        "@0x/tslint-config": "^3.0.1",
+        "@0x/abi-gen": "^4.4.0-beta.1",
+        "@0x/contracts-gen": "^1.1.0-beta.1",
+        "@0x/contracts-test-utils": "^3.2.0-beta.1",
+        "@0x/dev-utils": "^2.4.0-beta.1",
+        "@0x/sol-compiler": "^3.2.0-beta.1",
+        "@0x/tslint-config": "^3.1.0-beta.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",
@@ -69,15 +69,15 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.5.0-beta.0",
-        "@0x/contracts-asset-proxy": "^2.3.0-beta.0",
-        "@0x/contracts-erc20": "^2.3.0-beta.0",
-        "@0x/contracts-utils": "^3.3.0-beta.0",
-        "@0x/types": "^2.5.0-beta.0",
-        "@0x/typescript-typings": "^4.4.0-beta.0",
-        "@0x/utils": "^4.6.0-beta.0",
-        "@0x/web3-wrapper": "^6.1.0-beta.0",
-        "ethereum-types": "^2.2.0-beta.0",
+        "@0x/base-contract": "^5.5.0-beta.1",
+        "@0x/contracts-asset-proxy": "^2.3.0-beta.1",
+        "@0x/contracts-erc20": "^2.3.0-beta.1",
+        "@0x/contracts-utils": "^3.3.0-beta.1",
+        "@0x/types": "^2.5.0-beta.1",
+        "@0x/typescript-typings": "^4.4.0-beta.1",
+        "@0x/utils": "^4.6.0-beta.1",
+        "@0x/web3-wrapper": "^6.1.0-beta.1",
+        "ethereum-types": "^2.2.0-beta.1",
         "lodash": "^4.17.11"
     },
     "publishConfig": {

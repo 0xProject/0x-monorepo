@@ -1,6 +1,6 @@
 {
     "name": "@0x/sra-spec",
-    "version": "2.1.0-beta.0",
+    "version": "2.1.0-beta.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -35,11 +35,11 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
-        "@0x/json-schemas": "^4.1.0-beta.0",
+        "@0x/json-schemas": "^4.1.0-beta.1",
         "@loopback/openapi-v3-types": "^0.8.2"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^3.0.1",
+        "@0x/tslint-config": "^3.1.0-beta.1",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",
         "chai": "^4.0.1",
