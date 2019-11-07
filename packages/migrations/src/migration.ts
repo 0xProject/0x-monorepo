@@ -1,6 +1,12 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
-import { ERC1155ProxyContract, ERC20ProxyContract, ERC721ProxyContract, MultiAssetProxyContract, StaticCallProxyContract } from '@0x/contracts-asset-proxy';
+import {
+    ERC1155ProxyContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    MultiAssetProxyContract,
+    StaticCallProxyContract,
+} from '@0x/contracts-asset-proxy';
 import { CoordinatorContract, CoordinatorRegistryContract } from '@0x/contracts-coordinator';
 import { DevUtilsContract, OrderValidationUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155MintableContract } from '@0x/contracts-erc1155';
@@ -84,12 +90,7 @@ export async function runMigrationsAsync(
     );
 
     // Ether token
-    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(
-        artifacts.WETH9,
-        provider,
-        txDefaults,
-        artifacts,
-    );
+    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults, artifacts);
 
     // Exchange
     // tslint:disable-next-line:no-unused-variable

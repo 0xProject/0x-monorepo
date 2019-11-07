@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { ERC1155ProxyContract, ERC20ProxyContract, ERC721ProxyContract, MultiAssetProxyContract } from '@0x/contracts-asset-proxy';
+import {
+    ERC1155ProxyContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    MultiAssetProxyContract,
+} from '@0x/contracts-asset-proxy';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { ZeroExGovernorContract } from '@0x/contracts-multisig';
 import { StakingContract, StakingProxyContract, ZrxVaultContract } from '@0x/contracts-staking';

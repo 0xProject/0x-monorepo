@@ -1,20 +1,12 @@
 import { constants, orderUtils } from '@0x/contracts-test-utils';
-import {
-    Order,
-    SupportedProvider,
-} from '@0x/order-utils';
+import { Order, SupportedProvider } from '@0x/order-utils';
 import { FillResults } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import {
-    AbstractBalanceAndProxyAllowanceLazyStore as LazyStore,
-} from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { AbstractBalanceAndProxyAllowanceLazyStore as LazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
-import {
-    TradeSide,
-    TransferType,
-} from './types';
+import { TradeSide, TransferType } from './types';
 
 export enum FillOrderError {
     OrderUnfillable = 'ORDER_UNFILLABLE',
