@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.1 - _November 7, 2019_
+
+    * In Python wrappers, accept string arguments to bytes parameters (#2284)
+    * In Python wrappers, support module-local, Web3.py-compatible middleware (#2284)
+    * In Python wrappers, allow contracts to be instantiated with EITHER a Web3.py BaseProvider OR a Web3 client object (#2284)
+    * In Python wrappers, fix bug with casting some bytes objects using bytes.fromhex() (#2284)
+    * Add `getSelector` method to all functions (#2224)
+    * Command-line argument network-id has changed to chain-id (#2313)
+    * Fix templates not being included in published tarball (#2315)
+
 ## v4.3.0-beta.0 - _October 3, 2019_
 
     * Dependencies updated

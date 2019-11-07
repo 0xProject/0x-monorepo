@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.2 - _November 7, 2019_
+
+    * Update DevUtils contract artifacts
+
 ## v2.3.0-beta.1 - _November 6, 2019_
 
     * Dependencies updated

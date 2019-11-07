@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.0-beta.1 - _November 7, 2019_
+
+    * Remove debug functions `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2243)
+    * Remove `getABIEncodedTransactionData` for constant functions (pure and view) (#2243)
+    * Introduce TxOpts object for `sendTransactionAsync` and `awaitTransactionSuccessAsync`. Replaces `timeoutMs` and `pollingIntervalMs` arguments for `awaitTransactionSuccessAsync` (#2243)
+    * Remove `validateAndSendTransactionAsync`. Replaced with `shouldValidate` key in TxOpts. Defaults to true (#2243)
+
 ## v5.4.0-beta.0 - _October 3, 2019_
 
     * Use V3 contracts (#2181)

@@ -5,7 +5,8 @@
             {
                 "note": "Update DevUtils contract artifacts"
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "2.3.0-beta.1",

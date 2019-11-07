@@ -5,7 +5,8 @@
             {
                 "note": "Updated devUtils contract addresses on testnets"
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "3.3.0-beta.1",

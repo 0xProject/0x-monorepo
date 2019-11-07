@@ -6,7 +6,8 @@
                 "note": "OrderFactory default order expiration time increased from ten minutes to fifteen minutes ",
                 "pr": 2304
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "3.2.0-beta.0",

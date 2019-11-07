@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.4.0-beta.1 - _November 7, 2019_
+
+    * Dependencies updated
+
 ## v2.4.0-beta.0 - _October 3, 2019_
 
     * `revertWith` mocha extensions now accept Promise-like objects instead of just Promises (#2031)

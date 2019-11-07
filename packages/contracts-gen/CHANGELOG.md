@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0-beta.1 - _November 7, 2019_
+
+    * Dependencies updated
+
 ## v1.1.0-beta.0 - _October 3, 2019_
 
     * Generate boilerplate for all contracts if none are specified or if all contracts identifier is used (#2055)

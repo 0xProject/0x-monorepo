@@ -18,7 +18,8 @@
                 "note": "In OrderFactoryFromScenario, `generateOrder` is now `generateOrderAsync`",
                 "pr": 2304
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "2.2.0-beta.0",

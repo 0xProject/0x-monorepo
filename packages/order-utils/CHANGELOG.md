@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.5.0-beta.1 - _November 7, 2019_
+
+    * Remove `TransferFailedError` from `ForwarderRevertErrors`. (#2309)
+    * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)
+
 ## v8.5.0-beta.0 - _October 3, 2019_
 
     * Add `chainId` `OrderValidationUtils`, `OrderFactory` (#1742)
@@ -34,6 +39,8 @@ CHANGELOG
     * Remove `validateOrderFillableOrThrowAsync`, `simpleValidateOrderFillableOrThrowAsync`, `validateMakerTransferThrowIfInvalidAsync` (#2181)
     * Add `PreviousEpochNotFinalizedError` to `StakingRevertErrors`. (#2155)
     * Add `InvalidMinimumPoolStake` to `StakingRevertErrors.InvalidParamValueErrorCode`. (#2155)
+    * Renamed `OnlyCallableByPoolOperatorOrMakerError` to `OnlyCallableByPoolOperatorError`. (#2250)
+    * Removed protocol fee != 0 error. (#2278)
 
 ## v8.4.0 - _September 17, 2019_
 

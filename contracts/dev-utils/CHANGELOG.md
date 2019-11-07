@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.1.0-beta.1 - _November 7, 2019_
+
+    * Add `encodeStaticCallAssetData` and `decodeStaticCallAssetData` in LibAssetData (#2034)
+    * Add `revertIfInvalidAssetData` in LibAssetData (#2034)
+
 ## v0.1.0-beta.0 - _October 3, 2019_
 
     * Use built in selectors instead of hard coded constants (#2055)
