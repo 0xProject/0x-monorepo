@@ -7,7 +7,7 @@ import {
 } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, expect, LogDecoder, orderUtils, signingUtils } from '@0x/contracts-test-utils';
-import { BalanceAndProxyAllowanceLazyStore, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
@@ -35,6 +35,7 @@ import {
 import { FillOrderError, FillOrderSimulator } from './fill_order_simulator';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
+import { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 
 const EMPTY_FILL_RESULTS = {
     takerAssetFilledAmount: constants.ZERO_AMOUNT,
@@ -503,7 +504,7 @@ export class FillOrderCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
     ): Promise<FillResults> {
-        const simulator = new FillOrderSimulator(lazyStore);
+        const simulator = new FillOrderSimulator(lazyStore, this.provider);
         return simulator.simulateFillOrderAsync(signedOrder, this.takerAddress, takerAssetFillAmount);
     }
 

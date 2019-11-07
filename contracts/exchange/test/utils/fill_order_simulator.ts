@@ -1,14 +1,18 @@
 import { constants, orderUtils } from '@0x/contracts-test-utils';
 import {
-    AbstractBalanceAndProxyAllowanceLazyStore as LazyStore,
-    ExchangeTransferSimulator,
     Order,
+    SupportedProvider,
     TradeSide,
     TransferType,
 } from '@0x/order-utils';
 import { FillResults } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
+
+import {
+    AbstractBalanceAndProxyAllowanceLazyStore as LazyStore,
+} from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
+import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 
 export enum FillOrderError {
     OrderUnfillable = 'ORDER_UNFILLABLE',
@@ -27,9 +31,9 @@ export class FillOrderSimulator {
     public readonly lazyStore: LazyStore;
     private readonly _transferSimulator: ExchangeTransferSimulator;
 
-    constructor(lazyStore: LazyStore) {
+    constructor(lazyStore: LazyStore, provider: SupportedProvider) {
         this.lazyStore = lazyStore;
-        this._transferSimulator = new ExchangeTransferSimulator(lazyStore);
+        this._transferSimulator = new ExchangeTransferSimulator(lazyStore, provider);
     }
 
     public async simulateFillOrderAsync(

@@ -1,10 +1,10 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { constants } from '@0x/contracts-test-utils';
+import { SupportedProvider, TradeSide, TransferType } from '@0x/order-utils';
 import { AssetProxyId, ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
-import { assetDataUtils } from './asset_data_utils';
-import { constants } from './constants';
-import { TradeSide, TransferType } from './types';
 
 enum FailureReason {
     Balance = 'balance',
@@ -40,6 +40,7 @@ const ERR_MSG_MAPPING = {
  */
 export class ExchangeTransferSimulator {
     private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
+    private readonly _devUtils: DevUtilsContract;
     private static _throwValidationError(
         failureReason: FailureReason,
         tradeSide: TradeSide,
@@ -53,8 +54,9 @@ export class ExchangeTransferSimulator {
      * @param store A class that implements AbstractBalanceAndProxyAllowanceLazyStore
      * @return an instance of ExchangeTransferSimulator
      */
-    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore) {
+    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore, provider: SupportedProvider) {
         this._store = store;
+        this._devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
     }
     /**
      * Simulates transferFrom call performed by a proxy
@@ -75,7 +77,7 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
-        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+        const assetProxyId = await this._devUtils.decodeAssetProxyId.callAsync(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC1155:
             case AssetProxyId.ERC20:
@@ -108,11 +110,11 @@ export class ExchangeTransferSimulator {
                 break;
             }
             case AssetProxyId.MultiAsset: {
-                const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+                const decodedAssetData = await this._devUtils.decodeMultiAssetData.callAsync(assetData);
                 await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
                 await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
-                for (const [index, nestedAssetDataElement] of decodedAssetData.nestedAssetData.entries()) {
-                    const amountsElement = decodedAssetData.amounts[index];
+                for (const [index, nestedAssetDataElement] of decodedAssetData[2].entries()) {
+                    const amountsElement = decodedAssetData[1][index];
                     const totalAmount = amountInBaseUnits.times(amountsElement);
                     await this.transferFromAsync(
                         nestedAssetDataElement,
