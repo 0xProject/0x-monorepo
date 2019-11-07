@@ -1,6 +1,6 @@
 [
     {
-        "version": "5.0.0-beta.0",
+        "version": "4.4.0-beta.1",
         "changes": [
             {
                 "note": "Update all contract deployments to pass the actual chain ID (rather than the network ID) via the newly modified @0x/utils/provider_utils",

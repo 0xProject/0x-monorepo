@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.0.0-beta.0",
+        "version": "3.2.0-beta.1",
         "changes": [
             {
                 "note": "Output artifacts now include a 'chains' attribute rather than 'networks'",

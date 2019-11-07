@@ -1,6 +1,6 @@
 [
     {
-        "version": "7.0.0-beta.0",
+        "version": "6.2.0-beta.1",
         "changes": [
             {
                 "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
