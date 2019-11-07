@@ -4,6 +4,8 @@ import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
 import { constants as stakingConstants } from './constants';
 
+// tslint:disable:max-classes-per-file
+
 export interface StakingParams {
     epochDurationInSeconds: Numberish;
     rewardDelegatedStakeWeight: Numberish;

@@ -284,9 +284,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         );
 
         // The rewards are split between the operator and delegator based on the pool's operatorShare
-        const operatorReward = rewardsAvailable
-            .times(operatorShare)
-            .dividedToIntegerBy(constants.PPM_DENOMINATOR);
+        const operatorReward = rewardsAvailable.times(operatorShare).dividedToIntegerBy(constants.PPM_DENOMINATOR);
         const delegatorReward = rewardsAvailable.minus(operatorReward);
 
         // Finalize the pool. This should automatically pay the operator in WETH.
@@ -365,9 +363,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         balanceStore.assertEquals(expectedBalances);
 
         // The rewards are split between the operator and delegator based on the pool's operatorShare
-        const operatorReward = rewardsAvailable
-            .times(operatorShare)
-            .dividedToIntegerBy(constants.PPM_DENOMINATOR);
+        const operatorReward = rewardsAvailable.times(operatorShare).dividedToIntegerBy(constants.PPM_DENOMINATOR);
 
         // Finalize the pool. This should automatically pay the operator in WETH.
         const [finalizePoolReceipt] = await delegator.finalizePoolsAsync([poolId]);
