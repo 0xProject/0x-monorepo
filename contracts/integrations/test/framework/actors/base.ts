@@ -142,6 +142,12 @@ export class Actor {
         customTransactionParams: Partial<ZeroExTransaction>,
         signatureType: SignatureType = SignatureType.EthSign,
     ): Promise<SignedZeroExTransaction> {
-        return this._transactionFactory.newSignedTransactionAsync(customTransactionParams, signatureType);
+        return this._transactionFactory.newSignedTransactionAsync(
+            {
+                gasPrice: DeploymentManager.gasPrice,
+                ...customTransactionParams,
+            },
+            signatureType,
+        );
     }
 }

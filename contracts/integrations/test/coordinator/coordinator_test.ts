@@ -191,10 +191,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
             before(async () => {
                 order = await maker.signOrderAsync();
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
-                transaction = await taker.signTransactionAsync({
-                    data,
-                    gasPrice: DeploymentManager.gasPrice,
-                });
+                transaction = await taker.signTransactionAsync({ data });
                 approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
             });
 
@@ -309,10 +306,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
             before(async () => {
                 orders = [await maker.signOrderAsync(), await maker.signOrderAsync()];
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                transaction = await taker.signTransactionAsync({
-                    data,
-                    gasPrice: DeploymentManager.gasPrice,
-                });
+                transaction = await taker.signTransactionAsync({ data });
                 approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
             });
 
@@ -400,7 +394,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: DeploymentManager.gasPrice,
             });
             const txReceipt = await coordinator
                 .executeTransaction(transaction, maker.address, transaction.signature, [])
@@ -413,7 +406,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: DeploymentManager.gasPrice,
             });
             const txReceipt = await coordinator
                 .executeTransaction(transaction, maker.address, transaction.signature, [])
@@ -425,7 +417,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, []);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: DeploymentManager.gasPrice,
             });
             const txReceipt = await coordinator
                 .executeTransaction(transaction, maker.address, transaction.signature, [])
