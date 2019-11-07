@@ -42,7 +42,7 @@
     "dependencies": {
         "@0x/assert": "^2.2.0-beta.0",
         "@0x/connect": "^5.1.0-beta.0",
-        "@0x/contract-addresses": "^3.3.0-beta.0",
+        "@0x/contract-addresses": "^3.3.0-beta.1",
         "@0x/contract-wrappers": "^12.2.0-beta.0",
         "@0x/dev-utils": "^2.4.0-beta.0",
         "@0x/json-schemas": "^4.1.0-beta.0",
