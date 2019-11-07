@@ -92,6 +92,7 @@ export async function runMigrationsAsync(
     );
 
     // Exchange
+    // tslint:disable-next-line:no-unused-variable
     const zrxAssetData = encodeERC20AssetData(zrxToken.address);
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,

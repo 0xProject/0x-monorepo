@@ -5,6 +5,7 @@ import { blockchainTests, chaiSetup, constants } from '@0x/contracts-test-utils'
 import { TradeSide, TransferType } from '@0x/order-utils';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import * as chai from 'chai';
 
 import { ExchangeTransferSimulator } from './utils/exchange_transfer_simulator';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
