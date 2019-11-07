@@ -132,18 +132,30 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     );
 
     logUtils.log('Configuring Exchange...');
+    await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(stakingProxy.address);
+    await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(new BigNumber(150000));
+    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc20Proxy);
+    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc721Proxy);
+    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc1155Proxy);
+    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.multiAssetProxy);
+    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.staticCallProxy);
+    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20BridgeProxy.address);
     await exchange.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('Exchange configured!');
 
     logUtils.log('Configuring ERC20BridgeProxy...');
+    await erc20BridgeProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address);
+    await erc20BridgeProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(deployedAddresses.multiAssetProxy);
     await erc20BridgeProxy.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('ERC20BridgeProxy configured!');
 
     logUtils.log('Configuring ZrxVault...');
+    await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
     await zrxVault.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('ZrxVault configured!');
 
     logUtils.log('Configuring StakingProxy...');
+    await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
     await stakingProxy.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('StakingProxy configured!');
 
@@ -177,54 +189,12 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     logUtils.log('Ownership transferred!');
 
     const functionCalls = [
-        // Exchange staking configs
-        {
-            destination: exchange.address,
-            data: exchange.setProtocolFeeCollectorAddress.getABIEncodedTransactionData(stakingProxy.address),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.setProtocolFeeMultiplier.getABIEncodedTransactionData(new BigNumber(150000)),
-        },
-        // Exchange AssetProxy registrations
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(deployedAddresses.erc20Proxy),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(deployedAddresses.erc721Proxy),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(deployedAddresses.erc1155Proxy),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(deployedAddresses.multiAssetProxy),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(deployedAddresses.staticCallProxy),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(erc20BridgeProxy.address),
-        },
         // ZrxVault configs
-        {
-            destination: zrxVault.address,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(governor.address),
-        },
         {
             destination: zrxVault.address,
             data: zrxVault.setStakingProxy.getABIEncodedTransactionData(stakingProxy.address),
         },
-        // StakingProxy configs
-        {
-            destination: stakingProxy.address,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(governor.address),
-        },
+        // Staking configs
         {
             destination: stakingProxy.address,
             data: stakingLogic.addExchangeAddress.getABIEncodedTransactionData(exchange.address),
@@ -254,16 +224,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
             destination: deployedAddresses.multiAssetProxy,
             data: exchange.registerAssetProxy.getABIEncodedTransactionData(erc20BridgeProxy.address),
         },
-        {
-            destination: erc20BridgeProxy.address,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(exchange.address),
-        },
-        {
-            destination: erc20BridgeProxy.address,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(
-                deployedAddresses.multiAssetProxy,
-            ),
-        },
     ];
 
     const batchTransactionEncoder = AbiEncoder.create('(bytes[],address[],uint256[])');
@@ -276,10 +236,10 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
 }
 
 (async () => {
-    const networkId = 4;
-    const rpcUrl = 'https://rinkeby.infura.io/v3/';
+    const networkId = 1;
+    const rpcUrl = 'https://mainnet.infura.io/v3/';
     const provider = await providerFactory.getLedgerProviderAsync(networkId, rpcUrl);
-    await runMigrationsAsync(provider, { from: '0x9df8137872ac09a8fee71d0da5c7539923fb9bf0', gasPrice: 60000000000 });
+    await runMigrationsAsync(provider, { from: '0x3b39078f2a3e1512eecc8d6792fdc7f33e1cd2cf', gasPrice: 10000000000 });
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);
