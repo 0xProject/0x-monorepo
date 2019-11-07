@@ -1,6 +1,6 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
-import { constants, expect, OrderStatus, TransactionHelper } from '@0x/contracts-test-utils';
+import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -8,8 +8,6 @@ import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-
 import * as _ from 'lodash';
 
 import { DeploymentManager } from './deployment_manager';
-
-const ZERO = new BigNumber(0);
 
 export interface FillEventArgs {
     orderHash: string;
@@ -69,19 +67,14 @@ export interface MatchedOrders {
 }
 
 export class MatchOrderTester {
-    private readonly _devUtils: DevUtilsContract;
-    private readonly _deployment: DeploymentManager;
-    private readonly _blockchainBalanceStore: BlockchainBalanceStore;
-
+    /**
+     * Constructs new MatchOrderTester.
+     */
     constructor(
-        deployment: DeploymentManager,
-        devUtils: DevUtilsContract,
-        blockchainBalanceStore: BlockchainBalanceStore,
-    ) {
-        this._deployment = deployment;
-        this._devUtils = devUtils;
-        this._blockchainBalanceStore = blockchainBalanceStore;
-    }
+        private readonly _deployment: DeploymentManager,
+        private readonly _devUtils: DevUtilsContract,
+        private readonly _blockchainBalanceStore: BlockchainBalanceStore,
+    ) {}
 
     /**
      * Performs batch order matching on a set of complementary orders and asserts results.
@@ -121,14 +114,8 @@ export class MatchOrderTester {
         let actualBatchMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
-            actualBatchMatchResults = await this._deployment.exchange.batchMatchOrdersWithMaximalFill.callAsync(
-                orders.leftOrders,
-                orders.rightOrders,
-                orders.leftOrders.map(order => order.signature),
-                orders.rightOrders.map(order => order.signature),
-                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
-            );
-            transactionReceipt = await this._deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
+            [actualBatchMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
+                this._deployment.exchange.batchMatchOrdersWithMaximalFill,
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
@@ -136,14 +123,8 @@ export class MatchOrderTester {
                 { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         } else {
-            actualBatchMatchResults = await this._deployment.exchange.batchMatchOrders.callAsync(
-                orders.leftOrders,
-                orders.rightOrders,
-                orders.leftOrders.map(order => order.signature),
-                orders.rightOrders.map(order => order.signature),
-                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
-            );
-            transactionReceipt = await this._deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
+            [actualBatchMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
+                this._deployment.exchange.batchMatchOrders,
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
@@ -151,6 +132,8 @@ export class MatchOrderTester {
                 { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         }
+
+        // Burn the gas used to execute the transaction in the local balance store.
         localBalanceStore.burnGas(takerAddress, constants.DEFAULT_GAS_PRICE * transactionReceipt.gasUsed);
 
         // Simulate the batch order match.
@@ -207,14 +190,8 @@ export class MatchOrderTester {
         let actualMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
-            actualMatchResults = await this._deployment.exchange.matchOrdersWithMaximalFill.callAsync(
-                orders.leftOrder,
-                orders.rightOrder,
-                orders.leftOrder.signature,
-                orders.rightOrder.signature,
-                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
-            );
-            transactionReceipt = await this._deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
+            [actualMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
+                this._deployment.exchange.matchOrdersWithMaximalFill,
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
@@ -222,14 +199,8 @@ export class MatchOrderTester {
                 { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
             );
         } else {
-            actualMatchResults = await this._deployment.exchange.matchOrders.callAsync(
-                orders.leftOrder,
-                orders.rightOrder,
-                orders.leftOrder.signature,
-                orders.rightOrder.signature,
-                { from: takerAddress, gasPrice: constants.DEFAULT_GAS_PRICE, value },
-            );
-            transactionReceipt = await this._deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
+            [actualMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
+                this._deployment.exchange.matchOrders,
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
@@ -274,34 +245,34 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
         leftMakerAssetSoldByLeftMakerAmount:
             partial.leftMakerAssetSoldByLeftMakerAmount ||
             partial.leftMakerAssetBoughtByRightMakerAmount ||
-            ZERO,
+            constants.ZERO_AMOUNT,
         rightMakerAssetSoldByRightMakerAmount:
             partial.rightMakerAssetSoldByRightMakerAmount ||
             partial.rightMakerAssetBoughtByLeftMakerAmount ||
-            ZERO,
+            constants.ZERO_AMOUNT,
         rightMakerAssetBoughtByLeftMakerAmount:
             partial.rightMakerAssetBoughtByLeftMakerAmount ||
             partial.rightMakerAssetSoldByRightMakerAmount ||
-            ZERO,
+            constants.ZERO_AMOUNT,
         leftMakerAssetBoughtByRightMakerAmount: partial.leftMakerAssetBoughtByRightMakerAmount ||
             partial.leftMakerAssetSoldByLeftMakerAmount ||
-            ZERO,
+            constants.ZERO_AMOUNT,
         leftMakerFeeAssetPaidByLeftMakerAmount:
-            partial.leftMakerFeeAssetPaidByLeftMakerAmount || ZERO,
+            partial.leftMakerFeeAssetPaidByLeftMakerAmount || constants.ZERO_AMOUNT,
         rightMakerFeeAssetPaidByRightMakerAmount:
-            partial.rightMakerFeeAssetPaidByRightMakerAmount || ZERO,
+            partial.rightMakerFeeAssetPaidByRightMakerAmount || constants.ZERO_AMOUNT,
         leftMakerAssetReceivedByTakerAmount:
-            partial.leftMakerAssetReceivedByTakerAmount || ZERO,
+            partial.leftMakerAssetReceivedByTakerAmount || constants.ZERO_AMOUNT,
         rightMakerAssetReceivedByTakerAmount:
-            partial.rightMakerAssetReceivedByTakerAmount || ZERO,
+            partial.rightMakerAssetReceivedByTakerAmount || constants.ZERO_AMOUNT,
         leftTakerFeeAssetPaidByTakerAmount:
-            partial.leftTakerFeeAssetPaidByTakerAmount || ZERO,
+            partial.leftTakerFeeAssetPaidByTakerAmount || constants.ZERO_AMOUNT,
         rightTakerFeeAssetPaidByTakerAmount:
-            partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
+            partial.rightTakerFeeAssetPaidByTakerAmount || constants.ZERO_AMOUNT,
         leftProtocolFeePaidByTakerAmount:
-            partial.leftProtocolFeePaidByTakerAmount || ZERO,
+            partial.leftProtocolFeePaidByTakerAmount || constants.ZERO_AMOUNT,
         rightProtocolFeePaidByTakerAmount:
-            partial.rightProtocolFeePaidByTakerAmount || ZERO,
+            partial.rightProtocolFeePaidByTakerAmount || constants.ZERO_AMOUNT,
     };
 }
 
@@ -360,7 +331,7 @@ async function simulateBatchMatchOrdersAsync(
             } else {
                 batchMatchResults.filledAmounts.push([
                     orders.leftOrders[lastLeftIdx],
-                    getLastMatch(batchMatchResults).orders.leftOrderTakerAssetFilledAmount || ZERO,
+                    getLastMatch(batchMatchResults).orders.leftOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT,
                     'left',
                 ]);
             }
@@ -371,7 +342,7 @@ async function simulateBatchMatchOrdersAsync(
             } else {
                 batchMatchResults.filledAmounts.push([
                     orders.rightOrders[lastRightIdx],
-                    getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || ZERO,
+                    getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT,
                     'right',
                 ]);
             }
@@ -420,12 +391,12 @@ async function simulateBatchMatchOrdersAsync(
     // here.
     batchMatchResults.filledAmounts.push([
         orders.leftOrders[lastLeftIdx],
-        getLastMatch(batchMatchResults).orders.leftOrderTakerAssetFilledAmount || ZERO,
+        getLastMatch(batchMatchResults).orders.leftOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT,
         'left',
     ]);
     batchMatchResults.filledAmounts.push([
         orders.rightOrders[lastRightIdx],
-        getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || ZERO,
+        getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT,
         'right',
     ]);
 
@@ -456,12 +427,12 @@ async function simulateMatchOrdersAsync(
         orders: {
             leftOrder: orders.leftOrder,
             leftOrderTakerAssetFilledAmount:
-                (orders.leftOrderTakerAssetFilledAmount || ZERO).plus(
+                (orders.leftOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT).plus(
                     transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
                 ),
             rightOrder: orders.rightOrder,
             rightOrderTakerAssetFilledAmount:
-                (orders.rightOrderTakerAssetFilledAmount || ZERO).plus(
+                (orders.rightOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT).plus(
                     transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
                 ),
         },
@@ -732,8 +703,8 @@ async function assertBatchOrderStatesAsync(orders: BatchMatchedOrders, exchange:
  */
 async function assertInitialOrderStatesAsync(orders: MatchedOrders, exchange: ExchangeContract): Promise<void> {
     const pairs = [
-        [orders.leftOrder, orders.leftOrderTakerAssetFilledAmount || ZERO],
-        [orders.rightOrder, orders.rightOrderTakerAssetFilledAmount || ZERO],
+        [orders.leftOrder, orders.leftOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT],
+        [orders.rightOrder, orders.rightOrderTakerAssetFilledAmount || constants.ZERO_AMOUNT],
     ] as Array<[SignedOrder, BigNumber]>;
     await Promise.all(
         pairs.map(async ([order, expectedFilledAmount]) => {
@@ -854,20 +825,20 @@ function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFil
     const batchMatchedFillResults: BatchMatchedFillResults = {
         left: [],
         right: [],
-        profitInLeftMakerAsset: ZERO,
-        profitInRightMakerAsset: ZERO,
+        profitInLeftMakerAsset: constants.ZERO_AMOUNT,
+        profitInRightMakerAsset: constants.ZERO_AMOUNT,
     };
     for (const match of results.matches) {
         const leftSpread = match.fills[0].makerAssetFilledAmount.minus(match.fills[1].takerAssetFilledAmount);
         // If the left maker spread is positive for match, update the profitInLeftMakerAsset
-        if (leftSpread.isGreaterThan(ZERO)) {
+        if (leftSpread.isGreaterThan(constants.ZERO_AMOUNT)) {
             batchMatchedFillResults.profitInLeftMakerAsset = batchMatchedFillResults.profitInLeftMakerAsset.plus(
                 leftSpread,
             );
         }
         const rightSpread = match.fills[1].makerAssetFilledAmount.minus(match.fills[0].takerAssetFilledAmount);
         // If the right maker spread is positive for match, update the profitInRightMakerAsset
-        if (rightSpread.isGreaterThan(ZERO)) {
+        if (rightSpread.isGreaterThan(constants.ZERO_AMOUNT)) {
             batchMatchedFillResults.profitInRightMakerAsset = batchMatchedFillResults.profitInRightMakerAsset.plus(
                 rightSpread,
             );
@@ -891,14 +862,14 @@ function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFil
 function convertToMatchResults(result: MatchResults): MatchedFillResults {
     // If the left spread is negative, set it to zero
     let profitInLeftMakerAsset = result.fills[0].makerAssetFilledAmount.minus(result.fills[1].takerAssetFilledAmount);
-    if (profitInLeftMakerAsset.isLessThanOrEqualTo(ZERO)) {
-        profitInLeftMakerAsset = ZERO;
+    if (profitInLeftMakerAsset.isLessThanOrEqualTo(constants.ZERO_AMOUNT)) {
+        profitInLeftMakerAsset = constants.ZERO_AMOUNT;
     }
 
     // If the right spread is negative, set it to zero
     let profitInRightMakerAsset = result.fills[1].makerAssetFilledAmount.minus(result.fills[0].takerAssetFilledAmount);
-    if (profitInRightMakerAsset.isLessThanOrEqualTo(ZERO)) {
-        profitInRightMakerAsset = ZERO;
+    if (profitInRightMakerAsset.isLessThanOrEqualTo(constants.ZERO_AMOUNT)) {
+        profitInRightMakerAsset = constants.ZERO_AMOUNT;
     }
 
     const matchedFillResults: MatchedFillResults = {
