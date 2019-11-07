@@ -262,11 +262,11 @@ export class StakingContract extends BaseContract {
             {
                 inputs: [
                     {
-                        name: 'wethAddress',
+                        name: 'wethAddress_',
                         type: 'address',
                     },
                     {
-                        name: 'zrxVaultAddress',
+                        name: 'zrxVaultAddress_',
                         type: 'address',
                     },
                 ],
@@ -1195,7 +1195,7 @@ export class StakingContract extends BaseContract {
                 name: 'getWethContract',
                 outputs: [
                     {
-                        name: '',
+                        name: 'wethContract',
                         type: 'address',
                     },
                 ],
@@ -1523,34 +1523,6 @@ export class StakingContract extends BaseContract {
                 constant: true,
                 inputs: [],
                 name: 'stakingContract',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'address',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [],
-                name: 'testWethAddress',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'address',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [],
-                name: 'testZrxVaultAddress',
                 outputs: [
                     {
                         name: '',

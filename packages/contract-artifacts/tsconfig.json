@@ -32,7 +32,6 @@
         "./artifacts/StaticCallProxy.json",
         "./artifacts/Staking.json",
         "./artifacts/StakingProxy.json",
-        "./artifacts/TestStaking.json",
         "./artifacts/ZrxVault.json",
         "./artifacts/ERC20BridgeProxy.json"
     ]

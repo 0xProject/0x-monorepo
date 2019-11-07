@@ -1,21 +1,22 @@
-import { CoordinatorContract, OrderValidatorContract, ZrxVaultContract } from '@0x/abi-gen-wrappers';
+import { CoordinatorContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import {
     ERC1155ProxyContract,
+    ERC20BridgeProxyContract,
     ERC20ProxyContract,
     ERC721ProxyContract,
     MultiAssetProxyContract,
     StaticCallProxyContract,
-    ERC20BridgeProxyContract,
 } from '@0x/contracts-asset-proxy';
 import { CoordinatorRegistryContract } from '@0x/contracts-coordinator';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155MintableContract } from '@0x/contracts-erc1155';
-import { DummyERC20TokenContract, WETH9Contract, ZRXTokenContract } from '@0x/contracts-erc20';
+import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
+import { StakingProxyContract, TestStakingContract, ZrxVaultContract } from '@0x/contracts-staking';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -23,7 +24,6 @@ import { MethodAbi, SupportedProvider, TxData } from 'ethereum-types';
 
 import { constants } from './utils/constants';
 import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
-import { TestStakingContract, StakingProxyContract } from '@0x/contracts-staking';
 
 // HACK (xianny): Copied from @0x/order-utils to get rid of circular dependency
 /**
@@ -99,8 +99,6 @@ export async function runMigrationsAsync(
     const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults, artifacts);
 
     // Exchange
-    // tslint:disable-next-line:no-unused-variable
-    const zrxAssetData = encodeERC20AssetData(zrxToken.address);
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
@@ -188,42 +186,6 @@ export async function runMigrationsAsync(
         exchange.address,
         encodeERC20AssetData(etherToken.address),
     );
-
-    // TODO (xianny): figure out how to deploy AssetProxyOwnerContract properly
-    // // Multisigs
-    // const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
-    // const owners = _.uniq([accounts[0], accounts[1], txDefaults.from]);
-    // const confirmationsRequired = new BigNumber(2);
-    // const secondsRequired = new BigNumber(0);
-
-    // // AssetProxyOwner
-
-    // const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-    //     artifacts.AssetProxyOwner,
-    //     provider,
-    //     txDefaults,
-    //     artifacts,
-    //     [],
-    //     [erc20Proxy.address, erc721Proxy.address, multiAssetProxy.address],
-    //     [],
-    //     owners,
-    //     confirmationsRequired,
-    //     secondsRequired,
-    // );
-
-    // // Transfer Ownership to the Asset Proxy Owner
-    // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await erc20Proxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
-    // );
-    // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await erc721Proxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
-    // );
-    // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await erc1155Proxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
-    // );
-    // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await multiAssetProxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
-    // );
 
     // Fake the above transactions so our nonce increases and we result with the same addresses
     // while AssetProxyOwner is disabled (TODO: @dekz remove)
@@ -326,7 +288,6 @@ export async function runMigrationsAsync(
         zrxToken: zrxToken.address,
         etherToken: etherToken.address,
         exchange: exchange.address,
-        // TODO (xianny): figure out how to deploy AssetProxyOwnerContract
         assetProxyOwner: constants.NULL_ADDRESS,
         erc20BridgeProxy: erc20BridgeProxy.address,
         zeroExGovernor: constants.NULL_ADDRESS,

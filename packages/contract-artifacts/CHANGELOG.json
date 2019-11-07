@@ -5,6 +5,10 @@
             {
                 "note": "Replace Staking artifact with TestStaking",
                 "pr": 2322
+            },
+            {
+                "note": "Added `ZrxVault` and `ERC20BridgeProxy` artifacts",
+                "pr": 2323
             }
         ]
     },
