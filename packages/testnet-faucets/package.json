@@ -22,6 +22,7 @@
         "0x.js": "^8.0.0-beta.0",
         "@0x/contract-addresses": "^3.3.0-beta.2",
         "@0x/contract-wrappers": "^12.2.0-beta.1",
+        "@0x/contracts-dev-utils": "^0.1.0-beta.1",
         "@0x/subproviders": "^5.1.0-beta.1",
         "@0x/typescript-typings": "^4.4.0-beta.1",
         "@0x/utils": "^4.6.0-beta.1",

@@ -1,3 +1,4 @@
+import { chaiSetup } from '@0x/dev-utils';
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -6,8 +7,6 @@ import 'mocha';
 import { orderHashUtils } from '../src';
 
 import { constants } from '../src/constants';
-
-import { chaiSetup } from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;

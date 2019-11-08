@@ -1,17 +1,16 @@
 import {
     assetDataUtils,
-    BigNumber,
     generatePseudoRandomSalt,
     Order,
-    orderHashUtils,
     RPCSubprovider,
     signatureUtils,
     SignedOrder,
     Web3ProviderEngine,
 } from '0x.js';
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
-import { logUtils } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import * as express from 'express';
 import * as _ from 'lodash';
@@ -182,7 +181,9 @@ export class Handler {
             exchangeAddress: contractAddresses.exchange,
             chainId: chainConfig.chainId,
         };
-        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+            isEIP1193: true,
+        } as any).getOrderHash.callAsync(order, new BigNumber(order.chainId), order.exchangeAddress);
         const signature = await signatureUtils.ecSignHashAsync(
             chainConfig.web3Wrapper.getProvider(),
             orderHash,

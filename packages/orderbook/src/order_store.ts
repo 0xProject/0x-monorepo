@@ -25,11 +25,11 @@ export class OrderStore {
         }
         return orderSet;
     }
-    public update(addedRemoved: AddedRemovedOrders): void {
+    public async updateAsync(addedRemoved: AddedRemovedOrders): Promise<void> {
         const { added, removed, assetPairKey } = addedRemoved;
         const orders = this.getOrderSetForAssetPair(assetPairKey);
-        orders.addMany(added);
-        orders.deleteMany(removed);
+        await orders.addManyAsync(added);
+        await orders.deleteManyAsync(removed);
     }
     public has(assetPairKey: string): boolean {
         return this._orders.has(assetPairKey);

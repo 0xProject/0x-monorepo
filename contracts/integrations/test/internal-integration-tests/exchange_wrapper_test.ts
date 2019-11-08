@@ -18,12 +18,12 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     Numberish,
+    orderHashUtils,
     provider,
     toBaseUnitAmount,
     TransactionHelper,
     verifyEvents,
 } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';

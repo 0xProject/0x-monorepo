@@ -1,13 +1,13 @@
+import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
+import { eip712Utils } from '@0x/order-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { assert } from './assert';
-import { constants } from './constants';
-import { eip712Utils } from './eip712_utils';
-
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
+
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const orderHashUtils = {
     /**
@@ -20,9 +20,7 @@ export const orderHashUtils = {
             assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         } catch (error) {
             if (_.includes(error.message, INVALID_TAKER_FORMAT)) {
-                const errMsg = `Order taker must be of type string. If you want anyone to be able to fill an order - pass ${
-                    constants.NULL_ADDRESS
-                }`;
+                const errMsg = `Order taker must be of type string. If you want anyone to be able to fill an order - pass ${NULL_ADDRESS}`;
                 throw new Error(errMsg);
             }
             throw error;
@@ -42,9 +40,7 @@ export const orderHashUtils = {
             assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         } catch (error) {
             if (_.includes(error.message, INVALID_TAKER_FORMAT)) {
-                const errMsg = `Order taker must be of type string. If you want anyone to be able to fill an order - pass ${
-                    constants.NULL_ADDRESS
-                }`;
+                const errMsg = `Order taker must be of type string. If you want anyone to be able to fill an order - pass ${NULL_ADDRESS}`;
                 throw new Error(errMsg);
             }
             throw error;

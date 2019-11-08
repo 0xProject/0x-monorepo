@@ -1,4 +1,3 @@
-export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';

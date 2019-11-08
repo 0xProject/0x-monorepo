@@ -72,3 +72,4 @@ export {
     getPercentageOfValue,
     toBaseUnitAmount,
 } from './number_utils';
+export { orderHashUtils } from './order_hash';

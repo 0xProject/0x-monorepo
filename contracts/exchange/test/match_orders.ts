@@ -17,13 +17,13 @@ import {
     chaiSetup,
     constants,
     OrderFactory,
+    orderHashUtils,
     orderUtils,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { orderHashUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

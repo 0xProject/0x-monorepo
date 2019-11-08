@@ -19,6 +19,10 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "./OrderValidationUtils.sol";
 import "./OrderTransferSimulationUtils.sol";
 import "./LibTransactionDecoder.sol";
@@ -29,6 +33,7 @@ import "./EthBalanceChecker.sol";
 contract DevUtils is
     OrderValidationUtils,
     LibTransactionDecoder,
+    LibEIP712ExchangeDomain,
     EthBalanceChecker,
     OrderTransferSimulationUtils
 {
@@ -36,5 +41,17 @@ contract DevUtils is
         public
         OrderValidationUtils(_exchange)
         OrderTransferSimulationUtils(_exchange)
+        LibEIP712ExchangeDomain(uint256(0), address(0)) // null args because because we only use constants
     {}
+
+    function getOrderHash(LibOrder.Order memory order, uint256 chainId, address exchange)
+        public
+        pure
+        returns (bytes32 orderHash)
+    {
+        return LibOrder.getTypedDataHash(
+            order,
+            LibEIP712.hashEIP712Domain(_EIP712_EXCHANGE_DOMAIN_NAME, _EIP712_EXCHANGE_DOMAIN_VERSION, chainId, exchange)
+        );
+    }
 }

@@ -6,10 +6,10 @@ import {
     expect,
     hexRandom,
     MutatorContractFunction,
+    orderHashUtils,
     TransactionHelper,
 } from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilReferenceFunctions } from '@0x/contracts-utils';
-import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, Order } from '@0x/types';
 import { AnyRevertError, BigNumber, SafeMathRevertErrors, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';

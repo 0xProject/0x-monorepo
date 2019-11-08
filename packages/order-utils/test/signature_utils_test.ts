@@ -1,4 +1,5 @@
 import { assert } from '@0x/assert';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { Order, SignatureType, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -7,7 +8,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { generatePseudoRandomSalt, orderHashUtils, transactionHashUtils } from '../src';
+import { generatePseudoRandomSalt, transactionHashUtils } from '../src';
 import { constants } from '../src/constants';
 import { isValidECSignature, signatureUtils } from '../src/signature_utils';
 
@@ -282,7 +283,9 @@ describe('Signature utils', () => {
         it('should result in the same signature as signing the order hash without an ethereum message prefix', async () => {
             // Note: Since order hash is an EIP712 hash the result of a valid EIP712 signature
             //       of order hash is the same as signing the order without the Ethereum Message prefix.
-            const orderHashHex = orderHashUtils.getOrderHashHex(order);
+            const orderHashHex = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+                isEIP1193: true,
+            } as any).getOrderHash.callAsync(order, new BigNumber(order.chainId), order.exchangeAddress);
             const sig = ethUtil.ecsign(
                 ethUtil.toBuffer(orderHashHex),
                 Buffer.from('F2F48EE19680706196E2E339E5DA3491186E0C4C5030670656B0E0164837257D', 'hex'),

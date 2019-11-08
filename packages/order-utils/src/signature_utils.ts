@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils/lib/generated-wrappers/dev_utils';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,
@@ -8,7 +9,7 @@ import {
     ValidatorSignature,
     ZeroExTransaction,
 } from '@0x/types';
-import { providerUtils } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
@@ -16,7 +17,6 @@ import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
-import { orderHashUtils } from './order_hash';
 import { transactionHashUtils } from './transaction_hash';
 import { TypedDataError } from './types';
 
@@ -48,7 +48,9 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const orderHash = orderHashUtils.getOrderHashHex(order);
+            const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+                isEIP1193: true,
+            } as any).getOrderHash.callAsync(order, new BigNumber(order.chainId), order.exchangeAddress);
             const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
                 ...order,

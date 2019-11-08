@@ -9,9 +9,10 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     OrderFactory,
+    orderHashUtils,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { transactionHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';

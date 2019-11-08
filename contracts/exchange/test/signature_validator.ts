@@ -7,11 +7,12 @@ import {
     hexRandom,
     LogDecoder,
     OrderFactory,
+    orderHashUtils,
     orderUtils,
     randomAddress,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';

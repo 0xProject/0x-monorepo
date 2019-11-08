@@ -41,11 +41,11 @@ export class CustomOrderProvider extends BaseOrderProvider {
     public async addOrdersAsync(orders: SignedOrder[]): Promise<AcceptedRejectedOrders> {
         for (const order of orders) {
             const orderSet = this._orderStore.getOrderSetForAssets(order.makerAssetData, order.takerAssetData);
-            orderSet.add({
+            await orderSet.addAsync({
                 order,
                 metaData: {
                     remainingFillableTakerAssetAmount: order.takerAssetAmount,
-                    orderHash: utils.getOrderHash(order),
+                    orderHash: await utils.getOrderHashAsync(order),
                 },
             });
         }

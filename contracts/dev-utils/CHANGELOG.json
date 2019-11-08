@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Add new method getOrderHash() to DevUtils contract",
+                "pr": 2321
+            }
+        ]
+    },
+    {
         "version": "0.1.0-beta.1",
         "changes": [
             {

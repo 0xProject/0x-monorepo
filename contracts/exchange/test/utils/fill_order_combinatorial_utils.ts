@@ -6,8 +6,7 @@ import {
     MultiAssetProxyContract,
 } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { constants, expect, LogDecoder, orderUtils, signingUtils } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import { constants, expect, LogDecoder, orderHashUtils, orderUtils, signingUtils } from '@0x/contracts-test-utils';
 import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';

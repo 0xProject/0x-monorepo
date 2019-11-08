@@ -5,10 +5,10 @@ import {
     expect,
     FillEventArgs,
     filterLogsToArguments,
+    orderHashUtils,
     OrderStatus,
     orderUtils,
 } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
