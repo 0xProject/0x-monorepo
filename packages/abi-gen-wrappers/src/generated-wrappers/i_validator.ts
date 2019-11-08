@@ -1,7 +1,15 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    BaseContract,
+    PromiseWithTransactionHash,
+    methodAbiToFunctionSignature,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -18,13 +26,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import {
-    AwaitTransactionSuccessOpts,
-    EventCallback,
-    IndexedFilterValues,
-    SendTransactionOpts,
-    SimpleContractArtifact,
-} from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -38,69 +40,7 @@ export class IValidatorContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    /**
-     * Verifies that a signature is valid.
-     */
-    public isValidSignature = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param hash Message hash that is signed.
-         * @param signerAddress Address that should have signed the given hash.
-         * @param signature Proof of signing.
-         * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidValidatorSignature(address,bytes32,address,bytes)&quot;))
-         */
-        async callAsync(
-            hash: string,
-            signerAddress: string,
-            signature: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as IValidatorContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
+    private _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -200,6 +140,99 @@ export class IValidatorContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
+
+    public getFunctionSignature(methodName: string): string {
+        const index = this._methodABIIndex[methodName];
+        const methodAbi = IValidatorContract.ABI()[index] as MethodAbi;
+        const functionSignature = methodAbiToFunctionSignature(methodAbi);
+        return functionSignature;
+    }
+    public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as IValidatorContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as IValidatorContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getSelector(methodName: string): string {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as IValidatorContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        return abiEncoder.getSelector();
+    }
+
+    /**
+     * Verifies that a signature is valid.
+     * @param hash Message hash that is signed.
+     * @param signerAddress Address that should have signed the given hash.
+     * @param signature Proof of signing.
+     * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidValidatorSignature(address,bytes32,address,bytes)&quot;))
+     */
+    public isValidSignature(hash: string, signerAddress: string, signature: string): ContractFunctionObj<string> {
+        const self = (this as any) as IValidatorContract;
+        assert.isString('hash', hash);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('signature', signature);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
+                    hash,
+                    signerAddress.toLowerCase(),
+                    signature,
+                ]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments(
+                    'isValidSignature(bytes32,address,bytes)',
+                    [hash, signerAddress.toLowerCase(), signature],
+                );
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+
     constructor(
         address: string,
         supportedProvider: SupportedProvider,
@@ -217,6 +250,12 @@ export class IValidatorContract extends BaseContract {
             deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        IValidatorContract.ABI().forEach((item, index) => {
+            if (item.type === 'function') {
+                const methodAbi = item as MethodAbi;
+                this._methodABIIndex[methodAbi.name] = index;
+            }
+        });
     }
 }
 

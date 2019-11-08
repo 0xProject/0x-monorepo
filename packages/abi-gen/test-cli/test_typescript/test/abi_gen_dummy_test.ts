@@ -1,3 +1,4 @@
+import { ContractFunctionObj } from '@0x/base-contract';
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
@@ -33,10 +34,15 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('AbiGenDummy Contract', () => {
     let abiGenDummy: AbiGenDummyContract;
-    const runTestAsync = async (contractMethod: any, input: any, output: any) => {
-        const transaction = contractMethod.getABIEncodedTransactionData(input);
+    const runTestAsync = async (
+        contractMethodName: string,
+        contractMethod: ContractFunctionObj<any>,
+        input: any,
+        output: any,
+    ) => {
+        const transaction = contractMethod.getABIEncodedTransactionData();
         // try decoding transaction
-        const decodedInput = contractMethod.getABIDecodedTransactionData(transaction);
+        const decodedInput = abiGenDummy.getABIDecodedTransactionData(contractMethodName, transaction);
         expect(decodedInput, 'decoded input').to.be.deep.equal(input);
         // execute transaction
         const rawOutput = await web3Wrapper.callAsync({
@@ -44,7 +50,7 @@ describe('AbiGenDummy Contract', () => {
             data: transaction,
         });
         // try decoding output
-        const decodedOutput = contractMethod.getABIDecodedReturnData(rawOutput);
+        const decodedOutput = abiGenDummy.getABIDecodedReturnData(contractMethodName, rawOutput);
         expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
     };
     before(async () => {
@@ -62,46 +68,46 @@ describe('AbiGenDummy Contract', () => {
     });
     describe('simplePureFunction', () => {
         it('should call simplePureFunction', async () => {
-            const result = await abiGenDummy.simplePureFunction.callAsync();
+            const result = await abiGenDummy.simplePureFunction().callAsync();
             expect(result).to.deep.equal(new BigNumber(1));
         });
     });
     describe('simplePureFunctionWithInput', () => {
         it('should call simplePureFunctionWithInput', async () => {
-            const result = await abiGenDummy.simplePureFunctionWithInput.callAsync(new BigNumber(5));
+            const result = await abiGenDummy.simplePureFunctionWithInput(new BigNumber(5)).callAsync();
             expect(result).to.deep.equal(new BigNumber(6));
         });
     });
     describe('pureFunctionWithConstant', () => {
         it('should call pureFunctionWithConstant', async () => {
-            const result = await abiGenDummy.pureFunctionWithConstant.callAsync();
+            const result = await abiGenDummy.pureFunctionWithConstant().callAsync();
             expect(result).to.deep.equal(new BigNumber(1234));
         });
     });
     describe('simpleRevert', () => {
         it('should call simpleRevert', async () => {
-            expect(abiGenDummy.simpleRevert.callAsync())
+            expect(abiGenDummy.simpleRevert().callAsync())
                 .to.eventually.be.rejectedWith(StringRevertError)
                 .and.deep.equal(new StringRevertError('SIMPLE_REVERT'));
         });
     });
     describe('revertWithConstant', () => {
         it('should call revertWithConstant', async () => {
-            expect(abiGenDummy.revertWithConstant.callAsync())
+            expect(abiGenDummy.revertWithConstant().callAsync())
                 .to.eventually.be.rejectedWith(StringRevertError)
                 .and.deep.equal(new StringRevertError('REVERT_WITH_CONSTANT'));
         });
     });
     describe('simpleRequire', () => {
         it('should call simpleRequire', async () => {
-            expect(abiGenDummy.simpleRequire.callAsync())
+            expect(abiGenDummy.simpleRequire().callAsync())
                 .to.eventually.be.rejectedWith(StringRevertError)
                 .and.deep.equal(new StringRevertError('SIMPLE_REQUIRE'));
         });
     });
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
-            expect(abiGenDummy.requireWithConstant.callAsync())
+            expect(abiGenDummy.requireWithConstant().callAsync())
                 .to.eventually.be.rejectedWith(StringRevertError)
                 .and.deep.equal(new StringRevertError('REQUIRE_WITH_CONSTANT'));
         });
@@ -115,7 +121,7 @@ describe('AbiGenDummy Contract', () => {
             someBytes: '0x3078313233',
         };
         it('should be able to handle struct output', async () => {
-            const result = await abiGenDummy.structOutput.callAsync();
+            const result = await abiGenDummy.structOutput().callAsync();
             expect(result).to.deep.equal(sampleStruct);
         });
     });
@@ -133,7 +139,7 @@ describe('AbiGenDummy Contract', () => {
             const v_decimal = parseInt(v, 16) + 27; // v: (0 or 1) => (27 or 28)
             // tslint:enable:custom-no-magic-numbers
 
-            const result = await abiGenDummy.ecrecoverFn.callAsync(message, v_decimal, r, s);
+            const result = await abiGenDummy.ecrecoverFn(message, v_decimal, r, s).callAsync();
             expect(result).to.equal(signerAddress);
         });
     });
@@ -174,7 +180,7 @@ describe('AbiGenDummy Contract', () => {
             toBlock: BlockParamLiteral.Latest,
         };
         it('should get logs with decoded args emitted by EventWithStruct', async () => {
-            await abiGenDummy.emitSimpleEvent.awaitTransactionSuccessAsync();
+            await abiGenDummy.emitSimpleEvent().awaitTransactionSuccessAsync();
             const eventName = AbiGenDummyEvents.SimpleEvent;
             const indexFilterValues = {};
             const logs = await abiGenDummy.getLogsAsync(eventName, blockRange, indexFilterValues);
@@ -182,7 +188,7 @@ describe('AbiGenDummy Contract', () => {
             expect(logs[0].event).to.be.equal(eventName);
         });
         it('should only get the logs with the correct event name', async () => {
-            await abiGenDummy.emitSimpleEvent.awaitTransactionSuccessAsync();
+            await abiGenDummy.emitSimpleEvent().awaitTransactionSuccessAsync();
             const differentEventName = AbiGenDummyEvents.Withdrawal;
             const indexFilterValues = {};
             const logs = await abiGenDummy.getLogsAsync(differentEventName, blockRange, indexFilterValues);
@@ -190,8 +196,8 @@ describe('AbiGenDummy Contract', () => {
         });
         it('should only get the logs with the correct indexed fields', async () => {
             const [addressOne, addressTwo] = await web3Wrapper.getAvailableAddressesAsync();
-            await abiGenDummy.withdraw.awaitTransactionSuccessAsync(new BigNumber(1), { from: addressOne });
-            await abiGenDummy.withdraw.awaitTransactionSuccessAsync(new BigNumber(1), { from: addressTwo });
+            await abiGenDummy.withdraw(new BigNumber(1)).awaitTransactionSuccessAsync({ from: addressOne });
+            await abiGenDummy.withdraw(new BigNumber(1)).awaitTransactionSuccessAsync({ from: addressTwo });
             const eventName = AbiGenDummyEvents.Withdrawal;
             const indexFilterValues = {
                 _owner: addressOne,
@@ -214,7 +220,7 @@ describe('AbiGenDummy Contract', () => {
             const a = new BigNumber(1);
             const b = new BigNumber(2);
             const c = new BigNumber(3);
-            const output = await abiGenDummy.withAddressInput.callAsync(xAddress, a, b, yAddress, c);
+            const output = await abiGenDummy.withAddressInput(xAddress, a, b, yAddress, c).callAsync();
 
             expect(output).to.equal(xAddress.toLowerCase());
         });
@@ -224,22 +230,22 @@ describe('AbiGenDummy Contract', () => {
         it('should successfully encode/decode (no input / no output)', async () => {
             const input = undefined;
             const output = undefined;
-            await runTestAsync(abiGenDummy.noInputNoOutput, input, output);
+            await runTestAsync('noInputNoOutput', abiGenDummy.noInputNoOutput(), input, output);
         });
         it('should successfully encode/decode (no input / simple output)', async () => {
             const input = undefined;
             const output = new BigNumber(1991);
-            await runTestAsync(abiGenDummy.noInputSimpleOutput, input, output);
+            await runTestAsync('noInputSimpleOutput', abiGenDummy.noInputSimpleOutput(), input, output);
         });
         it('should successfully encode/decode (simple input / no output)', async () => {
             const input = new BigNumber(1991);
             const output = undefined;
-            await runTestAsync(abiGenDummy.simpleInputNoOutput, input, output);
+            await runTestAsync('simpleInputNoOutput', abiGenDummy.simpleInputNoOutput(input), input, output);
         });
         it('should successfully encode/decode (simple input / simple output)', async () => {
             const input = new BigNumber(16);
             const output = new BigNumber(1991);
-            await runTestAsync(abiGenDummy.simpleInputSimpleOutput, input, output);
+            await runTestAsync('simpleInputSimpleOutput', abiGenDummy.simpleInputSimpleOutput(input), input, output);
         });
         it('should successfully encode/decode (complex input / complex output)', async () => {
             const input = {
@@ -253,18 +259,21 @@ describe('AbiGenDummy Contract', () => {
                 ipsum: '0x87654321',
                 dolor: 'amet',
             };
-            await runTestAsync(abiGenDummy.complexInputComplexOutput, input, output);
+            await runTestAsync(
+                'complexInputComplexOutput',
+                abiGenDummy.complexInputComplexOutput(input),
+                input,
+                output,
+            );
         });
         it('should successfully encode/decode (multi-input / multi-output)', async () => {
             const input = [new BigNumber(1991), '0x1234', 'zoom zoom'];
             const output = ['0x12345678', '0x87654321', 'amet'];
-            const transaction = abiGenDummy.multiInputMultiOutput.getABIEncodedTransactionData(
-                input[0] as BigNumber,
-                input[1] as string,
-                input[2] as string,
-            );
+            const transaction = abiGenDummy
+                .multiInputMultiOutput(input[0] as BigNumber, input[1] as string, input[2] as string)
+                .getABIEncodedTransactionData();
             // try decoding transaction
-            const decodedInput = abiGenDummy.multiInputMultiOutput.getABIDecodedTransactionData(transaction);
+            const decodedInput = abiGenDummy.getABIDecodedTransactionData('multiInputMultiOutput', transaction);
             expect(decodedInput, 'decoded input').to.be.deep.equal(input);
             // execute transaction
             const rawOutput = await web3Wrapper.callAsync({
@@ -272,14 +281,14 @@ describe('AbiGenDummy Contract', () => {
                 data: transaction,
             });
             // try decoding output
-            const decodedOutput = abiGenDummy.multiInputMultiOutput.getABIDecodedReturnData(rawOutput);
+            const decodedOutput = abiGenDummy.getABIDecodedReturnData('multiInputMultiOutput', rawOutput);
             expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
         });
     });
     describe('awaitTransactionSuccessAsync', async () => {
         it('should successfully call the non pure function', async () => {
             expect(
-                abiGenDummy.nonPureMethod.awaitTransactionSuccessAsync({}, { pollingIntervalMs: 10, timeoutMs: 100 }),
+                abiGenDummy.nonPureMethod().awaitTransactionSuccessAsync({}, { pollingIntervalMs: 10, timeoutMs: 100 }),
             ).to.be.fulfilled('');
         });
     });
@@ -309,12 +318,12 @@ describe('Lib dummy contract', () => {
     });
 
     it('should call a library function', async () => {
-        const result = await libDummy.publicAddOne.callAsync(new BigNumber(1));
+        const result = await libDummy.publicAddOne(new BigNumber(1)).callAsync();
         expect(result).to.deep.equal(new BigNumber(2));
     });
 
     it('should call a library function referencing a constant', async () => {
-        const result = await libDummy.publicAddConstant.callAsync(new BigNumber(1));
+        const result = await libDummy.publicAddConstant(new BigNumber(1)).callAsync();
         expect(result).to.deep.equal(new BigNumber(1235));
     });
 });

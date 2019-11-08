@@ -1,7 +1,16 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    BaseContract,
+    SubscriptionManager,
+    PromiseWithTransactionHash,
+    methodAbiToFunctionSignature,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -19,13 +28,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import {
-    AwaitTransactionSuccessOpts,
-    EventCallback,
-    IndexedFilterValues,
-    SendTransactionOpts,
-    SimpleContractArtifact,
-} from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -74,1089 +77,7 @@ export class WETH9Contract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    public name = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('name()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('name()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
-    public approve = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            guy: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.approve.callAsync(guy, wad, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            guy: string,
-            wad: BigNumber,
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.approve.sendTransactionAsync(guy.toLowerCase(), wad, txData, opts);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(
-            guy: string,
-            wad: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<boolean> {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(guy: string, wad: BigNumber): string {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [
-                guy.toLowerCase(),
-                wad,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            return abiEncoder.getSelector();
-        },
-    };
-    public totalSupply = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('totalSupply()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
-    public transferFrom = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.transferFrom.callAsync(src, dst, wad, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.transferFrom.sendTransactionAsync(
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-                txData,
-                opts,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<boolean> {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(src: string, dst: string, wad: BigNumber): string {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            return abiEncoder.getSelector();
-        },
-    };
-    public withdraw = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.withdraw.callAsync(wad, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            wad: BigNumber,
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(wad: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-            assert.isBigNumber('wad', wad);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(wad: BigNumber): string {
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
-            return abiEncoder.getSelector();
-        },
-    };
-    public decimals = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('decimals()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('decimals()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
-    public balanceOf = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(
-            index_0: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
-            assert.isString('index_0', index_0);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('balanceOf(address)', [index_0.toLowerCase()]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
-    public symbol = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('symbol()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('symbol()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
-    public transfer = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.transfer.callAsync(dst, wad, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.transfer.sendTransactionAsync(dst.toLowerCase(), wad, txData, opts);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(
-            dst: string,
-            wad: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<boolean> {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(dst: string, wad: BigNumber): string {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [
-                dst.toLowerCase(),
-                wad,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
-            return abiEncoder.getSelector();
-        },
-    };
-    public deposit = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('deposit()', []);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.deposit.callAsync(txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.deposit.sendTransactionAsync(txData, opts);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('deposit()', []);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('deposit()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('deposit()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('deposit()');
-            return abiEncoder.getSelector();
-        },
-    };
-    public allowance = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(
-            index_0: string,
-            index_1: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
-            assert.isString('index_0', index_0);
-            assert.isString('index_1', index_1);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('allowance(address,address)', [
-                index_0.toLowerCase(),
-                index_1.toLowerCase(),
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
+    private _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -1513,6 +434,883 @@ export class WETH9Contract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
+
+    public getFunctionSignature(methodName: string): string {
+        const index = this._methodABIIndex[methodName];
+        const methodAbi = WETH9Contract.ABI()[index] as MethodAbi;
+        const functionSignature = methodAbiToFunctionSignature(methodAbi);
+        return functionSignature;
+    }
+    public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as WETH9Contract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as WETH9Contract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getSelector(methodName: string): string {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as WETH9Contract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        return abiEncoder.getSelector();
+    }
+
+    public name(): ContractFunctionObj<string> {
+        const self = (this as any) as WETH9Contract;
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('name()', []);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('name()');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public approve(guy: string, wad: BigNumber): ContractTxFunctionObj<boolean> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('guy', guy);
+        assert.isBigNumber('wad', wad);
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [
+                    guy.toLowerCase(),
+                    wad,
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public totalSupply(): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as WETH9Contract;
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('totalSupply()', []);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public transferFrom(src: string, dst: string, wad: BigNumber): ContractTxFunctionObj<boolean> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('src', src);
+        assert.isString('dst', dst);
+        assert.isBigNumber('wad', wad);
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                    src.toLowerCase(),
+                    dst.toLowerCase(),
+                    wad,
+                ]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                    src.toLowerCase(),
+                    dst.toLowerCase(),
+                    wad,
+                ]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                    src.toLowerCase(),
+                    dst.toLowerCase(),
+                    wad,
+                ]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                    src.toLowerCase(),
+                    dst.toLowerCase(),
+                    wad,
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public withdraw(wad: BigNumber): ContractTxFunctionObj<void> {
+        const self = (this as any) as WETH9Contract;
+        assert.isBigNumber('wad', wad);
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public decimals(): ContractFunctionObj<number> {
+        const self = (this as any) as WETH9Contract;
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('decimals()', []);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('decimals()');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public balanceOf(index_0: string): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('index_0', index_0);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('balanceOf(address)', [index_0.toLowerCase()]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [
+                    index_0.toLowerCase(),
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public symbol(): ContractFunctionObj<string> {
+        const self = (this as any) as WETH9Contract;
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('symbol()', []);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('symbol()');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public transfer(dst: string, wad: BigNumber): ContractTxFunctionObj<boolean> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('dst', dst);
+        assert.isBigNumber('wad', wad);
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [
+                    dst.toLowerCase(),
+                    wad,
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public deposit(): ContractTxFunctionObj<void> {
+        const self = (this as any) as WETH9Contract;
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments('deposit()', []);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments('deposit()', []);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('deposit()', []);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('deposit()');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public allowance(index_0: string, index_1: string): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('index_0', index_0);
+        assert.isString('index_1', index_1);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('allowance(address,address)', [
+                    index_0.toLowerCase(),
+                    index_1.toLowerCase(),
+                ]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [
+                    index_0.toLowerCase(),
+                    index_1.toLowerCase(),
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+
     /**
      * Subscribe to an event type emitted by the WETH9 contract.
      * @param eventName The WETH9 contract event you would like to subscribe to.
@@ -1602,6 +1400,12 @@ export class WETH9Contract extends BaseContract {
             WETH9Contract.ABI(),
             this._web3Wrapper,
         );
+        WETH9Contract.ABI().forEach((item, index) => {
+            if (item.type === 'function') {
+                const methodAbi = item as MethodAbi;
+                this._methodABIIndex[methodAbi.name] = index;
+            }
+        });
     }
 }
 

@@ -29,6 +29,8 @@ import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
 import * as _ from 'lodash';
 
+export { methodAbiToFunctionSignature } from './utils';
+
 import { formatABIDataItem } from './utils';
 
 export { SubscriptionManager } from './subscription_manager';

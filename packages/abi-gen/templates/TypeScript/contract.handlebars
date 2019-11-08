@@ -1,8 +1,16 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract{{#if events}},
-    SubscriptionManager{{/if}},PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    BaseContract,
+    {{#if events~}}SubscriptionManager,{{/if~}}
+    PromiseWithTransactionHash,
+    methodAbiToFunctionSignature,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -20,11 +28,12 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { AwaitTransactionSuccessOpts, EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
+
 
 {{#if events}}
 export type {{contractName}}EventArgs =
@@ -56,27 +65,12 @@ export class {{contractName}}Contract extends BaseContract {
     {{else~}}
     public static deployedBytecode = '{{this.deployedBytecode}}';
     {{/ifEquals~}}
+    private _methodABIIndex: { [name:string]: number } = {};
+    {{#if events~}}
+    private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
+    {{/if~}}
 
-{{#each methods}}
-    {{#if this.devdoc.details}}
-    /**
-     * {{formatDocstringForMethodTs this.devdoc.details}}
-     */
-    {{/if}}
-    public {{languageSpecificName}} = {
-        {{^this.constant}}
-        {{> method_tx contractName=../contractName}}
-        {{/this.constant}}
-        {{#ifEquals this.stateMutability "pure"}}
-        {{> method_call_pure contractName=../contractName}}
-        {{else}}
-        {{> method_call contractName=../contractName}}
-        {{/ifEquals}}
-        {{> method_abi_helper contractName=../contractName debug=../debug}}
-    };
-{{/each}}
-{{#if events}}private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
-{{/if}}public static async deployFrom0xArtifactAsync(
+    public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -169,7 +163,63 @@ export class {{contractName}}Contract extends BaseContract {
             {{/each}}
         ] as ContractAbi;
         return abi;
-    }{{#if events}}
+    }
+
+    public getFunctionSignature(methodName: string): string {
+        const index = this._methodABIIndex[methodName];
+        const methodAbi = {{contractName}}Contract.ABI()[index] as MethodAbi;
+        const functionSignature = methodAbiToFunctionSignature(methodAbi);
+        return functionSignature;
+    }
+    public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as {{contractName}}Contract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as {{contractName}}Contract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getSelector(methodName: string): string {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as {{contractName}}Contract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        return abiEncoder.getSelector();
+    }
+
+    {{#each methods}}
+    {{#if this.devdoc.details}}
+    /**
+     * {{formatDocstringForMethodTs this.devdoc.details}}
+    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+    {{#if devdoc.return}}
+    * @returns {{devdoc.return}}
+    {{/if}}
+     */
+    {{/if}}
+    public {{languageSpecificName}}(
+        {{> typed_params inputs=this.inputs}}
+    ): Contract{{^this.constant}}Tx{{/this.constant}}FunctionObj<{{> return_type outputs=outputs ~}}> {
+        const self = this as any as {{../contractName}}Contract;
+        {{#each inputs}}
+            {{#assertionType name type}}{{/assertionType}}
+        {{/each}}
+        
+        return {
+            {{^this.constant}}
+            {{> method_tx}}
+            {{/this.constant}}
+            {{> method_call stateMutability=this.stateMutability}}
+        }
+    };
+    {{/each}}
+
+    {{#if events}}
     /**
      * Subscribe to an event type emitted by the {{contractName}} contract.
      * @param eventName The {{contractName}} contract event you would like to subscribe to.
@@ -246,11 +296,18 @@ export class {{contractName}}Contract extends BaseContract {
         deployedBytecode: string | undefined = {{contractName}}Contract.deployedBytecode,
     ) {
         super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
-        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);{{#if events}}
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        {{#if events~}}
         this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
             {{contractName}}Contract.ABI(),
             this._web3Wrapper,
-        );{{/if}}
+        );{{/if~}}
+        {{contractName}}Contract.ABI().forEach((item, index) => {
+            if (item.type === 'function') {
+                const methodAbi = item as MethodAbi;
+                this._methodABIIndex[methodAbi.name] = index;
+            }
+        })
     }
 } 
 

@@ -1,7 +1,15 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    BaseContract,
+    PromiseWithTransactionHash,
+    methodAbiToFunctionSignature,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -18,13 +26,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import {
-    AwaitTransactionSuccessOpts,
-    EventCallback,
-    IndexedFilterValues,
-    SendTransactionOpts,
-    SimpleContractArtifact,
-} from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -38,666 +40,7 @@ export class DutchAuctionContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    /**
-     * Calculates the Auction Details for the given order
-     */
-    public getAuctionDetails = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param order The sell order
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            const self = (this as any) as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments(
-                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.getAuctionDetails.callAsync(order, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param order The sell order
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            const self = (this as any) as DutchAuctionContract;
-            const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order, txData, opts);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param order The sell order
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            const self = (this as any) as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments(
-                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param order The sell order
-         * @returns AuctionDetails
-         */
-        async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<{
-            beginTimeSeconds: BigNumber;
-            endTimeSeconds: BigNumber;
-            beginAmount: BigNumber;
-            endAmount: BigNumber;
-            currentAmount: BigNumber;
-            currentTimeSeconds: BigNumber;
-        }> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments(
-                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-            );
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                beginTimeSeconds: BigNumber;
-                endTimeSeconds: BigNumber;
-                beginAmount: BigNumber;
-                endAmount: BigNumber;
-                currentAmount: BigNumber;
-                currentTimeSeconds: BigNumber;
-            }>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param order The sell order
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(order: {
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-        }): string {
-            const self = (this as any) as DutchAuctionContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as DutchAuctionContract;
-            const abiEncoder = self._lookupAbiEncoder(
-                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-            );
-            return abiEncoder.getSelector();
-        },
-    };
-    /**
-     * Matches the buy and sell orders at an amount given the following: the current block time, the auction
-     * start time and the auction begin amount. The sell order is a an order at the lowest amount
-     * at the end of the auction. Excess from the match is transferred to the seller.
-     * Over time the price moves from beginAmount to endAmount given the current block.timestamp.
-     * sellOrder.expiryTimeSeconds is the end time of the auction.
-     * sellOrder.takerAssetAmount is the end amount of the auction (lowest possible amount).
-     * sellOrder.makerAssetData is the ABI encoded Asset Proxy data with the following data appended
-     * buyOrder.makerAssetData is the buyers bid on the auction, must meet the amount for the current block timestamp
-     * (uint256 beginTimeSeconds, uint256 beginAmount).
-     * This function reverts in the following scenarios:
-     * * Auction has not started (auctionDetails.currentTimeSeconds < auctionDetails.beginTimeSeconds)
-     * * Auction has expired (auctionDetails.endTimeSeconds < auctionDetails.currentTimeSeconds)
-     * * Amount is invalid: Buy order amount is too low (buyOrder.makerAssetAmount < auctionDetails.currentAmount)
-     * * Amount is invalid: Invalid begin amount (auctionDetails.beginAmount > auctionDetails.endAmount)
-     * * Any failure in the 0x Match Orders
-     */
-    public matchOrders = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param buyOrder The Buyer's order. This order is for the current expected
-         *     price of the auction.
-         * @param sellOrder The Seller's order. This order is for the lowest amount (at
-         *     the end of the auction).
-         * @param buySignature Proof that order was created by the buyer.
-         * @param sellSignature Proof that order was created by the seller.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            assert.isString('buySignature', buySignature);
-            assert.isString('sellSignature', sellSignature);
-            const self = (this as any) as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [buyOrder, sellOrder, buySignature, sellSignature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param buyOrder The Buyer's order. This order is for the current expected
-         *     price of the auction.
-         * @param sellOrder The Seller's order. This order is for the lowest amount (at
-         *     the end of the auction).
-         * @param buySignature Proof that order was created by the buyer.
-         * @param sellSignature Proof that order was created by the seller.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('buySignature', buySignature);
-            assert.isString('sellSignature', sellSignature);
-            const self = (this as any) as DutchAuctionContract;
-            const txHashPromise = self.matchOrders.sendTransactionAsync(
-                buyOrder,
-                sellOrder,
-                buySignature,
-                sellSignature,
-                txData,
-                opts,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param buyOrder The Buyer's order. This order is for the current expected
-         *     price of the auction.
-         * @param sellOrder The Seller's order. This order is for the lowest amount (at
-         *     the end of the auction).
-         * @param buySignature Proof that order was created by the buyer.
-         * @param sellSignature Proof that order was created by the seller.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('buySignature', buySignature);
-            assert.isString('sellSignature', sellSignature);
-            const self = (this as any) as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [buyOrder, sellOrder, buySignature, sellSignature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param buyOrder The Buyer's order. This order is for the current expected
-         *     price of the auction.
-         * @param sellOrder The Seller's order. This order is for the lowest amount (at
-         *     the end of the auction).
-         * @param buySignature Proof that order was created by the buyer.
-         * @param sellSignature Proof that order was created by the seller.
-         * @returns matchedFillResults amounts filled and fees paid by maker and taker of matched orders.
-         */
-        async callAsync(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<{
-            left: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            right: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            leftMakerAssetSpreadAmount: BigNumber;
-        }> {
-            assert.isString('buySignature', buySignature);
-            assert.isString('sellSignature', sellSignature);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as DutchAuctionContract;
-            const encodedData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [buyOrder, sellOrder, buySignature, sellSignature],
-            );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-            );
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                left: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                right: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                leftMakerAssetSpreadAmount: BigNumber;
-            }>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param buyOrder The Buyer's order. This order is for the current expected
-         *     price of the auction.
-         * @param sellOrder The Seller's order. This order is for the lowest amount (at
-         *     the end of the auction).
-         * @param buySignature Proof that order was created by the buyer.
-         * @param sellSignature Proof that order was created by the seller.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-        ): string {
-            assert.isString('buySignature', buySignature);
-            assert.isString('sellSignature', sellSignature);
-            const self = (this as any) as DutchAuctionContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [buyOrder, sellOrder, buySignature, sellSignature],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as DutchAuctionContract;
-            const abiEncoder = self._lookupAbiEncoder(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-            );
-            return abiEncoder.getSelector();
-        },
-    };
+    private _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -1071,6 +414,418 @@ export class DutchAuctionContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
+
+    public getFunctionSignature(methodName: string): string {
+        const index = this._methodABIIndex[methodName];
+        const methodAbi = DutchAuctionContract.ABI()[index] as MethodAbi;
+        const functionSignature = methodAbiToFunctionSignature(methodAbi);
+        return functionSignature;
+    }
+    public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as DutchAuctionContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as DutchAuctionContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getSelector(methodName: string): string {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as DutchAuctionContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        return abiEncoder.getSelector();
+    }
+
+    /**
+     * Calculates the Auction Details for the given order
+     * @param order The sell order
+     * @returns AuctionDetails
+     */
+    public getAuctionDetails(order: {
+        makerAddress: string;
+        takerAddress: string;
+        feeRecipientAddress: string;
+        senderAddress: string;
+        makerAssetAmount: BigNumber;
+        takerAssetAmount: BigNumber;
+        makerFee: BigNumber;
+        takerFee: BigNumber;
+        expirationTimeSeconds: BigNumber;
+        salt: BigNumber;
+        makerAssetData: string;
+        takerAssetData: string;
+    }): ContractTxFunctionObj<{
+        beginTimeSeconds: BigNumber;
+        endTimeSeconds: BigNumber;
+        beginAmount: BigNumber;
+        endAmount: BigNumber;
+        currentAmount: BigNumber;
+        currentTimeSeconds: BigNumber;
+    }> {
+        const self = (this as any) as DutchAuctionContract;
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments(
+                    'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+                    [order],
+                );
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments(
+                    'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+                    [order],
+                );
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<{
+                beginTimeSeconds: BigNumber;
+                endTimeSeconds: BigNumber;
+                beginAmount: BigNumber;
+                endAmount: BigNumber;
+                currentAmount: BigNumber;
+                currentTimeSeconds: BigNumber;
+            }> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments(
+                    'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+                    [order],
+                );
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder(
+                    'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+                );
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<{
+                    beginTimeSeconds: BigNumber;
+                    endTimeSeconds: BigNumber;
+                    beginAmount: BigNumber;
+                    endAmount: BigNumber;
+                    currentAmount: BigNumber;
+                    currentTimeSeconds: BigNumber;
+                }>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments(
+                    'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+                    [order],
+                );
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    /**
+     * Matches the buy and sell orders at an amount given the following: the current block time, the auction
+     * start time and the auction begin amount. The sell order is a an order at the lowest amount
+     * at the end of the auction. Excess from the match is transferred to the seller.
+     * Over time the price moves from beginAmount to endAmount given the current block.timestamp.
+     * sellOrder.expiryTimeSeconds is the end time of the auction.
+     * sellOrder.takerAssetAmount is the end amount of the auction (lowest possible amount).
+     * sellOrder.makerAssetData is the ABI encoded Asset Proxy data with the following data appended
+     * buyOrder.makerAssetData is the buyers bid on the auction, must meet the amount for the current block timestamp
+     * (uint256 beginTimeSeconds, uint256 beginAmount).
+     * This function reverts in the following scenarios:
+     * * Auction has not started (auctionDetails.currentTimeSeconds < auctionDetails.beginTimeSeconds)
+     * * Auction has expired (auctionDetails.endTimeSeconds < auctionDetails.currentTimeSeconds)
+     * * Amount is invalid: Buy order amount is too low (buyOrder.makerAssetAmount < auctionDetails.currentAmount)
+     * * Amount is invalid: Invalid begin amount (auctionDetails.beginAmount > auctionDetails.endAmount)
+     * * Any failure in the 0x Match Orders
+     * @param buyOrder The Buyer's order. This order is for the current expected
+     *     price of the auction.
+     * @param sellOrder The Seller's order. This order is for the lowest amount (at
+     *     the end of the auction).
+     * @param buySignature Proof that order was created by the buyer.
+     * @param sellSignature Proof that order was created by the seller.
+     * @returns matchedFillResults amounts filled and fees paid by maker and taker of matched orders.
+     */
+    public matchOrders(
+        buyOrder: {
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+        },
+        sellOrder: {
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+        },
+        buySignature: string,
+        sellSignature: string,
+    ): ContractTxFunctionObj<{
+        left: {
+            makerAssetFilledAmount: BigNumber;
+            takerAssetFilledAmount: BigNumber;
+            makerFeePaid: BigNumber;
+            takerFeePaid: BigNumber;
+        };
+        right: {
+            makerAssetFilledAmount: BigNumber;
+            takerAssetFilledAmount: BigNumber;
+            makerFeePaid: BigNumber;
+            takerFeePaid: BigNumber;
+        };
+        leftMakerAssetSpreadAmount: BigNumber;
+    }> {
+        const self = (this as any) as DutchAuctionContract;
+
+        assert.isString('buySignature', buySignature);
+        assert.isString('sellSignature', sellSignature);
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments(
+                    'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+                    [buyOrder, sellOrder, buySignature, sellSignature],
+                );
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments(
+                    'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+                    [buyOrder, sellOrder, buySignature, sellSignature],
+                );
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<{
+                left: {
+                    makerAssetFilledAmount: BigNumber;
+                    takerAssetFilledAmount: BigNumber;
+                    makerFeePaid: BigNumber;
+                    takerFeePaid: BigNumber;
+                };
+                right: {
+                    makerAssetFilledAmount: BigNumber;
+                    takerAssetFilledAmount: BigNumber;
+                    makerFeePaid: BigNumber;
+                    takerFeePaid: BigNumber;
+                };
+                leftMakerAssetSpreadAmount: BigNumber;
+            }> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments(
+                    'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+                    [buyOrder, sellOrder, buySignature, sellSignature],
+                );
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder(
+                    'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+                );
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<{
+                    left: {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    };
+                    right: {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    };
+                    leftMakerAssetSpreadAmount: BigNumber;
+                }>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments(
+                    'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+                    [buyOrder, sellOrder, buySignature, sellSignature],
+                );
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+
     constructor(
         address: string,
         supportedProvider: SupportedProvider,
@@ -1088,6 +843,12 @@ export class DutchAuctionContract extends BaseContract {
             deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        DutchAuctionContract.ABI().forEach((item, index) => {
+            if (item.type === 'function') {
+                const methodAbi = item as MethodAbi;
+                this._methodABIIndex[methodAbi.name] = index;
+            }
+        });
     }
 }
 
