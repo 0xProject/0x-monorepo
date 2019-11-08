@@ -19,8 +19,10 @@ export function validDecreaseStakingPoolOperatorShareAssertion(
         after: async (_beforeInfo, _result: FunctionResult, poolId: string, expectedOperatorShare: number) => {
             logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
 
+            // Checks that the on-chain pool's operator share has been updated.
             const { operatorShare } = await stakingWrapper.getStakingPool.callAsync(poolId);
             expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
+            // Updates the pool in local state.
             pools[poolId].operatorShare = operatorShare;
         },
     });

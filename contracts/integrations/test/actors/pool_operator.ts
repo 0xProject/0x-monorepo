@@ -1,4 +1,4 @@
-import { constants } from '@0x/contracts-staking';
+import { constants, StakingPoolById } from '@0x/contracts-staking';
 import { getRandomInteger } from '@0x/contracts-test-utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -7,7 +7,6 @@ import {
     validCreateStakingPoolAssertion,
     validDecreaseStakingPoolOperatorShareAssertion,
 } from '../function-assertions';
-import { SimulationEnvironment } from '../simulation/simulation';
 import { AssertionResult } from '../utils/function_assertions';
 
 import { Actor, Constructor } from './base';
@@ -39,15 +38,11 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             this.actor = (this as any) as Actor;
 
             // Register this mixin's assertion generators
-            if (this.actor.simulationEnvironment !== undefined) {
-                this.actor.simulationActions = {
-                    ...this.actor.simulationActions,
-                    validCreateStakingPool: this._validCreateStakingPool(this.actor.simulationEnvironment),
-                    validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare(
-                        this.actor.simulationEnvironment,
-                    ),
-                };
-            }
+            this.actor.simulationActions = {
+                ...this.actor.simulationActions,
+                validCreateStakingPool: this._validCreateStakingPool(),
+                validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare(),
+            };
         }
 
         /**
@@ -84,40 +79,29 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             );
         }
 
-        private _getOperatorPoolIds(simulationEnvironment: SimulationEnvironment): string[] {
-            const operatorPools = _.pickBy(
-                simulationEnvironment.stakingPools,
-                pool => pool.operator === this.actor.address,
-            );
+        private _getOperatorPoolIds(stakingPools: StakingPoolById): string[] {
+            const operatorPools = _.pickBy(stakingPools, pool => pool.operator === this.actor.address);
             return Object.keys(operatorPools);
         }
 
-        private async *_validCreateStakingPool(
-            simulationEnvironment: SimulationEnvironment,
-        ): AsyncIterableIterator<AssertionResult> {
-            const assertion = validCreateStakingPoolAssertion(
-                this.actor.deployment,
-                simulationEnvironment.stakingPools,
-            );
+        private async *_validCreateStakingPool(): AsyncIterableIterator<AssertionResult> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, stakingPools);
             while (true) {
                 const operatorShare = getRandomInteger(0, constants.PPM);
                 yield assertion.executeAsync(operatorShare, false, { from: this.actor.address });
             }
         }
 
-        private async *_validDecreaseStakingPoolOperatorShare(
-            simulationEnvironment: SimulationEnvironment,
-        ): AsyncIterableIterator<AssertionResult | void> {
-            const assertion = validDecreaseStakingPoolOperatorShareAssertion(
-                this.actor.deployment,
-                simulationEnvironment.stakingPools,
-            );
+        private async *_validDecreaseStakingPoolOperatorShare(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validDecreaseStakingPoolOperatorShareAssertion(this.actor.deployment, stakingPools);
             while (true) {
-                const poolId = _.sample(this._getOperatorPoolIds(simulationEnvironment));
+                const poolId = _.sample(this._getOperatorPoolIds(stakingPools));
                 if (poolId === undefined) {
                     yield undefined;
                 } else {
-                    const operatorShare = getRandomInteger(0, simulationEnvironment.stakingPools[poolId].operatorShare);
+                    const operatorShare = getRandomInteger(0, stakingPools[poolId].operatorShare);
                     yield assertion.executeAsync(poolId, operatorShare, { from: this.actor.address });
                 }
             }

@@ -4,7 +4,6 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { validMoveStakeAssertion, validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
-import { SimulationEnvironment } from '../simulation/simulation';
 import { AssertionResult } from '../utils/function_assertions';
 
 import { Actor, Constructor } from './base';
@@ -37,14 +36,12 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             };
 
             // Register this mixin's assertion generators
-            if (this.actor.simulationEnvironment !== undefined) {
-                this.actor.simulationActions = {
-                    ...this.actor.simulationActions,
-                    validStake: this._validStake(this.actor.simulationEnvironment),
-                    validUnstake: this._validUnstake(this.actor.simulationEnvironment),
-                    validMoveStake: this._validMoveStake(this.actor.simulationEnvironment),
-                };
-            }
+            this.actor.simulationActions = {
+                ...this.actor.simulationActions,
+                validStake: this._validStake(),
+                validUnstake: this._validUnstake(),
+                validMoveStake: this._validMoveStake(),
+            };
         }
 
         /**
@@ -66,30 +63,26 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             }
         }
 
-        private async *_validStake(
-            simulationEnvironment: SimulationEnvironment,
-        ): AsyncIterableIterator<AssertionResult> {
+        private async *_validStake(): AsyncIterableIterator<AssertionResult> {
             const { zrx } = this.actor.deployment.tokens;
-            const { deployment, balanceStore, globalStake } = simulationEnvironment;
+            const { deployment, balanceStore, globalStake } = this.actor.simulationEnvironment!;
             const assertion = validStakeAssertion(deployment, balanceStore, globalStake, this.stake);
 
             while (true) {
-                await simulationEnvironment.balanceStore.updateErc20BalancesAsync();
-                const zrxBalance = simulationEnvironment.balanceStore.balances.erc20[this.actor.address][zrx.address];
+                await balanceStore.updateErc20BalancesAsync();
+                const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
                 const amount = getRandomInteger(0, zrxBalance);
                 yield assertion.executeAsync(amount, { from: this.actor.address });
             }
         }
 
-        private async *_validUnstake(
-            simulationEnvironment: SimulationEnvironment,
-        ): AsyncIterableIterator<AssertionResult> {
+        private async *_validUnstake(): AsyncIterableIterator<AssertionResult> {
             const { stakingWrapper } = this.actor.deployment.staking;
-            const { deployment, balanceStore, globalStake } = simulationEnvironment;
+            const { deployment, balanceStore, globalStake } = this.actor.simulationEnvironment!;
             const assertion = validUnstakeAssertion(deployment, balanceStore, globalStake, this.stake);
 
             while (true) {
-                await simulationEnvironment.balanceStore.updateErc20BalancesAsync();
+                await balanceStore.updateErc20BalancesAsync();
                 const undelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
                     this.actor.address,
                     StakeStatus.Undelegated,
@@ -103,16 +96,9 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             }
         }
 
-        private async *_validMoveStake(
-            simulationEnvironment: SimulationEnvironment,
-        ): AsyncIterableIterator<AssertionResult> {
-            const { deployment, globalStake } = simulationEnvironment;
-            const assertion = validMoveStakeAssertion(
-                deployment,
-                globalStake,
-                this.stake,
-                simulationEnvironment.stakingPools,
-            );
+        private async *_validMoveStake(): AsyncIterableIterator<AssertionResult> {
+            const { deployment, globalStake, stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validMoveStakeAssertion(deployment, globalStake, this.stake, stakingPools);
 
             while (true) {
                 const fromPoolId = _.sample(Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])));
@@ -122,7 +108,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                         : (_.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
-                const toPoolId = _.sample(Object.keys(simulationEnvironment.stakingPools));
+                const toPoolId = _.sample(Object.keys(stakingPools));
                 const toStatus =
                     toPoolId === undefined
                         ? StakeStatus.Undelegated

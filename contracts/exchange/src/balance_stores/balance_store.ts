@@ -1,5 +1,5 @@
 import { BaseContract } from '@0x/base-contract';
-import { expect, TokenBalances } from '@0x/contracts-test-utils';
+import { constants, expect, TokenBalances } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -37,7 +37,7 @@ export class BalanceStore {
     }
 
     /**
-     * Registers the given token owner in this balance store. The token owner's balane will be
+     * Registers the given token owner in this balance store. The token owner's balance will be
      * tracked in subsequent operations.
      * @param address Address of the token owner
      * @param name Name of the token owner
@@ -83,8 +83,8 @@ export class BalanceStore {
      */
     private _assertEthBalancesEqual(rhs: BalanceStore): void {
         for (const ownerAddress of [...this._ownerAddresses, ...rhs._ownerAddresses]) {
-            const thisBalance = _.get(this.balances.eth, [ownerAddress], new BigNumber(0));
-            const rhsBalance = _.get(rhs.balances.eth, [ownerAddress], new BigNumber(0));
+            const thisBalance = _.get(this.balances.eth, [ownerAddress], constants.ZERO_AMOUNT);
+            const rhsBalance = _.get(rhs.balances.eth, [ownerAddress], constants.ZERO_AMOUNT);
             expect(thisBalance, `${this._readableAddressName(ownerAddress)} ETH balance`).to.bignumber.equal(
                 rhsBalance,
             );
@@ -98,8 +98,8 @@ export class BalanceStore {
     private _assertErc20BalancesEqual(rhs: BalanceStore): void {
         for (const ownerAddress of [...this._ownerAddresses, ...rhs._ownerAddresses]) {
             for (const tokenAddress of [...this._tokenAddresses.erc20, ...rhs._tokenAddresses.erc20]) {
-                const thisBalance = _.get(this.balances.erc20, [ownerAddress, tokenAddress], new BigNumber(0));
-                const rhsBalance = _.get(rhs.balances.erc20, [ownerAddress, tokenAddress], new BigNumber(0));
+                const thisBalance = _.get(this.balances.erc20, [ownerAddress, tokenAddress], constants.ZERO_AMOUNT);
+                const rhsBalance = _.get(rhs.balances.erc20, [ownerAddress, tokenAddress], constants.ZERO_AMOUNT);
                 expect(
                     thisBalance,
                     `${this._readableAddressName(ownerAddress)} ${this._readableAddressName(tokenAddress)} balance`,

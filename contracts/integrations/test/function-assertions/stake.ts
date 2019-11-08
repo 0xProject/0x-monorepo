@@ -35,6 +35,7 @@ export function validStakeAssertion(
 
     return new FunctionAssertion(stakingWrapper.stake, {
         before: async (amount: BigNumber, txData: Partial<TxData>) => {
+            // Simulates the transfer of ZRX from staker to vault
             const expectedBalances = LocalBalanceStore.create(balanceStore);
             expectedBalances.transferAsset(
                 txData.from as string,
@@ -52,22 +53,27 @@ export function validStakeAssertion(
         ) => {
             logUtils.log(`stake(${amount})`);
 
+            // Checks that the ZRX transfer updated balances as expected.
             await balanceStore.updateErc20BalancesAsync();
             balanceStore.assertEquals(expectedBalances);
 
+            // Checks that the owner's undelegated stake has increased by the stake amount
             const ownerUndelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
                 txData.from as string,
                 StakeStatus.Undelegated,
             );
             const expectedOwnerUndelegatedStake = expectedUndelegatedStake(ownerStake, amount);
             expect(ownerUndelegatedStake, 'Owner undelegated stake').to.deep.equal(expectedOwnerUndelegatedStake);
+            // Updates local state accordingly
             ownerStake[StakeStatus.Undelegated] = expectedOwnerUndelegatedStake;
 
+            // Checks that the global undelegated stake has also increased by the stake amount
             const globalUndelegatedStake = await stakingWrapper.getGlobalStakeByStatus.callAsync(
                 StakeStatus.Undelegated,
             );
             const expectedGlobalUndelegatedStake = expectedUndelegatedStake(globalStake, amount);
             expect(globalUndelegatedStake, 'Global undelegated stake').to.deep.equal(expectedGlobalUndelegatedStake);
+            // Updates local state accordingly
             globalStake[StakeStatus.Undelegated] = expectedGlobalUndelegatedStake;
         },
     });

@@ -19,8 +19,10 @@ export function validCreateStakingPoolAssertion(
     const { stakingWrapper } = deployment.staking;
 
     return new FunctionAssertion(stakingWrapper.createStakingPool, {
+        // Returns the expected ID of th created pool
         before: async () => {
             const lastPoolId = await stakingWrapper.lastPoolId.callAsync();
+            // Effectively the last poolId + 1, but as a bytestring
             return `0x${new BigNumber(lastPoolId)
                 .plus(1)
                 .toString(16)
@@ -35,9 +37,12 @@ export function validCreateStakingPoolAssertion(
         ) => {
             logUtils.log(`createStakingPool(${operatorShare}, ${addOperatorAsMaker}) => ${expectedPoolId}`);
 
+            // Checks the logs for the new poolId, verifies that it is as expected
             const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
             const actualPoolId = (log as any).args.poolId;
             expect(actualPoolId).to.equal(expectedPoolId);
+
+            // Adds the new pool to local state
             pools[actualPoolId] = {
                 operator: txData.from as string,
                 operatorShare,
