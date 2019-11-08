@@ -14,7 +14,7 @@ import { MatchOrderTester, MatchTransferAmounts } from '../utils/match_order_tes
 
 const { isRoundingErrorCeil, isRoundingErrorFloor } = LibReferenceFunctions;
 
-blockchainTests.resets.only('matchOrders', env => {
+blockchainTests.resets('matchOrders', env => {
     // The fee recipient addresses.
     let feeRecipientLeft: Actor;
     let feeRecipientRight: Actor;
@@ -149,55 +149,56 @@ blockchainTests.resets.only('matchOrders', env => {
         matchOrderTester = new MatchOrderTester(deployment, blockchainBalanceStore);
     });
 
+    async function testMatchOrdersAsync(
+        leftOrder: Partial<Order>,
+        rightOrder: Partial<Order>,
+        expectedTransferAmounts: Partial<MatchTransferAmounts>,
+        withMaximalFill: boolean,
+        matcherAddress?: string,
+    ): Promise<void> {
+        // Create orders to match.
+        const signedOrderLeft = await makerLeft.signOrderAsync(leftOrder);
+        const signedOrderRight = await makerRight.signOrderAsync(rightOrder);
+
+        await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            {
+                leftOrder: signedOrderLeft,
+                rightOrder: signedOrderRight,
+            },
+            {
+                ...expectedTransferAmounts,
+                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
+                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
+                leftProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
+                rightProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
+            },
+            matcherAddress || matcher.address,
+            PROTOCOL_FEE.times(2),
+            withMaximalFill,
+        );
+
+        await env.blockchainLifecycle.revertAsync();
+        await env.blockchainLifecycle.startAsync();
+
+        await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            {
+                leftOrder: signedOrderLeft,
+                rightOrder: signedOrderRight,
+            },
+            {
+                ...expectedTransferAmounts,
+                leftProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
+                rightProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
+                leftProtocolFeePaidByTakerInWethAmount: PROTOCOL_FEE,
+                rightProtocolFeePaidByTakerInWethAmount: PROTOCOL_FEE,
+            },
+            matcherAddress || matcher.address,
+            constants.ZERO_AMOUNT,
+            withMaximalFill,
+        );
+    }
+
     describe('matchOrders', () => {
-        async function testMatchOrdersAsync(
-            leftOrder: Partial<Order>,
-            rightOrder: Partial<Order>,
-            expectedTransferAmounts: Partial<MatchTransferAmounts>,
-            matcherAddress?: string,
-        ): Promise<void> {
-            // Create orders to match.
-            const signedOrderLeft = await makerLeft.signOrderAsync(leftOrder);
-            const signedOrderRight = await makerRight.signOrderAsync(rightOrder);
-
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
-                {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
-                },
-                {
-                    ...expectedTransferAmounts,
-                    leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                    rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                    leftProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
-                    rightProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
-                },
-                matcherAddress || matcher.address,
-                PROTOCOL_FEE.times(2),
-                false,
-            );
-
-            await env.blockchainLifecycle.revertAsync();
-            await env.blockchainLifecycle.startAsync();
-
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
-                {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
-                },
-                {
-                    ...expectedTransferAmounts,
-                    leftProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
-                    rightProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
-                    leftProtocolFeePaidByTakerInWethAmount: PROTOCOL_FEE,
-                    rightProtocolFeePaidByTakerInWethAmount: PROTOCOL_FEE,
-                },
-                matcherAddress || matcher.address,
-                constants.ZERO_AMOUNT,
-                false,
-            );
-        }
-
         it('Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorFloor but fail isRoundingErrorCeil', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
@@ -333,6 +334,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
                 },
+                false,
             );
         });
 
@@ -359,6 +361,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -387,6 +390,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(2653, 0), // 2653.1 rounded down to 2653
                 },
+                false,
             );
         });
 
@@ -415,6 +419,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(9175, 0), // 9175.2 rounded down to 9175
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -459,6 +464,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
                 },
+                false,
             );
         });
 
@@ -485,6 +491,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -510,6 +517,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -537,6 +545,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(50, 16), // 50%
                 },
+                false,
             );
         });
 
@@ -564,6 +573,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(10, 16), // 10%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -739,6 +749,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -765,6 +776,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
                 makerLeft.address,
             );
         });
@@ -792,6 +804,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
                 makerRight.address,
             );
         });
@@ -819,6 +832,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
                 feeRecipientLeft.address,
             );
         });
@@ -846,6 +860,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
                 feeRecipientRight.address,
             );
         });
@@ -876,6 +891,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -905,6 +921,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -934,6 +951,7 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
@@ -965,10 +983,11 @@ blockchainTests.resets.only('matchOrders', env => {
                     leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
                 },
+                false,
             );
         });
 
-        it('Should revert if left order is not fillable', async () => {
+        it('should revert if left order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(5, 18),
@@ -997,7 +1016,7 @@ blockchainTests.resets.only('matchOrders', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('Should revert if right order is not fillable', async () => {
+        it('should revert if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(5, 18),
@@ -1232,258 +1251,174 @@ blockchainTests.resets.only('matchOrders', env => {
         });
 
         it('Should transfer correct amounts when left order is fully filled', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(16, 0),
-                takerAssetAmount: toBaseUnitAmount(22, 0),
-            });
-            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(87, 0),
-                takerAssetAmount: toBaseUnitAmount(48, 0),
-            });
-
-            // Match the orders.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(16, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(22, 0),
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(29, 0),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(16, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
-                // Taker
-                rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(7, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(16, 0),
+                    takerAssetAmount: toBaseUnitAmount(22, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(87, 0),
+                    takerAssetAmount: toBaseUnitAmount(48, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(16, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(22, 0),
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(29, 0),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(16, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(
+                        new BigNumber('33.3333333333333333'),
+                        16,
+                    ), // 33.33%
+                    // Taker
+                    rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(7, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
+                },
                 true,
             );
         });
 
         it('should fully fill both orders and pay out profit in both maker assets', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(7, 0),
-                takerAssetAmount: toBaseUnitAmount(4, 0),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(8, 0),
-                takerAssetAmount: toBaseUnitAmount(6, 0),
-            });
-
-            // Match the orders.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(7, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(4, 0), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(8, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(6, 0), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(1, 0),
-                rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(4, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), //
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(7, 0),
+                    takerAssetAmount: toBaseUnitAmount(4, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(8, 0),
+                    takerAssetAmount: toBaseUnitAmount(6, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(7, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(4, 0), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(8, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(6, 0), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(1, 0),
+                    rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(4, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
         it('Should give left maker a better sell price when rounding', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(12, 0),
-                takerAssetAmount: toBaseUnitAmount(97, 0),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(89, 0),
-                takerAssetAmount: toBaseUnitAmount(1, 0),
-            });
-
-            // Note:
-            //  The maker/taker fee percentage paid on the left order differs because
-            //  they received different sale prices. The left maker pays a fee
-            //  slightly lower than the left taker.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(11, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(89, 0),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(1, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(10, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-
-            // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(12, 0),
+                    takerAssetAmount: toBaseUnitAmount(97, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(89, 0),
+                    takerAssetAmount: toBaseUnitAmount(1, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(11, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(89, 0),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(1, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(10, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
         it('Should give right maker and right taker a favorable fee price when rounding', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(16, 0),
-                takerAssetAmount: toBaseUnitAmount(22, 0),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(87, 0),
-                takerAssetAmount: toBaseUnitAmount(48, 0),
-                makerFee: toBaseUnitAmount(10000, 0),
-                takerFee: toBaseUnitAmount(10000, 0),
-            });
-
-            // Match the orders.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(16, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(22, 0),
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(29, 0),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(16, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(3333, 0), // 3333.3 repeating rounded down to 3333
-                // Taker
-                rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(7, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(3333, 0), // 3333.3 repeating rounded down to 3333
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(16, 0),
+                    takerAssetAmount: toBaseUnitAmount(22, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(87, 0),
+                    takerAssetAmount: toBaseUnitAmount(48, 0),
+                    makerFee: toBaseUnitAmount(10000, 0),
+                    takerFee: toBaseUnitAmount(10000, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(16, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(22, 0),
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(29, 0),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(16, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(3333, 0), // 3333.3 repeating rounded down to 3333
+                    // Taker
+                    rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(7, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(3333, 0), // 3333.3 repeating rounded down to 3333
+                },
                 true,
             );
         });
 
         it('Should give left maker and left taker a favorable fee price when rounding', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(12, 0),
-                takerAssetAmount: toBaseUnitAmount(97, 0),
-                makerFee: toBaseUnitAmount(10000, 0),
-                takerFee: toBaseUnitAmount(10000, 0),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(89, 0),
-                takerAssetAmount: toBaseUnitAmount(1, 0),
-            });
-
-            // Note:
-            //  The maker/taker fee percentage paid on the left order differs because
-            //  they received different sale prices. The left maker pays a
-            //  fee slightly lower than the left taker.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(11, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(9166, 0), // 9166.6 rounded down to 9166
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(89, 0),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(1, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(10, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(9175, 0), // 9175.2 rounded down to 9175
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-
-            // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(12, 0),
+                    takerAssetAmount: toBaseUnitAmount(97, 0),
+                    makerFee: toBaseUnitAmount(10000, 0),
+                    takerFee: toBaseUnitAmount(10000, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(89, 0),
+                    takerAssetAmount: toBaseUnitAmount(1, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(11, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(9166, 0), // 9166.6 rounded down to 9166
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(89, 0),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(1, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(10, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(9175, 0), // 9175.2 rounded down to 9175
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
         it('Should give left maker a better sell price when rounding', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(12, 0),
-                takerAssetAmount: toBaseUnitAmount(97, 0),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(89, 0),
-                takerAssetAmount: toBaseUnitAmount(1, 0),
-            });
-
-            // Note:
-            //  The maker/taker fee percentage paid on the left order differs because
-            //  they received different sale prices. The left maker pays a fee
-            //  slightly lower than the left taker.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(11, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(89, 0),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(1, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(10, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-
-            // Match the orders.
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(12, 0),
+                    takerAssetAmount: toBaseUnitAmount(97, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(89, 0),
+                    takerAssetAmount: toBaseUnitAmount(1, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(11, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(89, 0),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(1, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(10, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
@@ -1563,92 +1498,71 @@ blockchainTests.resets.only('matchOrders', env => {
             );
         });
 
-        it('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(1000, 0),
-                takerAssetAmount: toBaseUnitAmount(1005, 0),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(2126, 0),
-                takerAssetAmount: toBaseUnitAmount(1063, 0),
-            });
-
-            // Match the orders.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(1000, 0),
-                rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(1005, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                // Notes:
-                //  i.
-                //    The left order is fully filled by the right order, so the right maker must sell 1005 units of their asset to the left maker.
-                //    By selling 1005 units, the right maker should theoretically receive 502.5 units of the left maker's asset.
-                //    Since the transfer amount must be an integer, this value must be rounded down to 502 or up to 503.
-                //  ii.
-                //    If the right order were filled via `Exchange.fillOrder` the respective fill amounts would be [1004, 502] or [1006, 503].
-                //    It follows that we cannot trigger a sale of 1005 units of the right maker's asset through `Exchange.fillOrder`.
-                //  iii.
-                //    For an optimal match, the algorithm must choose either [1005, 502] or [1005, 503] as fill amounts for the right order.
-                //    The algorithm favors the right maker when the exchange rate must be rounded, so the final fill for the right order is [1005, 503].
-                //  iv.
-                //    The right maker fee differs from the right taker fee because their exchange rate differs.
-                //    The right maker always receives the better exchange and fee price.
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(2000, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
-                // Taker
-                rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(995, 0),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+        it('should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(1000, 0),
+                    takerAssetAmount: toBaseUnitAmount(1005, 0),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(2126, 0),
+                    takerAssetAmount: toBaseUnitAmount(1063, 0),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(1000, 0),
+                    rightMakerAssetBoughtByLeftMakerAmount: toBaseUnitAmount(1005, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    // Notes:
+                    //  i.
+                    //    The left order is fully filled by the right order, so the right maker must sell 1005 units of their asset to the left maker.
+                    //    By selling 1005 units, the right maker should theoretically receive 502.5 units of the left maker's asset.
+                    //    Since the transfer amount must be an integer, this value must be rounded down to 502 or up to 503.
+                    //  ii.
+                    //    If the right order were filled via `Exchange.fillOrder` the respective fill amounts would be [1004, 502] or [1006, 503].
+                    //    It follows that we cannot trigger a sale of 1005 units of the right maker's asset through `Exchange.fillOrder`.
+                    //  iii.
+                    //    For an optimal match, the algorithm must choose either [1005, 502] or [1005, 503] as fill amounts for the right order.
+                    //    The algorithm favors the right maker when the exchange rate must be rounded, so the final fill for the right order is [1005, 503].
+                    //  iv.
+                    //    The right maker fee differs from the right taker fee because their exchange rate differs.
+                    //    The right maker always receives the better exchange and fee price.
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(2000, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(
+                        new BigNumber('94.0733772342427093'),
+                        16,
+                    ), // 94.07%
+                    // Taker
+                    rightMakerAssetReceivedByTakerAmount: toBaseUnitAmount(995, 0),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
+                },
                 true,
             );
         });
 
         it("should transfer the correct amounts when orders completely fill each other and taker doesn't take a profit", async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(5, 18),
-            });
-
-            // Match the orders.
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(5, 18),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
@@ -1731,373 +1645,266 @@ blockchainTests.resets.only('matchOrders', env => {
         });
 
         it('should transfer the correct amounts if fee recipient is the same across both matched orders', async () => {
-            const feeRecipientAddress = feeRecipientLeft.address;
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-                feeRecipientAddress,
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-                feeRecipientAddress,
-            });
-
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
+                    feeRecipientAddress: feeRecipientLeft.address,
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                    feeRecipientAddress: feeRecipientLeft.address,
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
         it('should transfer the correct amounts if taker == leftMaker', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-            });
-
-            // Match orders
-            const matcherAddress = makerLeft.address;
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
                 },
-                expectedTransferAmounts,
-                matcherAddress,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
+                makerLeft.address,
             );
         });
 
         it('should transfer the correct amounts if taker == rightMaker', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-            });
-
-            // Match orders
-            const matcherAddress = makerRight.address;
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
                 },
-                expectedTransferAmounts,
-                matcherAddress,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
+                makerRight.address,
             );
         });
 
         it('should transfer the correct amounts if taker == leftFeeRecipient', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-            });
-
-            // Match orders
-            const matcherAddress = feeRecipientLeft.address;
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
                 },
-                expectedTransferAmounts,
-                matcherAddress,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
+                feeRecipientLeft.address,
             );
         });
 
         it('should transfer the correct amounts if taker == rightFeeRecipient', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-            });
-
-            // Match orders
-            const matcherAddress = feeRecipientRight.address;
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
                 },
-                expectedTransferAmounts,
-                matcherAddress,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
+                feeRecipientRight.address,
             );
         });
 
         it('should transfer the correct amounts if leftMaker == leftFeeRecipient && rightMaker == rightFeeRecipient', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-                feeRecipientAddress: makerLeft.address,
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-                feeRecipientAddress: makerRight.address,
-            });
-
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
+                    feeRecipientAddress: makerLeft.address,
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                    feeRecipientAddress: makerRight.address,
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
         it('should transfer the correct amounts if leftMaker == leftFeeRecipient && leftMakerFeeAsset == leftTakerAsset', async () => {
-            // Create orders to match
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-            });
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-                makerFeeAssetData: signedOrderRight.makerAssetData,
-                feeRecipientAddress: makerLeft.address,
-            });
-
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
+                    makerFeeAssetData: makerAssetDataRight,
+                    feeRecipientAddress: makerLeft.address,
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
         it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightMakerFeeAsset == rightTakerAsset', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-                makerFeeAssetData: signedOrderLeft.makerAssetData,
-                feeRecipientAddress: makerRight.address,
-            });
-
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                    makerFeeAssetData: makerAssetDataLeft,
+                    feeRecipientAddress: makerRight.address,
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
-        it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightTakerAsset == rightMakerFeeAsset && leftMaker == leftFeeRecipient && leftTakerAsset == leftMakerFeeAsset', async () => {
-            // Create orders to match
-            const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(5, 18),
-                takerAssetAmount: toBaseUnitAmount(10, 18),
-                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
-                feeRecipientAddress: makerLeft.address,
-            });
-            const signedOrderRight = await makerRight.signOrderAsync({
-                makerAssetAmount: toBaseUnitAmount(10, 18),
-                takerAssetAmount: toBaseUnitAmount(2, 18),
-                makerFeeAssetData: signedOrderLeft.makerAssetData,
-                feeRecipientAddress: makerRight.address,
-            });
-
-            // Match orders
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
-                leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Right Maker
-                rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
-                leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
-                rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
-                // Taker
-                leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
-                leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-            };
-            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+        it(`should transfer the correct amounts if rightMaker == rightFeeRecipient && rightTakerAsset == rightMakerFeeAsset
+            && leftMaker == leftFeeRecipient && leftTakerAsset == leftMakerFeeAsset`, async () => {
+            await testMatchOrdersAsync(
                 {
-                    leftOrder: signedOrderLeft,
-                    rightOrder: signedOrderRight,
+                    makerAssetAmount: toBaseUnitAmount(5, 18),
+                    takerAssetAmount: toBaseUnitAmount(10, 18),
+                    makerFeeAssetData: makerAssetDataRight,
+                    feeRecipientAddress: makerLeft.address,
                 },
-                expectedTransferAmounts,
-                matcher.address,
-                PROTOCOL_FEE.times(2),
+                {
+                    makerAssetAmount: toBaseUnitAmount(10, 18),
+                    takerAssetAmount: toBaseUnitAmount(2, 18),
+                    makerFeeAssetData: makerAssetDataRight,
+                    feeRecipientAddress: makerRight.address,
+                },
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: toBaseUnitAmount(5, 18),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: toBaseUnitAmount(10, 18),
+                    leftMakerAssetBoughtByRightMakerAmount: toBaseUnitAmount(2, 18),
+                    rightMakerFeeAssetPaidByRightMakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftMakerAssetReceivedByTakerAmount: toBaseUnitAmount(3, 18),
+                    leftTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: toBaseUnitAmount(100, 16), // 100%
+                },
                 true,
             );
         });
 
-        it('Should revert if left order is not fillable', async () => {
+        it('should revert if left order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(5, 18),
@@ -2124,7 +1931,7 @@ blockchainTests.resets.only('matchOrders', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('Should revert if right order is not fillable', async () => {
+        it('should revert if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(5, 18),
