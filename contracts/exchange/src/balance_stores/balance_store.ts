@@ -1,6 +1,5 @@
 import { BaseContract } from '@0x/base-contract';
 import { constants, expect, TokenBalances } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { TokenAddresses, TokenContractsByName, TokenOwnersByName } from './types';

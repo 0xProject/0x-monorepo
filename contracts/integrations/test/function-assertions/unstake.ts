@@ -1,7 +1,6 @@
 import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
 import { GlobalStakeByStatus, OwnerStakeByStatus, StakeStatus, StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
@@ -31,17 +30,16 @@ export function validUnstakeAssertion(
     ownerStake: OwnerStakeByStatus,
 ): FunctionAssertion<LocalBalanceStore> {
     const { stakingWrapper, zrxVault } = deployment.staking;
-    const { zrx } = deployment.tokens;
 
     return new FunctionAssertion(stakingWrapper.unstake, {
         before: async (amount: BigNumber, txData: Partial<TxData>) => {
             // Simulates the transfer of ZRX from vault to staker
-            const expectedBalances = LocalBalanceStore.create(balanceStore);
-            expectedBalances.transferAsset(
+            const expectedBalances = LocalBalanceStore.create(deployment.devUtils, balanceStore);
+            await expectedBalances.transferAssetAsync(
                 zrxVault.address,
                 txData.from as string,
                 amount,
-                assetDataUtils.encodeERC20AssetData(zrx.address),
+                await deployment.devUtils.encodeERC20AssetData.callAsync(deployment.tokens.zrx.address),
             );
             return expectedBalances;
         },
