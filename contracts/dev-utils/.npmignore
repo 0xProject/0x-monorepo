@@ -1,0 +1,10 @@
+# Blacklist all files
+.*
+*
+# Whitelist lib
+!lib/**/*
+# Whitelist Solidity contracts
+!contracts/**/*
+# Blacklist tests and publish scripts
+/lib/test/*
+# Package specific ignore
