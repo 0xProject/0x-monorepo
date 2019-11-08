@@ -1,7 +1,7 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
 import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -36,8 +36,10 @@ export interface MatchTransferAmounts {
     leftTakerFeeAssetPaidByTakerAmount: BigNumber; // 0 if omitted.
     rightTakerFeeAssetPaidByTakerAmount: BigNumber; // 0 if omitted.
     // Protocol fees.
-    leftProtocolFeePaidByTakerAmount: BigNumber; // 0 if omitted
-    rightProtocolFeePaidByTakerAmount: BigNumber; // 0 if omitted
+    leftProtocolFeePaidByTakerInEthAmount: BigNumber; // 0 if omitted
+    leftProtocolFeePaidByTakerInWethAmount: BigNumber; // 0 if omitted
+    rightProtocolFeePaidByTakerInWethAmount: BigNumber; // 0 if omitted
+    rightProtocolFeePaidByTakerInEthAmount: BigNumber; // 0 if omitted
 }
 
 export interface MatchResults {
@@ -140,7 +142,7 @@ export class MatchOrderTester {
         const expectedBatchMatchResults = await simulateBatchMatchOrdersAsync(
             orders,
             takerAddress,
-            this._deployment.staking.stakingProxy.address,
+            this._deployment,
             this._blockchainBalanceStore,
             localBalanceStore,
             matchPairs,
@@ -214,7 +216,7 @@ export class MatchOrderTester {
         const expectedMatchResults = await simulateMatchOrdersAsync(
             orders,
             takerAddress,
-            this._deployment.staking.stakingProxy.address,
+            this._deployment,
             toFullMatchTransferAmounts(expectedTransferAmounts),
             this._devUtils,
             this._blockchainBalanceStore,
@@ -269,10 +271,14 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
             partial.leftTakerFeeAssetPaidByTakerAmount || constants.ZERO_AMOUNT,
         rightTakerFeeAssetPaidByTakerAmount:
             partial.rightTakerFeeAssetPaidByTakerAmount || constants.ZERO_AMOUNT,
-        leftProtocolFeePaidByTakerAmount:
-            partial.leftProtocolFeePaidByTakerAmount || constants.ZERO_AMOUNT,
-        rightProtocolFeePaidByTakerAmount:
-            partial.rightProtocolFeePaidByTakerAmount || constants.ZERO_AMOUNT,
+        leftProtocolFeePaidByTakerInEthAmount:
+            partial.leftProtocolFeePaidByTakerInEthAmount || constants.ZERO_AMOUNT,
+        leftProtocolFeePaidByTakerInWethAmount:
+            partial.leftProtocolFeePaidByTakerInWethAmount || constants.ZERO_AMOUNT,
+        rightProtocolFeePaidByTakerInEthAmount:
+            partial.rightProtocolFeePaidByTakerInEthAmount || constants.ZERO_AMOUNT,
+        rightProtocolFeePaidByTakerInWethAmount:
+            partial.rightProtocolFeePaidByTakerInWethAmount || constants.ZERO_AMOUNT,
     };
 }
 
@@ -288,7 +294,7 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
 async function simulateBatchMatchOrdersAsync(
     orders: BatchMatchedOrders,
     takerAddress: string,
-    stakingProxyAddress: string,
+    deployment: DeploymentManager,
     blockchainBalanceStore: BlockchainBalanceStore,
     localBalanceStore: LocalBalanceStore,
     matchPairs: Array<[number, number]>,
@@ -353,7 +359,7 @@ async function simulateBatchMatchOrdersAsync(
             await simulateMatchOrdersAsync(
                 matchedOrders,
                 takerAddress,
-                stakingProxyAddress,
+                deployment,
                 toFullMatchTransferAmounts(transferAmounts[i]),
                 devUtils,
                 blockchainBalanceStore,
@@ -416,7 +422,7 @@ async function simulateBatchMatchOrdersAsync(
 async function simulateMatchOrdersAsync(
     orders: MatchedOrders,
     takerAddress: string,
-    stakingProxyAddress: string,
+    deployment: DeploymentManager,
     transferAmounts: MatchTransferAmounts,
     devUtils: DevUtilsContract,
     blockchainBalanceStore: BlockchainBalanceStore,
@@ -508,10 +514,28 @@ async function simulateMatchOrdersAsync(
     );
 
     // Protocol Fee
+    const wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
     localBalanceStore.sendEth(
         takerAddress,
-        stakingProxyAddress,
-        transferAmounts.leftProtocolFeePaidByTakerAmount.plus(transferAmounts.rightProtocolFeePaidByTakerAmount),
+        deployment.staking.stakingProxy.address,
+        transferAmounts.leftProtocolFeePaidByTakerInEthAmount,
+    );
+    localBalanceStore.sendEth(
+        takerAddress,
+        deployment.staking.stakingProxy.address,
+        transferAmounts.rightProtocolFeePaidByTakerInEthAmount,
+    );
+    localBalanceStore.transferAsset(
+        takerAddress,
+        deployment.staking.stakingProxy.address,
+        transferAmounts.leftProtocolFeePaidByTakerInWethAmount,
+        wethAssetData,
+    );
+    localBalanceStore.transferAsset(
+        takerAddress,
+        deployment.staking.stakingProxy.address,
+        transferAmounts.rightProtocolFeePaidByTakerInWethAmount,
+        wethAssetData,
     );
 
     return matchResults;
@@ -626,7 +650,9 @@ function simulateFillEvents(
             takerAssetFilledAmount: transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
             makerFeePaid: transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
             takerFeePaid: transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
-            protocolFeePaid: transferAmounts.leftProtocolFeePaidByTakerAmount,
+            protocolFeePaid: transferAmounts.leftProtocolFeePaidByTakerInEthAmount.plus(
+                transferAmounts.leftProtocolFeePaidByTakerInWethAmount,
+            ),
         },
         // Right order Fill
         {
@@ -637,7 +663,9 @@ function simulateFillEvents(
             takerAssetFilledAmount: transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
             makerFeePaid: transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
             takerFeePaid: transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
-            protocolFeePaid: transferAmounts.rightProtocolFeePaidByTakerAmount,
+            protocolFeePaid: transferAmounts.rightProtocolFeePaidByTakerInEthAmount.plus(
+                transferAmounts.rightProtocolFeePaidByTakerInWethAmount,
+            ),
         },
     ];
 }
