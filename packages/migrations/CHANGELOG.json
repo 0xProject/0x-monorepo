@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.0-beta.2",
+        "changes": [
+            {
+                "note": "Migrations script no longer deploys DutchAuction since it is not yet upgraded for V3 of the protocol",
+                "pr": 2324
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.1",
         "changes": [
             {
