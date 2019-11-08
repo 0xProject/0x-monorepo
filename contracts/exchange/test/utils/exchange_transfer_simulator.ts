@@ -55,9 +55,9 @@ export class ExchangeTransferSimulator {
      * @param store A class that implements AbstractBalanceAndProxyAllowanceLazyStore
      * @return an instance of ExchangeTransferSimulator
      */
-    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore, provider: SupportedProvider) {
+    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore, devUtilsContract: DevUtilsContract) {
         this._store = store;
-        this._devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
+        this._devUtils = devUtilsContract;
     }
     /**
      * Simulates transferFrom call performed by a proxy

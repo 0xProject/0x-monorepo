@@ -88,7 +88,7 @@ blockchainTests('ExchangeTransferSimulator', env => {
             const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
                 simpleERC20BalanceAndProxyAllowanceFetcher,
             );
-            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore, env.provider);
+            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore, devUtils);
         });
         it("throws if the user doesn't have enough allowance", async () => {
             return expect(

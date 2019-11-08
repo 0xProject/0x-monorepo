@@ -504,7 +504,7 @@ export class FillOrderCombinatorialUtils {
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
     ): Promise<FillResults> {
-        const simulator = new FillOrderSimulator(lazyStore, this.provider);
+        const simulator = new FillOrderSimulator(lazyStore, devUtils);
         return simulator.simulateFillOrderAsync(signedOrder, this.takerAddress, takerAssetFillAmount);
     }
 

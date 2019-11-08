@@ -1,3 +1,4 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, orderUtils } from '@0x/contracts-test-utils';
 import { Order, SupportedProvider } from '@0x/order-utils';
 import { FillResults } from '@0x/types';
@@ -25,9 +26,9 @@ export class FillOrderSimulator {
     public readonly lazyStore: LazyStore;
     private readonly _transferSimulator: ExchangeTransferSimulator;
 
-    constructor(lazyStore: LazyStore, provider: SupportedProvider) {
+    constructor(lazyStore: LazyStore, devUtilsContract: DevUtilsContract) {
         this.lazyStore = lazyStore;
-        this._transferSimulator = new ExchangeTransferSimulator(lazyStore, provider);
+        this._transferSimulator = new ExchangeTransferSimulator(lazyStore, devUtilsContract);
     }
 
     public async simulateFillOrderAsync(
