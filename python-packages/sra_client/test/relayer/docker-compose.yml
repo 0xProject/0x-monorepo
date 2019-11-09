@@ -35,7 +35,7 @@ services:
             - "3000:3000"
         network_mode: "host" # to connect to ganache
         environment:
-            - NETWORK_ID=50
+            - CHAIN_ID=1337
             - RPC_URL=http://localhost:8545
             - WHITELIST_ALL_TOKENS=True
             - FEE_RECIPIENT=0x0000000000000000000000000000000000000001
