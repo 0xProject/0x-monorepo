@@ -28,7 +28,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      * @param orderStore The `OrderStore` where orders are added and removed from
      */
     constructor(opts: SRAWebsocketOrderProviderOpts, orderStore: OrderStore) {
-        super(orderStore, opts.httpEndpoint, PER_PAGE_DEFAULT, opts.chainId);
+        super(orderStore, opts.httpEndpoint, PER_PAGE_DEFAULT);
         assert.isUri('websocketEndpoint', opts.websocketEndpoint);
         this._websocketEndpoint = opts.websocketEndpoint;
     }
@@ -125,7 +125,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
         const ordersChannelHandler: OrdersChannelHandler = {
             onUpdate: async (_channel, _opts, apiOrders) => this._handleOrderUpdates(apiOrders),
             // tslint:disable-next-line:no-empty
-            onError: (_channel, _err) => {},
+            onError: (_channel, _err) => { },
             onClose: async () => {
                 // Do not reconnect if destroyed
                 if (this._isDestroyed) {
