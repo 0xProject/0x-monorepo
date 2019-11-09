@@ -15,6 +15,5 @@ export {
     OrdersResponse,
     PagedRequestOpts,
     PaginatedCollection,
-    RequestOpts,
     SignedOrder,
 } from '@0x/types';
