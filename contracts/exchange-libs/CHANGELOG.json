@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Introduced new export LibMathRevertErrors",
+                "pr": 2321
+            }
+        ]
+    },
+    {
         "version": "3.1.0-beta.1",
         "changes": [
             {

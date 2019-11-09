@@ -8,12 +8,12 @@ import {
     toHex,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
     artifacts,
+    StakingRevertErrors,
     TestMixinStakingPoolContract,
     TestMixinStakingPoolEvents,
     TestMixinStakingPoolStakingPoolCreatedEventArgs as StakingPoolCreated,

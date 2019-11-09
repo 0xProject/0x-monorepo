@@ -9,7 +9,6 @@ import {
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -17,6 +16,7 @@ import { StakeStatus } from '../utils/types';
 
 import {
     artifacts,
+    StakingRevertErrors,
     TestMixinStakeContract,
     TestMixinStakeDecreaseCurrentAndNextBalanceEventArgs as DecreaseCurrentAndNextBalanceEventArgs,
     TestMixinStakeDecreaseNextBalanceEventArgs as DecreaseNextBalanceEventArgs,

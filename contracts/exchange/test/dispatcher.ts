@@ -17,7 +17,6 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { ExchangeRevertErrors } from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber, OwnableRevertErrors, StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
@@ -26,6 +25,7 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    ExchangeRevertErrors,
     TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
 } from '../src';

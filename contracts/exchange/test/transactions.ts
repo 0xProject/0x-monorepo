@@ -11,7 +11,7 @@ import {
     OrderFactory,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
@@ -27,6 +27,7 @@ import {
     exchangeDataEncoder,
     ExchangeFillEventArgs,
     ExchangeFunctionName,
+    ExchangeRevertErrors,
     ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeTransactionExecutionEventArgs,
     ExchangeWrapper,

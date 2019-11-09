@@ -1,11 +1,16 @@
 import { blockchainTests, constants, describe, expect, hexRandom, TransactionHelper } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, transactionHashUtils } from '@0x/order-utils';
+import { transactionHashUtils } from '@0x/order-utils';
 import { EIP712DomainWithDefaultSchema, ZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, TestTransactionsContract, TestTransactionsTransactionExecutionEventArgs } from '../src';
+import {
+    artifacts,
+    ExchangeRevertErrors,
+    TestTransactionsContract,
+    TestTransactionsTransactionExecutionEventArgs,
+} from '../src';
 
 blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDefaults }) => {
     let transactionsContract: TestTransactionsContract;

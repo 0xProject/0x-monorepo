@@ -1,11 +1,11 @@
 import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors, BigNumber, StringRevertError } from '@0x/utils';
 
 import {
     artifacts,
     StakingContract,
     StakingProxyContract,
+    StakingRevertErrors,
     TestAssertStorageParamsContract,
     TestInitTargetContract,
     TestStakingProxyContract,

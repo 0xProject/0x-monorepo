@@ -4,6 +4,7 @@ import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-e
 import {
     artifacts as exchangeArtifacts,
     BlockchainBalanceStore,
+    ExchangeRevertErrors,
     IExchangeEvents,
     IExchangeFillEventArgs,
     LocalBalanceStore,
@@ -22,7 +23,7 @@ import {
     TransactionHelper,
     verifyEvents,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';

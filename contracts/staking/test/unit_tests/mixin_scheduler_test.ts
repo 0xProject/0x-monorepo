@@ -1,10 +1,10 @@
 import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
     artifacts,
+    StakingRevertErrors,
     TestMixinSchedulerContract,
     TestMixinSchedulerEvents,
     TestMixinSchedulerGoToNextEpochTestInfoEventArgs,

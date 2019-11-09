@@ -6,10 +6,9 @@ import {
     testCombinatoriallyWithReferenceFunc,
     uint256Values,
 } from '@0x/contracts-test-utils';
-import { LibMathRevertErrors } from '@0x/order-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 
-import { artifacts, ReferenceFunctions, TestLibMathContract } from '../src';
+import { artifacts, LibMathRevertErrors, ReferenceFunctions, TestLibMathContract } from '../src';
 
 blockchainTests('LibMath', env => {
     const { ONE_ETHER, MAX_UINT256, MAX_UINT256_ROOT, ZERO_AMOUNT } = constants;

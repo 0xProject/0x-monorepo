@@ -23,14 +23,14 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { orderHashUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract, ExchangeWrapper } from '../src';
+import { artifacts, ExchangeContract, ExchangeRevertErrors, ExchangeWrapper } from '../src';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 

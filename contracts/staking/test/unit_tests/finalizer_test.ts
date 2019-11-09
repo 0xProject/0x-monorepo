@@ -7,7 +7,6 @@ import {
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -18,6 +17,7 @@ import {
     IStakingEventsEpochFinalizedEventArgs,
     IStakingEventsEvents,
     IStakingEventsRewardsPaidEventArgs,
+    StakingRevertErrors,
     TestFinalizerContract,
     TestFinalizerDepositStakingPoolRewardsEventArgs as DepositStakingPoolRewardsEventArgs,
     TestFinalizerEvents,

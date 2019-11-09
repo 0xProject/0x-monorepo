@@ -1,8 +1,8 @@
 import { constants, describe, expect } from '@0x/contracts-test-utils';
-import { LibMathRevertErrors } from '@0x/order-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { LibMathRevertErrors } from '../src';
 import {
     addFillResults,
     getPartialAmountCeil,

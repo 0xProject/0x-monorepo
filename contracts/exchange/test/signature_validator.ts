@@ -11,7 +11,7 @@ import {
     randomAddress,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -19,6 +19,7 @@ import ethUtil = require('ethereumjs-util');
 
 import {
     artifacts,
+    ExchangeRevertErrors,
     IEIP1271DataContract,
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,

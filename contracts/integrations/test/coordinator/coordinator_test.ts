@@ -1,4 +1,4 @@
-import { CoordinatorContract, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
+import { CoordinatorContract, CoordinatorRevertErrors, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     BlockchainBalanceStore,
@@ -20,7 +20,7 @@ import {
     provider,
     verifyEvents,
 } from '@0x/contracts-test-utils';
-import { CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';

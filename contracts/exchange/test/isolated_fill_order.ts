@@ -1,9 +1,10 @@
-import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
+import { LibMathRevertErrors, ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, hexRandom } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, LibMathRevertErrors } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
+
+import { ExchangeRevertErrors } from '../src';
 
 import {
     AssetBalances,

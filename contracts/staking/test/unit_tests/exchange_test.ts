@@ -1,10 +1,10 @@
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import {
     artifacts,
+    StakingRevertErrors,
     TestExchangeManagerContract,
     TestExchangeManagerExchangeAddedEventArgs,
     TestExchangeManagerExchangeRemovedEventArgs,

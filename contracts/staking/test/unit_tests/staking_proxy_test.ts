@@ -1,11 +1,11 @@
 import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
     artifacts,
     StakingProxyEvents,
+    StakingRevertErrors,
     TestProxyDestinationContract,
     TestProxyDestinationEvents,
     TestStakingProxyUnitContract,

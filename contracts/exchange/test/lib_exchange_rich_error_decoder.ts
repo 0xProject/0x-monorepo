@@ -7,11 +7,11 @@ import {
     orderUtils,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibExchangeRichErrorDecoderContract } from '../src';
+import { artifacts, ExchangeRevertErrors, TestLibExchangeRichErrorDecoderContract } from '../src';
 
 blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
     const ASSET_PROXY_ID_LENGTH = 4;

@@ -8,7 +8,6 @@ import {
     filterLogsToArguments,
     provider,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { AuthorizableRevertErrors, BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -17,6 +16,7 @@ import { constants as stakingConstants } from '../utils/constants';
 
 import {
     artifacts,
+    StakingRevertErrors,
     ZrxVaultContract,
     ZrxVaultDepositEventArgs,
     ZrxVaultInCatastrophicFailureModeEventArgs,

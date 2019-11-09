@@ -17,6 +17,10 @@
             {
                 "note": "Removed function isValidOrderHash from export orderHashUtils",
                 "pr": 2321
+            },
+            {
+                "note": "Removed exports CoordinatorRevertErrors, ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors and StakingRevertErrors",
+                "pr": 2321
             }
         ]
     },

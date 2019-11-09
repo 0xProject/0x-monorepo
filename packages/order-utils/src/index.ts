@@ -1,9 +1,3 @@
-export import CoordinatorRevertErrors = require('./coordinator_revert_errors');
-export import ExchangeRevertErrors = require('./exchange_revert_errors');
-export import ForwarderRevertErrors = require('./forwarder_revert_errors');
-export import LibMathRevertErrors = require('./lib_math_revert_errors');
-export import StakingRevertErrors = require('./staking_revert_errors');
-
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';

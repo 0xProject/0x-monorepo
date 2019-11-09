@@ -1,7 +1,6 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract, ExchangeRevertErrors, ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { ExchangeRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
