@@ -168,7 +168,7 @@ Retrieve the order we just posted:
 >>> relayer.get_order("0x" + order_hash_hex)
 {'meta_data': {'orderHash': '0x...',
                'remainingFillableTakerAssetAmount': '2'},
- 'order': {'chainId': 50,
+ 'order': {'chainId': 1337,
            'exchangeAddress': '0x...',
            'expirationTimeSeconds': '...',
            'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -195,7 +195,7 @@ of the one we just posted:
 >>> relayer.get_orders()
 {'records': [{'meta_data': {'orderHash': '0x...',
                             'remainingFillableTakerAssetAmount': '2'},
-              'order': {'chainId': 50,
+              'order': {'chainId': 1337,
                         'exchangeAddress': '0x...',
                         'expirationTimeSeconds': '...',
                         'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -255,7 +255,7 @@ consists just of our order):
 {'asks': {'records': [...]},
  'bids': {'records': [{'meta_data': {'orderHash': '0x...',
                                      'remainingFillableTakerAssetAmount': '2'},
-                       'order': {'chainId': 50,
+                       'order': {'chainId': 1337,
                                  'exchangeAddress': '0x...',
                                  'expirationTimeSeconds': '...',
                                  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -280,7 +280,7 @@ Select an order from the orderbook
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)
-{'chainId': 50,
+{'chainId': 1337,
  'expirationTimeSeconds': ...,
  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',

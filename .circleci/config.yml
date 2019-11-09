@@ -219,7 +219,7 @@ jobs:
             - image: 0xorg/launch-kit-backend:v3
               environment:
                   RPC_URL: 'http://localhost:8545'
-                  NETWORK_ID: 50
+                  CHAIN_ID: 1337
                   WHITELIST_ALL_TOKENS: True
                   FEE_RECIPIENT: '0x0000000000000000000000000000000000000001'
                   MAKER_FEE_UNIT_AMOUNT: 0
