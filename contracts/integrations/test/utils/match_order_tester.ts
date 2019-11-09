@@ -149,6 +149,7 @@ export class MatchOrderTester {
             expectedTransferAmounts,
             this._devUtils,
         );
+
         const expectedResults = convertToBatchMatchResults(expectedBatchMatchResults);
         expect(actualBatchMatchResults).to.be.eql(expectedResults);
 
