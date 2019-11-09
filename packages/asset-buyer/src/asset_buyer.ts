@@ -77,7 +77,8 @@ export class AssetBuyer {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
         const chainId = options.chainId || constants.DEFAULT_ASSET_BUYER_OPTS.chainId;
-        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, chainId);
+        // HACK: asset-buy will be deleted, but do not pass in chainId to allow everything to compile.
+        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
