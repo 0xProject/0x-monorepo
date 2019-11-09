@@ -5,7 +5,10 @@
         "rootDir": ".",
         "resolveJsonModule": true
     },
-    "include": ["./src/**/*", "./test/**/*"],
+    "include": [
+        "./src/**/*",
+        "./test/**/*"
+    ],
     "files": [
         "./schemas/address_schema.json",
         "./schemas/number_schema.json",
@@ -50,7 +53,6 @@
         "./schemas/orderbook_request_schema.json",
         "./schemas/orders_request_opts_schema.json",
         "./schemas/paged_request_opts_schema.json",
-        "./schemas/request_opts_schema.json",
         "./schemas/order_config_request_schema.json"
     ]
 }

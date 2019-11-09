@@ -5,12 +5,10 @@ import { MethodAbi } from 'ethereum-types';
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
- * chainId: The chainId that the desired orders should be for.
  */
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    chainId: number;
 }
 
 /**
@@ -111,14 +109,14 @@ export interface ForwarderSmartContractParamsBase {
 
 export interface ForwarderMarketBuySmartContractParams
     extends ExchangeMarketBuySmartContractParams,
-        ForwarderSmartContractParamsBase {}
+    ForwarderSmartContractParamsBase { }
 
 // Temporary fix until typescript is upgraded to ^3.5
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 export interface ForwarderMarketSellSmartContractParams
     extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
-        ForwarderSmartContractParamsBase {}
+    ForwarderSmartContractParamsBase { }
 
 /**
  * Represents all the parameters to interface with 0x forwarder extension contract marketSell and marketBuy functions.
@@ -157,7 +155,7 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOptsBase {}
+export interface SwapQuoteGetOutputOptsBase { }
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
@@ -196,12 +194,12 @@ export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts 
     useExtensionContract: ExtensionContractType;
 }
 
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase { }
 
 /**
  * Represents the options for executing a swap quote with SwapQuoteConsumer
  */
-export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
+export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts { }
 
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
@@ -242,9 +240,9 @@ export interface SwapQuoteWithAffiliateFeeBase {
     feePercentage: number;
 }
 
-export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketSellSwapQuote {}
+export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketSellSwapQuote { }
 
-export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote {}
+export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote { }
 
 export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
 

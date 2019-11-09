@@ -24,19 +24,23 @@ const baseUnitAmount = (unitAmount: number, decimals = TOKEN_DECIMALS): BigNumbe
 describe('utils', () => {
     // orders
     const sellTwoTokensFor1Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
+        chainId: 42,
         makerAssetAmount: baseUnitAmount(2),
         takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
     });
     const sellTenTokensFor10Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
+        chainId: 42,
         makerAssetAmount: baseUnitAmount(10),
         takerAssetAmount: baseUnitAmount(10, WETH_DECIMALS),
     });
     const sellTwoTokensFor1WethWithTwoTokenFee: SignedOrder = orderFactory.createSignedOrderFromPartial({
+        chainId: 42,
         makerAssetAmount: baseUnitAmount(2),
         takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
         takerFee: baseUnitAmount(2),
     });
     const sellTenTokensFor1WethWithFourTokenFee: SignedOrder = orderFactory.createSignedOrderFromPartial({
+        chainId: 42,
         makerAssetAmount: baseUnitAmount(2),
         takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
         takerFee: baseUnitAmount(4),
