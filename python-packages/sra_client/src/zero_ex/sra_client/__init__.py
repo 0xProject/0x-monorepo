@@ -38,9 +38,24 @@ To replicate this setup, one could run the following commands:
 
     docker run -d -p 8545:8545 0xorg/ganache-cli
 
+    docker run -d -p 60557:60557 --network host \
+        -e ETHEREUM_RPC_URL=http://localhost:8545 \
+        -e ETHEREUM_NETWORK_ID=50 \
+        -e ETHEREUM_CHAIN_ID=1337 \
+        -e USE_BOOTSTRAP_LIST=false \
+        -e VERBOSITY=3 \
+        -e PRIVATE_KEY_PATH= \
+        -e BLOCK_POLLING_INTERVAL=5s \
+        -e P2P_LISTEN_PORT=60557
+        0xorg/mesh:6.0.0-beta-0xv3
+
     docker run -d --network host \
         -e RPC_URL=http://localhost:8545 \
-        -e NETWORK_ID=50 \
+        -e CHAIN_ID=1337 \
+        -e FEE_RECIPIENT=0x0000000000000000000000000000000000000001 \
+        -e MAKER_FEE_UNIT_AMOUNT=0 \
+        -e TAKER_FEE_UNIT_AMOUNT=0
+        -e MESH_ENDPOINT=ws://localhost:60557
         -e WHITELIST_ALL_TOKENS=True \
         0xorg/launch-kit-ci
 
@@ -168,7 +183,7 @@ Retrieve the order we just posted:
 >>> relayer.get_order("0x" + order_hash_hex)
 {'meta_data': {'orderHash': '0x...',
                'remainingFillableTakerAssetAmount': '2'},
- 'order': {'chainId': 50,
+ 'order': {'chainId': 1337,
            'exchangeAddress': '0x...',
            'expirationTimeSeconds': '...',
            'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -195,7 +210,7 @@ of the one we just posted:
 >>> relayer.get_orders()
 {'records': [{'meta_data': {'orderHash': '0x...',
                             'remainingFillableTakerAssetAmount': '2'},
-              'order': {'chainId': 50,
+              'order': {'chainId': 1337,
                         'exchangeAddress': '0x...',
                         'expirationTimeSeconds': '...',
                         'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -255,7 +270,7 @@ consists just of our order):
 {'asks': {'records': [...]},
  'bids': {'records': [{'meta_data': {'orderHash': '0x...',
                                      'remainingFillableTakerAssetAmount': '2'},
-                       'order': {'chainId': 50,
+                       'order': {'chainId': 1337,
                                  'exchangeAddress': '0x...',
                                  'expirationTimeSeconds': '...',
                                  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -280,7 +295,7 @@ Select an order from the orderbook
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)
-{'chainId': 50,
+{'chainId': 1337,
  'expirationTimeSeconds': ...,
  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',
