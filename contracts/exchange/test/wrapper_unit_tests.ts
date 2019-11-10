@@ -9,9 +9,9 @@ import {
     orderHashUtils,
     TransactionHelper,
 } from '@0x/contracts-test-utils';
-import { ReferenceFunctions as UtilReferenceFunctions } from '@0x/contracts-utils';
+import { ReferenceFunctions as UtilReferenceFunctions, SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, Order } from '@0x/types';
-import { AnyRevertError, BigNumber, SafeMathRevertErrors, StringRevertError } from '@0x/utils';
+import { AnyRevertError, BigNumber, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';

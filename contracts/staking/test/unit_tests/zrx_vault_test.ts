@@ -8,8 +8,9 @@ import {
     filterLogsToArguments,
     provider,
 } from '@0x/contracts-test-utils';
+import { AuthorizableRevertErrors, SafeMathRevertErrors } from '@0x/contracts-utils';
 import { RevertReason } from '@0x/types';
-import { AuthorizableRevertErrors, BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { constants as stakingConstants } from '../utils/constants';

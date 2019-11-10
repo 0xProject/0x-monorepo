@@ -1,5 +1,6 @@
 import { blockchainTests, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
+import { AuthorizableRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 

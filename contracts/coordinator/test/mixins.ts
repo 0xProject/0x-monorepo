@@ -8,9 +8,10 @@ import {
     randomAddress,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
+import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 
 import { ApprovalFactory, artifacts, CoordinatorContract, CoordinatorRevertErrors } from '../src';
 

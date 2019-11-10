@@ -6,7 +6,8 @@ import {
     testCombinatoriallyWithReferenceFunc,
     uint256Values,
 } from '@0x/contracts-test-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 
 import { artifacts, LibMathRevertErrors, ReferenceFunctions, TestLibMathContract } from '../src';
 

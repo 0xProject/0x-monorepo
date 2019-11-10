@@ -1,5 +1,6 @@
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber, OwnableRevertErrors } from '@0x/utils';
+import { OwnableRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {

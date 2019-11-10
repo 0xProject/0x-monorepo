@@ -6,7 +6,8 @@ import {
     hexRandom,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 
 import { artifacts, TestMixinStakeBalancesContract } from '../../src';
 import { constants as stakingConstants } from '../utils/constants';

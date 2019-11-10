@@ -1,5 +1,4 @@
-import { BigNumber } from './configured_bignumber';
-import { RevertError } from './revert_error';
+import { BigNumber, RevertError } from '@0x/utils';
 
 export class MismanagedMemoryError extends RevertError {
     constructor(freeMemPtr?: BigNumber, addressArrayEndPtr?: BigNumber) {

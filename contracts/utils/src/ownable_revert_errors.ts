@@ -1,4 +1,4 @@
-import { RevertError } from './revert_error';
+import { RevertError } from '@0x/utils';
 
 // tslint:disable:max-classes-per-file
 export class OnlyOwnerError extends RevertError {

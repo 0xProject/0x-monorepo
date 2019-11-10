@@ -1,10 +1,10 @@
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import BN = require('bn.js');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibBytesContract } from '../src';
+import { artifacts, LibBytesRevertErrors, TestLibBytesContract } from '../src';
 
 // BUG: Ideally we would use fromHex(memory).toString('hex')
 // https://github.com/Microsoft/TypeScript/issues/23155

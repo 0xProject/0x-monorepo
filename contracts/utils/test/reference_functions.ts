@@ -1,6 +1,6 @@
 import { constants, describe, expect } from '@0x/contracts-test-utils';
-import { SafeMathRevertErrors } from '@0x/utils';
 
+import { SafeMathRevertErrors } from '../src';
 import { safeAdd, safeDiv, safeMul, safeSub } from '../src/reference_functions';
 
 describe('Reference Functions', () => {

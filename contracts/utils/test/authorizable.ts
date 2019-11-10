@@ -1,10 +1,10 @@
 import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { AuthorizableRevertErrors, BigNumber, OwnableRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, AuthorizableContract } from '../src';
+import { artifacts, AuthorizableContract, AuthorizableRevertErrors, OwnableRevertErrors } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

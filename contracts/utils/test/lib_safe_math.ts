@@ -1,8 +1,8 @@
 import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibSafeMathContract } from '../src';
+import { artifacts, SafeMathRevertErrors, TestLibSafeMathContract } from '../src';
 import * as ReferenceFunctions from '../src/reference_functions';
 
 function toBigNumber(a: number | string): BigNumber {

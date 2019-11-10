@@ -1,6 +1,7 @@
 import { blockchainTests, constants, expect, getLatestBlockTimestampAsync, hexRandom } from '@0x/contracts-test-utils';
+import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 

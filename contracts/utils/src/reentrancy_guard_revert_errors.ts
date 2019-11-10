@@ -1,4 +1,4 @@
-import { RevertError } from './revert_error';
+import { RevertError } from '@0x/utils';
 
 export class IllegalReentrancyError extends RevertError {
     constructor() {

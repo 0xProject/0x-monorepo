@@ -3,7 +3,7 @@
         "version": "1.1.0-beta.2",
         "changes": [
             {
-                "note": "Introduce new export StakingRevertErrors",
+                "note": "Introduce new exports FixedMathRevertErrors and StakingRevertErrors",
                 "pr": 2321
             }
         ]

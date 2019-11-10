@@ -1,11 +1,3 @@
-export import AuthorizableRevertErrors = require('./authorizable_revert_errors');
-export import FixedMathRevertErrors = require('./fixed_math_revert_errors');
-export import LibAddressArrayRevertErrors = require('./lib_address_array_revert_errors');
-export import LibBytesRevertErrors = require('./lib_bytes_revert_errors');
-export import OwnableRevertErrors = require('./ownable_revert_errors');
-export import ReentrancyGuardRevertErrors = require('./reentrancy_guard_revert_errors');
-export import SafeMathRevertErrors = require('./safe_math_revert_errors');
-
 export { promisify } from './promisify';
 export { addressUtils } from './address_utils';
 export { classUtils } from './class_utils';

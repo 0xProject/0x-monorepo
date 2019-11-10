@@ -1,7 +1,12 @@
 import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { OwnableRevertErrors } from '@0x/utils';
 
-import { artifacts, IOwnableEvents, IOwnableOwnershipTransferredEventArgs, TestOwnableContract } from '../src';
+import {
+    artifacts,
+    IOwnableEvents,
+    IOwnableOwnershipTransferredEventArgs,
+    OwnableRevertErrors,
+    TestOwnableContract,
+} from '../src';
 
 blockchainTests.resets('Ownable', env => {
     let ownable: TestOwnableContract;
