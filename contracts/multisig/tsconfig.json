@@ -8,7 +8,13 @@
         "generated-artifacts/MultiSigWalletWithTimeLock.json",
         "generated-artifacts/TestRejectEther.json",
         "generated-artifacts/TestZeroExGovernor.json",
-        "generated-artifacts/ZeroExGovernor.json"
+        "generated-artifacts/ZeroExGovernor.json",
+        "test/generated-artifacts/ContractCallReceiver.json",
+        "test/generated-artifacts/MultiSigWallet.json",
+        "test/generated-artifacts/MultiSigWalletWithTimeLock.json",
+        "test/generated-artifacts/TestRejectEther.json",
+        "test/generated-artifacts/TestZeroExGovernor.json",
+        "test/generated-artifacts/ZeroExGovernor.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

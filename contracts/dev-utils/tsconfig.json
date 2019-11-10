@@ -8,7 +8,13 @@
         "generated-artifacts/LibAssetData.json",
         "generated-artifacts/LibTransactionDecoder.json",
         "generated-artifacts/OrderTransferSimulationUtils.json",
-        "generated-artifacts/OrderValidationUtils.json"
+        "generated-artifacts/OrderValidationUtils.json",
+        "test/generated-artifacts/DevUtils.json",
+        "test/generated-artifacts/EthBalanceChecker.json",
+        "test/generated-artifacts/LibAssetData.json",
+        "test/generated-artifacts/LibTransactionDecoder.json",
+        "test/generated-artifacts/OrderTransferSimulationUtils.json",
+        "test/generated-artifacts/OrderValidationUtils.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

@@ -91,13 +91,13 @@ contracts/coordinator/test/generated-artifacts/
 contracts/exchange/generated-artifacts/
 contracts/exchange/test/generated-artifacts/
 contracts/asset-proxy/generated-artifacts/
-contracts/asset/test-proxy/generated-artifacts/
+contracts/asset-proxy/test/generated-artifacts/
 contracts/multisig/generated-artifacts/
 contracts/multisig/test/generated-artifacts/
 contracts/utils/generated-artifacts/
 contracts/utils/test/generated-artifacts/
 contracts/exchange-libs/generated-artifacts/
-contracts/exchange/test-libs/generated-artifacts/
+contracts/exchange-libs/test/generated-artifacts/
 contracts/erc20/generated-artifacts/
 contracts/erc20/test/generated-artifacts/
 contracts/erc721/generated-artifacts/
@@ -107,9 +107,9 @@ contracts/erc1155/test/generated-artifacts/
 contracts/extensions/generated-artifacts/
 contracts/extensions/test/generated-artifacts/
 contracts/exchange-forwarder/generated-artifacts/
-contracts/exchange/test-forwarder/generated-artifacts/
+contracts/exchange-forwarder/test/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
-contracts/dev/test-utils/generated-artifacts/
+contracts/dev-utils/test/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
@@ -139,13 +139,13 @@ contracts/coordinator/test/generated-wrappers/
 contracts/exchange/generated-wrappers/
 contracts/exchange/test/generated-wrappers/
 contracts/asset-proxy/generated-wrappers/
-contracts/asset/test-proxy/generated-wrappers/
+contracts/asset-proxy/test/generated-wrappers/
 contracts/multisig/generated-wrappers/
 contracts/multisig/test/generated-wrappers/
 contracts/utils/generated-wrappers/
 contracts/utils/test/generated-wrappers/
 contracts/exchange-libs/generated-wrappers/
-contracts/exchange/test-libs/generated-wrappers/
+contracts/exchange-libs/test/generated-wrappers/
 contracts/erc20/generated-wrappers/
 contracts/erc20/test/generated-wrappers/
 contracts/erc721/generated-wrappers/
@@ -155,9 +155,9 @@ contracts/erc1155/test/generated-wrappers/
 contracts/extensions/generated-wrappers/
 contracts/extensions/test/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
-contracts/exchange/test-forwarder/generated-wrappers/
+contracts/exchange-forwarder/test/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
-contracts/dev/test-utils/generated-wrappers/
+contracts/dev-utils/test/generated-wrappers/
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dev_utils/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py

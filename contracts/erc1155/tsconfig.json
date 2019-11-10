@@ -9,7 +9,14 @@
         "generated-artifacts/IERC1155.json",
         "generated-artifacts/IERC1155Mintable.json",
         "generated-artifacts/IERC1155Receiver.json",
-        "generated-artifacts/MixinNonFungibleToken.json"
+        "generated-artifacts/MixinNonFungibleToken.json",
+        "test/generated-artifacts/DummyERC1155Receiver.json",
+        "test/generated-artifacts/ERC1155.json",
+        "test/generated-artifacts/ERC1155Mintable.json",
+        "test/generated-artifacts/IERC1155.json",
+        "test/generated-artifacts/IERC1155Mintable.json",
+        "test/generated-artifacts/IERC1155Receiver.json",
+        "test/generated-artifacts/MixinNonFungibleToken.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

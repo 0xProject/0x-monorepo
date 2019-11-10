@@ -16,7 +16,21 @@
         "generated-artifacts/UnlimitedAllowanceERC20Token.json",
         "generated-artifacts/UntransferrableDummyERC20Token.json",
         "generated-artifacts/WETH9.json",
-        "generated-artifacts/ZRXToken.json"
+        "generated-artifacts/ZRXToken.json",
+        "test/generated-artifacts/DummyERC20Token.json",
+        "test/generated-artifacts/DummyMultipleReturnERC20Token.json",
+        "test/generated-artifacts/DummyNoReturnERC20Token.json",
+        "test/generated-artifacts/ERC20Token.json",
+        "test/generated-artifacts/IERC20Token.json",
+        "test/generated-artifacts/IEtherToken.json",
+        "test/generated-artifacts/LibERC20Token.json",
+        "test/generated-artifacts/MintableERC20Token.json",
+        "test/generated-artifacts/TestLibERC20Token.json",
+        "test/generated-artifacts/TestLibERC20TokenTarget.json",
+        "test/generated-artifacts/UnlimitedAllowanceERC20Token.json",
+        "test/generated-artifacts/UntransferrableDummyERC20Token.json",
+        "test/generated-artifacts/WETH9.json",
+        "test/generated-artifacts/ZRXToken.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }
