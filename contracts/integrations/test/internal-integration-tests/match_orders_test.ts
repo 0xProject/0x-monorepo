@@ -1,8 +1,7 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, TokenIds } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { toBaseUnitAmount } from '@0x/contracts-staking';
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { Order, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
