@@ -147,7 +147,7 @@ blockchainTests.resets.only('matchOrders', env => {
             tokenIds,
         );
 
-        matchOrderTester = new MatchOrderTester(deployment, blockchainBalanceStore);
+        matchOrderTester = new MatchOrderTester(deployment, devUtils, blockchainBalanceStore);
     });
 
     async function testMatchOrdersAsync(
@@ -1097,7 +1097,8 @@ blockchainTests.resets.only('matchOrders', env => {
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
-            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+            const signedOrderRight = await makerRight.signOrderAsync({
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressRight),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -1131,8 +1132,8 @@ blockchainTests.resets.only('matchOrders', env => {
 
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
-            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress).callAsync(),
+            const signedOrderLeft = await makerLeft.signOrderAsync({
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressLeft),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
@@ -2010,7 +2011,7 @@ blockchainTests.resets.only('matchOrders', env => {
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await makerRight.signOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressRight),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -2043,7 +2044,7 @@ blockchainTests.resets.only('matchOrders', env => {
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressLeft),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });

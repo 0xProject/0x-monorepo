@@ -1,7 +1,7 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
 import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { orderHashUtils } from '@0x/order-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -110,7 +110,7 @@ export class MatchOrderTester {
         // Update the blockchain balance store and create a new local balance store
         // with the same initial balances.
         await this._blockchainBalanceStore.updateBalancesAsync();
-        const localBalanceStore = LocalBalanceStore.create(this._blockchainBalanceStore);
+        const localBalanceStore = LocalBalanceStore.create(this._devUtils, this._blockchainBalanceStore);
 
         // Execute `batchMatchOrders()`
         let actualBatchMatchResults;
@@ -187,7 +187,7 @@ export class MatchOrderTester {
         // Update the blockchain balance store and create a new local balance store
         // with the same initial balances.
         await this._blockchainBalanceStore.updateBalancesAsync();
-        const localBalanceStore = LocalBalanceStore.create(this._blockchainBalanceStore);
+        const localBalanceStore = LocalBalanceStore.create(this._devUtils, this._blockchainBalanceStore);
 
         // Execute `matchOrders()`
         let actualMatchResults;
@@ -447,7 +447,7 @@ async function simulateMatchOrdersAsync(
     };
 
     // Right maker asset -> left maker
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         orders.rightOrder.makerAddress,
         orders.leftOrder.makerAddress,
         transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
@@ -456,7 +456,7 @@ async function simulateMatchOrdersAsync(
 
     if (orders.leftOrder.makerAddress !== orders.leftOrder.feeRecipientAddress) {
         // Left maker fees
-        localBalanceStore.transferAsset(
+        await localBalanceStore.transferAssetAsync(
             orders.leftOrder.makerAddress,
             orders.leftOrder.feeRecipientAddress,
             transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
@@ -465,7 +465,7 @@ async function simulateMatchOrdersAsync(
     }
 
     // Left maker asset -> right maker
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         orders.leftOrder.makerAddress,
         orders.rightOrder.makerAddress,
         transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
@@ -474,7 +474,7 @@ async function simulateMatchOrdersAsync(
 
     if (orders.rightOrder.makerAddress !== orders.rightOrder.feeRecipientAddress) {
         // Right maker fees
-        localBalanceStore.transferAsset(
+        await localBalanceStore.transferAssetAsync(
             orders.rightOrder.makerAddress,
             orders.rightOrder.feeRecipientAddress,
             transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
@@ -483,7 +483,7 @@ async function simulateMatchOrdersAsync(
     }
 
     // Left taker profit
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         orders.leftOrder.makerAddress,
         takerAddress,
         transferAmounts.leftMakerAssetReceivedByTakerAmount,
@@ -491,7 +491,7 @@ async function simulateMatchOrdersAsync(
     );
 
     // Right taker profit
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         orders.rightOrder.makerAddress,
         takerAddress,
         transferAmounts.rightMakerAssetReceivedByTakerAmount,
@@ -499,7 +499,7 @@ async function simulateMatchOrdersAsync(
     );
 
     // Left taker fees
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         takerAddress,
         orders.leftOrder.feeRecipientAddress,
         transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
@@ -507,7 +507,7 @@ async function simulateMatchOrdersAsync(
     );
 
     // Right taker fees
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         takerAddress,
         orders.rightOrder.feeRecipientAddress,
         transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
@@ -515,7 +515,7 @@ async function simulateMatchOrdersAsync(
     );
 
     // Protocol Fee
-    const wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
+    const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address);
     localBalanceStore.sendEth(
         takerAddress,
         deployment.staking.stakingProxy.address,
@@ -526,13 +526,13 @@ async function simulateMatchOrdersAsync(
         deployment.staking.stakingProxy.address,
         transferAmounts.rightProtocolFeePaidByTakerInEthAmount,
     );
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         takerAddress,
         deployment.staking.stakingProxy.address,
         transferAmounts.leftProtocolFeePaidByTakerInWethAmount,
         wethAssetData,
     );
-    localBalanceStore.transferAsset(
+    await localBalanceStore.transferAssetAsync(
         takerAddress,
         deployment.staking.stakingProxy.address,
         transferAmounts.rightProtocolFeePaidByTakerInWethAmount,
