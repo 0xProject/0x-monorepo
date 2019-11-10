@@ -1,3 +1,4 @@
+import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
 import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
@@ -73,9 +74,10 @@ export class MatchOrderTester {
      * Constructs new MatchOrderTester.
      */
     constructor(
-        private readonly _deployment: DeploymentManager,
-        private readonly _devUtils: DevUtilsContract,
-        private readonly _blockchainBalanceStore: BlockchainBalanceStore,
+        protected readonly _assetDataEncoder: IAssetDataContract,
+        protected readonly _deployment: DeploymentManager,
+        protected readonly _devUtils: DevUtilsContract,
+        protected readonly _blockchainBalanceStore: BlockchainBalanceStore,
     ) {}
 
     /**
@@ -147,7 +149,7 @@ export class MatchOrderTester {
             localBalanceStore,
             matchPairs,
             expectedTransferAmounts,
-            this._devUtils,
+            this._assetDataEncoder,
         );
 
         const expectedResults = convertToBatchMatchResults(expectedBatchMatchResults);
@@ -219,7 +221,7 @@ export class MatchOrderTester {
             takerAddress,
             this._deployment,
             toFullMatchTransferAmounts(expectedTransferAmounts),
-            this._devUtils,
+            this._assetDataEncoder,
             this._blockchainBalanceStore,
             localBalanceStore,
         );
@@ -300,7 +302,7 @@ async function simulateBatchMatchOrdersAsync(
     localBalanceStore: LocalBalanceStore,
     matchPairs: Array<[number, number]>,
     transferAmounts: Array<Partial<MatchTransferAmounts>>,
-    devUtils: DevUtilsContract,
+    assetDataEncoder: IAssetDataContract,
 ): Promise<BatchMatchResults> {
     // Initialize variables
     let leftIdx = 0;
@@ -362,7 +364,7 @@ async function simulateBatchMatchOrdersAsync(
                 takerAddress,
                 deployment,
                 toFullMatchTransferAmounts(transferAmounts[i]),
-                devUtils,
+                assetDataEncoder,
                 blockchainBalanceStore,
                 localBalanceStore,
             ),
@@ -425,7 +427,7 @@ async function simulateMatchOrdersAsync(
     takerAddress: string,
     deployment: DeploymentManager,
     transferAmounts: MatchTransferAmounts,
-    devUtils: DevUtilsContract,
+    assetDataEncoder: IAssetDataContract,
     blockchainBalanceStore: BlockchainBalanceStore,
     localBalanceStore: LocalBalanceStore,
 ): Promise<MatchResults> {
@@ -515,7 +517,7 @@ async function simulateMatchOrdersAsync(
     );
 
     // Protocol Fee
-    const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address);
+    const wethAssetData = assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.weth.address);
     localBalanceStore.sendEth(
         takerAddress,
         deployment.staking.stakingProxy.address,

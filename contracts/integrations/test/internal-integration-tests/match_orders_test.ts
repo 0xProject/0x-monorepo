@@ -1,8 +1,9 @@
+import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BlockchainBalanceStore, TokenIds } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { Order, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -36,10 +37,11 @@ blockchainTests.resets.only('matchOrders', env => {
 
     let deployment: DeploymentManager;
     let matchOrderTester: MatchOrderTester;
-
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     let leftId: BigNumber;
     let rightId: BigNumber;
+
+    const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
 
     const PROTOCOL_FEE = DeploymentManager.protocolFeeMultiplier.times(constants.DEFAULT_GAS_PRICE);
 
@@ -65,9 +67,9 @@ blockchainTests.resets.only('matchOrders', env => {
         });
 
         // Encode the asset data.
-        makerAssetDataLeft = assetDataUtils.encodeERC20AssetData(makerAssetAddressLeft);
-        makerAssetDataRight = assetDataUtils.encodeERC20AssetData(makerAssetAddressRight);
-        feeAssetData = assetDataUtils.encodeERC20AssetData(feeAssetAddress);
+        makerAssetDataLeft = assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressLeft);
+        makerAssetDataRight = assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressRight);
+        feeAssetData = assetDataEncoder.ERC20Token.getABIEncodedTransactionData(feeAssetAddress);
 
         // Create two market makers with compatible orders for matching.
         makerLeft = new Maker({
@@ -146,9 +148,12 @@ blockchainTests.resets.only('matchOrders', env => {
             tokenIds,
         );
 
-        matchOrderTester = new MatchOrderTester(deployment, devUtils, blockchainBalanceStore);
+        matchOrderTester = new MatchOrderTester(assetDataEncoder, deployment, devUtils, blockchainBalanceStore);
     });
 
+    /**
+     * Tests an order matching scenario with both eth and weth protocol fees.
+     */
     async function testMatchOrdersAsync(
         leftOrder: Partial<Order>,
         rightOrder: Partial<Order>,
@@ -174,26 +179,6 @@ blockchainTests.resets.only('matchOrders', env => {
             },
             matcherAddress || matcher.address,
             PROTOCOL_FEE.times(2),
-            withMaximalFill,
-        );
-
-        await env.blockchainLifecycle.revertAsync();
-        await env.blockchainLifecycle.startAsync();
-
-        await matchOrderTester.matchOrdersAndAssertEffectsAsync(
-            {
-                leftOrder: signedOrderLeft,
-                rightOrder: signedOrderRight,
-            },
-            {
-                ...expectedTransferAmounts,
-                leftProtocolFeePaidByTakerInEthAmount: PROTOCOL_FEE,
-                rightProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
-                leftProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
-                rightProtocolFeePaidByTakerInWethAmount: PROTOCOL_FEE,
-            },
-            matcherAddress || matcher.address,
-            PROTOCOL_FEE,
             withMaximalFill,
         );
 
@@ -1097,7 +1082,7 @@ blockchainTests.resets.only('matchOrders', env => {
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await makerRight.signOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressRight),
+                takerAssetData: assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressRight),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -1132,7 +1117,7 @@ blockchainTests.resets.only('matchOrders', env => {
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressLeft),
+                takerAssetData: assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressLeft),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
@@ -2010,7 +1995,7 @@ blockchainTests.resets.only('matchOrders', env => {
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await makerRight.signOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressRight),
+                takerAssetData: assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressRight),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -2043,7 +2028,7 @@ blockchainTests.resets.only('matchOrders', env => {
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerAssetAddressLeft),
+                takerAssetData: assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressLeft),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
@@ -2229,6 +2214,9 @@ blockchainTests.resets.only('matchOrders', env => {
         matcherAddress?: string;
     }
 
+    /**
+     * Tests a batch order matching scenario with both eth and weth protocol fees.
+     */
     async function testBatchMatchOrdersAsync(args: TestBatchMatchOrdersArgs): Promise<void> {
         const signedLeftOrders = await Promise.all(args.leftOrders.map(async order => makerLeft.signOrderAsync(order)));
         const signedRightOrders = await Promise.all(
@@ -2750,13 +2738,13 @@ blockchainTests.resets.only('matchOrders', env => {
 
     describe('token sanity checks', () => {
         it('should be able to match ERC721 tokens with ERC1155 tokens', async () => {
-            const leftMakerAssetData = assetDataUtils.encodeERC1155AssetData(
+            const leftMakerAssetData = assetDataEncoder.ERC1155Assets.getABIEncodedTransactionData(
                 deployment.tokens.erc1155[0].address,
                 [leftId],
                 [new BigNumber(1)],
                 '0x',
             );
-            const rightMakerAssetData = assetDataUtils.encodeERC721AssetData(
+            const rightMakerAssetData = assetDataEncoder.ERC721Token.getABIEncodedTransactionData(
                 deployment.tokens.erc721[0].address,
                 rightId,
             );
