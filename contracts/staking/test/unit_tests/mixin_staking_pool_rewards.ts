@@ -14,7 +14,7 @@ import {
 import { BigNumber } from '@0x/utils';
 import { LogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { StoredBalance } from '../utils/types';
+import { StoredBalance } from '../../src/types';
 
 import { artifacts } from '../artifacts';
 import { TestMixinStakingPoolRewardsContract, TestMixinStakingPoolRewardsEvents as Events } from '../wrappers';

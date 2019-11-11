@@ -2,7 +2,7 @@ import { blockchainTests, constants, expect, randomAddress } from '@0x/contracts
 import { transactionHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { hashUtils } from './utils/hash_utils';
+import { hashUtils } from '../src/hash_utils';
 
 import { artifacts } from './artifacts';
 

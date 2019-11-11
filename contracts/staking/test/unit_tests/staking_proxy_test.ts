@@ -11,7 +11,7 @@ import {
     TestStakingProxyUnitContract,
 } from '../wrappers';
 
-import { constants as stakingConstants } from '../utils/constants';
+import { constants as stakingConstants } from '.../src/constants';
 
 blockchainTests.resets('StakingProxy unit tests', env => {
     const testString = 'Hello, World!';

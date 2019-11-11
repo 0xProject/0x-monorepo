@@ -29,12 +29,12 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { ERC1155ProxyWrapper } from '../src/erc1155_proxy_wrapper';
+import { ERC20Wrapper } from '../src/erc20_wrapper';
+import { ERC721Wrapper } from '../src/erc721_wrapper';
 import { ERC1155ProxyContract, ERC20ProxyContract, ERC721ProxyContract } from '../src/wrappers';
 
 import { artifacts } from './artifacts';
-import { ERC1155ProxyWrapper } from './utils/erc1155_proxy_wrapper';
-import { ERC20Wrapper } from './utils/erc20_wrapper';
-import { ERC721Wrapper } from './utils/erc721_wrapper';
 import { IAssetDataContract, IAssetProxyContract, MultiAssetProxyContract } from './wrappers';
 
 chaiSetup.configure();

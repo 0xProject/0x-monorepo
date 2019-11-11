@@ -3,7 +3,7 @@ import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { constants as stakingConstants } from './utils/constants';
+import { constants as stakingConstants } from '../src/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('Epochs', env => {

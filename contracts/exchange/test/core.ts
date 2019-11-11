@@ -40,7 +40,8 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeWrapper, ValidatorWalletAction } from './utils';
+import { ValidatorWalletAction } from './utils/constants';
+import { ExchangeWrapper } from './utils/exchange_wrapper';
 
 import { artifacts } from './artifacts';
 import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';

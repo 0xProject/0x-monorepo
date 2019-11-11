@@ -2,7 +2,7 @@ import { blockchainTests, constants, expect, filterLogsToArguments, getRandomInt
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { FunctionAssertion, Result } from '../utils/function_assertions';
+import { FunctionAssertion, Result } from '../../src/function_assertions';
 
 import { artifacts } from '../artifacts';
 import { TestFrameworkContract, TestFrameworkEventEventArgs, TestFrameworkEvents } from '../wrappers';

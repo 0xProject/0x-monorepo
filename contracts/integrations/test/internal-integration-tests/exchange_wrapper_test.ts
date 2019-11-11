@@ -30,7 +30,7 @@ import * as _ from 'lodash';
 
 import { Actor } from '../actors/base';
 import { Maker } from '../actors/maker';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../../src/deployment_manager';
 
 const { addFillResults, safeGetPartialAmountFloor } = ReferenceFunctions;
 

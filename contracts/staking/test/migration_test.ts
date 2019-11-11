@@ -13,7 +13,7 @@ import {
 
 import { artifacts } from './artifacts';
 
-import { constants as stakingConstants } from './utils/constants';
+import { constants as stakingConstants } from '../src/constants';
 
 blockchainTests('Migration tests', env => {
     let authorizedAddress: string;

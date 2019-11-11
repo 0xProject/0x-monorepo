@@ -21,7 +21,7 @@ import { ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../../src/deployment_manager';
 
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';

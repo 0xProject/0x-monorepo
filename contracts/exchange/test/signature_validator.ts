@@ -25,7 +25,7 @@ import {
     TestValidatorWalletContract,
 } from './wrappers';
 
-import { ValidatorWalletAction } from './utils';
+import { ValidatorWalletAction } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('MixinSignatureValidator', env => {

@@ -6,8 +6,8 @@ import * as _ from 'lodash';
 import { artifacts } from '../artifacts';
 import { IStakingEventsParamsSetEventArgs, TestMixinParamsContract } from '../wrappers';
 
-import { constants as stakingConstants } from '../utils/constants';
-import { StakingParams } from '../utils/types';
+import { constants as stakingConstants } from '.../src/constants';
+import { StakingParams } from '../../src/types';
 
 blockchainTests('Configurable Parameters unit tests', env => {
     let testContract: TestMixinParamsContract;

@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 import { ERC1155MintableContract } from '../src/wrappers';
 
 import { artifacts } from './artifacts';
-import { Erc1155Wrapper } from './utils/erc1155_wrapper';
+import { Erc1155Wrapper } from '../src/erc1155_wrapper';
 import { DummyERC1155ReceiverBatchTokenReceivedEventArgs, DummyERC1155ReceiverContract } from './wrappers';
 chaiSetup.configure();
 const expect = chai.expect;

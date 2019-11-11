@@ -19,8 +19,10 @@ import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { exchangeDataEncoder } from '../src/exchange_data_encoder';
+
 import { artifacts as localArtifacts } from './artifacts';
-import { exchangeDataEncoder, ExchangeWrapper } from './utils';
+import { ExchangeWrapper } from './utils/exchange_wrapper';
 import {
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,

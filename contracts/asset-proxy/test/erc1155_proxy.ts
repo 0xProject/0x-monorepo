@@ -23,10 +23,10 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { ERC1155ProxyWrapper } from '../src/erc1155_proxy_wrapper';
 import { ERC1155ProxyContract, IAssetDataContract } from '../src/wrappers';
 
 import { artifacts } from './artifacts';
-import { ERC1155ProxyWrapper } from './utils/erc1155_proxy_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

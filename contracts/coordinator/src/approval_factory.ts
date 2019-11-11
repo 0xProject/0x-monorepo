@@ -1,7 +1,8 @@
 import { hexConcat, signingUtils } from '@0x/contracts-test-utils';
 import { SignatureType, SignedZeroExTransaction } from '@0x/types';
 
-import { hashUtils, SignedCoordinatorApproval } from './index';
+import { hashUtils } from './hash_utils';
+import { SignedCoordinatorApproval } from './types';
 
 export class ApprovalFactory {
     private readonly _privateKey: Buffer;

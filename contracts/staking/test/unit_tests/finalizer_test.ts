@@ -13,7 +13,7 @@ import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { constants as stakingConstants } from '../utils/constants';
+import { constants as stakingConstants } from '.../src/constants';
 import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
 import {

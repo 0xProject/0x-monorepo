@@ -12,7 +12,7 @@ import {
     OperatorShareByPoolId,
     RewardBalanceByPoolId,
     RewardByPoolId,
-} from '../utils/types';
+} from '../../src/types';
 
 import { BaseActor } from './base_actor';
 

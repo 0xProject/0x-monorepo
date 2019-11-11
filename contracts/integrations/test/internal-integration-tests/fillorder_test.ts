@@ -21,7 +21,7 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { actorAddressesByName, FeeRecipient, Maker, OperatorStakerMaker, StakerKeeper, Taker } from '../actors';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../../src/deployment_manager';
 
 const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 blockchainTests.resets('fillOrder integration tests', env => {

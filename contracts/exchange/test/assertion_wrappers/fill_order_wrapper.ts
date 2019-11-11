@@ -16,14 +16,10 @@ import * as _ from 'lodash';
 
 import { ExchangeContract } from '../wrappers';
 
-import {
-    BalanceStore,
-    BlockchainBalanceStore,
-    LocalBalanceStore,
-    TokenContractsByName,
-    TokenIds,
-    TokenOwnersByName,
-} from './../balance_stores';
+import { BalanceStore } from '../../src/balance_stores/balance_store';
+import { BlockchainBalanceStore } from '../../src/balance_stores/blockchain_balance_store';
+import { LocalBalanceStore } from '../../src/balance_stores/local_balance_store';
+import { TokenContractsByName, TokenIds, TokenOwnersByName } from '../../src/balance_stores/types';
 
 export class FillOrderWrapper {
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;

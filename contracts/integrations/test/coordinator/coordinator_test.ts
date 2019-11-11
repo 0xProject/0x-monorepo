@@ -25,7 +25,7 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../../src/deployment_manager';
 
 import { deployCoordinatorAsync } from './deploy_coordinator';
 

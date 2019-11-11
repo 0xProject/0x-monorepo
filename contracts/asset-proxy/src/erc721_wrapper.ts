@@ -5,9 +5,9 @@ import { BigNumber } from '@0x/utils';
 import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../../src/artifacts';
+import { artifacts } from './artifacts';
 
-import { ERC721ProxyContract } from '../../src/wrappers';
+import { ERC721ProxyContract } from './wrappers';
 
 export class ERC721Wrapper {
     private readonly _tokenOwnerAddresses: string[];

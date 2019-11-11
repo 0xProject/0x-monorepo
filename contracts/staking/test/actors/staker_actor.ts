@@ -3,7 +3,7 @@ import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingApiWrapper } from '../utils/api_wrapper';
-import { StakeBalances, StakeInfo, StakeStatus, StoredBalance } from '../utils/types';
+import { StakeBalances, StakeInfo, StakeStatus, StoredBalance } from '../../src/types';
 
 import { BaseActor } from './base_actor';
 

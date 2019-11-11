@@ -13,7 +13,7 @@ import { CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
 
-import { ApprovalFactory } from './utils/approval_factory';
+import { ApprovalFactory } from '../src/approval_factory';
 
 import { artifacts } from './artifacts';
 
