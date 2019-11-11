@@ -2157,10 +2157,11 @@
   dependencies:
     bignumber.js "7.2.1"
 
-"@types/ethereumjs-tx@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/ethereumjs-tx/-/ethereumjs-tx-1.0.0.tgz#ae2ce90a145cc1a6849656db38baf0e793ff7927"
+"@types/ethereumjs-tx@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/ethereumjs-tx/-/ethereumjs-tx-1.0.1.tgz#31a46b858a51ec4395959b2ae37f5064a8688fbd"
   dependencies:
+    "@types/bn.js" "*"
     "@types/node" "*"
 
 "@types/events@*":

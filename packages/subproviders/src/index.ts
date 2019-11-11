@@ -24,6 +24,12 @@ export { LedgerSubprovider } from './subproviders/ledger';
 export { RPCSubprovider } from './subproviders/rpc_subprovider';
 export { GanacheSubprovider } from './subproviders/ganache';
 export { Subprovider } from './subproviders/subprovider';
+export {
+    DebugPayloadRawTransactionAttributes,
+    DebugPayload,
+    DebugSubprovider,
+    WithDebugPayload,
+} from './subproviders/debug_subprovider';
 export { NonceTrackerSubprovider } from './subproviders/nonce_tracker';
 export { PrivateKeyWalletSubprovider } from './subproviders/private_key_wallet';
 export { MnemonicWalletSubprovider } from './subproviders/mnemonic_wallet';
