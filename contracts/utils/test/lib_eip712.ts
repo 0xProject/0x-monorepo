@@ -5,7 +5,8 @@ import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibEIP712Contract } from '../src';
+import { artifacts } from './artifacts';
+import { TestLibEIP712Contract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

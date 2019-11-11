@@ -3,11 +3,7 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/ContractCallReceiver.json",
-        "generated-artifacts/MultiSigWallet.json",
         "generated-artifacts/MultiSigWalletWithTimeLock.json",
-        "generated-artifacts/TestRejectEther.json",
-        "generated-artifacts/TestZeroExGovernor.json",
         "generated-artifacts/ZeroExGovernor.json",
         "test/generated-artifacts/ContractCallReceiver.json",
         "test/generated-artifacts/MultiSigWallet.json",

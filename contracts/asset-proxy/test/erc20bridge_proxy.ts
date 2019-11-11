@@ -14,12 +14,13 @@ import { AbiEncoder, AuthorizableRevertErrors, BigNumber, StringRevertError } fr
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
+
 import {
-    artifacts,
     ERC20BridgeProxyContract,
     TestERC20BridgeBridgeWithdrawToEventArgs,
     TestERC20BridgeContract,
-} from '../src';
+} from './wrappers';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     const PROXY_ID = AssetProxyId.ERC20Bridge;

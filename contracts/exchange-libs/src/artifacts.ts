@@ -8,28 +8,16 @@ import { ContractArtifact } from 'ethereum-types';
 import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as LibEIP712ExchangeDomain from '../generated-artifacts/LibEIP712ExchangeDomain.json';
 import * as LibExchangeRichErrors from '../generated-artifacts/LibExchangeRichErrors.json';
-import * as LibFillResults from '../generated-artifacts/LibFillResults.json';
 import * as LibMath from '../generated-artifacts/LibMath.json';
 import * as LibMathRichErrors from '../generated-artifacts/LibMathRichErrors.json';
 import * as LibOrder from '../generated-artifacts/LibOrder.json';
 import * as LibZeroExTransaction from '../generated-artifacts/LibZeroExTransaction.json';
-import * as TestLibEIP712ExchangeDomain from '../generated-artifacts/TestLibEIP712ExchangeDomain.json';
-import * as TestLibFillResults from '../generated-artifacts/TestLibFillResults.json';
-import * as TestLibMath from '../generated-artifacts/TestLibMath.json';
-import * as TestLibOrder from '../generated-artifacts/TestLibOrder.json';
-import * as TestLibZeroExTransaction from '../generated-artifacts/TestLibZeroExTransaction.json';
 export const artifacts = {
     IWallet: IWallet as ContractArtifact,
     LibEIP712ExchangeDomain: LibEIP712ExchangeDomain as ContractArtifact,
     LibExchangeRichErrors: LibExchangeRichErrors as ContractArtifact,
-    LibFillResults: LibFillResults as ContractArtifact,
     LibMath: LibMath as ContractArtifact,
     LibMathRichErrors: LibMathRichErrors as ContractArtifact,
     LibOrder: LibOrder as ContractArtifact,
     LibZeroExTransaction: LibZeroExTransaction as ContractArtifact,
-    TestLibEIP712ExchangeDomain: TestLibEIP712ExchangeDomain as ContractArtifact,
-    TestLibFillResults: TestLibFillResults as ContractArtifact,
-    TestLibMath: TestLibMath as ContractArtifact,
-    TestLibOrder: TestLibOrder as ContractArtifact,
-    TestLibZeroExTransaction: TestLibZeroExTransaction as ContractArtifact,
 };

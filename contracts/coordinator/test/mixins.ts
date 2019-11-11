@@ -13,7 +13,11 @@ import { CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
 
-import { ApprovalFactory, artifacts, CoordinatorContract } from '../src';
+import { ApprovalFactory } from './utils/approval_factory';
+
+import { artifacts } from './artifacts';
+
+import { CoordinatorContract } from './wrappers';
 
 blockchainTests.resets('Mixins tests', env => {
     let chainId: number;

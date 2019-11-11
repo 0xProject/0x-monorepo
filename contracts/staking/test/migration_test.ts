@@ -3,14 +3,15 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors, BigNumber, StringRevertError } from '@0x/utils';
 
 import {
-    artifacts,
     StakingContract,
     StakingProxyContract,
     TestAssertStorageParamsContract,
     TestInitTargetContract,
     TestStakingProxyContract,
     TestStakingProxyStakingContractAttachedToProxyEventArgs,
-} from '../src/';
+} from './wrappers';
+
+import { artifacts } from './artifacts';
 
 import { constants as stakingConstants } from './utils/constants';
 

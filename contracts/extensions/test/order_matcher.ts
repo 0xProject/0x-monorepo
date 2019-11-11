@@ -30,7 +30,9 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeFillEventArgs, OrderMatcherContract } from '../src';
+import { ExchangeFillEventArgs, OrderMatcherContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -117,18 +119,12 @@ describe('OrderMatcher', () => {
             await devUtils.encodeERC20AssetData.callAsync(zrxToken.address),
             new BigNumber(chainId),
         );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            {
-                from: owner,
-            },
-        );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc721Proxy.address,
-            {
-                from: owner,
-            },
-        );        // Authorize ERC20 trades by exchange
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        }); // Authorize ERC20 trades by exchange
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,

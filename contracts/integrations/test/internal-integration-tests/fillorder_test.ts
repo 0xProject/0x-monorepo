@@ -1,5 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
+import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     BlockchainBalanceStore,
     ExchangeEvents,
@@ -166,7 +166,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         );
 
         // Ensure that the transfer events were correctly emitted.
-        verifyEvents<IERC20TokenTransferEventArgs>(
+        verifyEvents<ERC20TokenTransferEventArgs>(
             receipt,
             [
                 {
@@ -180,7 +180,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
                     _value: order.makerAssetAmount,
                 },
             ],
-            IERC20TokenEvents.Transfer,
+            ERC20TokenEvents.Transfer,
         );
     }
 

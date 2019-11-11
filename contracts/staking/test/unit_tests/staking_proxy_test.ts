@@ -3,13 +3,13 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     StakingProxyEvents,
     TestProxyDestinationContract,
     TestProxyDestinationEvents,
     TestStakingProxyUnitContract,
-} from '../../src';
+} from '../wrappers';
 
 import { constants as stakingConstants } from '../utils/constants';
 

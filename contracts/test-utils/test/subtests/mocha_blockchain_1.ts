@@ -1,4 +1,5 @@
-import { blockchainTests, BlockchainTestsEnvironment, expect } from '../../src';
+import { expect } from '../../src/chai_setup';
+import { blockchainTests, BlockchainTestsEnvironment } from '../../src/mocha_blockchain';
 
 // tslint:disable: no-default-export completed-docs
 export function append(env: BlockchainTestsEnvironment): void {

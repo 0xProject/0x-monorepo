@@ -22,7 +22,9 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, DutchAuctionContract, DutchAuctionTestWrapper, WETH9Contract } from '../src';
+import { DutchAuctionContract, DutchAuctionTestWrapper, WETH9Contract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -98,18 +100,12 @@ describe(ContractName.DutchAuction, () => {
             zrxAssetData,
             new BigNumber(chainId),
         );
-        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            {
-                from: owner,
-            },
-        );
-        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc721Proxy.address,
-            {
-                from: owner,
-            },
-        );
+        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        });
 
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,

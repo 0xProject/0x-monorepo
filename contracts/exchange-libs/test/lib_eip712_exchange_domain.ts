@@ -2,7 +2,9 @@ import { blockchainTests, constants, expect, randomAddress } from '@0x/contracts
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
-import { artifacts, TestLibEIP712ExchangeDomainContract } from '../src';
+import { TestLibEIP712ExchangeDomainContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 blockchainTests('LibEIP712ExchangeDomain', env => {
     describe('constructor', () => {

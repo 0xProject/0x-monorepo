@@ -4,7 +4,8 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
-import { artifacts, TestLogDecodingContract } from '../src';
+import { artifacts } from './artifacts';
+import { TestLogDecodingContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

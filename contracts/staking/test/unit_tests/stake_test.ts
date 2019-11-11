@@ -15,8 +15,8 @@ import * as _ from 'lodash';
 
 import { StakeStatus } from '../utils/types';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     TestMixinStakeContract,
     TestMixinStakeDecreaseCurrentAndNextBalanceEventArgs as DecreaseCurrentAndNextBalanceEventArgs,
     TestMixinStakeDecreaseNextBalanceEventArgs as DecreaseNextBalanceEventArgs,
@@ -30,7 +30,7 @@ import {
     TestMixinStakeWithdrawAndSyncDelegatorRewardsEventArgs as WithdrawAndSyncDelegatorRewardsEventArgs,
     TestMixinStakeZrxVaultDepositFromEventArgs as ZrxVaultDepositFromEventArgs,
     TestMixinStakeZrxVaultWithdrawFromEventArgs as ZrxVaultWithdrawFromEventArgs,
-} from '../../src';
+} from '../wrappers';
 
 blockchainTests.resets('MixinStake unit tests', env => {
     let testContract: TestMixinStakeContract;

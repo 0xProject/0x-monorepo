@@ -13,7 +13,9 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ERC1155ProxyContract, IAssetProxyContract } from '../../src';
+import { artifacts } from '../../src/artifacts';
+
+import { ERC1155ProxyContract, IAssetProxyContract } from '../../src/wrappers';
 
 export class ERC1155ProxyWrapper {
     private readonly _tokenOwnerAddresses: string[];

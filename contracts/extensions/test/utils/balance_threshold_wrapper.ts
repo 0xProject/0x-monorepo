@@ -13,7 +13,9 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, BalanceThresholdFilterContract } from '../../src';
+import { BalanceThresholdFilterContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 export class BalanceThresholdWrapper {
     private readonly _balanceThresholdFilter: BalanceThresholdFilterContract;

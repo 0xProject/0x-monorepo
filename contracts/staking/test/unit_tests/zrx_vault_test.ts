@@ -15,15 +15,15 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { constants as stakingConstants } from '../utils/constants';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     ZrxVaultContract,
     ZrxVaultDepositEventArgs,
     ZrxVaultInCatastrophicFailureModeEventArgs,
     ZrxVaultStakingProxySetEventArgs,
     ZrxVaultWithdrawEventArgs,
     ZrxVaultZrxProxySetEventArgs,
-} from '../../src';
+} from '../wrappers';
 
 blockchainTests.resets('ZrxVault unit tests', env => {
     let accounts: string[];

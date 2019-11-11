@@ -14,6 +14,8 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { ExchangeContract } from '../wrappers';
+
 import {
     BalanceStore,
     BlockchainBalanceStore,
@@ -21,9 +23,7 @@ import {
     TokenContractsByName,
     TokenIds,
     TokenOwnersByName,
-} from '../../src';
-
-import { ExchangeContract } from '../wrappers';
+} from './../balance_stores';
 
 export class FillOrderWrapper {
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;

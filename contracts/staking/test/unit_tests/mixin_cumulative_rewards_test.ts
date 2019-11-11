@@ -2,10 +2,11 @@ import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestMixinCumulativeRewardsContract } from '../../src';
-
 import { constants as stakingConstants } from '../utils/constants';
 import { toBaseUnitAmount } from '../utils/number_utils';
+
+import { artifacts } from '../artifacts';
+import { TestMixinCumulativeRewardsContract } from '../wrappers';
 
 blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
     const ZERO = new BigNumber(0);

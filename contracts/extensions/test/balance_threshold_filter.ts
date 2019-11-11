@@ -24,7 +24,11 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 
-import { artifacts, BalanceThresholdFilterContract, BalanceThresholdWrapper } from '../src';
+import { BalanceThresholdWrapper } from './utils/balance_threshold_wrapper';
+
+import { BalanceThresholdFilterContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -139,12 +143,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             new BigNumber(chainId),
         );
         // Register proxies
-        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            {
-                from: owner,
-            },
-        );
+        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,
         });
