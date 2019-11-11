@@ -97,14 +97,6 @@ zero_ex.contract_wrappers.erc721_token
    :special-members:
 
 
-zero_ex.contract_wrappers.eth_balance_checker
-=============================================
-
-.. automodule:: zero_ex.contract_wrappers.eth_balance_checker
-   :members:
-   :special-members:
-
-
 zero_ex.contract_wrappers.exchange
 ==================================
 
