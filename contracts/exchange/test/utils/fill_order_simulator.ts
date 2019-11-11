@@ -1,6 +1,6 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, orderUtils } from '@0x/contracts-test-utils';
-import { Order, SupportedProvider } from '@0x/order-utils';
+import { Order } from '@0x/order-utils';
 import { FillResults } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
