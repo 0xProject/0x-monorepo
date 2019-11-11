@@ -440,24 +440,29 @@ export class FillOrderCombinatorialUtils {
         this.balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(assetWrapper);
     }
 
-    public async testFillOrderScenarioAsync(fillScenario: FillScenario): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario);
+    public async testFillOrderScenarioAsync(fillScenario: FillScenario, devUtils: DevUtilsContract): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Any, devUtils);
     }
 
-    public async testFillOrderScenarioSuccessAsync(fillScenario: FillScenario): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success);
+    public async testFillOrderScenarioSuccessAsync(
+        fillScenario: FillScenario,
+        devUtils: DevUtilsContract,
+    ): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success, devUtils);
     }
 
     public async testFillOrderScenarioFailureAsync(
         fillScenario: FillScenario,
+        devUtils: DevUtilsContract,
         fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, fillErrorIfExists);
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, devUtils, fillErrorIfExists);
     }
 
     private async _testFillOrderScenarioAsync(
         fillScenario: FillScenario,
         expectedTestResult: TestOutlook = TestOutlook.Any,
+        devUtils: DevUtilsContract,
         fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(this.balanceAndProxyAllowanceFetcher);
@@ -470,7 +475,12 @@ export class FillOrderCombinatorialUtils {
         let _fillErrorIfExists = fillErrorIfExists;
         if (expectedTestResult !== TestOutlook.Failure || fillErrorIfExists === undefined) {
             try {
-                expectedFillResults = await this._simulateFillOrderAsync(signedOrder, takerAssetFillAmount, lazyStore);
+                expectedFillResults = await this._simulateFillOrderAsync(
+                    signedOrder,
+                    takerAssetFillAmount,
+                    lazyStore,
+                    devUtils,
+                );
             } catch (err) {
                 _fillErrorIfExists = err.message;
                 if (expectedTestResult === TestOutlook.Success) {
@@ -503,6 +513,7 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
+        devUtils: DevUtilsContract,
     ): Promise<FillResults> {
         const simulator = new FillOrderSimulator(lazyStore, devUtils);
         return simulator.simulateFillOrderAsync(signedOrder, this.takerAddress, takerAssetFillAmount);
