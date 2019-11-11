@@ -36,3 +36,13 @@ export enum ExchangeFunctionName {
     SetProtocolFeeCollectorAddress = 'setProtocolFeeCollectorAddress',
     DetachProtocolFeeCollector = 'detachProtocolFeeCollector',
 }
+
+export enum TradeSide {
+    Maker = 'maker',
+    Taker = 'taker',
+}
+
+export enum TransferType {
+    Trade = 'trade',
+    Fee = 'fee',
+}

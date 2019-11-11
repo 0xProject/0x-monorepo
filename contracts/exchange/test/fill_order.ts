@@ -1,6 +1,11 @@
-import { blockchainTests, describe } from '@0x/contracts-test-utils';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { blockchainTests, constants, describe, provider } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
+import {
+    FillOrderCombinatorialUtils,
+    fillOrderCombinatorialUtilsFactoryAsync,
+} from './utils/fill_order_combinatorial_utils';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -12,11 +17,6 @@ import {
     TakerAssetFillAmountScenario,
     TakerScenario,
 } from './utils/fill_order_scenarios';
-
-import {
-    FillOrderCombinatorialUtils,
-    fillOrderCombinatorialUtilsFactoryAsync,
-} from './utils/fill_order_combinatorial_utils';
 
 const defaultFillScenario = {
     orderScenario: {
@@ -49,8 +49,10 @@ const defaultFillScenario = {
 
 blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
     let fillOrderCombinatorialUtils: FillOrderCombinatorialUtils;
+    let devUtils: DevUtilsContract;
 
     before(async () => {
+        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
         fillOrderCombinatorialUtils = await fillOrderCombinatorialUtilsFactoryAsync(web3Wrapper, txDefaults);
     });
 
@@ -63,7 +65,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     takerAssetAmountScenario: OrderAssetAmountScenario.Small,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
@@ -74,7 +76,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     makerAssetAmountScenario: OrderAssetAmountScenario.Small,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount with zero decimals', async () => {
@@ -86,7 +88,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     makerAssetDataScenario: AssetDataScenario.ERC20ZeroDecimals,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts when taker is specified and order is claimed by taker', async () => {
@@ -97,7 +99,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     takerScenario: TakerScenario.CorrectlySpecified,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts maker == feeRecipient', async () => {
@@ -108,7 +110,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeRecipientScenario: FeeRecipientAddressScenario.MakerAddress,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts maker == feeRecipient and makerFeeAsset == takerAsset', async () => {
@@ -120,7 +122,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     makerFeeAssetDataScenario: FeeAssetDataScenario.TakerToken,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts taker == feeRecipient', async () => {
@@ -131,7 +133,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeRecipientScenario: FeeRecipientAddressScenario.TakerAddress,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should transfer the correct amounts taker == feeRecipient and takerFeeAsset == makerAsset', async () => {
@@ -143,7 +145,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     takerFeeAssetDataScenario: FeeAssetDataScenario.MakerToken,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should fill remaining value if takerAssetFillAmount > remaining takerAssetAmount', async () => {
@@ -151,7 +153,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                 ...defaultFillScenario,
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should revert when taker is specified and order is claimed by other', async () => {
@@ -162,7 +164,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     takerScenario: TakerScenario.IncorrectlySpecified,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if makerAssetAmount is 0', async () => {
@@ -174,7 +176,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if takerAssetAmount is 0', async () => {
@@ -186,7 +188,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                 },
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.GreaterThanTakerAssetAmount,
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if an order is expired', async () => {
@@ -197,7 +199,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     expirationTimeSecondsScenario: ExpirationTimeSecondsScenario.InPast,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
     });
 
@@ -217,7 +219,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                         takerAssetDataScenario: takerAsset,
                     },
                 };
-                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
             });
         }
         it('should be able to pay maker fee with taker asset', async () => {
@@ -233,7 +235,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should be able to pay taker fee with maker asset', async () => {
@@ -249,7 +251,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should not be able to pay maker fee with maker asset if none is left over (double-spend)', async () => {
@@ -266,7 +268,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should not be able to pay taker fee with taker asset if none is left over (double-spend)', async () => {
@@ -283,7 +285,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should be able to pay taker fee with maker asset', async () => {
@@ -299,7 +301,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should revert if maker balance is too low to fill order', async () => {
@@ -310,7 +312,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     traderAssetBalance: BalanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if taker balance is too low to fill order', async () => {
@@ -321,7 +323,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     traderAssetBalance: BalanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if maker allowances are too low to fill order', async () => {
@@ -332,7 +334,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if taker allowances are too low to fill order', async () => {
@@ -343,7 +345,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     traderAssetAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if maker fee balance is too low to fill order', async () => {
@@ -354,7 +356,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if taker fee balance is too low to fill order', async () => {
@@ -365,7 +367,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if maker fee allowances are too low to fill order', async () => {
@@ -376,7 +378,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should revert if taker fee allowances are too low to fill order', async () => {
@@ -387,7 +389,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeAllowance: AllowanceAmountScenario.TooLow,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
     });
 
@@ -406,7 +408,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should be able to pay taker fee with maker ERC721', async () => {
@@ -423,7 +425,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should not be able to pay maker fee with maker ERC721 (double-spend)', async () => {
@@ -440,7 +442,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should be able to pay taker fee with taker ERC721 (double-spend)', async () => {
@@ -457,7 +459,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
     });
 
@@ -479,7 +481,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                             feeBalance: BalanceAmountScenario.Zero,
                         },
                     };
-                    await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
                 });
 
                 it('should be able to pay taker fee with maker asset', async () => {
@@ -496,7 +498,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                             feeBalance: BalanceAmountScenario.Zero,
                         },
                     };
-                    await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
                 });
 
                 it('should not be able to pay maker fee with maker asset if not enough left (double-spend)', async () => {
@@ -514,7 +516,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                             feeBalance: BalanceAmountScenario.Zero,
                         },
                     };
-                    await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
                 });
 
                 it('should be able to pay taker fee with taker asset if not enough left (double-spend)', async () => {
@@ -532,7 +534,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                             feeBalance: BalanceAmountScenario.Zero,
                         },
                     };
-                    await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+                    await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
                 });
             });
         }
@@ -553,7 +555,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should be able to pay taker fee with maker MAP', async () => {
@@ -570,7 +572,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
         });
 
         it('should not be able to pay maker fee with maker MAP (double-spend)', async () => {
@@ -587,7 +589,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
 
         it('should be able to pay taker fee with taker MAP (double-spend)', async () => {
@@ -604,7 +606,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     feeBalance: BalanceAmountScenario.Zero,
                 },
             };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
+            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario, devUtils);
         });
     });
 
@@ -627,7 +629,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     },
                     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
                 };
-                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
             });
         }
     });
@@ -651,7 +653,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
                     },
                     takerAssetFillAmountScenario: TakerAssetFillAmountScenario.ExactlyTakerAssetAmount,
                 };
-                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
+                await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario, devUtils);
             });
         }
     });
@@ -661,7 +663,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
         for (const fillScenario of allFillScenarios) {
             const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;
             it(description, async () => {
-                await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(fillScenario);
+                await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(fillScenario, devUtils);
             });
         }
     });

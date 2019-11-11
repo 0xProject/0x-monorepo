@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.5.0-beta.2",
+        "changes": [
+            {
+                "note": "[Breaking] Removed `OrderStateUtils`, `OrderValidationUtils`, `ExchangeTransferSimulator` and all abstract and store classes. For order validation, please use the `DevUtils` contract wrapper method `getOrderRelevantState`|`getOrderRelevantStates`",
+                "pr": 2324
+            }
+        ]
+    },
+    {
         "version": "8.5.0-beta.1",
         "changes": [
             {
