@@ -100,6 +100,5 @@ export {
     CoordinatorRegistryCoordinatorEndpointSetEventArgs,
     CoordinatorRegistryContract,
 } from './generated-wrappers/coordinator_registry';
-export { EthBalanceCheckerContract } from './generated-wrappers/eth_balance_checker';
 
 export * from '@0x/contract-addresses';
