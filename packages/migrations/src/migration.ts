@@ -244,7 +244,7 @@ export async function runMigrationsAsync(
 
     // Fake the above transactions so our nonce increases and we result with the same addresses
     // while AssetProxyOwner is disabled (TODO: @dekz remove)
-    const dummyTransactionCount = 5;
+    const dummyTransactionCount = 6;
     for (let index = 0; index < dummyTransactionCount; index++) {
         await web3Wrapper.sendTransactionAsync({ to: txDefaults.from, from: txDefaults.from, value: new BigNumber(0) });
     }
