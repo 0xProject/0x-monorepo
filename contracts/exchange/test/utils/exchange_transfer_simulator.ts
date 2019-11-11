@@ -1,6 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants } from '@0x/contracts-test-utils';
-import { SupportedProvider } from '@0x/order-utils';
 import { AssetProxyId, ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
