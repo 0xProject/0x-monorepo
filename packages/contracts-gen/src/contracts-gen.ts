@@ -54,6 +54,13 @@ const COPY = 'copy';
     const srcArtifactsDir = convertToTopLevelDir('testArtifactsDir', testArtifactsDir);
     const testWrappersDir = DEFAULT_WRAPPERS_DIR;
     const srcWrappersDir = convertToTopLevelDir('testWrappersDir', testWrappersDir);
+
+    // Make sure all dirs exist, if not, create them
+    mkdirp.sync(testArtifactsDir);
+    mkdirp.sync(srcArtifactsDir);
+    mkdirp.sync(testWrappersDir);
+    mkdirp.sync(srcWrappersDir);
+
     if (command === GENERATE) {
         await regenerateContractPackageAsync(
             testContracts,
@@ -197,7 +204,6 @@ function generateArtifactsTs(
     export const artifacts = {${artifacts.join('\n')}};
     `;
     const formattedArtifactsTs = prettier.format(artifactsTs, { ...prettierConfig, filepath: artifactsTsFilePath });
-    mkdirp.sync(artifactsTsFilePath);
     fs.writeFileSync(artifactsTsFilePath, formattedArtifactsTs);
 }
 
@@ -219,7 +225,6 @@ function generateWrappersTs(
     ${sortedImports.join('\n')}
     `;
     const formattedArtifactsTs = prettier.format(wrappersTs, { ...prettierConfig, filepath: wrappersTsFilePath });
-    mkdirp.sync(wrappersTsFilePath);
     fs.writeFileSync(wrappersTsFilePath, formattedArtifactsTs);
 }
 
