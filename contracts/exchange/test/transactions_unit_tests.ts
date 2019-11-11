@@ -5,7 +5,11 @@ import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, TestTransactionsContract, TestTransactionsTransactionExecutionEventArgs } from '../src';
+import { artifacts } from './artifacts';
+import {
+    TestTransactionsContract,
+    TestTransactionsTransactionExecutionEventArgs,
+} from './wrappers';
 
 blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDefaults }) => {
     let transactionsContract: TestTransactionsContract;

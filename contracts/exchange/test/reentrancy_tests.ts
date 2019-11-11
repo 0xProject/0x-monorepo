@@ -3,7 +3,8 @@ import { BigNumber } from '@0x/utils';
 import { DataItem, MethodAbi, TupleDataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ReentrancyTesterContract } from '../src';
+import { artifacts } from './artifacts';
+import { ReentrancyTesterContract} from './wrappers';
 
 import { constants as TestConstants } from './utils/constants';
 

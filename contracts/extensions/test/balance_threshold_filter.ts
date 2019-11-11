@@ -1,5 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { ExchangeRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
@@ -52,7 +52,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
     let zrxAssetData: string;
     let zrxToken: DummyERC20TokenContract;
     let exchangeInstance: ExchangeContract;
-    let exchangeWrapper: ExchangeWrapper;
     let devUtils: DevUtilsContract;
 
     let orderFactory: OrderFactory;
@@ -139,9 +138,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
             zrxAssetData,
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         // Register proxies
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
+        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc20Proxy.address,
+            {
+                from: owner,
+            },
+        );
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,
         });

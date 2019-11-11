@@ -15,7 +15,9 @@ import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
+import { artifacts } from '../artifacts';
+
+import { ExchangeContract, ExchangeFillEventArgs } from '../wrappers';
 
 import { AssetWrapper } from './asset_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';

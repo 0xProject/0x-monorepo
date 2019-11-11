@@ -8,14 +8,11 @@ import {
 } from '@0x/contracts-asset-proxy';
 import {
     artifacts as exchangeArtifacts,
-    AssetProxyDispatcher,
-    Authorizable,
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
     ExchangeEvents,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
-    Ownable,
 } from '@0x/contracts-exchange';
 import { artifacts as multisigArtifacts, ZeroExGovernorContract } from '@0x/contracts-multisig';
 import {
@@ -35,6 +32,8 @@ import {
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
+
+import { AssetProxyDispatcher, Authorizable, Ownable } from '../utils/wrapper_interfaces';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('Deployment and Configuration End to End Tests', env => {

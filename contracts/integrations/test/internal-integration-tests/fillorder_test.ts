@@ -2,8 +2,8 @@ import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     BlockchainBalanceStore,
-    IExchangeEvents,
-    IExchangeFillEventArgs,
+    ExchangeEvents,
+    ExchangeFillEventArgs,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import {
@@ -142,7 +142,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
 
     function verifyFillEvents(order: SignedOrder, receipt: TransactionReceiptWithDecodedLogs): void {
         // Ensure that the fill event was correct.
-        verifyEvents<IExchangeFillEventArgs>(
+        verifyEvents<ExchangeFillEventArgs>(
             receipt,
             [
                 {
@@ -162,7 +162,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
                     protocolFeePaid: DeploymentManager.protocolFee,
                 },
             ],
-            IExchangeEvents.Fill,
+            ExchangeEvents.Fill,
         );
 
         // Ensure that the transfer events were correctly emitted.

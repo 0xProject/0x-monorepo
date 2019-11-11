@@ -1,8 +1,8 @@
-import { Authorizable, Ownable } from '@0x/contracts-exchange';
 import { constants as stakingConstants } from '@0x/contracts-staking';
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
 
 import { DeploymentManager } from '../utils/deployment_manager';
+import { Authorizable, Ownable } from '../utils/wrapper_interfaces';
 
 blockchainTests('Deployment Manager', env => {
     let owner: string;

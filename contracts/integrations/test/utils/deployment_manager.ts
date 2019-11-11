@@ -9,13 +9,7 @@ import {
 import { artifacts as ERC1155Artifacts, ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { artifacts as ERC20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { artifacts as ERC721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
-import {
-    artifacts as exchangeArtifacts,
-    AssetProxyDispatcher,
-    Authorizable,
-    ExchangeContract,
-    Ownable,
-} from '@0x/contracts-exchange';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as multisigArtifacts, ZeroExGovernorContract } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
@@ -27,6 +21,8 @@ import { BlockchainTestsEnvironment, constants } from '@0x/contracts-test-utils'
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import { AssetProxyDispatcher, Authorizable, Ownable } from './wrapper_interfaces';
 
 /**
  * Adds a batch of authorities to a list of authorizable contracts.

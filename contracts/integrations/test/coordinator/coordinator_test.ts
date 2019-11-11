@@ -2,18 +2,17 @@ import { CoordinatorContract, SignedCoordinatorApproval } from '@0x/contracts-co
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     BlockchainBalanceStore,
-    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
     exchangeDataEncoder,
     ExchangeEvents,
     ExchangeFillEventArgs,
-    ExchangeFunctionName,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import {
     blockchainTests,
     constants,
+    ExchangeFunctionName,
     expect,
     hexConcat,
     hexSlice,
@@ -174,7 +173,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
         let transaction: SignedZeroExTransaction;
         let approval: SignedCoordinatorApproval;
 
-        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
             before(async () => {
                 order = await maker.signOrderAsync();
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
@@ -321,7 +320,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
         let transaction: SignedZeroExTransaction;
         let approval: SignedCoordinatorApproval;
 
-        for (const fnName of [...exchangeConstants.MARKET_FILL_FN_NAMES, ...exchangeConstants.BATCH_FILL_FN_NAMES]) {
+        for (const fnName of [...constants.MARKET_FILL_FN_NAMES, ...constants.BATCH_FILL_FN_NAMES]) {
             before(async () => {
                 orders = [await maker.signOrderAsync(), await maker.signOrderAsync()];
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);

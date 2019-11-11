@@ -17,12 +17,13 @@ import * as _ from 'lodash';
 import {
     BalanceStore,
     BlockchainBalanceStore,
-    ExchangeContract,
     LocalBalanceStore,
     TokenContractsByName,
     TokenIds,
     TokenOwnersByName,
 } from '../../src';
+
+import { ExchangeContract } from '../wrappers';
 
 export class FillOrderWrapper {
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;

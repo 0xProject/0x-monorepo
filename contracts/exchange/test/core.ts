@@ -41,16 +41,21 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { Erc1155Wrapper } from '../../erc1155/lib/src';
+
+import {
+    ExchangeWrapper,
+    ValidatorWalletAction,
+} from './utils';
+
 import {
     artifacts,
+} from './artifacts';
+import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
+import {
     ExchangeCancelEventArgs,
     ExchangeContract,
-    ExchangeWrapper,
     TestValidatorWalletContract,
-    ValidatorWalletAction,
-} from '../src';
-
-import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
+} from './wrappers';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Exchange core', () => {

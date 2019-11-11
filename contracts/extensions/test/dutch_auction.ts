@@ -2,7 +2,7 @@ import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -98,9 +98,18 @@ describe(ContractName.DutchAuction, () => {
             zrxAssetData,
             new BigNumber(chainId),
         );
-        const exchangeWrapper = new ExchangeWrapper(exchangeInstance);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
+        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc20Proxy.address,
+            {
+                from: owner,
+            },
+        );
+        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc721Proxy.address,
+            {
+                from: owner,
+            },
+        );
 
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,

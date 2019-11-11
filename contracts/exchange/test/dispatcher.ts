@@ -24,11 +24,11 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
-} from '../src';
+} from './wrappers';
 
 import { dependencyArtifacts } from './utils/dependency_artifacts';
 

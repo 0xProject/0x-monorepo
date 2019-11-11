@@ -1,7 +1,8 @@
-import { constants as exchangeConstants, exchangeDataEncoder, ExchangeFunctionName } from '@0x/contracts-exchange';
+import { exchangeDataEncoder } from '@0x/contracts-exchange';
 import {
     blockchainTests,
     constants,
+    ExchangeFunctionName,
     expect,
     hexConcat,
     hexSlice,
@@ -144,7 +145,7 @@ blockchainTests.resets('Mixins tests', env => {
     });
 
     describe('decodeOrdersFromFillData', () => {
-        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -158,7 +159,7 @@ blockchainTests.resets('Mixins tests', env => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of exchangeConstants.BATCH_FILL_FN_NAMES) {
+        for (const fnName of constants.BATCH_FILL_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -172,7 +173,7 @@ blockchainTests.resets('Mixins tests', env => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of exchangeConstants.MARKET_FILL_FN_NAMES) {
+        for (const fnName of constants.MARKET_FILL_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -186,7 +187,7 @@ blockchainTests.resets('Mixins tests', env => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of exchangeConstants.MATCH_ORDER_FN_NAMES) {
+        for (const fnName of constants.MATCH_ORDER_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -200,7 +201,7 @@ blockchainTests.resets('Mixins tests', env => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of exchangeConstants.CANCEL_ORDER_FN_NAMES) {
+        for (const fnName of constants.CANCEL_ORDER_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -227,7 +228,7 @@ blockchainTests.resets('Mixins tests', env => {
     });
 
     describe('Single order approvals', () => {
-        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
             it(`Should be successful: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1]`, async () => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -341,9 +342,9 @@ blockchainTests.resets('Mixins tests', env => {
     });
     describe('Batch order approvals', () => {
         for (const fnName of [
-            ...exchangeConstants.BATCH_FILL_FN_NAMES,
-            ...exchangeConstants.MARKET_FILL_FN_NAMES,
-            ...exchangeConstants.MATCH_ORDER_FN_NAMES,
+            ...constants.BATCH_FILL_FN_NAMES,
+            ...constants.MARKET_FILL_FN_NAMES,
+            ...constants.MATCH_ORDER_FN_NAMES,
         ]) {
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver1], approval_sig=[approver1]`, async () => {
                 const orders = [defaultOrder, defaultOrder];

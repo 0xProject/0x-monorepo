@@ -16,7 +16,21 @@
         "generated-artifacts/MixinCoordinatorApprovalVerifier.json",
         "generated-artifacts/MixinCoordinatorCore.json",
         "generated-artifacts/MixinCoordinatorRegistryCore.json",
-        "generated-artifacts/MixinSignatureValidator.json"
+        "generated-artifacts/MixinSignatureValidator.json",
+        "test/generated-artifacts/Coordinator.json",
+        "test/generated-artifacts/CoordinatorRegistry.json",
+        "test/generated-artifacts/ICoordinatorApprovalVerifier.json",
+        "test/generated-artifacts/ICoordinatorCore.json",
+        "test/generated-artifacts/ICoordinatorRegistryCore.json",
+        "test/generated-artifacts/ICoordinatorSignatureValidator.json",
+        "test/generated-artifacts/LibConstants.json",
+        "test/generated-artifacts/LibCoordinatorApproval.json",
+        "test/generated-artifacts/LibCoordinatorRichErrors.json",
+        "test/generated-artifacts/LibEIP712CoordinatorDomain.json",
+        "test/generated-artifacts/MixinCoordinatorApprovalVerifier.json",
+        "test/generated-artifacts/MixinCoordinatorCore.json",
+        "test/generated-artifacts/MixinCoordinatorRegistryCore.json",
+        "test/generated-artifacts/MixinSignatureValidator.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

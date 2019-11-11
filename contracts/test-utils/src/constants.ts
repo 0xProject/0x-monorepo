@@ -3,6 +3,8 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { ExchangeFunctionName } from './types';
+
 const TESTRPC_PRIVATE_KEYS_STRINGS = [
     '0xf2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d',
     '0x5d862464fe9303452126c8bc94274b8c5f9874cbd219789b3eb2128075a76f72',
@@ -84,4 +86,26 @@ export const constants = {
     PPM_DENOMINATOR: 1e6,
     PPM_100_PERCENT: 1e6,
     MAX_CODE_SIZE: 24576,
+    SINGLE_FILL_FN_NAMES: [ExchangeFunctionName.FillOrder, ExchangeFunctionName.FillOrKillOrder],
+    BATCH_FILL_FN_NAMES: [
+        ExchangeFunctionName.BatchFillOrders,
+        ExchangeFunctionName.BatchFillOrKillOrders,
+        ExchangeFunctionName.BatchFillOrdersNoThrow,
+    ],
+    MARKET_FILL_FN_NAMES: [
+        ExchangeFunctionName.MarketBuyOrdersFillOrKill,
+        ExchangeFunctionName.MarketSellOrdersFillOrKill,
+        ExchangeFunctionName.MarketBuyOrdersNoThrow,
+        ExchangeFunctionName.MarketSellOrdersNoThrow,
+    ],
+    MATCH_ORDER_FN_NAMES: [ExchangeFunctionName.MatchOrders, ExchangeFunctionName.MatchOrdersWithMaximalFill],
+    BATCH_MATCH_ORDER_FN_NAMES: [
+        ExchangeFunctionName.BatchMatchOrders,
+        ExchangeFunctionName.BatchMatchOrdersWithMaximalFill,
+    ],
+    CANCEL_ORDER_FN_NAMES: [
+        ExchangeFunctionName.CancelOrder,
+        ExchangeFunctionName.BatchCancelOrders,
+        ExchangeFunctionName.CancelOrdersUpTo,
+    ],
 };
