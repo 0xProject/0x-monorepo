@@ -112,6 +112,13 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
             'Unexpected StaticCallProxy registered in Exchange',
         );
 
+        const registeredERC20BridgeProxy = await exchange.getAssetProxy.callAsync(AssetProxyId.ERC20Bridge);
+        warnIfMismatch(
+            registeredERC20BridgeProxy,
+            addresses.erc20BridgeProxy,
+            'Unexpected ERC20BridgeProxy registered in Exchange',
+        );
+
         const protocolFeeCollector = await exchange.protocolFeeCollector.callAsync();
         warnIfMismatch(protocolFeeCollector, addresses.stakingProxy, 'Unexpected StakingProxy attached to Exchange');
 
