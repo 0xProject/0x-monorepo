@@ -21,7 +21,7 @@
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --output src/generated-wrappers --backend ethers"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DevUtils|DutchAuction|DummyERC20Token|DummyERC721Token|ERC1155Mintable|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker|ERC1155Proxy|StaticCallProxy|Staking|StakingProxy).json"
+        "abis": "../contract-artifacts/artifacts/@(DevUtils|DummyERC20Token|DummyERC721Token|ERC1155Mintable|ERC20Token|ERC721Token|Exchange|Forwarder|IValidator|IWallet|OrderValidator|WETH9|Coordinator|CoordinatorRegistry|Staking|StakingProxy).json"
     },
     "repository": {
         "type": "git",

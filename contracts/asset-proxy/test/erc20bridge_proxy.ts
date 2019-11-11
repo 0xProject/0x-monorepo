@@ -16,11 +16,7 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 
-import {
-    ERC20BridgeProxyContract,
-    TestERC20BridgeBridgeWithdrawToEventArgs,
-    TestERC20BridgeContract,
-} from './wrappers';
+import { ERC20BridgeProxyContract, TestERC20BridgeContract } from './wrappers';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     const PROXY_ID = AssetProxyId.ERC20Bridge;
@@ -165,7 +161,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             const opts = createTransferFromOpts();
             const logs = await transferFromAsync(opts);
             expect(logs.length).to.eq(1);
-            const args = logs[0].args as TestERC20BridgeBridgeWithdrawToEventArgs;
+            const args = logs[0].args;
             expect(args.tokenAddress).to.eq(opts.assetData.tokenAddress);
             expect(args.from).to.eq(opts.from);
             expect(args.to).to.eq(opts.to);

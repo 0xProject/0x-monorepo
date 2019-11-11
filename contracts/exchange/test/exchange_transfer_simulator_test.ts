@@ -1,29 +1,22 @@
-import {
-    DevUtilsContract,
-    DummyERC20TokenContract,
-    ERC20ProxyContract,
-    ERC20TokenContract,
-} from '@0x/abi-gen-wrappers';
-import * as artifacts from '@0x/contract-artifacts';
-import { BlockchainLifecycle, devConstants } from '@0x/dev-utils';
+import { artifacts as assetProxyArtifacts, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, ERC20TokenContract } from '@0x/contracts-erc20';
+import { blockchainTests, chaiSetup, constants } from '@0x/contracts-test-utils';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { constants } from '../src/constants';
-import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
-import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
-import { TradeSide, TransferType } from '../src/types';
-
-import { chaiSetup } from './utils/chai_setup';
+import { ExchangeTransferSimulator } from './utils/exchange_transfer_simulator';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { BalanceAndProxyAllowanceLazyStore } from './utils/store/balance_and_proxy_allowance_lazy_store';
+import { TradeSide, TransferType } from './utils/types';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('ExchangeTransferSimulator', async () => {
+const GAS_LIMIT = 9e6;
+
+blockchainTests('ExchangeTransferSimulator', env => {
     const transferAmount = new BigNumber(5);
     let userAddresses: string[];
     let dummyERC20Token: DummyERC20TokenContract;
@@ -34,25 +27,25 @@ describe('ExchangeTransferSimulator', async () => {
     let exchangeTransferSimulator: ExchangeTransferSimulator;
     let txHash: string;
     let erc20ProxyAddress: string;
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider);
     before(async function(): Promise<void> {
         const mochaTestTimeoutMs = 20000;
         this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
 
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await env.web3Wrapper.getAvailableAddressesAsync();
         [coinbase, sender, recipient] = userAddresses;
 
         const txDefaults = {
-            gas: devConstants.GAS_LIMIT,
-            from: devConstants.TESTRPC_FIRST_ADDRESS,
+            gas: GAS_LIMIT,
+            from: userAddresses[0],
         };
 
-        await blockchainLifecycle.startAsync();
+        await env.blockchainLifecycle.startAsync();
         const erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
-            artifacts.ERC20Proxy,
-            provider,
+            assetProxyArtifacts.ERC20Proxy,
+            env.provider,
             txDefaults,
-            artifacts,
+            assetProxyArtifacts,
         );
         erc20ProxyAddress = erc20Proxy.address;
 
@@ -62,10 +55,10 @@ describe('ExchangeTransferSimulator', async () => {
         const decimals = new BigNumber(18);
         // tslint:disable-next-line:no-unused-variable
         dummyERC20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyERC20Token,
-            provider,
+            erc20Artifacts.DummyERC20Token,
+            env.provider,
             txDefaults,
-            artifacts,
+            erc20Artifacts,
             name,
             symbol,
             decimals,
@@ -75,13 +68,13 @@ describe('ExchangeTransferSimulator', async () => {
         exampleAssetData = await devUtils.encodeERC20AssetData.callAsync(dummyERC20Token.address);
     });
     beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
+        await env.blockchainLifecycle.startAsync();
     });
     afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
+        await env.blockchainLifecycle.revertAsync();
     });
     after(async () => {
-        await blockchainLifecycle.revertAsync();
+        await env.blockchainLifecycle.revertAsync();
     });
     describe('#transferFromAsync', function(): void {
         // HACK: For some reason these tests need a slightly longer timeout
@@ -95,7 +88,7 @@ describe('ExchangeTransferSimulator', async () => {
             const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
                 simpleERC20BalanceAndProxyAllowanceFetcher,
             );
-            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore, devUtils);
         });
         it("throws if the user doesn't have enough allowance", async () => {
             return expect(
@@ -113,7 +106,7 @@ describe('ExchangeTransferSimulator', async () => {
             txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
                 from: sender,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
                     exampleAssetData,
@@ -129,12 +122,12 @@ describe('ExchangeTransferSimulator', async () => {
             txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
                 from: coinbase,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
                 from: sender,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             await exchangeTransferSimulator.transferFromAsync(
                 exampleAssetData,
@@ -156,7 +149,7 @@ describe('ExchangeTransferSimulator', async () => {
             txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
                 from: coinbase,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
             txHash = await dummyERC20Token.approve.sendTransactionAsync(
                 erc20ProxyAddress,
                 constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
@@ -164,7 +157,7 @@ describe('ExchangeTransferSimulator', async () => {
                     from: sender,
                 },
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
             await exchangeTransferSimulator.transferFromAsync(
                 exampleAssetData,
                 sender,

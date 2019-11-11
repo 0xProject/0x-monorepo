@@ -1,7 +1,7 @@
-import { ERC20TokenContract } from '@0x/abi-gen-wrappers';
+import { ERC20TokenContract } from '@0x/contracts-erc20';
 import { BigNumber } from '@0x/utils';
 
-import { AbstractBalanceAndProxyAllowanceFetcher } from '../../src/abstract/abstract_balance_and_proxy_allowance_fetcher';
+import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 
 export class SimpleERC20BalanceAndProxyAllowanceFetcher implements AbstractBalanceAndProxyAllowanceFetcher {
     private readonly _erc20TokenContract: ERC20TokenContract;

@@ -1,10 +1,8 @@
-import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { AbstractOrderFilledCancelledFetcher } from '../abstract/abstract_order_filled_cancelled_fetcher';
 import { AbstractOrderFilledCancelledLazyStore } from '../abstract/abstract_order_filled_cancelled_lazy_store';
-import { orderHashUtils } from '../order_hash';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
@@ -54,20 +52,6 @@ export class OrderFilledCancelledLazyStore implements AbstractOrderFilledCancell
      */
     public deleteFilledTakerAmount(orderHash: string): void {
         delete this._filledTakerAmount[orderHash];
-    }
-    /**
-     * Check if an order has been cancelled
-     * @param orderHash OrderHash from order of interest
-     * @return Whether the order has been cancelled
-     */
-    public async getIsCancelledAsync(signedOrder: SignedOrder): Promise<boolean> {
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        if (this._isCancelled[orderHash] === undefined) {
-            const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
-            this.setIsCancelled(orderHash, isCancelled);
-        }
-        const cachedIsCancelled = this._isCancelled[orderHash]; // tslint:disable-line:boolean-naming
-        return cachedIsCancelled;
     }
     /**
      * Set whether an order has been cancelled or not

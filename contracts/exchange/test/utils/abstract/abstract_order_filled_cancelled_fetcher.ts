@@ -1,4 +1,3 @@
-import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 /**
@@ -13,10 +12,4 @@ export abstract class AbstractOrderFilledCancelledFetcher {
      * @return FilledTakerAmount
      */
     public abstract async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber>;
-    /**
-     * Whether an order is cancelled
-     * @param orderHash OrderHash of order we are interested in
-     * @return Whether or not the order is cancelled
-     */
-    public abstract async isOrderCancelledAsync(signedOrder: SignedOrder): Promise<boolean>;
 }

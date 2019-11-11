@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.4.0-beta.2",
+        "changes": [
+            {
+                "note": "[Breaking] Remove `erc20Proxy`, `multiAssetProxy`, `erc1155Proxy`, `staticCallProxy`, `erc721Proxy`, `assetProxyOwner`, `ZRXToken` and `dutchAuction` wrappers",
+                "pr": 2324
+            }
+        ]
+    },
+    {
         "version": "5.4.0-beta.1",
         "changes": [
             {

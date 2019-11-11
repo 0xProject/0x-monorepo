@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/abi-gen-wrappers';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
