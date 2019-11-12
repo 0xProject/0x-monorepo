@@ -10,17 +10,15 @@ export const PER_PAGE_DEFAULT = 100;
 
 export abstract class BaseSRAOrderProvider extends BaseOrderProvider {
     protected readonly _httpClient: HttpClient;
-    protected readonly _chainId?: number;
     protected readonly _perPage: number;
 
     /**
      * This is an internal class for Websocket and Polling Order Providers
      */
-    constructor(orderStore: OrderStore, httpEndpoint: string, perPage: number = PER_PAGE_DEFAULT, chainId?: number) {
+    constructor(orderStore: OrderStore, httpEndpoint: string, perPage: number = PER_PAGE_DEFAULT) {
         super(orderStore);
         this._httpClient = new HttpClient(httpEndpoint);
         this._perPage = perPage;
-        this._chainId = chainId;
     }
 
     /**
@@ -30,7 +28,6 @@ export abstract class BaseSRAOrderProvider extends BaseOrderProvider {
     public async getAvailableAssetDatasAsync(): Promise<AssetPairsItem[]> {
         const requestOpts = {
             perPage: this._perPage,
-            chainId: this._chainId,
         };
         let recordsToReturn: AssetPairsItem[] = [];
 
@@ -60,7 +57,7 @@ export abstract class BaseSRAOrderProvider extends BaseOrderProvider {
         const rejected: RejectedOrder[] = [];
         for (const order of orders) {
             try {
-                await this._httpClient.submitOrderAsync(order, { chainId: this._chainId });
+                await this._httpClient.submitOrderAsync(order);
                 accepted.push(order);
             } catch (e) {
                 rejected.push({ order, message: e.message });
@@ -83,7 +80,6 @@ export abstract class BaseSRAOrderProvider extends BaseOrderProvider {
             makerAssetData,
             takerAssetData,
             perPage: this._perPage,
-            chainId: this._chainId,
         };
 
         let hasMorePages = true;

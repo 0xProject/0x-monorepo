@@ -46,6 +46,7 @@ export const getPartialSignedOrdersWithNoFees = (
             makerAssetData,
             takerAssetAmount: fillableAmount,
             takerAssetData,
+            chainId: 42,
         }),
     );
 };
@@ -69,6 +70,7 @@ export const getPartialSignedOrdersWithFees = (
         orderFactory.createSignedOrderFromPartial({
             ...order,
             ...{ takerFee: takerFees[index] },
+            chainId: 42,
         }),
     );
 };

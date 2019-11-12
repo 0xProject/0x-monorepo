@@ -1,11 +1,11 @@
 export const validationError = {
-    code: 100,
+    code: 101,
     reason: 'Validation failed',
     validationErrors: [
         {
-            field: 'chainId',
-            code: 1006,
-            reason: 'Chain id 42 is not supported',
+            field: 'maker',
+            code: 1002,
+            reason: 'Invalid address',
         },
     ],
 };
