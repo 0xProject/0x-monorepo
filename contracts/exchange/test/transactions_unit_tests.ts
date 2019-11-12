@@ -6,10 +6,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
-import {
-    TestTransactionsContract,
-    TestTransactionsTransactionExecutionEventArgs,
-} from './wrappers';
+import { TestTransactionsContract, TestTransactionsTransactionExecutionEventArgs } from './wrappers';
 
 blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDefaults }) => {
     let transactionsContract: TestTransactionsContract;

@@ -33,9 +33,7 @@ import * as _ from 'lodash';
 import { ExchangeWrapper } from './utils/exchange_wrapper';
 
 import { artifacts } from './artifacts';
-import {
-    ExchangeContract,
-} from './wrappers';
+import { ExchangeContract } from './wrappers';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 

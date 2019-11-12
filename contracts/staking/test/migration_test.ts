@@ -2,6 +2,9 @@ import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/c
 import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors, BigNumber, StringRevertError } from '@0x/utils';
 
+import { constants as stakingConstants } from '../src/constants';
+
+import { artifacts } from './artifacts';
 import {
     StakingContract,
     StakingProxyContract,
@@ -10,10 +13,6 @@ import {
     TestStakingProxyContract,
     TestStakingProxyStakingContractAttachedToProxyEventArgs,
 } from './wrappers';
-
-import { artifacts } from './artifacts';
-
-import { constants as stakingConstants } from '../src/constants';
 
 blockchainTests('Migration tests', env => {
     let authorizedAddress: string;

@@ -3,10 +3,11 @@ import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import * as _ from 'lodash';
 
+import { constants as stakingConstants } from '../src/constants';
+
 import { MakerActor } from './actors/maker_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { constants as stakingConstants } from '../src/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count

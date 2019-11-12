@@ -18,7 +18,7 @@ import {
     IsolatedExchangeContract,
     IsolatedExchangeDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
     IsolatedExchangeFillEventArgs as FillEventArgs,
- } from '../wrappers';
+} from '../wrappers';
 
 export interface AssetBalances {
     [assetData: string]: { [address: string]: BigNumber };

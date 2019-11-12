@@ -93,24 +93,15 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             txDefaults,
             artifacts,
         );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            {
-                from: owner,
-            },
-        );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc721Proxy.address,
-            {
-                from: owner,
-            },
-        );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(
-            multiAssetProxy.address,
-            {
-                from: owner,
-            },
-        );
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+            from: owner,
+        });
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
         await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
 
