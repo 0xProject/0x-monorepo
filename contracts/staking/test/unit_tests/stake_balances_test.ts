@@ -11,7 +11,7 @@ import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { artifacts } from '../artifacts';
 import { TestMixinStakeBalancesContract } from '../wrappers';
 
-import { constants as stakingConstants } from '.../src/constants';
+import { constants as stakingConstants } from '../../src/constants';
 import { StakeStatus, StoredBalance } from '../../src/types';
 
 blockchainTests.resets('MixinStakeBalances unit tests', env => {

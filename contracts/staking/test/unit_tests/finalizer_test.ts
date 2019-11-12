@@ -12,8 +12,8 @@ import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { constants as stakingConstants } from '../../src/constants';
 import { artifacts } from '../artifacts';
-import { constants as stakingConstants } from '.../src/constants';
 import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
 import {

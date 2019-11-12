@@ -17,8 +17,8 @@ import {
     ZrxVaultContract,
 } from '../wrappers';
 
-import { constants as stakingConstants } from './constants';
-import { DecodedLogs, EndOfEpochInfo, StakingParams } from './types';
+import { constants as stakingConstants } from '../../src/constants';
+import { DecodedLogs, EndOfEpochInfo, StakingParams } from '../../src/types';
 
 export class StakingApiWrapper {
     // The address of the real Staking.sol contract

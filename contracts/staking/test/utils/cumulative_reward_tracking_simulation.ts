@@ -3,12 +3,12 @@ import { BigNumber } from '@0x/utils';
 import { DecodedLogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { DecodedLogs, StakeInfo, StakeStatus } from '../../src/types';
 import { artifacts } from '../artifacts';
 import { TestCumulativeRewardTrackingContract, TestCumulativeRewardTrackingEvents } from '../wrappers';
 
 import { StakingApiWrapper } from './api_wrapper';
 import { toBaseUnitAmount } from './number_utils';
-import { DecodedLogs, StakeInfo, StakeStatus } from './types';
 
 export enum TestAction {
     Finalize,

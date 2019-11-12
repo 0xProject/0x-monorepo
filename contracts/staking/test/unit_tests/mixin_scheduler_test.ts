@@ -3,7 +3,7 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
-import { constants as stakingConstants } from '.../src/constants';
+import { constants as stakingConstants } from '../../src/constants';
 
 import { artifacts } from '../artifacts';
 import {

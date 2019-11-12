@@ -13,7 +13,7 @@ import { RevertReason } from '@0x/types';
 import { AuthorizableRevertErrors, BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { constants as stakingConstants } from '.../src/constants';
+import { constants as stakingConstants } from '../../src/constants';
 
 import { artifacts } from '../artifacts';
 import {
