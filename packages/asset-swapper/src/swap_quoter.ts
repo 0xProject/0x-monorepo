@@ -1,6 +1,6 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
-import { assetDataUtils, SignedOrder } from '@0x/order-utils';
+import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -31,7 +31,7 @@ export class SwapQuoter {
     public readonly orderbook: Orderbook;
     public readonly expiryBufferMs: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
-    private readonly _contractWrappers: ContractWrappers;
+    public readonly contractWrappers: ContractWrappers;
     private readonly _orderPruner: OrderPruner;
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -148,10 +148,10 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this._contractWrappers = new ContractWrappers(this.provider, {
+        this.contractWrappers = new ContractWrappers(this.provider, {
             chainId,
         });
-        this._orderPruner = new OrderPruner(this._contractWrappers.devUtils, {
+        this._orderPruner = new OrderPruner(this.contractWrappers.devUtils, {
             expiryBufferMs: this.expiryBufferMs,
             permittedOrderFeeTypes: this.permittedOrderFeeTypes,
         });
@@ -227,8 +227,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        const makerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
-        const takerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
+        const makerAssetData = await this.contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
+        const takerAssetData = await this.contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
         const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -257,8 +257,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
-        const makerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
-        const takerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
+        const makerAssetData = await this.contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
+        const takerAssetData = await this.contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
         const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -282,9 +282,8 @@ export class SwapQuoter {
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
-
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(takerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(makerAssetData);
         const assetPairs = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         if (!assetPairs.includes(makerAssetData)) {
             return {
@@ -304,7 +303,7 @@ export class SwapQuoter {
      */
     public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
         assert.isString('makerAssetData', makerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(makerAssetData);
         const allAssetPairs = await this.orderbook.getAvailableAssetDatasAsync();
         const assetPairs = allAssetPairs
             .filter(pair => pair.assetDataA.assetData === makerAssetData)
@@ -319,7 +318,7 @@ export class SwapQuoter {
      */
     public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
         assert.isString('takerAssetData', takerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(takerAssetData);
         const allAssetPairs = await this.orderbook.getAvailableAssetDatasAsync();
         const assetPairs = allAssetPairs
             .filter(pair => pair.assetDataB.assetData === takerAssetData)
@@ -338,8 +337,8 @@ export class SwapQuoter {
     ): Promise<boolean> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(makerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(takerAssetData);
         const availableMakerAssetDatas = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         return _.includes(availableMakerAssetDatas, makerAssetData);
     }
@@ -355,8 +354,8 @@ export class SwapQuoter {
     ): Promise<PrunedSignedOrder[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
-        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(takerAssetData);
+        await this.contractWrappers.devUtils.revertIfInvalidAssetData.callAsync(makerAssetData);
         // get orders
         const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const orders = _.map(apiOrders, o => o.order);
@@ -374,7 +373,7 @@ export class SwapQuoter {
         swapQuote: SwapQuote,
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
-        const balanceAndAllowance = await this._contractWrappers.devUtils.getBalanceAndAssetProxyAllowance.callAsync(
+        const balanceAndAllowance = await this.contractWrappers.devUtils.getBalanceAndAssetProxyAllowance.callAsync(
             takerAddress,
             swapQuote.takerAssetData,
         );

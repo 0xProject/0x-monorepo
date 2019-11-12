@@ -18,6 +18,7 @@ import {
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
 } from '../types';
+import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
@@ -50,7 +51,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts> = {},
     ): Promise<CalldataInfo> {
-        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
+        assert.isValidForwarderSwapQuote('quote', quote, await this.getEtherTokenAssetDataOrThrowAsync());
 
         const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
@@ -82,7 +83,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts> = {},
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
-        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
+        assert.isValidForwarderSwapQuote('quote', quote, await this.getEtherTokenAssetDataOrThrowAsync());
 
         const { ethAmount: providedEthAmount, feeRecipient, feePercentage } = _.merge(
             {},
@@ -136,9 +137,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             methodName,
         ) as MethodAbi;
 
-        const ethAmount = worstCaseQuoteInfo.protocolFeeInEthAmount.plus(worstCaseQuoteInfo.totalTakerAssetAmount);
-        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage);
-        const ethAmountWithFees = ethAmount.plus(affiliateFeeAmount);
+        const ethAmountWithFees = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(worstCaseQuoteInfo, feePercentage);
         return {
             params,
             toAddress: this._contractWrappers.forwarder.address,
@@ -156,7 +155,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<SwapQuoteExecutionOpts & ForwarderExtensionContractOpts>,
     ): Promise<string> {
-        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
+        assert.isValidForwarderSwapQuote('quote', quote, await this.getEtherTokenAssetDataOrThrowAsync());
 
         const { ethAmount: providedEthAmount, takerAddress, gasLimit, gasPrice, feeRecipient, feePercentage } = _.merge(
             {},
@@ -184,9 +183,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
         // if no ethAmount is provided, default to the worst totalTakerAssetAmount
-        const ethAmount = worstCaseQuoteInfo.protocolFeeInEthAmount.plus(worstCaseQuoteInfo.totalTakerAssetAmount);
-        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage);
-        const ethAmountWithFees = ethAmount.plus(affiliateFeeAmount);
+        const ethAmountWithFees = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(worstCaseQuoteInfo, feePercentage);
         // format fee percentage
         const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         try {
@@ -232,7 +229,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         }
     }
 
-    private async _getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
+    public async getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
         return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
             this._contractWrappers.contractAddresses.etherToken,
         );
