@@ -4,6 +4,6 @@
         "custom-no-magic-numbers": false
     },
     "linterOptions": {
-        "exclude": ["src/artifacts.ts"]
+        "exclude": ["src/artifacts.ts", "test/artifacts.ts"]
     }
 }

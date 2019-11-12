@@ -12,7 +12,7 @@ export interface ContractWrapperFunction extends ContractGetterFunction {
     awaitTransactionSuccessAsync?: (...args: any[]) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
 }
 
-export interface Result {
+export interface FunctionResult {
     data?: any;
     success: boolean;
     receipt?: TransactionReceiptWithDecodedLogs;
@@ -30,7 +30,7 @@ export interface Result {
  */
 export interface Condition<TBefore> {
     before: (...args: any[]) => Promise<TBefore>;
-    after: (beforeInfo: TBefore, result: Result, ...args: any[]) => Promise<any>;
+    after: (beforeInfo: TBefore, result: FunctionResult, ...args: any[]) => Promise<any>;
 }
 
 /**
@@ -44,8 +44,8 @@ export interface Assertion {
     executeAsync: (...args: any[]) => Promise<any>;
 }
 
-export interface RunResult {
-    beforeInfo: any;
+export interface AssertionResult<TBefore = unknown> {
+    beforeInfo: TBefore;
     afterInfo: any;
 }
 
@@ -73,12 +73,12 @@ export class FunctionAssertion<TBefore> implements Assertion {
      * Runs the wrapped function and fails if the before or after assertions fail.
      * @param ...args The args to the contract wrapper function.
      */
-    public async executeAsync(...args: any[]): Promise<RunResult> {
+    public async executeAsync(...args: any[]): Promise<AssertionResult<TBefore>> {
         // Call the before condition.
         const beforeInfo = await this.condition.before(...args);
 
         // Initialize the callResult so that the default success value is true.
-        const callResult: Result = { success: true };
+        const callResult: FunctionResult = { success: true };
 
         // Try to make the call to the function. If it is successful, pass the
         // result and receipt to the after condition.

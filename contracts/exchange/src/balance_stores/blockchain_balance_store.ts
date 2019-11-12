@@ -53,7 +53,7 @@ export class BlockchainBalanceStore extends BalanceStore {
             this._ownerAddresses,
             await Promise.all(this._ownerAddresses.map(address => web3Wrapper.getBalanceInWeiAsync(address))),
         );
-        this._balances.eth = ethBalances;
+        this.balances.eth = ethBalances;
     }
 
     /**
@@ -68,7 +68,7 @@ export class BlockchainBalanceStore extends BalanceStore {
                 ),
             ),
         );
-        this._balances.erc20 = _.zipObject(this._ownerAddresses, balances);
+        this.balances.erc20 = _.zipObject(this._ownerAddresses, balances);
     }
 
     /**
@@ -80,11 +80,11 @@ export class BlockchainBalanceStore extends BalanceStore {
             this._tokenContracts.erc721,
         );
 
-        this._balances.erc721 = {};
+        this.balances.erc721 = {};
         for (const [tokenAddress, tokenIds] of Object.entries(this._tokenIds.erc721)) {
             for (const tokenId of tokenIds) {
                 const tokenOwner = await erc721ContractsByAddress[tokenAddress].ownerOf.callAsync(tokenId);
-                _.update(this._balances.erc721, [tokenOwner, tokenAddress], nfts => _.union([tokenId], nfts).sort());
+                _.update(this.balances.erc721, [tokenOwner, tokenAddress], nfts => _.union([tokenId], nfts).sort());
             }
         }
     }
@@ -116,20 +116,20 @@ export class BlockchainBalanceStore extends BalanceStore {
             let i = 0;
             for (const tokenOwner of this._ownerAddresses) {
                 // Fungible tokens
-                _.set(this._balances.erc1155, [tokenOwner, tokenAddress, 'fungible'], {});
+                _.set(this.balances.erc1155, [tokenOwner, tokenAddress, 'fungible'], {});
                 for (const tokenId of fungible) {
                     _.set(
-                        this._balances.erc1155,
+                        this.balances.erc1155,
                         [tokenOwner, tokenAddress, 'fungible', tokenId.toString()],
                         balances[i++],
                     );
                 }
                 // Non-fungible tokens
-                _.set(this._balances.erc1155, [tokenOwner, tokenAddress, 'nonFungible'], []);
+                _.set(this.balances.erc1155, [tokenOwner, tokenAddress, 'nonFungible'], []);
                 for (const tokenId of nonFungible) {
                     const isOwner = balances[i++];
                     if (isOwner.isEqualTo(1)) {
-                        _.update(this._balances.erc1155, [tokenOwner, tokenAddress, 'nonFungible'], nfts =>
+                        _.update(this.balances.erc1155, [tokenOwner, tokenAddress, 'nonFungible'], nfts =>
                             _.union([tokenId], nfts).sort(),
                         );
                     }

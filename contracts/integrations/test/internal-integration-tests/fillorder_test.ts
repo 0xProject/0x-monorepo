@@ -6,6 +6,7 @@ import {
     ExchangeFillEventArgs,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
+import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     constants as stakingConstants,
     IStakingEventsEpochEndedEventArgs,
@@ -35,6 +36,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
     let delegator: StakerKeeper;
 
     let poolId: string;
+    let operatorShare: number;
 
     before(async () => {
         deployment = await DeploymentManager.deployAsync(env, {
@@ -79,7 +81,8 @@ blockchainTests.resets('fillOrder integration tests', env => {
         await delegator.configureERC20TokenAsync(deployment.tokens.zrx);
 
         // Create a staking pool with the operator as a maker.
-        poolId = await operator.createStakingPoolAsync(stakingConstants.PPM * 0.95, true);
+        operatorShare = stakingConstants.PPM * 0.95;
+        poolId = await operator.createStakingPoolAsync(operatorShare, true);
         // A vanilla maker joins the pool as well.
         await maker.joinStakingPoolAsync(poolId);
 
@@ -282,9 +285,11 @@ blockchainTests.resets('fillOrder integration tests', env => {
         );
 
         // The rewards are split between the operator and delegator based on the pool's operatorShare
-        const operatorReward = rewardsAvailable
-            .times(operator.operatorShares[poolId])
-            .dividedToIntegerBy(constants.PPM_DENOMINATOR);
+        const operatorReward = ReferenceFunctions.getPartialAmountFloor(
+            new BigNumber(operatorShare),
+            new BigNumber(constants.PPM_DENOMINATOR),
+            rewardsAvailable,
+        );
         const delegatorReward = rewardsAvailable.minus(operatorReward);
 
         // Finalize the pool. This should automatically pay the operator in WETH.
@@ -363,9 +368,11 @@ blockchainTests.resets('fillOrder integration tests', env => {
         balanceStore.assertEquals(expectedBalances);
 
         // The rewards are split between the operator and delegator based on the pool's operatorShare
-        const operatorReward = rewardsAvailable
-            .times(operator.operatorShares[poolId])
-            .dividedToIntegerBy(constants.PPM_DENOMINATOR);
+        const operatorReward = ReferenceFunctions.getPartialAmountFloor(
+            new BigNumber(operatorShare),
+            new BigNumber(constants.PPM_DENOMINATOR),
+            rewardsAvailable,
+        );
 
         // Finalize the pool. This should automatically pay the operator in WETH.
         const [finalizePoolReceipt] = await delegator.finalizePoolsAsync([poolId]);
