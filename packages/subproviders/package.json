@@ -59,7 +59,7 @@
         "@0x/tslint-config": "^3.1.0-beta.1",
         "@types/bip39": "^2.4.0",
         "@types/bn.js": "^4.11.0",
-        "@types/ethereumjs-tx": "^1.0.0",
+        "@types/ethereumjs-tx": "^1.0.1",
         "@types/hdkey": "^0.7.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",

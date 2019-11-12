@@ -63,4 +63,26 @@ export const fixtureData = {
     EIP712_TEST_TYPED_DATA_HASH: '0xb460d69ca60383293877cd765c0f97bd832d66bca720f7e32222ce1118832493',
     EIP712_TEST_TYPED_DATA_SIGNED_RESULT:
         '0x20af5b6bfc3658942198d6eeda159b4ed589f90cee6eac3ba117818ffba5fd7e354a353aad93faabd6eb6c66e17921c92bd1cd09c92a770f554470dc3e254ce701',
+    ERC20_TRANSFER_RPC_PAYLOAD: {
+        id: 1573248819933307,
+        jsonrpc: '2.0',
+        params: [
+            '0xf8a820843b9aca00829234942002d3812f58e35f0ea1ffbf80a75a38c32175fa80b844a9059cbb0000000000000000000000008a333a18b924554d6e83ef9e9944de6260f61d3b00000000000000000000000000000000000000000000000000005af3107a40001ba0aef7ea75bfc9c8fd6ecd9572e78de6aabfe856a69658ce259a64cffd5b31ac22a0386d4669313a21a59e27d629810fc4ab4e1ff08eb7c20f5fa4f533a23fd5533f',
+        ],
+        method: 'eth_sendRawTransaction',
+    },
+    ETH_TRANSFER_PAYLOAD: {
+        id: 1573451366422343,
+        jsonrpc: '2.0',
+        params: [
+            '0xf86b268501dcd65000825208948a333a18b924554d6e83ef9e9944de6260f61d3b870174e4905ba000801ba0b71c9f67a42b53288cbf8d73741e8d189e79031c00f0e029f6501057fdb71affa035f306598dbc3f1f60db8ca0a4fe0d2e189c4caead7c6179da512e6abc481cbb',
+        ],
+        method: 'eth_sendRawTransaction',
+    },
+    ETH_GETBLOCK_RPC_PAYLOAD: {
+        id: 1,
+        params: [],
+        jsonrpc: '2.0',
+        method: 'eth_blockNumber',
+    },
 };
