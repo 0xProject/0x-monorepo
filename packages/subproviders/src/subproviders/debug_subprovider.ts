@@ -9,10 +9,10 @@ import { Subprovider } from './subprovider';
 const HEX_BASE = 16;
 
 export interface DebugPayloadRawTransactionAttributes {
-    gasPrice: BigNumber;
-    gasLimit: BigNumber;
-    nonce: BigNumber;
-    value: BigNumber;
+    gasPrice: string;
+    gasLimit: string;
+    nonce: string;
+    value: string;
     to: string;
 }
 export interface DebugPayload extends JSONRPCRequestPayload {
@@ -21,7 +21,7 @@ export interface DebugPayload extends JSONRPCRequestPayload {
 
 export type WithDebugPayload = (debugPayload: DebugPayload) => void;
 // tslint:disable-next-line:no-console
-const defaultDebugCallback = (debugPayload: DebugPayload) => console.debug(debugPayload);
+const defaultDebugCallback = (debugPayload: DebugPayload) => console.debug(JSON.stringify(debugPayload, null, 2));
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -32,13 +32,13 @@ export class DebugSubprovider extends Subprovider {
     private readonly _debugCallback: WithDebugPayload;
 
     private static _generateRawTransactionAttributes(txn: EthereumTx): DebugPayloadRawTransactionAttributes {
-        const hexBufferToBN = (value: Buffer) => new BigNumber(value.toString('hex'), HEX_BASE);
+        const hexBufferToString = (value: Buffer): string => new BigNumber(value.toString('hex'), HEX_BASE).toString();
 
         return {
-            gasLimit: hexBufferToBN(txn.gasLimit),
-            gasPrice: hexBufferToBN(txn.gasPrice),
-            nonce: hexBufferToBN(txn.nonce),
-            value: hexBufferToBN(txn.value),
+            gasLimit: hexBufferToString(txn.gasLimit),
+            gasPrice: hexBufferToString(txn.gasPrice),
+            nonce: hexBufferToString(txn.nonce),
+            value: hexBufferToString(txn.value),
             to: `0x${txn.to.toString('hex')}`,
         };
     }

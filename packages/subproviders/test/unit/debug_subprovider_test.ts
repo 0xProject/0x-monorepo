@@ -39,11 +39,11 @@ describe('DebugSubprovider', () => {
                 if (!rawTxnAttrs) {
                     fail('No rawTransactionAttributes');
                 } else {
-                    expect(rawTxnAttrs.gasLimit.toString()).to.eql('37428');
-                    expect(rawTxnAttrs.gasPrice.toString()).to.eql('1000000000');
-                    expect(rawTxnAttrs.nonce.toString()).to.eql('32');
-                    expect(rawTxnAttrs.value.toString()).to.eql('0');
-                    expect(rawTxnAttrs.to.toString()).to.eql('0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa');
+                    expect(rawTxnAttrs.gasLimit).to.eql('37428');
+                    expect(rawTxnAttrs.gasPrice).to.eql('1000000000');
+                    expect(rawTxnAttrs.nonce).to.eql('32');
+                    expect(rawTxnAttrs.value).to.eql('0');
+                    expect(rawTxnAttrs.to).to.eql('0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa');
                 }
             }
         });
@@ -75,11 +75,11 @@ describe('DebugSubprovider', () => {
                 if (!rawTxnAttrs) {
                     fail('No rawTransactionAttributes');
                 } else {
-                    expect(rawTxnAttrs.gasLimit.toString()).to.eql('21000');
-                    expect(rawTxnAttrs.gasPrice.toString()).to.eql('8000000000');
-                    expect(rawTxnAttrs.nonce.toString()).to.eql('38');
-                    expect(rawTxnAttrs.value.toString()).to.eql('410000000000000');
-                    expect(rawTxnAttrs.to.toString()).to.eql('0x8a333a18b924554d6e83ef9e9944de6260f61d3b');
+                    expect(rawTxnAttrs.gasLimit).to.eql('21000');
+                    expect(rawTxnAttrs.gasPrice).to.eql('8000000000');
+                    expect(rawTxnAttrs.nonce).to.eql('38');
+                    expect(rawTxnAttrs.value).to.eql('410000000000000');
+                    expect(rawTxnAttrs.to).to.eql('0x8a333a18b924554d6e83ef9e9944de6260f61d3b');
                 }
             }
         });
