@@ -56,6 +56,10 @@
         "@0x/dev-utils": "^2.4.0-beta.1",
         "@0x/sol-compiler": "^3.2.0-beta.1",
         "@0x/tslint-config": "^3.1.0-beta.1",
+        "@0x/contracts-utils": "^3.3.0-beta.1",
+        "@0x/types": "^2.5.0-beta.1",
+        "@0x/utils": "^4.6.0-beta.1",
+        "@0x/web3-wrapper": "^6.1.0-beta.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",
@@ -63,6 +67,7 @@
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
+        "lodash": "^4.17.11",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
@@ -74,13 +79,8 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.5.0-beta.1",
-        "@0x/contracts-utils": "^3.3.0-beta.1",
-        "@0x/types": "^2.5.0-beta.1",
         "@0x/typescript-typings": "^4.4.0-beta.1",
-        "@0x/utils": "^4.6.0-beta.1",
-        "@0x/web3-wrapper": "^6.1.0-beta.1",
-        "ethereum-types": "^2.2.0-beta.1",
-        "lodash": "^4.17.11"
+        "ethereum-types": "^2.2.0-beta.1"
     },
     "publishConfig": {
         "access": "public"
