@@ -13,10 +13,10 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { Erc1155Wrapper } from '../src/erc1155_wrapper';
 import { ERC1155MintableContract } from '../src/wrappers';
 
 import { artifacts } from './artifacts';
-import { Erc1155Wrapper } from '../src/erc1155_wrapper';
 import { DummyERC1155ReceiverBatchTokenReceivedEventArgs, DummyERC1155ReceiverContract } from './wrappers';
 chaiSetup.configure();
 const expect = chai.expect;

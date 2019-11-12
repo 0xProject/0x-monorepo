@@ -20,8 +20,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { actorAddressesByName, FeeRecipient, Maker, OperatorStakerMaker, StakerKeeper, Taker } from '../actors';
 import { DeploymentManager } from '../../src/deployment_manager';
+import { actorAddressesByName, FeeRecipient, Maker, OperatorStakerMaker, StakerKeeper, Taker } from '../actors';
 
 const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 blockchainTests.resets('fillOrder integration tests', env => {

@@ -28,9 +28,9 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { DeploymentManager } from '../../src/deployment_manager';
 import { Actor } from '../actors/base';
 import { Maker } from '../actors/maker';
-import { DeploymentManager } from '../../src/deployment_manager';
 
 const { addFillResults, safeGetPartialAmountFloor } = ReferenceFunctions;
 

@@ -6,8 +6,8 @@ import { OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { Actor, FeeRecipient, Maker } from '../actors';
 import { DeploymentManager } from '../../src/deployment_manager';
+import { Actor, FeeRecipient, Maker } from '../actors';
 
 // Necessary bookkeeping to validate Forwarder results
 interface ForwarderFillState {
