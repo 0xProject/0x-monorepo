@@ -6,10 +6,10 @@ import { BIG_NUMBER_ZERO } from '../constants';
 import { AccountState, BaseCurrency, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
-import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
 import { errorReporter } from '../util/error_reporter';
+import { swapQuoteUpdater } from '../util/swap_quote_updater';
 
 import { actions } from './actions';
 import { State } from './reducer';
@@ -30,9 +30,11 @@ export const asyncData = {
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
         const { providerState, assetMetaDataMap, network } = state;
-        const assetBuyer = providerState.assetBuyer;
+        const swapQuoter = providerState.swapQuoter;
         try {
-            const assetDatas = await assetBuyer.getAvailableAssetDatasAsync();
+            // TODO(dave4506)
+            const wethAssetData = '';
+            const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);
             const deduplicatedAssetDatas = _.uniq(assetDatas);
             const assets = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);
             dispatch(actions.setAvailableAssets(assets));
@@ -87,22 +89,22 @@ export const asyncData = {
             return;
         }
     },
-    fetchCurrentBuyQuoteAndDispatchToStore: async (
+    fetchCurrentSwapQuoteAndDispatchToStore: async (
         state: State,
         dispatch: Dispatch,
         fetchOrigin: QuoteFetchOrigin,
         options: { updateSilently: boolean },
     ) => {
-        const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
-        const assetBuyer = providerState.assetBuyer;
+        const { swapOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
+        const swapQuoter = providerState.swapQuoter;
         if (
             selectedAssetUnitAmount !== undefined &&
             selectedAsset !== undefined &&
             selectedAssetUnitAmount.isGreaterThan(BIG_NUMBER_ZERO) &&
-            buyOrderState.processState === OrderProcessState.None
+            swapOrderState.processState === OrderProcessState.None
         ) {
-            await buyQuoteUpdater.updateBuyQuoteAsync(
-                assetBuyer,
+            await swapQuoteUpdater.updateSwapQuoteAsync(
+                swapQuoter,
                 dispatch,
                 selectedAsset,
                 selectedAssetUnitAmount,

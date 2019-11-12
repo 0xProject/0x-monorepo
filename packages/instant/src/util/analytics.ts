@@ -1,4 +1,4 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { MarketBuySwapQuote, SwapQuote } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -82,20 +82,17 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
     };
 }
 
-const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
-    const assetBuyAmount = buyQuote.assetBuyAmount.toString();
-    const assetEthAmount = buyQuote.worstCaseQuoteInfo.assetEthAmount.toString();
-    const feeEthAmount = buyQuote.worstCaseQuoteInfo.feeEthAmount.toString();
-    const totalEthAmount = buyQuote.worstCaseQuoteInfo.totalEthAmount.toString();
-    const feePercentage = buyQuote.feePercentage !== undefined ? buyQuote.feePercentage.toString() : 0;
-    const hasFeeOrders = !_.isEmpty(buyQuote.feeOrders) ? 'true' : 'false';
+const swapQuoteEventProperties = (swapQuote: MarketBuySwapQuote) => {
+    const assetBuyAmount = swapQuote.makerAssetFillAmount.toString();
+    const assetEthAmount = swapQuote.worstCaseQuoteInfo.takerAssetAmount.toString();
+    const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount.plus(swapQuote.worstCaseQuoteInfo.feeTakerAssetAmount).toString();
+    const totalEthAmount = swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount.toString();
+    // const feePercentage = swapQuote.feePercentage !== undefined ? buyQuote.feePercentage.toString() : 0;
     return {
         assetBuyAmount,
         assetEthAmount,
         feeEthAmount,
         totalEthAmount,
-        feePercentage,
-        hasFeeOrders,
     };
 };
 
@@ -182,35 +179,35 @@ export const analytics = {
     trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PaymentMethodDropdownOpened),
     trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PaymentMethodOpenedEtherscan),
     trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PaymentMethodCopiedAddress),
-    trackBuyNotEnoughEth: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BuyNotEnoughEth)(buyQuoteEventProperties(buyQuote)),
-    trackBuyStarted: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BuyStarted)(buyQuoteEventProperties(buyQuote)),
-    trackBuySignatureDenied: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BuySignatureDenied)(buyQuoteEventProperties(buyQuote)),
-    trackBuySimulationFailed: (buyQuote: BuyQuote) =>
-        trackingEventFnWithPayload(EventNames.BuySimulationFailed)(buyQuoteEventProperties(buyQuote)),
-    trackBuyUnknownError: (buyQuote: BuyQuote, errorMessage: string) =>
+    trackBuyNotEnoughEth: (swapQuote: MarketBuySwapQuote) =>
+        trackingEventFnWithPayload(EventNames.BuyNotEnoughEth)(swapQuoteEventProperties(swapQuote)),
+    trackBuyStarted: (swapQuote: MarketBuySwapQuote) =>
+        trackingEventFnWithPayload(EventNames.BuyStarted)(swapQuoteEventProperties(swapQuote)),
+    trackBuySignatureDenied: (swapQuote: MarketBuySwapQuote) =>
+        trackingEventFnWithPayload(EventNames.BuySignatureDenied)(swapQuoteEventProperties(swapQuote)),
+    trackBuySimulationFailed: (swapQuote: MarketBuySwapQuote) =>
+        trackingEventFnWithPayload(EventNames.BuySimulationFailed)(swapQuoteEventProperties(swapQuote)),
+    trackBuyUnknownError: (swapQuote: MarketBuySwapQuote, errorMessage: string) =>
         trackingEventFnWithPayload(EventNames.BuyUnknownError)({
-            ...buyQuoteEventProperties(buyQuote),
+            ...swapQuoteEventProperties(swapQuote),
             errorMessage,
         }),
-    trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+    trackBuyTxSubmitted: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BuyTxSubmitted)({
-            ...buyQuoteEventProperties(buyQuote),
+            ...swapQuoteEventProperties(swapQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
         }),
-    trackBuyTxSucceeded: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+    trackBuyTxSucceeded: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BuyTxSucceeded)({
-            ...buyQuoteEventProperties(buyQuote),
+            ...swapQuoteEventProperties(swapQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
-    trackBuyTxFailed: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+    trackBuyTxFailed: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BuyTxFailed)({
-            ...buyQuoteEventProperties(buyQuote),
+            ...swapQuoteEventProperties(swapQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
@@ -232,9 +229,9 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TokenSelectorSearched)({ searchText }),
     trackTransactionViewed: (orderProcesState: OrderProcessState) =>
         trackingEventFnWithPayload(EventNames.TransactionViewed)({ orderState: orderProcesState }),
-    trackQuoteFetched: (buyQuote: BuyQuote, fetchOrigin: QuoteFetchOrigin) =>
+    trackQuoteFetched: (swapQuote: MarketBuySwapQuote, fetchOrigin: QuoteFetchOrigin) =>
         trackingEventFnWithPayload(EventNames.QuoteFetched)({
-            ...buyQuoteEventProperties(buyQuote),
+            ...swapQuoteEventProperties(swapQuote),
             fetchOrigin,
         }),
     trackQuoteError: (errorMessage: string, assetBuyAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {

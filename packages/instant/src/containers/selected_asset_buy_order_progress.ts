@@ -5,9 +5,9 @@ import { State } from '../redux/reducer';
 import { OrderState } from '../types';
 
 interface ConnectedState {
-    buyOrderState: OrderState;
+    swapOrderState: OrderState;
 }
 const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
-    buyOrderState: state.buyOrderState,
+    swapOrderState: state.swapOrderState,
 });
 export const SelectedAssetBuyOrderProgress = connect(mapStateToProps)(BuyOrderProgress);

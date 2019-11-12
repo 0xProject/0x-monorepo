@@ -28,7 +28,7 @@ interface ConnectedState extends BuyOrderProgressOrPaymentMethodProps {}
 
 export interface ConnectedBuyOrderProgressOrPaymentMethodProps {}
 const mapStateToProps = (state: State, _ownProps: ConnectedBuyOrderProgressOrPaymentMethodProps): ConnectedState => ({
-    orderProcessState: state.buyOrderState.processState,
+    orderProcessState: state.swapOrderState.processState,
 });
 export const ConnectedBuyOrderProgressOrPaymentMethod: React.ComponentClass<
     ConnectedBuyOrderProgressOrPaymentMethodProps

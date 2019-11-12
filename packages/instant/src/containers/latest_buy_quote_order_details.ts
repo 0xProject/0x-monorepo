@@ -16,7 +16,7 @@ type DispatchProperties = 'onBaseCurrencySwitchEth' | 'onBaseCurrencySwitchUsd';
 interface ConnectedState extends Omit<OrderDetailsProps, DispatchProperties> {}
 const mapStateToProps = (state: State, _ownProps: LatestBuyQuoteOrderDetailsProps): ConnectedState => ({
     // use the worst case quote info
-    buyQuoteInfo: oc(state).latestBuyQuote.worstCaseQuoteInfo(),
+    buyQuoteInfo: oc(state).latestSwapQuote.worstCaseQuoteInfo(),
     selectedAssetUnitAmount: state.selectedAssetUnitAmount,
     ethUsdPrice: state.ethUsdPrice,
     isLoading: state.quoteRequestState === AsyncProcessState.Pending,

@@ -1,4 +1,4 @@
-import { AssetBuyer } from '@0x/asset-buyer';
+import { SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -11,7 +11,7 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, ERC20Asset, Omit, OrderProcessState, QuoteFetchOrigin } from '../types';
-import { buyQuoteUpdater } from '../util/buy_quote_updater';
+import { swapQuoteUpdater } from '../util/swap_quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
@@ -20,7 +20,7 @@ export interface SelectedERC20AssetAmountInputProps {
 }
 
 interface ConnectedState {
-    assetBuyer: AssetBuyer;
+    swapQuoter: SwapQuoter;
     value?: BigNumber;
     asset?: ERC20Asset;
     isInputDisabled: boolean;
@@ -30,8 +30,8 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    updateBuyQuote: (
-        assetBuyer: AssetBuyer,
+    updateSwapQuote: (
+        swapQuoter: SwapQuoter,
         value?: BigNumber,
         asset?: ERC20Asset,
         affiliateInfo?: AffiliateInfo,
@@ -43,7 +43,7 @@ type ConnectedProps = Omit<ERC20AssetAmountInputProps, keyof SelectedERC20AssetA
 type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
 const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputProps): ConnectedState => {
-    const processState = state.buyOrderState.processState;
+    const processState = state.swapOrderState.processState;
     const isInputEnabled = processState === OrderProcessState.None || processState === OrderProcessState.Failure;
     const isInputDisabled = !isInputEnabled;
     const selectedAsset =
@@ -56,9 +56,9 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
             ? isInputEnabled || processState === OrderProcessState.Success
             : false;
 
-    const assetBuyer = state.providerState.assetBuyer;
+    const swapQuoter = state.providerState.swapQuoter;
     return {
-        assetBuyer,
+        swapQuoter,
         value: state.selectedAssetUnitAmount,
         asset: selectedAsset,
         isInputDisabled,
@@ -68,27 +68,27 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     };
 };
 
-const debouncedUpdateBuyQuoteAsync = _.debounce(buyQuoteUpdater.updateBuyQuoteAsync.bind(buyQuoteUpdater), 200, {
+const debouncedUpdateSwapQuoteAsync = _.debounce(swapQuoteUpdater.updateSwapQuoteAsync.bind(swapQuoteUpdater), 200, {
     trailing: true,
-}) as typeof buyQuoteUpdater.updateBuyQuoteAsync;
+}) as typeof swapQuoteUpdater.updateSwapQuoteAsync;
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     _ownProps: SelectedERC20AssetAmountInputProps,
 ): ConnectedDispatch => ({
-    updateBuyQuote: (assetBuyer, value, asset, affiliateInfo) => {
+    updateSwapQuote: (swapQuoter, value, asset, affiliateInfo) => {
         // Update the input
         dispatch(actions.updateSelectedAssetAmount(value));
-        // invalidate the last buy quote.
-        dispatch(actions.updateLatestBuyQuote(undefined));
-        // reset our buy state
-        dispatch(actions.setBuyOrderStateNone());
+        // invalidate the last swap quote.
+        dispatch(actions.updateLatestSwapQuote(undefined));
+        // reset our swap state
+        dispatch(actions.setSwapOrderStateNone());
 
         if (value !== undefined && value.isGreaterThan(0) && asset !== undefined) {
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, QuoteFetchOrigin.Manual, {
+            debouncedUpdateSwapQuoteAsync(swapQuoter, dispatch, asset, value, QuoteFetchOrigin.Manual, {
                 setPending: true,
                 dispatchErrors: true,
                 affiliateInfo,
@@ -107,7 +107,7 @@ const mergeProps = (
         asset: connectedState.asset,
         value: connectedState.value,
         onChange: (value, asset) => {
-            connectedDispatch.updateBuyQuote(connectedState.assetBuyer, value, asset, connectedState.affiliateInfo);
+            connectedDispatch.updateSwapQuote(connectedState.swapQuoter, value, asset, connectedState.affiliateInfo);
         },
         isInputDisabled: connectedState.isInputDisabled,
         numberOfAssetsAvailable: connectedState.numberOfAssetsAvailable,

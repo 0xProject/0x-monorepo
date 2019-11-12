@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { SwapQuote, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -6,17 +6,17 @@ import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
-import { ERC20_BUY_QUOTE_SLIPPAGE_PERCENTAGE, ERC721_BUY_QUOTE_SLIPPAGE_PERCENTAGE } from '../constants';
+import { ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE, ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { AffiliateInfo, Asset, QuoteFetchOrigin } from '../types';
-import { analytics } from '../util/analytics';
-import { assetUtils } from '../util/asset';
-import { errorFlasher } from '../util/error_flasher';
-import { errorReporter } from '../util/error_reporter';
+import { analytics } from './analytics';
+import { assetUtils } from './asset';
+import { errorFlasher } from './error_flasher';
+import { errorReporter } from './error_reporter';
 
-export const buyQuoteUpdater = {
-    updateBuyQuoteAsync: async (
-        assetBuyer: AssetBuyer,
+export const swapQuoteUpdater = {
+    updateSwapQuoteAsync: async (
+        swapQuoter: SwapQuoter,
         dispatch: Dispatch<Action>,
         asset: Asset,
         assetUnitAmount: BigNumber,
@@ -27,7 +27,7 @@ export const buyQuoteUpdater = {
             affiliateInfo?: AffiliateInfo;
         },
     ): Promise<void> => {
-        // get a new buy quote.
+        // get a new swap quote.
         const baseUnitValue =
             asset.metaData.assetProxyId === AssetProxyId.ERC20
                 ? Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals)
@@ -36,19 +36,20 @@ export const buyQuoteUpdater = {
             // mark quote as pending
             dispatch(actions.setQuoteRequestStatePending());
         }
+        // TODO(dave4506) expose wethAssetData + feePercentage utils
+        const wethAssetData = '';
         const feePercentage = oc(options.affiliateInfo).feePercentage();
-        let newBuyQuote: BuyQuote | undefined;
+        let newSwapQuote: SwapQuote | undefined;
         const slippagePercentage =
             asset.metaData.assetProxyId === AssetProxyId.ERC20
-                ? ERC20_BUY_QUOTE_SLIPPAGE_PERCENTAGE
-                : ERC721_BUY_QUOTE_SLIPPAGE_PERCENTAGE;
+                ? ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE
+                : ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE;
         try {
-            newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, {
-                feePercentage,
+            newSwapQuote = await swapQuoter.getMarketBuySwapQuoteAsync(wethAssetData, asset.assetData, assetUnitAmount, {
                 slippagePercentage,
             });
         } catch (error) {
-            const errorMessage = assetUtils.assetBuyerErrorMessage(asset, error);
+            const errorMessage = assetUtils.swapQuoterErrorMessage(asset, error);
 
             errorReporter.report(error);
             analytics.trackQuoteError(error.message ? error.message : 'other', baseUnitValue, fetchOrigin);
@@ -59,10 +60,10 @@ export const buyQuoteUpdater = {
             }
             return;
         }
-        // We have a successful new buy quote
+        // We have a successful new swap quote
         errorFlasher.clearError(dispatch);
-        // invalidate the last buy quote.
-        dispatch(actions.updateLatestBuyQuote(newBuyQuote));
-        analytics.trackQuoteFetched(newBuyQuote, fetchOrigin);
+        // invalidate the last swap quote.
+        dispatch(actions.updateLatestSwapQuote(newSwapQuote));
+        analytics.trackQuoteFetched(newSwapQuote, fetchOrigin);
     },
 };
