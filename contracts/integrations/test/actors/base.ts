@@ -5,9 +5,9 @@ import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/t
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { SimulationEnvironment } from '../simulation/simulation';
-import { DeploymentManager } from '../deployment_manager';
 import { AssertionResult } from '../../src/function_assertions';
+import { DeploymentManager } from '../deployment_manager';
+import { SimulationEnvironment } from '../simulation/simulation';
 
 export type Constructor<T = {}> = new (...args: any[]) => T;
 

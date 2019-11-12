@@ -4,8 +4,8 @@ import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
-import { DeploymentManager } from '../utils/deployment_manager';
-import { FunctionAssertion, FunctionResult } from '../utils/function_assertions';
+import { FunctionAssertion, FunctionResult } from '../../src/function_assertions';
+import { DeploymentManager } from '../deployment_manager';
 
 function expectedUndelegatedStake(
     initStake: OwnerStakeByStatus | GlobalStakeByStatus,

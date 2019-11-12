@@ -2,8 +2,8 @@ import { BlockchainBalanceStore } from '@0x/contracts-exchange';
 import { GlobalStakeByStatus, StakeStatus, StakingPoolById, StoredBalance } from '@0x/contracts-staking';
 import * as _ from 'lodash';
 
-import { DeploymentManager } from '../utils/deployment_manager';
-import { AssertionResult } from '../utils/function_assertions';
+import { AssertionResult } from '../../src/function_assertions';
+import { DeploymentManager } from '../deployment_manager';
 
 // tslint:disable:max-classes-per-file
 

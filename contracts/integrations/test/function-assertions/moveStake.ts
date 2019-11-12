@@ -11,8 +11,8 @@ import { BigNumber, logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DeploymentManager } from '../utils/deployment_manager';
-import { FunctionAssertion } from '../utils/function_assertions';
+import { FunctionAssertion } from '../../src/function_assertions';
+import { DeploymentManager } from '../deployment_manager';
 
 function incrementNextEpochBalance(stakeBalance: StoredBalance, amount: BigNumber): void {
     _.update(stakeBalance, ['nextEpochBalance'], balance => (balance || constants.ZERO_AMOUNT).plus(amount));

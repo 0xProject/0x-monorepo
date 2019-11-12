@@ -2,9 +2,9 @@ import { BlockchainBalanceStore } from '@0x/contracts-exchange';
 import { blockchainTests } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
+import { AssertionResult } from '../../src/function_assertions';
 import { PoolOperator } from '../actors';
-import { DeploymentManager } from '../utils/deployment_manager';
-import { AssertionResult } from '../utils/function_assertions';
+import { DeploymentManager } from '../deployment_manager';
 
 import { Simulation, SimulationEnvironment } from './simulation';
 
