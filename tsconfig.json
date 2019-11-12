@@ -60,7 +60,6 @@
         { "path": "./packages/sol-resolver" },
         { "path": "./packages/sra-spec" },
         { "path": "./packages/subproviders" },
-        { "path": "./packages/testnet-faucets" },
         { "path": "./packages/tslint-config" },
         { "path": "./packages/types" },
         { "path": "./packages/typescript-typings" },

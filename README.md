@@ -96,10 +96,9 @@ These packages are all under development. See [/contracts/README.md](/contracts/
 
 #### Private Packages
 
-| Package                                            | Description                                                                      |
-| -------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [`@0x/instant`](/packages/instant)                 | A free and flexible way to offer simple crypto purchasing in any app or website. |
-| [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether                 |
+| Package                            | Description                                                                      |
+| ---------------------------------- | -------------------------------------------------------------------------------- |
+| [`@0x/instant`](/packages/instant) | A free and flexible way to offer simple crypto purchasing in any app or website. |
 
 ## Usage
 
