@@ -86,33 +86,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         assetProxyArtifacts,
     );
 
-    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
-        devUtilsArtifacts.DevUtils,
-        provider,
-        txDefaults,
-        devUtilsArtifacts,
-        exchange.address,
-    );
-
-    await CoordinatorContract.deployFrom0xArtifactAsync(
-        coordinatorArtifacts.Coordinator,
-        provider,
-        txDefaults,
-        coordinatorArtifacts,
-        exchange.address,
-        chainId,
-    );
-
-    const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployedAddresses.etherToken);
-    await ForwarderContract.deployFrom0xArtifactAsync(
-        forwarderArtifacts.Forwarder,
-        provider,
-        txDefaults,
-        forwarderArtifacts,
-        exchange.address,
-        wethAssetData,
-    );
-
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider, txDefaults);
     const ownableInterface = new IOwnableContract(constants.NULL_ADDRESS, provider, txDefaults);
 
@@ -230,6 +203,34 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         functionCalls.map(() => constants.ZERO_AMOUNT),
     ]);
     await submitAndExecuteTransactionAsync(governor, governor.address, batchTransactionData);
+
+    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+        devUtilsArtifacts.DevUtils,
+        provider,
+        txDefaults,
+        devUtilsArtifacts,
+        exchange.address,
+    );
+
+    await CoordinatorContract.deployFrom0xArtifactAsync(
+        coordinatorArtifacts.Coordinator,
+        provider,
+        txDefaults,
+        coordinatorArtifacts,
+        exchange.address,
+        chainId,
+    );
+
+    const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployedAddresses.etherToken);
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+        forwarderArtifacts.Forwarder,
+        provider,
+        txDefaults,
+        forwarderArtifacts,
+        exchange.address,
+        wethAssetData,
+    );
+    await forwarder.approveMakerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.etherToken);
 }
 
 (async () => {
