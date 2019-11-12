@@ -125,7 +125,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
         const ordersChannelHandler: OrdersChannelHandler = {
             onUpdate: async (_channel, _opts, apiOrders) => this._handleOrderUpdates(apiOrders),
             // tslint:disable-next-line:no-empty
-            onError: (_channel, _err) => { },
+            onError: (_channel, _err) => {},
             onClose: async () => {
                 // Do not reconnect if destroyed
                 if (this._isDestroyed) {

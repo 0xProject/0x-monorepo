@@ -34,7 +34,6 @@ All endpoints that are paginated should return a `total`, `page`, `perPage` and 
 
 These requests include the [`/v3/asset_pairs`](#operation/getAssetPairs), [`/v3/orders`](#operation/getOrders), [`/v3/fee_recipients`](#operation/getFeeRecipients) and [`/v3/orderbook`](#operation/getOrderbook) endpoints.
 
-
 # Link Header
 
 A [Link Header](https://tools.ietf.org/html/rfc5988) can be included in a response to provide clients with more context about paging

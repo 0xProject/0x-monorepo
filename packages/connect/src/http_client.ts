@@ -74,9 +74,7 @@ export class HttpClient {
      * @param   requestOpts     Options specifying orders to retrieve and page information, page information.
      * @return  The resulting OrdersResponse that match the request
      */
-    public async getOrdersAsync(
-        requestOpts?: OrdersRequestOpts & PagedRequestOpts,
-    ): Promise<OrdersResponse> {
+    public async getOrdersAsync(requestOpts?: OrdersRequestOpts & PagedRequestOpts): Promise<OrdersResponse> {
         if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.ordersRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
@@ -125,9 +123,7 @@ export class HttpClient {
      * @param   request         A OrderConfigRequest instance describing the specific fees to retrieve
      * @return  The resulting OrderConfigResponse that matches the request
      */
-    public async getOrderConfigAsync(
-        request: OrderConfigRequest,
-    ): Promise<OrderConfigResponse> {
+    public async getOrderConfigAsync(request: OrderConfigRequest): Promise<OrderConfigResponse> {
         assert.doesConformToSchema('request', request, schemas.orderConfigRequestSchema);
         const httpRequestOpts = {
             payload: request,

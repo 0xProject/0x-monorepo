@@ -22,7 +22,6 @@ export const paginationParameters: ParameterObject[] = [
     },
 ];
 
-
 export const generateParameters = (parameters: ParameterObject[], isPaginated: boolean = false): ParameterObject[] => {
     const optionalParameters = isPaginated ? paginationParameters : [];
     return [...parameters, ...optionalParameters];
