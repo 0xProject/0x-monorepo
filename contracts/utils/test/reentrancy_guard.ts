@@ -4,7 +4,8 @@ import { ReentrancyGuardRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, TestReentrancyGuardContract } from '../src';
+import { artifacts } from './artifacts';
+import { TestReentrancyGuardContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

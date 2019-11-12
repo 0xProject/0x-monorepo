@@ -6,5 +6,3 @@
 export * from '../generated-wrappers/dev_utils';
 export * from '../generated-wrappers/lib_asset_data';
 export * from '../generated-wrappers/lib_transaction_decoder';
-export * from '../generated-wrappers/order_transfer_simulation_utils';
-export * from '../generated-wrappers/order_validation_utils';

@@ -7,7 +7,7 @@ import {
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -15,6 +15,7 @@ import {
     expectContractCreationFailedAsync,
     LogDecoder,
     OrderFactory,
+    orderUtils,
     provider,
     sendTransactionResult,
     txDefaults,
@@ -29,7 +30,9 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeFillEventArgs, OrderMatcherContract } from '../src';
+import { ExchangeFillEventArgs, OrderMatcherContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -53,7 +56,6 @@ describe('OrderMatcher', () => {
     let orderMatcher: OrderMatcherContract;
 
     let erc20BalancesByOwner: ERC20BalancesByOwner;
-    let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
     let orderFactoryLeft: OrderFactory;
     let orderFactoryRight: OrderFactory;
@@ -117,10 +119,12 @@ describe('OrderMatcher', () => {
             await devUtils.encodeERC20AssetData.callAsync(zrxToken.address),
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-        // Authorize ERC20 trades by exchange
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        }); // Authorize ERC20 trades by exchange
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
@@ -486,12 +490,20 @@ describe('OrderMatcher', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            await exchangeWrapper.fillOrderAsync(signedOrderLeft, takerAddress, {
-                takerAssetFillAmount: signedOrderLeft.takerAssetAmount.dividedToIntegerBy(5),
-            });
-            await exchangeWrapper.fillOrderAsync(signedOrderRight, takerAddress, {
-                takerAssetFillAmount: signedOrderRight.takerAssetAmount.dividedToIntegerBy(5),
-            });
+            let params = orderUtils.createFill(signedOrderLeft, signedOrderLeft.takerAssetAmount.dividedToIntegerBy(5));
+            await exchange.fillOrder.awaitTransactionSuccessAsync(
+                params.order,
+                params.takerAssetFillAmount,
+                params.signature,
+                { from: takerAddress },
+            );
+            params = orderUtils.createFill(signedOrderRight, signedOrderRight.takerAssetAmount.dividedToIntegerBy(5));
+            await exchange.fillOrder.awaitTransactionSuccessAsync(
+                params.order,
+                params.takerAssetFillAmount,
+                params.signature,
+                { from: takerAddress },
+            );
             const data = exchange.matchOrders.getABIEncodedTransactionData(
                 signedOrderLeft,
                 signedOrderRight,

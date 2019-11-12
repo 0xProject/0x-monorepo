@@ -1,6 +1,7 @@
 import { AnyRevertError, StringRevertError } from '@0x/utils';
 
-import { expect } from '../src';
+import { expect } from '../src/chai_setup';
+
 import { testWithReferenceFuncAsync } from '../src/test_with_reference';
 
 async function divAsync(x: number, y: number): Promise<number> {

@@ -84,10 +84,12 @@ export class FunctionAssertion<TBefore> implements Assertion {
         // result and receipt to the after condition.
         try {
             callResult.data = await this.wrapperFunction.callAsync(...args);
+            // tslint:disable:await-promise
             callResult.receipt =
                 this.wrapperFunction.awaitTransactionSuccessAsync !== undefined
                     ? await this.wrapperFunction.awaitTransactionSuccessAsync(...args)
                     : undefined;
+            // tslint:enable:await-promise
         } catch (error) {
             callResult.data = error;
             callResult.success = false;

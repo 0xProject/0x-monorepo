@@ -5,7 +5,9 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ERC1155MintableContract, ERC1155TransferSingleEventArgs } from '../../src';
+import { ERC1155MintableContract, ERC1155TransferSingleEventArgs } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 const expect = chai.expect;
 

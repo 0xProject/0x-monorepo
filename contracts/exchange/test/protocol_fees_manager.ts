@@ -2,12 +2,12 @@ import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     ExchangeContract,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
-} from '../src';
+} from './wrappers';
 
 blockchainTests.resets('MixinProtocolFees', env => {
     let accounts: string[];

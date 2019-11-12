@@ -3,12 +3,12 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     TestExchangeManagerContract,
     TestExchangeManagerExchangeAddedEventArgs,
     TestExchangeManagerExchangeRemovedEventArgs,
-} from '../../src';
+} from '../wrappers';
 
 blockchainTests.resets('Exchange Unit Tests', env => {
     // Addresses

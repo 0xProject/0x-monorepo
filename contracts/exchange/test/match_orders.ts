@@ -30,7 +30,10 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract, ExchangeWrapper } from '../src';
+import { ExchangeWrapper } from './utils/exchange_wrapper';
+
+import { artifacts } from './artifacts';
+import { ExchangeContract } from './wrappers';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 
