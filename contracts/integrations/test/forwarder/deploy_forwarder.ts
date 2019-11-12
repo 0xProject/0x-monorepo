@@ -3,7 +3,7 @@ import { artifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { BlockchainTestsEnvironment } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 
-import { DeploymentManager } from '../../src/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 /**
  * Deploys a Forwarder contract configured to work alongside the provided `deployment`.

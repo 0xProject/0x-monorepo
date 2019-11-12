@@ -24,8 +24,8 @@ import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { DeploymentManager } from '../../src/deployment_manager';
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
+import { DeploymentManager } from '../deployment_manager';
 
 import { deployCoordinatorAsync } from './deploy_coordinator';
 

@@ -5,7 +5,7 @@ import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/t
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { DeploymentManager } from '../../src/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 export type Constructor<T = {}> = new (...args: any[]) => T;
 

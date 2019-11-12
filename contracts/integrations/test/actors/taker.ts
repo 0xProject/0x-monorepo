@@ -2,7 +2,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 
-import { DeploymentManager } from '../../src/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 import { Actor, Constructor } from './base';
 
