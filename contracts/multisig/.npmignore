@@ -5,6 +5,6 @@
 !lib/**/*
 # Whitelist Solidity contracts
 !contracts/src/**/*
-# Blacklist tests and publish scripts
+# Blacklist tests in lib
 /lib/test/*
 # Package specific ignore
