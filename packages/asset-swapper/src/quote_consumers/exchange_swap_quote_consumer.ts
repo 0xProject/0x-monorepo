@@ -1,5 +1,4 @@
 import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
-import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -9,6 +8,7 @@ import { constants } from '../constants';
 import {
     CalldataInfo,
     ExchangeSmartContractParams,
+    MarketOperation,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
@@ -27,16 +27,13 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     private readonly _contractWrappers: ContractWrappers;
 
-    constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
-        const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
-        assert.isNumber('chainId', chainId);
-
+    constructor(supportedProvider: SupportedProvider, contractWrappers: ContractWrappers, options: Partial<SwapQuoteConsumerOpts> = {}) {
+        const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        assert.isNumber('networkId', networkId);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
-        this.chainId = chainId;
-        this._contractWrappers = new ContractWrappers(this.provider, {
-            chainId,
-        });
+        this.chainId = networkId;
+        this._contractWrappers = contractWrappers;
     }
 
     public async getCalldataOrThrowAsync(
@@ -77,8 +74,6 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         const signatures = _.map(orders, o => o.signature);
 
-        const optimizedOrders = swapQuoteConsumerUtils.optimizeOrdersForMarketExchangeOperation(orders, quote.type);
-
         let params: ExchangeSmartContractParams;
         let methodName: string;
 
@@ -86,24 +81,24 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { makerAssetFillAmount } = quote;
 
             params = {
-                orders: optimizedOrders,
+                orders,
                 signatures,
                 makerAssetFillAmount,
                 type: MarketOperation.Buy,
             };
 
-            methodName = 'marketBuyOrders';
+            methodName = 'marketBuyOrdersFillOrKill';
         } else {
             const { takerAssetFillAmount } = quote;
 
             params = {
-                orders: optimizedOrders,
+                orders,
                 signatures,
                 takerAssetFillAmount,
                 type: MarketOperation.Sell,
             };
 
-            methodName = 'marketSellOrders';
+            methodName = 'marketSellOrdersFillOrKill';
         }
 
         const methodAbi = utils.getMethodAbiFromContractAbi(
@@ -144,7 +139,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             let txHash: string;
             if (quote.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
+                txHash = await this._contractWrappers.exchange.marketBuyOrdersFillOrKill.sendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
@@ -156,7 +151,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                 );
             } else {
                 const { takerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrow.sendTransactionAsync(
+                txHash = await this._contractWrappers.exchange.marketSellOrdersFillOrKill.sendTransactionAsync(
                     orders,
                     takerAssetFillAmount,
                     orders.map(o => o.signature),

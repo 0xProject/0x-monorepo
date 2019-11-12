@@ -33,11 +33,6 @@ export interface SignedOrder extends Order {
     signature: string;
 }
 
-export enum MarketOperation {
-    Sell = 'Sell',
-    Buy = 'Buy',
-}
-
 /**
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */

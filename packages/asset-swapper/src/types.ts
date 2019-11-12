@@ -1,7 +1,10 @@
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
+export interface OrderPrunerOpts {
+    expiryBufferMs: number;
+}
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
@@ -12,18 +15,13 @@ export interface OrderProviderRequest {
 }
 
 /**
- * orders: An array of orders with optional remaining fillable makerAsset amounts. See type for more info.
- */
-export interface OrderProviderResponse {
-    orders: SignedOrderWithRemainingFillableMakerAssetAmount[];
-}
-
-/**
  * A normal SignedOrder with one extra optional property `remainingFillableMakerAssetAmount`
  * remainingFillableMakerAssetAmount: The amount of the makerAsset that is available to be filled
  */
-export interface SignedOrderWithRemainingFillableMakerAssetAmount extends SignedOrder {
-    remainingFillableMakerAssetAmount?: BigNumber;
+export interface PrunedSignedOrder extends SignedOrder {
+    remainingMakerAssetAmount: BigNumber;
+    remainingTakerAssetAmount: BigNumber;
+    remainingTakerFee: BigNumber;
 }
 
 /**
@@ -95,14 +93,10 @@ export enum ExtensionContractType {
 export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
 
 /**
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
- * feeSignatures: An array of signatures that attest that the maker of the orders in fact made the orders.
  * feePercentage: Optional affiliate fee percentage used to calculate the eth amount paid to fee recipient.
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
 export interface ForwarderSmartContractParamsBase {
-    feeOrders: SignedOrder[];
-    feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
 }
@@ -205,7 +199,6 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, Forwarde
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * bestCaseQuoteInfo: Info about the best case price for the asset.
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
@@ -213,7 +206,6 @@ export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
     orders: SignedOrder[];
-    feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
 }
@@ -249,7 +241,7 @@ export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | Mar
 /**
  * feeTakerTokenAmount: The amount of takerToken required any fee concerned with completing the swap.
  * takerTokenAmount: The amount of takerToken required to conduct the swap.
- * totalTakerTokenAmount: The total amount of takerToken required to complete the swap (filling orders, feeOrders, and paying affiliate fee)
+ * totalTakerTokenAmount: The total amount of takerToken required to complete the swap (filling orders, and paying affiliate fee)
  * makerTokenAmount: The amount of makerToken that will be acquired through the swap.
  */
 export interface SwapQuoteInfo {
@@ -260,11 +252,9 @@ export interface SwapQuoteInfo {
 }
 
 /**
- * shouldDisableRequestingFeeOrders: If set to true, requesting a swapQuote will not perform any computation or requests for fees.
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  */
 export interface SwapQuoteRequestOpts {
-    shouldDisableRequestingFeeOrders: boolean;
     slippagePercentage: number;
 }
 
@@ -274,7 +264,15 @@ export interface SwapQuoteRequestOpts {
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
 export interface SwapQuoterOpts {
+<<<<<<< HEAD
+<<<<<<< HEAD
     chainId: number;
+=======
+    networkId?: number;
+>>>>>>> edac3aa26... upgraded SwapQuoter for v3
+=======
+    networkId: number;
+>>>>>>> fd8323e29... minor updates
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
 }
@@ -295,28 +293,25 @@ export enum SwapQuoteConsumerError {
  */
 export enum SwapQuoterError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
-    NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
     StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
-    InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
-    InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
-    FeeAssetUnavailable = 'FEE_ASSET_UNAVAILABLE',
-}
-
-/**
- * orders: An array of signed orders
- * remainingFillableMakerAssetAmounts: A list of fillable amounts for the signed orders. The index of an item in the array associates the amount with the corresponding order.
- */
-export interface OrdersAndFillableAmounts {
-    orders: SignedOrder[];
-    remainingFillableMakerAssetAmounts: BigNumber[];
 }
 
 /**
  * Represents available liquidity for a given assetData
  */
-export interface LiquidityForAssetData {
+export interface LiquidityForTakerMakerAssetDataPair {
     makerTokensAvailableInBaseUnits: BigNumber;
     takerTokensAvailableInBaseUnits: BigNumber;
+}
+
+export enum MarketOperation {
+    Sell = 'Sell',
+    Buy = 'Buy',
+}
+
+export interface OrdersAndRemainingFillAmount {
+    resultOrders: PrunedSignedOrder[];
+    remainingFillAmount: BigNumber;
 }

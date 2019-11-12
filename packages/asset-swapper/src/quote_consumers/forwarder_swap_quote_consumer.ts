@@ -1,5 +1,4 @@
 import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
-import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -11,6 +10,7 @@ import {
     ForwarderSmartContractParams,
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
+    MarketOperation,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
@@ -28,16 +28,13 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
     private readonly _contractWrappers: ContractWrappers;
 
-    constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
-        const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
-        assert.isNumber('chainId', chainId);
-
+    constructor(supportedProvider: SupportedProvider, contractWrappers: ContractWrappers, options: Partial<SwapQuoteConsumerOpts> = {}) {
+        const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        assert.isNumber('networkId', networkId);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
-        this.chainId = chainId;
-        this._contractWrappers = new ContractWrappers(this.provider, {
-            chainId,
-        });
+        this.chainId = networkId;
+        this._contractWrappers = contractWrappers;
     }
 
     /**
@@ -54,7 +51,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-        const { orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient } = params;
+        const { orders, signatures, feePercentage, feeRecipient } = params;
 
         let args: any[];
         if (params.type === MarketOperation.Buy) {
@@ -97,7 +94,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const quoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(quote, unFormattedFeePercentage);
 
-        const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
+        const { orders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
 
         // lowercase input addresses
         const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();

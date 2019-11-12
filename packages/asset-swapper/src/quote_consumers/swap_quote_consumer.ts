@@ -30,6 +30,13 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
     private readonly _contractWrappers: ContractWrappers;
 
+    public static getSwapQuoteConsumer(
+        supportedProvider: SupportedProvider,
+        options: Partial<SwapQuoteConsumerOpts> = {},
+    ): SwapQuoteConsumer {
+        return new SwapQuoteConsumer(supportedProvider, options);
+    }
+
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         assert.isNumber('chainId', chainId);
@@ -38,11 +45,11 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         this.provider = provider;
         this.chainId = chainId;
 
-        this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
-        this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
         this._contractWrappers = new ContractWrappers(this.provider, {
             chainId,
         });
+        this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, this._contractWrappers, options);
+        this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, this._contractWrappers, options);
     }
 
     /**

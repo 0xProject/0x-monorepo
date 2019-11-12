@@ -1,18 +1,18 @@
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
-import { assetDataUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, ERC20AssetData, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
-import { MarketOperation } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
 import {
-    LiquidityForAssetData,
+    LiquidityForTakerMakerAssetDataPair,
     MarketBuySwapQuote,
+    MarketOperation,
     MarketSellSwapQuote,
-    OrdersAndFillableAmounts,
+    PrunedSignedOrder,
     SwapQuote,
     SwapQuoteRequestOpts,
     SwapQuoterError,
@@ -20,7 +20,8 @@ import {
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
-import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
+import { OrderPruner } from './utils/order_prune_utils';
+import { sortingUtils } from './utils/sorting_utils';
 import { swapQuoteCalculator } from './utils/swap_quote_calculator';
 import { utils } from './utils/utils';
 
@@ -29,7 +30,7 @@ export class SwapQuoter {
     public readonly orderbook: Orderbook;
     public readonly expiryBufferMs: number;
     private readonly _contractWrappers: ContractWrappers;
-
+    private readonly _orderPruner: OrderPruner;
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
      * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
@@ -143,7 +144,11 @@ export class SwapQuoter {
         this._contractWrappers = new ContractWrappers(this.provider, {
             chainId,
         });
+        this._orderPruner = new OrderPruner(this._contractWrappers.devUtils, {
+            expiryBufferMs: this.expiryBufferMs,
+        });
     }
+
     /**
      * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
@@ -266,7 +271,7 @@ export class SwapQuoter {
     public async getLiquidityForMakerTakerAssetDataPairAsync(
         makerAssetData: string,
         takerAssetData: string,
-    ): Promise<LiquidityForAssetData> {
+    ): Promise<LiquidityForTakerMakerAssetDataPair> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
@@ -280,8 +285,8 @@ export class SwapQuoter {
             };
         }
 
-        const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData);
-        return calculateLiquidity(ordersAndFillableAmounts);
+        const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
+        return calculateLiquidity(prunedOrders);
     }
 
     /**
@@ -336,30 +341,22 @@ export class SwapQuoter {
      * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      */
-    public async getOrdersAndFillableAmountsAsync(
+    public async getPrunedSignedOrdersAsync(
         makerAssetData: string,
         takerAssetData: string,
-    ): Promise<OrdersAndFillableAmounts> {
+    ): Promise<PrunedSignedOrder[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
-        const zrxTokenAssetData = await this._getZrxTokenAssetDataOrThrowAsync();
         // get orders
-        const response = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
-        const adaptedResponse = { orders: response.map(o => ({ ...o.order, ...o.metaData })) };
-        // since the order provider is an injected dependency, validate that it respects the API
-        // ie. it should only return maker/taker assetDatas that are specified
-        orderProviderResponseProcessor.throwIfInvalidResponse(adaptedResponse, makerAssetData, takerAssetData);
-        // process the responses into one object
-        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
-        const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
-            adaptedResponse,
-            isMakerAssetZrxToken,
-            this.expiryBufferMs,
-            this._contractWrappers.orderValidator,
+        const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
+        const orders = _.map(apiOrders, o => o.order);
+        const prunedOrders = await this._orderPruner.pruneSignedOrdersAsync(
+            orders,
         );
-        return ordersAndFillableAmounts;
+        const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
+        return sortedPrunedOrders;
     }
 
     /**
@@ -371,12 +368,11 @@ export class SwapQuoter {
         swapQuote: SwapQuote,
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
-        const orderValidator = this._contractWrappers.orderValidator;
-        const balanceAndAllowance = await orderValidator.getBalanceAndAllowance.callAsync(
-            takerAddress,
-            swapQuote.takerAssetData,
-        );
-        const allowance = balanceAndAllowance[1];
+        assetDataUtils.assertIsERC20AssetData(swapQuote.takerAssetData);
+        const erc20ProxyAddress = this._contractWrappers.erc20Proxy.address;
+        const erc20TokenAddress = (assetDataUtils.decodeAssetDataOrThrow(swapQuote.takerAssetData) as ERC20AssetData).tokenAddress;
+        const erc20TokenContract = new ERC20TokenContract(erc20TokenAddress, this.provider);
+        const allowance = await erc20TokenContract.allowance.callAsync(takerAddress, erc20ProxyAddress);
         return [
             allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
             allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
@@ -391,16 +387,6 @@ export class SwapQuoter {
     }
 
     /**
-     * Get the assetData that represents the ZRX token.
-     * Will throw if ZRX does not exist for the current chain.
-     */
-    private async _getZrxTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-            this._contractWrappers.contractAddresses.zrxToken,
-        );
-    }
-
-    /**
      * General function for getting swap quote, conditionally uses different logic per specified marketOperation
      */
     private async _getSwapQuoteAsync(
@@ -410,7 +396,7 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { slippagePercentage, shouldDisableRequestingFeeOrders } = _.merge(
+        const { slippagePercentage } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
             options,
@@ -418,33 +404,13 @@ export class SwapQuoter {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
-        const zrxTokenAssetData = await this._getZrxTokenAssetDataOrThrowAsync();
-        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
         // get the relevant orders for the makerAsset
-        const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData);
-        const doesOrdersRequireFeeOrders =
-            !isMakerAssetZrxToken && utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts);
-        const isRequestingFeeOrders = !shouldDisableRequestingFeeOrders && doesOrdersRequireFeeOrders;
-        let feeOrdersAndFillableAmounts = constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS;
-        if (isRequestingFeeOrders) {
-            feeOrdersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
-                zrxTokenAssetData,
-                takerAssetData,
-            );
-        }
+        const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
 
-        if (ordersAndFillableAmounts.orders.length === 0) {
+        if (prunedOrders.length === 0) {
             throw new Error(
                 `${
                     SwapQuoterError.AssetUnavailable
-                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
-            );
-        }
-
-        if (isRequestingFeeOrders && feeOrdersAndFillableAmounts.orders.length === 0) {
-            throw new Error(
-                `${
-                    SwapQuoterError.FeeAssetUnavailable
                 }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
             );
         }
@@ -453,21 +419,15 @@ export class SwapQuoter {
 
         if (marketOperation === MarketOperation.Buy) {
             swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
-                ordersAndFillableAmounts,
-                feeOrdersAndFillableAmounts,
+                prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
-                isMakerAssetZrxToken,
-                shouldDisableRequestingFeeOrders,
             );
         } else {
             swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
-                ordersAndFillableAmounts,
-                feeOrdersAndFillableAmounts,
+                prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
-                isMakerAssetZrxToken,
-                shouldDisableRequestingFeeOrders,
             );
         }
 

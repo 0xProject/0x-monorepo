@@ -1,5 +1,5 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -9,6 +9,7 @@ import { constants } from '../constants';
 import {
     ExtensionContractType,
     GetExtensionContractTypeOpts,
+    MarketOperation,
     SwapQuote,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
@@ -57,8 +58,7 @@ export const swapQuoteConsumerUtils = {
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
         return (
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData) &&
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.feeOrders, wethAssetData)
+            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData)
         );
     },
     isValidForwarderSignedOrders(orders: SignedOrder[], wethAssetData: string): boolean {
@@ -66,17 +66,6 @@ export const swapQuoteConsumerUtils = {
     },
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
-    },
-    optimizeOrdersForMarketExchangeOperation(orders: SignedOrder[], operation: MarketOperation): SignedOrder[] {
-        return _.map(orders, (order: SignedOrder, index: number) => {
-            const optimizedOrder = _.clone(order);
-            if (operation === MarketOperation.Sell && index !== 0) {
-                optimizedOrder.takerAssetData = constants.NULL_BYTES;
-            } else if (index !== 0) {
-                optimizedOrder.makerAssetData = constants.NULL_BYTES;
-            }
-            return optimizedOrder;
-        });
     },
     async getExtensionContractTypeForSwapQuoteAsync(
         quote: SwapQuote,
