@@ -1,6 +1,6 @@
-import { AbstractBalanceAndProxyAllowanceFetcher } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
+import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AssetWrapper } from './asset_wrapper';
 
 export class SimpleAssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndProxyAllowanceFetcher {

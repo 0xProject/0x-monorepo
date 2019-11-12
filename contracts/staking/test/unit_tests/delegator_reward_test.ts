@@ -12,18 +12,18 @@ import {
 import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 
-import {
-    artifacts,
-    TestDelegatorRewardsContract,
-    TestDelegatorRewardsEvents,
-    TestDelegatorRewardsTransferEventArgs,
-} from '../../src';
-
+import { artifacts } from '../artifacts';
 import {
     assertIntegerRoughlyEquals as assertRoughlyEquals,
     getRandomInteger,
     toBaseUnitAmount,
 } from '../utils/number_utils';
+
+import {
+    TestDelegatorRewardsContract,
+    TestDelegatorRewardsEvents,
+    TestDelegatorRewardsTransferEventArgs,
+} from '../wrappers';
 
 blockchainTests.resets('Delegator rewards unit tests', env => {
     let testContract: TestDelegatorRewardsContract;

@@ -4,7 +4,8 @@ import { AuthorizableRevertErrors, BigNumber, OwnableRevertErrors } from '@0x/ut
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, AuthorizableContract } from '../src';
+import { artifacts } from './artifacts';
+import { AuthorizableContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

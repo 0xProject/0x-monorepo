@@ -9,7 +9,17 @@ import {
 import { LibMathRevertErrors } from '@0x/order-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 
-import { artifacts, ReferenceFunctions, TestLibMathContract } from '../src';
+import {
+    getPartialAmountCeil,
+    getPartialAmountFloor,
+    isRoundingErrorCeil,
+    isRoundingErrorFloor,
+    safeGetPartialAmountCeil,
+    safeGetPartialAmountFloor,
+} from '../src/reference_functions';
+
+import { artifacts } from './artifacts';
+import { TestLibMathContract } from './wrappers';
 
 blockchainTests('LibMath', env => {
     const { ONE_ETHER, MAX_UINT256, MAX_UINT256_ROOT, ZERO_AMOUNT } = constants;
@@ -42,7 +52,7 @@ blockchainTests('LibMath', env => {
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'getPartialAmountFloor',
-                createAsyncReferenceFunction(ReferenceFunctions.getPartialAmountFloor),
+                createAsyncReferenceFunction(getPartialAmountFloor),
                 createContractTestFunction('getPartialAmountFloor'),
                 [uint256Values, uint256Values, uint256Values],
             );
@@ -53,7 +63,7 @@ blockchainTests('LibMath', env => {
                 const numerator = ONE_ETHER;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
-                const expected = ReferenceFunctions.getPartialAmountFloor(numerator, denominator, target);
+                const expected = getPartialAmountFloor(numerator, denominator, target);
                 const actual = await libsContract.getPartialAmountFloor.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
@@ -101,7 +111,7 @@ blockchainTests('LibMath', env => {
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'getPartialAmountCeil',
-                createAsyncReferenceFunction(ReferenceFunctions.getPartialAmountCeil),
+                createAsyncReferenceFunction(getPartialAmountCeil),
                 createContractTestFunction('getPartialAmountCeil'),
                 [uint256Values, uint256Values, uint256Values],
             );
@@ -112,7 +122,7 @@ blockchainTests('LibMath', env => {
                 const numerator = ONE_ETHER;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
-                const expected = ReferenceFunctions.getPartialAmountCeil(numerator, denominator, target);
+                const expected = getPartialAmountCeil(numerator, denominator, target);
                 const actual = await libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
@@ -161,7 +171,7 @@ blockchainTests('LibMath', env => {
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'safeGetPartialAmountFloor',
-                createAsyncReferenceFunction(ReferenceFunctions.safeGetPartialAmountFloor),
+                createAsyncReferenceFunction(safeGetPartialAmountFloor),
                 createContractTestFunction('safeGetPartialAmountFloor'),
                 [uint256Values, uint256Values, uint256Values],
             );
@@ -172,7 +182,7 @@ blockchainTests('LibMath', env => {
                 const numerator = ONE_ETHER;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
-                const expected = ReferenceFunctions.safeGetPartialAmountFloor(numerator, denominator, target);
+                const expected = safeGetPartialAmountFloor(numerator, denominator, target);
                 const actual = await libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
@@ -226,7 +236,7 @@ blockchainTests('LibMath', env => {
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'safeGetPartialAmountCeil',
-                createAsyncReferenceFunction(ReferenceFunctions.safeGetPartialAmountCeil),
+                createAsyncReferenceFunction(safeGetPartialAmountCeil),
                 createContractTestFunction('safeGetPartialAmountCeil'),
                 [uint256Values, uint256Values, uint256Values],
             );
@@ -237,7 +247,7 @@ blockchainTests('LibMath', env => {
                 const numerator = ONE_ETHER;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
-                const expected = ReferenceFunctions.safeGetPartialAmountCeil(numerator, denominator, target);
+                const expected = safeGetPartialAmountCeil(numerator, denominator, target);
                 const actual = await libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
@@ -291,7 +301,7 @@ blockchainTests('LibMath', env => {
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'isRoundingErrorFloor',
-                createAsyncReferenceFunction(ReferenceFunctions.isRoundingErrorFloor),
+                createAsyncReferenceFunction(isRoundingErrorFloor),
                 createContractTestFunction('isRoundingErrorFloor'),
                 [uint256Values, uint256Values, uint256Values],
             );
@@ -321,7 +331,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 // tslint:disable-next-line: boolean-naming
-                const expected = ReferenceFunctions.isRoundingErrorFloor(numerator, denominator, target);
+                const expected = isRoundingErrorFloor(numerator, denominator, target);
                 // tslint:disable-next-line: boolean-naming
                 const actual = await libsContract.isRoundingErrorFloor.callAsync(numerator, denominator, target);
                 expect(actual).to.eq(expected);
@@ -357,7 +367,7 @@ blockchainTests('LibMath', env => {
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'isRoundingErrorCeil',
-                createAsyncReferenceFunction(ReferenceFunctions.isRoundingErrorCeil),
+                createAsyncReferenceFunction(isRoundingErrorCeil),
                 createContractTestFunction('isRoundingErrorCeil'),
                 [uint256Values, uint256Values, uint256Values],
             );
@@ -387,7 +397,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 // tslint:disable-next-line: boolean-naming
-                const expected = ReferenceFunctions.isRoundingErrorCeil(numerator, denominator, target);
+                const expected = isRoundingErrorCeil(numerator, denominator, target);
                 // tslint:disable-next-line: boolean-naming
                 const actual = await libsContract.isRoundingErrorCeil.callAsync(numerator, denominator, target);
                 expect(actual).to.eq(expected);

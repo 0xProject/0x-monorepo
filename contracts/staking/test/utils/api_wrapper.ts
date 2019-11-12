@@ -6,8 +6,8 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParamLiteral, ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     IStakingEventsEpochEndedEventArgs,
     IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
     StakingProxyContract,
@@ -15,10 +15,10 @@ import {
     TestStakingContract,
     TestStakingEvents,
     ZrxVaultContract,
-} from '../../src';
+} from '../wrappers';
 
-import { constants as stakingConstants } from './constants';
-import { DecodedLogs, EndOfEpochInfo, StakingParams } from './types';
+import { constants as stakingConstants } from '../../src/constants';
+import { DecodedLogs, EndOfEpochInfo, StakingParams } from '../../src/types';
 
 export class StakingApiWrapper {
     // The address of the real Staking.sol contract

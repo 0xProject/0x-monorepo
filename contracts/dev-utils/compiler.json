@@ -1,5 +1,5 @@
 {
-    "artifactsDir": "./generated-artifacts",
+    "artifactsDir": "./test/generated-artifacts",
     "contractsDir": "./contracts",
     "useDockerisedSolc": false,
     "isOfflineMode": false,

@@ -9,29 +9,13 @@ import * as DummyERC20Token from '../generated-artifacts/DummyERC20Token.json';
 import * as DummyMultipleReturnERC20Token from '../generated-artifacts/DummyMultipleReturnERC20Token.json';
 import * as DummyNoReturnERC20Token from '../generated-artifacts/DummyNoReturnERC20Token.json';
 import * as ERC20Token from '../generated-artifacts/ERC20Token.json';
-import * as IERC20Token from '../generated-artifacts/IERC20Token.json';
-import * as IEtherToken from '../generated-artifacts/IEtherToken.json';
-import * as LibERC20Token from '../generated-artifacts/LibERC20Token.json';
-import * as MintableERC20Token from '../generated-artifacts/MintableERC20Token.json';
-import * as TestLibERC20Token from '../generated-artifacts/TestLibERC20Token.json';
-import * as TestLibERC20TokenTarget from '../generated-artifacts/TestLibERC20TokenTarget.json';
-import * as UnlimitedAllowanceERC20Token from '../generated-artifacts/UnlimitedAllowanceERC20Token.json';
-import * as UntransferrableDummyERC20Token from '../generated-artifacts/UntransferrableDummyERC20Token.json';
 import * as WETH9 from '../generated-artifacts/WETH9.json';
 import * as ZRXToken from '../generated-artifacts/ZRXToken.json';
 export const artifacts = {
+    DummyERC20Token: DummyERC20Token as ContractArtifact,
     ERC20Token: ERC20Token as ContractArtifact,
-    LibERC20Token: LibERC20Token as ContractArtifact,
-    MintableERC20Token: MintableERC20Token as ContractArtifact,
-    UnlimitedAllowanceERC20Token: UnlimitedAllowanceERC20Token as ContractArtifact,
     WETH9: WETH9 as ContractArtifact,
     ZRXToken: (ZRXToken as any) as ContractArtifact,
-    IERC20Token: IERC20Token as ContractArtifact,
-    IEtherToken: IEtherToken as ContractArtifact,
-    DummyERC20Token: DummyERC20Token as ContractArtifact,
-    DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,
     DummyNoReturnERC20Token: DummyNoReturnERC20Token as ContractArtifact,
-    TestLibERC20Token: TestLibERC20Token as ContractArtifact,
-    TestLibERC20TokenTarget: TestLibERC20TokenTarget as ContractArtifact,
-    UntransferrableDummyERC20Token: UntransferrableDummyERC20Token as ContractArtifact,
+    DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,
 };

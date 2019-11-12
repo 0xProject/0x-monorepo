@@ -14,7 +14,9 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 
-import { artifacts, IAssetProxyContract, StaticCallProxyContract, TestStaticCallTargetContract } from '../src';
+import { artifacts } from './artifacts';
+
+import { IAssetProxyContract, StaticCallProxyContract, TestStaticCallTargetContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

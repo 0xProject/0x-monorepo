@@ -30,7 +30,6 @@ CONTRACTS_TO_BE_WRAPPED = [
     "erc20_token",
     "erc721_proxy",
     "erc721_token",
-    "eth_balance_checker",
     "exchange",
     "forwarder",
     "i_asset_proxy",

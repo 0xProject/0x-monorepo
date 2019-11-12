@@ -2,7 +2,8 @@ import { blockchainTests, constants } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestRefundableContract, TestRefundableReceiverContract } from '../src';
+import { artifacts } from './artifacts';
+import { TestRefundableContract, TestRefundableReceiverContract } from './wrappers';
 
 blockchainTests('Refundable', env => {
     let refundable: TestRefundableContract;

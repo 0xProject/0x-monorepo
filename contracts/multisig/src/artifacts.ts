@@ -5,17 +5,9 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as ContractCallReceiver from '../generated-artifacts/ContractCallReceiver.json';
-import * as MultiSigWallet from '../generated-artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../generated-artifacts/MultiSigWalletWithTimeLock.json';
-import * as TestRejectEther from '../generated-artifacts/TestRejectEther.json';
-import * as TestZeroExGovernor from '../generated-artifacts/TestZeroExGovernor.json';
 import * as ZeroExGovernor from '../generated-artifacts/ZeroExGovernor.json';
 export const artifacts = {
-    MultiSigWallet: MultiSigWallet as ContractArtifact,
     MultiSigWalletWithTimeLock: MultiSigWalletWithTimeLock as ContractArtifact,
     ZeroExGovernor: ZeroExGovernor as ContractArtifact,
-    ContractCallReceiver: ContractCallReceiver as ContractArtifact,
-    TestRejectEther: TestRejectEther as ContractArtifact,
-    TestZeroExGovernor: TestZeroExGovernor as ContractArtifact,
 };

@@ -13,7 +13,10 @@ import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { artifacts, ReferenceFunctions, TestLibFillResultsContract } from '../src';
+import { addFillResults, calculateFillResults, getPartialAmountFloor } from '../src/reference_functions';
+
+import { artifacts } from './artifacts';
+import { TestLibFillResultsContract } from './wrappers';
 
 blockchainTests('LibFillResults', env => {
     interface PartialMatchedFillResults {
@@ -92,7 +95,7 @@ blockchainTests('LibFillResults', env => {
                 // in any mathematical operation in either the reference TypeScript
                 // implementation or the Solidity implementation of
                 // calculateFillResults.
-                return ReferenceFunctions.calculateFillResults(
+                return calculateFillResults(
                     makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount),
                     takerAssetFilledAmount,
                     takerAssetFilledAmount, // Using this so that the gas price is distinct from protocolFeeMultiplier
@@ -139,7 +142,7 @@ blockchainTests('LibFillResults', env => {
                     takerFee: ONE_ETHER.times(0.0025),
                 });
                 const takerAssetFilledAmount = ONE_ETHER.dividedToIntegerBy(3);
-                const expected = ReferenceFunctions.calculateFillResults(
+                const expected = calculateFillResults(
                     order,
                     takerAssetFilledAmount,
                     DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -184,7 +187,7 @@ blockchainTests('LibFillResults', env => {
                     makerFee: MAX_UINT256_ROOT.times(11),
                 });
                 const takerAssetFilledAmount = MAX_UINT256_ROOT.dividedToIntegerBy(10);
-                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
+                const makerAssetFilledAmount = getPartialAmountFloor(
                     takerAssetFilledAmount,
                     order.takerAssetAmount,
                     order.makerAssetAmount,
@@ -272,7 +275,7 @@ blockchainTests('LibFillResults', env => {
                     makerFee: new BigNumber(100),
                 });
                 const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
-                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
+                const makerAssetFilledAmount = getPartialAmountFloor(
                     takerAssetFilledAmount,
                     order.takerAssetAmount,
                     order.makerAssetAmount,
@@ -299,7 +302,7 @@ blockchainTests('LibFillResults', env => {
                     takerFee: new BigNumber(100),
                 });
                 const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
-                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
+                const makerAssetFilledAmount = getPartialAmountFloor(
                     takerAssetFilledAmount,
                     order.takerAssetAmount,
                     order.makerAssetAmount,
@@ -349,7 +352,7 @@ blockchainTests('LibFillResults', env => {
                     makerFee: new BigNumber(100),
                 });
                 const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
-                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
+                const makerAssetFilledAmount = getPartialAmountFloor(
                     takerAssetFilledAmount,
                     order.takerAssetAmount,
                     order.makerAssetAmount,
@@ -392,7 +395,7 @@ blockchainTests('LibFillResults', env => {
 
             it('matches the output of the reference function', async () => {
                 const [a, b] = DEFAULT_FILL_RESULTS;
-                const expected = ReferenceFunctions.addFillResults(a, b);
+                const expected = addFillResults(a, b);
                 const actual = await libsContract.addFillResults.callAsync(a, b);
                 expect(actual).to.deep.equal(expected);
             });

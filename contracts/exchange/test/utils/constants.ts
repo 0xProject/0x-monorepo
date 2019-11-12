@@ -1,4 +1,4 @@
-import { ExchangeFunctionName } from './types';
+import { ExchangeFunctionName } from '@0x/contracts-test-utils';
 
 export const constants = {
     // These are functions not secured by the `nonReentrant`, directly or
@@ -12,28 +12,6 @@ export const constants = {
         ExchangeFunctionName.SetProtocolFeeMultiplier,
         ExchangeFunctionName.SetProtocolFeeCollectorAddress,
         ExchangeFunctionName.DetachProtocolFeeCollector,
-    ],
-    SINGLE_FILL_FN_NAMES: [ExchangeFunctionName.FillOrder, ExchangeFunctionName.FillOrKillOrder],
-    BATCH_FILL_FN_NAMES: [
-        ExchangeFunctionName.BatchFillOrders,
-        ExchangeFunctionName.BatchFillOrKillOrders,
-        ExchangeFunctionName.BatchFillOrdersNoThrow,
-    ],
-    MARKET_FILL_FN_NAMES: [
-        ExchangeFunctionName.MarketBuyOrdersFillOrKill,
-        ExchangeFunctionName.MarketSellOrdersFillOrKill,
-        ExchangeFunctionName.MarketBuyOrdersNoThrow,
-        ExchangeFunctionName.MarketSellOrdersNoThrow,
-    ],
-    MATCH_ORDER_FN_NAMES: [ExchangeFunctionName.MatchOrders, ExchangeFunctionName.MatchOrdersWithMaximalFill],
-    BATCH_MATCH_ORDER_FN_NAMES: [
-        ExchangeFunctionName.BatchMatchOrders,
-        ExchangeFunctionName.BatchMatchOrdersWithMaximalFill,
-    ],
-    CANCEL_ORDER_FN_NAMES: [
-        ExchangeFunctionName.CancelOrder,
-        ExchangeFunctionName.BatchCancelOrders,
-        ExchangeFunctionName.CancelOrdersUpTo,
     ],
 };
 

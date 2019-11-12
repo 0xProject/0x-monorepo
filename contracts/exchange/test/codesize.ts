@@ -4,7 +4,7 @@ import * as chai from 'chai';
 chaiSetup.configure();
 const expect = chai.expect;
 
-import { artifacts } from '../src';
+import { artifacts } from './artifacts';
 
 describe('Contract Size Checks', () => {
     describe('Exchange', () => {

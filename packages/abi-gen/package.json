@@ -42,7 +42,7 @@
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
-        "contracts:gen": "contracts-gen"
+        "contracts:gen": "contracts-gen generate"
     },
     "config": {
         "abis": "./test-cli/fixtures/artifacts/@(AbiGenDummy|LibDummy|TestLibDummy).json",

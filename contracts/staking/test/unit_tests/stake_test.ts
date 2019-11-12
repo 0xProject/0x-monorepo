@@ -13,10 +13,10 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { StakeStatus } from '../utils/types';
+import { StakeStatus } from '../../src/types';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     TestMixinStakeContract,
     TestMixinStakeDecreaseCurrentAndNextBalanceEventArgs as DecreaseCurrentAndNextBalanceEventArgs,
     TestMixinStakeDecreaseNextBalanceEventArgs as DecreaseNextBalanceEventArgs,
@@ -30,7 +30,7 @@ import {
     TestMixinStakeWithdrawAndSyncDelegatorRewardsEventArgs as WithdrawAndSyncDelegatorRewardsEventArgs,
     TestMixinStakeZrxVaultDepositFromEventArgs as ZrxVaultDepositFromEventArgs,
     TestMixinStakeZrxVaultWithdrawFromEventArgs as ZrxVaultWithdrawFromEventArgs,
-} from '../../src';
+} from '../wrappers';
 
 blockchainTests.resets('MixinStake unit tests', env => {
     let testContract: TestMixinStakeContract;

@@ -9,7 +9,9 @@ import {
 } from '@0x/contracts-test-utils';
 import { RawRevertError, StringRevertError } from '@0x/utils';
 
-import { artifacts, TestLibERC20TokenContract, TestLibERC20TokenTargetEvents } from '../src';
+import { TestLibERC20TokenContract, TestLibERC20TokenTargetEvents } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 blockchainTests('LibERC20Token', env => {
     let testContract: TestLibERC20TokenContract;
