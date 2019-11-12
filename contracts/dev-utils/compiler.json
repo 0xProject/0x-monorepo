@@ -7,7 +7,7 @@
         "evmVersion": "constantinople",
         "optimizer": {
             "enabled": true,
-            "runs": 7999,
+            "runs": 1666,
             "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
         },
         "outputSelection": {

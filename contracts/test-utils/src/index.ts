@@ -73,3 +73,4 @@ export {
     toBaseUnitAmount,
 } from './number_utils';
 export { orderHashUtils } from './order_hash';
+export { transactionHashUtils } from './transaction_hash';

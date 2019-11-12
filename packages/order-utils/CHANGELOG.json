@@ -27,7 +27,7 @@
                 "pr": 2321
             },
             {
-                "note": "Removed function isValidTransactionHash from export transactionHashUtils",
+                "note": "Removed export transactionHashUtils",
                 "pr": 2321
             }
         ]

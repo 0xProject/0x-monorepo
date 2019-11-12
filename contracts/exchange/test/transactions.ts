@@ -11,8 +11,8 @@ import {
     OrderFactory,
     orderHashUtils,
     TransactionFactory,
+    transactionHashUtils,
 } from '@0x/contracts-test-utils';
-import { transactionHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';

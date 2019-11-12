@@ -11,7 +11,7 @@
                 "pr": 2324
             },
             {
-                "note": "Remove export orderHashUtils",
+                "note": "Remove exports orderHashUtils and transactionHashUtils",
                 "pr": 2321
             }
         ]

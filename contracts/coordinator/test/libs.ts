@@ -1,5 +1,4 @@
-import { blockchainTests, constants, expect, randomAddress } from '@0x/contracts-test-utils';
-import { transactionHashUtils } from '@0x/order-utils';
+import { blockchainTests, constants, expect, randomAddress, transactionHashUtils } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 import { artifacts, CoordinatorContract, hashUtils } from '../src';
@@ -41,7 +40,11 @@ blockchainTests.resets('Libs tests', env => {
                 transactionHash: transactionHashUtils.getTransactionHashHex(signedTx),
                 transactionSignature: signedTx.signature,
             };
-            const expectedApprovalHash = hashUtils.getApprovalHashHex(signedTx, coordinatorContract.address, txOrigin);
+            const expectedApprovalHash = await hashUtils.getApprovalHashHexAsync(
+                signedTx,
+                coordinatorContract.address,
+                txOrigin,
+            );
             const approvalHash = await coordinatorContract.getCoordinatorApprovalHash.callAsync(approval);
             expect(expectedApprovalHash).to.eq(approvalHash);
         });

@@ -5,6 +5,10 @@
             {
                 "note": "Add new method getOrderHash() to DevUtils contract",
                 "pr": 2321
+            },
+            {
+                "note": "Add new method getTransactionHash() to DevUtils contract",
+                "pr": 2321
             }
         ]
     },

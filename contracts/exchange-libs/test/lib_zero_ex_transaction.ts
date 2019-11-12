@@ -1,5 +1,12 @@
-import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
-import { eip712Utils, transactionHashUtils } from '@0x/order-utils';
+import {
+    blockchainTests,
+    constants,
+    describe,
+    expect,
+    hexRandom,
+    transactionHashUtils,
+} from '@0x/contracts-test-utils';
+import { eip712Utils } from '@0x/order-utils';
 import { ZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';

@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "./OrderValidationUtils.sol";
@@ -51,6 +52,21 @@ contract DevUtils is
     {
         return LibOrder.getTypedDataHash(
             order,
+            LibEIP712.hashEIP712Domain(_EIP712_EXCHANGE_DOMAIN_NAME, _EIP712_EXCHANGE_DOMAIN_VERSION, chainId, exchange)
+        );
+    }
+
+    function getTransactionHash(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        uint256 chainId,
+        address exchange
+    )
+        public
+        pure
+        returns (bytes32 transactionHash)
+    {
+        return LibZeroExTransaction.getTypedDataHash(
+            transaction,
             LibEIP712.hashEIP712Domain(_EIP712_EXCHANGE_DOMAIN_NAME, _EIP712_EXCHANGE_DOMAIN_VERSION, chainId, exchange)
         );
     }

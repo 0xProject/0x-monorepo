@@ -17,8 +17,11 @@ import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
-import { transactionHashUtils } from './transaction_hash';
 import { TypedDataError } from './types';
+
+const devUtilsContract = new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+    isEIP1193: true,
+} as any);
 
 export const signatureUtils = {
     /**
@@ -48,9 +51,11 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
-                isEIP1193: true,
-            } as any).getOrderHash.callAsync(order, new BigNumber(order.chainId), order.exchangeAddress);
+            const orderHash = await devUtilsContract.getOrderHash.callAsync(
+                order,
+                new BigNumber(order.chainId),
+                order.exchangeAddress,
+            );
             const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
                 ...order,
@@ -133,7 +138,11 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const transactionHash = await devUtilsContract.getTransactionHash.callAsync(
+                transaction,
+                new BigNumber(transaction.domain.chainId),
+                transaction.domain.verifyingContract,
+            );
             const signatureHex = await signatureUtils.ecSignHashAsync(
                 supportedProvider,
                 transactionHash,

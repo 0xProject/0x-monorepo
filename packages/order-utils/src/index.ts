@@ -2,7 +2,6 @@ export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
 export { marketUtils } from './market_utils';
-export { transactionHashUtils } from './transaction_hash';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderCalculationUtils } from './order_calculation_utils';
