@@ -1,6 +1,7 @@
 import { OwnerStakeByStatus, StakeInfo, StakeStatus, StoredBalance } from '@0x/contracts-staking';
 import { getRandomInteger } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import '@azure/core-asynciterator-polyfill';
 import * as _ from 'lodash';
 
 import { validMoveStakeAssertion, validStakeAssertion, validUnstakeAssertion } from '../function-assertions';

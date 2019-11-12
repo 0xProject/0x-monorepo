@@ -1,5 +1,6 @@
 import { constants, StakingPoolById } from '@0x/contracts-staking';
 import { getRandomInteger } from '@0x/contracts-test-utils';
+import '@azure/core-asynciterator-polyfill';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
