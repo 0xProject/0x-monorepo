@@ -519,7 +519,7 @@
                 "constant": true,
                 "inputs": [],
                 "name": "getWethContract",
-                "outputs": [{ "internalType": "contract IEtherToken", "name": "", "type": "address" }],
+                "outputs": [{ "internalType": "contract IEtherToken", "name": "wethContract", "type": "address" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -727,24 +727,6 @@
                 "type": "function"
             },
             {
-                "constant": true,
-                "inputs": [],
-                "name": "testWethAddress",
-                "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "testZrxVaultAddress",
-                "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
                 "constant": false,
                 "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
                 "name": "transferOwnership",
@@ -879,7 +861,14 @@
                     "params": { "poolId": "Unique Id of pool." },
                     "return": "Total stake delegated to pool."
                 },
-                "getWethContract()": { "details": "Overridden to use testWethAddress;" },
+                "getWethContract()": {
+                    "details": "Returns the current weth contract address",
+                    "return": "wethContract The WETH contract instance."
+                },
+                "getZrxVault()": {
+                    "details": "Returns the current zrxVault address.",
+                    "return": "zrxVault The zrxVault contract."
+                },
                 "init()": {
                     "details": "Initialize storage owned by this contract.      This function should not be called directly.      The StakingProxy contract will call it in `attachStakingContract()`."
                 },
