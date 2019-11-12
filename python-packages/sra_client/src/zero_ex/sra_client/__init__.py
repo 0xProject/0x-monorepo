@@ -84,11 +84,6 @@ To start, connect to the Ethereum network:
 >>> from web3 import HTTPProvider, Web3
 >>> eth_node = HTTPProvider("http://localhost:8545")
 
-What chain are we on?
-
->>> from zero_ex.contract_addresses import ChainId
->>> chain_id = ChainId.GANACHE  # you might use .MAINNET or .KOVAN
-
 For our Maker role, we'll just use the first address available in the node:
 
 >>> maker_address = Web3(eth_node).eth.accounts[0]
@@ -98,8 +93,8 @@ for this account, so the example orders below have the maker trading away ZRX.
 Before such an order can be valid, though, the maker must give the 0x contracts
 permission to trade their ZRX tokens:
 
->>> from zero_ex.contract_addresses import chain_to_addresses
->>> contract_addresses = chain_to_addresses(chain_id)
+>>> from zero_ex.contract_addresses import chain_to_addresses, ChainId
+>>> contract_addresses = chain_to_addresses(ChainId(Web3(eth_node).eth.chainId))
 >>>
 >>> from zero_ex.contract_artifacts import abi_by_name
 >>> zrx_token_contract = Web3(eth_node).eth.contract(
@@ -156,7 +151,6 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     order, contract_addresses.exchange, Web3(eth_node).eth.chainId
 ... )
 >>> relayer.post_order_with_http_info(
-...     chain_id=chain_id.value,
 ...     signed_order_schema=order_to_jsdict(
 ...         order=order,
 ...         exchange_address=contract_addresses.exchange,
