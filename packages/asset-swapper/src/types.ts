@@ -2,11 +2,18 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
+/**
+ * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
+ * permittedOrderFeeTypes: A set of all the takerFee types that OrderPruner will filter for
+ */
 export interface OrderPrunerOpts {
     expiryBufferMs: number;
     permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
 }
 
+/**
+ * Represents the on-chain metadata of a signed order
+ */
 export interface OrderPrunerOnChainMetadata {
     orderStatus: number;
     orderHash: string;
@@ -14,6 +21,7 @@ export interface OrderPrunerOnChainMetadata {
     fillableTakerAssetAmount: BigNumber;
     isValidSignature: boolean;
 }
+
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
@@ -24,6 +32,9 @@ export interface OrderProviderRequest {
 }
 
 /**
+ * fillableMakerAssetAmount: Amount of makerAsset that is fillable
+ * fillableTakerAssetAmount: Amount of takerAsset that is fillable
+ * fillableTakerFeeAmount: Amount of takerFee paid to fill fillableTakerAssetAmount
  */
 export interface PrunedSignedOrder extends SignedOrder {
     fillableMakerAssetAmount: BigNumber;
@@ -162,6 +173,7 @@ export interface SwapQuoteGetOutputOpts {}
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
+ * ethAmount: The amount of eth sent with the execution of a swap
  */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
     takerAddress?: string;
@@ -171,9 +183,9 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
 }
 
 /**
+ * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
  * feeRecipient: address of the receiver of the feePercentage of taker asset
- * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
 export interface ForwarderExtensionContractOpts {
     ethAmount?: BigNumber;
@@ -181,6 +193,9 @@ export interface ForwarderExtensionContractOpts {
     feeRecipient: string;
 }
 
+/*
+ * Options for how SwapQuoteConsumer will generate output
+ */
 export interface SwapQuoteConsumingOpts {
     useExtensionContract: ExtensionContractType;
 }
@@ -226,10 +241,11 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
 }
 
 /**
- * feeTakerTokenAmount: The amount of takerToken required any fee concerned with completing the swap.
- * takerTokenAmount: The amount of takerToken required to conduct the swap.
- * totalTakerTokenAmount: The total amount of takerToken required to complete the swap (filling orders, and paying affiliate fee)
- * makerTokenAmount: The amount of makerToken that will be acquired through the swap.
+ * feeTakerAssetAmount: The amount of takerAsset reserved for paying takerFees when swapping for desired assets.
+ * takerAssetAmount: The amount of takerAsset swapped for desired makerAsset.
+ * totalTakerAssetAmount: The total amount of takerAsset required to complete the swap (filling orders, and paying takerFees).
+ * makerAssetAmount: The amount of makerAsset that will be acquired through the swap.
+ * protocolFeeInEthAmount: The amount of eth to pay as protocol fee to perform the swap for desired asset.
  */
 export interface SwapQuoteInfo {
     feeTakerAssetAmount: BigNumber;
@@ -241,6 +257,7 @@ export interface SwapQuoteInfo {
 
 /**
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
+ * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
 export interface SwapQuoteRequestOpts {
     slippagePercentage: number;
@@ -281,18 +298,24 @@ export enum SwapQuoterError {
 }
 
 /**
- * Represents available liquidity for a given assetData
+ * Represents available liquidity for a given assetData.
  */
 export interface LiquidityForTakerMakerAssetDataPair {
     makerAssetAvailableInBaseUnits: BigNumber;
     takerAssetAvailableInBaseUnits: BigNumber;
 }
 
+/**
+ * Represents two main market operations supported by asset-swapper.
+ */
 export enum MarketOperation {
     Sell = 'Sell',
     Buy = 'Buy',
 }
 
+/**
+ * Represents varying order takerFee types that can be pruned for by OrderPruner.
+ */
 export enum OrderPrunerPermittedFeeTypes {
     NoFees = 'NO_FEES',
     MakerDenominatedTakerFee = 'MAKER_DENOMINATED_TAKER_FEE',

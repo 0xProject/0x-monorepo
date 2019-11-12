@@ -54,7 +54,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     }
 
     /**
-     * Given a SwapQuote, returns 'CalldataInfo' for a 0x exchange call. See type definition of CalldataInfo for more information.
+     * Given a SwapQuote, returns 'CalldataInfo' for a 0x extesion or exchange call. See type definition of CalldataInfo for more information.
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting SmartContractParams. See type definition for more information.
      */
@@ -68,7 +68,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     }
 
     /**
-     * Given a SwapQuote, returns 'SmartContractParamsInfo' for a 0x exchange call. See type definition of SmartContractParamsInfo for more information.
+     * Given a SwapQuote, returns 'SmartContractParamsInfo' for a 0x extension or exchange call. See type definition of SmartContractParamsInfo for more information.
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting SmartContractParams. See type definition for more information.
      */
@@ -82,7 +82,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     }
 
     /**
-     * Given a SwapQuote and desired rate (in takerAsset), attempt to execute the swap.
+     * Given a SwapQuote and desired rate (in takerAsset), attempt to execute the swap with 0x extension or exchange contract.
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting CalldataInfo. See type definition for more information.
      */
@@ -95,6 +95,11 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         return consumer.executeSwapQuoteOrThrowAsync(quote, opts);
     }
 
+    /**
+     * Given a SwapQuote, returns optimal 0x protocol interface (extension or no extension) to perform the swap.
+     * @param quote An object that conforms to SwapQuote. See type definition for more information.
+     * @param opts  Options for getting optimal exteion contract to fill quote. See type definition for more information.
+     */
     public async getOptimalExtensionContractTypeAsync(
         quote: SwapQuote,
         opts: Partial<GetExtensionContractTypeOpts> = {},

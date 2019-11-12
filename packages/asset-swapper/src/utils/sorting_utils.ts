@@ -7,13 +7,6 @@ import { assert } from './assert';
 import { utils } from './utils';
 
 export const sortingUtils = {
-    /**
-     * Takes an array of fee orders (makerAssetData corresponds to ZRX and takerAssetData corresponds to WETH)
-     * and sorts them by rate in ascending order (best rate first). Adjusts the rate according to the takerFee.
-     * @param   feeOrders       An array of objects that extend the Order interface. All orders should specify ZRX as
-     *                          the makerAsset and WETH as the takerAsset.
-     * @return  The input orders sorted by rate in ascending order
-     */
     sortOrders<T extends Order>(orders: T[]): T[] {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidOrdersForSwapQuoter('orders', orders);

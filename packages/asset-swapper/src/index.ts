@@ -20,11 +20,9 @@ export {
     ConstructorStateMutability,
 } from 'ethereum-types';
 
-export { SignedOrder, AssetPairsItem, APIOrder, Asset } from '@0x/types';
+export { SignedOrder, AssetPairsItem, APIOrder, Asset, Order } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
-export { ForwarderSwapQuoteConsumer } from './quote_consumers/forwarder_swap_quote_consumer';
-export { ExchangeSwapQuoteConsumer } from './quote_consumers/exchange_swap_quote_consumer';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export { protocolFeeUtils } from './utils/protocol_fee_utils';
@@ -38,7 +36,10 @@ export {
     SwapQuoteConsumerOpts,
     CalldataInfo,
     ExtensionContractType,
+    SwapQuoteConsumingOpts,
+    LiquidityForTakerMakerAssetDataPair,
     SwapQuoteGetOutputOpts,
+    PrunedSignedOrder,
     SwapQuoteExecutionOpts,
     SwapQuoteInfo,
     GetExtensionContractTypeOpts,

@@ -53,7 +53,6 @@ describe('OrderPruner', () => {
     let filledOpenSignedOrder: SignedOrder;
 
     const chainId = TESTRPC_CHAIN_ID;
-;
     const fillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
     const partialFillAmount = new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI);
     const takerFeeAmount = new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI);

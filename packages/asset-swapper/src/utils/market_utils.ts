@@ -20,16 +20,6 @@ export const marketUtils = {
             slippageBufferAmount,
         );
     },
-    /**
-     * Takes an array of orders and returns a subset of those orders that has enough makerAssetAmount
-     * in order to fill the input makerAssetFillAmount plus slippageBufferAmount. Iterates from first order to last order.
-     * Sort the input by ascending rate in order to get the subset of orders that will cost the least ETH.
-     * @param   orders                      An array of objects that extend the Order interface. All orders should specify the same makerAsset.
-     *                                      All orders should specify WETH as the takerAsset.
-     * @param   makerAssetFillAmount        The amount of makerAsset desired to be filled.
-     * @param   opts                        Optional arguments this function accepts.
-     * @return  Resulting orders and remaining fill amount that could not be covered by the input.
-     */
     findOrdersThatCoverMakerAssetFillAmount(
         sortedOrders: PrunedSignedOrder[],
         makerAssetFillAmount: BigNumber,

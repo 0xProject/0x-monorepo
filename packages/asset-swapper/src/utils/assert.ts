@@ -55,9 +55,9 @@ export const assert = {
                 order.takerFee.isZero() ||
                     utils.isOrderTakerFeePayableWithTakerAsset(order) ||
                     utils.isOrderTakerFeePayableWithMakerAsset(order),
-                `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} or ${order.takerAssetData} but found ${
-                    order.takerFeeAssetData
-                }`,
+                `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} or ${
+                    order.takerAssetData
+                } but found ${order.takerFeeAssetData}`,
             );
         });
     },

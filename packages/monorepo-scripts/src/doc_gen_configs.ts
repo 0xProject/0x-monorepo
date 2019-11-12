@@ -6,6 +6,7 @@ export const docGenConfigs: DocGenConfigs = {
     // Some types that are exposed by our package's public interface are external types. As such, we won't
     // be able to render their definitions. Instead we link to them using this lookup.
     EXTERNAL_TYPE_MAP: {
+        Set: true,
         Array: true,
         BigNumber: true,
         Error: true,

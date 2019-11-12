@@ -7,6 +7,9 @@ import { SwapQuoterError } from '../types';
 
 // tslint:disable:no-unnecessary-type-assertion
 export const protocolFeeUtils = {
+    /**
+     * Gets 'fast' gas price from Eth Gas Station.
+     */
     async getGasPriceEstimationOrThrowAsync(): Promise<BigNumber> {
         try {
             const res = await fetch(`${constants.ETH_GAS_STATION_API_BASE_URL}/json/ethgasAPI.json`);
@@ -18,6 +21,9 @@ export const protocolFeeUtils = {
             throw new Error(SwapQuoterError.NoGasPriceProvidedOrEstimated);
         }
     },
+    /**
+     * Calculates protocol fee with protofol fee multiplier for each fill.
+     */
     calculateWorstCaseProtocolFee<T extends Order>(orders: T[], gasPrice: BigNumber): BigNumber {
         const protocolFee = new BigNumber(orders.length * constants.PROTOCOL_FEE_MULTIPLIER).times(gasPrice);
         return protocolFee;
