@@ -25,6 +25,10 @@
             {
                 "note": "Removed export orderHashUtils",
                 "pr": 2321
+            },
+            {
+                "note": "Removed function isValidTransactionHash from export transactionHashUtils",
+                "pr": 2321
             }
         ]
     },

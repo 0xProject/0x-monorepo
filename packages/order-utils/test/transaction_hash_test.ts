@@ -46,19 +46,4 @@ describe('0x transaction hashing', () => {
             expect(transactionHash).to.be.equal(expectedTransactionHash);
         });
     });
-    describe('#isValidTransactionHash', () => {
-        it('returns false if the value is not a hex string', () => {
-            const isValid = transactionHashUtils.isValidTransactionHash('not a hex');
-            expect(isValid).to.be.false();
-        });
-        it('returns false if the length is wrong', () => {
-            const isValid = transactionHashUtils.isValidTransactionHash('0xdeadbeef');
-            expect(isValid).to.be.false();
-        });
-        it('returns true if order hash is correct', () => {
-            const orderHashLength = 65;
-            const isValid = transactionHashUtils.isValidTransactionHash(`0x${Array(orderHashLength).join('0')}`);
-            expect(isValid).to.be.true();
-        });
-    });
 });
