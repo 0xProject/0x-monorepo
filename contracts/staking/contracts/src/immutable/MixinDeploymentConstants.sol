@@ -28,21 +28,24 @@ contract MixinDeploymentConstants {
     // @TODO SET THESE VALUES FOR DEPLOYMENT
 
     // Mainnet WETH9 Address
-    // address constant private WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    address constant private WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
     // Kovan WETH9 Address
     // address constant private WETH_ADDRESS = address(0xd0A1E359811322d97991E03f863a0C30C2cF029C);
 
     // Ropsten & Rinkeby WETH9 Address
-    address constant private WETH_ADDRESS = address(0xc778417E063141139Fce010982780140Aa0cD5Ab);
+    // address constant private WETH_ADDRESS = address(0xc778417E063141139Fce010982780140Aa0cD5Ab);
 
     // @TODO SET THESE VALUES FOR DEPLOYMENT
+
+    // Mainnet ZrxVault address
+    address constant private ZRX_VAULT_ADDRESS = address(0xcE2a4B118813cBfa27Ee11cf8E67B101867fa85E);
 
     // Kovan ZrxVault address
     // address constant private ZRX_VAULT_ADDRESS = address(0xf36eabdFE986B35b62c8FD5a98A7f2aEBB79B291);
 
     // Ropsten ZrxVault address
-    address constant private ZRX_VAULT_ADDRESS = address(0xffD161026865Ad8B4aB28a76840474935eEc4DfA);
+    // address constant private ZRX_VAULT_ADDRESS = address(0xffD161026865Ad8B4aB28a76840474935eEc4DfA);
 
     // Rinkeby ZrxVault address
     // address constant private ZRX_VAULT_ADDRESS = address(0xA5Bf6aC73bC40790FC6Ffc9DBbbCE76c9176e224);

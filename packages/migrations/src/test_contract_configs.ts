@@ -15,6 +15,9 @@ import { logUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 
+import { getConfigsByChainId } from './utils/configs_by_chain';
+import { getTimelockRegistrationsAsync } from './utils/timelocks';
+
 // NOTE: add your own Infura Project ID to RPC urls before running
 const INFURA_PROJECT_ID = '';
 
@@ -30,6 +33,7 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
     const web3Wrapper = new Web3Wrapper(provider);
     const chainId = await web3Wrapper.getChainIdAsync();
     const addresses = getContractAddressesForChainOrThrow(chainId);
+    const configs = getConfigsByChainId(chainId);
 
     function warnIfMismatch(actual: any, expected: any, message: string): void {
         if (actual !== expected) {
@@ -106,6 +110,13 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
             registeredStaticCallProxy,
             addresses.staticCallProxy,
             'Unexpected StaticCallProxy registered in Exchange',
+        );
+
+        const registeredERC20BridgeProxy = await exchange.getAssetProxy.callAsync(AssetProxyId.ERC20Bridge);
+        warnIfMismatch(
+            registeredERC20BridgeProxy,
+            addresses.erc20BridgeProxy,
+            'Unexpected ERC20BridgeProxy registered in Exchange',
         );
 
         const protocolFeeCollector = await exchange.protocolFeeCollector.callAsync();
@@ -246,10 +257,10 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         warnIfMismatch(stakingLogicAddress, addresses.staking, 'Unexpected Staking contract attached to StakingProxy');
 
         const zrxVaultAddress = await stakingContract.getZrxVault.callAsync();
-        warnIfMismatch(zrxVaultAddress, addresses.zrxVault, 'Unexpected ZrxVault set in Staking contract');
+        warnIfMismatch(zrxVaultAddress, addresses.zrxVault, 'Unexpected ZrxVault set in StakingProxy');
 
         const wethAddress = await stakingContract.getWethContract.callAsync();
-        warnIfMismatch(wethAddress, addresses.etherToken, 'Unexpected WETH contract set in Staking contract');
+        warnIfMismatch(wethAddress, addresses.etherToken, 'Unexpected WETH contract set in StakingProxy');
 
         const stakingProxyOwner = await stakingProxy.owner.callAsync();
         warnIfMismatch(stakingProxyOwner, addresses.zeroExGovernor, 'Unexpected StakingProxy owner');
@@ -270,15 +281,92 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         warnIfMismatch(zrxVaultAuthorizedAddresses.length, 1, 'Unexpected number of authorized addresses in ZrxVault');
         const isGovernorAuthorizedInZrxVault = await zrxVault.authorized.callAsync(addresses.zeroExGovernor);
         warnIfMismatch(isGovernorAuthorizedInZrxVault, true, 'ZeroExGovernor not authorized in ZrxVault');
+
+        const params = await stakingContract.getParams.callAsync();
+        warnIfMismatch(
+            params[0].toNumber(),
+            configs.staking.epochDurationInSeconds.toNumber(),
+            'Unexpected epoch duration in StakingProxy',
+        );
+        warnIfMismatch(
+            params[1].toString(),
+            configs.staking.rewardDelegatedStakeWeight.toString(),
+            'Unexpected delegated stake weight in StakingProxy',
+        );
+        warnIfMismatch(
+            params[2].toNumber(),
+            configs.staking.minimumPoolStake.toNumber(),
+            'Unexpected minimum pool stake in StakingProxy',
+        );
+        warnIfMismatch(
+            params[3].toString(),
+            configs.staking.cobbDouglasAlphaNumerator.toString(),
+            'Unexpected alpha numerator in StakingProxy',
+        );
+        warnIfMismatch(
+            params[4].toString(),
+            configs.staking.cobbDouglasAlphaDenominator.toString(),
+            'Unexpected alpha denominator in StakingProxy',
+        );
     }
 
-    // TODO: implement ZeroExGovernor config tests
-    // async function verifyAssetProxyOwnerConfigsAsync(): Promise<void> {}
+    async function verifyZeroExGovernorConfigsAsync(): Promise<void> {
+        const timelockRegistrations = await getTimelockRegistrationsAsync(provider);
+        for (const timelockRegistration of timelockRegistrations) {
+            const actualRegistration = await governor.functionCallTimeLocks.callAsync(
+                timelockRegistration.functionSelector,
+                timelockRegistration.destination,
+            );
+            warnIfMismatch(
+                actualRegistration[0],
+                true,
+                `Function ${timelockRegistration.functionSelector} at address ${
+                    timelockRegistration.destination
+                } not registered in ZeroExGovernor`,
+            );
+            warnIfMismatch(
+                actualRegistration[1].toNumber(),
+                timelockRegistration.secondsTimeLocked.toNumber(),
+                `Timelock for function ${timelockRegistration.functionSelector} at address ${
+                    timelockRegistration.destination
+                } in ZeroExGovernor`,
+            );
+        }
+
+        const owners = await governor.getOwners.callAsync();
+        warnIfMismatch(
+            owners.length,
+            configs.zeroExGovernor.owners.length,
+            'Unexpected number of owners in ZeroExGovernor',
+        );
+        owners.forEach((owner, i) => {
+            warnIfMismatch(
+                owners[i],
+                configs.zeroExGovernor.owners[i],
+                `Unexpected owner in ZeroExGovernor at index ${i}`,
+            );
+        });
+
+        const secondsTimeLocked = await governor.secondsTimeLocked.callAsync();
+        warnIfMismatch(
+            secondsTimeLocked.toNumber(),
+            configs.zeroExGovernor.secondsTimeLocked.toNumber(),
+            'Unexpected secondsTimeLocked in ZeroExGovernor',
+        );
+
+        const confirmationsRequired = await governor.required.callAsync();
+        warnIfMismatch(
+            confirmationsRequired.toNumber(),
+            configs.zeroExGovernor.required.toNumber(),
+            'Unexpected number of confirmations required in ZeroExGovernor',
+        );
+    }
 
     await verifyExchangeV2ConfigsAsync();
     await verifyExchangeV3ConfigsAsync();
     await verifyStakingConfigsAsync();
     await verifyAssetProxyConfigsAsync();
+    await verifyZeroExGovernorConfigsAsync();
 }
 
 (async () => {
