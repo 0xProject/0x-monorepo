@@ -1,6 +1,6 @@
 import { artifacts as assetProxyArtifacts } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
     BlockchainBalanceStore,
@@ -117,6 +117,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             ...assetProxyArtifacts,
             ...exchangeArtifacts,
             ...stakingArtifacts,
+            ...erc20Artifacts,
         });
     });
 
