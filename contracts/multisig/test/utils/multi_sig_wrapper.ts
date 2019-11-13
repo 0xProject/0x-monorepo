@@ -25,19 +25,19 @@ export class MultiSigWrapper {
         opts: { value?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const value = opts.value === undefined ? new BigNumber(0) : opts.value;
-        const txHash = await this._multiSig.submitTransaction.sendTransactionAsync(destination, value, data, {
+        const txHash = await this._multiSig.submitTransaction(destination, value, data).sendTransactionAsync({
             from,
         });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async confirmTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.confirmTransaction.sendTransactionAsync(txId, { from });
+        const txHash = await this._multiSig.confirmTransaction(txId).sendTransactionAsync({ from });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async revokeConfirmationAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.revokeConfirmation.sendTransactionAsync(txId, { from });
+        const txHash = await this._multiSig.revokeConfirmation(txId).sendTransactionAsync({ from });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
@@ -46,7 +46,7 @@ export class MultiSigWrapper {
         from: string,
         opts: { gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, {
+        const txHash = await this._multiSig.executeTransaction(txId).sendTransactionAsync({
             from,
             gas: opts.gas,
         });

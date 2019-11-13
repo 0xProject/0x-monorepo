@@ -45,7 +45,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         });
 
         it('should not fail immediately if the wrapped function fails', async () => {
-            const assertion = new FunctionAssertion<{}>(exampleContract.emptyRevert);
+            const assertion = new FunctionAssertion<{}, void>(exampleContract.emptyRevert);
             await assertion.executeAsync();
         });
 

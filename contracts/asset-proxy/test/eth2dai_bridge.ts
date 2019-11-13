@@ -8,7 +8,7 @@ import {
     hexRandom,
     Numberish,
     randomAddress,
-    TransactionHelper,
+    transactionHelper,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber, RawRevertError } from '@0x/utils';
@@ -25,7 +25,6 @@ import {
 } from '../src';
 
 blockchainTests.resets('Eth2DaiBridge unit tests', env => {
-    const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestEth2DaiBridgeContract;
 
     before(async () => {
@@ -40,7 +39,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
     describe('isValidSignature()', () => {
         it('returns success bytes', async () => {
             const LEGACY_WALLET_MAGIC_VALUE = '0xb0671381';
-            const result = await testContract.isValidSignature.callAsync(hexRandom(), hexRandom(_.random(0, 32)));
+            const result = await testContract.isValidSignature(hexRandom(), hexRandom(_.random(0, 32))).callAsync();
             expect(result).to.eq(LEGACY_WALLET_MAGIC_VALUE);
         });
     });
@@ -80,31 +79,32 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
         async function withdrawToAsync(opts?: Partial<WithdrawToOpts>): Promise<WithdrawToResult> {
             const _opts = createWithdrawToOpts(opts);
             // Set the fill behavior.
-            await testContract.setFillBehavior.awaitTransactionSuccessAsync(
-                _opts.revertReason,
-                new BigNumber(_opts.fillAmount),
-            );
+            await testContract
+                .setFillBehavior(_opts.revertReason, new BigNumber(_opts.fillAmount))
+                .awaitTransactionSuccessAsync();
             // Create tokens and balances.
             if (_opts.fromTokenAddress === undefined) {
-                [_opts.fromTokenAddress] = await txHelper.getResultAndReceiptAsync(
+                [_opts.fromTokenAddress] = await transactionHelper.getResultAndReceiptAsync(
                     testContract.createToken,
                     new BigNumber(_opts.fromTokenBalance),
                 );
             }
             if (_opts.toTokenAddress === undefined) {
-                [_opts.toTokenAddress] = await txHelper.getResultAndReceiptAsync(
+                [_opts.toTokenAddress] = await transactionHelper.getResultAndReceiptAsync(
                     testContract.createToken,
                     constants.ZERO_AMOUNT,
                 );
             }
             // Set the transfer behavior of `toTokenAddress`.
-            await testContract.setTransferBehavior.awaitTransactionSuccessAsync(
-                _opts.toTokenAddress,
-                _opts.toTokentransferRevertReason,
-                _opts.toTokenTransferReturnData,
-            );
+            await testContract
+                .setTransferBehavior(
+                    _opts.toTokenAddress,
+                    _opts.toTokentransferRevertReason,
+                    _opts.toTokenTransferReturnData,
+                )
+                .awaitTransactionSuccessAsync();
             // Call bridgeTransferFrom().
-            const [result, { logs }] = await txHelper.getResultAndReceiptAsync(
+            const [result, { logs }] = await transactionHelper.getResultAndReceiptAsync(
                 testContract.bridgeTransferFrom,
                 // "to" token address
                 _opts.toTokenAddress,

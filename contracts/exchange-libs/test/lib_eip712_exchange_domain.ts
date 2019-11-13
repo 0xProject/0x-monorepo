@@ -23,7 +23,7 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
                 version: constants.EIP712_DOMAIN_VERSION,
             };
             const expectedDomainHash = ethUtil.bufferToHex(signTypedDataUtils.generateDomainHash(domain));
-            const actualDomainHash = await libEIP712ExchangeDomainContract.EIP712_EXCHANGE_DOMAIN_HASH.callAsync();
+            const actualDomainHash = await libEIP712ExchangeDomainContract.EIP712_EXCHANGE_DOMAIN_HASH().callAsync();
             expect(actualDomainHash).to.be.equal(expectedDomainHash);
         });
         it('should calculate the correct domain hash when verifyingContractAddressIfExists is set to a non-null address', async () => {
@@ -44,7 +44,7 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
                 version: constants.EIP712_DOMAIN_VERSION,
             };
             const expectedDomainHash = ethUtil.bufferToHex(signTypedDataUtils.generateDomainHash(domain));
-            const actualDomainHash = await libEIP712ExchangeDomainContract.EIP712_EXCHANGE_DOMAIN_HASH.callAsync();
+            const actualDomainHash = await libEIP712ExchangeDomainContract.EIP712_EXCHANGE_DOMAIN_HASH().callAsync();
             expect(actualDomainHash).to.be.equal(expectedDomainHash);
         });
     });

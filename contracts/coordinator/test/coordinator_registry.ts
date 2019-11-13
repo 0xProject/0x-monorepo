@@ -23,43 +23,42 @@ blockchainTests.resets('Coordinator Registry tests', env => {
     });
     describe('core', () => {
         it('Should successfully set a Coordinator endpoint', async () => {
-            await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(coordinatorEndpoint, {
+            await coordinatorRegistry.setCoordinatorEndpoint(coordinatorEndpoint).awaitTransactionSuccessAsync({
                 from: coordinatorOperator,
             });
-            const recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
-                coordinatorOperator,
-            );
+            const recordedCoordinatorEndpoint = await coordinatorRegistry
+                .getCoordinatorEndpoint(coordinatorOperator)
+                .callAsync();
             expect(recordedCoordinatorEndpoint).to.be.equal(coordinatorEndpoint);
         });
         it('Should successfully unset a Coordinator endpoint', async () => {
             // set Coordinator endpoint
-            await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(coordinatorEndpoint, {
+            await coordinatorRegistry.setCoordinatorEndpoint(coordinatorEndpoint).awaitTransactionSuccessAsync({
                 from: coordinatorOperator,
             });
-            let recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
-                coordinatorOperator,
-            );
+            let recordedCoordinatorEndpoint = await coordinatorRegistry
+                .getCoordinatorEndpoint(coordinatorOperator)
+                .callAsync();
             expect(recordedCoordinatorEndpoint).to.be.equal(coordinatorEndpoint);
             // unset Coordinator endpoint
-            await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(nilCoordinatorEndpoint, {
+            await coordinatorRegistry.setCoordinatorEndpoint(nilCoordinatorEndpoint).awaitTransactionSuccessAsync({
                 from: coordinatorOperator,
             });
-            recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
-                coordinatorOperator,
-            );
+            recordedCoordinatorEndpoint = await coordinatorRegistry
+                .getCoordinatorEndpoint(coordinatorOperator)
+                .callAsync();
             expect(recordedCoordinatorEndpoint).to.be.equal(nilCoordinatorEndpoint);
         });
         it('Should emit an event when setting Coordinator endpoint', async () => {
             // set Coordinator endpoint
-            const txReceipt = await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(
-                coordinatorEndpoint,
-                {
+            const txReceipt = await coordinatorRegistry
+                .setCoordinatorEndpoint(coordinatorEndpoint)
+                .awaitTransactionSuccessAsync({
                     from: coordinatorOperator,
-                },
-            );
-            const recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
-                coordinatorOperator,
-            );
+                });
+            const recordedCoordinatorEndpoint = await coordinatorRegistry
+                .getCoordinatorEndpoint(coordinatorOperator)
+                .callAsync();
             expect(recordedCoordinatorEndpoint).to.be.equal(coordinatorEndpoint);
             // validate event
             const expectedEvent: CoordinatorRegistryCoordinatorEndpointSetEventArgs = {

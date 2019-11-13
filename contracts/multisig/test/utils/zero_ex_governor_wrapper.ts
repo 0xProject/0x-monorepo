@@ -20,12 +20,13 @@ export class ZeroExGovernorWrapper {
         const values = opts.values === undefined ? data.map(() => constants.ZERO_AMOUNT) : opts.values;
         const batchTransactionEncoder = AbiEncoder.create('(bytes[],address[],uint256[])');
         const batchTransactionData = batchTransactionEncoder.encode([data, destinations, values]);
-        const txReceipt = await this._governor.submitTransaction.awaitTransactionSuccessAsync(
-            hexRandom(20), // submitTransaction will fail if this is a null address
-            constants.ZERO_AMOUNT,
-            batchTransactionData,
-            { from },
-        );
+        const txReceipt = await this._governor
+            .submitTransaction(
+                hexRandom(20), // submitTransaction will fail if this is a null address
+                constants.ZERO_AMOUNT,
+                batchTransactionData,
+            )
+            .awaitTransactionSuccessAsync({ from });
         const txId = (txReceipt.logs[0] as LogWithDecodedArgs<ZeroExGovernorSubmissionEventArgs>).args.transactionId;
         return { txReceipt, txId };
     }
@@ -39,15 +40,16 @@ export class ZeroExGovernorWrapper {
         const submitResults = await this.submitTransactionAsync(data, destinations, signerAddresses[0], opts);
         const requiredSignatures = opts.requiredSignatures === undefined ? 2 : opts.requiredSignatures;
         for (const index of _.range(1, requiredSignatures)) {
-            await this._governor.confirmTransaction.awaitTransactionSuccessAsync(submitResults.txId, {
+            await this._governor.confirmTransaction(submitResults.txId).awaitTransactionSuccessAsync({
                 from: signerAddresses[index],
             });
         }
         await increaseTimeAndMineBlockAsync(increaseTimeSeconds);
-        const executionTxReceipt = await this._governor.executeTransaction.awaitTransactionSuccessAsync(
-            submitResults.txId,
-            { from: opts.executeFromAddress === undefined ? signerAddresses[0] : opts.executeFromAddress },
-        );
+        const executionTxReceipt = await this._governor
+            .executeTransaction(submitResults.txId)
+            .awaitTransactionSuccessAsync({
+                from: opts.executeFromAddress === undefined ? signerAddresses[0] : opts.executeFromAddress,
+            });
         return { executionTxReceipt, txId: submitResults.txId };
     }
 }

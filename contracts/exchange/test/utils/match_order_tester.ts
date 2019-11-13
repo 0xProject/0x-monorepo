@@ -631,11 +631,11 @@ async function transferAssetAsync(
     matchResults: MatchResults,
     devUtils: DevUtilsContract,
 ): Promise<void> {
-    const assetProxyId = await devUtils.decodeAssetProxyId.callAsync(assetData);
+    const assetProxyId = await devUtils.decodeAssetProxyId(assetData).callAsync();
     switch (assetProxyId) {
         case AssetProxyId.ERC20: {
             // tslint:disable-next-line:no-unused-variable
-            const [proxyId, assetAddress] = await devUtils.decodeERC20AssetData.callAsync(assetData); // tslint:disable-line-no-unused-variable
+            const [proxyId, assetAddress] = await devUtils.decodeERC20AssetData(assetData).callAsync(); // tslint:disable-line-no-unused-variable
             const fromBalances = matchResults.balances.erc20[fromAddress];
             const toBalances = matchResults.balances.erc20[toAddress];
             fromBalances[assetAddress] = fromBalances[assetAddress].minus(amount);
@@ -644,7 +644,7 @@ async function transferAssetAsync(
         }
         case AssetProxyId.ERC721: {
             // tslint:disable-next-line:no-unused-variable
-            const [proxyId, assetAddress, tokenId] = await devUtils.decodeERC721AssetData.callAsync(assetData); // tslint:disable-line-no-unused-variable
+            const [proxyId, assetAddress, tokenId] = await devUtils.decodeERC721AssetData(assetData).callAsync(); // tslint:disable-line-no-unused-variable
             const fromTokens = matchResults.balances.erc721[fromAddress][assetAddress];
             const toTokens = matchResults.balances.erc721[toAddress][assetAddress];
             if (amount.gte(1)) {
@@ -658,9 +658,9 @@ async function transferAssetAsync(
         }
         case AssetProxyId.ERC1155: {
             // tslint:disable-next-line:no-unused-variable
-            const [proxyId, assetAddress, tokenIds, tokenValues] = await devUtils.decodeERC1155AssetData.callAsync(
-                assetData,
-            );
+            const [proxyId, assetAddress, tokenIds, tokenValues] = await devUtils
+                .decodeERC1155AssetData(assetData)
+                .callAsync();
             const fromBalances = matchResults.balances.erc1155[fromAddress][assetAddress];
             const toBalances = matchResults.balances.erc1155[toAddress][assetAddress];
             for (const i of _.times(tokenIds.length)) {
@@ -685,7 +685,7 @@ async function transferAssetAsync(
         }
         case AssetProxyId.MultiAsset: {
             // tslint:disable-next-line:no-unused-variable
-            const [proxyId, amounts, nestedAssetData] = await devUtils.decodeMultiAssetData.callAsync(assetData); // tslint:disable-line-no-unused-variable
+            const [proxyId, amounts, nestedAssetData] = await devUtils.decodeMultiAssetData(assetData).callAsync(); // tslint:disable-line-no-unused-variable
             for (const i of _.times(amounts.length)) {
                 const nestedAmount = amount.times(amounts[i]);
                 const _nestedAssetData = nestedAssetData[i];

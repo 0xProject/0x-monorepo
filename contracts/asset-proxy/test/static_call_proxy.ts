@@ -79,26 +79,21 @@ describe('StaticCallProxy', () => {
             );
         });
         it('should have an id of 0xc339d10a', async () => {
-            const proxyId = await staticCallProxy.getProxyId.callAsync();
+            const proxyId = await staticCallProxy.getProxyId().callAsync();
             const expectedProxyId = AssetProxyId.StaticCall;
             expect(proxyId).to.equal(expectedProxyId);
         });
     });
     describe('transferFrom', () => {
         it('should revert if assetData lies outside the bounds of calldata', async () => {
-            const staticCallData = staticCallTarget.noInputFunction.getABIEncodedTransactionData();
+            const staticCallData = staticCallTarget.noInputFunction().getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
-            const txData = staticCallProxy.transferFrom.getABIEncodedTransactionData(
-                assetData,
-                fromAddress,
-                toAddress,
-                amount,
-            );
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
+            const txData = staticCallProxy
+                .transferFrom(assetData, fromAddress, toAddress, amount)
+                .getABIEncodedTransactionData();
             const offsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000080';
             const txDataEndBuffer = ethUtil.toBuffer((txData.length - 2) / 2 - 4);
             const paddedTxDataEndBuffer = ethUtil.setLengthLeft(txDataEndBuffer, 32);
@@ -116,25 +111,21 @@ describe('StaticCallProxy', () => {
         it('should revert if the length of assetData is less than 100 bytes', async () => {
             const staticCallData = constants.NULL_BYTES;
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = (await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            )).slice(0, -128);
+            const assetData = (await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync()).slice(0, -128);
             const assetDataByteLen = (assetData.length - 2) / 2;
             expect((assetDataByteLen - 4) % 32).to.equal(0);
             await expectTransactionFailedWithoutReasonAsync(
-                staticCallProxy.transferFrom.sendTransactionAsync(assetData, fromAddress, toAddress, amount),
+                staticCallProxy.transferFrom(assetData, fromAddress, toAddress, amount).sendTransactionAsync(),
             );
         });
         it('should revert if the offset to `staticCallData` points to outside of assetData', async () => {
-            const staticCallData = staticCallTarget.noInputFunction.getABIEncodedTransactionData();
+            const staticCallData = staticCallTarget.noInputFunction().getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
             const offsetToStaticCallData = '0000000000000000000000000000000000000000000000000000000000000060';
             const assetDataEndBuffer = ethUtil.toBuffer((assetData.length - 2) / 2 - 4);
             const paddedAssetDataEndBuffer = ethUtil.setLengthLeft(assetDataEndBuffer, 32);
@@ -145,94 +136,88 @@ describe('StaticCallProxy', () => {
                 invalidOffsetToStaticCallData,
             )}${newStaticCallData}`;
             await expectTransactionFailedWithoutReasonAsync(
-                staticCallProxy.transferFrom.sendTransactionAsync(badAssetData, fromAddress, toAddress, amount),
+                staticCallProxy.transferFrom(badAssetData, fromAddress, toAddress, amount).sendTransactionAsync(),
             );
         });
         it('should revert if the callTarget attempts to write to state', async () => {
-            const staticCallData = staticCallTarget.updateState.getABIEncodedTransactionData();
+            const staticCallData = staticCallTarget.updateState().getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
             await expectTransactionFailedWithoutReasonAsync(
-                staticCallProxy.transferFrom.sendTransactionAsync(assetData, fromAddress, toAddress, amount),
+                staticCallProxy.transferFrom(assetData, fromAddress, toAddress, amount).sendTransactionAsync(),
             );
         });
         it('should revert with data provided by the callTarget if the staticcall reverts', async () => {
-            const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(new BigNumber(1));
+            const staticCallData = staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
             await expectTransactionFailedAsync(
-                staticCallProxy.transferFrom.sendTransactionAsync(assetData, fromAddress, toAddress, amount),
+                staticCallProxy.transferFrom(assetData, fromAddress, toAddress, amount).sendTransactionAsync(),
                 RevertReason.TargetNotEven,
             );
         });
         it('should revert if the hash of the output is different than expected expected', async () => {
-            const staticCallData = staticCallTarget.isOddNumber.getABIEncodedTransactionData(new BigNumber(0));
+            const staticCallData = staticCallTarget.isOddNumber(new BigNumber(0)).getABIEncodedTransactionData();
             const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
             const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
             await expectTransactionFailedAsync(
-                staticCallProxy.transferFrom.sendTransactionAsync(assetData, fromAddress, toAddress, amount),
+                staticCallProxy.transferFrom(assetData, fromAddress, toAddress, amount).sendTransactionAsync(),
                 RevertReason.UnexpectedStaticCallResult,
             );
         });
         it('should be successful if a function call with no inputs and no outputs is successful', async () => {
-            const staticCallData = staticCallTarget.noInputFunction.getABIEncodedTransactionData();
+            const staticCallData = staticCallTarget.noInputFunction().getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
-            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
+            await staticCallProxy
+                .transferFrom(assetData, fromAddress, toAddress, amount)
+                .awaitTransactionSuccessAsync();
         });
         it('should be successful if the staticCallTarget is not a contract and no return value is expected', async () => {
             const staticCallData = '0x0102030405060708';
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                toAddress,
-                staticCallData,
-                expectedResultHash,
-            );
-            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(toAddress, staticCallData, expectedResultHash)
+                .callAsync();
+            await staticCallProxy
+                .transferFrom(assetData, fromAddress, toAddress, amount)
+                .awaitTransactionSuccessAsync();
         });
         it('should be successful if a function call with one static input returns the correct value', async () => {
-            const staticCallData = staticCallTarget.isOddNumber.getABIEncodedTransactionData(new BigNumber(1));
+            const staticCallData = staticCallTarget.isOddNumber(new BigNumber(1)).getABIEncodedTransactionData();
             const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
             const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
-            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
+            await staticCallProxy
+                .transferFrom(assetData, fromAddress, toAddress, amount)
+                .awaitTransactionSuccessAsync();
         });
         it('should be successful if a function with one dynamic input is successful', async () => {
             const dynamicInput = '0x0102030405060708';
-            const staticCallData = staticCallTarget.dynamicInputFunction.getABIEncodedTransactionData(dynamicInput);
+            const staticCallData = staticCallTarget.dynamicInputFunction(dynamicInput).getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
-            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
+            await staticCallProxy
+                .transferFrom(assetData, fromAddress, toAddress, amount)
+                .awaitTransactionSuccessAsync();
         });
         it('should be successful if a function call returns a complex type', async () => {
             const a = new BigNumber(1);
             const b = new BigNumber(2);
-            const staticCallData = staticCallTarget.returnComplexType.getABIEncodedTransactionData(a, b);
+            const staticCallData = staticCallTarget.returnComplexType(a, b).getABIEncodedTransactionData();
             const abiEncoder = new AbiEncoder.DynamicBytes({
                 name: '',
                 type: 'bytes',
@@ -245,12 +230,12 @@ describe('StaticCallProxy', () => {
             const expectedResultHash = ethUtil.bufferToHex(
                 ethUtil.sha3(ethUtil.toBuffer(encodedExpectedResultWithOffset)),
             );
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            );
-            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
+                .callAsync();
+            await staticCallProxy
+                .transferFrom(assetData, fromAddress, toAddress, amount)
+                .awaitTransactionSuccessAsync();
         });
     });
 });

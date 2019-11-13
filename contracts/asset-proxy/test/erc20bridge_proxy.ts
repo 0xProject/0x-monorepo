@@ -44,8 +44,8 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             env.txDefaults,
             artifacts,
         );
-        testTokenAddress = await bridgeContract.testToken.callAsync();
-        await assetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(owner);
+        testTokenAddress = await bridgeContract.testToken().callAsync();
+        await assetProxy.addAuthorizedAddress(owner).awaitTransactionSuccessAsync();
     });
 
     interface AssetDataOpts {
@@ -102,7 +102,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     }
 
     async function setTestTokenBalanceAsync(_owner: string, balance: Numberish): Promise<void> {
-        await bridgeContract.setTestTokenBalance.awaitTransactionSuccessAsync(_owner, new BigNumber(balance));
+        await bridgeContract.setTestTokenBalance(_owner, new BigNumber(balance)).awaitTransactionSuccessAsync();
     }
 
     describe('transferFrom()', () => {
@@ -132,13 +132,9 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
 
         async function transferFromAsync(opts?: Partial<TransferFromOpts>, caller?: string): Promise<DecodedLogs> {
             const _opts = createTransferFromOpts(opts);
-            const { logs } = await assetProxy.transferFrom.awaitTransactionSuccessAsync(
-                encodeAssetData(_opts.assetData),
-                _opts.from,
-                _opts.to,
-                new BigNumber(_opts.amount),
-                { from: caller },
-            );
+            const { logs } = await assetProxy
+                .transferFrom(encodeAssetData(_opts.assetData), _opts.from, _opts.to, new BigNumber(_opts.amount))
+                .awaitTransactionSuccessAsync({ from: caller });
             return (logs as any) as DecodedLogs;
         }
 
@@ -180,12 +176,9 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
         it('fails if asset data is truncated', async () => {
             const opts = createTransferFromOpts();
             const truncatedAssetData = hexSlice(encodeAssetData(opts.assetData), 0, -1);
-            const tx = assetProxy.transferFrom.awaitTransactionSuccessAsync(
-                truncatedAssetData,
-                opts.from,
-                opts.to,
-                new BigNumber(opts.amount),
-            );
+            const tx = assetProxy
+                .transferFrom(truncatedAssetData, opts.from, opts.to, new BigNumber(opts.amount))
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.be.rejected();
         });
 
@@ -281,18 +274,18 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
         it('retrieves the balance of the encoded token', async () => {
             const _owner = randomAddress();
             const balance = getRandomInteger(1, 100e18);
-            await bridgeContract.setTestTokenBalance.awaitTransactionSuccessAsync(_owner, balance);
+            await bridgeContract.setTestTokenBalance(_owner, balance).awaitTransactionSuccessAsync();
             const assetData = createAssetData({
                 tokenAddress: testTokenAddress,
             });
-            const actualBalance = await assetProxy.balanceOf.callAsync(encodeAssetData(assetData), _owner);
+            const actualBalance = await assetProxy.balanceOf(encodeAssetData(assetData), _owner).callAsync();
             expect(actualBalance).to.bignumber.eq(balance);
         });
     });
 
     describe('getProxyId()', () => {
         it('returns the correct proxy ID', async () => {
-            const proxyId = await assetProxy.getProxyId.callAsync();
+            const proxyId = await assetProxy.getProxyId().callAsync();
             expect(proxyId).to.eq(PROXY_ID);
         });
     });

@@ -31,11 +31,11 @@ describe('ReentrancyGuard', () => {
     describe('nonReentrant', () => {
         it('should revert if reentrancy occurs', async () => {
             const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-            return expect(guard.guarded.sendTransactionAsync(true)).to.revertWith(expectedError);
+            return expect(guard.guarded(true).sendTransactionAsync()).to.revertWith(expectedError);
         });
 
         it('should succeed if reentrancy does not occur', async () => {
-            const isSuccessful = await guard.guarded.callAsync(false);
+            const isSuccessful = await guard.guarded(false).callAsync();
             expect(isSuccessful).to.be.true();
         });
     });

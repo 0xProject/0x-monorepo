@@ -44,12 +44,9 @@ describe('LibEIP712', () => {
             chainId,
             verifyingContract,
         });
-        const actualHash = await lib.externalHashEIP712DomainSeperator.callAsync(
-            name,
-            version,
-            new BigNumber(chainId),
-            verifyingContract,
-        );
+        const actualHash = await lib
+            .externalHashEIP712DomainSeperator(name, version, new BigNumber(chainId), verifyingContract)
+            .callAsync();
         expect(actualHash).to.be.eq(hexConcat(expectedHash));
     }
 
@@ -83,7 +80,7 @@ describe('LibEIP712', () => {
         const expectedHash = '0x'.concat(ethUtil.sha3(input).toString('hex'));
 
         // Get the actual hash by calling the smart contract
-        const actualHash = await lib.externalHashEIP712Message.callAsync(domainHash, hashStruct);
+        const actualHash = await lib.externalHashEIP712Message(domainHash, hashStruct).callAsync();
 
         // Verify that the actual hash matches the expected hash
         expect(actualHash).to.be.eq(expectedHash);

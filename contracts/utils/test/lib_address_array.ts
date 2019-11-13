@@ -30,7 +30,7 @@ describe('LibAddressArray', () => {
     describe('append', () => {
         it('should append to empty array', async () => {
             const addr = randomAddress();
-            const result = await lib.publicAppend.callAsync([], addr);
+            const result = await lib.publicAppend([], addr).callAsync();
             const expected = [addr];
             expect(result).to.deep.equal(expected);
         });
@@ -39,7 +39,7 @@ describe('LibAddressArray', () => {
             const arr = _.times(3, () => randomAddress());
             const addr = randomAddress();
             const expected = [...arr, addr];
-            const result = await lib.publicAppend.callAsync(arr, addr);
+            const result = await lib.publicAppend(arr, addr).callAsync();
             expect(result).to.deep.equal(expected);
         });
 
@@ -52,7 +52,7 @@ describe('LibAddressArray', () => {
                 addressArrayEndPtr.plus(freeMemOffset),
                 addressArrayEndPtr,
             );
-            return expect(lib.testAppendRealloc.callAsync(arr, freeMemOffset, addr)).to.revertWith(expectedError);
+            return expect(lib.testAppendRealloc(arr, freeMemOffset, addr).callAsync()).to.revertWith(expectedError);
         });
 
         it('should keep the same memory address if free memory pointer does not move', async () => {
@@ -60,11 +60,9 @@ describe('LibAddressArray', () => {
             const addr = randomAddress();
             const freeMemOffset = new BigNumber(0);
             const expected = [...arr, addr];
-            const [result, oldArrayMemStart, newArrayMemStart] = await lib.testAppendRealloc.callAsync(
-                arr,
-                freeMemOffset,
-                addr,
-            );
+            const [result, oldArrayMemStart, newArrayMemStart] = await lib
+                .testAppendRealloc(arr, freeMemOffset, addr)
+                .callAsync();
             expect(result).to.deep.equal(expected);
             expect(newArrayMemStart).bignumber.to.be.equal(oldArrayMemStart);
         });
@@ -74,11 +72,9 @@ describe('LibAddressArray', () => {
             const addr = randomAddress();
             const freeMemOffset = new BigNumber(1);
             const expectedArray = [...arr, addr];
-            const [result, oldArrayMemStart, newArrayMemStart] = await lib.testAppendRealloc.callAsync(
-                arr,
-                freeMemOffset,
-                addr,
-            );
+            const [result, oldArrayMemStart, newArrayMemStart] = await lib
+                .testAppendRealloc(arr, freeMemOffset, addr)
+                .callAsync();
             // The new location should be the end of the old array + freeMemOffset.
             const expectedNewArrayMemStart = oldArrayMemStart.plus((arr.length + 1) * 32).plus(freeMemOffset);
             expect(result).to.deep.equal(expectedArray);
@@ -89,27 +85,27 @@ describe('LibAddressArray', () => {
     describe('contains', () => {
         it('should return false on an empty array', async () => {
             const addr = randomAddress();
-            const isFound = await lib.publicContains.callAsync([], addr);
+            const isFound = await lib.publicContains([], addr).callAsync();
             expect(isFound).to.equal(false);
         });
 
         it('should return false on a missing item', async () => {
             const arr = _.times(3, () => randomAddress());
             const addr = randomAddress();
-            const isFound = await lib.publicContains.callAsync(arr, addr);
+            const isFound = await lib.publicContains(arr, addr).callAsync();
             expect(isFound).to.equal(false);
         });
 
         it('should return true on an included item', async () => {
             const arr = _.times(4, () => randomAddress());
             const addr = _.sample(arr) as string;
-            const isFound = await lib.publicContains.callAsync(arr, addr);
+            const isFound = await lib.publicContains(arr, addr).callAsync();
             expect(isFound).to.equal(true);
         });
 
         it('should return true on the only item in the array', async () => {
             const arr = _.times(1, () => randomAddress());
-            const isFound = await lib.publicContains.callAsync(arr, arr[0]);
+            const isFound = await lib.publicContains(arr, arr[0]).callAsync();
             expect(isFound).to.equal(true);
         });
     });
@@ -117,14 +113,14 @@ describe('LibAddressArray', () => {
     describe('indexOf', () => {
         it('should fail on an empty array', async () => {
             const addr = randomAddress();
-            const [isSuccess] = await lib.publicIndexOf.callAsync([], addr);
+            const [isSuccess] = await lib.publicIndexOf([], addr).callAsync();
             expect(isSuccess).to.equal(false);
         });
 
         it('should fail on a missing item', async () => {
             const arr = _.times(3, () => randomAddress());
             const addr = randomAddress();
-            const [isSuccess] = await lib.publicIndexOf.callAsync(arr, addr);
+            const [isSuccess] = await lib.publicIndexOf(arr, addr).callAsync();
             expect(isSuccess).to.equal(false);
         });
 
@@ -132,14 +128,14 @@ describe('LibAddressArray', () => {
             const arr = _.times(4, () => randomAddress());
             const expectedIndexOf = _.random(0, arr.length - 1);
             const addr = arr[expectedIndexOf];
-            const [isSuccess, index] = await lib.publicIndexOf.callAsync(arr, addr);
+            const [isSuccess, index] = await lib.publicIndexOf(arr, addr).callAsync();
             expect(isSuccess).to.equal(true);
             expect(index).bignumber.to.equal(expectedIndexOf);
         });
 
         it('should succeed on the only item in the array', async () => {
             const arr = _.times(1, () => randomAddress());
-            const [isSuccess, index] = await lib.publicIndexOf.callAsync(arr, arr[0]);
+            const [isSuccess, index] = await lib.publicIndexOf(arr, arr[0]).callAsync();
             expect(isSuccess).to.equal(true);
             expect(index).bignumber.to.equal(0);
         });

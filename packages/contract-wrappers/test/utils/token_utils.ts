@@ -28,7 +28,7 @@ export const tokenUtils = {
     async mintDummyERC721Async(address: string, tokenOwner: string): Promise<BigNumber> {
         const erc721 = new DummyERC721TokenContract(address, provider, txDefaults);
         const tokenId = generatePseudoRandomSalt();
-        const txHash = await erc721.mint.sendTransactionAsync(tokenOwner, tokenId);
+        const txHash = await erc721.mint(tokenOwner, tokenId).sendTransactionAsync();
         web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return tokenId;
     },

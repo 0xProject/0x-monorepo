@@ -48,7 +48,7 @@ blockchainTests('LibZeroExTransaction', env => {
                 version: constants.EIP712_DOMAIN_VERSION,
             }),
         );
-        const actualHash = await libZeroExTransactionContract.getTypedDataHash.callAsync(transaction, domainHash);
+        const actualHash = await libZeroExTransactionContract.getTypedDataHash(transaction, domainHash).callAsync();
         expect(actualHash).to.be.eq(expectedHash);
     }
 
@@ -92,14 +92,12 @@ blockchainTests('LibZeroExTransaction', env => {
                     chainId: 1337,
                 }),
             );
-            const transactionHashHex1 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
-                EMPTY_TRANSACTION,
-                domainHash1,
-            );
-            const transactionHashHex2 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
-                EMPTY_TRANSACTION,
-                domainHash2,
-            );
+            const transactionHashHex1 = await libZeroExTransactionContract
+                .getTypedDataHash(EMPTY_TRANSACTION, domainHash1)
+                .callAsync();
+            const transactionHashHex2 = await libZeroExTransactionContract
+                .getTypedDataHash(EMPTY_TRANSACTION, domainHash2)
+                .callAsync();
             expect(transactionHashHex1).to.be.not.equal(transactionHashHex2);
         });
     });
@@ -110,7 +108,7 @@ blockchainTests('LibZeroExTransaction', env => {
     async function testGetStructHashAsync(transaction: ZeroExTransaction): Promise<void> {
         const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
         const expectedHash = ethUtil.bufferToHex(signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData));
-        const actualHash = await libZeroExTransactionContract.getStructHash.callAsync(transaction);
+        const actualHash = await libZeroExTransactionContract.getStructHash(transaction).callAsync();
         expect(actualHash).to.be.eq(expectedHash);
     }
 

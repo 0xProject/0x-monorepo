@@ -9,7 +9,7 @@ import {
     hexRandom,
     Numberish,
     randomAddress,
-    TransactionHelper,
+    transactionHelper,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -30,7 +30,6 @@ import {
 } from '../src';
 
 blockchainTests.resets('UniswapBridge unit tests', env => {
-    const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestUniswapBridgeContract;
     let wethTokenAddress: string;
 
@@ -41,13 +40,13 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             env.txDefaults,
             artifacts,
         );
-        wethTokenAddress = await testContract.wethToken.callAsync();
+        wethTokenAddress = await testContract.wethToken().callAsync();
     });
 
     describe('isValidSignature()', () => {
         it('returns success bytes', async () => {
             const LEGACY_WALLET_MAGIC_VALUE = '0xb0671381';
-            const result = await testContract.isValidSignature.callAsync(hexRandom(), hexRandom(_.random(0, 32)));
+            const result = await testContract.isValidSignature(hexRandom(), hexRandom(_.random(0, 32))).callAsync();
             expect(result).to.eq(LEGACY_WALLET_MAGIC_VALUE);
         });
     });
@@ -90,33 +89,31 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         async function withdrawToAsync(opts?: Partial<WithdrawToOpts>): Promise<WithdrawToResult> {
             const _opts = createWithdrawToOpts(opts);
             // Create the "from" token and exchange.
-            [[_opts.fromTokenAddress]] = await txHelper.getResultAndReceiptAsync(
+            [[_opts.fromTokenAddress]] = await transactionHelper.getResultAndReceiptAsync(
                 testContract.createTokenAndExchange,
                 _opts.fromTokenAddress,
                 _opts.exchangeRevertReason,
                 { value: new BigNumber(_opts.exchangeFillAmount) },
             );
             // Create the "to" token and exchange.
-            [[_opts.toTokenAddress]] = await txHelper.getResultAndReceiptAsync(
+            [[_opts.toTokenAddress]] = await transactionHelper.getResultAndReceiptAsync(
                 testContract.createTokenAndExchange,
                 _opts.toTokenAddress,
                 _opts.exchangeRevertReason,
                 { value: new BigNumber(_opts.exchangeFillAmount) },
             );
-            await testContract.setTokenRevertReason.awaitTransactionSuccessAsync(
-                _opts.toTokenAddress,
-                _opts.toTokenRevertReason,
-            );
-            await testContract.setTokenRevertReason.awaitTransactionSuccessAsync(
-                _opts.fromTokenAddress,
-                _opts.fromTokenRevertReason,
-            );
+            await testContract
+                .setTokenRevertReason(_opts.toTokenAddress, _opts.toTokenRevertReason)
+                .awaitTransactionSuccessAsync();
+            await testContract
+                .setTokenRevertReason(_opts.fromTokenAddress, _opts.fromTokenRevertReason)
+                .awaitTransactionSuccessAsync();
             // Set the token balance for the token we're converting from.
-            await testContract.setTokenBalance.awaitTransactionSuccessAsync(_opts.fromTokenAddress, {
+            await testContract.setTokenBalance(_opts.fromTokenAddress).awaitTransactionSuccessAsync({
                 value: new BigNumber(_opts.fromTokenBalance),
             });
             // Call bridgeTransferFrom().
-            const [result, receipt] = await txHelper.getResultAndReceiptAsync(
+            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
                 testContract.bridgeTransferFrom,
                 // The "to" token address.
                 _opts.toTokenAddress,
@@ -138,7 +135,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         }
 
         async function getExchangeForTokenAsync(tokenAddress: string): Promise<string> {
-            return testContract.getExchange.callAsync(tokenAddress);
+            return testContract.getExchange(tokenAddress).callAsync();
         }
 
         it('returns magic bytes on success', async () => {
@@ -147,7 +144,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         });
 
         it('just transfers tokens to `to` if the same tokens are in play', async () => {
-            const [[tokenAddress]] = await txHelper.getResultAndReceiptAsync(
+            const [[tokenAddress]] = await transactionHelper.getResultAndReceiptAsync(
                 testContract.createTokenAndExchange,
                 constants.NULL_ADDRESS,
                 '',
@@ -203,13 +200,15 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             });
 
             it('fails if "from" token does not exist', async () => {
-                const tx = testContract.bridgeTransferFrom.awaitTransactionSuccessAsync(
-                    randomAddress(),
-                    randomAddress(),
-                    randomAddress(),
-                    getRandomInteger(1, 1e18),
-                    hexLeftPad(randomAddress()),
-                );
+                const tx = testContract
+                    .bridgeTransferFrom(
+                        randomAddress(),
+                        randomAddress(),
+                        randomAddress(),
+                        getRandomInteger(1, 1e18),
+                        hexLeftPad(randomAddress()),
+                    )
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
             });
 
@@ -275,13 +274,15 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             });
 
             it('fails if "from" token does not exist', async () => {
-                const tx = testContract.bridgeTransferFrom.awaitTransactionSuccessAsync(
-                    randomAddress(),
-                    randomAddress(),
-                    randomAddress(),
-                    getRandomInteger(1, 1e18),
-                    hexLeftPad(wethTokenAddress),
-                );
+                const tx = testContract
+                    .bridgeTransferFrom(
+                        randomAddress(),
+                        randomAddress(),
+                        randomAddress(),
+                        getRandomInteger(1, 1e18),
+                        hexLeftPad(wethTokenAddress),
+                    )
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
             });
 
@@ -333,13 +334,15 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             });
 
             it('fails if "to" token does not exist', async () => {
-                const tx = testContract.bridgeTransferFrom.awaitTransactionSuccessAsync(
-                    wethTokenAddress,
-                    randomAddress(),
-                    randomAddress(),
-                    getRandomInteger(1, 1e18),
-                    hexLeftPad(randomAddress()),
-                );
+                const tx = testContract
+                    .bridgeTransferFrom(
+                        wethTokenAddress,
+                        randomAddress(),
+                        randomAddress(),
+                        getRandomInteger(1, 1e18),
+                        hexLeftPad(randomAddress()),
+                    )
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
             });
 

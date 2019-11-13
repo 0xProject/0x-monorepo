@@ -157,10 +157,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
                 new BigNumber(REQUIRED_SIGNERS),
                 new BigNumber(DEFAULT_TIME_LOCK),
             );
-            const timelock = await governorContract.functionCallTimeLocks.callAsync(
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const timelock = await governorContract
+                .functionCallTimeLocks(reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(timelock[0]).to.equal(true);
             expect(timelock[1]).to.bignumber.equal(reg.functionCallTimeLockSeconds[0]);
         });
@@ -179,10 +178,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
                 new BigNumber(DEFAULT_TIME_LOCK),
             );
             for (const [index, selector] of reg.functionSelectors.entries()) {
-                const timelock = await governorContract.functionCallTimeLocks.callAsync(
-                    selector,
-                    reg.destinations[index],
-                );
+                const timelock = await governorContract
+                    .functionCallTimeLocks(selector, reg.destinations[index])
+                    .callAsync();
                 expect(timelock[0]).to.equal(true);
                 expect(timelock[1]).to.bignumber.equal(reg.functionCallTimeLockSeconds[index]);
             }
@@ -192,23 +190,26 @@ blockchainTests.resets('ZeroExGovernor', env => {
     blockchainTests.resets('registerFunctionCall', () => {
         it('should revert if not called by wallet', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            const tx = governor.registerFunctionCall.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-                { from: signerAddresses[0] },
-            );
+            const tx = governor
+                .registerFunctionCall(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync({ from: signerAddresses[0] });
             expect(tx).to.revertWith(RevertReason.OnlyCallableByWallet);
         });
         it('should register a function call', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            const txReceipt = await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-            );
+            const txReceipt = await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.eq(1);
             const logArgs = (txReceipt.logs[0] as LogWithDecodedArgs<
                 ZeroExGovernorFunctionCallTimeLockRegistrationEventArgs
@@ -217,53 +218,53 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(logArgs.destination).to.eq(reg.destinations[0]);
             expect(logArgs.hasCustomTimeLock).to.eq(true);
             expect(logArgs.newSecondsTimeLocked).to.bignumber.eq(reg.functionCallTimeLockSeconds[0]);
-            const timelock = await governor.functionCallTimeLocks.callAsync(
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const timelock = await governor
+                .functionCallTimeLocks(reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(timelock[0]).to.equal(true);
             expect(timelock[1]).to.bignumber.equal(reg.functionCallTimeLockSeconds[0]);
         });
         it('should be able to overwrite existing function calls', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-            );
+            await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync();
             const newTimeLock = reg.functionCallTimeLockSeconds[0].plus(1000);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                newTimeLock,
-            );
-            const timelock = await governor.functionCallTimeLocks.callAsync(
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            await governor
+                .registerFunctionCallBypassWallet(true, reg.functionSelectors[0], reg.destinations[0], newTimeLock)
+                .awaitTransactionSuccessAsync();
+            const timelock = await governor
+                .functionCallTimeLocks(reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(timelock[0]).to.equal(true);
             expect(timelock[1]).to.bignumber.equal(newTimeLock);
         });
         it('should clear the function timelock if hasCustomTimeLock is set to false', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-            );
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                false,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-            );
-            const timelock = await governor.functionCallTimeLocks.callAsync(
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync();
+            await governor
+                .registerFunctionCallBypassWallet(
+                    false,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync();
+            const timelock = await governor
+                .functionCallTimeLocks(reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(timelock[0]).to.equal(false);
             expect(timelock[1]).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
@@ -271,11 +272,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
 
     describe('assertValidFunctionCall', () => {
         it('should revert if the data is less than 4 bytes long', async () => {
-            const result = governor.assertValidFunctionCall.callAsync(
-                constants.ZERO_AMOUNT,
-                constants.NULL_BYTES,
-                constants.NULL_ADDRESS,
-            );
+            const result = governor
+                .assertValidFunctionCall(constants.ZERO_AMOUNT, constants.NULL_BYTES, constants.NULL_ADDRESS)
+                .callAsync();
             const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
                 LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsFourRequired,
                 constants.ZERO_AMOUNT,
@@ -287,91 +286,87 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp);
             const reg = createFunctionRegistration(1, 1, 1);
-            const result = governor.assertValidFunctionCall.callAsync(
-                transactionConfirmationTime,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const result = governor
+                .assertValidFunctionCall(transactionConfirmationTime, reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(result).to.revertWith(RevertReason.DefaultTimeLockIncomplete);
         });
         it('should revert if a registered function is called before the custom timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-            );
+            await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync();
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp);
-            const result = governor.assertValidFunctionCall.callAsync(
-                transactionConfirmationTime,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const result = governor
+                .assertValidFunctionCall(transactionConfirmationTime, reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(result).to.revertWith(RevertReason.CustomTimeLockIncomplete);
         });
         it('should revert if a registered function is called before the custom timelock and after the default timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                new BigNumber(DEFAULT_TIME_LOCK).times(2),
-            );
+            await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    new BigNumber(DEFAULT_TIME_LOCK).times(2),
+                )
+                .awaitTransactionSuccessAsync();
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(DEFAULT_TIME_LOCK);
-            const result = governor.assertValidFunctionCall.callAsync(
-                transactionConfirmationTime,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const result = governor
+                .assertValidFunctionCall(transactionConfirmationTime, reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(result).to.revertWith(RevertReason.CustomTimeLockIncomplete);
         });
         it('should be successful if an unregistered function is called after the default timelock', async () => {
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(DEFAULT_TIME_LOCK);
             const reg = createFunctionRegistration(1, 1, 1);
-            const result = governor.assertValidFunctionCall.callAsync(
-                transactionConfirmationTime,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const result = governor
+                .assertValidFunctionCall(transactionConfirmationTime, reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(result).to.be.fulfilled('');
         });
         it('should be successful if a registered function is called after the custom timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                reg.functionCallTimeLockSeconds[0],
-            );
+            await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    reg.functionCallTimeLockSeconds[0],
+                )
+                .awaitTransactionSuccessAsync();
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(
                 reg.functionCallTimeLockSeconds[0],
             );
-            const result = governor.assertValidFunctionCall.callAsync(
-                transactionConfirmationTime,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const result = governor
+                .assertValidFunctionCall(transactionConfirmationTime, reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(result).to.be.fulfilled('');
         });
         it('should allow a custom timelock to be set to 0', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                reg.functionSelectors[0],
-                reg.destinations[0],
-                constants.ZERO_AMOUNT,
-            );
+            await governor
+                .registerFunctionCallBypassWallet(
+                    true,
+                    reg.functionSelectors[0],
+                    reg.destinations[0],
+                    constants.ZERO_AMOUNT,
+                )
+                .awaitTransactionSuccessAsync();
             const latestTimestamp = await getLatestBlockTimestampAsync();
-            const result = governor.assertValidFunctionCall.callAsync(
-                new BigNumber(latestTimestamp),
-                reg.functionSelectors[0],
-                reg.destinations[0],
-            );
+            const result = governor
+                .assertValidFunctionCall(new BigNumber(latestTimestamp), reg.functionSelectors[0], reg.destinations[0])
+                .callAsync();
             expect(result).to.be.fulfilled('');
         });
     });
@@ -401,7 +396,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
-            const tx = governor.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
+            const tx = governor.executeTransaction(results.txId).awaitTransactionSuccessAsync({
                 from: signerAddresses[1],
             });
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
@@ -410,7 +405,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
-            const tx = governor.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
+            const tx = governor.executeTransaction(results.txId).awaitTransactionSuccessAsync({
                 from: signerAddresses[0],
             });
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
@@ -443,12 +438,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                data[0].slice(0, 10),
-                receiver.address,
-                newTimeLock,
-            );
+            await governor
+                .registerFunctionCallBypassWallet(true, data[0].slice(0, 10), receiver.address, newTimeLock)
+                .awaitTransactionSuccessAsync();
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
@@ -461,12 +453,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = constants.ZERO_AMOUNT;
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                data[0].slice(0, 10),
-                receiver.address,
-                newTimeLock,
-            );
+            await governor
+                .registerFunctionCallBypassWallet(true, data[0].slice(0, 10), receiver.address, newTimeLock)
+                .awaitTransactionSuccessAsync();
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
@@ -479,12 +468,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                data[0].slice(0, 10),
-                receiver.address,
-                newTimeLock,
-            );
+            await governor
+                .registerFunctionCallBypassWallet(true, data[0].slice(0, 10), receiver.address, newTimeLock)
+                .awaitTransactionSuccessAsync();
             const values = [INITIAL_BALANCE];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
@@ -529,12 +515,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                data[0].slice(0, 10),
-                receiver.address,
-                newTimeLock,
-            );
+            await governor
+                .registerFunctionCallBypassWallet(true, data[0].slice(0, 10), receiver.address, newTimeLock)
+                .awaitTransactionSuccessAsync();
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
@@ -547,12 +530,9 @@ blockchainTests.resets('ZeroExGovernor', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
-                true,
-                data[0].slice(0, 10),
-                receiver.address,
-                newTimeLock,
-            );
+            await governor
+                .registerFunctionCallBypassWallet(true, data[0].slice(0, 10), receiver.address, newTimeLock)
+                .awaitTransactionSuccessAsync();
             const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
@@ -629,7 +609,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
                 signerAddresses,
                 DEFAULT_TIME_LOCK,
             );
-            const tx = governor.executeTransaction.awaitTransactionSuccessAsync(results.txId);
+            const tx = governor.executeTransaction(results.txId).awaitTransactionSuccessAsync();
             expect(tx).to.revertWith(RevertReason.TxAlreadyExecuted);
         });
         it('should revert if the only call is unsuccessful', async () => {
@@ -659,12 +639,14 @@ blockchainTests.resets('ZeroExGovernor', env => {
         it('should be able to call registerFunctionCall after the default timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
             const data = [
-                governor.registerFunctionCall.getABIEncodedTransactionData(
-                    true,
-                    reg.functionSelectors[0],
-                    reg.destinations[0],
-                    reg.functionCallTimeLockSeconds[0],
-                ),
+                governor
+                    .registerFunctionCall(
+                        true,
+                        reg.functionSelectors[0],
+                        reg.destinations[0],
+                        reg.functionCallTimeLockSeconds[0],
+                    )
+                    .getABIEncodedTransactionData(),
             ];
             const destinations = [governor.address];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(

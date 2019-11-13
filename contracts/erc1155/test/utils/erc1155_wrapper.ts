@@ -25,7 +25,7 @@ export class Erc1155Wrapper {
         return this._erc1155Contract;
     }
     public async getBalancesAsync(owners: string[], tokens: BigNumber[]): Promise<BigNumber[]> {
-        const balances = await this._erc1155Contract.balanceOfBatch.callAsync(owners, tokens);
+        const balances = await this._erc1155Contract.balanceOfBatch(owners, tokens).callAsync();
         return balances;
     }
     public async safeTransferFromAsync(
@@ -39,7 +39,7 @@ export class Erc1155Wrapper {
         const spender = delegatedSpender === undefined ? from : delegatedSpender;
         const callbackDataHex = callbackData === undefined ? '0x' : callbackData;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.safeTransferFrom.sendTransactionAsync(from, to, token, value, callbackDataHex, {
+            await this._erc1155Contract.safeTransferFrom(from, to, token, value, callbackDataHex).sendTransactionAsync({
                 from: spender,
             }),
         );
@@ -56,14 +56,9 @@ export class Erc1155Wrapper {
         const spender = delegatedSpender === undefined ? from : delegatedSpender;
         const callbackDataHex = callbackData === undefined ? '0x' : callbackData;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
-                from,
-                to,
-                tokens,
-                values,
-                callbackDataHex,
-                { from: spender },
-            ),
+            await this._erc1155Contract
+                .safeBatchTransferFrom(from, to, tokens, values, callbackDataHex)
+                .sendTransactionAsync({ from: spender }),
         );
         return tx;
     }
@@ -74,7 +69,7 @@ export class Erc1155Wrapper {
         const tokenUri = 'dummyFungibleToken';
         const tokenIsNonFungible = false;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.create.sendTransactionAsync(tokenUri, tokenIsNonFungible, {
+            await this._erc1155Contract.create(tokenUri, tokenIsNonFungible).sendTransactionAsync({
                 from: this._contractOwner,
             }),
         );
@@ -95,25 +90,22 @@ export class Erc1155Wrapper {
                 tokenAmountsAsArray.push(tokenAmounts);
             });
         }
-        await this._erc1155Contract.mintFungible.awaitTransactionSuccessAsync(
-            tokenId,
-            beneficiaries,
-            tokenAmountsAsArray,
-            { from: this._contractOwner },
-        );
+        await this._erc1155Contract
+            .mintFungible(tokenId, beneficiaries, tokenAmountsAsArray)
+            .awaitTransactionSuccessAsync({ from: this._contractOwner });
     }
     public async mintNonFungibleTokensAsync(beneficiaries: string[]): Promise<[BigNumber, BigNumber[]]> {
         const tokenUri = 'dummyNonFungibleToken';
         const tokenIsNonFungible = true;
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.create.sendTransactionAsync(tokenUri, tokenIsNonFungible, {
+            await this._erc1155Contract.create(tokenUri, tokenIsNonFungible).sendTransactionAsync({
                 from: this._contractOwner,
             }),
         );
         // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
         const token = createFungibleTokenLog.args.id;
-        await this._erc1155Contract.mintNonFungible.awaitTransactionSuccessAsync(token, beneficiaries, {
+        await this._erc1155Contract.mintNonFungible(token, beneficiaries).awaitTransactionSuccessAsync({
             from: this._contractOwner,
         });
         const encodedNftIds: BigNumber[] = [];
@@ -132,14 +124,14 @@ export class Erc1155Wrapper {
         isApproved: boolean,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._erc1155Contract.setApprovalForAll.sendTransactionAsync(beneficiary, isApproved, {
+            await this._erc1155Contract.setApprovalForAll(beneficiary, isApproved).sendTransactionAsync({
                 from: owner,
             }),
         );
         return tx;
     }
     public async isApprovedForAllAsync(owner: string, beneficiary: string): Promise<boolean> {
-        const isApprovedForAll = await this._erc1155Contract.isApprovedForAll.callAsync(owner, beneficiary);
+        const isApprovedForAll = await this._erc1155Contract.isApprovedForAll(owner, beneficiary).callAsync();
         return isApprovedForAll;
     }
     public async assertBalancesAsync(
@@ -161,18 +153,18 @@ export class Erc1155Wrapper {
         });
     }
     public async isNonFungibleItemAsync(tokenId: BigNumber): Promise<boolean> {
-        return this._erc1155Contract.isNonFungibleItem.callAsync(tokenId);
+        return this._erc1155Contract.isNonFungibleItem(tokenId).callAsync();
     }
     public async isFungibleItemAsync(tokenId: BigNumber): Promise<boolean> {
         return !(await this.isNonFungibleItemAsync(tokenId));
     }
     public async getOwnerOfAsync(tokenId: BigNumber): Promise<string> {
-        return this._erc1155Contract.ownerOf.callAsync(tokenId);
+        return this._erc1155Contract.ownerOf(tokenId).callAsync();
     }
     /**
      * @dev Get the balance of an ERC1155 token for a given owner and token ID.
      */
     public async getBalanceAsync(ownerAddress: string, tokenId: BigNumber): Promise<BigNumber> {
-        return this._erc1155Contract.balanceOf.callAsync(ownerAddress, tokenId);
+        return this._erc1155Contract.balanceOf(ownerAddress, tokenId).callAsync();
     }
 }

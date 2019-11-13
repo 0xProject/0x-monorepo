@@ -106,12 +106,14 @@ blockchainTests('LibFillResults', env => {
                 otherAmount: BigNumber,
             ): Promise<FillResults> {
                 const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
-                return libsContract.calculateFillResults.callAsync(
-                    order,
-                    takerAssetFilledAmount,
-                    takerAssetFilledAmount, // Using this so that the gas price is distinct from protocolFeeMultiplier
-                    otherAmount,
-                );
+                return libsContract
+                    .calculateFillResults(
+                        order,
+                        takerAssetFilledAmount,
+                        takerAssetFilledAmount, // Using this so that the gas price is distinct from protocolFeeMultiplier
+                        otherAmount,
+                    )
+                    .callAsync();
             }
 
             testCombinatoriallyWithReferenceFunc(
@@ -145,12 +147,14 @@ blockchainTests('LibFillResults', env => {
                     DEFAULT_PROTOCOL_FEE_MULTIPLIER,
                     DEFAULT_GAS_PRICE,
                 );
-                const actual = await libsContract.calculateFillResults.callAsync(
-                    order,
-                    takerAssetFilledAmount,
-                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                    DEFAULT_GAS_PRICE,
-                );
+                const actual = await libsContract
+                    .calculateFillResults(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    )
+                    .callAsync();
                 expect(actual).to.deep.eq(expected);
             });
 
@@ -167,12 +171,14 @@ blockchainTests('LibFillResults', env => {
                     order.makerAssetAmount,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -195,12 +201,14 @@ blockchainTests('LibFillResults', env => {
                     order.makerFee,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -218,12 +226,14 @@ blockchainTests('LibFillResults', env => {
                     order.takerFee,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -235,12 +245,14 @@ blockchainTests('LibFillResults', env => {
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -256,12 +268,14 @@ blockchainTests('LibFillResults', env => {
                     order.makerAssetAmount,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -283,12 +297,14 @@ blockchainTests('LibFillResults', env => {
                     order.makerFee,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -310,12 +326,14 @@ blockchainTests('LibFillResults', env => {
                     order.takerFee,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -333,12 +351,9 @@ blockchainTests('LibFillResults', env => {
                     MAX_UINT256,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        MAX_UINT256,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(order, takerAssetFilledAmount, MAX_UINT256, DEFAULT_GAS_PRICE)
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -360,12 +375,14 @@ blockchainTests('LibFillResults', env => {
                     order.makerFee,
                 );
                 return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
+                    libsContract
+                        .calculateFillResults(
+                            order,
+                            takerAssetFilledAmount,
+                            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                            DEFAULT_GAS_PRICE,
+                        )
+                        .callAsync(),
                 ).to.revertWith(expectedError);
             });
         });
@@ -393,7 +410,7 @@ blockchainTests('LibFillResults', env => {
             it('matches the output of the reference function', async () => {
                 const [a, b] = DEFAULT_FILL_RESULTS;
                 const expected = ReferenceFunctions.addFillResults(a, b);
-                const actual = await libsContract.addFillResults.callAsync(a, b);
+                const actual = await libsContract.addFillResults(a, b).callAsync();
                 expect(actual).to.deep.equal(expected);
             });
 
@@ -405,7 +422,7 @@ blockchainTests('LibFillResults', env => {
                     a.makerAssetFilledAmount,
                     b.makerAssetFilledAmount,
                 );
-                return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
+                return expect(libsContract.addFillResults(a, b).callAsync()).to.revertWith(expectedError);
             });
 
             it('reverts if computing `takerAssetFilledAmount` overflows', async () => {
@@ -416,7 +433,7 @@ blockchainTests('LibFillResults', env => {
                     a.takerAssetFilledAmount,
                     b.takerAssetFilledAmount,
                 );
-                return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
+                return expect(libsContract.addFillResults(a, b).callAsync()).to.revertWith(expectedError);
             });
 
             it('reverts if computing `makerFeePaid` overflows', async () => {
@@ -427,7 +444,7 @@ blockchainTests('LibFillResults', env => {
                     a.makerFeePaid,
                     b.makerFeePaid,
                 );
-                return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
+                return expect(libsContract.addFillResults(a, b).callAsync()).to.revertWith(expectedError);
             });
 
             it('reverts if computing `takerFeePaid` overflows', async () => {
@@ -438,7 +455,7 @@ blockchainTests('LibFillResults', env => {
                     a.takerFeePaid,
                     b.takerFeePaid,
                 );
-                return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
+                return expect(libsContract.addFillResults(a, b).callAsync()).to.revertWith(expectedError);
             });
 
             it('reverts if computing `protocolFeePaid` overflows', async () => {
@@ -449,7 +466,7 @@ blockchainTests('LibFillResults', env => {
                     a.protocolFeePaid,
                     b.protocolFeePaid,
                 );
-                return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
+                return expect(libsContract.addFillResults(a, b).callAsync()).to.revertWith(expectedError);
             });
         });
     });
@@ -513,16 +530,17 @@ blockchainTests('LibFillResults', env => {
             gasPrice: BigNumber,
             from?: string,
         ): Promise<void> {
-            const actualMatchedFillResults = await libsContract.calculateMatchedFillResults.callAsync(
-                leftOrder,
-                rightOrder,
-                leftOrderTakerAssetFilledAmount,
-                rightOrderTakerAssetFilledAmount,
-                protocolFeeMultiplier,
-                gasPrice,
-                false,
-                { from },
-            );
+            const actualMatchedFillResults = await libsContract
+                .calculateMatchedFillResults(
+                    leftOrder,
+                    rightOrder,
+                    leftOrderTakerAssetFilledAmount,
+                    rightOrderTakerAssetFilledAmount,
+                    protocolFeeMultiplier,
+                    gasPrice,
+                    false,
+                )
+                .callAsync({ from });
             expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
         }
 
@@ -1184,16 +1202,17 @@ blockchainTests('LibFillResults', env => {
             gasPrice: BigNumber,
             from?: string,
         ): Promise<void> {
-            const actualMatchedFillResults = await libsContract.calculateMatchedFillResults.callAsync(
-                leftOrder,
-                rightOrder,
-                leftOrderTakerAssetFilledAmount,
-                rightOrderTakerAssetFilledAmount,
-                protocolFeeMultiplier,
-                gasPrice,
-                true,
-                { from },
-            );
+            const actualMatchedFillResults = await libsContract
+                .calculateMatchedFillResults(
+                    leftOrder,
+                    rightOrder,
+                    leftOrderTakerAssetFilledAmount,
+                    rightOrderTakerAssetFilledAmount,
+                    protocolFeeMultiplier,
+                    gasPrice,
+                    true,
+                )
+                .callAsync({ from });
             expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
         }
 

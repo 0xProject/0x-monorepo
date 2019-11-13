@@ -44,7 +44,7 @@ describe('UnlimitedAllowanceToken', () => {
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner }),
+            await token.mint(MAX_MINT_VALUE).sendTransactionAsync({ from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     });
@@ -56,24 +56,24 @@ describe('UnlimitedAllowanceToken', () => {
     });
     describe('transfer', () => {
         it('should revert if owner has insufficient balance', async () => {
-            const ownerBalance = await token.balanceOf.callAsync(owner);
+            const ownerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance.plus(1);
             return expectContractCallFailedAsync(
-                token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
+                token.transfer(spender, amountToTransfer).callAsync({ from: owner }),
                 RevertReason.Erc20InsufficientBalance,
             );
         });
 
         it('should transfer balance from sender to receiver', async () => {
             const receiver = spender;
-            const initOwnerBalance = await token.balanceOf.callAsync(owner);
+            const initOwnerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.transfer.sendTransactionAsync(receiver, amountToTransfer, { from: owner }),
+                await token.transfer(receiver, amountToTransfer).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const finalOwnerBalance = await token.balanceOf.callAsync(owner);
-            const finalReceiverBalance = await token.balanceOf.callAsync(receiver);
+            const finalOwnerBalance = await token.balanceOf(owner).callAsync();
+            const finalReceiverBalance = await token.balanceOf(receiver).callAsync();
 
             const expectedFinalOwnerBalance = initOwnerBalance.minus(amountToTransfer);
             const expectedFinalReceiverBalance = amountToTransfer;
@@ -82,7 +82,7 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await token.transfer.callAsync(spender, new BigNumber(0), {
+            const didReturnTrue = await token.transfer(spender, new BigNumber(0)).callAsync({
                 from: owner,
             });
             expect(didReturnTrue).to.be.true();
@@ -91,14 +91,14 @@ describe('UnlimitedAllowanceToken', () => {
 
     describe('transferFrom', () => {
         it('should revert if owner has insufficient balance', async () => {
-            const ownerBalance = await token.balanceOf.callAsync(owner);
+            const ownerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance.plus(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
+                await token.approve(spender, amountToTransfer).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             return expectContractCallFailedAsync(
-                token.transferFrom.callAsync(owner, spender, amountToTransfer, {
+                token.transferFrom(owner, spender, amountToTransfer).callAsync({
                     from: spender,
                 }),
                 RevertReason.Erc20InsufficientBalance,
@@ -106,15 +106,15 @@ describe('UnlimitedAllowanceToken', () => {
         });
 
         it('should revert if spender has insufficient allowance', async () => {
-            const ownerBalance = await token.balanceOf.callAsync(owner);
+            const ownerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance;
 
-            const spenderAllowance = await token.allowance.callAsync(owner, spender);
+            const spenderAllowance = await token.allowance(owner, spender).callAsync();
             const isSpenderAllowanceInsufficient = spenderAllowance.comparedTo(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
             return expectContractCallFailedAsync(
-                token.transferFrom.callAsync(owner, spender, amountToTransfer, {
+                token.transferFrom(owner, spender, amountToTransfer).callAsync({
                     from: spender,
                 }),
                 RevertReason.Erc20InsufficientAllowance,
@@ -123,72 +123,72 @@ describe('UnlimitedAllowanceToken', () => {
 
         it('should return true on a 0 value transfer', async () => {
             const amountToTransfer = new BigNumber(0);
-            const didReturnTrue = await token.transferFrom.callAsync(owner, spender, amountToTransfer, {
+            const didReturnTrue = await token.transferFrom(owner, spender, amountToTransfer).callAsync({
                 from: spender,
             });
             expect(didReturnTrue).to.be.true();
         });
 
         it('should not modify spender allowance if spender allowance is 2^256 - 1', async () => {
-            const initOwnerBalance = await token.balanceOf.callAsync(owner);
+            const initOwnerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
+                await token.approve(spender, initSpenderAllowance).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                await token.transferFrom(owner, spender, amountToTransfer).sendTransactionAsync({
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            const newSpenderAllowance = await token.allowance.callAsync(owner, spender);
+            const newSpenderAllowance = await token.allowance(owner, spender).callAsync();
             expect(initSpenderAllowance).to.be.bignumber.equal(newSpenderAllowance);
         });
 
         it('should transfer the correct balances if spender has sufficient allowance', async () => {
-            const initOwnerBalance = await token.balanceOf.callAsync(owner);
+            const initOwnerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
+                await token.approve(spender, initSpenderAllowance).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                await token.transferFrom(owner, spender, amountToTransfer).sendTransactionAsync({
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            const newOwnerBalance = await token.balanceOf.callAsync(owner);
-            const newSpenderBalance = await token.balanceOf.callAsync(spender);
+            const newOwnerBalance = await token.balanceOf(owner).callAsync();
+            const newSpenderBalance = await token.balanceOf(spender).callAsync();
 
             expect(newOwnerBalance).to.be.bignumber.equal(0);
             expect(newSpenderBalance).to.be.bignumber.equal(initOwnerBalance);
         });
 
         it('should modify allowance if spender has sufficient allowance less than 2^256 - 1', async () => {
-            const initOwnerBalance = await token.balanceOf.callAsync(owner);
+            const initOwnerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
+                await token.approve(spender, initSpenderAllowance).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                await token.transferFrom(owner, spender, amountToTransfer).sendTransactionAsync({
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            const newSpenderAllowance = await token.allowance.callAsync(owner, spender);
+            const newSpenderAllowance = await token.allowance(owner, spender).callAsync();
             expect(newSpenderAllowance).to.be.bignumber.equal(0);
         });
     });

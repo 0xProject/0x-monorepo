@@ -40,7 +40,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId.callAsync();
+            const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId().callAsync();
             expect(lastPoolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
         });
         it('Should successfully create several staking pools, as long as the operator is only a maker in one', async () => {
@@ -77,7 +77,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId.callAsync();
+            const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId().callAsync();
             expect(lastPoolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
         });
         it('Should throw if operatorShare is > PPM_DENOMINATOR', async () => {

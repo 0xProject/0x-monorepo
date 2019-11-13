@@ -1,16 +1,10 @@
-import { PromiseWithTransactionHash } from '@0x/base-contract';
+import { ContractFunctionObj, ContractTxFunctionObj, PromiseWithTransactionHash } from '@0x/base-contract';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
 
-export interface ContractGetterFunction {
-    callAsync: (...args: any[]) => Promise<any>;
-}
-
-export interface ContractWrapperFunction extends ContractGetterFunction {
-    awaitTransactionSuccessAsync?: (...args: any[]) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
-}
+export type GenericContractFunction<T> = (...args: any[]) => ContractFunctionObj<T>;
 
 export interface Result {
     data?: any;
@@ -53,14 +47,21 @@ export interface RunResult {
  * This class implements `Assertion` and represents a "Hoare Triple" that can be
  * executed.
  */
-export class FunctionAssertion<TBefore> implements Assertion {
+export class FunctionAssertion<TBefore, ReturnDataType> implements Assertion {
     // A condition that will be applied to `wrapperFunction`.
     public condition: Condition<TBefore>;
 
     // The wrapper function that will be wrapped in assertions.
-    public wrapperFunction: ContractWrapperFunction;
+    public wrapperFunction: (
+        ...args: any[]
+    ) => ContractTxFunctionObj<ReturnDataType> | ContractFunctionObj<ReturnDataType>;
 
-    constructor(wrapperFunction: ContractWrapperFunction, condition: Partial<Condition<TBefore>> = {}) {
+    constructor(
+        wrapperFunction: (
+            ...args: any[]
+        ) => ContractTxFunctionObj<ReturnDataType> | ContractFunctionObj<ReturnDataType>,
+        condition: Partial<Condition<TBefore>> = {},
+    ) {
         this.condition = {
             before: _.noop.bind(this),
             after: _.noop.bind(this),
@@ -83,10 +84,11 @@ export class FunctionAssertion<TBefore> implements Assertion {
         // Try to make the call to the function. If it is successful, pass the
         // result and receipt to the after condition.
         try {
-            callResult.data = await this.wrapperFunction.callAsync(...args);
+            const functionWithArgs = this.wrapperFunction(...args) as ContractTxFunctionObj<ReturnDataType>;
+            callResult.data = await functionWithArgs.callAsync();
             callResult.receipt =
-                this.wrapperFunction.awaitTransactionSuccessAsync !== undefined
-                    ? await this.wrapperFunction.awaitTransactionSuccessAsync(...args)
+                functionWithArgs.awaitTransactionSuccessAsync !== undefined
+                    ? await functionWithArgs.awaitTransactionSuccessAsync()
                     : undefined;
         } catch (error) {
             callResult.data = error;

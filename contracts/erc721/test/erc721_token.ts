@@ -60,7 +60,7 @@ describe('ERC721Token', () => {
         );
         logDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await token.mint.sendTransactionAsync(owner, tokenId, { from: owner }),
+            await token.mint(owner, tokenId).sendTransactionAsync({ from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     });
@@ -77,7 +77,7 @@ describe('ERC721Token', () => {
             const to = erc721Receiver.address;
             const unownedTokenId = new BigNumber(2);
             await expectTransactionFailedAsync(
-                token.transferFrom.sendTransactionAsync(from, to, unownedTokenId),
+                token.transferFrom(from, to, unownedTokenId).sendTransactionAsync(),
                 RevertReason.Erc721ZeroOwner,
             );
         });
@@ -85,7 +85,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = constants.NULL_ADDRESS;
             await expectTransactionFailedAsync(
-                token.transferFrom.sendTransactionAsync(from, to, tokenId),
+                token.transferFrom(from, to, tokenId).sendTransactionAsync(),
                 RevertReason.Erc721ZeroToAddress,
             );
         });
@@ -93,7 +93,7 @@ describe('ERC721Token', () => {
             const from = spender;
             const to = erc721Receiver.address;
             await expectTransactionFailedAsync(
-                token.transferFrom.sendTransactionAsync(from, to, tokenId),
+                token.transferFrom(from, to, tokenId).sendTransactionAsync(),
                 RevertReason.Erc721OwnerMismatch,
             );
         });
@@ -101,7 +101,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = erc721Receiver.address;
             await expectTransactionFailedAsync(
-                token.transferFrom.sendTransactionAsync(from, to, tokenId, { from: spender }),
+                token.transferFrom(from, to, tokenId).sendTransactionAsync({ from: spender }),
                 RevertReason.Erc721InvalidSpender,
             );
         });
@@ -109,9 +109,9 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = erc721Receiver.address;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.transferFrom.sendTransactionAsync(from, to, tokenId),
+                await token.transferFrom(from, to, tokenId).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             expect(log.args._from).to.be.equal(from);
@@ -121,16 +121,16 @@ describe('ERC721Token', () => {
         it('should transfer the token if spender is approved for all', async () => {
             const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.setApprovalForAll.sendTransactionAsync(spender, isApproved),
+                await token.setApprovalForAll(spender, isApproved).sendTransactionAsync(),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const from = owner;
             const to = erc721Receiver.address;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.transferFrom.sendTransactionAsync(from, to, tokenId),
+                await token.transferFrom(from, to, tokenId).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             expect(log.args._from).to.be.equal(from);
@@ -139,19 +139,19 @@ describe('ERC721Token', () => {
         });
         it('should transfer the token if spender is individually approved', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await token.approve.sendTransactionAsync(spender, tokenId),
+                await token.approve(spender, tokenId).sendTransactionAsync(),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const from = owner;
             const to = erc721Receiver.address;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.transferFrom.sendTransactionAsync(from, to, tokenId),
+                await token.transferFrom(from, to, tokenId).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
 
-            const approvedAddress = await token.getApproved.callAsync(tokenId);
+            const approvedAddress = await token.getApproved(tokenId).callAsync();
             expect(approvedAddress).to.be.equal(constants.NULL_ADDRESS);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             expect(log.args._from).to.be.equal(from);
@@ -164,9 +164,9 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = spender;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.safeTransferFrom1.sendTransactionAsync(from, to, tokenId),
+                await token.safeTransferFrom1(from, to, tokenId).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             expect(log.args._from).to.be.equal(from);
@@ -185,7 +185,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = contract.address;
             await expectTransactionFailedWithoutReasonAsync(
-                token.safeTransferFrom1.sendTransactionAsync(from, to, tokenId),
+                token.safeTransferFrom1(from, to, tokenId).sendTransactionAsync(),
             );
         });
         it('should revert if onERC721Received does not return the correct value', async () => {
@@ -198,7 +198,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = invalidErc721Receiver.address;
             await expectTransactionFailedAsync(
-                token.safeTransferFrom1.sendTransactionAsync(from, to, tokenId),
+                token.safeTransferFrom1(from, to, tokenId).sendTransactionAsync(),
                 RevertReason.Erc721InvalidSelector,
             );
         });
@@ -206,9 +206,9 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = erc721Receiver.address;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.safeTransferFrom1.sendTransactionAsync(from, to, tokenId),
+                await token.safeTransferFrom1(from, to, tokenId).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
             const transferLog = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;
@@ -227,9 +227,9 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = spender;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.safeTransferFrom2.sendTransactionAsync(from, to, tokenId, data),
+                await token.safeTransferFrom2(from, to, tokenId, data).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             expect(log.args._from).to.be.equal(from);
@@ -248,7 +248,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = contract.address;
             await expectTransactionFailedWithoutReasonAsync(
-                token.safeTransferFrom2.sendTransactionAsync(from, to, tokenId, data),
+                token.safeTransferFrom2(from, to, tokenId, data).sendTransactionAsync(),
             );
         });
         it('should revert if onERC721Received does not return the correct value', async () => {
@@ -261,7 +261,7 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = invalidErc721Receiver.address;
             await expectTransactionFailedAsync(
-                token.safeTransferFrom2.sendTransactionAsync(from, to, tokenId, data),
+                token.safeTransferFrom2(from, to, tokenId, data).sendTransactionAsync(),
                 RevertReason.Erc721InvalidSelector,
             );
         });
@@ -269,9 +269,9 @@ describe('ERC721Token', () => {
             const from = owner;
             const to = erc721Receiver.address;
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await token.safeTransferFrom2.sendTransactionAsync(from, to, tokenId, data),
+                await token.safeTransferFrom2(from, to, tokenId, data).sendTransactionAsync(),
             );
-            const newOwner = await token.ownerOf.callAsync(tokenId);
+            const newOwner = await token.ownerOf(tokenId).callAsync();
             expect(newOwner).to.be.equal(to);
             const transferLog = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
             const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;

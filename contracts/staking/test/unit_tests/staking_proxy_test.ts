@@ -59,23 +59,23 @@ blockchainTests.resets('StakingProxy unit tests', env => {
         );
 
         // Add authorized address to Staking Proxy
-        await testProxyContract.addAuthorizedAddress.sendTransactionAsync(authorizedAddress, { from: owner });
+        await testProxyContract.addAuthorizedAddress(authorizedAddress).sendTransactionAsync({ from: owner });
     });
 
     describe('Fallback function', () => {
         it('should pass back the return value of the destination contract', async () => {
-            const returnValue = await testContractViaProxy.echo.callAsync(testString);
+            const returnValue = await testContractViaProxy.echo(testString).callAsync();
             expect(returnValue).to.equal(testString);
         });
 
         it('should revert with correct value when destination reverts', async () => {
-            return expect(testContractViaProxy.die.callAsync()).to.revertWith(testRevertString);
+            return expect(testContractViaProxy.die().callAsync()).to.revertWith(testRevertString);
         });
 
         it('should revert if no staking contract is attached', async () => {
-            await testProxyContract.detachStakingContract.awaitTransactionSuccessAsync({ from: authorizedAddress });
+            await testProxyContract.detachStakingContract().awaitTransactionSuccessAsync({ from: authorizedAddress });
             const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
-            const tx = testContractViaProxy.echo.callAsync(testString);
+            const tx = testContractViaProxy.echo(testString).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -83,11 +83,10 @@ blockchainTests.resets('StakingProxy unit tests', env => {
     describe('attachStakingContract', () => {
         it('should successfully attaching a new staking contract', async () => {
             // Cache existing staking contract and attach a new one
-            const initStakingContractAddress = await testProxyContract.stakingContract.callAsync();
-            const txReceipt = await testProxyContract.attachStakingContract.awaitTransactionSuccessAsync(
-                testContract2.address,
-                { from: authorizedAddress },
-            );
+            const initStakingContractAddress = await testProxyContract.stakingContract().callAsync();
+            const txReceipt = await testProxyContract
+                .attachStakingContract(testContract2.address)
+                .awaitTransactionSuccessAsync({ from: authorizedAddress });
 
             // Validate `ContractAttachedToProxy` event
             verifyEventsFromLogs(
@@ -112,14 +111,14 @@ blockchainTests.resets('StakingProxy unit tests', env => {
             );
 
             // Validate new staking contract address
-            const finalStakingContractAddress = await testProxyContract.stakingContract.callAsync();
+            const finalStakingContractAddress = await testProxyContract.stakingContract().callAsync();
             expect(finalStakingContractAddress).to.be.equal(testContract2.address);
             expect(finalStakingContractAddress).to.not.equal(initStakingContractAddress);
         });
 
         it('should revert if call to `init` on new staking contract fails', async () => {
-            await testProxyContract.setInitFailFlag.awaitTransactionSuccessAsync();
-            const tx = testProxyContract.attachStakingContract.awaitTransactionSuccessAsync(testContract2.address, {
+            await testProxyContract.setInitFailFlag().awaitTransactionSuccessAsync();
+            const tx = testProxyContract.attachStakingContract(testContract2.address).awaitTransactionSuccessAsync({
                 from: authorizedAddress,
             });
             const expectedError = 'INIT_FAIL_FLAG_SET';
@@ -127,7 +126,7 @@ blockchainTests.resets('StakingProxy unit tests', env => {
         });
 
         it('should revert if called by unauthorized address', async () => {
-            const tx = testProxyContract.attachStakingContract.awaitTransactionSuccessAsync(testContract2.address, {
+            const tx = testProxyContract.attachStakingContract(testContract2.address).awaitTransactionSuccessAsync({
                 from: notAuthorizedAddresses[0],
             });
             const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddresses[0]);
@@ -138,8 +137,8 @@ blockchainTests.resets('StakingProxy unit tests', env => {
     describe('detachStakingContract', () => {
         it('should detach staking contract', async () => {
             // Cache existing staking contract and attach a new one
-            const initStakingContractAddress = await testProxyContract.stakingContract.callAsync();
-            const txReceipt = await testProxyContract.detachStakingContract.awaitTransactionSuccessAsync({
+            const initStakingContractAddress = await testProxyContract.stakingContract().callAsync();
+            const txReceipt = await testProxyContract.detachStakingContract().awaitTransactionSuccessAsync({
                 from: authorizedAddress,
             });
 
@@ -147,13 +146,13 @@ blockchainTests.resets('StakingProxy unit tests', env => {
             verifyEventsFromLogs(txReceipt.logs, [{}], StakingProxyEvents.StakingContractDetachedFromProxy);
 
             // Validate staking contract address was unset
-            const finalStakingContractAddress = await testProxyContract.stakingContract.callAsync();
+            const finalStakingContractAddress = await testProxyContract.stakingContract().callAsync();
             expect(finalStakingContractAddress).to.be.equal(stakingConstants.NIL_ADDRESS);
             expect(finalStakingContractAddress).to.not.equal(initStakingContractAddress);
         });
 
         it('should revert if called by unauthorized address', async () => {
-            const tx = testProxyContract.detachStakingContract.awaitTransactionSuccessAsync({
+            const tx = testProxyContract.detachStakingContract().awaitTransactionSuccessAsync({
                 from: notAuthorizedAddresses[0],
             });
             const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddresses[0]);
@@ -163,27 +162,27 @@ blockchainTests.resets('StakingProxy unit tests', env => {
 
     describe('batchExecute', () => {
         it('should execute no-op if no calls to make', async () => {
-            await testProxyContract.batchExecute.awaitTransactionSuccessAsync([]);
+            await testProxyContract.batchExecute([]).awaitTransactionSuccessAsync();
         });
 
         it('should call one function and return the output', async () => {
-            const calls = [testContract.echo.getABIEncodedTransactionData(testString)];
-            const rawResults = await testProxyContract.batchExecute.callAsync(calls);
+            const calls = [testContract.echo(testString).getABIEncodedTransactionData()];
+            const rawResults = await testProxyContract.batchExecute(calls).callAsync();
             expect(rawResults.length).to.equal(1);
-            const returnValues = [testContract.echo.getABIDecodedReturnData(rawResults[0])];
+            const returnValues = [testContract.getABIDecodedReturnData('echo', rawResults[0])];
             expect(returnValues[0]).to.equal(testString);
         });
 
         it('should call multiple functions and return their outputs', async () => {
             const calls = [
-                testContract.echo.getABIEncodedTransactionData(testString),
-                testContract.doMath.getABIEncodedTransactionData(new BigNumber(2), new BigNumber(1)),
+                testContract.echo(testString).getABIEncodedTransactionData(),
+                testContract.doMath(new BigNumber(2), new BigNumber(1)).getABIEncodedTransactionData(),
             ];
-            const rawResults = await testProxyContract.batchExecute.callAsync(calls);
+            const rawResults = await testProxyContract.batchExecute(calls).callAsync();
             expect(rawResults.length).to.equal(2);
             const returnValues = [
-                testContract.echo.getABIDecodedReturnData(rawResults[0]),
-                testContract.doMath.getABIDecodedReturnData(rawResults[1]),
+                testContract.getABIDecodedReturnData<string>('echo', rawResults[0]),
+                testContract.getABIDecodedReturnData<BigNumber[]>('doMath', rawResults[1]),
             ];
             expect(returnValues[0]).to.equal(testString);
             expect(returnValues[1][0]).to.bignumber.equal(new BigNumber(3));
@@ -192,20 +191,20 @@ blockchainTests.resets('StakingProxy unit tests', env => {
 
         it('should revert if a call reverts', async () => {
             const calls = [
-                testContract.echo.getABIEncodedTransactionData(testString),
-                testContract.die.getABIEncodedTransactionData(),
-                testContract.doMath.getABIEncodedTransactionData(new BigNumber(2), new BigNumber(1)),
+                testContract.echo(testString).getABIEncodedTransactionData(),
+                testContract.die().getABIEncodedTransactionData(),
+                testContract.doMath(new BigNumber(2), new BigNumber(1)).getABIEncodedTransactionData(),
             ];
-            const tx = testProxyContract.batchExecute.callAsync(calls);
+            const tx = testProxyContract.batchExecute(calls).callAsync();
             const expectedError = testRevertString;
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert if no staking contract is attached', async () => {
-            await testProxyContract.detachStakingContract.awaitTransactionSuccessAsync({ from: authorizedAddress });
-            const calls = [testContract.echo.getABIEncodedTransactionData(testString)];
+            await testProxyContract.detachStakingContract().awaitTransactionSuccessAsync({ from: authorizedAddress });
+            const calls = [testContract.echo(testString).getABIEncodedTransactionData()];
 
-            const tx = testProxyContract.batchExecute.callAsync(calls);
+            const tx = testProxyContract.batchExecute(calls).callAsync();
             const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
             return expect(tx).to.revertWith(expectedError);
         });
@@ -220,16 +219,16 @@ blockchainTests.resets('StakingProxy unit tests', env => {
             minimumPoolStake: new BigNumber(100),
         };
         it('should not revert if all storage params are valid', async () => {
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(validStorageParams);
-            await testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(validStorageParams).awaitTransactionSuccessAsync();
+            await testProxyContract.assertValidStorageParams().callAsync();
         });
         it('should revert if `epochDurationInSeconds` is less than 5 days', async () => {
             const invalidStorageParams = {
                 ...validStorageParams,
                 epochDurationInSeconds: new BigNumber(0),
             };
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
-            const tx = testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(invalidStorageParams).awaitTransactionSuccessAsync();
+            const tx = testProxyContract.assertValidStorageParams().callAsync();
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCodes.InvalidEpochDuration,
             );
@@ -240,8 +239,8 @@ blockchainTests.resets('StakingProxy unit tests', env => {
                 ...validStorageParams,
                 epochDurationInSeconds: new BigNumber(stakingConstants.ONE_DAY_IN_SECONDS * 31),
             };
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
-            const tx = testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(invalidStorageParams).awaitTransactionSuccessAsync();
+            const tx = testProxyContract.assertValidStorageParams().callAsync();
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCodes.InvalidEpochDuration,
             );
@@ -253,8 +252,8 @@ blockchainTests.resets('StakingProxy unit tests', env => {
                 cobbDouglasAlphaNumerator: new BigNumber(2),
                 cobbDouglasAlphaDenominator: new BigNumber(1),
             };
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
-            const tx = testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(invalidStorageParams).awaitTransactionSuccessAsync();
+            const tx = testProxyContract.assertValidStorageParams().callAsync();
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCodes.InvalidCobbDouglasAlpha,
             );
@@ -265,8 +264,8 @@ blockchainTests.resets('StakingProxy unit tests', env => {
                 ...validStorageParams,
                 cobbDouglasAlphaDenominator: new BigNumber(0),
             };
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
-            const tx = testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(invalidStorageParams).awaitTransactionSuccessAsync();
+            const tx = testProxyContract.assertValidStorageParams().callAsync();
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCodes.InvalidCobbDouglasAlpha,
             );
@@ -277,8 +276,8 @@ blockchainTests.resets('StakingProxy unit tests', env => {
                 ...validStorageParams,
                 rewardDelegatedStakeWeight: new BigNumber(constants.PPM_DENOMINATOR + 1),
             };
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
-            const tx = testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(invalidStorageParams).awaitTransactionSuccessAsync();
+            const tx = testProxyContract.assertValidStorageParams().callAsync();
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCodes.InvalidRewardDelegatedStakeWeight,
             );
@@ -289,8 +288,8 @@ blockchainTests.resets('StakingProxy unit tests', env => {
                 ...validStorageParams,
                 minimumPoolStake: new BigNumber(1),
             };
-            await testProxyContract.setTestStorageParams.awaitTransactionSuccessAsync(invalidStorageParams);
-            const tx = testProxyContract.assertValidStorageParams.callAsync();
+            await testProxyContract.setTestStorageParams(invalidStorageParams).awaitTransactionSuccessAsync();
+            const tx = testProxyContract.assertValidStorageParams().callAsync();
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCodes.InvalidMinimumPoolStake,
             );
