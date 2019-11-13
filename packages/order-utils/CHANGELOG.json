@@ -7,7 +7,7 @@
                 "pr": 2324
             },
             {
-                "note": "Removed export orderParsingUtils",
+                "note": "Removed exports CoordinatorRevertErrors, ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors, orderHashUtils, orderParsingUtils, StakingRevertErrors and transactionHashUtils",
                 "pr": 2321
             },
             {
@@ -16,18 +16,6 @@
             },
             {
                 "note": "Removed function isValidOrderHash from export orderHashUtils",
-                "pr": 2321
-            },
-            {
-                "note": "Removed exports CoordinatorRevertErrors, ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors and StakingRevertErrors",
-                "pr": 2321
-            },
-            {
-                "note": "Removed export orderHashUtils",
-                "pr": 2321
-            },
-            {
-                "note": "Removed export transactionHashUtils",
                 "pr": 2321
             }
         ]
