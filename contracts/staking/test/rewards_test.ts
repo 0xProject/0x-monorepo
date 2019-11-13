@@ -163,7 +163,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // sanity balances - all zero
             await validateEndBalances({});
         });
-        it.only('Reward balance should be zero if not delegated, when epoch is greater than 0', async () => {
+        it('Reward balance should be zero if not delegated, when epoch is greater than 0', async () => {
             await payProtocolFeeAndFinalize();
             // sanity balances - all zero
             await validateEndBalances({});

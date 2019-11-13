@@ -89,15 +89,15 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         async function withdrawToAsync(opts?: Partial<WithdrawToOpts>): Promise<WithdrawToResult> {
             const _opts = createWithdrawToOpts(opts);
             // Create the "from" token and exchange.
-            [[_opts.fromTokenAddress]] = await transactionHelper.getResultAndReceiptAsync(
-                testContract.createTokenAndExchange,
+            [[_opts.fromTokenAddress]] = await transactionHelper.getResultAndReceiptAsync<any, string>(
+                testContract.createTokenAndExchange.bind(testContract),
                 _opts.fromTokenAddress,
                 _opts.exchangeRevertReason,
                 { value: new BigNumber(_opts.exchangeFillAmount) },
             );
             // Create the "to" token and exchange.
-            [[_opts.toTokenAddress]] = await transactionHelper.getResultAndReceiptAsync(
-                testContract.createTokenAndExchange,
+            [[_opts.toTokenAddress]] = await transactionHelper.getResultAndReceiptAsync<any, string>(
+                testContract.createTokenAndExchange.bind(testContract),
                 _opts.toTokenAddress,
                 _opts.exchangeRevertReason,
                 { value: new BigNumber(_opts.exchangeFillAmount) },
@@ -113,8 +113,8 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 value: new BigNumber(_opts.fromTokenBalance),
             });
             // Call bridgeTransferFrom().
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                testContract.bridgeTransferFrom,
+            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync<any, string>(
+                testContract.bridgeTransferFrom.bind(testContract),
                 // The "to" token address.
                 _opts.toTokenAddress,
                 // The "from" address.
@@ -144,8 +144,8 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         });
 
         it('just transfers tokens to `to` if the same tokens are in play', async () => {
-            const [[tokenAddress]] = await transactionHelper.getResultAndReceiptAsync(
-                testContract.createTokenAndExchange,
+            const [[tokenAddress]] = await transactionHelper.getResultAndReceiptAsync<any, string[]>(
+                testContract.createTokenAndExchange.bind(testContract),
                 constants.NULL_ADDRESS,
                 '',
             );

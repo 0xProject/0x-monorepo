@@ -84,14 +84,14 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 .awaitTransactionSuccessAsync();
             // Create tokens and balances.
             if (_opts.fromTokenAddress === undefined) {
-                [_opts.fromTokenAddress] = await transactionHelper.getResultAndReceiptAsync(
-                    testContract.createToken,
+                [_opts.fromTokenAddress] = await transactionHelper.getResultAndReceiptAsync<any, string>(
+                    testContract.createToken.bind(testContract),
                     new BigNumber(_opts.fromTokenBalance),
                 );
             }
             if (_opts.toTokenAddress === undefined) {
-                [_opts.toTokenAddress] = await transactionHelper.getResultAndReceiptAsync(
-                    testContract.createToken,
+                [_opts.toTokenAddress] = await transactionHelper.getResultAndReceiptAsync<any, string>(
+                    testContract.createToken.bind(testContract),
                     constants.ZERO_AMOUNT,
                 );
             }
@@ -104,8 +104,8 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 )
                 .awaitTransactionSuccessAsync();
             // Call bridgeTransferFrom().
-            const [result, { logs }] = await transactionHelper.getResultAndReceiptAsync(
-                testContract.bridgeTransferFrom,
+            const [result, { logs }] = await transactionHelper.getResultAndReceiptAsync<any, string>(
+                testContract.bridgeTransferFrom.bind(testContract),
                 // "to" token address
                 _opts.toTokenAddress,
                 // Random from address.

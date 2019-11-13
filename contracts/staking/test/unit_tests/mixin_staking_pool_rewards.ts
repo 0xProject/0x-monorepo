@@ -365,8 +365,8 @@ blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
             reward: Numberish,
             membersStake: Numberish,
         ): Promise<[[BigNumber, BigNumber], LogEntry[]]> {
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                testContract.syncPoolRewards,
+            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync<any, [BigNumber, BigNumber]>(
+                testContract.syncPoolRewards.bind(testContract),
                 POOL_ID,
                 new BigNumber(reward),
                 new BigNumber(membersStake),

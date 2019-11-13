@@ -315,10 +315,10 @@ blockchainTests.resets('Exchange wrappers', env => {
                 makerAssetAmount: toBaseUnitAmount(new BigNumber(100)),
                 takerAssetAmount: toBaseUnitAmount(new BigNumber(200)),
             });
-            const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
+            const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(5);
 
             const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                deployment.exchange.fillOrKillOrder,
+                deployment.exchange.fillOrKillOrder.bind(deployment.exchange),
                 signedOrder,
                 takerAssetFilledAmount,
                 signedOrder.signature,
@@ -437,7 +437,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 }
 
                 const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.batchFillOrders,
+                    deployment.exchange.batchFillOrders.bind(deployment.exchange),
                     signedOrders,
                     takerAssetFillAmounts,
                     signedOrders.map(signedOrder => signedOrder.signature),
@@ -499,7 +499,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 }
 
                 const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.batchFillOrKillOrders,
+                    deployment.exchange.batchFillOrKillOrders.bind(deployment.exchange),
                     signedOrders,
                     takerAssetFillAmounts,
                     signedOrders.map(order => order.signature),
@@ -595,7 +595,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 }
 
                 const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.batchFillOrdersNoThrow,
+                    deployment.exchange.batchFillOrdersNoThrow.bind(deployment.exchange),
                     signedOrdersWithValidity.map(signedOrderWithValidity => signedOrderWithValidity.signedOrder),
                     takerAssetFillAmounts,
                     signedOrdersWithValidity.map(
@@ -710,7 +710,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 }
 
                 const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.marketSellOrdersNoThrow,
+                    deployment.exchange.marketSellOrdersNoThrow.bind(deployment.exchange),
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder),
                     takerAssetFillAmount,
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder.signature),
@@ -908,7 +908,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 }
 
                 const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.marketBuyOrdersNoThrow,
+                    deployment.exchange.marketBuyOrdersNoThrow.bind(deployment.exchange),
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder),
                     makerAssetFillAmount,
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder.signature),

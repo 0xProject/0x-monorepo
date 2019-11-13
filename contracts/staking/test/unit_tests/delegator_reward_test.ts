@@ -152,7 +152,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             stake: getRandomInteger(1, toBaseUnitAmount(10)),
             ...opts,
         };
-        const fn = now ? testContract.delegateStakeNow : testContract.delegateStake;
+        const fn = now ? testContract.delegateStakeNow.bind(testContract) : testContract.delegateStake.bind(testContract);
         const receipt = await fn(_opts.delegator, poolId, new BigNumber(_opts.stake)).awaitTransactionSuccessAsync();
         const delegatorTransfers = getTransfersFromLogs(receipt.logs, _opts.delegator);
         return {
