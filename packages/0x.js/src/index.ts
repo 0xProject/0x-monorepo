@@ -89,7 +89,6 @@ export {
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
     EIP712DomainWithDefaultSchema,
-    SendTransactionOpts,
     EventCallback,
     IndexedFilterValues,
     DecodedLogEvent,
