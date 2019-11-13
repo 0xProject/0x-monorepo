@@ -125,7 +125,7 @@ export const signatureUtils = {
             exchangeContract = new ExchangeContract(addresses.exchange, provider);
         }
 
-        const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
+        const isValid = await exchangeContract.preSigned(data, signerAddress).callAsync();
         return isValid;
     },
     /**
@@ -150,7 +150,7 @@ export const signatureUtils = {
         const signatureWithoutType = signature.slice(0, -2);
         const walletContract = new IWalletContract(signerAddress, provider);
         try {
-            const magicValue = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
+            const magicValue = await walletContract.isValidSignature(data, signatureWithoutType).callAsync();
             return magicValue === constants.IS_VALID_WALLET_SIGNATURE_MAGIC_VALUE;
         } catch (e) {
             return false;
@@ -189,10 +189,9 @@ export const signatureUtils = {
         }
 
         const validatorSignature = signatureUtils.parseValidatorSignature(signature);
-        const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
-            signerAddress,
-            validatorSignature.validatorAddress,
-        );
+        const isValidatorApproved = await exchangeContract
+            .allowedValidators(signerAddress, validatorSignature.validatorAddress)
+            .callAsync();
         if (!isValidatorApproved) {
             throw new Error(
                 `Validator ${validatorSignature.validatorAddress} was not pre-approved by ${signerAddress}.`,
@@ -201,11 +200,9 @@ export const signatureUtils = {
 
         const validatorContract = new IValidatorContract(validatorSignature.validatorAddress, provider);
         try {
-            const magicValue = await validatorContract.isValidSignature.callAsync(
-                data,
-                signerAddress,
-                validatorSignature.signature,
-            );
+            const magicValue = await validatorContract
+                .isValidSignature(data, signerAddress, validatorSignature.signature)
+                .callAsync();
             return magicValue === constants.IS_VALID_VALIDATOR_SIGNATURE_MAGIC_VALUE;
         } catch (e) {
             return false;

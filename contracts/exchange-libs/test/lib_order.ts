@@ -56,7 +56,7 @@ blockchainTests('LibOrder', env => {
                 version: constants.EIP712_DOMAIN_VERSION,
             }),
         );
-        const actualHash = await libOrderContract.getTypedDataHash.callAsync(order, domainHash);
+        const actualHash = await libOrderContract.getTypedDataHash(order, domainHash).callAsync();
         expect(actualHash).to.be.eq(expectedHash);
     }
 
@@ -106,8 +106,8 @@ blockchainTests('LibOrder', env => {
                     chainId: 1337,
                 }),
             );
-            const orderHashHex1 = await libOrderContract.getTypedDataHash.callAsync(EMPTY_ORDER, domainHash1);
-            const orderHashHex2 = await libOrderContract.getTypedDataHash.callAsync(EMPTY_ORDER, domainHash2);
+            const orderHashHex1 = await libOrderContract.getTypedDataHash(EMPTY_ORDER, domainHash1).callAsync();
+            const orderHashHex2 = await libOrderContract.getTypedDataHash(EMPTY_ORDER, domainHash2).callAsync();
             expect(orderHashHex1).to.be.not.equal(orderHashHex2);
         });
     });
@@ -118,7 +118,7 @@ blockchainTests('LibOrder', env => {
     async function testGetStructHashAsync(order: Order): Promise<void> {
         const typedData = eip712Utils.createOrderTypedData(order);
         const expectedHash = ethUtil.bufferToHex(signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData));
-        const actualHash = await libOrderContract.getStructHash.callAsync(order);
+        const actualHash = await libOrderContract.getStructHash(order).callAsync();
         expect(actualHash).to.be.eq(expectedHash);
     }
 

@@ -24,7 +24,7 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             env.txDefaults,
             artifacts,
         );
-        await testContract.setCurrentEpoch.awaitTransactionSuccessAsync(CURRENT_EPOCH);
+        await testContract.setCurrentEpoch(CURRENT_EPOCH).awaitTransactionSuccessAsync();
         defaultUninitializedBalance = {
             currentEpoch: constants.INITIAL_EPOCH,
             currentEpochBalance: new BigNumber(0),
@@ -48,7 +48,7 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             storedBalance.currentEpoch,
             storedBalance.currentEpochBalance,
             storedBalance.nextEpochBalance,
-        ] = await testContract.testBalances.callAsync(new BigNumber(index));
+        ] = await testContract.testBalances(new BigNumber(index)).callAsync();
         return storedBalance as StoredBalance;
     }
 
@@ -58,9 +58,9 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             toBalance: StoredBalance,
             amount: BigNumber,
         ): Promise<void> {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(fromBalance, INDEX_ZERO);
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(toBalance, INDEX_ONE);
-            await testContract.moveStake.awaitTransactionSuccessAsync(INDEX_ZERO, INDEX_ONE, amount);
+            await testContract.setStoredBalance(fromBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
+            await testContract.setStoredBalance(toBalance, INDEX_ONE).awaitTransactionSuccessAsync();
+            await testContract.moveStake(INDEX_ZERO, INDEX_ONE, amount).awaitTransactionSuccessAsync();
 
             const actualBalances = await Promise.all([
                 getTestBalancesAsync(INDEX_ZERO),
@@ -100,20 +100,18 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             );
         });
         it('Noop if pointers are equal', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultSyncedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultSyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             // If the pointers weren't equal, this would revert with InsufficientBalanceError
-            await testContract.moveStake.awaitTransactionSuccessAsync(
-                INDEX_ZERO,
-                INDEX_ZERO,
-                defaultSyncedBalance.nextEpochBalance.plus(1),
-            );
+            await testContract
+                .moveStake(INDEX_ZERO, INDEX_ZERO, defaultSyncedBalance.nextEpochBalance.plus(1))
+                .awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
         it("Reverts if attempting to move more than next epoch's balance", async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultSyncedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultSyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultSyncedBalance.nextEpochBalance.plus(1);
-            const tx = testContract.moveStake.awaitTransactionSuccessAsync(INDEX_ZERO, INDEX_ONE, amount);
+            const tx = testContract.moveStake(INDEX_ZERO, INDEX_ONE, amount).awaitTransactionSuccessAsync();
             await expect(tx).to.revertWith(
                 new StakingRevertErrors.InsufficientBalanceError(amount, defaultSyncedBalance.nextEpochBalance),
             );
@@ -122,32 +120,32 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
 
     describe('Load balance', () => {
         it('Balance does not change state if balance was previously synced in the current epoch', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultSyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadCurrentBalance.callAsync(INDEX_ZERO);
+            await testContract.setStoredBalance(defaultSyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
+            const actualBalance = await testContract.loadCurrentBalance(INDEX_ZERO).callAsync();
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
         it('Balance updates current epoch fields if the balance has not yet been synced in the current epoch', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadCurrentBalance.callAsync(INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUnsyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
+            const actualBalance = await testContract.loadCurrentBalance(INDEX_ZERO).callAsync();
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
         it('Balance loads unsynced balance from storage without changing fields', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadStaleBalance.callAsync(INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUnsyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
+            const actualBalance = await testContract.loadStaleBalance(INDEX_ZERO).callAsync();
             expect(actualBalance).to.deep.equal(defaultUnsyncedBalance);
         });
         it('Balance loads synced balance from storage without changing fields', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultSyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadStaleBalance.callAsync(INDEX_ZERO);
+            await testContract.setStoredBalance(defaultSyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
+            const actualBalance = await testContract.loadStaleBalance(INDEX_ZERO).callAsync();
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
     });
 
     describe('Increase/decrease balance', () => {
         it('_increaseCurrentAndNextBalance', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUnsyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultUnsyncedBalance.currentEpochBalance.dividedToIntegerBy(2);
-            await testContract.increaseCurrentAndNextBalance.awaitTransactionSuccessAsync(INDEX_ZERO, amount);
+            await testContract.increaseCurrentAndNextBalance(INDEX_ZERO, amount).awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal({
                 ...defaultSyncedBalance,
@@ -156,16 +154,16 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             });
         });
         it('_increaseCurrentAndNextBalance (previously uninitialized)', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUninitializedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUninitializedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultSyncedBalance.currentEpochBalance;
-            await testContract.increaseCurrentAndNextBalance.awaitTransactionSuccessAsync(INDEX_ZERO, amount);
+            await testContract.increaseCurrentAndNextBalance(INDEX_ZERO, amount).awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
         it('_decreaseCurrentAndNextBalance', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUnsyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultUnsyncedBalance.currentEpochBalance.dividedToIntegerBy(2);
-            await testContract.decreaseCurrentAndNextBalance.awaitTransactionSuccessAsync(INDEX_ZERO, amount);
+            await testContract.decreaseCurrentAndNextBalance(INDEX_ZERO, amount).awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal({
                 ...defaultSyncedBalance,
@@ -174,9 +172,9 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             });
         });
         it('_increaseNextBalance', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUnsyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultUnsyncedBalance.currentEpochBalance.dividedToIntegerBy(2);
-            await testContract.increaseNextBalance.awaitTransactionSuccessAsync(INDEX_ZERO, amount);
+            await testContract.increaseNextBalance(INDEX_ZERO, amount).awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal({
                 ...defaultSyncedBalance,
@@ -184,9 +182,9 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             });
         });
         it('_increaseCurrentAndNextBalance (previously uninitialized)', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUninitializedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUninitializedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultSyncedBalance.currentEpochBalance;
-            await testContract.increaseNextBalance.awaitTransactionSuccessAsync(INDEX_ZERO, amount);
+            await testContract.increaseNextBalance(INDEX_ZERO, amount).awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal({
                 ...defaultSyncedBalance,
@@ -194,9 +192,9 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
             });
         });
         it('_decreaseNextBalance', async () => {
-            await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
+            await testContract.setStoredBalance(defaultUnsyncedBalance, INDEX_ZERO).awaitTransactionSuccessAsync();
             const amount = defaultUnsyncedBalance.currentEpochBalance.dividedToIntegerBy(2);
-            await testContract.decreaseNextBalance.awaitTransactionSuccessAsync(INDEX_ZERO, amount);
+            await testContract.decreaseNextBalance(INDEX_ZERO, amount).awaitTransactionSuccessAsync();
             const actualBalance = await getTestBalancesAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal({
                 ...defaultSyncedBalance,

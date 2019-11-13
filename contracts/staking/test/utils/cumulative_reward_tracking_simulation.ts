@@ -73,9 +73,9 @@ export class CumulativeRewardTrackingSimulation {
 
     public async deployAndConfigureTestContractsAsync(env: BlockchainTestsEnvironment): Promise<void> {
         // set exchange address
-        await this._stakingApiWrapper.stakingContract.addExchangeAddress.awaitTransactionSuccessAsync(
-            this._exchangeAddress,
-        );
+        await this._stakingApiWrapper.stakingContract
+            .addExchangeAddress(this._exchangeAddress)
+            .awaitTransactionSuccessAsync();
         this._testCumulativeRewardTrackingContract = await TestCumulativeRewardTrackingContract.deployFrom0xArtifactAsync(
             artifacts.TestCumulativeRewardTracking,
             env.provider,
@@ -99,9 +99,9 @@ export class CumulativeRewardTrackingSimulation {
         expectedTestLogs: TestLog[],
     ): Promise<void> {
         await this._executeActionsAsync(initActions);
-        await this._stakingApiWrapper.stakingProxyContract.attachStakingContract.awaitTransactionSuccessAsync(
-            this.getTestCumulativeRewardTrackingContract().address,
-        );
+        await this._stakingApiWrapper.stakingProxyContract
+            .attachStakingContract(this.getTestCumulativeRewardTrackingContract().address)
+            .awaitTransactionSuccessAsync();
         const testLogs = await this._executeActionsAsync(testActions);
         CumulativeRewardTrackingSimulation._assertTestLogs(expectedTestLogs, testLogs);
     }
@@ -117,41 +117,38 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.Delegate:
-                    await this._stakingApiWrapper.stakingContract.stake.sendTransactionAsync(this._amountToStake, {
+                    await this._stakingApiWrapper.stakingContract.stake(this._amountToStake).sendTransactionAsync({
                         from: this._staker,
                     });
-                    receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
-                        new StakeInfo(StakeStatus.Undelegated),
-                        new StakeInfo(StakeStatus.Delegated, this._poolId),
-                        this._amountToStake,
-                        { from: this._staker },
-                    );
+                    receipt = await this._stakingApiWrapper.stakingContract
+                        .moveStake(
+                            new StakeInfo(StakeStatus.Undelegated),
+                            new StakeInfo(StakeStatus.Delegated, this._poolId),
+                            this._amountToStake,
+                        )
+                        .awaitTransactionSuccessAsync({ from: this._staker });
                     break;
 
                 case TestAction.Undelegate:
-                    receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
-                        new StakeInfo(StakeStatus.Delegated, this._poolId),
-                        new StakeInfo(StakeStatus.Undelegated),
-                        this._amountToStake,
-                        { from: this._staker },
-                    );
+                    receipt = await this._stakingApiWrapper.stakingContract
+                        .moveStake(
+                            new StakeInfo(StakeStatus.Delegated, this._poolId),
+                            new StakeInfo(StakeStatus.Undelegated),
+                            this._amountToStake,
+                        )
+                        .awaitTransactionSuccessAsync({ from: this._staker });
                     break;
 
                 case TestAction.PayProtocolFee:
-                    receipt = await this._stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
-                        this._poolOperator,
-                        this._takerAddress,
-                        this._protocolFee,
-                        { from: this._exchangeAddress, value: this._protocolFee },
-                    );
+                    receipt = await this._stakingApiWrapper.stakingContract
+                        .payProtocolFee(this._poolOperator, this._takerAddress, this._protocolFee)
+                        .awaitTransactionSuccessAsync({ from: this._exchangeAddress, value: this._protocolFee });
                     break;
 
                 case TestAction.CreatePool:
-                    receipt = await this._stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(
-                        0,
-                        true,
-                        { from: this._poolOperator },
-                    );
+                    receipt = await this._stakingApiWrapper.stakingContract
+                        .createStakingPool(0, true)
+                        .awaitTransactionSuccessAsync({ from: this._poolOperator });
                     const createStakingPoolLog = receipt.logs[0];
                     // tslint:disable-next-line no-unnecessary-type-assertion
                     this._poolId = (createStakingPoolLog as DecodedLogEntry<any>).args.poolId;

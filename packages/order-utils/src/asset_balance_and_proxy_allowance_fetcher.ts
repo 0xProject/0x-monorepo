@@ -10,11 +10,11 @@ export class AssetBalanceAndProxyAllowanceFetcher implements AbstractBalanceAndP
         this._devUtilsContract = devUtilsContract;
     }
     public async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        const balance = await this._devUtilsContract.getBalance.callAsync(userAddress, assetData);
+        const balance = await this._devUtilsContract.getBalance(userAddress, assetData).callAsync();
         return balance;
     }
     public async getProxyAllowanceAsync(assetData: string, userAddress: string): Promise<BigNumber> {
-        const proxyAllowance = await this._devUtilsContract.getAssetProxyAllowance.callAsync(userAddress, assetData);
+        const proxyAllowance = await this._devUtilsContract.getAssetProxyAllowance(userAddress, assetData).callAsync();
         return proxyAllowance;
     }
 }

@@ -47,8 +47,8 @@ describe('LibTransactionDecoder', () => {
     });
 
     it('should decode an Exchange.batchCancelOrders() transaction', async () => {
-        const input = exchangeInterface.batchCancelOrders.getABIEncodedTransactionData([order, order]);
-        expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(input)).to.deep.equal([
+        const input = exchangeInterface.batchCancelOrders([order, order]).getABIEncodedTransactionData();
+        expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
             'batchCancelOrders',
             [order, order],
             [],
@@ -57,13 +57,11 @@ describe('LibTransactionDecoder', () => {
     });
 
     for (const func of ['batchFillOrders', 'batchFillOrdersNoThrow', 'batchFillOrKillOrders']) {
-        const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
-            [order, order],
-            [takerAssetFillAmount, takerAssetFillAmount],
-            [signature, signature],
-        );
+        const input = (exchangeInterface as any)
+            [func]([order, order], [takerAssetFillAmount, takerAssetFillAmount], [signature, signature])
+            .getABIEncodedTransactionData();
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(input)).to.deep.equal([
+            expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
                 func,
                 [order, order],
                 [takerAssetFillAmount, takerAssetFillAmount],
@@ -73,8 +71,8 @@ describe('LibTransactionDecoder', () => {
     }
 
     it('should decode an Exchange.cancelOrder() transaction', async () => {
-        const input = exchangeInterface.cancelOrder.getABIEncodedTransactionData(order);
-        expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(input)).to.deep.equal([
+        const input = exchangeInterface.cancelOrder(order).getABIEncodedTransactionData();
+        expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
             'cancelOrder',
             [order],
             [],
@@ -83,13 +81,11 @@ describe('LibTransactionDecoder', () => {
     });
 
     for (const func of ['fillOrder', 'fillOrKillOrder']) {
-        const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
-            order,
-            takerAssetFillAmount,
-            signature,
-        );
+        const input = (exchangeInterface as any)
+            [func](order, takerAssetFillAmount, signature)
+            .getABIEncodedTransactionData();
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(input)).to.deep.equal([
+            expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
                 func,
                 [order],
                 [takerAssetFillAmount],
@@ -104,13 +100,11 @@ describe('LibTransactionDecoder', () => {
         'marketBuyOrdersFillOrKill',
         'marketSellOrdersFillOrKill',
     ]) {
-        const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
-            [order, order],
-            takerAssetFillAmount,
-            [signature, signature],
-        );
+        const input = (exchangeInterface as any)
+            [func]([order, order], takerAssetFillAmount, [signature, signature])
+            .getABIEncodedTransactionData();
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(input)).to.deep.equal([
+            expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
                 func,
                 [order, order],
                 [takerAssetFillAmount],
@@ -133,13 +127,10 @@ describe('LibTransactionDecoder', () => {
             makerFeeAssetData: order.takerFeeAssetData,
             takerFeeAssetData: order.makerFeeAssetData,
         };
-        const input = exchangeInterface.matchOrders.getABIEncodedTransactionData(
-            order,
-            complementaryOrder,
-            signature,
-            signature,
-        );
-        expect(await libTxDecoder.decodeZeroExTransactionData.callAsync(input)).to.deep.equal([
+        const input = exchangeInterface
+            .matchOrders(order, complementaryOrder, signature, signature)
+            .getABIEncodedTransactionData();
+        expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
             'matchOrders',
             [order, complementaryOrder],
             [order.takerAssetAmount, complementaryOrder.takerAssetAmount],

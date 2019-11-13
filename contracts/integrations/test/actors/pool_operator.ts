@@ -43,11 +43,9 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             addOperatorAsMaker: boolean = false,
         ): Promise<string> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
-            const txReceipt = await stakingContract.createStakingPool.awaitTransactionSuccessAsync(
-                operatorShare,
-                addOperatorAsMaker,
-                { from: this.actor.address },
-            );
+            const txReceipt = await stakingContract
+                .createStakingPool(operatorShare, addOperatorAsMaker)
+                .awaitTransactionSuccessAsync({ from: this.actor.address });
 
             const createStakingPoolLog = txReceipt.logs[0];
             const poolId = (createStakingPoolLog as any).args.poolId;
@@ -64,11 +62,9 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
         ): Promise<TransactionReceiptWithDecodedLogs> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
             this.operatorShares[poolId] = newOperatorShare;
-            return stakingContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(
-                poolId,
-                newOperatorShare,
-                { from: this.actor.address },
-            );
+            return stakingContract
+                .decreaseStakingPoolOperatorShare(poolId, newOperatorShare)
+                .awaitTransactionSuccessAsync({ from: this.actor.address });
         }
     };
 }

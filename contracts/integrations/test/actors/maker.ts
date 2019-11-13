@@ -59,7 +59,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
          */
         public async cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs> {
             const params = orderUtils.createCancel(order);
-            return this.actor.deployment.exchange.cancelOrder.awaitTransactionSuccessAsync(params.order, {
+            return this.actor.deployment.exchange.cancelOrder(params.order).awaitTransactionSuccessAsync({
                 from: this.actor.address,
             });
         }
@@ -70,7 +70,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
         public async joinStakingPoolAsync(poolId: string): Promise<TransactionReceiptWithDecodedLogs> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
             this.makerPoolId = poolId;
-            return stakingContract.joinStakingPoolAsMaker.awaitTransactionSuccessAsync(poolId, {
+            return stakingContract.joinStakingPoolAsMaker(poolId).awaitTransactionSuccessAsync({
                 from: this.actor.address,
             });
         }

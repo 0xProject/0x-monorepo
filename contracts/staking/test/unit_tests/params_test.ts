@@ -21,7 +21,7 @@ blockchainTests('Configurable Parameters unit tests', env => {
             env.txDefaults,
             artifacts,
         );
-        await testContract.addAuthorizedAddress.awaitTransactionSuccessAsync(authorizedAddress);
+        await testContract.addAuthorizedAddress(authorizedAddress).awaitTransactionSuccessAsync();
     });
 
     blockchainTests.resets('setParams()', () => {
@@ -33,14 +33,15 @@ blockchainTests('Configurable Parameters unit tests', env => {
                 ...stakingConstants.DEFAULT_PARAMS,
                 ...params,
             };
-            const receipt = await testContract.setParams.awaitTransactionSuccessAsync(
-                new BigNumber(_params.epochDurationInSeconds),
-                new BigNumber(_params.rewardDelegatedStakeWeight),
-                new BigNumber(_params.minimumPoolStake),
-                new BigNumber(_params.cobbDouglasAlphaNumerator),
-                new BigNumber(_params.cobbDouglasAlphaDenominator),
-                { from },
-            );
+            const receipt = await testContract
+                .setParams(
+                    new BigNumber(_params.epochDurationInSeconds),
+                    new BigNumber(_params.rewardDelegatedStakeWeight),
+                    new BigNumber(_params.minimumPoolStake),
+                    new BigNumber(_params.cobbDouglasAlphaNumerator),
+                    new BigNumber(_params.cobbDouglasAlphaDenominator),
+                )
+                .awaitTransactionSuccessAsync({ from });
             // Assert event.
             const events = filterLogsToArguments<IStakingEventsParamsSetEventArgs>(receipt.logs, 'ParamsSet');
             expect(events.length).to.eq(1);
@@ -51,7 +52,7 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(event.cobbDouglasAlphaNumerator).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(event.cobbDouglasAlphaDenominator).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             // Assert `getParams()`.
-            const actual = await testContract.getParams.callAsync();
+            const actual = await testContract.getParams().callAsync();
             expect(actual[0]).to.bignumber.eq(_params.epochDurationInSeconds);
             expect(actual[1]).to.bignumber.eq(_params.rewardDelegatedStakeWeight);
             expect(actual[2]).to.bignumber.eq(_params.minimumPoolStake);
@@ -67,7 +68,7 @@ blockchainTests('Configurable Parameters unit tests', env => {
         });
 
         it('throws if `assertValidStorageParams()` throws`', async () => {
-            await testContract.setShouldFailAssertValidStorageParams.awaitTransactionSuccessAsync(true);
+            await testContract.setShouldFailAssertValidStorageParams(true).awaitTransactionSuccessAsync();
             const tx = setParamsAndAssertAsync({});
             return expect(tx).to.revertWith('ASSERT_VALID_STORAGE_PARAMS_FAILED');
         });

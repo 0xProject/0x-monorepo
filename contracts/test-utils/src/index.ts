@@ -26,7 +26,7 @@ export { randomAddress } from './address_utils';
 export { OrderFactory } from './order_factory';
 export { bytes32Values, testCombinatoriallyWithReferenceFunc, uint256Values } from './combinatorial_utils';
 export { TransactionFactory } from './transaction_factory';
-export { MutatorContractFunction, TransactionHelper } from './transaction_helper';
+export { MutatorContractFunction, transactionHelper } from './transaction_helper';
 export { testWithReferenceFuncAsync } from './test_with_reference';
 export {
     hexConcat,

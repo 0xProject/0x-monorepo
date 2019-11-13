@@ -38,15 +38,11 @@ export class DutchAuctionTestWrapper {
         sellOrder: SignedOrder,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._dutchAuctionContract.matchOrders.sendTransactionAsync(
-            buyOrder,
-            sellOrder,
-            buyOrder.signature,
-            sellOrder.signature,
-            {
+        const txHash = await this._dutchAuctionContract
+            .matchOrders(buyOrder, sellOrder, buyOrder.signature, sellOrder.signature)
+            .sendTransactionAsync({
                 from,
-            },
-        );
+            });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
@@ -56,7 +52,7 @@ export class DutchAuctionTestWrapper {
      * @return The dutch auction details.
      */
     public async getAuctionDetailsAsync(sellOrder: SignedOrder): Promise<DutchAuctionDetails> {
-        const auctionDetails = await this._dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
+        const auctionDetails = await this._dutchAuctionContract.getAuctionDetails(sellOrder).callAsync();
         return auctionDetails;
     }
 }

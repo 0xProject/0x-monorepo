@@ -85,9 +85,9 @@ describe.skip('CoordinatorWrapper', () => {
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         feeTokenAddress = contractAddresses.zrxToken;
         [makerAssetData, takerAssetData, feeAssetData] = [
-            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
-            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
-            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(feeTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
+            await contractWrappers.devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
+            await contractWrappers.devUtils.encodeERC20AssetData(feeTokenAddress).callAsync(),
         ];
 
         // Configure order defaults
@@ -190,32 +190,29 @@ describe.skip('CoordinatorWrapper', () => {
 
         // register coordinator server
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
-                `${coordinatorEndpoint}${coordinatorPort}`,
-                {
+            await coordinatorRegistryInstance
+                .setCoordinatorEndpoint(`${coordinatorEndpoint}${coordinatorPort}`)
+                .sendTransactionAsync({
                     from: feeRecipientAddressOne,
-                },
-            ),
+                }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
-                `${coordinatorEndpoint}${coordinatorPort}`,
-                {
+            await coordinatorRegistryInstance
+                .setCoordinatorEndpoint(`${coordinatorEndpoint}${coordinatorPort}`)
+                .sendTransactionAsync({
                     from: feeRecipientAddressTwo,
-                },
-            ),
+                }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         // register another coordinator server
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync(
-                `${coordinatorEndpoint}${anotherCoordinatorPort}`,
-                {
+            await coordinatorRegistryInstance
+                .setCoordinatorEndpoint(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
+                .sendTransactionAsync({
                     from: feeRecipientAddressThree,
-                },
-            ),
+                }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
     });
@@ -238,12 +235,12 @@ describe.skip('CoordinatorWrapper', () => {
     });
     describe('test setup', () => {
         it('should have coordinator registry which returns an endpoint', async () => {
-            const setCoordinatorEndpoint = await coordinatorRegistryInstance.getCoordinatorEndpoint.callAsync(
-                feeRecipientAddressOne,
-            );
-            const anotherSetCoordinatorEndpoint = await coordinatorRegistryInstance.getCoordinatorEndpoint.callAsync(
-                feeRecipientAddressThree,
-            );
+            const setCoordinatorEndpoint = await coordinatorRegistryInstance
+                .getCoordinatorEndpoint(feeRecipientAddressOne)
+                .callAsync();
+            const anotherSetCoordinatorEndpoint = await coordinatorRegistryInstance
+                .getCoordinatorEndpoint(feeRecipientAddressThree)
+                .callAsync();
             expect(setCoordinatorEndpoint).to.be.equal(`${coordinatorEndpoint}${coordinatorPort}`);
             expect(anotherSetCoordinatorEndpoint).to.be.equal(`${coordinatorEndpoint}${anotherCoordinatorPort}`);
         });
@@ -386,10 +383,9 @@ describe.skip('CoordinatorWrapper', () => {
                 txHash = await contractWrappers.coordinator.hardCancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
 
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderEpoch = await contractWrappers.exchange.orderEpoch.callAsync(
-                    makerAddress,
-                    contractWrappers.coordinator.address,
-                );
+                const orderEpoch = await contractWrappers.exchange
+                    .orderEpoch(makerAddress, contractWrappers.coordinator.address)
+                    .callAsync();
                 expect(orderEpoch).to.be.bignumber.equal(targetOrderEpoch.plus(1));
             });
         });
@@ -406,7 +402,7 @@ describe.skip('CoordinatorWrapper', () => {
         });
         it('should throw error when coordinator endpoint is malformed', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorRegistryInstance.setCoordinatorEndpoint.sendTransactionAsync('localhost', {
+                await coordinatorRegistryInstance.setCoordinatorEndpoint('localhost').sendTransactionAsync({
                     from: feeRecipientAddressFour,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,

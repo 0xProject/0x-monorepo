@@ -16,7 +16,7 @@ export function getAbiEncodedTransactionData<K extends keyof ExchangeContract>(
         getABIEncodedTransactionData: (...args: any[]) => string;
     };
     if (method.getABIEncodedTransactionData) {
-        const abiEncodedData = method.getABIEncodedTransactionData(...params);
+        const abiEncodedData = method(...params).getABIEncodedTransactionData();
         return abiEncodedData;
     } else {
         return '';

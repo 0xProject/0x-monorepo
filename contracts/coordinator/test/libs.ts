@@ -42,7 +42,7 @@ blockchainTests.resets('Libs tests', env => {
                 transactionSignature: signedTx.signature,
             };
             const expectedApprovalHash = hashUtils.getApprovalHashHex(signedTx, coordinatorContract.address, txOrigin);
-            const approvalHash = await coordinatorContract.getCoordinatorApprovalHash.callAsync(approval);
+            const approvalHash = await coordinatorContract.getCoordinatorApprovalHash(approval).callAsync();
             expect(expectedApprovalHash).to.eq(approvalHash);
         });
     });

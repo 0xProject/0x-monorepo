@@ -543,13 +543,15 @@ export class CoordinatorWrapper {
             assert.isHexString('approvalSignature', approvalSignature);
         }
 
-        await this._contractInstance.assertValidCoordinatorApprovals.callAsync(
-            transaction,
-            txOrigin,
-            transactionSignature,
-            approvalExpirationTimeSeconds,
-            approvalSignatures,
-        );
+        await this._contractInstance
+            .assertValidCoordinatorApprovals(
+                transaction,
+                txOrigin,
+                transactionSignature,
+                approvalExpirationTimeSeconds,
+                approvalSignatures,
+            )
+            .callAsync();
     }
 
     /**
@@ -561,7 +563,7 @@ export class CoordinatorWrapper {
     public async getSignerAddressAsync(hash: string, signature: string): Promise<string> {
         assert.isHexString('hash', hash);
         assert.isHexString('signature', signature);
-        const signerAddress = await this._contractInstance.getSignerAddress.callAsync(hash, signature);
+        const signerAddress = await this._contractInstance.getSignerAddress(hash, signature).callAsync();
         return signerAddress;
     }
 
@@ -665,7 +667,7 @@ export class CoordinatorWrapper {
             feeRecipient: string,
             registryInstance: CoordinatorRegistryContract,
         ): Promise<string> {
-            const coordinatorOperatorEndpoint = await registryInstance.getCoordinatorEndpoint.callAsync(feeRecipient);
+            const coordinatorOperatorEndpoint = await registryInstance.getCoordinatorEndpoint(feeRecipient).callAsync();
             if (coordinatorOperatorEndpoint === '' || coordinatorOperatorEndpoint === undefined) {
                 throw new Error(
                     `No Coordinator server endpoint found in Coordinator Registry for feeRecipientAddress: ${feeRecipient}. Registry contract address: ${
@@ -744,33 +746,35 @@ export class CoordinatorWrapper {
         orderTransactionOpts: OrderTransactionOpts,
     ): Promise<string> {
         if (orderTransactionOpts.shouldValidate) {
-            await this._contractInstance.executeTransaction.callAsync(
+            await this._contractInstance
+                .executeTransaction(
+                    transaction,
+                    txOrigin,
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                )
+                .callAsync({
+                    from: txOrigin,
+                    gas: orderTransactionOpts.gasLimit,
+                    gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
+                });
+        }
+        const txHash = await this._contractInstance
+            .executeTransaction(
                 transaction,
                 txOrigin,
                 transactionSignature,
                 approvalExpirationTimeSeconds,
                 approvalSignatures,
-                {
-                    from: txOrigin,
-                    gas: orderTransactionOpts.gasLimit,
-                    gasPrice: orderTransactionOpts.gasPrice,
-                    nonce: orderTransactionOpts.nonce,
-                },
-            );
-        }
-        const txHash = await this._contractInstance.executeTransaction.sendTransactionAsync(
-            transaction,
-            txOrigin,
-            transactionSignature,
-            approvalExpirationTimeSeconds,
-            approvalSignatures,
-            {
+            )
+            .sendTransactionAsync({
                 from: txOrigin,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
                 nonce: orderTransactionOpts.nonce,
-            },
-        );
+            });
         return txHash;
     }
 

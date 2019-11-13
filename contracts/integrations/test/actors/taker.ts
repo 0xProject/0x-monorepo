@@ -41,17 +41,14 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             fillAmount: BigNumber,
             txData: Partial<TxData> = {},
         ): Promise<TransactionReceiptWithDecodedLogs> {
-            return this.actor.deployment.exchange.fillOrder.awaitTransactionSuccessAsync(
-                order,
-                fillAmount,
-                order.signature,
-                {
+            return this.actor.deployment.exchange
+                .fillOrder(order, fillAmount, order.signature)
+                .awaitTransactionSuccessAsync({
                     from: this.actor.address,
                     gasPrice: DeploymentManager.gasPrice,
                     value: DeploymentManager.protocolFee,
                     ...txData,
-                },
-            );
+                });
         }
     };
 }

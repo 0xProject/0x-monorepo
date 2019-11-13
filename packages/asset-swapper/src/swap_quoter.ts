@@ -216,8 +216,12 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        const makerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
-        const takerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
+        const makerAssetData = await this._contractWrappers.devUtils
+            .encodeERC20AssetData(makerTokenAddress)
+            .callAsync();
+        const takerAssetData = await this._contractWrappers.devUtils
+            .encodeERC20AssetData(takerTokenAddress)
+            .callAsync();
         const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -246,8 +250,12 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
-        const makerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
-        const takerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
+        const makerAssetData = await this._contractWrappers.devUtils
+            .encodeERC20AssetData(makerTokenAddress)
+            .callAsync();
+        const takerAssetData = await this._contractWrappers.devUtils
+            .encodeERC20AssetData(takerTokenAddress)
+            .callAsync();
         const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -374,10 +382,9 @@ export class SwapQuoter {
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
         const orderValidator = this._contractWrappers.orderValidator;
-        const balanceAndAllowance = await orderValidator.getBalanceAndAllowance.callAsync(
-            takerAddress,
-            swapQuote.takerAssetData,
-        );
+        const balanceAndAllowance = await orderValidator
+            .getBalanceAndAllowance(takerAddress, swapQuote.takerAssetData)
+            .callAsync();
         const allowance = balanceAndAllowance[1];
         return [
             allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
@@ -397,9 +404,9 @@ export class SwapQuoter {
      * Will throw if ZRX does not exist for the current chain.
      */
     private async _getZrxTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-            this._contractWrappers.contractAddresses.zrxToken,
-        );
+        return this._contractWrappers.devUtils
+            .encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken)
+            .callAsync();
     }
 
     /**

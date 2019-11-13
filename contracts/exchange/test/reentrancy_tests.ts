@@ -101,8 +101,8 @@ blockchainTests.resets('Reentrancy Tests', env => {
         for (const fn of NON_REENTRANT_FUNCTIONS) {
             it(`${fn.name}()`, async () => {
                 const inputs = createFunctionInputs(fn.inputs);
-                const callData = (testerContract as any)[fn.name].getABIEncodedTransactionData(...inputs);
-                const isReentrant = await testerContract.isReentrant.callAsync(callData);
+                const callData = (testerContract as any)[fn.name](...inputs).getABIEncodedTransactionData();
+                const isReentrant = await testerContract.isReentrant(callData).callAsync();
                 expect(isReentrant).to.be.false();
             });
         }
@@ -112,8 +112,8 @@ blockchainTests.resets('Reentrancy Tests', env => {
         for (const fn of REENTRANT_FUNCTIONS) {
             it(`${fn.name}()`, async () => {
                 const inputs = createFunctionInputs(fn.inputs);
-                const callData = (testerContract as any)[fn.name].getABIEncodedTransactionData(...inputs);
-                const isReentrant = await testerContract.isReentrant.callAsync(callData);
+                const callData = (testerContract as any)[fn.name](...inputs).getABIEncodedTransactionData();
+                const isReentrant = await testerContract.isReentrant(callData).callAsync();
                 expect(isReentrant).to.be.true();
             });
         }

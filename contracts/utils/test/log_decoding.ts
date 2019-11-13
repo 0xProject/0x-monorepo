@@ -48,19 +48,25 @@ describe('TestLogDecoding', () => {
 
     describe('Decoding Log Arguments', () => {
         it('should decode locally emitted event args when no dependencies are passed into wrapper', async () => {
-            const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEvent.awaitTransactionSuccessAsync();
+            const txReceipt = await testLogDecodingDeployedWithoutDependencies
+                .emitEvent()
+                .awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
         });
         it('should not decode event args when no dependencies are passed into wrapper', async () => {
-            const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEventDownstream.awaitTransactionSuccessAsync();
+            const txReceipt = await testLogDecodingDeployedWithoutDependencies
+                .emitEventDownstream()
+                .awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.undefined();
         });
         it('should decode args for local but not downstream event when no dependencies are passed into wrapper', async () => {
-            const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEventsLocalAndDownstream.awaitTransactionSuccessAsync();
+            const txReceipt = await testLogDecodingDeployedWithoutDependencies
+                .emitEventsLocalAndDownstream()
+                .awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(2);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
@@ -68,13 +74,15 @@ describe('TestLogDecoding', () => {
             expect((txReceipt.logs[1] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.undefined();
         });
         it('should decode locally emitted event args when dependencies are passed into wrapper', async () => {
-            const txReceipt = await testLogDecodingWithDependencies.emitEvent.awaitTransactionSuccessAsync();
+            const txReceipt = await testLogDecodingWithDependencies.emitEvent().awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
         });
         it('should decode downstream event args when dependencies are passed into wrapper', async () => {
-            const txReceipt = await testLogDecodingWithDependencies.emitEventDownstream.awaitTransactionSuccessAsync();
+            const txReceipt = await testLogDecodingWithDependencies
+                .emitEventDownstream()
+                .awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(
@@ -82,7 +90,9 @@ describe('TestLogDecoding', () => {
             );
         });
         it('should decode args for both local and downstream events when dependencies are passed into wrapper', async () => {
-            const txReceipt = await testLogDecodingWithDependencies.emitEventsLocalAndDownstream.awaitTransactionSuccessAsync();
+            const txReceipt = await testLogDecodingWithDependencies
+                .emitEventsLocalAndDownstream()
+                .awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(2);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);

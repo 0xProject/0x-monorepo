@@ -48,7 +48,7 @@ export const dispenseAssetTasks = {
             }
             const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);
             const erc20Token = new ERC20TokenContract(tokenIfExists.address, provider);
-            const userBalanceBaseUnits = await erc20Token.balanceOf.callAsync(recipientAddress);
+            const userBalanceBaseUnits = await erc20Token.balanceOf(recipientAddress).callAsync();
             const maxAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
                 new BigNumber(DISPENSE_MAX_AMOUNT_TOKEN),
                 tokenIfExists.decimals,
@@ -59,7 +59,7 @@ export const dispenseAssetTasks = {
                 );
                 return;
             }
-            const txHash = await erc20Token.transfer.sendTransactionAsync(recipientAddress, baseUnitAmount, {
+            const txHash = await erc20Token.transfer(recipientAddress, baseUnitAmount).sendTransactionAsync({
                 from: configs.DISPENSER_ADDRESS,
             });
             logUtils.log(`Sent ${amountToDispense} ${tokenSymbol} to ${recipientAddress} tx: ${txHash}`);

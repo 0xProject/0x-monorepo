@@ -55,18 +55,19 @@ blockchainTests('LibCobbDouglas unit tests', env => {
                 ...DEFAULT_COBB_DOUGLAS_PARAMS,
                 ...params,
             };
-            return testContract.cobbDouglas.callAsync(
-                new BigNumber(_params.totalRewards),
-                new BigNumber(_params.ownerFees),
-                new BigNumber(_params.totalFees),
-                new BigNumber(_params.ownerStake),
-                new BigNumber(_params.totalStake),
-                new BigNumber(_params.alphaNumerator),
-                new BigNumber(_params.alphaDenominator),
-                {
+            return testContract
+                .cobbDouglas(
+                    new BigNumber(_params.totalRewards),
+                    new BigNumber(_params.ownerFees),
+                    new BigNumber(_params.totalFees),
+                    new BigNumber(_params.ownerStake),
+                    new BigNumber(_params.totalStake),
+                    new BigNumber(_params.alphaNumerator),
+                    new BigNumber(_params.alphaDenominator),
+                )
+                .callAsync({
                     gas: TX_GAS_FEE + (_params.gas === undefined ? MAX_COBB_DOUGLAS_GAS : _params.gas),
-                },
-            );
+                });
         }
 
         function cobbDouglas(params?: Partial<CobbDouglasParams>): BigNumber {

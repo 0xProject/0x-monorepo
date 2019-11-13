@@ -29,10 +29,12 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
 
     describe('getCurrentEpochEarliestEndTimeInSeconds', () => {
         it('Should return the sum of `epoch start time + epoch duration`', async () => {
-            const testDeployedTimestamp = await testContract.testDeployedTimestamp.callAsync();
-            const epochDurationInSeconds = await testContract.epochDurationInSeconds.callAsync();
+            const testDeployedTimestamp = await testContract.testDeployedTimestamp().callAsync();
+            const epochDurationInSeconds = await testContract.epochDurationInSeconds().callAsync();
             const expectedCurrentEpochEarliestEndTimeInSeconds = testDeployedTimestamp.plus(epochDurationInSeconds);
-            const currentEpochEarliestEndTimeInSeconds = await testContract.getCurrentEpochEarliestEndTimeInSeconds.callAsync();
+            const currentEpochEarliestEndTimeInSeconds = await testContract
+                .getCurrentEpochEarliestEndTimeInSeconds()
+                .callAsync();
             expect(currentEpochEarliestEndTimeInSeconds).to.bignumber.equal(
                 expectedCurrentEpochEarliestEndTimeInSeconds,
             );
@@ -42,23 +44,23 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
     describe('_initMixinScheduler', () => {
         it('Should succeed if scheduler is not yet initialized (`currentEpochStartTimeInSeconds == 0`)', async () => {
             const initCurrentEpochStartTimeInSeconds = constants.ZERO_AMOUNT;
-            const txReceipt = await testContract.initMixinSchedulerTest.awaitTransactionSuccessAsync(
-                initCurrentEpochStartTimeInSeconds,
-            );
+            const txReceipt = await testContract
+                .initMixinSchedulerTest(initCurrentEpochStartTimeInSeconds)
+                .awaitTransactionSuccessAsync();
             // Assert `currentEpochStartTimeInSeconds` was properly initialized
             const blockTimestamp = await env.web3Wrapper.getBlockTimestampAsync(txReceipt.blockNumber);
-            const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds.callAsync();
+            const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds().callAsync();
             expect(currentEpochStartTimeInSeconds).to.bignumber.equal(blockTimestamp);
             // Assert `currentEpoch` was properly initialized
-            const currentEpoch = await testContract.currentEpoch.callAsync();
+            const currentEpoch = await testContract.currentEpoch().callAsync();
             expect(currentEpoch).to.bignumber.equal(1);
         });
 
         it('Should revert if scheduler is already initialized (`currentEpochStartTimeInSeconds != 0`)', async () => {
             const initCurrentEpochStartTimeInSeconds = new BigNumber(10);
-            const tx = testContract.initMixinSchedulerTest.awaitTransactionSuccessAsync(
-                initCurrentEpochStartTimeInSeconds,
-            );
+            const tx = testContract
+                .initMixinSchedulerTest(initCurrentEpochStartTimeInSeconds)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(
                 new StakingRevertErrors.InitializationError(
                     StakingRevertErrors.InitializationErrorCodes.MixinSchedulerAlreadyInitialized,
@@ -70,9 +72,9 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
     describe('_goToNextEpoch', () => {
         it('Should succeed if epoch end time is strictly less than to block timestamp', async () => {
             const epochEndTimeDelta = new BigNumber(-10);
-            const txReceipt = await testContract.goToNextEpochTest.awaitTransactionSuccessAsync(epochEndTimeDelta);
-            const currentEpoch = await testContract.currentEpoch.callAsync();
-            const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds.callAsync();
+            const txReceipt = await testContract.goToNextEpochTest(epochEndTimeDelta).awaitTransactionSuccessAsync();
+            const currentEpoch = await testContract.currentEpoch().callAsync();
+            const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds().callAsync();
             verifyEventsFromLogs(
                 txReceipt.logs,
                 [
@@ -87,20 +89,20 @@ blockchainTests.resets('MixinScheduler unit tests', env => {
 
         it('Should succeed if epoch end time is equal to block timestamp', async () => {
             const epochEndTimeDelta = constants.ZERO_AMOUNT;
-            const txReceipt = await testContract.goToNextEpochTest.awaitTransactionSuccessAsync(epochEndTimeDelta);
+            const txReceipt = await testContract.goToNextEpochTest(epochEndTimeDelta).awaitTransactionSuccessAsync();
             // tslint:disable-next-line no-unnecessary-type-assertion
             const testLog: TestMixinSchedulerGoToNextEpochTestInfoEventArgs = (txReceipt.logs[0] as LogWithDecodedArgs<
                 TestMixinSchedulerGoToNextEpochTestInfoEventArgs
             >).args;
-            const currentEpoch = await testContract.currentEpoch.callAsync();
-            const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds.callAsync();
+            const currentEpoch = await testContract.currentEpoch().callAsync();
+            const currentEpochStartTimeInSeconds = await testContract.currentEpochStartTimeInSeconds().callAsync();
             expect(currentEpoch).to.bignumber.equal(testLog.oldEpoch.plus(1));
             expect(currentEpochStartTimeInSeconds).to.bignumber.equal(testLog.blockTimestamp);
         });
 
         it('Should revert if epoch end time is strictly greater than block timestamp', async () => {
             const epochEndTimeDelta = new BigNumber(10);
-            const tx = testContract.goToNextEpochTest.awaitTransactionSuccessAsync(epochEndTimeDelta);
+            const tx = testContract.goToNextEpochTest(epochEndTimeDelta).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(new StakingRevertErrors.BlockTimestampTooLowError());
         });
     });
