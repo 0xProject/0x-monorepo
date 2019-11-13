@@ -35,7 +35,14 @@ import { formatABIDataItem } from './utils';
 
 export { SubscriptionManager } from './subscription_manager';
 
-export * from './types';
+export {
+    ContractEvent,
+    SendTransactionOpts,
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SubscriptionErrors,
+} from './types';
 
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;

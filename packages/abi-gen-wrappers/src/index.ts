@@ -158,3 +158,11 @@ export {
 export { EthBalanceCheckerContract } from './generated-wrappers/eth_balance_checker';
 
 export * from '@0x/contract-addresses';
+export {
+    ContractEvent,
+    SendTransactionOpts,
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SubscriptionErrors,
+} from '@0x/base-contract';

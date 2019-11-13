@@ -46,6 +46,12 @@ export {
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,
+    ContractEvent,
+    SendTransactionOpts,
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SubscriptionErrors,
 } from '@0x/abi-gen-wrappers';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
@@ -83,7 +89,6 @@ export {
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
     EIP712DomainWithDefaultSchema,
-    AwaitTransactionSuccessOpts,
     SendTransactionOpts,
     EventCallback,
     IndexedFilterValues,
