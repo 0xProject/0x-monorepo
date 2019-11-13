@@ -8,7 +8,6 @@ import {
     hexRandom,
     Numberish,
     randomAddress,
-    transactionHelper,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber, RawRevertError } from '@0x/utils';
@@ -84,16 +83,14 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 .awaitTransactionSuccessAsync();
             // Create tokens and balances.
             if (_opts.fromTokenAddress === undefined) {
-                [_opts.fromTokenAddress] = await transactionHelper.getResultAndReceiptAsync<any, string>(
-                    testContract.createToken.bind(testContract),
-                    new BigNumber(_opts.fromTokenBalance),
-                );
+                const createTokenFn = testContract.createToken(new BigNumber(_opts.fromTokenBalance));
+                _opts.fromTokenAddress = await createTokenFn.callAsync();
+                await createTokenFn.awaitTransactionSuccessAsync();
             }
             if (_opts.toTokenAddress === undefined) {
-                [_opts.toTokenAddress] = await transactionHelper.getResultAndReceiptAsync<any, string>(
-                    testContract.createToken.bind(testContract),
-                    constants.ZERO_AMOUNT,
-                );
+                const createTokenFn = testContract.createToken(constants.ZERO_AMOUNT);
+                _opts.toTokenAddress = await createTokenFn.callAsync();
+                await createTokenFn.awaitTransactionSuccessAsync();
             }
             // Set the transfer behavior of `toTokenAddress`.
             await testContract
@@ -104,8 +101,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 )
                 .awaitTransactionSuccessAsync();
             // Call bridgeTransferFrom().
-            const [result, { logs }] = await transactionHelper.getResultAndReceiptAsync<any, string>(
-                testContract.bridgeTransferFrom.bind(testContract),
+            const bridgeTransferFromFn = testContract.bridgeTransferFrom(
                 // "to" token address
                 _opts.toTokenAddress,
                 // Random from address.
@@ -116,6 +112,8 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 // ABI-encode the "from" token address as the bridge data.
                 hexLeftPad(_opts.fromTokenAddress as string),
             );
+            const result = await bridgeTransferFromFn.callAsync();
+            const { logs } = await bridgeTransferFromFn.awaitTransactionSuccessAsync();
             return {
                 opts: _opts,
                 result,

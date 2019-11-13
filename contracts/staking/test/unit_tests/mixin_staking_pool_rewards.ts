@@ -8,7 +8,6 @@ import {
     hexRandom,
     Numberish,
     randomAddress,
-    transactionHelper,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
@@ -365,13 +364,14 @@ blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
             reward: Numberish,
             membersStake: Numberish,
         ): Promise<[[BigNumber, BigNumber], LogEntry[]]> {
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync<any, [BigNumber, BigNumber]>(
-                testContract.syncPoolRewards.bind(testContract),
+            const contractFn = testContract.syncPoolRewards(
                 POOL_ID,
                 new BigNumber(reward),
                 new BigNumber(membersStake),
             );
-            return [result, receipt.logs];
+            const result = await contractFn.callAsync();
+            const { logs } = await contractFn.awaitTransactionSuccessAsync();
+            return [result, logs];
         }
 
         it("transfers operator's portion of the reward to the operator", async () => {
