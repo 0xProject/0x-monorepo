@@ -131,9 +131,17 @@ export class FinalizerActor extends BaseActor {
             for (const delegator of delegators) {
                 let balance = new BigNumber(delegatorBalancesByPoolId[poolId][delegator] || 0);
                 if (delegator === operator) {
-                    balance = balance.plus(await computeRewardBalanceOfOperator.bind(this._stakingApiWrapper.stakingContract)(poolId).callAsync());
+                    balance = balance.plus(
+                        await computeRewardBalanceOfOperator
+                            .bind(this._stakingApiWrapper.stakingContract)(poolId)
+                            .callAsync(),
+                    );
                 } else {
-                    balance = balance.plus(await computeRewardBalanceOfDelegator.bind(this._stakingApiWrapper.stakingContract)(poolId, delegator).callAsync());
+                    balance = balance.plus(
+                        await computeRewardBalanceOfDelegator
+                            .bind(this._stakingApiWrapper.stakingContract)(poolId, delegator)
+                            .callAsync(),
+                    );
                 }
                 delegatorBalancesByPoolId[poolId][delegator] = balance;
             }
@@ -149,10 +157,11 @@ export class FinalizerActor extends BaseActor {
             const delegators = delegatorsByPoolId[poolId];
             delegatorBalancesByPoolId[poolId] = {};
             for (const delegator of delegators) {
-                delegatorBalancesByPoolId[poolId][delegator] = (await this._stakingApiWrapper.stakingContract.getStakeDelegatedToPoolByOwner(
-                    delegator,
-                    poolId,
-                ).callAsync()).currentEpochBalance;
+                delegatorBalancesByPoolId[poolId][
+                    delegator
+                ] = (await this._stakingApiWrapper.stakingContract
+                    .getStakeDelegatedToPoolByOwner(delegator, poolId)
+                    .callAsync()).currentEpochBalance;
             }
         }
         return delegatorBalancesByPoolId;
