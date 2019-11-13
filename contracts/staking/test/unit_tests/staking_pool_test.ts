@@ -170,6 +170,20 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
             expect(pool.operator).to.eq(operator);
             expect(pool.operatorShare).to.bignumber.eq(operatorShare);
         });
+        it('records pool details when operator share is 100%', async () => {
+            const operatorShare = constants.PPM_100_PERCENT;
+            await testContract.createStakingPool.awaitTransactionSuccessAsync(operatorShare, false, { from: operator });
+            const pool = await testContract.getStakingPool.callAsync(nextPoolId);
+            expect(pool.operator).to.eq(operator);
+            expect(pool.operatorShare).to.bignumber.eq(operatorShare);
+        });
+        it('records pool details when operator share is 0%', async () => {
+            const operatorShare = constants.ZERO_AMOUNT;
+            await testContract.createStakingPool.awaitTransactionSuccessAsync(operatorShare, false, { from: operator });
+            const pool = await testContract.getStakingPool.callAsync(nextPoolId);
+            expect(pool.operator).to.eq(operator);
+            expect(pool.operatorShare).to.bignumber.eq(operatorShare);
+        });
         it('returns the next pool ID', async () => {
             const poolId = await testContract.createStakingPool.callAsync(randomOperatorShare(), false, {
                 from: operator,
@@ -239,20 +253,6 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
             const expectedError = new StakingRevertErrors.OnlyCallableByPoolOperatorError(maker, poolId);
             return expect(tx).to.revertWith(expectedError);
         });
-        it('fails if operator share is equal to current', async () => {
-            const { poolId, operatorShare } = await createPoolAsync();
-            const tx = testContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(
-                poolId,
-                operatorShare,
-                { from: operator },
-            );
-            const expectedError = new StakingRevertErrors.OperatorShareError(
-                StakingRevertErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
-                poolId,
-                operatorShare,
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
         it('fails if operator share is greater than current', async () => {
             const { poolId, operatorShare } = await createPoolAsync();
             const tx = testContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(
@@ -290,6 +290,14 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
             );
             const pool = await testContract.getStakingPool.callAsync(poolId);
             expect(pool.operatorShare).to.bignumber.eq(operatorShare - 1);
+        });
+        it('does not modify operator share if equal to current', async () => {
+            const { poolId, operatorShare } = await createPoolAsync();
+            await testContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(poolId, operatorShare, {
+                from: operator,
+            });
+            const pool = await testContract.getStakingPool.callAsync(poolId);
+            expect(pool.operatorShare).to.bignumber.eq(operatorShare);
         });
         it('does not modify operator', async () => {
             const { poolId, operatorShare } = await createPoolAsync();
