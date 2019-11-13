@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 import 'mocha';
 
 import { ContractAddresses, ContractWrappers } from '../src';
-import { getAbiEncodedTransactionData } from '../src/utils/getAbiEncodedTransactionData';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -107,14 +106,9 @@ describe('ABI Decoding Calldata', () => {
         const orderFactoryRight = new OrderFactory(privateKeyRight, orderRight);
         signedOrderRight = await orderFactoryRight.newSignedOrderAsync(domainInfo);
         // Encode match orders transaction
-        matchOrdersTxData = getAbiEncodedTransactionData(
-            contractWrappers.exchange,
-            'matchOrders',
-            signedOrderLeft,
-            signedOrderRight,
-            signedOrderLeft.signature,
-            signedOrderRight.signature,
-        );
+        matchOrdersTxData = contractWrappers.exchange
+            .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+            .getABIEncodedTransactionData();
     });
 
     describe('decode', () => {
