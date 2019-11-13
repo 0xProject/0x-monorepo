@@ -145,7 +145,7 @@ describe('swapQuoteConsumerUtils', () => {
         });
         it('should return exchange consumer if takerAsset is wEth and taker has enough weth', async () => {
             const etherInWei = new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI);
-            await contractWrappers.weth9.deposit({ value: etherInWei, from: takerAddress }).sendTransactionAsync();
+            await contractWrappers.weth9.deposit().sendTransactionAsync({ value: etherInWei, from: takerAddress });
             const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 forwarderSwapQuote,
                 { takerAddress },
@@ -154,7 +154,7 @@ describe('swapQuoteConsumerUtils', () => {
         });
         it('should return forwarder consumer if takerAsset is wEth and takerAddress has no available balance in either weth or eth (defaulting behavior)', async () => {
             const etherInWei = new BigNumber(50).multipliedBy(ONE_ETH_IN_WEI);
-            await contractWrappers.weth9.deposit({ value: etherInWei, from: takerAddress }).sendTransactionAsync();
+            await contractWrappers.weth9.deposit().sendTransactionAsync({ value: etherInWei, from: takerAddress });
             const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 largeForwarderSwapQuote,
                 { takerAddress },
