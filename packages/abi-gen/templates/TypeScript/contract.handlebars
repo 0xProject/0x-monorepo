@@ -65,7 +65,7 @@ export class {{contractName}}Contract extends BaseContract {
     {{else~}}
     public static deployedBytecode = '{{this.deployedBytecode}}';
     {{/ifEquals~}}
-    private _methodABIIndex: { [name:string]: number } = {};
+    private readonly _methodABIIndex: { [name:string]: number } = {};
     {{#if events~}}
     private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
     {{/if~}}
@@ -167,7 +167,7 @@ export class {{contractName}}Contract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = {{contractName}}Contract.ABI()[index] as MethodAbi;
+        const methodAbi = {{contractName}}Contract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }

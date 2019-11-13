@@ -169,7 +169,7 @@ blockchainTests.resets('StakingProxy unit tests', env => {
             const calls = [testContract.echo(testString).getABIEncodedTransactionData()];
             const rawResults = await testProxyContract.batchExecute(calls).callAsync();
             expect(rawResults.length).to.equal(1);
-            const returnValues = [testContract.getABIDecodedReturnData('echo', rawResults[0])];
+            const returnValues = [testContract.getABIDecodedReturnData<{}>('echo', rawResults[0])];
             expect(returnValues[0]).to.equal(testString);
         });
 

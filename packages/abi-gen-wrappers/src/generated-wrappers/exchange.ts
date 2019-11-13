@@ -120,7 +120,7 @@ export class ExchangeContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    private _methodABIIndex: { [name: string]: number } = {};
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<ExchangeEventArgs, ExchangeEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -3078,7 +3078,7 @@ export class ExchangeContract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = ExchangeContract.ABI()[index] as MethodAbi;
+        const methodAbi = ExchangeContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }

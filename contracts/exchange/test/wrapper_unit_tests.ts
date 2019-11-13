@@ -1052,7 +1052,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         });
 
         describe('marketBuyOrdersFillOrKill', () => {
-            defineCommonMarketBuyOrdersTests(() => testContract.marketBuyOrdersFillOrKill, simulateMarketBuyOrdersNoThrow);
+            defineCommonMarketBuyOrdersTests(
+                () => testContract.marketBuyOrdersFillOrKill,
+                simulateMarketBuyOrdersNoThrow,
+            );
 
             it('reverts when filled < `makerAssetFillAmount`', async () => {
                 const COUNT = 4;

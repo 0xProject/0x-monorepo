@@ -53,7 +53,7 @@ export class CoordinatorRegistryContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    private _methodABIIndex: { [name: string]: number } = {};
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -194,7 +194,7 @@ export class CoordinatorRegistryContract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = CoordinatorRegistryContract.ABI()[index] as MethodAbi;
+        const methodAbi = CoordinatorRegistryContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }

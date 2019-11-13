@@ -61,7 +61,7 @@ export class ZRXTokenContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    private _methodABIIndex: { [name: string]: number } = {};
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<ZRXTokenEventArgs, ZRXTokenEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -352,7 +352,7 @@ export class ZRXTokenContract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = ZRXTokenContract.ABI()[index] as MethodAbi;
+        const methodAbi = ZRXTokenContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }

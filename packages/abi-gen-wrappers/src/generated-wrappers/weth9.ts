@@ -77,7 +77,7 @@ export class WETH9Contract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    private _methodABIIndex: { [name: string]: number } = {};
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -437,7 +437,7 @@ export class WETH9Contract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = WETH9Contract.ABI()[index] as MethodAbi;
+        const methodAbi = WETH9Contract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }

@@ -161,4 +161,4 @@ export {
 } from '@0x/types';
 
 export { AbiDecoder, DecodedCalldata } from '@0x/utils';
-export { AwaitTransactionSuccessOpts, SendTransactionOpts } from '@0x/base-contract';
+export { AwaitTransactionSuccessOpts, SendTransactionOpts, ContractFunctionObj, ContractTxFunctionObj } from '@0x/base-contract';

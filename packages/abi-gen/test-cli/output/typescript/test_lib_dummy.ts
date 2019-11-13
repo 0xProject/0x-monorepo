@@ -41,7 +41,7 @@ export class TestLibDummyContract extends BaseContract {
      */
     public static deployedBytecode =
         '0x6080604052348015600f57600080fd5b506004361060325760003560e01c806322935e921460375780632b82fdf0146063575b600080fd5b605160048036036020811015604b57600080fd5b5035607d565b60408051918252519081900360200190f35b605160048036036020811015607757600080fd5b5035608c565b60006086826095565b92915050565b6000608682609c565b6104d20190565b6001019056fea265627a7a72315820863e53f0da474a1275d583d88852313fe053941e79bddd5279abd812b31e020c64736f6c634300050c0032';
-    private _methodABIIndex: { [name: string]: number } = {};
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -155,7 +155,7 @@ export class TestLibDummyContract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = TestLibDummyContract.ABI()[index] as MethodAbi;
+        const methodAbi = TestLibDummyContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }

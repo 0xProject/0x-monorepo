@@ -1,10 +1,14 @@
 [
     {
-        "version": "3.2.0-beta.1",
+        "version": "4.0.0-beta.0",
         "changes": [
             {
                 "note": "OrderFactory default order expiration time increased from ten minutes to fifteen minutes ",
                 "pr": 2304
+            },
+            {
+                "note": "Remove TransactionHelper and MutatorContractFunction",
+                "pr": 2325
             }
         ]
     },
