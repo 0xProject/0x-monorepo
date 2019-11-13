@@ -414,14 +414,19 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset and pay a WETH fee', async () => {
             const erc721orderWithWethFee = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: deployment.assetDataEncoder.ERC721Token.getABIEncodedTransactionData(erc721Token.address, nftId),
+                makerAssetData: deployment.assetDataEncoder.ERC721Token.getABIEncodedTransactionData(
+                    erc721Token.address,
+                    nftId,
+                ),
                 takerFee: toBaseUnitAmount(1),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721orderWithWethFee], 1);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(anotherErc20Token.address);
+            const takerFeeAssetData = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
+                anotherErc20Token.address,
+            );
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
