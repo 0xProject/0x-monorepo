@@ -5,15 +5,16 @@ import { BigNumber } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { ZeroExGovernorWrapper } from './utils/zero_ex_governor_wrapper';
+
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     ContractCallReceiverContract,
     ContractCallReceiverEventArgs,
     TestZeroExGovernorContract,
     ZeroExGovernorExecutionEventArgs,
     ZeroExGovernorFunctionCallTimeLockRegistrationEventArgs,
-    ZeroExGovernorWrapper,
-} from '../src';
+} from './wrappers';
 
 // tslint:disable: no-unnecessary-type-assertion
 blockchainTests.resets('ZeroExGovernor', env => {

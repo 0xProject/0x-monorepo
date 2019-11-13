@@ -3,6 +3,10 @@
         "version": "3.3.0-beta.2",
         "changes": [
             {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
                 "note": "Introduced new exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors",
                 "pr": 2321
             }

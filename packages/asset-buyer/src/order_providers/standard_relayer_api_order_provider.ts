@@ -15,7 +15,6 @@ import { assert } from '../utils/assert';
 
 export class StandardRelayerAPIOrderProvider implements OrderProvider {
     public readonly apiUrl: string;
-    public readonly chainId: number;
     private readonly _sraClient: HttpClient;
     /**
      * Given an array of APIOrder objects from a standard relayer api, return an array
@@ -49,14 +48,11 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
     /**
      * Instantiates a new StandardRelayerAPIOrderProvider instance
      * @param   apiUrl      The standard relayer API base HTTP url you would like to source orders from.
-     * @param   chainId     The ethereum chain id.
      * @return  An instance of StandardRelayerAPIOrderProvider
      */
-    constructor(apiUrl: string, chainId: number) {
+    constructor(apiUrl: string) {
         assert.isWebUri('apiUrl', apiUrl);
-        assert.isNumber('chainId', chainId);
         this.apiUrl = apiUrl;
-        this.chainId = chainId;
         this._sraClient = new HttpClient(apiUrl);
     }
     /**
@@ -68,10 +64,9 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         assert.isValidOrderProviderRequest('orderProviderRequest', orderProviderRequest);
         const { makerAssetData, takerAssetData } = orderProviderRequest;
         const orderbookRequest = { baseAssetData: makerAssetData, quoteAssetData: takerAssetData };
-        const requestOpts = { chainId: this.chainId };
         let orderbook: OrderbookResponse;
         try {
-            orderbook = await this._sraClient.getOrderbookAsync(orderbookRequest, requestOpts);
+            orderbook = await this._sraClient.getOrderbookAsync(orderbookRequest);
         } catch (err) {
             throw new Error(AssetBuyerError.StandardRelayerApiError);
         }
@@ -91,7 +86,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
     public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
         // Return a maximum of 1000 asset datas
         const maxPerPage = 1000;
-        const requestOpts = { chainId: this.chainId, perPage: maxPerPage };
+        const requestOpts = { perPage: maxPerPage };
         const assetPairsRequest = { assetDataA: takerAssetData };
         const fullRequest = {
             ...requestOpts,

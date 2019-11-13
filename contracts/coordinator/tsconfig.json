@@ -5,18 +5,24 @@
     "files": [
         "generated-artifacts/Coordinator.json",
         "generated-artifacts/CoordinatorRegistry.json",
-        "generated-artifacts/ICoordinatorApprovalVerifier.json",
-        "generated-artifacts/ICoordinatorCore.json",
-        "generated-artifacts/ICoordinatorRegistryCore.json",
-        "generated-artifacts/ICoordinatorSignatureValidator.json",
         "generated-artifacts/LibConstants.json",
         "generated-artifacts/LibCoordinatorApproval.json",
         "generated-artifacts/LibCoordinatorRichErrors.json",
         "generated-artifacts/LibEIP712CoordinatorDomain.json",
-        "generated-artifacts/MixinCoordinatorApprovalVerifier.json",
-        "generated-artifacts/MixinCoordinatorCore.json",
-        "generated-artifacts/MixinCoordinatorRegistryCore.json",
-        "generated-artifacts/MixinSignatureValidator.json"
+        "test/generated-artifacts/Coordinator.json",
+        "test/generated-artifacts/CoordinatorRegistry.json",
+        "test/generated-artifacts/ICoordinatorApprovalVerifier.json",
+        "test/generated-artifacts/ICoordinatorCore.json",
+        "test/generated-artifacts/ICoordinatorRegistryCore.json",
+        "test/generated-artifacts/ICoordinatorSignatureValidator.json",
+        "test/generated-artifacts/LibConstants.json",
+        "test/generated-artifacts/LibCoordinatorApproval.json",
+        "test/generated-artifacts/LibCoordinatorRichErrors.json",
+        "test/generated-artifacts/LibEIP712CoordinatorDomain.json",
+        "test/generated-artifacts/MixinCoordinatorApprovalVerifier.json",
+        "test/generated-artifacts/MixinCoordinatorCore.json",
+        "test/generated-artifacts/MixinCoordinatorRegistryCore.json",
+        "test/generated-artifacts/MixinSignatureValidator.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

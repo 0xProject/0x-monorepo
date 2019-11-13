@@ -3,9 +3,11 @@ import { BigNumber } from '@0x/utils';
 import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 
-import { artifacts, FixedMathRevertErrors, TestLibFixedMathContract } from '../../src';
-
+import { FixedMathRevertErrors } from '../../src';
 import { assertRoughlyEquals, fromFixed, toDecimal, toFixed } from '../utils/number_utils';
+
+import { artifacts } from '../artifacts';
+import { TestLibFixedMathContract } from '../wrappers';
 
 blockchainTests('LibFixedMath unit tests', env => {
     let testContract: TestLibFixedMathContract;

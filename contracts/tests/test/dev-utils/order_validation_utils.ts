@@ -8,7 +8,7 @@ import {
 } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -93,10 +93,15 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             txDefaults,
             artifacts,
         );
-        const exchangeWrapper = new ExchangeWrapper(exchange);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(multiAssetProxy.address, owner);
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+            from: owner,
+        });
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
         await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
 

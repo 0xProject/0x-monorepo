@@ -2,18 +2,17 @@ import { CoordinatorContract, CoordinatorRevertErrors, SignedCoordinatorApproval
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     BlockchainBalanceStore,
-    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
     exchangeDataEncoder,
     ExchangeEvents,
     ExchangeFillEventArgs,
-    ExchangeFunctionName,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import {
     blockchainTests,
     constants,
+    ExchangeFunctionName,
     expect,
     hexConcat,
     hexSlice,
@@ -27,7 +26,7 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 import { deployCoordinatorAsync } from './deploy_coordinator';
 
@@ -175,7 +174,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
         let transaction: SignedZeroExTransaction;
         let approval: SignedCoordinatorApproval;
 
-        for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
+        for (const fnName of constants.SINGLE_FILL_FN_NAMES) {
             before(async () => {
                 order = await maker.signOrderAsync();
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
@@ -322,7 +321,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
         let transaction: SignedZeroExTransaction;
         let approval: SignedCoordinatorApproval;
 
-        for (const fnName of [...exchangeConstants.MARKET_FILL_FN_NAMES, ...exchangeConstants.BATCH_FILL_FN_NAMES]) {
+        for (const fnName of [...constants.MARKET_FILL_FN_NAMES, ...constants.BATCH_FILL_FN_NAMES]) {
             before(async () => {
                 orders = [await maker.signOrderAsync(), await maker.signOrderAsync()];
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);

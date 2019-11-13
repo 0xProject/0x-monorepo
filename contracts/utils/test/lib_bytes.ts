@@ -4,7 +4,10 @@ import BN = require('bn.js');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, LibBytesRevertErrors, TestLibBytesContract } from '../src';
+import { LibBytesRevertErrors } from '../src';
+
+import { artifacts } from './artifacts';
+import { TestLibBytesContract } from './wrappers';
 
 // BUG: Ideally we would use fromHex(memory).toString('hex')
 // https://github.com/Microsoft/TypeScript/issues/23155

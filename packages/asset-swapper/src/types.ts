@@ -5,12 +5,10 @@ import { MethodAbi } from 'ethereum-types';
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
- * chainId: The chainId that the desired orders should be for.
  */
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    chainId: number;
 }
 
 /**

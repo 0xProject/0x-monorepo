@@ -1,10 +1,13 @@
 import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-import { StoredBalance } from '../utils/types';
+import { constants } from '../../src/constants';
+import { StoredBalance } from '../../src/types';
 
-import { artifacts, StakingRevertErrors, TestMixinStakeStorageContract } from '../../src';
-import { constants } from '../utils/constants';
+import { StakingRevertErrors } from '../../src';
+
+import { artifacts } from '../artifacts';
+import { TestMixinStakeStorageContract } from '../wrappers';
 
 blockchainTests.resets('MixinStakeStorage unit tests', env => {
     let testContract: TestMixinStakeStorageContract;

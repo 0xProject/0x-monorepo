@@ -26,8 +26,6 @@ export interface SRAWebsocketOrderProviderOpts {
     httpEndpoint: string;
     // The websocket endpoint to the SRA service, e.g wss://ws.sra.0x.org/
     websocketEndpoint: string;
-    // The chain Id
-    chainId?: number;
 }
 
 /**

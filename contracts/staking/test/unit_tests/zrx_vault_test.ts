@@ -13,18 +13,18 @@ import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { constants as stakingConstants } from '../utils/constants';
+import { StakingRevertErrors } from '../../src';
+import { constants as stakingConstants } from '../../src/constants';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
-    StakingRevertErrors,
     ZrxVaultContract,
     ZrxVaultDepositEventArgs,
     ZrxVaultInCatastrophicFailureModeEventArgs,
     ZrxVaultStakingProxySetEventArgs,
     ZrxVaultWithdrawEventArgs,
     ZrxVaultZrxProxySetEventArgs,
-} from '../../src';
+} from '../wrappers';
 
 blockchainTests.resets('ZrxVault unit tests', env => {
     let accounts: string[];

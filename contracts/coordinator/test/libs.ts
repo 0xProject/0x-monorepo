@@ -1,7 +1,11 @@
 import { blockchainTests, constants, expect, randomAddress, transactionHashUtils } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-import { artifacts, CoordinatorContract, hashUtils } from '../src';
+import { hashUtils } from '../src/hash_utils';
+
+import { artifacts } from './artifacts';
+
+import { CoordinatorContract } from './wrappers';
 
 blockchainTests.resets('Libs tests', env => {
     let coordinatorContract: CoordinatorContract;

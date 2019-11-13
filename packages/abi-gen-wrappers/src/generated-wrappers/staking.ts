@@ -4905,8 +4905,8 @@ export class StakingContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        wethAddress_: string,
-        zrxVaultAddress_: string,
+        wethAddress: string,
+        zrxVaultAddress: string,
     ): Promise<StakingContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -4931,8 +4931,8 @@ export class StakingContract extends BaseContract {
             provider,
             txDefaults,
             logDecodeDependenciesAbiOnly,
-            wethAddress_,
-            zrxVaultAddress_,
+            wethAddress,
+            zrxVaultAddress,
         );
     }
     public static async deployAsync(
@@ -4941,8 +4941,8 @@ export class StakingContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-        wethAddress_: string,
-        zrxVaultAddress_: string,
+        wethAddress: string,
+        zrxVaultAddress: string,
     ): Promise<StakingContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -4952,14 +4952,14 @@ export class StakingContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [wethAddress_, zrxVaultAddress_] = BaseContract._formatABIDataItemList(
+        [wethAddress, zrxVaultAddress] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [wethAddress_, zrxVaultAddress_],
+            [wethAddress, zrxVaultAddress],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [wethAddress_, zrxVaultAddress_]);
+        const txData = deployInfo.encode(bytecode, [wethAddress, zrxVaultAddress]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             { data: txData },
@@ -4976,7 +4976,7 @@ export class StakingContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [wethAddress_, zrxVaultAddress_];
+        contractInstance.constructorArgs = [wethAddress, zrxVaultAddress];
         return contractInstance;
     }
 
@@ -4988,11 +4988,11 @@ export class StakingContract extends BaseContract {
             {
                 inputs: [
                     {
-                        name: 'wethAddress_',
+                        name: 'wethAddress',
                         type: 'address',
                     },
                     {
-                        name: 'zrxVaultAddress_',
+                        name: 'zrxVaultAddress',
                         type: 'address',
                     },
                 ],

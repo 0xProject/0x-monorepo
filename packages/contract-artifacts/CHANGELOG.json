@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0-beta.3",
+        "changes": [
+            {
+                "note": "Replace Staking artifact with TestStaking",
+                "pr": 2322
+            }
+        ]
+    },
+    {
         "version": "2.3.0-beta.2",
         "changes": [
             {

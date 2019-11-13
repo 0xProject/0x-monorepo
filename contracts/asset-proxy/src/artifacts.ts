@@ -12,44 +12,20 @@ import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
 import * as Eth2DaiBridge from '../generated-artifacts/Eth2DaiBridge.json';
 import * as IAssetData from '../generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
-import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispatcher.json';
-import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
-import * as IERC20Bridge from '../generated-artifacts/IERC20Bridge.json';
-import * as IEth2Dai from '../generated-artifacts/IEth2Dai.json';
-import * as IUniswapExchange from '../generated-artifacts/IUniswapExchange.json';
-import * as IUniswapExchangeFactory from '../generated-artifacts/IUniswapExchangeFactory.json';
-import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
-import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
-import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../generated-artifacts/StaticCallProxy.json';
-import * as TestERC20Bridge from '../generated-artifacts/TestERC20Bridge.json';
-import * as TestEth2DaiBridge from '../generated-artifacts/TestEth2DaiBridge.json';
 import * as TestStaticCallTarget from '../generated-artifacts/TestStaticCallTarget.json';
-import * as TestUniswapBridge from '../generated-artifacts/TestUniswapBridge.json';
 import * as UniswapBridge from '../generated-artifacts/UniswapBridge.json';
 export const artifacts = {
-    MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
-    MixinAuthorizable: MixinAuthorizable as ContractArtifact,
-    Ownable: Ownable as ContractArtifact,
     ERC1155Proxy: ERC1155Proxy as ContractArtifact,
-    ERC20BridgeProxy: ERC20BridgeProxy as ContractArtifact,
     ERC20Proxy: ERC20Proxy as ContractArtifact,
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     StaticCallProxy: StaticCallProxy as ContractArtifact,
+    ERC20BridgeProxy: ERC20BridgeProxy as ContractArtifact,
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
-    UniswapBridge: UniswapBridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
-    IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
-    IAuthorizable: IAuthorizable as ContractArtifact,
-    IERC20Bridge: IERC20Bridge as ContractArtifact,
-    IEth2Dai: IEth2Dai as ContractArtifact,
-    IUniswapExchange: IUniswapExchange as ContractArtifact,
-    IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
-    TestERC20Bridge: TestERC20Bridge as ContractArtifact,
-    TestEth2DaiBridge: TestEth2DaiBridge as ContractArtifact,
+    UniswapBridge: UniswapBridge as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
-    TestUniswapBridge: TestUniswapBridge as ContractArtifact,
 };

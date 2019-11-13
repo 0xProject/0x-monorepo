@@ -6,6 +6,7 @@ import {
     blockchainTests,
     constants,
     describe,
+    ExchangeFunctionName,
     expect,
     getLatestBlockTimestampAsync,
     OrderFactory,
@@ -19,20 +20,19 @@ import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { ExchangeRevertErrors } from '../src';
+import { exchangeDataEncoder } from '../src/exchange_data_encoder';
+
+import { artifacts as localArtifacts } from './artifacts';
+import { ExchangeWrapper } from './utils/exchange_wrapper';
 import {
-    artifacts as localArtifacts,
-    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
     ExchangeContract,
-    exchangeDataEncoder,
     ExchangeFillEventArgs,
-    ExchangeFunctionName,
-    ExchangeRevertErrors,
     ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeTransactionExecutionEventArgs,
-    ExchangeWrapper,
-} from '../src/';
+} from './wrappers';
 
 const artifacts = { ...erc20Artifacts, ...localArtifacts };
 
@@ -212,9 +212,9 @@ blockchainTests.resets('Exchange transactions', env => {
         });
         describe('fill methods', () => {
             for (const fnName of [
-                ...exchangeConstants.SINGLE_FILL_FN_NAMES,
-                ...exchangeConstants.BATCH_FILL_FN_NAMES,
-                ...exchangeConstants.MARKET_FILL_FN_NAMES,
+                ...constants.SINGLE_FILL_FN_NAMES,
+                ...constants.BATCH_FILL_FN_NAMES,
+                ...constants.MARKET_FILL_FN_NAMES,
             ]) {
                 it(`${fnName} should revert if signature is invalid and not called by signer`, async () => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
@@ -303,7 +303,7 @@ blockchainTests.resets('Exchange transactions', env => {
 
                     const decodedReturnData = abiEncoder.decodeReturnValues(returnData);
                     const fillResults =
-                        exchangeConstants.BATCH_FILL_FN_NAMES.indexOf(fnName) !== -1
+                        constants.BATCH_FILL_FN_NAMES.indexOf(fnName) !== -1
                             ? decodedReturnData.fillResults[0]
                             : decodedReturnData.fillResults;
 

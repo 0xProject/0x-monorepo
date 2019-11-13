@@ -16,13 +16,14 @@ import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { ExchangeRevertErrors } from '../src';
+
+import { artifacts } from './artifacts';
 import {
-    artifacts,
-    ExchangeRevertErrors,
     TestWrapperFunctionsCancelOrderCalledEventArgs as CancelOrderCalledEventArgs,
     TestWrapperFunctionsContract,
     TestWrapperFunctionsFillOrderCalledEventArgs as FillOrderCalledEventArgs,
-} from '../src';
+} from './wrappers';
 
 blockchainTests('Exchange wrapper functions unit tests.', env => {
     const CHAIN_ID = 0x74657374;

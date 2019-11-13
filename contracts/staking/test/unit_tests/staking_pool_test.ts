@@ -12,13 +12,14 @@ import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { StakingRevertErrors } from '../../src';
+
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
-    StakingRevertErrors,
     TestMixinStakingPoolContract,
     TestMixinStakingPoolEvents,
     TestMixinStakingPoolStakingPoolCreatedEventArgs as StakingPoolCreated,
-} from '../../src';
+} from '../wrappers';
 
 blockchainTests.resets('MixinStakingPool unit tests', env => {
     let testContract: TestMixinStakingPoolContract;

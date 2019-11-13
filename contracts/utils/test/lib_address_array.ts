@@ -4,7 +4,10 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, LibAddressArrayRevertErrors, TestLibAddressArrayContract } from '../src';
+import { LibAddressArrayRevertErrors } from '../src';
+
+import { artifacts } from './artifacts';
+import { TestLibAddressArrayContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

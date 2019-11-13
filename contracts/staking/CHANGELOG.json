@@ -3,6 +3,10 @@
         "version": "1.1.0-beta.2",
         "changes": [
             {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
                 "note": "Introduce new exports FixedMathRevertErrors and StakingRevertErrors",
                 "pr": 2321
             }

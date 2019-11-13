@@ -4,10 +4,11 @@ import * as _ from 'lodash';
 
 import { StakingRevertErrors } from '../src';
 
+import { constants as stakingConstants } from '../src/constants';
+
 import { MakerActor } from './actors/maker_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count

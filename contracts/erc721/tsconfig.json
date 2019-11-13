@@ -7,9 +7,13 @@
         "generated-artifacts/DummyERC721Token.json",
         "generated-artifacts/ERC721Token.json",
         "generated-artifacts/IERC721Receiver.json",
-        "generated-artifacts/IERC721Token.json",
-        "generated-artifacts/InvalidERC721Receiver.json",
-        "generated-artifacts/MintableERC721Token.json"
+        "test/generated-artifacts/DummyERC721Receiver.json",
+        "test/generated-artifacts/DummyERC721Token.json",
+        "test/generated-artifacts/ERC721Token.json",
+        "test/generated-artifacts/IERC721Receiver.json",
+        "test/generated-artifacts/IERC721Token.json",
+        "test/generated-artifacts/InvalidERC721Receiver.json",
+        "test/generated-artifacts/MintableERC721Token.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

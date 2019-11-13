@@ -3,7 +3,10 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, ReentrancyGuardRevertErrors, TestReentrancyGuardContract } from '../src';
+import { ReentrancyGuardRevertErrors } from '../src';
+
+import { artifacts } from './artifacts';
+import { TestReentrancyGuardContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

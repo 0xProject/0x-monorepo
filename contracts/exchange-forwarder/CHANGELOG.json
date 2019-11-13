@@ -3,6 +3,10 @@
         "version": "3.1.0-beta.2",
         "changes": [
             {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
                 "note": "Introduced new export ForwarderRevertErrors",
                 "pr": 2321
             }

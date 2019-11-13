@@ -5,10 +5,11 @@ import * as _ from 'lodash';
 
 import { StakingRevertErrors } from '../src';
 
+import { StakeInfo, StakeStatus } from '../src/types';
+
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { toBaseUnitAmount } from './utils/number_utils';
-import { StakeInfo, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Stake Statuses', env => {

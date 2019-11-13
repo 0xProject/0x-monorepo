@@ -4,10 +4,11 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, IStakingEventsParamsSetEventArgs, TestMixinParamsContract } from '../../src/';
+import { artifacts } from '../artifacts';
+import { IStakingEventsParamsSetEventArgs, TestMixinParamsContract } from '../wrappers';
 
-import { constants as stakingConstants } from '../utils/constants';
-import { StakingParams } from '../utils/types';
+import { constants as stakingConstants } from '../../src/constants';
+import { StakingParams } from '../../src/types';
 
 blockchainTests('Configurable Parameters unit tests', env => {
     let testContract: TestMixinParamsContract;

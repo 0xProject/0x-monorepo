@@ -1,4 +1,4 @@
-import { IExchangeContract } from '@0x/contracts-exchange';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
@@ -32,7 +32,7 @@ const signature =
 
 describe('LibTransactionDecoder', () => {
     let libTxDecoder: LibTransactionDecoderContract;
-    const exchangeInterface = new IExchangeContract(constants.NULL_ADDRESS, provider, txDefaults);
+    const exchangeInterface = new ExchangeContract(constants.NULL_ADDRESS, provider, txDefaults);
     before(async () => {
         await blockchainLifecycle.startAsync();
         libTxDecoder = await LibTransactionDecoderContract.deployFrom0xArtifactAsync(

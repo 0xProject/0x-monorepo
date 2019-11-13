@@ -18,7 +18,7 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
      * @param orderStore The `OrderStore` where orders are added and removed from
      */
     constructor(opts: SRAPollingOrderProviderOpts, orderStore: OrderStore) {
-        super(orderStore, opts.httpEndpoint, opts.perPage, opts.chainId);
+        super(orderStore, opts.httpEndpoint, opts.perPage);
         assert.isNumber('pollingIntervalMs', opts.pollingIntervalMs);
         this._pollingIntervalMs = opts.pollingIntervalMs;
     }

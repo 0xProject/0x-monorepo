@@ -36,7 +36,6 @@ import * as relayerApiOrdersChannelSubscribeSchema from '../schemas/relayer_api_
 import * as relayerApiOrdersChannelUpdateSchema from '../schemas/relayer_api_orders_channel_update_response_schema.json';
 import * as relayerApiOrdersResponseSchema from '../schemas/relayer_api_orders_response_schema.json';
 import * as relayerApiOrdersSchema from '../schemas/relayer_api_orders_schema.json';
-import * as requestOptsSchema from '../schemas/request_opts_schema.json';
 import * as signedOrderSchema from '../schemas/signed_order_schema.json';
 import * as signedOrdersSchema from '../schemas/signed_orders_schema.json';
 import * as tokenSchema from '../schemas/token_schema.json';
@@ -66,7 +65,6 @@ export const schemas = {
     blockRangeSchema,
     tokenSchema,
     jsNumber,
-    requestOptsSchema,
     pagedRequestOptsSchema,
     ordersRequestOptsSchema,
     orderBookRequestSchema,

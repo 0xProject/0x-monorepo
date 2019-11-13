@@ -3,16 +3,16 @@ import { AuthorizableRevertErrors } from '@0x/contracts-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     StakingProxyEvents,
-    StakingRevertErrors,
     TestProxyDestinationContract,
     TestProxyDestinationEvents,
     TestStakingProxyUnitContract,
-} from '../../src';
+} from '../wrappers';
 
-import { constants as stakingConstants } from '../utils/constants';
+import { StakingRevertErrors } from '../../src';
+import { constants as stakingConstants } from '../../src/constants';
 
 blockchainTests.resets('StakingProxy unit tests', env => {
     const testString = 'Hello, World!';

@@ -7,7 +7,7 @@ import { BigNumber, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 // Necessary bookkeeping to validate Forwarder results
 interface ForwarderFillState {

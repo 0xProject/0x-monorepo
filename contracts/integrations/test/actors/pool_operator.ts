@@ -1,13 +1,18 @@
+import { constants, StakingPoolById } from '@0x/contracts-staking';
+import { getRandomInteger } from '@0x/contracts-test-utils';
+import '@azure/core-asynciterator-polyfill';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
+
+import { AssertionResult } from '../../src/function_assertions';
+import {
+    validCreateStakingPoolAssertion,
+    validDecreaseStakingPoolOperatorShareAssertion,
+} from '../function-assertions';
 
 import { Actor, Constructor } from './base';
 
-interface OperatorShareByPoolId {
-    [poolId: string]: number;
-}
-
 export interface PoolOperatorInterface {
-    operatorShares: OperatorShareByPoolId;
     createStakingPoolAsync: (operatorShare: number, addOperatorAsMaker?: boolean) => Promise<string>;
     decreaseOperatorShareAsync: (
         poolId: string,
@@ -21,7 +26,6 @@ export interface PoolOperatorInterface {
  */
 export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<PoolOperatorInterface> {
     return class extends Base {
-        public readonly operatorShares: OperatorShareByPoolId = {};
         public readonly actor: Actor;
 
         /**
@@ -33,6 +37,13 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+
+            // Register this mixin's assertion generators
+            this.actor.simulationActions = {
+                ...this.actor.simulationActions,
+                validCreateStakingPool: this._validCreateStakingPool(),
+                validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare(),
+            };
         }
 
         /**
@@ -51,7 +62,6 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
 
             const createStakingPoolLog = txReceipt.logs[0];
             const poolId = (createStakingPoolLog as any).args.poolId;
-            this.operatorShares[poolId] = operatorShare;
             return poolId;
         }
 
@@ -63,12 +73,39 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             newOperatorShare: number,
         ): Promise<TransactionReceiptWithDecodedLogs> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
-            this.operatorShares[poolId] = newOperatorShare;
             return stakingContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(
                 poolId,
                 newOperatorShare,
                 { from: this.actor.address },
             );
+        }
+
+        private _getOperatorPoolIds(stakingPools: StakingPoolById): string[] {
+            const operatorPools = _.pickBy(stakingPools, pool => pool.operator === this.actor.address);
+            return Object.keys(operatorPools);
+        }
+
+        private async *_validCreateStakingPool(): AsyncIterableIterator<AssertionResult> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, stakingPools);
+            while (true) {
+                const operatorShare = getRandomInteger(0, constants.PPM);
+                yield assertion.executeAsync(operatorShare, false, { from: this.actor.address });
+            }
+        }
+
+        private async *_validDecreaseStakingPoolOperatorShare(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validDecreaseStakingPoolOperatorShareAssertion(this.actor.deployment, stakingPools);
+            while (true) {
+                const poolId = _.sample(this._getOperatorPoolIds(stakingPools));
+                if (poolId === undefined) {
+                    yield undefined;
+                } else {
+                    const operatorShare = getRandomInteger(0, stakingPools[poolId].operatorShare);
+                    yield assertion.executeAsync(poolId, operatorShare, { from: this.actor.address });
+                }
+            }
         }
     };
 }

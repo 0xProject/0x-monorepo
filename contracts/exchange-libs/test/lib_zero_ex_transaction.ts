@@ -12,7 +12,9 @@ import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibZeroExTransactionContract } from '../src';
+import { TestLibZeroExTransactionContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 blockchainTests('LibZeroExTransaction', env => {
     let libZeroExTransactionContract: TestLibZeroExTransactionContract;

@@ -4,7 +4,10 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, AuthorizableContract, AuthorizableRevertErrors, OwnableRevertErrors } from '../src';
+import { AuthorizableRevertErrors, OwnableRevertErrors } from '../src';
+
+import { artifacts } from './artifacts';
+import { AuthorizableContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

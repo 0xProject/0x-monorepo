@@ -11,19 +11,20 @@ import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { StakingRevertErrors } from '../../src';
+import { constants as stakingConstants } from '../../src/constants';
+import { artifacts } from '../artifacts';
+import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
+
 import {
-    artifacts,
     IStakingEventsEpochEndedEventArgs,
     IStakingEventsEpochFinalizedEventArgs,
     IStakingEventsEvents,
     IStakingEventsRewardsPaidEventArgs,
-    StakingRevertErrors,
     TestFinalizerContract,
     TestFinalizerDepositStakingPoolRewardsEventArgs as DepositStakingPoolRewardsEventArgs,
     TestFinalizerEvents,
-} from '../../src';
-import { constants as stakingConstants } from '../utils/constants';
-import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
+} from '../wrappers';
 
 blockchainTests.resets('Finalizer unit tests', env => {
     const { ZERO_AMOUNT } = constants;

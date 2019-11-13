@@ -22,18 +22,7 @@ export const paginationParameters: ParameterObject[] = [
     },
 ];
 
-export const chainIdParameter: ParameterObject = {
-    name: 'chainId',
-    in: 'query',
-    description: 'The id of the Ethereum chain',
-    example: 42,
-    schema: {
-        type: 'number',
-        default: 1,
-    },
-};
-
 export const generateParameters = (parameters: ParameterObject[], isPaginated: boolean = false): ParameterObject[] => {
     const optionalParameters = isPaginated ? paginationParameters : [];
-    return [...parameters, chainIdParameter, ...optionalParameters];
+    return [...parameters, ...optionalParameters];
 };

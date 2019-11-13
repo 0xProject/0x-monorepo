@@ -1,7 +1,8 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-import { artifacts, TestProtocolFeesContract, TestProtocolFeesReceiverContract } from '../src';
+import { artifacts } from './artifacts';
+import { TestProtocolFeesContract, TestProtocolFeesReceiverContract } from './wrappers';
 
 // The contents of this test suite does not inform the reader about the assertions made in these
 // tests. For more information and a more accurate view of the tests, check out
