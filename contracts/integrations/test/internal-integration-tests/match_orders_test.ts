@@ -9,12 +9,12 @@ import { BigNumber } from '@0x/utils';
 
 import { Actor } from '../actors/base';
 import { Maker } from '../actors/maker';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 import { MatchOrderTester, MatchTransferAmounts } from '../utils/match_order_tester';
 
 const { isRoundingErrorCeil, isRoundingErrorFloor } = LibReferenceFunctions;
 
-blockchainTests.resets.only('matchOrders', env => {
+blockchainTests.resets('matchOrders integration tests', env => {
     // The fee recipient addresses.
     let feeRecipientLeft: Actor;
     let feeRecipientRight: Actor;

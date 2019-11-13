@@ -71,6 +71,14 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 takerAssetData: await devUtils.encodeERC20AssetData(takerToken.address).callAsync(),
                 makerFeeAssetData: await devUtils.encodeERC20AssetData(makerFeeToken.address).callAsync(),
                 takerFeeAssetData: await devUtils.encodeERC20AssetData(takerFeeToken.address).callAsync(),
+                makerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerToken.address),
+                takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(takerToken.address),
+                makerFeeAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
+                    makerFeeToken.address,
+                ),
+                takerFeeAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
+                    takerFeeToken.address,
+                ),
             },
         });
 
@@ -144,7 +152,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     taker.address,
                     deployment.staking.stakingProxy.address,
                     DeploymentManager.protocolFee,
-                    await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync(),
+                    deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.weth.address),
                 );
             }
         }

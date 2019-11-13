@@ -3,6 +3,7 @@ import {
     ERC1155ProxyContract,
     ERC20ProxyContract,
     ERC721ProxyContract,
+    IAssetDataContract,
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
@@ -193,6 +194,7 @@ export class DeploymentManager {
         ]);
 
         const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, environment.provider);
+        const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
 
         // Create a `TransactionHelper` object that uses all of the packages artifacts.
         const txHelper = new TransactionHelper(environment.web3Wrapper, {
@@ -215,6 +217,7 @@ export class DeploymentManager {
             accounts,
             txDefaults,
             devUtils,
+            assetDataEncoder,
             txHelper,
         );
     }
@@ -506,6 +509,7 @@ export class DeploymentManager {
         public accounts: string[],
         public txDefaults: Partial<TxData>,
         public devUtils: DevUtilsContract,
+        public assetDataEncoder: IAssetDataContract,
         public txHelper: TransactionHelper,
     ) {}
 }

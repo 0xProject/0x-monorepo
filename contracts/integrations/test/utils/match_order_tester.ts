@@ -8,7 +8,7 @@ import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DeploymentManager } from './deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 export interface FillEventArgs {
     orderHash: string;
