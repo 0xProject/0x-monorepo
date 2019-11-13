@@ -4,11 +4,9 @@ import '@azure/core-asynciterator-polyfill';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AssertionResult } from '../../src/function_assertions';
-import {
-    validCreateStakingPoolAssertion,
-    validDecreaseStakingPoolOperatorShareAssertion,
-} from '../function-assertions';
+import { validCreateStakingPoolAssertion } from '../assertions/createStakingPool';
+import { validDecreaseStakingPoolOperatorShareAssertion } from '../assertions/decreaseStakingPoolOperatorShare';
+import { AssertionResult } from '../assertions/function_assertion';
 
 import { Actor, Constructor } from './base';
 

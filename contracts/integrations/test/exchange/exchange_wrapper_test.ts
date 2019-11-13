@@ -1,12 +1,6 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
-import {
-    BlockchainBalanceStore,
-    ExchangeRevertErrors,
-    IExchangeEvents,
-    IExchangeFillEventArgs,
-    LocalBalanceStore,
-} from '@0x/contracts-exchange';
+import { ExchangeRevertErrors, IExchangeEvents, IExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     blockchainTests,
@@ -25,9 +19,11 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Actor } from '../actors/base';
-import { Maker } from '../actors/maker';
-import { DeploymentManager } from '../deployment_manager';
+import { Actor } from '../framework/actors/base';
+import { Maker } from '../framework/actors/maker';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 const { addFillResults, safeGetPartialAmountFloor } = ReferenceFunctions;
 

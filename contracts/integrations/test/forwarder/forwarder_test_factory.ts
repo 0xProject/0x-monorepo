@@ -1,13 +1,16 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { constants, expect, getPercentageOfValue, OrderStatus } from '@0x/contracts-test-utils';
 import { OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { Actor, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../deployment_manager';
+import { FeeRecipient } from '../framework/actors/fee_recipient';
+import { Maker } from '../framework/actors/maker';
+import { Taker } from '../framework/actors/taker';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 // Necessary bookkeeping to validate Forwarder results
 interface ForwarderFillState {
@@ -31,7 +34,7 @@ export class ForwarderTestFactory {
         private readonly _deployment: DeploymentManager,
         private readonly _balanceStore: BlockchainBalanceStore,
         private readonly _maker: Maker,
-        private readonly _taker: Actor,
+        private readonly _taker: Taker,
         private readonly _orderFeeRecipient: FeeRecipient,
         private readonly _forwarderFeeRecipient: FeeRecipient,
         private readonly _devUtils: DevUtilsContract,

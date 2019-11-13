@@ -1,13 +1,11 @@
 import { CoordinatorContract, CoordinatorRevertErrors, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
-    BlockchainBalanceStore,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
     exchangeDataEncoder,
     ExchangeEvents,
     ExchangeFillEventArgs,
-    LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import {
     blockchainTests,
@@ -25,8 +23,13 @@ import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../deployment_manager';
+import { Actor } from '../framework/actors/base';
+import { FeeRecipient } from '../framework/actors/fee_recipient';
+import { Maker } from '../framework/actors/maker';
+import { actorAddressesByName } from '../framework/actors/utils';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 import { deployCoordinatorAsync } from './deploy_coordinator';
 

@@ -1,13 +1,13 @@
-import { BlockchainBalanceStore } from '@0x/contracts-exchange';
 import { blockchainTests } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
-import { AssertionResult } from '../../src/function_assertions';
-import { Staker } from '../actors';
-import { DeploymentManager } from '../deployment_manager';
+import { Staker } from '../framework/actors/staker';
+import { AssertionResult } from '../framework/assertions/function_assertion';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
+import { Simulation, SimulationEnvironment } from '../framework/simulation';
 
 import { PoolManagementSimulation } from './pool_management_test';
-import { Simulation, SimulationEnvironment } from './simulation';
 
 export class StakeManagementSimulation extends Simulation {
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {

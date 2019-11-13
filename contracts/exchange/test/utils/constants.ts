@@ -14,14 +14,3 @@ export const constants = {
         ExchangeFunctionName.DetachProtocolFeeCollector,
     ],
 };
-
-export enum ValidatorWalletAction {
-    Reject = 0,
-    Accept = 1,
-    Revert = 2,
-    UpdateState = 3,
-    MatchSignatureHash = 4,
-    ReturnTrue = 5,
-    ReturnNothing = 6,
-    NTypes = 7,
-}

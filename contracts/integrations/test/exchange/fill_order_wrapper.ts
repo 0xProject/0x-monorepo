@@ -1,4 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     constants,
@@ -14,12 +15,10 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../wrappers';
-
-import { BalanceStore } from '../../src/balance_stores/balance_store';
-import { BlockchainBalanceStore } from '../../src/balance_stores/blockchain_balance_store';
-import { LocalBalanceStore } from '../../src/balance_stores/local_balance_store';
-import { TokenContractsByName, TokenIds, TokenOwnersByName } from '../../src/balance_stores/types';
+import { BalanceStore } from '../framework/balances/balance_store';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { TokenContractsByName, TokenIds, TokenOwnersByName } from '../framework/balances/types';
 
 export class FillOrderWrapper {
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;

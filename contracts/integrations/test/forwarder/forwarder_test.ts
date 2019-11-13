@@ -1,12 +1,7 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import {
-    artifacts as exchangeArtifacts,
-    BlockchainBalanceStore,
-    ExchangeContract,
-    LocalBalanceStore,
-} from '@0x/contracts-exchange';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts, ForwarderContract, ForwarderRevertErrors } from '@0x/contracts-exchange-forwarder';
 import {
     blockchainTests,
@@ -19,8 +14,13 @@ import {
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { DeploymentManager } from '../deployment_manager';
+import { FeeRecipient } from '../framework/actors/fee_recipient';
+import { Maker } from '../framework/actors/maker';
+import { Taker } from '../framework/actors/taker';
+import { actorAddressesByName } from '../framework/actors/utils';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
@@ -42,7 +42,7 @@ blockchainTests('Forwarder integration tests', env => {
     let makerAssetData: string;
 
     let maker: Maker;
-    let taker: Actor;
+    let taker: Taker;
     let orderFeeRecipient: FeeRecipient;
     let forwarderFeeRecipient: FeeRecipient;
 
@@ -59,7 +59,7 @@ blockchainTests('Forwarder integration tests', env => {
         wethAssetData = await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync();
         makerAssetData = await devUtils.encodeERC20AssetData(makerToken.address).callAsync();
 
-        taker = new Actor({ name: 'Taker', deployment });
+        taker = new Taker({ name: 'Taker', deployment });
         orderFeeRecipient = new FeeRecipient({
             name: 'Order fee recipient',
             deployment,
@@ -560,14 +560,24 @@ blockchainTests('Forwarder integration tests', env => {
 
             // Compute expected balances
             const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
-            expectedBalances.transferAssetAsync(maker.address, taker.address, makerAssetFillAmount, makerAssetData);
+            await expectedBalances.transferAssetAsync(
+                maker.address,
+                taker.address,
+                makerAssetFillAmount,
+                makerAssetData,
+            );
             expectedBalances.wrapEth(
                 taker.address,
                 deployment.tokens.weth.address,
                 takerAssetFillAmount.plus(DeploymentManager.protocolFee),
             );
-            expectedBalances.transferAssetAsync(taker.address, maker.address, takerAssetFillAmount, wethAssetData);
-            expectedBalances.transferAssetAsync(
+            await expectedBalances.transferAssetAsync(
+                taker.address,
+                maker.address,
+                takerAssetFillAmount,
+                wethAssetData,
+            );
+            await expectedBalances.transferAssetAsync(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,

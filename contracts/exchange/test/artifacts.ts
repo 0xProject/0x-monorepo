@@ -37,7 +37,6 @@ import * as TestLibExchangeRichErrorDecoder from '../test/generated-artifacts/Te
 import * as TestProtocolFeeCollector from '../test/generated-artifacts/TestProtocolFeeCollector.json';
 import * as TestProtocolFees from '../test/generated-artifacts/TestProtocolFees.json';
 import * as TestProtocolFeesReceiver from '../test/generated-artifacts/TestProtocolFeesReceiver.json';
-import * as TestSignatureValidator from '../test/generated-artifacts/TestSignatureValidator.json';
 import * as TestTransactions from '../test/generated-artifacts/TestTransactions.json';
 import * as TestValidatorWallet from '../test/generated-artifacts/TestValidatorWallet.json';
 import * as TestWrapperFunctions from '../test/generated-artifacts/TestWrapperFunctions.json';
@@ -74,7 +73,6 @@ export const artifacts = {
     TestProtocolFeeCollector: TestProtocolFeeCollector as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestProtocolFeesReceiver: TestProtocolFeesReceiver as ContractArtifact,
-    TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestTransactions: TestTransactions as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
     TestWrapperFunctions: TestWrapperFunctions as ContractArtifact,
