@@ -1,4 +1,4 @@
-import { blockchainTests, constants, describe, expect, hexRandom, transactionHelper } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { EIP712DomainWithDefaultSchema, ZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
@@ -186,12 +186,9 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const validSignature = randomSignature();
 
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                transactionsContract.batchExecuteTransactions,
-                [transaction],
-                [validSignature],
-                { from: accounts[0] },
-            );
+            const contractFn = transactionsContract.batchExecuteTransactions([transaction], [validSignature]);
+            const result = await contractFn.callAsync({ from: accounts[0] });
+            const receipt = await contractFn.awaitTransactionSuccessAsync({ from: accounts[0] });
 
             expect(result.length).to.be.eq(1);
             const returnData = transactionsContract.getABIDecodedReturnData('executeTransaction', result[0]);
@@ -224,13 +221,13 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const transactionHash1 = transactionHashUtils.getTransactionHashHex(transaction1);
             const transactionHash2 = transactionHashUtils.getTransactionHashHex(transaction2);
 
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                transactionsContract.batchExecuteTransactions,
+            const contractFn = transactionsContract.batchExecuteTransactions(
                 [transaction1, transaction2],
                 [randomSignature(), randomSignature()],
-                { from: accounts[0] },
             );
+            const result = await contractFn.callAsync({ from: accounts[0] });
 
+            const receipt = await contractFn.awaitTransactionSuccessAsync({ from: accounts[0] });
             expect(result.length).to.be.eq(2);
             expect(transactionsContract.getABIDecodedReturnData('executeTransaction', result[0])).to.equal(
                 DEADBEEF_RETURN_DATA,
@@ -507,13 +504,10 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             });
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
 
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                transactionsContract.executeTransaction,
-                transaction,
-                validSignature,
-                { from: accounts[0] },
-            );
+            const contractFn = transactionsContract.executeTransaction(transaction, validSignature);
+            const result = await contractFn.callAsync({ from: accounts[0] });
 
+            const receipt = await contractFn.awaitTransactionSuccessAsync({ from: accounts[0] });
             expect(transactionsContract.getABIDecodedReturnData('executeTransaction', result)).to.equal(
                 DEADBEEF_RETURN_DATA,
             );
@@ -538,13 +532,10 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             });
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
 
-            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                transactionsContract.executeTransaction,
-                transaction,
-                validSignature,
-                { from: accounts[0] },
-            );
+            const contractFn = transactionsContract.executeTransaction(transaction, validSignature);
+            const result = await contractFn.callAsync({ from: accounts[0] });
 
+            const receipt = await contractFn.awaitTransactionSuccessAsync({ from: accounts[0] });
             expect(transactionsContract.getABIDecodedReturnData('executeTransaction', result)).to.equal(
                 DEADBEEF_RETURN_DATA,
             );

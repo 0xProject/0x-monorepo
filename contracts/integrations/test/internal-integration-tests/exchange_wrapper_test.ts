@@ -1,15 +1,12 @@
-import { artifacts as assetProxyArtifacts } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
-    artifacts as exchangeArtifacts,
     BlockchainBalanceStore,
     IExchangeEvents,
     IExchangeFillEventArgs,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { artifacts as stakingArtifacts } from '@0x/contracts-staking';
 import {
     blockchainTests,
     constants,
@@ -19,7 +16,6 @@ import {
     Numberish,
     provider,
     toBaseUnitAmount,
-    transactionHelper,
     verifyEvents,
 } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
@@ -317,13 +313,14 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
             const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(5);
 
-            const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                deployment.exchange.fillOrKillOrder.bind(deployment.exchange),
+            const contractFn = deployment.exchange.fillOrKillOrder(
                 signedOrder,
                 takerAssetFilledAmount,
                 signedOrder.signature,
-                { from: taker.address, gasPrice: DeploymentManager.gasPrice, value },
             );
+            const callData = { from: taker.address, gasPrice: DeploymentManager.gasPrice, value };
+            const fillResults = await contractFn.callAsync(callData);
+            const receipt = await contractFn.awaitTransactionSuccessAsync(callData);
 
             const expectedFillResults = calculateScaledFillResultsWithTaker(signedOrder, takerAssetFilledAmount);
 
@@ -436,20 +433,20 @@ blockchainTests.resets('Exchange wrappers', env => {
                     await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                 }
 
-                const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.batchFillOrders.bind(deployment.exchange),
+                const contractFn = deployment.exchange.batchFillOrders(
                     signedOrders,
                     takerAssetFillAmounts,
                     signedOrders.map(signedOrder => signedOrder.signature),
-                    {
-                        from: taker.address,
-                        gasPrice: DeploymentManager.gasPrice,
-                        value,
-                    },
                 );
+                const callData = {
+                    from: taker.address,
+                    gasPrice: DeploymentManager.gasPrice,
+                    value,
+                };
+                const fillResults = await contractFn.callAsync(callData);
+                const receipt = await contractFn.awaitTransactionSuccessAsync(callData);
 
                 expect(totalFillResults).to.be.deep.eq(fillResults);
-
                 await assertResultsAsync(receipt, fillTestInfo);
             }
 
@@ -498,17 +495,18 @@ blockchainTests.resets('Exchange wrappers', env => {
                     await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
                 }
 
-                const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.batchFillOrKillOrders.bind(deployment.exchange),
+                const contractFn = deployment.exchange.batchFillOrKillOrders(
                     signedOrders,
                     takerAssetFillAmounts,
                     signedOrders.map(order => order.signature),
-                    {
-                        from: taker.address,
-                        gasPrice: DeploymentManager.gasPrice,
-                        value,
-                    },
                 );
+                const callData = {
+                    from: taker.address,
+                    gasPrice: DeploymentManager.gasPrice,
+                    value,
+                };
+                const fillResults = await contractFn.callAsync(callData);
+                const receipt = await contractFn.awaitTransactionSuccessAsync(callData);
 
                 expect(totalFillResults).to.be.deep.eq(fillResults);
 
@@ -594,19 +592,20 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
                 }
 
-                const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.batchFillOrdersNoThrow.bind(deployment.exchange),
+                const contractFn = deployment.exchange.batchFillOrdersNoThrow(
                     signedOrdersWithValidity.map(signedOrderWithValidity => signedOrderWithValidity.signedOrder),
                     takerAssetFillAmounts,
                     signedOrdersWithValidity.map(
                         signedOrderWithValidity => signedOrderWithValidity.signedOrder.signature,
                     ),
-                    {
-                        from: taker.address,
-                        gasPrice: DeploymentManager.gasPrice,
-                        value,
-                    },
                 );
+                const callData = {
+                    from: taker.address,
+                    gasPrice: DeploymentManager.gasPrice,
+                    value,
+                };
+                const fillResults = await contractFn.callAsync(callData);
+                const receipt = await contractFn.awaitTransactionSuccessAsync(callData);
 
                 expect(totalFillResults).to.be.deep.eq(fillResults);
 
@@ -709,18 +708,18 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
                 }
 
-                const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.marketSellOrdersNoThrow.bind(deployment.exchange),
+                const contractFn = deployment.exchange.marketSellOrdersNoThrow(
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder),
                     takerAssetFillAmount,
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder.signature),
-                    {
-                        from: taker.address,
-                        gasPrice: DeploymentManager.gasPrice,
-                        value,
-                    },
                 );
-
+                const callData = {
+                    from: taker.address,
+                    gasPrice: DeploymentManager.gasPrice,
+                    value,
+                };
+                const fillResults = await contractFn.callAsync(callData);
+                const receipt = await contractFn.awaitTransactionSuccessAsync(callData);
                 expect(fillResults).to.deep.equal(totalFillResults);
 
                 await assertResultsAsync(receipt, fillTestInfo);
@@ -907,18 +906,18 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
                 }
 
-                const [fillResults, receipt] = await transactionHelper.getResultAndReceiptAsync(
-                    deployment.exchange.marketBuyOrdersNoThrow.bind(deployment.exchange),
+                const contractFn = deployment.exchange.marketBuyOrdersNoThrow(
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder),
                     makerAssetFillAmount,
                     signedOrdersWithValidity.map(orderWithValidity => orderWithValidity.signedOrder.signature),
-                    {
-                        from: taker.address,
-                        gasPrice: DeploymentManager.gasPrice,
-                        value,
-                    },
                 );
-
+                const callData = {
+                    from: taker.address,
+                    gasPrice: DeploymentManager.gasPrice,
+                    value,
+                };
+                const fillResults = await contractFn.callAsync(callData);
+                const receipt = await contractFn.awaitTransactionSuccessAsync(callData);
                 expect(fillResults).to.deep.equal(totalFillResults);
 
                 await assertResultsAsync(receipt, fillTestInfo);
