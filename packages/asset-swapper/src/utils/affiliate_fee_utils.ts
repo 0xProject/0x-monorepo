@@ -1,8 +1,9 @@
 import { BigNumber } from '@0x/utils';
 
-import { SwapQuoteInfo } from '../types';
-import { assert } from './assert';
 import { constants } from '../constants';
+import { SwapQuoteInfo } from '../types';
+
+import { assert } from './assert';
 
 export const affiliateFeeUtils = {
     /**
