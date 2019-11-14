@@ -1,5 +1,10 @@
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { artifacts as assetProxyArtifacts, ERC20BridgeProxyContract } from '@0x/contracts-asset-proxy';
+import {
+    artifacts as assetProxyArtifacts,
+    ERC20BridgeProxyContract,
+    Eth2DaiBridgeContract,
+    UniswapBridgeContract,
+} from '@0x/contracts-asset-proxy';
 import { artifacts as coordinatorArtifacts, CoordinatorContract } from '@0x/contracts-coordinator';
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
@@ -79,6 +84,20 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
 
     const erc20BridgeProxy = await ERC20BridgeProxyContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.ERC20BridgeProxy,
+        provider,
+        txDefaults,
+        assetProxyArtifacts,
+    );
+
+    await UniswapBridgeContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.UniswapBridge,
+        provider,
+        txDefaults,
+        assetProxyArtifacts,
+    );
+
+    await Eth2DaiBridgeContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.Eth2DaiBridge,
         provider,
         txDefaults,
         assetProxyArtifacts,
@@ -235,7 +254,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const networkId = 1;
     const rpcUrl = 'https://mainnet.infura.io/v3/';
     const provider = await providerFactory.getLedgerProviderAsync(networkId, rpcUrl);
-    await runMigrationsAsync(provider, { from: '0x3b39078f2a3e1512eecc8d6792fdc7f33e1cd2cf', gasPrice: 10000000000 });
+    await runMigrationsAsync(provider, { from: '0x3b39078f2a3e1512eecc8d6792fdc7f33e1cd2cf', gasPrice: 10000000001 });
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);
