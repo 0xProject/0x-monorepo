@@ -56,13 +56,15 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         };
         // Generate a deterministic operator address based on the poolId.
         _opts.operator = poolIdToOperator(_opts.poolId);
-        await testContract.syncPoolRewards.awaitTransactionSuccessAsync(
-            _opts.poolId,
-            _opts.operator,
-            new BigNumber(_opts.operatorReward),
-            new BigNumber(_opts.membersReward),
-            new BigNumber(_opts.membersStake),
-        );
+        await testContract
+            .syncPoolRewards(
+                _opts.poolId,
+                _opts.operator,
+                new BigNumber(_opts.operatorReward),
+                new BigNumber(_opts.membersReward),
+                new BigNumber(_opts.membersStake),
+            )
+            .awaitTransactionSuccessAsync();
         // Because the operator share is implicitly defined by the member and
         // operator reward, and is stored as a uint32, there will be precision
         // loss when the reward is combined then split again in the contracts.
@@ -86,13 +88,15 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         };
         // Generate a deterministic operator address based on the poolId.
         _opts.operator = poolIdToOperator(_opts.poolId);
-        await testContract.setUnfinalizedPoolReward.awaitTransactionSuccessAsync(
-            _opts.poolId,
-            _opts.operator,
-            new BigNumber(_opts.operatorReward),
-            new BigNumber(_opts.membersReward),
-            new BigNumber(_opts.membersStake),
-        );
+        await testContract
+            .setUnfinalizedPoolReward(
+                _opts.poolId,
+                _opts.operator,
+                new BigNumber(_opts.operatorReward),
+                new BigNumber(_opts.membersReward),
+                new BigNumber(_opts.membersStake),
+            )
+            .awaitTransactionSuccessAsync();
         // Because the operator share is implicitly defined by the member and
         // operator reward, and is stored as a uint32, there will be precision
         // loss when the reward is combined then split again in the contracts.
@@ -148,8 +152,10 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             stake: getRandomInteger(1, toBaseUnitAmount(10)),
             ...opts,
         };
-        const fn = now ? testContract.delegateStakeNow : testContract.delegateStake;
-        const receipt = await fn.awaitTransactionSuccessAsync(_opts.delegator, poolId, new BigNumber(_opts.stake));
+        const fn = now
+            ? testContract.delegateStakeNow.bind(testContract)
+            : testContract.delegateStake.bind(testContract);
+        const receipt = await fn(_opts.delegator, poolId, new BigNumber(_opts.stake)).awaitTransactionSuccessAsync();
         const delegatorTransfers = getTransfersFromLogs(receipt.logs, _opts.delegator);
         return {
             ..._opts,
@@ -164,9 +170,9 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
     ): Promise<ResultWithTransfers<{ stake: BigNumber }>> {
         const _stake = new BigNumber(
             stake ||
-                (await testContract.getStakeDelegatedToPoolByOwner.callAsync(delegator, poolId)).currentEpochBalance,
+                (await testContract.getStakeDelegatedToPoolByOwner(delegator, poolId).callAsync()).currentEpochBalance,
         );
-        const receipt = await testContract.undelegateStake.awaitTransactionSuccessAsync(delegator, poolId, _stake);
+        const receipt = await testContract.undelegateStake(delegator, poolId, _stake).awaitTransactionSuccessAsync();
         const delegatorTransfers = getTransfersFromLogs(receipt.logs, delegator);
         return {
             stake: _stake,
@@ -189,17 +195,17 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
     }
 
     async function advanceEpochAsync(): Promise<number> {
-        await testContract.advanceEpoch.awaitTransactionSuccessAsync();
-        const epoch = await testContract.currentEpoch.callAsync();
+        await testContract.advanceEpoch().awaitTransactionSuccessAsync();
+        const epoch = await testContract.currentEpoch().callAsync();
         return epoch.toNumber();
     }
 
     async function getDelegatorRewardBalanceAsync(poolId: string, delegator: string): Promise<BigNumber> {
-        return testContract.computeRewardBalanceOfDelegator.callAsync(poolId, delegator);
+        return testContract.computeRewardBalanceOfDelegator(poolId, delegator).callAsync();
     }
 
     async function getOperatorRewardBalanceAsync(poolId: string): Promise<BigNumber> {
-        return testContract.computeRewardBalanceOfOperator.callAsync(poolId);
+        return testContract.computeRewardBalanceOfOperator(poolId).callAsync();
     }
 
     async function touchStakeAsync(poolId: string, delegator: string): Promise<ResultWithTransfers<{}>> {
@@ -207,7 +213,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
     }
 
     async function finalizePoolAsync(poolId: string): Promise<ResultWithTransfers<{}>> {
-        const receipt = await testContract.finalizePool.awaitTransactionSuccessAsync(poolId);
+        const receipt = await testContract.finalizePool(poolId).awaitTransactionSuccessAsync();
         const delegatorTransfers = getTransfersFromLogs(receipt.logs, poolId);
         return {
             delegatorTransfers,

@@ -1,5 +1,4 @@
 import { BigNumber, WSClient } from '@0x/mesh-rpc-client';
-import { SERVER_PORT, setupServerAsync, stopServer } from '@0x/mesh-rpc-client/lib/test/utils/mock_ws_server';
 import * as sinon from 'sinon';
 
 import { MeshOrderProvider } from '../../src';
@@ -7,6 +6,8 @@ import { BaseOrderProvider } from '../../src/order_provider/base_order_provider'
 import { OrderStore } from '../../src/order_store';
 import { utils } from '../../src/utils';
 import { createOrder } from '../utils';
+
+import { SERVER_PORT, setupServerAsync, stopServer } from './mock_ws_server';
 
 describe('MeshOrderProvider', () => {
     let orderStore: OrderStore;

@@ -1,7 +1,16 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    BaseContract,
+    SubscriptionManager,
+    PromiseWithTransactionHash,
+    methodAbiToFunctionSignature,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -19,13 +28,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import {
-    AwaitTransactionSuccessOpts,
-    EventCallback,
-    IndexedFilterValues,
-    SendTransactionOpts,
-    SimpleContractArtifact,
-} from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -50,222 +53,7 @@ export class CoordinatorRegistryContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    /**
-     * Called by a Coordinator operator to set the endpoint of their Coordinator.
-     */
-    public setCoordinatorEndpoint = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param coordinatorEndpoint endpoint of the Coordinator.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            coordinatorEndpoint: string,
-            txData?: Partial<TxData> | undefined,
-            opts: SendTransactionOpts = { shouldValidate: true },
-        ): Promise<string> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = (this as any) as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            if (opts.shouldValidate !== false) {
-                await self.setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txDataWithDefaults);
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param coordinatorEndpoint endpoint of the Coordinator.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            coordinatorEndpoint: string,
-            txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = (this as any) as CoordinatorRegistryContract;
-            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData, opts);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        opts.pollingIntervalMs,
-                        opts.timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param coordinatorEndpoint endpoint of the Coordinator.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = (this as any) as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param coordinatorEndpoint endpoint of the Coordinator.
-         */
-        async callAsync(
-            coordinatorEndpoint: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param coordinatorEndpoint endpoint of the Coordinator.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(coordinatorEndpoint: string): string {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = (this as any) as CoordinatorRegistryContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [
-                coordinatorEndpoint,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as CoordinatorRegistryContract;
-            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
-            return abiEncoder.getSelector();
-        },
-    };
-    /**
-     * Gets the endpoint for a Coordinator.
-     */
-    public getCoordinatorEndpoint = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param coordinatorOperator operator of the Coordinator endpoint.
-         */
-        async callAsync(
-            coordinatorOperator: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            assert.isString('coordinatorOperator', coordinatorOperator);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
-                coordinatorOperator.toLowerCase(),
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -403,6 +191,209 @@ export class CoordinatorRegistryContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
+
+    public getFunctionSignature(methodName: string): string {
+        const index = this._methodABIIndex[methodName];
+        const methodAbi = CoordinatorRegistryContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
+        const functionSignature = methodAbiToFunctionSignature(methodAbi);
+        return functionSignature;
+    }
+    public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as CoordinatorRegistryContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as CoordinatorRegistryContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getSelector(methodName: string): string {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as CoordinatorRegistryContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        return abiEncoder.getSelector();
+    }
+
+    /**
+     * Called by a Coordinator operator to set the endpoint of their Coordinator.
+     * @param coordinatorEndpoint endpoint of the Coordinator.
+     */
+    public setCoordinatorEndpoint(coordinatorEndpoint: string): ContractTxFunctionObj<void> {
+        const self = (this as any) as CoordinatorRegistryContract;
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [
+                    coordinatorEndpoint,
+                ]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+
+                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                return txHash;
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                const txHashPromise = this.sendTransactionAsync(txData, opts);
+                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                    txHashPromise,
+                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                        // When the transaction hash resolves, wait for it to be mined.
+                        return self._web3Wrapper.awaitTransactionSuccessAsync(
+                            await txHashPromise,
+                            opts.pollingIntervalMs,
+                            opts.timeoutMs,
+                        );
+                    })(),
+                );
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [
+                    coordinatorEndpoint,
+                ]);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...txData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                if (txDataWithDefaults.from !== undefined) {
+                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+                }
+
+                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+                return gas;
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [
+                    coordinatorEndpoint,
+                ]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [
+                    coordinatorEndpoint,
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    /**
+     * Gets the endpoint for a Coordinator.
+     * @param coordinatorOperator operator of the Coordinator endpoint.
+     */
+    public getCoordinatorEndpoint(coordinatorOperator: string): ContractFunctionObj<string> {
+        const self = (this as any) as CoordinatorRegistryContract;
+        assert.isString('coordinatorOperator', coordinatorOperator);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
+                    coordinatorOperator.toLowerCase(),
+                ]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
+                    coordinatorOperator.toLowerCase(),
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+
     /**
      * Subscribe to an event type emitted by the CoordinatorRegistry contract.
      * @param eventName The CoordinatorRegistry contract event you would like to subscribe to.
@@ -492,6 +483,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             CoordinatorRegistryContract.ABI(),
             this._web3Wrapper,
         );
+        CoordinatorRegistryContract.ABI().forEach((item, index) => {
+            if (item.type === 'function') {
+                const methodAbi = item as MethodAbi;
+                this._methodABIIndex[methodAbi.name] = index;
+            }
+        });
     }
 }
 

@@ -9,6 +9,14 @@
             {
                 "note": "Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback`",
                 "pr": 2243
+            },
+            {
+                "note": "Added ContractFunctionObj type and supporting types",
+                "pr": 2325
+            },
+            {
+                "note": "Added AwaitTransactionSuccessOpts and SendTransactionOpts",
+                "pr": 2325
             }
         ],
         "timestamp": 1573159180

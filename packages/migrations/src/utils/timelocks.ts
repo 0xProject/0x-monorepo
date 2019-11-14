@@ -34,65 +34,65 @@ export async function getTimelockRegistrationsAsync(provider: SupportedProvider)
         // AssetProxy timelocks
         {
             destination: deployedAddresses.erc20Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc20Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc721Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc721Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc1155Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc1155Proxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.multiAssetProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.multiAssetProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc20BridgeProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.erc20BridgeProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         // ZrxVault timelocks
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.enterCatastrophicFailure.getSelector(),
+            functionSelector: zrxVault.getSelector('enterCatastrophicFailure'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         // Exchange timelocks
 
         {
             destination: exchange.address,
-            functionSelector: exchange.detachProtocolFeeCollector.getSelector(),
+            functionSelector: exchange.getSelector('detachProtocolFeeCollector'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
     ];
@@ -101,105 +101,105 @@ export async function getTimelockRegistrationsAsync(provider: SupportedProvider)
         // ZrxVault timelocks
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.setStakingProxy.getSelector(),
+            functionSelector: zrxVault.getSelector('setStakingProxy'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.setZrxProxy.getSelector(),
+            functionSelector: zrxVault.getSelector('setZrxProxy'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: ownableInterface.transferOwnership.getSelector(),
+            functionSelector: ownableInterface.getSelector('transferOwnership'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.addAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('addAuthorizedAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         // StakingProxy timelocks
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.attachStakingContract.getSelector(),
+            functionSelector: stakingProxy.getSelector('attachStakingContract'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.detachStakingContract.getSelector(),
+            functionSelector: stakingProxy.getSelector('detachStakingContract'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.setParams.getSelector(),
+            functionSelector: stakingLogic.getSelector('setParams'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TEN_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.addExchangeAddress.getSelector(),
+            functionSelector: stakingLogic.getSelector('addExchangeAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.removeExchangeAddress.getSelector(),
+            functionSelector: stakingLogic.getSelector('removeExchangeAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: ownableInterface.transferOwnership.getSelector(),
+            functionSelector: ownableInterface.getSelector('transferOwnership'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.addAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('addAuthorizedAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddress.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
+            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         // Exchange timelocks
         {
             destination: exchange.address,
-            functionSelector: exchange.setProtocolFeeMultiplier.getSelector(),
+            functionSelector: exchange.getSelector('setProtocolFeeMultiplier'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TEN_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
             destination: exchange.address,
-            functionSelector: exchange.setProtocolFeeCollectorAddress.getSelector(),
+            functionSelector: exchange.getSelector('setProtocolFeeCollectorAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },

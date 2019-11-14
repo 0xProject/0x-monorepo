@@ -5,6 +5,10 @@
             {
                 "note": "[Breaking] Remove `erc20Proxy`, `multiAssetProxy`, `erc1155Proxy`, `staticCallProxy`, `erc721Proxy`, `assetProxyOwner`, `ZRXToken` and `dutchAuction` wrappers",
                 "pr": 2324
+            },
+            {
+                "note": "[Breaking] Big refactor of contract wrapper interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details",
+                "pr": 2325
             }
         ]
     },

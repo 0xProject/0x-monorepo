@@ -28,7 +28,7 @@ export function validStakeAssertion(
     balanceStore: BlockchainBalanceStore,
     globalStake: GlobalStakeByStatus,
     ownerStake: OwnerStakeByStatus,
-): FunctionAssertion<LocalBalanceStore> {
+): FunctionAssertion<LocalBalanceStore, void> {
     const { stakingWrapper, zrxVault } = deployment.staking;
 
     return new FunctionAssertion(stakingWrapper.stake, {
@@ -39,7 +39,7 @@ export function validStakeAssertion(
                 txData.from as string,
                 zrxVault.address,
                 amount,
-                await deployment.devUtils.encodeERC20AssetData.callAsync(deployment.tokens.zrx.address),
+                await deployment.devUtils.encodeERC20AssetData(deployment.tokens.zrx.address).callAsync(),
             );
             return expectedBalances;
         },
@@ -56,19 +56,18 @@ export function validStakeAssertion(
             balanceStore.assertEquals(expectedBalances);
 
             // Checks that the owner's undelegated stake has increased by the stake amount
-            const ownerUndelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
-                txData.from as string,
-                StakeStatus.Undelegated,
-            );
+            const ownerUndelegatedStake = await stakingWrapper
+                .getOwnerStakeByStatus(txData.from as string, StakeStatus.Undelegated)
+                .callAsync();
             const expectedOwnerUndelegatedStake = expectedUndelegatedStake(ownerStake, amount);
             expect(ownerUndelegatedStake, 'Owner undelegated stake').to.deep.equal(expectedOwnerUndelegatedStake);
             // Updates local state accordingly
             ownerStake[StakeStatus.Undelegated] = expectedOwnerUndelegatedStake;
 
             // Checks that the global undelegated stake has also increased by the stake amount
-            const globalUndelegatedStake = await stakingWrapper.getGlobalStakeByStatus.callAsync(
-                StakeStatus.Undelegated,
-            );
+            const globalUndelegatedStake = await stakingWrapper
+                .getGlobalStakeByStatus(StakeStatus.Undelegated)
+                .callAsync();
             const expectedGlobalUndelegatedStake = expectedUndelegatedStake(globalStake, amount);
             expect(globalUndelegatedStake, 'Global undelegated stake').to.deep.equal(expectedGlobalUndelegatedStake);
             // Updates local state accordingly

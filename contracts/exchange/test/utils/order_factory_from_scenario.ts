@@ -96,52 +96,59 @@ export class OrderFactoryFromScenario {
 
         switch (orderScenario.makerAssetDataScenario) {
             case AssetDataScenario.ERC20EighteenDecimals:
-                makerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(
-                    this._erc20EighteenDecimalTokenAddresses[0],
-                );
+                makerAssetData = await this._devUtils
+                    .encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[0])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
-                makerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(
-                    this._erc20FiveDecimalTokenAddresses[0],
-                );
+                makerAssetData = await this._devUtils
+                    .encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC721:
-                makerAssetData = await this._devUtils.encodeERC721AssetData.callAsync(
-                    this._erc721TokenAddress,
-                    erc721MakerAssetIds[0],
-                );
+                makerAssetData = await this._devUtils
+                    .encodeERC721AssetData(this._erc721TokenAddress, erc721MakerAssetIds[0])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC20ZeroDecimals:
-                makerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(
-                    this._erc20ZeroDecimalTokenAddresses[0],
-                );
+                makerAssetData = await this._devUtils
+                    .encodeERC20AssetData(this._erc20ZeroDecimalTokenAddresses[0])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC1155Fungible:
-                makerAssetData = await this._devUtils.encodeERC1155AssetData.callAsync(
-                    this._erc1155TokenAddress,
-                    [erc1155FungibleMakerTokenIds[0]],
-                    [ONE_UNITS_ZERO_DECIMALS],
-                    erc1155CallbackData,
-                );
+                makerAssetData = await this._devUtils
+                    .encodeERC1155AssetData(
+                        this._erc1155TokenAddress,
+                        [erc1155FungibleMakerTokenIds[0]],
+                        [ONE_UNITS_ZERO_DECIMALS],
+                        erc1155CallbackData,
+                    )
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC1155NonFungible:
-                makerAssetData = await this._devUtils.encodeERC1155AssetData.callAsync(
-                    this._erc1155TokenAddress,
-                    [erc1155NonFungibleMakerTokenIds[0]],
-                    [ONE_UNITS_ZERO_DECIMALS],
-                    erc1155CallbackData,
-                );
+                makerAssetData = await this._devUtils
+                    .encodeERC1155AssetData(
+                        this._erc1155TokenAddress,
+                        [erc1155NonFungibleMakerTokenIds[0]],
+                        [ONE_UNITS_ZERO_DECIMALS],
+                        erc1155CallbackData,
+                    )
+                    .callAsync();
                 break;
             case AssetDataScenario.MultiAssetERC20:
-                makerAssetData = await this._devUtils.encodeMultiAssetData.callAsync(
-                    [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
-                    [
-                        await this._devUtils.encodeERC20AssetData.callAsync(
-                            this._erc20EighteenDecimalTokenAddresses[0],
-                        ),
-                        await this._devUtils.encodeERC20AssetData.callAsync(this._erc20FiveDecimalTokenAddresses[0]),
-                    ],
-                );
+                makerAssetData = await this._devUtils
+                    .encodeMultiAssetData(
+                        [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
+                        [
+                            await this._devUtils
+                                .encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[0])
+                                .callAsync(),
+                            await this._devUtils
+                                .encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0])
+                                .callAsync(),
+                        ],
+                    )
+                    .callAsync();
                 break;
             default:
                 throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
@@ -149,52 +156,59 @@ export class OrderFactoryFromScenario {
 
         switch (orderScenario.takerAssetDataScenario) {
             case AssetDataScenario.ERC20EighteenDecimals:
-                takerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(
-                    this._erc20EighteenDecimalTokenAddresses[1],
-                );
+                takerAssetData = await this._devUtils
+                    .encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[1])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC20FiveDecimals:
-                takerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(
-                    this._erc20FiveDecimalTokenAddresses[1],
-                );
+                takerAssetData = await this._devUtils
+                    .encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC721:
-                takerAssetData = await this._devUtils.encodeERC721AssetData.callAsync(
-                    this._erc721TokenAddress,
-                    erc721TakerAssetIds[0],
-                );
+                takerAssetData = await this._devUtils
+                    .encodeERC721AssetData(this._erc721TokenAddress, erc721TakerAssetIds[0])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC20ZeroDecimals:
-                takerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(
-                    this._erc20ZeroDecimalTokenAddresses[1],
-                );
+                takerAssetData = await this._devUtils
+                    .encodeERC20AssetData(this._erc20ZeroDecimalTokenAddresses[1])
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC1155Fungible:
-                takerAssetData = await this._devUtils.encodeERC1155AssetData.callAsync(
-                    this._erc1155TokenAddress,
-                    [erc1155FungibleTakerTokenIds[1]],
-                    [ONE_UNITS_ZERO_DECIMALS],
-                    erc1155CallbackData,
-                );
+                takerAssetData = await this._devUtils
+                    .encodeERC1155AssetData(
+                        this._erc1155TokenAddress,
+                        [erc1155FungibleTakerTokenIds[1]],
+                        [ONE_UNITS_ZERO_DECIMALS],
+                        erc1155CallbackData,
+                    )
+                    .callAsync();
                 break;
             case AssetDataScenario.ERC1155NonFungible:
-                takerAssetData = await this._devUtils.encodeERC1155AssetData.callAsync(
-                    this._erc1155TokenAddress,
-                    [erc1155NonFungibleTakerTokenIds[0]],
-                    [ONE_UNITS_ZERO_DECIMALS],
-                    erc1155CallbackData,
-                );
+                takerAssetData = await this._devUtils
+                    .encodeERC1155AssetData(
+                        this._erc1155TokenAddress,
+                        [erc1155NonFungibleTakerTokenIds[0]],
+                        [ONE_UNITS_ZERO_DECIMALS],
+                        erc1155CallbackData,
+                    )
+                    .callAsync();
                 break;
             case AssetDataScenario.MultiAssetERC20:
-                takerAssetData = await this._devUtils.encodeMultiAssetData.callAsync(
-                    [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
-                    [
-                        await this._devUtils.encodeERC20AssetData.callAsync(
-                            this._erc20EighteenDecimalTokenAddresses[1],
-                        ),
-                        await this._devUtils.encodeERC20AssetData.callAsync(this._erc20FiveDecimalTokenAddresses[1]),
-                    ],
-                );
+                takerAssetData = await this._devUtils
+                    .encodeMultiAssetData(
+                        [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
+                        [
+                            await this._devUtils
+                                .encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[1])
+                                .callAsync(),
+                            await this._devUtils
+                                .encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1])
+                                .callAsync(),
+                        ],
+                    )
+                    .callAsync();
                 break;
             default:
                 throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
@@ -327,53 +341,61 @@ export class OrderFactoryFromScenario {
                 case FeeAssetDataScenario.ERC20EighteenDecimals:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeERC20AssetData.callAsync(erc20EighteenDecimalTokenAddress),
+                        await this._devUtils.encodeERC20AssetData(erc20EighteenDecimalTokenAddress).callAsync(),
                     ];
                 case FeeAssetDataScenario.ERC20FiveDecimals:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeERC20AssetData.callAsync(erc20FiveDecimalTokenAddress),
+                        await this._devUtils.encodeERC20AssetData(erc20FiveDecimalTokenAddress).callAsync(),
                     ];
                 case FeeAssetDataScenario.ERC20ZeroDecimals:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeERC20AssetData.callAsync(erc20ZeroDecimalTokenAddress),
+                        await this._devUtils.encodeERC20AssetData(erc20ZeroDecimalTokenAddress).callAsync(),
                     ];
                 case FeeAssetDataScenario.ERC721:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeERC721AssetData.callAsync(this._erc721TokenAddress, erc721AssetId),
+                        await this._devUtils.encodeERC721AssetData(this._erc721TokenAddress, erc721AssetId).callAsync(),
                     ];
                 case FeeAssetDataScenario.ERC1155Fungible:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeERC1155AssetData.callAsync(
-                            this._erc1155TokenAddress,
-                            [erc1155FungibleTokenId],
-                            [ONE_UNITS_ZERO_DECIMALS],
-                            erc1155CallbackData,
-                        ),
+                        await this._devUtils
+                            .encodeERC1155AssetData(
+                                this._erc1155TokenAddress,
+                                [erc1155FungibleTokenId],
+                                [ONE_UNITS_ZERO_DECIMALS],
+                                erc1155CallbackData,
+                            )
+                            .callAsync(),
                     ];
                 case FeeAssetDataScenario.ERC1155NonFungible:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeERC1155AssetData.callAsync(
-                            this._erc1155TokenAddress,
-                            [erc1155NonFungibleAssetId],
-                            [ONE_UNITS_ZERO_DECIMALS],
-                            erc1155CallbackData,
-                        ),
+                        await this._devUtils
+                            .encodeERC1155AssetData(
+                                this._erc1155TokenAddress,
+                                [erc1155NonFungibleAssetId],
+                                [ONE_UNITS_ZERO_DECIMALS],
+                                erc1155CallbackData,
+                            )
+                            .callAsync(),
                     ];
                 case FeeAssetDataScenario.MultiAssetERC20:
                     return [
                         feeAmount,
-                        await this._devUtils.encodeMultiAssetData.callAsync(
-                            [POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS, POINT_ZERO_FIVE_UNITS_FIVE_DECIMALS],
-                            [
-                                await this._devUtils.encodeERC20AssetData.callAsync(erc20EighteenDecimalTokenAddress),
-                                await this._devUtils.encodeERC20AssetData.callAsync(erc20FiveDecimalTokenAddress),
-                            ],
-                        ),
+                        await this._devUtils
+                            .encodeMultiAssetData(
+                                [POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS, POINT_ZERO_FIVE_UNITS_FIVE_DECIMALS],
+                                [
+                                    await this._devUtils
+                                        .encodeERC20AssetData(erc20EighteenDecimalTokenAddress)
+                                        .callAsync(),
+                                    await this._devUtils.encodeERC20AssetData(erc20FiveDecimalTokenAddress).callAsync(),
+                                ],
+                            )
+                            .callAsync(),
                     ];
                 default:
                     throw errorUtils.spawnSwitchErr('FeeAssetDataScenario', feeAssetDataScenario);

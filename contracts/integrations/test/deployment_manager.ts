@@ -38,7 +38,7 @@ async function batchAddAuthorizedAddressAsync(
 ): Promise<void> {
     for (const authorizer of authorizers) {
         for (const authority of authorities) {
-            await authorizer.addAuthorizedAddress.awaitTransactionSuccessAsync(authority, { from: owner });
+            await authorizer.addAuthorizedAddress(authority).awaitTransactionSuccessAsync({ from: owner });
         }
     }
 }
@@ -56,7 +56,7 @@ async function batchRegisterAssetProxyAsync(
 ): Promise<void> {
     for (const registry of registries) {
         for (const proxy of proxies) {
-            await registry.registerAssetProxy.awaitTransactionSuccessAsync(proxy, { from: owner });
+            await registry.registerAssetProxy(proxy).awaitTransactionSuccessAsync({ from: owner });
         }
     }
 }
@@ -73,7 +73,7 @@ async function batchTransferOwnershipAsync(
     ownedContracts: Ownable[],
 ): Promise<void> {
     for (const ownedContract of ownedContracts) {
-        await ownedContract.transferOwnership.awaitTransactionSuccessAsync(newOwner.address, { from: owner });
+        await ownedContract.transferOwnership(newOwner.address).awaitTransactionSuccessAsync({ from: owner });
     }
 }
 
@@ -171,16 +171,16 @@ export class DeploymentManager {
         await DeploymentManager._configureExchangeWithStakingAsync(exchange, staking, owner);
 
         // Authorize the asset-proxy owner in the staking proxy and in the zrx vault.
-        await staking.stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address, {
+        await staking.stakingProxy.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync({
             from: owner,
         });
-        await staking.zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address, {
+        await staking.zrxVault.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync({
             from: owner,
         });
 
         // Remove authorization for the original owner address.
-        await staking.stakingProxy.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
-        await staking.zrxVault.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
+        await staking.stakingProxy.removeAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
+        await staking.zrxVault.removeAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
 
         // Transfer complete ownership of the system to the asset proxy owner.
         await batchTransferOwnershipAsync(owner, governor, [
@@ -275,13 +275,13 @@ export class DeploymentManager {
         owner: string,
     ): Promise<void> {
         // Configure the exchange for staking.
-        await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(staking.stakingProxy.address, {
+        await exchange.setProtocolFeeCollectorAddress(staking.stakingProxy.address).awaitTransactionSuccessAsync({
             from: owner,
         });
-        await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(DeploymentManager.protocolFeeMultiplier);
+        await exchange.setProtocolFeeMultiplier(DeploymentManager.protocolFeeMultiplier).awaitTransactionSuccessAsync();
 
         // Register the exchange contract in staking.
-        await staking.stakingWrapper.addExchangeAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
+        await staking.stakingWrapper.addExchangeAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
     }
 
     /**
@@ -374,20 +374,20 @@ export class DeploymentManager {
         const stakingWrapper = new TestStakingContract(stakingProxy.address, environment.provider, txDefaults);
 
         // Add the zrx vault and the weth contract to the staking proxy.
-        await stakingWrapper.setWethContract.awaitTransactionSuccessAsync(tokens.weth.address, { from: owner });
-        await stakingWrapper.setZrxVault.awaitTransactionSuccessAsync(zrxVault.address, { from: owner });
+        await stakingWrapper.setWethContract(tokens.weth.address).awaitTransactionSuccessAsync({ from: owner });
+        await stakingWrapper.setZrxVault(zrxVault.address).awaitTransactionSuccessAsync({ from: owner });
 
         // Authorize the owner address in the staking proxy and the zrx vault.
-        await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
-        await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
+        await stakingProxy.addAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
+        await zrxVault.addAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
 
         // Authorize the zrx vault in the erc20 proxy
-        await assetProxies.erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVault.address, {
+        await assetProxies.erc20Proxy.addAuthorizedAddress(zrxVault.address).awaitTransactionSuccessAsync({
             from: owner,
         });
 
         // Configure the zrx vault and the staking contract.
-        await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
+        await zrxVault.setStakingProxy(stakingProxy.address).awaitTransactionSuccessAsync({ from: owner });
 
         return {
             stakingLogic,

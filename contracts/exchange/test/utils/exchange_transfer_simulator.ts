@@ -77,7 +77,7 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
-        const assetProxyId = await this._devUtils.decodeAssetProxyId.callAsync(assetData);
+        const assetProxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
         switch (assetProxyId) {
             case AssetProxyId.ERC1155:
             case AssetProxyId.ERC20:
@@ -110,7 +110,7 @@ export class ExchangeTransferSimulator {
                 break;
             }
             case AssetProxyId.MultiAsset: {
-                const decodedAssetData = await this._devUtils.decodeMultiAssetData.callAsync(assetData);
+                const decodedAssetData = await this._devUtils.decodeMultiAssetData(assetData).callAsync();
                 await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
                 await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
                 for (const [index, nestedAssetDataElement] of decodedAssetData[2].entries()) {

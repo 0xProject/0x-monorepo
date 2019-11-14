@@ -129,37 +129,37 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, ownerAddress);
     await exchangeWrapper.registerAssetProxyAsync(multiAssetProxy.address, ownerAddress);
 
-    await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+    await erc20Proxy.addAuthorizedAddress(exchangeContract.address).awaitTransactionSuccessAsync({
         from: ownerAddress,
     });
 
-    await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+    await erc721Proxy.addAuthorizedAddress(exchangeContract.address).awaitTransactionSuccessAsync({
         from: ownerAddress,
     });
 
-    await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+    await erc1155Proxy.addAuthorizedAddress(exchangeContract.address).awaitTransactionSuccessAsync({
         from: ownerAddress,
     });
 
-    await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeContract.address, {
+    await multiAssetProxy.addAuthorizedAddress(exchangeContract.address).awaitTransactionSuccessAsync({
         from: ownerAddress,
     });
 
-    await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: ownerAddress });
+    await erc20Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({ from: ownerAddress });
 
-    await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+    await erc721Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({
         from: ownerAddress,
     });
 
-    await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+    await erc1155Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({
         from: ownerAddress,
     });
 
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: ownerAddress });
+    await multiAssetProxy.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({ from: ownerAddress });
 
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, { from: ownerAddress });
+    await multiAssetProxy.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync({ from: ownerAddress });
 
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address, { from: ownerAddress });
+    await multiAssetProxy.registerAssetProxy(erc1155Proxy.address).awaitTransactionSuccessAsync({ from: ownerAddress });
 
     const orderFactory = new OrderFactoryFromScenario(
         devUtils,

@@ -51,11 +51,9 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const orderHash = await devUtilsContract.getOrderHash.callAsync(
-                order,
-                new BigNumber(order.chainId),
-                order.exchangeAddress,
-            );
+            const orderHash = await devUtilsContract
+                .getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress)
+                .callAsync();
             const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
                 ...order,
@@ -138,11 +136,13 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const transactionHash = await devUtilsContract.getTransactionHash.callAsync(
-                transaction,
-                new BigNumber(transaction.domain.chainId),
-                transaction.domain.verifyingContract,
-            );
+            const transactionHash = await devUtilsContract
+                .getTransactionHash(
+                    transaction,
+                    new BigNumber(transaction.domain.chainId),
+                    transaction.domain.verifyingContract,
+                )
+                .callAsync();
             const signatureHex = await signatureUtils.ecSignHashAsync(
                 supportedProvider,
                 transactionHash,

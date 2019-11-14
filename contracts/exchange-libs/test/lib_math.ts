@@ -44,8 +44,7 @@ blockchainTests('LibMath', env => {
 
     function createContractTestFunction<T>(name: string): (...args: any[]) => Promise<T> {
         return async (...args: any[]): Promise<T> => {
-            const method = (libsContract as any)[name] as { callAsync: (...args: any[]) => Promise<T> };
-            return method.callAsync(...args);
+            return (libsContract as any)[name](...args).callAsync;
         };
     }
 
@@ -65,7 +64,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = getPartialAmountFloor(numerator, denominator, target);
-                const actual = await libsContract.getPartialAmountFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.getPartialAmountFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -74,7 +73,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.times(1.8);
                 const target = ONE_ETHER;
                 const expected = ONE_ETHER.dividedToIntegerBy(3);
-                const actual = await libsContract.getPartialAmountFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.getPartialAmountFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -88,7 +87,7 @@ blockchainTests('LibMath', env => {
                     denominator,
                 );
                 return expect(
-                    libsContract.getPartialAmountFloor.callAsync(numerator, denominator, target),
+                    libsContract.getPartialAmountFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -102,7 +101,7 @@ blockchainTests('LibMath', env => {
                     target,
                 );
                 return expect(
-                    libsContract.getPartialAmountFloor.callAsync(numerator, denominator, target),
+                    libsContract.getPartialAmountFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
         });
@@ -124,7 +123,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = getPartialAmountCeil(numerator, denominator, target);
-                const actual = await libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.getPartialAmountCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -133,7 +132,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.times(1.8);
                 const target = ONE_ETHER;
                 const expected = ONE_ETHER.dividedToIntegerBy(3).plus(1);
-                const actual = await libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.getPartialAmountCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -148,7 +147,7 @@ blockchainTests('LibMath', env => {
                     new BigNumber(1),
                 );
                 return expect(
-                    libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target),
+                    libsContract.getPartialAmountCeil(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -162,7 +161,7 @@ blockchainTests('LibMath', env => {
                     target,
                 );
                 return expect(
-                    libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target),
+                    libsContract.getPartialAmountCeil(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
         });
@@ -184,7 +183,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = safeGetPartialAmountFloor(numerator, denominator, target);
-                const actual = await libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.safeGetPartialAmountFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -193,7 +192,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.times(1.8);
                 const target = ONE_ETHER;
                 const expected = ONE_ETHER.dividedToIntegerBy(3);
-                const actual = await libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.safeGetPartialAmountFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -203,7 +202,7 @@ blockchainTests('LibMath', env => {
                 const target = new BigNumber(333);
                 const expectedError = new LibMathRevertErrors.RoundingError(numerator, denominator, target);
                 return expect(
-                    libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target),
+                    libsContract.safeGetPartialAmountFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -213,7 +212,7 @@ blockchainTests('LibMath', env => {
                 const target = ONE_ETHER.times(0.01);
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
                 return expect(
-                    libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target),
+                    libsContract.safeGetPartialAmountFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -227,7 +226,7 @@ blockchainTests('LibMath', env => {
                     target,
                 );
                 return expect(
-                    libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target),
+                    libsContract.safeGetPartialAmountFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
         });
@@ -249,7 +248,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = safeGetPartialAmountCeil(numerator, denominator, target);
-                const actual = await libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.safeGetPartialAmountCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -258,7 +257,7 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.times(1.8);
                 const target = ONE_ETHER;
                 const expected = ONE_ETHER.dividedToIntegerBy(3).plus(1);
-                const actual = await libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.safeGetPartialAmountCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.bignumber.eq(expected);
             });
 
@@ -268,7 +267,7 @@ blockchainTests('LibMath', env => {
                 const target = new BigNumber(333);
                 const expectedError = new LibMathRevertErrors.RoundingError(numerator, denominator, target);
                 return expect(
-                    libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target),
+                    libsContract.safeGetPartialAmountCeil(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -278,7 +277,7 @@ blockchainTests('LibMath', env => {
                 const target = ONE_ETHER.times(0.01);
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
                 return expect(
-                    libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target),
+                    libsContract.safeGetPartialAmountCeil(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -292,7 +291,7 @@ blockchainTests('LibMath', env => {
                     target,
                 );
                 return expect(
-                    libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target),
+                    libsContract.safeGetPartialAmountCeil(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
         });
@@ -314,7 +313,7 @@ blockchainTests('LibMath', env => {
                 const denominator = new BigNumber(102);
                 const target = new BigNumber(52);
                 // tslint:disable-next-line: boolean-naming
-                const actual = await libsContract.isRoundingErrorFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.isRoundingErrorFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.eq(true);
             });
 
@@ -323,7 +322,7 @@ blockchainTests('LibMath', env => {
                 const denominator = new BigNumber(101);
                 const target = new BigNumber(92);
                 // tslint:disable-next-line: boolean-naming
-                const actual = await libsContract.isRoundingErrorFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.isRoundingErrorFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.eq(false);
             });
 
@@ -334,7 +333,7 @@ blockchainTests('LibMath', env => {
                 // tslint:disable-next-line: boolean-naming
                 const expected = isRoundingErrorFloor(numerator, denominator, target);
                 // tslint:disable-next-line: boolean-naming
-                const actual = await libsContract.isRoundingErrorFloor.callAsync(numerator, denominator, target);
+                const actual = await libsContract.isRoundingErrorFloor(numerator, denominator, target).callAsync();
                 expect(actual).to.eq(expected);
             });
 
@@ -344,7 +343,7 @@ blockchainTests('LibMath', env => {
                 const target = ONE_ETHER.times(0.01);
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
                 return expect(
-                    libsContract.isRoundingErrorFloor.callAsync(numerator, denominator, target),
+                    libsContract.isRoundingErrorFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
 
@@ -358,7 +357,7 @@ blockchainTests('LibMath', env => {
                     target,
                 );
                 return expect(
-                    libsContract.isRoundingErrorFloor.callAsync(numerator, denominator, target),
+                    libsContract.isRoundingErrorFloor(numerator, denominator, target).callAsync(),
                 ).to.revertWith(expectedError);
             });
         });
@@ -380,7 +379,7 @@ blockchainTests('LibMath', env => {
                 const denominator = new BigNumber(101);
                 const target = new BigNumber(92);
                 // tslint:disable-next-line: boolean-naming
-                const actual = await libsContract.isRoundingErrorCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.isRoundingErrorCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.eq(true);
             });
 
@@ -389,7 +388,7 @@ blockchainTests('LibMath', env => {
                 const denominator = new BigNumber(102);
                 const target = new BigNumber(52);
                 // tslint:disable-next-line: boolean-naming
-                const actual = await libsContract.isRoundingErrorCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.isRoundingErrorCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.eq(false);
             });
 
@@ -400,7 +399,7 @@ blockchainTests('LibMath', env => {
                 // tslint:disable-next-line: boolean-naming
                 const expected = isRoundingErrorCeil(numerator, denominator, target);
                 // tslint:disable-next-line: boolean-naming
-                const actual = await libsContract.isRoundingErrorCeil.callAsync(numerator, denominator, target);
+                const actual = await libsContract.isRoundingErrorCeil(numerator, denominator, target).callAsync();
                 expect(actual).to.eq(expected);
             });
 
@@ -409,9 +408,9 @@ blockchainTests('LibMath', env => {
                 const denominator = ZERO_AMOUNT;
                 const target = ONE_ETHER.times(0.01);
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(libsContract.isRoundingErrorCeil.callAsync(numerator, denominator, target)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.isRoundingErrorCeil(numerator, denominator, target).callAsync(),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if `numerator * target` overflows', async () => {
@@ -423,9 +422,9 @@ blockchainTests('LibMath', env => {
                     numerator,
                     target,
                 );
-                return expect(libsContract.isRoundingErrorCeil.callAsync(numerator, denominator, target)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.isRoundingErrorCeil(numerator, denominator, target).callAsync(),
+                ).to.revertWith(expectedError);
             });
         });
     });

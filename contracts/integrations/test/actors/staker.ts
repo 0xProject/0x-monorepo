@@ -51,16 +51,17 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
          */
         public async stakeAsync(amount: BigNumber, poolId?: string): Promise<void> {
             const { stakingWrapper } = this.actor.deployment.staking;
-            await stakingWrapper.stake.awaitTransactionSuccessAsync(amount, {
+            await stakingWrapper.stake(amount).awaitTransactionSuccessAsync({
                 from: this.actor.address,
             });
             if (poolId !== undefined) {
-                await stakingWrapper.moveStake.awaitTransactionSuccessAsync(
-                    new StakeInfo(StakeStatus.Undelegated),
-                    new StakeInfo(StakeStatus.Delegated, poolId),
-                    amount,
-                    { from: this.actor.address },
-                );
+                await stakingWrapper
+                    .moveStake(
+                        new StakeInfo(StakeStatus.Undelegated),
+                        new StakeInfo(StakeStatus.Delegated, poolId),
+                        amount,
+                    )
+                    .awaitTransactionSuccessAsync({ from: this.actor.address });
             }
         }
 
@@ -84,10 +85,9 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
 
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
-                const undelegatedStake = await stakingWrapper.getOwnerStakeByStatus.callAsync(
-                    this.actor.address,
-                    StakeStatus.Undelegated,
-                );
+                const undelegatedStake = await stakingWrapper
+                    .getOwnerStakeByStatus(this.actor.address, StakeStatus.Undelegated)
+                    .callAsync();
                 const withdrawableStake = BigNumber.min(
                     undelegatedStake.currentEpochBalance,
                     undelegatedStake.nextEpochBalance,

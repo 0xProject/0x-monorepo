@@ -25,7 +25,6 @@ blockchainTests('ExchangeTransferSimulator', env => {
     let recipient: string;
     let exampleAssetData: string;
     let exchangeTransferSimulator: ExchangeTransferSimulator;
-    let txHash: string;
     let erc20ProxyAddress: string;
     const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider);
     before(async function(): Promise<void> {
@@ -65,7 +64,7 @@ blockchainTests('ExchangeTransferSimulator', env => {
             totalSupply,
         );
 
-        exampleAssetData = await devUtils.encodeERC20AssetData.callAsync(dummyERC20Token.address);
+        exampleAssetData = await devUtils.encodeERC20AssetData(dummyERC20Token.address).callAsync();
     });
     beforeEach(async () => {
         await env.blockchainLifecycle.startAsync();
@@ -103,10 +102,9 @@ blockchainTests('ExchangeTransferSimulator', env => {
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientTakerAllowance);
         });
         it("throws if the user doesn't have enough balance", async () => {
-            txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
+            await dummyERC20Token.approve(erc20ProxyAddress, transferAmount).awaitTransactionSuccessAsync({
                 from: sender,
             });
-            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
                     exampleAssetData,
@@ -119,15 +117,12 @@ blockchainTests('ExchangeTransferSimulator', env => {
             ).to.be.rejectedWith(ExchangeContractErrs.InsufficientMakerBalance);
         });
         it('updates balances and proxyAllowance after transfer', async () => {
-            txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
+            await dummyERC20Token.transfer(sender, transferAmount).awaitTransactionSuccessAsync({
                 from: coinbase,
             });
-            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
-
-            txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
+            await dummyERC20Token.approve(erc20ProxyAddress, transferAmount).awaitTransactionSuccessAsync({
                 from: sender,
             });
-            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
 
             await exchangeTransferSimulator.transferFromAsync(
                 exampleAssetData,
@@ -146,18 +141,14 @@ blockchainTests('ExchangeTransferSimulator', env => {
             expect(senderProxyAllowance).to.be.bignumber.equal(0);
         });
         it("doesn't update proxyAllowance after transfer if unlimited", async () => {
-            txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
+            await dummyERC20Token.transfer(sender, transferAmount).awaitTransactionSuccessAsync({
                 from: coinbase,
             });
-            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            txHash = await dummyERC20Token.approve.sendTransactionAsync(
-                erc20ProxyAddress,
-                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
-                {
+            await dummyERC20Token
+                .approve(erc20ProxyAddress, constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
+                .awaitTransactionSuccessAsync({
                     from: sender,
-                },
-            );
-            await env.web3Wrapper.awaitTransactionSuccessAsync(txHash);
+                });
             await exchangeTransferSimulator.transferFromAsync(
                 exampleAssetData,
                 sender,

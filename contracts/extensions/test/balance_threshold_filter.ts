@@ -128,7 +128,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         );
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
-        zrxAssetData = await devUtils.encodeERC20AssetData.callAsync(zrxToken.address);
+        zrxAssetData = await devUtils.encodeERC20AssetData(zrxToken.address).callAsync();
         // Create proxies
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
@@ -142,10 +142,10 @@ describe(ContractName.BalanceThresholdFilter, () => {
             new BigNumber(chainId),
         );
         // Register proxies
-        await exchangeInstance.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+        await exchangeInstance.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
             from: owner,
         });
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
+        await erc20Proxy.addAuthorizedAddress(exchangeInstance.address).awaitTransactionSuccessAsync({
             from: owner,
         });
         // Deploy Balance Threshold Filters
@@ -176,8 +176,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
         // Default order parameters
         defaultOrderParams = {
             feeRecipientAddress,
-            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
-            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(),
+            takerAssetData: await devUtils.encodeERC20AssetData(defaultTakerAssetAddress).callAsync(),
             makerAssetAmount,
             takerAssetAmount,
             makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
@@ -299,12 +299,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const badSelectorHex = '0x00000000';
             const signatureHex = '0x';
             // Call valid forwarder
-            const tx = erc721BalanceThresholdFilterInstance.executeTransaction.sendTransactionAsync(
-                salt,
-                validTakerAddress,
-                badSelectorHex,
-                signatureHex,
-            );
+            const tx = erc721BalanceThresholdFilterInstance
+                .executeTransaction(salt, validTakerAddress, badSelectorHex, signatureHex)
+                .sendTransactionAsync();
             return expect(tx).to.revertWith(RevertReason.InvalidOrBlockedExchangeSelector);
         });
         it('should revert if senderAddress is not set to the valid forwarding contract', async () => {
@@ -1242,8 +1239,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 feeRecipientAddress,
             });
             const signedOrderRight = await orderFactory2.newSignedOrderAsync({
-                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData(defaultTakerAssetAddress).callAsync(),
+                takerAssetData: await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
                 makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),

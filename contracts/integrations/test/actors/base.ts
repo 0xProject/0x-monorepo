@@ -54,22 +54,19 @@ export class Actor {
         amount?: BigNumber,
     ): Promise<void> {
         if (token instanceof DummyERC20TokenContract) {
-            await token.setBalance.awaitTransactionSuccessAsync(
-                this.address,
-                amount || constants.INITIAL_ERC20_BALANCE,
-            );
+            await token
+                .setBalance(this.address, amount || constants.INITIAL_ERC20_BALANCE)
+                .awaitTransactionSuccessAsync();
         } else {
-            await token.deposit.awaitTransactionSuccessAsync({
+            await token.deposit().awaitTransactionSuccessAsync({
                 from: this.address,
                 value: amount || constants.ONE_ETHER,
             });
         }
 
-        await token.approve.awaitTransactionSuccessAsync(
-            spender || this.deployment.assetProxies.erc20Proxy.address,
-            constants.MAX_UINT256,
-            { from: this.address },
-        );
+        await token
+            .approve(spender || this.deployment.assetProxies.erc20Proxy.address, constants.MAX_UINT256)
+            .awaitTransactionSuccessAsync({ from: this.address });
     }
 
     /**
@@ -84,19 +81,17 @@ export class Actor {
         const tokenIds: BigNumber[] = [];
         _.times(numToMint, async () => {
             const tokenId = getRandomInteger(constants.ZERO_AMOUNT, constants.MAX_UINT256);
-            await token.mint.awaitTransactionSuccessAsync(this.address, tokenId, {
+            await token.mint(this.address, tokenId).awaitTransactionSuccessAsync({
                 from: this.address,
             });
             tokenIds.push(tokenId);
         });
 
-        await token.setApprovalForAll.awaitTransactionSuccessAsync(
-            spender || this.deployment.assetProxies.erc721Proxy.address,
-            true,
-            {
+        await token
+            .setApprovalForAll(spender || this.deployment.assetProxies.erc721Proxy.address, true)
+            .awaitTransactionSuccessAsync({
                 from: this.address,
-            },
-        );
+            });
         return tokenIds;
     }
 

@@ -23,7 +23,7 @@ blockchainTests('LibSafeDowncast unit tests', env => {
 
     describe('downcastToUint96', () => {
         async function verifyCorrectDowncastAsync(n: Numberish): Promise<void> {
-            const actual = await testContract.downcastToUint96.callAsync(new BigNumber(n));
+            const actual = await testContract.downcastToUint96(new BigNumber(n)).callAsync();
             expect(actual).to.bignumber.eq(n);
         }
         function toDowncastError(n: Numberish): SafeMathRevertErrors.Uint256DowncastError {
@@ -54,7 +54,7 @@ blockchainTests('LibSafeDowncast unit tests', env => {
 
     describe('downcastToUint64', () => {
         async function verifyCorrectDowncastAsync(n: Numberish): Promise<void> {
-            const actual = await testContract.downcastToUint64.callAsync(new BigNumber(n));
+            const actual = await testContract.downcastToUint64(new BigNumber(n)).callAsync();
             expect(actual).to.bignumber.eq(n);
         }
         function toDowncastError(n: Numberish): SafeMathRevertErrors.Uint256DowncastError {

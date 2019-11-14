@@ -1,9 +1,7 @@
 import {
     constants,
     filterLogsToArguments,
-    MutatorContractFunction,
     orderHashUtils,
-    TransactionHelper,
     txDefaults as testTxDefaults,
 } from '@0x/contracts-test-utils';
 import { FillResults, Order, OrderInfo, SignatureType } from '@0x/types';
@@ -41,7 +39,6 @@ export const DEFAULT_BAD_SIGNATURE = createBadSignature();
 export class IsolatedExchangeWrapper {
     public static readonly CHAIN_ID = 1337;
     public readonly instance: IsolatedExchangeContract;
-    public readonly txHelper: TransactionHelper;
     public lastTxEvents: IsolatedExchangeEvents = createEmptyEvents();
     public lastTxBalanceChanges: AssetBalances = {};
 
@@ -71,19 +68,18 @@ export class IsolatedExchangeWrapper {
 
     public constructor(web3Wrapper: Web3Wrapper, instance: IsolatedExchangeContract) {
         this.instance = instance;
-        this.txHelper = new TransactionHelper(web3Wrapper, artifacts);
     }
 
     public async getTakerAssetFilledAmountAsync(order: Order): Promise<BigNumber> {
-        return this.instance.filled.callAsync(this.getOrderHash(order));
+        return this.instance.filled(this.getOrderHash(order)).callAsync();
     }
 
     public async cancelOrderAsync(order: Order, txOpts?: TxData): Promise<void> {
-        await this.instance.cancelOrder.awaitTransactionSuccessAsync(order, txOpts);
+        await this.instance.cancelOrder(order).awaitTransactionSuccessAsync(txOpts);
     }
 
     public async cancelOrdersUpToAsync(epoch: BigNumber, txOpts?: TxData): Promise<void> {
-        await this.instance.cancelOrdersUpTo.awaitTransactionSuccessAsync(epoch, txOpts);
+        await this.instance.cancelOrdersUpTo(epoch).awaitTransactionSuccessAsync(txOpts);
     }
 
     public async fillOrderAsync(
@@ -92,13 +88,14 @@ export class IsolatedExchangeWrapper {
         signature: string = DEFAULT_GOOD_SIGNATURE,
         txOpts?: TxData,
     ): Promise<FillResults> {
-        return this._runFillContractFunctionAsync(
-            this.instance.fillOrder,
-            order,
-            new BigNumber(takerAssetFillAmount),
-            signature,
-            txOpts,
-        );
+        this.lastTxEvents = createEmptyEvents();
+        this.lastTxBalanceChanges = {};
+        const fillOrderFn = this.instance.fillOrder(order, new BigNumber(takerAssetFillAmount), signature);
+        const result = await fillOrderFn.callAsync();
+        const receipt = await fillOrderFn.awaitTransactionSuccessAsync(txOpts);
+        this.lastTxEvents = extractEvents(receipt.logs);
+        this.lastTxBalanceChanges = getBalanceChangesFromTransferFromCalls(this.lastTxEvents.transferFromCalls);
+        return result;
     }
 
     public getOrderHash(order: Order): string {
@@ -110,7 +107,7 @@ export class IsolatedExchangeWrapper {
     }
 
     public async getOrderInfoAsync(order: Order): Promise<OrderInfo> {
-        return this.instance.getOrderInfo.callAsync(order);
+        return this.instance.getOrderInfo(order).callAsync();
     }
 
     public getBalanceChange(assetData: string, address: string): BigNumber {
@@ -121,23 +118,6 @@ export class IsolatedExchangeWrapper {
             }
         }
         return constants.ZERO_AMOUNT;
-    }
-
-    protected async _runFillContractFunctionAsync<
-        TCallAsyncArgs extends any[],
-        TAwaitTransactionSuccessAsyncArgs extends any[],
-        TResult
-    >(
-        contractFunction: MutatorContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TResult>,
-        // tslint:disable-next-line: trailing-comma
-        ...args: TAwaitTransactionSuccessAsyncArgs
-    ): Promise<TResult> {
-        this.lastTxEvents = createEmptyEvents();
-        this.lastTxBalanceChanges = {};
-        const [result, receipt] = await this.txHelper.getResultAndReceiptAsync(contractFunction, ...args);
-        this.lastTxEvents = extractEvents(receipt.logs);
-        this.lastTxBalanceChanges = getBalanceChangesFromTransferFromCalls(this.lastTxEvents.transferFromCalls);
-        return result;
     }
 }
 

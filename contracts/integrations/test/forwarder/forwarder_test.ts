@@ -56,8 +56,8 @@ blockchainTests('Forwarder integration tests', env => {
 
         [makerToken, makerFeeToken, anotherErc20Token] = deployment.tokens.erc20;
         [erc721Token] = deployment.tokens.erc721;
-        wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address);
-        makerAssetData = await devUtils.encodeERC20AssetData.callAsync(makerToken.address);
+        wethAssetData = await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync();
+        makerAssetData = await devUtils.encodeERC20AssetData(makerToken.address).callAsync();
 
         taker = new Actor({ name: 'Taker', deployment });
         orderFeeRecipient = new FeeRecipient({
@@ -78,7 +78,7 @@ blockchainTests('Forwarder integration tests', env => {
                 makerAssetData,
                 takerAssetData: wethAssetData,
                 takerFee: constants.ZERO_AMOUNT,
-                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(makerFeeToken.address),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData(makerFeeToken.address).callAsync(),
                 takerFeeAssetData: wethAssetData,
             },
         });
@@ -86,7 +86,7 @@ blockchainTests('Forwarder integration tests', env => {
         await maker.configureERC20TokenAsync(makerToken);
         await maker.configureERC20TokenAsync(makerFeeToken);
         await maker.configureERC20TokenAsync(anotherErc20Token);
-        await forwarder.approveMakerAssetProxy.awaitTransactionSuccessAsync(makerAssetData);
+        await forwarder.approveMakerAssetProxy(makerAssetData).awaitTransactionSuccessAsync();
         [nftId] = await maker.configureERC721TokenAsync(erc721Token);
 
         const tokenOwners = {
@@ -170,7 +170,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync(orders, 1.34);
         });
         it('should fail to fill an order with a percentage fee if the asset proxy is not yet approved', async () => {
-            const unapprovedAsset = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
+            const unapprovedAsset = await devUtils.encodeERC20AssetData(anotherErc20Token.address).callAsync();
             const order = await maker.signOrderAsync({
                 makerAssetData: unapprovedAsset,
                 takerFee: toBaseUnitAmount(2),
@@ -179,16 +179,17 @@ blockchainTests('Forwarder integration tests', env => {
 
             await balanceStore.updateBalancesAsync();
             // Execute test case
-            const tx = await forwarder.marketSellOrdersWithEth.awaitTransactionSuccessAsync(
-                [order],
-                [order.signature],
-                constants.ZERO_AMOUNT,
-                forwarderFeeRecipient.address,
-                {
+            const tx = await forwarder
+                .marketSellOrdersWithEth(
+                    [order],
+                    [order.signature],
+                    constants.ZERO_AMOUNT,
+                    forwarderFeeRecipient.address,
+                )
+                .awaitTransactionSuccessAsync({
                     value: order.takerAssetAmount.plus(DeploymentManager.protocolFee),
                     from: taker.address,
-                },
-            );
+                });
 
             const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
             expectedBalances.burnGas(tx.from, DeploymentManager.gasPrice.times(tx.gasUsed));
@@ -222,16 +223,17 @@ blockchainTests('Forwarder integration tests', env => {
             const order = await maker.signOrderAsync();
             const ethValue = order.takerAssetAmount.plus(DeploymentManager.protocolFee).plus(2);
             const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(taker.address);
-            const tx = await forwarder.marketSellOrdersWithEth.awaitTransactionSuccessAsync(
-                [order],
-                [order.signature],
-                constants.ZERO_AMOUNT,
-                forwarderFeeRecipient.address,
-                {
+            const tx = await forwarder
+                .marketSellOrdersWithEth(
+                    [order],
+                    [order.signature],
+                    constants.ZERO_AMOUNT,
+                    forwarderFeeRecipient.address,
+                )
+                .awaitTransactionSuccessAsync({
                     value: ethValue,
                     from: taker.address,
-                },
-            );
+                });
             const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(taker.address);
             const totalEthSpent = order.takerAssetAmount
                 .plus(DeploymentManager.protocolFee)
@@ -240,16 +242,18 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should fill orders with different makerAssetData', async () => {
             const firstOrder = await maker.signOrderAsync();
-            const secondOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
+            const secondOrderMakerAssetData = await devUtils
+                .encodeERC20AssetData(anotherErc20Token.address)
+                .callAsync();
             const secondOrder = await maker.signOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
-            await forwarder.approveMakerAssetProxy.awaitTransactionSuccessAsync(secondOrderMakerAssetData);
+            await forwarder.approveMakerAssetProxy(secondOrderMakerAssetData).awaitTransactionSuccessAsync();
             const orders = [firstOrder, secondOrder];
             await testFactory.marketSellTestAsync(orders, 1.5);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
+            const takerFeeAssetData = await devUtils.encodeERC20AssetData(anotherErc20Token.address).callAsync();
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
@@ -340,11 +344,13 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should buy exactly makerAssetBuyAmount in orders with different makerAssetData', async () => {
             const firstOrder = await maker.signOrderAsync();
-            const secondOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
+            const secondOrderMakerAssetData = await devUtils
+                .encodeERC20AssetData(anotherErc20Token.address)
+                .callAsync();
             const secondOrder = await maker.signOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
-            await forwarder.approveMakerAssetProxy.awaitTransactionSuccessAsync(secondOrderMakerAssetData);
+            await forwarder.approveMakerAssetProxy(secondOrderMakerAssetData).awaitTransactionSuccessAsync();
             const orders = [firstOrder, secondOrder];
             await testFactory.marketBuyTestAsync(orders, 1.5);
         });
@@ -389,7 +395,7 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset from a single order', async () => {
             const erc721Order = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, nftId),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, nftId).callAsync(),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721Order], 1);
@@ -397,14 +403,14 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset and pay a WETH fee', async () => {
             const erc721orderWithWethFee = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, nftId),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, nftId).callAsync(),
                 takerFee: toBaseUnitAmount(1),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721orderWithWethFee], 1);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = await devUtils.encodeERC20AssetData.callAsync(anotherErc20Token.address);
+            const takerFeeAssetData = await devUtils.encodeERC20AssetData(anotherErc20Token.address).callAsync();
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
@@ -482,17 +488,18 @@ blockchainTests('Forwarder integration tests', env => {
 
             await balanceStore.updateBalancesAsync();
             // Execute test case
-            const tx = await forwarder.marketBuyOrdersWithEth.awaitTransactionSuccessAsync(
-                [order],
-                desiredMakerAssetFillAmount,
-                [order.signature],
-                constants.ZERO_AMOUNT,
-                forwarderFeeRecipient.address,
-                {
+            const tx = await forwarder
+                .marketBuyOrdersWithEth(
+                    [order],
+                    desiredMakerAssetFillAmount,
+                    [order.signature],
+                    constants.ZERO_AMOUNT,
+                    forwarderFeeRecipient.address,
+                )
+                .awaitTransactionSuccessAsync({
                     value: ethValue,
                     from: taker.address,
-                },
-            );
+                });
 
             // Compute expected balances
             const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
@@ -538,17 +545,18 @@ blockchainTests('Forwarder integration tests', env => {
 
             await balanceStore.updateBalancesAsync();
             // Execute test case
-            const tx = await forwarder.marketBuyOrdersWithEth.awaitTransactionSuccessAsync(
-                [order],
-                desiredMakerAssetFillAmount,
-                [order.signature],
-                constants.ZERO_AMOUNT,
-                forwarderFeeRecipient.address,
-                {
+            const tx = await forwarder
+                .marketBuyOrdersWithEth(
+                    [order],
+                    desiredMakerAssetFillAmount,
+                    [order.signature],
+                    constants.ZERO_AMOUNT,
+                    forwarderFeeRecipient.address,
+                )
+                .awaitTransactionSuccessAsync({
                     value: takerAssetFillAmount.plus(DeploymentManager.protocolFee),
                     from: taker.address,
-                },
-            );
+                });
 
             // Compute expected balances
             const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);

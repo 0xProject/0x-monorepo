@@ -44,7 +44,7 @@ blockchainTests.resets('MixinProtocolFees', env => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
 
             // Ensure that the transaction reverts with the expected rich error.
-            const tx = exchange.setProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
+            const tx = exchange.setProtocolFeeCollectorAddress(protocolFeeCollector).sendTransactionAsync({
                 from: nonOwner,
             });
             return expect(tx).to.revertWith(expectedError);
@@ -52,15 +52,14 @@ blockchainTests.resets('MixinProtocolFees', env => {
 
         it('should succeed and emit an ProtocolFeeMultiplier event if msg.sender == owner', async () => {
             // Call the `setProtocolFeeMultiplier()` function and get the receipt.
-            const receipt = await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(
-                protocolFeeMultiplier,
-                {
+            const receipt = await exchange
+                .setProtocolFeeMultiplier(protocolFeeMultiplier)
+                .awaitTransactionSuccessAsync({
                     from: owner,
-                },
-            );
+                });
 
             // Verify that the protocolFeeCollector address was actually updated to the correct address.
-            const updated = await exchange.protocolFeeMultiplier.callAsync();
+            const updated = await exchange.protocolFeeMultiplier().callAsync();
             expect(updated).bignumber.to.be.eq(protocolFeeMultiplier);
 
             // Ensure that the correct `ProtocolFeeCollectorAddress` event was logged.
@@ -77,7 +76,7 @@ blockchainTests.resets('MixinProtocolFees', env => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
 
             // Ensure that the transaction reverts with the expected rich error.
-            const tx = exchange.setProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
+            const tx = exchange.setProtocolFeeCollectorAddress(protocolFeeCollector).sendTransactionAsync({
                 from: nonOwner,
             });
             return expect(tx).to.revertWith(expectedError);
@@ -85,15 +84,14 @@ blockchainTests.resets('MixinProtocolFees', env => {
 
         it('should succeed and emit an ProtocolFeeCollectorAddress event if msg.sender == owner', async () => {
             // Call the `setProtocolFeeCollectorAddress()` function and get the receipt.
-            const receipt = await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(
-                protocolFeeCollector,
-                {
+            const receipt = await exchange
+                .setProtocolFeeCollectorAddress(protocolFeeCollector)
+                .awaitTransactionSuccessAsync({
                     from: owner,
-                },
-            );
+                });
 
             // Verify that the protocolFeeCollector address was actually updated to the correct address.
-            const updated = await exchange.protocolFeeCollector.callAsync();
+            const updated = await exchange.protocolFeeCollector().callAsync();
             expect(updated).to.be.eq(protocolFeeCollector);
 
             // Ensure that the correct `UpdatedProtocolFeeCollectorAddress` event was logged.
@@ -110,23 +108,23 @@ blockchainTests.resets('MixinProtocolFees', env => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
 
             // Ensure that the transaction reverts with the expected rich error.
-            const tx = exchange.detachProtocolFeeCollector.sendTransactionAsync({
+            const tx = exchange.detachProtocolFeeCollector().sendTransactionAsync({
                 from: nonOwner,
             });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should succeed and emit an ProtocolFeeCollectorAddress event if msg.sender == owner', async () => {
-            await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(protocolFeeCollector, {
+            await exchange.setProtocolFeeCollectorAddress(protocolFeeCollector).awaitTransactionSuccessAsync({
                 from: owner,
             });
 
-            const receipt = await exchange.detachProtocolFeeCollector.awaitTransactionSuccessAsync({
+            const receipt = await exchange.detachProtocolFeeCollector().awaitTransactionSuccessAsync({
                 from: owner,
             });
 
             // Verify that the protocolFeeCollector address was actually updated to the correct address.
-            const updated = await exchange.protocolFeeCollector.callAsync();
+            const updated = await exchange.protocolFeeCollector().callAsync();
             expect(updated).to.be.eq(constants.NULL_ADDRESS);
 
             // Ensure that the correct `UpdatedProtocolFeeCollectorAddress` event was logged.

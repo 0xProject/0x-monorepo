@@ -62,11 +62,10 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
         );
 
         before(async () => {
-            await testContract.setGlobalStakeByStatus.awaitTransactionSuccessAsync(
-                StakeStatus.Delegated,
-                delegatedBalance,
-            );
-            await testContract.setBalanceOfZrxVault.awaitTransactionSuccessAsync(zrxVaultBalance);
+            await testContract
+                .setGlobalStakeByStatus(StakeStatus.Delegated, delegatedBalance)
+                .awaitTransactionSuccessAsync();
+            await testContract.setBalanceOfZrxVault(zrxVaultBalance).awaitTransactionSuccessAsync();
         });
 
         it('undelegated stake is the difference between zrx vault balance and global delegated stake', async () => {
@@ -75,12 +74,12 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
                 currentEpochBalance: zrxVaultBalance.minus(delegatedBalance.currentEpochBalance),
                 nextEpochBalance: zrxVaultBalance.minus(delegatedBalance.nextEpochBalance),
             };
-            const actualBalance = await testContract.getGlobalStakeByStatus.callAsync(StakeStatus.Undelegated);
+            const actualBalance = await testContract.getGlobalStakeByStatus(StakeStatus.Undelegated).callAsync();
             expect(actualBalance).to.deep.eq(expectedBalance);
         });
 
         it('delegated stake is the global delegated stake', async () => {
-            const actualBalance = await testContract.getGlobalStakeByStatus.callAsync(StakeStatus.Delegated);
+            const actualBalance = await testContract.getGlobalStakeByStatus(StakeStatus.Delegated).callAsync();
             expect(actualBalance).to.deep.eq(toCurrentBalance(delegatedBalance));
         });
 
@@ -89,8 +88,8 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
                 delegatedBalance.currentEpochBalance,
                 delegatedBalance.nextEpochBalance,
             ).minus(1);
-            await testContract.setBalanceOfZrxVault.awaitTransactionSuccessAsync(_zrxVaultBalance);
-            const tx = testContract.getGlobalStakeByStatus.callAsync(StakeStatus.Undelegated);
+            await testContract.setBalanceOfZrxVault(_zrxVaultBalance).awaitTransactionSuccessAsync();
+            const tx = testContract.getGlobalStakeByStatus(StakeStatus.Undelegated).callAsync();
             const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
                 SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 _zrxVaultBalance,
@@ -102,7 +101,7 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
         });
 
         it('throws if unknown stake status is passed in', async () => {
-            const tx = testContract.getGlobalStakeByStatus.callAsync(2);
+            const tx = testContract.getGlobalStakeByStatus(2).callAsync();
             return expect(tx).to.be.rejected();
         });
     });
@@ -114,40 +113,36 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
         const undelegatedStake = randomStoredBalance();
 
         before(async () => {
-            await testContract.setOwnerStakeByStatus.awaitTransactionSuccessAsync(
-                staker,
-                StakeStatus.Delegated,
-                delegatedStake,
-            );
-            await testContract.setOwnerStakeByStatus.awaitTransactionSuccessAsync(
-                staker,
-                StakeStatus.Undelegated,
-                undelegatedStake,
-            );
+            await testContract
+                .setOwnerStakeByStatus(staker, StakeStatus.Delegated, delegatedStake)
+                .awaitTransactionSuccessAsync();
+            await testContract
+                .setOwnerStakeByStatus(staker, StakeStatus.Undelegated, undelegatedStake)
+                .awaitTransactionSuccessAsync();
         });
 
         it('throws if unknown stake status is passed in', async () => {
-            const tx = testContract.getOwnerStakeByStatus.callAsync(staker, 2);
+            const tx = testContract.getOwnerStakeByStatus(staker, 2).callAsync();
             return expect(tx).to.be.rejected();
         });
 
         it('returns empty delegated stake for an unstaked owner', async () => {
-            const balance = await testContract.getOwnerStakeByStatus.callAsync(notStaker, StakeStatus.Delegated);
+            const balance = await testContract.getOwnerStakeByStatus(notStaker, StakeStatus.Delegated).callAsync();
             expect(balance).to.deep.eq(EMPTY_BALANCE);
         });
 
         it('returns empty undelegated stake for an unstaked owner', async () => {
-            const balance = await testContract.getOwnerStakeByStatus.callAsync(notStaker, StakeStatus.Undelegated);
+            const balance = await testContract.getOwnerStakeByStatus(notStaker, StakeStatus.Undelegated).callAsync();
             expect(balance).to.deep.eq(EMPTY_BALANCE);
         });
 
         it('returns undelegated stake for a staked owner', async () => {
-            const balance = await testContract.getOwnerStakeByStatus.callAsync(staker, StakeStatus.Undelegated);
+            const balance = await testContract.getOwnerStakeByStatus(staker, StakeStatus.Undelegated).callAsync();
             expect(balance).to.deep.eq(toCurrentBalance(undelegatedStake));
         });
 
         it('returns delegated stake for a staked owner', async () => {
-            const balance = await testContract.getOwnerStakeByStatus.callAsync(staker, StakeStatus.Delegated);
+            const balance = await testContract.getOwnerStakeByStatus(staker, StakeStatus.Delegated).callAsync();
             expect(balance).to.deep.eq(toCurrentBalance(delegatedStake));
         });
     });
@@ -158,16 +153,16 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
         const stakerAmount = randomAmount();
 
         before(async () => {
-            await testContract.setZrxBalanceOf.awaitTransactionSuccessAsync(staker, stakerAmount);
+            await testContract.setZrxBalanceOf(staker, stakerAmount).awaitTransactionSuccessAsync();
         });
 
         it('returns empty for unstaked owner', async () => {
-            const amount = await testContract.getTotalStake.callAsync(notStaker);
+            const amount = await testContract.getTotalStake(notStaker).callAsync();
             expect(amount).to.bignumber.eq(0);
         });
 
         it('returns stake for staked owner', async () => {
-            const amount = await testContract.getTotalStake.callAsync(staker);
+            const amount = await testContract.getTotalStake(staker).callAsync();
             expect(amount).to.bignumber.eq(stakerAmount);
         });
     });
@@ -180,25 +175,23 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
         const delegatedBalance = randomStoredBalance();
 
         before(async () => {
-            await testContract.setDelegatedStakeToPoolByOwner.awaitTransactionSuccessAsync(
-                staker,
-                poolId,
-                delegatedBalance,
-            );
+            await testContract
+                .setDelegatedStakeToPoolByOwner(staker, poolId, delegatedBalance)
+                .awaitTransactionSuccessAsync();
         });
 
         it('returns empty for unstaked owner', async () => {
-            const balance = await testContract.getStakeDelegatedToPoolByOwner.callAsync(notStaker, poolId);
+            const balance = await testContract.getStakeDelegatedToPoolByOwner(notStaker, poolId).callAsync();
             expect(balance).to.deep.eq(EMPTY_BALANCE);
         });
 
         it('returns empty for empty pool', async () => {
-            const balance = await testContract.getStakeDelegatedToPoolByOwner.callAsync(staker, notPoolId);
+            const balance = await testContract.getStakeDelegatedToPoolByOwner(staker, notPoolId).callAsync();
             expect(balance).to.deep.eq(EMPTY_BALANCE);
         });
 
         it('returns stake for staked owner in their pool', async () => {
-            const balance = await testContract.getStakeDelegatedToPoolByOwner.callAsync(staker, poolId);
+            const balance = await testContract.getStakeDelegatedToPoolByOwner(staker, poolId).callAsync();
             expect(balance).to.deep.eq(toCurrentBalance(delegatedBalance));
         });
     });
@@ -209,16 +202,16 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
         const delegatedBalance = randomStoredBalance();
 
         before(async () => {
-            await testContract.setDelegatedStakeByPoolId.awaitTransactionSuccessAsync(poolId, delegatedBalance);
+            await testContract.setDelegatedStakeByPoolId(poolId, delegatedBalance).awaitTransactionSuccessAsync();
         });
 
         it('returns empty for empty pool', async () => {
-            const balance = await testContract.getTotalStakeDelegatedToPool.callAsync(notPoolId);
+            const balance = await testContract.getTotalStakeDelegatedToPool(notPoolId).callAsync();
             expect(balance).to.deep.eq(EMPTY_BALANCE);
         });
 
         it('returns stake for staked pool', async () => {
-            const balance = await testContract.getTotalStakeDelegatedToPool.callAsync(poolId);
+            const balance = await testContract.getTotalStakeDelegatedToPool(poolId).callAsync();
             expect(balance).to.deep.eq(toCurrentBalance(delegatedBalance));
         });
     });

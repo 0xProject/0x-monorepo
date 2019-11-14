@@ -39,13 +39,9 @@ blockchainTests('LibERC20Token', env => {
         it('calls the target with the correct arguments', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const { logs } = await testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                spender,
-                allowance,
-            );
+            const { logs } = await testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), ENCODED_TRUE, spender, allowance)
+                .awaitTransactionSuccessAsync();
             expect(logs).to.be.length(1);
             verifyEventsFromLogs(logs, [{ spender, allowance }], TestLibERC20TokenTargetEvents.ApproveCalled);
         });
@@ -53,37 +49,25 @@ blockchainTests('LibERC20Token', env => {
         it('succeeds if the target returns true', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            await testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                spender,
-                allowance,
-            );
+            await testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), ENCODED_TRUE, spender, allowance)
+                .awaitTransactionSuccessAsync();
         });
 
         it('succeeds if the target returns nothing', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            await testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                constants.NULL_BYTES,
-                spender,
-                allowance,
-            );
+            await testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), constants.NULL_BYTES, spender, allowance)
+                .awaitTransactionSuccessAsync();
         });
 
         it('fails if the target returns false', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const tx = testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_FALSE,
-                spender,
-                allowance,
-            );
+            const tx = testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), ENCODED_FALSE, spender, allowance)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_FALSE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -91,13 +75,9 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target returns nonzero and not true', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const tx = testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TWO,
-                spender,
-                allowance,
-            );
+            const tx = testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), ENCODED_TWO, spender, allowance)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_TWO);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -105,13 +85,9 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target returns less than 32 bytes', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const tx = testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_SHORT_TRUE,
-                spender,
-                allowance,
-            );
+            const tx = testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), ENCODED_SHORT_TRUE, spender, allowance)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_SHORT_TRUE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -119,13 +95,9 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target returns greater than 32 bytes', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const tx = testContract.testApprove.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_LONG_TRUE,
-                spender,
-                allowance,
-            );
+            const tx = testContract
+                .testApprove(false, encodeRevert(REVERT_STRING), ENCODED_LONG_TRUE, spender, allowance)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_LONG_TRUE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -133,26 +105,18 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target reverts', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const tx = testContract.testApprove.awaitTransactionSuccessAsync(
-                true,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                spender,
-                allowance,
-            );
+            const tx = testContract
+                .testApprove(true, encodeRevert(REVERT_STRING), ENCODED_TRUE, spender, allowance)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(REVERT_STRING);
         });
 
         it('fails if the target reverts with no data', async () => {
             const spender = randomAddress();
             const allowance = getRandomInteger(0, 100e18);
-            const tx = testContract.testApprove.awaitTransactionSuccessAsync(
-                true,
-                constants.NULL_BYTES,
-                ENCODED_TRUE,
-                spender,
-                allowance,
-            );
+            const tx = testContract
+                .testApprove(true, constants.NULL_BYTES, ENCODED_TRUE, spender, allowance)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.be.rejectedWith('revert');
         });
     });
@@ -161,13 +125,9 @@ blockchainTests('LibERC20Token', env => {
         it('calls the target with the correct arguments', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const { logs } = await testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                to,
-                amount,
-            );
+            const { logs } = await testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), ENCODED_TRUE, to, amount)
+                .awaitTransactionSuccessAsync();
             expect(logs).to.be.length(1);
             verifyEventsFromLogs(logs, [{ to, amount }], TestLibERC20TokenTargetEvents.TransferCalled);
         });
@@ -175,37 +135,25 @@ blockchainTests('LibERC20Token', env => {
         it('succeeds if the target returns true', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            await testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                to,
-                amount,
-            );
+            await testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), ENCODED_TRUE, to, amount)
+                .awaitTransactionSuccessAsync();
         });
 
         it('succeeds if the target returns nothing', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            await testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                constants.NULL_BYTES,
-                to,
-                amount,
-            );
+            await testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), constants.NULL_BYTES, to, amount)
+                .awaitTransactionSuccessAsync();
         });
 
         it('fails if the target returns false', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_FALSE,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), ENCODED_FALSE, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_FALSE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -213,13 +161,9 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target returns nonzero and not true', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TWO,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), ENCODED_TWO, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_TWO);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -227,13 +171,9 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target returns less than 32 bytes', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_SHORT_TRUE,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), ENCODED_SHORT_TRUE, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_SHORT_TRUE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -241,13 +181,9 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target returns greater than 32 bytes', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransfer.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_LONG_TRUE,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransfer(false, encodeRevert(REVERT_STRING), ENCODED_LONG_TRUE, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_LONG_TRUE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -255,26 +191,18 @@ blockchainTests('LibERC20Token', env => {
         it('fails if the target reverts', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransfer.awaitTransactionSuccessAsync(
-                true,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransfer(true, encodeRevert(REVERT_STRING), ENCODED_TRUE, to, amount)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(REVERT_STRING);
         });
 
         it('fails if the target reverts with no data', async () => {
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransfer.awaitTransactionSuccessAsync(
-                true,
-                constants.NULL_BYTES,
-                ENCODED_TRUE,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransfer(true, constants.NULL_BYTES, ENCODED_TRUE, to, amount)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.be.rejectedWith('revert');
         });
     });
@@ -284,14 +212,9 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const { logs } = await testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                owner,
-                to,
-                amount,
-            );
+            const { logs } = await testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), ENCODED_TRUE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             expect(logs).to.be.length(1);
             verifyEventsFromLogs(logs, [{ from: owner, to, amount }], TestLibERC20TokenTargetEvents.TransferFromCalled);
         });
@@ -300,42 +223,27 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            await testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                owner,
-                to,
-                amount,
-            );
+            await testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), ENCODED_TRUE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
         });
 
         it('succeeds if the target returns nothing', async () => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            await testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                constants.NULL_BYTES,
-                owner,
-                to,
-                amount,
-            );
+            await testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), constants.NULL_BYTES, owner, to, amount)
+                .awaitTransactionSuccessAsync();
         });
 
         it('fails if the target returns false', async () => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_FALSE,
-                owner,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), ENCODED_FALSE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_FALSE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -344,14 +252,9 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TWO,
-                owner,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), ENCODED_TWO, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_TWO);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -360,14 +263,9 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_SHORT_TRUE,
-                owner,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), ENCODED_SHORT_TRUE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_SHORT_TRUE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -376,14 +274,9 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                false,
-                encodeRevert(REVERT_STRING),
-                ENCODED_LONG_TRUE,
-                owner,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransferFrom(false, encodeRevert(REVERT_STRING), ENCODED_LONG_TRUE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             const expectedError = new RawRevertError(ENCODED_LONG_TRUE);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -392,14 +285,9 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                true,
-                encodeRevert(REVERT_STRING),
-                ENCODED_TRUE,
-                owner,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransferFrom(true, encodeRevert(REVERT_STRING), ENCODED_TRUE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(REVERT_STRING);
         });
 
@@ -407,14 +295,9 @@ blockchainTests('LibERC20Token', env => {
             const owner = randomAddress();
             const to = randomAddress();
             const amount = getRandomInteger(0, 100e18);
-            const tx = testContract.testTransferFrom.awaitTransactionSuccessAsync(
-                true,
-                constants.NULL_BYTES,
-                ENCODED_TRUE,
-                owner,
-                to,
-                amount,
-            );
+            const tx = testContract
+                .testTransferFrom(true, constants.NULL_BYTES, ENCODED_TRUE, owner, to, amount)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.be.rejectedWith('revert');
         });
     });

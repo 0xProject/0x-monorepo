@@ -177,7 +177,7 @@ export class AssetBuyer {
     ): Promise<BuyQuote> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
-        const assetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(tokenAddress);
+        const assetData = await this._contractWrappers.devUtils.encodeERC20AssetData(tokenAddress).callAsync();
         const buyQuote = this.getBuyQuoteAsync(assetData, assetBuyAmount, options);
         return buyQuote;
     }
@@ -267,19 +267,20 @@ export class AssetBuyer {
             // if no ethAmount is provided, default to the worst ethAmount from buyQuote
             const value = ethAmount || worstCaseQuoteInfo.totalEthAmount;
 
-            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
-                orders,
-                assetBuyAmount,
-                orders.map(o => o.signature),
-                formattedFeePercentage,
-                feeRecipient,
-                {
+            const txHash = await this._contractWrappers.forwarder
+                .marketBuyOrdersWithEth(
+                    orders,
+                    assetBuyAmount,
+                    orders.map(o => o.signature),
+                    formattedFeePercentage,
+                    feeRecipient,
+                )
+                .sendTransactionAsync({
                     value,
                     from: finalTakerAddress.toLowerCase(),
                     gas: gasLimit,
                     gasPrice,
-                },
-            );
+                });
 
             return txHash;
         } catch (err) {
@@ -360,17 +361,17 @@ export class AssetBuyer {
      * Will throw if WETH does not exist for the current chain.
      */
     private async _getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-            this._contractWrappers.contractAddresses.etherToken,
-        );
+        return this._contractWrappers.devUtils
+            .encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken)
+            .callAsync();
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current chain.
      */
     private async _getZrxTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-            this._contractWrappers.contractAddresses.zrxToken,
-        );
+        return this._contractWrappers.devUtils
+            .encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken)
+            .callAsync();
     }
 }

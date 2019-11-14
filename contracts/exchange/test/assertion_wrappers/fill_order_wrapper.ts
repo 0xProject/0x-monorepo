@@ -154,9 +154,9 @@ export class FillOrderWrapper {
     ): Promise<void> {
         // Get init state
         await this._blockchainBalanceStore.updateBalancesAsync();
-        const initTakerAssetFilledAmount = await this._exchange.filled.callAsync(
-            orderHashUtils.getOrderHashHex(signedOrder),
-        );
+        const initTakerAssetFilledAmount = await this._exchange
+            .filled(orderHashUtils.getOrderHashHex(signedOrder))
+            .callAsync();
         // Assert init state of exchange
         await this._assertOrderStateAsync(signedOrder, initTakerAssetFilledAmount);
         // Simulate and execute fill then assert outputs
@@ -187,18 +187,12 @@ export class FillOrderWrapper {
         opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<[FillResults, FillEventArgs, TransactionReceiptWithDecodedLogs]> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
-        const fillResults = await this._exchange.fillOrder.callAsync(
-            params.order,
-            params.takerAssetFillAmount,
-            params.signature,
-            { from },
-        );
-        const txReceipt = await this._exchange.fillOrder.awaitTransactionSuccessAsync(
-            params.order,
-            params.takerAssetFillAmount,
-            params.signature,
-            { from },
-        );
+        const fillResults = await this._exchange
+            .fillOrder(params.order, params.takerAssetFillAmount, params.signature)
+            .callAsync({ from });
+        const txReceipt = await this._exchange
+            .fillOrder(params.order, params.takerAssetFillAmount, params.signature)
+            .awaitTransactionSuccessAsync({ from });
         const fillEvent = FillOrderWrapper._extractFillEventsfromReceipt(txReceipt)[0];
         return [fillResults, fillEvent, txReceipt];
     }
@@ -213,7 +207,7 @@ export class FillOrderWrapper {
         order: SignedOrder,
         expectedFilledAmount: BigNumber = new BigNumber(0),
     ): Promise<void> {
-        const orderInfo = await this._exchange.getOrderInfo.callAsync(order);
+        const orderInfo = await this._exchange.getOrderInfo(order).callAsync();
         // Check filled amount of order.
         const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
         expect(actualFilledAmount, 'order filled amount').to.be.bignumber.equal(expectedFilledAmount);

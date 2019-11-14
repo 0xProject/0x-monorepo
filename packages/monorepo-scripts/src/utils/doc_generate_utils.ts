@@ -427,9 +427,9 @@ export class DocGenerateUtils {
                         throw new Error(
                             `GENERATE_DOCS: WARNING - ${
                                 this._packageName
-                            } is exporting one of ${innerExportItems} which is
-                            itself exported from an external package. To fix this, export the external dependency directly,
-                            not indirectly through ${innerExportPath}.`,
+                            } is exporting one of ${innerExportItems} from a package which is itself exporting from another\
+                            internal package ${innerExportPath}. To fix this, export the dependency directly from ${innerExportPath}\
+                            instead of the intermediate package.`,
                         );
                     } else {
                         const absoluteSrcPath = path.join(pathIfExists, 'src', `${innerExportPath}.ts`);

@@ -64,7 +64,7 @@ export class BlockchainBalanceStore extends BalanceStore {
             this._ownerAddresses.map(async account =>
                 _.zipObject(
                     this._tokenContracts.erc20.map(token => token.address),
-                    await Promise.all(this._tokenContracts.erc20.map(token => token.balanceOf.callAsync(account))),
+                    await Promise.all(this._tokenContracts.erc20.map(token => token.balanceOf(account).callAsync())),
                 ),
             ),
         );
@@ -83,7 +83,7 @@ export class BlockchainBalanceStore extends BalanceStore {
         this.balances.erc721 = {};
         for (const [tokenAddress, tokenIds] of Object.entries(this._tokenIds.erc721)) {
             for (const tokenId of tokenIds) {
-                const tokenOwner = await erc721ContractsByAddress[tokenAddress].ownerOf.callAsync(tokenId);
+                const tokenOwner = await erc721ContractsByAddress[tokenAddress].ownerOf(tokenId).callAsync();
                 _.update(this.balances.erc721, [tokenOwner, tokenAddress], nfts => _.union([tokenId], nfts).sort());
             }
         }
@@ -108,10 +108,9 @@ export class BlockchainBalanceStore extends BalanceStore {
             const [_tokenIds, _tokenOwners] = _.unzip(
                 combinatorics.cartesianProduct(tokenIds, this._ownerAddresses).toArray(),
             );
-            const balances = await contract.balanceOfBatch.callAsync(
-                _tokenOwners as string[],
-                _tokenIds as BigNumber[],
-            );
+            const balances = await contract
+                .balanceOfBatch(_tokenOwners as string[], _tokenIds as BigNumber[])
+                .callAsync();
 
             let i = 0;
             for (const tokenOwner of this._ownerAddresses) {

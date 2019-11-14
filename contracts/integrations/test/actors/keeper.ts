@@ -37,14 +37,14 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             if (shouldFastForward) {
                 // increase timestamp of next block by how many seconds we need to
                 // get to the next epoch.
-                const epochEndTime = await stakingWrapper.getCurrentEpochEarliestEndTimeInSeconds.callAsync();
+                const epochEndTime = await stakingWrapper.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
                 const lastBlockTime = await web3Wrapper.getBlockTimestampAsync('latest');
                 const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
                 await web3Wrapper.increaseTimeAsync(dt);
                 // mine next block
                 await web3Wrapper.mineBlockAsync();
             }
-            return stakingWrapper.endEpoch.awaitTransactionSuccessAsync({ from: this.actor.address });
+            return stakingWrapper.endEpoch().awaitTransactionSuccessAsync({ from: this.actor.address });
         }
 
         /**
@@ -55,7 +55,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             const { stakingWrapper } = this.actor.deployment.staking;
             // If no poolIds provided, finalize all active pools from the previous epoch
             if (poolIds.length === 0) {
-                const previousEpoch = (await stakingWrapper.currentEpoch.callAsync()).minus(1);
+                const previousEpoch = (await stakingWrapper.currentEpoch().callAsync()).minus(1);
                 const events = filterLogsToArguments<IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs>(
                     await stakingWrapper.getLogsAsync(
                         TestStakingEvents.StakingPoolEarnedRewardsInEpoch,
@@ -69,7 +69,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
 
             return Promise.all(
                 poolIds.map(async poolId =>
-                    stakingWrapper.finalizePool.awaitTransactionSuccessAsync(poolId, {
+                    stakingWrapper.finalizePool(poolId).awaitTransactionSuccessAsync({
                         from: this.actor.address,
                     }),
                 ),

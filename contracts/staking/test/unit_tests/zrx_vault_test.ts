@@ -49,7 +49,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
         zrxProxyAddress = erc20ProxyContract.address;
         // deploy zrx token
         const [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, constants.DUMMY_TOKEN_DECIMALS);
-        zrxAssetData = await devUtils.encodeERC20AssetData.callAsync(zrxTokenContract.address);
+        zrxAssetData = await devUtils.encodeERC20AssetData(zrxTokenContract.address).callAsync();
 
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -62,10 +62,10 @@ blockchainTests.resets('ZrxVault unit tests', env => {
             zrxTokenContract.address,
         );
 
-        await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(owner);
+        await zrxVault.addAuthorizedAddress(owner).awaitTransactionSuccessAsync();
 
         // configure erc20 proxy to accept calls from zrx vault
-        await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVault.address);
+        await erc20ProxyContract.addAuthorizedAddress(zrxVault.address).awaitTransactionSuccessAsync();
     });
 
     enum ZrxTransfer {
@@ -89,7 +89,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
         expect(eventArgs[0].staker).to.equal(staker);
         expect(eventArgs[0].amount).to.bignumber.equal(amount);
 
-        const newVaultBalance = await zrxVault.balanceOf.callAsync(staker);
+        const newVaultBalance = await zrxVault.balanceOf(staker).callAsync();
         const newTokenBalance = await erc20Wrapper.getBalanceAsync(staker, zrxAssetData);
         const [expectedVaultBalance, expectedTokenBalance] =
             transferType === ZrxTransfer.Deposit
@@ -111,13 +111,13 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                 );
                 expect(eventArgs.length).to.equal(1);
                 expect(eventArgs[0].stakingProxyAddress).to.equal(newProxy);
-                const actualAddress = await zrxVault.stakingProxyAddress.callAsync();
+                const actualAddress = await zrxVault.stakingProxyAddress().callAsync();
                 expect(actualAddress).to.equal(newProxy);
             }
 
             it('Owner can set the ZRX proxy', async () => {
                 const newProxy = nonOwnerAddresses[0];
-                const receipt = await zrxVault.setZrxProxy.awaitTransactionSuccessAsync(newProxy, {
+                const receipt = await zrxVault.setZrxProxy(newProxy).awaitTransactionSuccessAsync({
                     from: owner,
                 });
                 const eventArgs = filterLogsToArguments<ZrxVaultZrxProxySetEventArgs>(receipt.logs, 'ZrxProxySet');
@@ -126,8 +126,8 @@ blockchainTests.resets('ZrxVault unit tests', env => {
             });
             it('Authorized address can set the ZRX proxy', async () => {
                 const [authorized, newProxy] = nonOwnerAddresses;
-                await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
-                const receipt = await zrxVault.setZrxProxy.awaitTransactionSuccessAsync(newProxy, {
+                await zrxVault.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
+                const receipt = await zrxVault.setZrxProxy(newProxy).awaitTransactionSuccessAsync({
                     from: authorized,
                 });
                 const eventArgs = filterLogsToArguments<ZrxVaultZrxProxySetEventArgs>(receipt.logs, 'ZrxProxySet');
@@ -136,7 +136,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
             });
             it('Non-authorized address cannot set the ZRX proxy', async () => {
                 const [notAuthorized, newProxy] = nonOwnerAddresses;
-                const tx = zrxVault.setZrxProxy.awaitTransactionSuccessAsync(newProxy, {
+                const tx = zrxVault.setZrxProxy(newProxy).awaitTransactionSuccessAsync({
                     from: notAuthorized,
                 });
                 const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorized);
@@ -144,27 +144,27 @@ blockchainTests.resets('ZrxVault unit tests', env => {
             });
             it('Owner can set the staking proxy', async () => {
                 const newProxy = nonOwnerAddresses[0];
-                const receipt = await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(newProxy, {
+                const receipt = await zrxVault.setStakingProxy(newProxy).awaitTransactionSuccessAsync({
                     from: owner,
                 });
                 await verifyStakingProxySetAsync(receipt, newProxy);
             });
             it('Authorized address can set the staking proxy', async () => {
                 const [authorized, newProxy] = nonOwnerAddresses;
-                await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
-                const receipt = await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(newProxy, {
+                await zrxVault.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
+                const receipt = await zrxVault.setStakingProxy(newProxy).awaitTransactionSuccessAsync({
                     from: authorized,
                 });
                 await verifyStakingProxySetAsync(receipt, newProxy);
             });
             it('Non-authorized address cannot set the staking proxy', async () => {
                 const [notAuthorized, newProxy] = nonOwnerAddresses;
-                const tx = zrxVault.setStakingProxy.awaitTransactionSuccessAsync(newProxy, {
+                const tx = zrxVault.setStakingProxy(newProxy).awaitTransactionSuccessAsync({
                     from: notAuthorized,
                 });
                 const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorized);
                 expect(tx).to.revertWith(expectedError);
-                const actualAddress = await zrxVault.stakingProxyAddress.callAsync();
+                const actualAddress = await zrxVault.stakingProxyAddress().callAsync();
                 expect(actualAddress).to.equal(stakingConstants.NIL_ADDRESS);
             });
         });
@@ -176,26 +176,24 @@ blockchainTests.resets('ZrxVault unit tests', env => {
 
             before(async () => {
                 [staker, stakingProxy] = nonOwnerAddresses;
-                await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy, { from: owner });
-                await zrxVault.depositFrom.awaitTransactionSuccessAsync(staker, new BigNumber(10), {
+                await zrxVault.setStakingProxy(stakingProxy).awaitTransactionSuccessAsync({ from: owner });
+                await zrxVault.depositFrom(staker, new BigNumber(10)).awaitTransactionSuccessAsync({
                     from: stakingProxy,
                 });
             });
 
             beforeEach(async () => {
-                initialVaultBalance = await zrxVault.balanceOf.callAsync(staker);
+                initialVaultBalance = await zrxVault.balanceOf(staker).callAsync();
                 initialTokenBalance = await erc20Wrapper.getBalanceAsync(staker, zrxAssetData);
             });
 
             describe('Deposit', () => {
                 it('Staking proxy can deposit zero amount on behalf of staker', async () => {
-                    const receipt = await zrxVault.depositFrom.awaitTransactionSuccessAsync(
-                        staker,
-                        constants.ZERO_AMOUNT,
-                        {
+                    const receipt = await zrxVault
+                        .depositFrom(staker, constants.ZERO_AMOUNT)
+                        .awaitTransactionSuccessAsync({
                             from: stakingProxy,
-                        },
-                    );
+                        });
                     await verifyTransferPostconditionsAsync(
                         ZrxTransfer.Deposit,
                         staker,
@@ -206,7 +204,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it('Staking proxy can deposit nonzero amount on behalf of staker', async () => {
-                    const receipt = await zrxVault.depositFrom.awaitTransactionSuccessAsync(staker, new BigNumber(1), {
+                    const receipt = await zrxVault.depositFrom(staker, new BigNumber(1)).awaitTransactionSuccessAsync({
                         from: stakingProxy,
                     });
                     await verifyTransferPostconditionsAsync(
@@ -219,13 +217,11 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it('Staking proxy can deposit entire ZRX balance on behalf of staker', async () => {
-                    const receipt = await zrxVault.depositFrom.awaitTransactionSuccessAsync(
-                        staker,
-                        initialTokenBalance,
-                        {
+                    const receipt = await zrxVault
+                        .depositFrom(staker, initialTokenBalance)
+                        .awaitTransactionSuccessAsync({
                             from: stakingProxy,
-                        },
-                    );
+                        });
                     await verifyTransferPostconditionsAsync(
                         ZrxTransfer.Deposit,
                         staker,
@@ -236,7 +232,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it("Reverts if attempting to deposit more than staker's ZRX balance", async () => {
-                    const tx = zrxVault.depositFrom.sendTransactionAsync(staker, initialTokenBalance.plus(1), {
+                    const tx = zrxVault.depositFrom(staker, initialTokenBalance.plus(1)).sendTransactionAsync({
                         from: stakingProxy,
                     });
                     expectTransactionFailedAsync(tx, RevertReason.TransferFailed);
@@ -244,13 +240,11 @@ blockchainTests.resets('ZrxVault unit tests', env => {
             });
             describe('Withdrawal', () => {
                 it('Staking proxy can withdraw zero amount on behalf of staker', async () => {
-                    const receipt = await zrxVault.withdrawFrom.awaitTransactionSuccessAsync(
-                        staker,
-                        constants.ZERO_AMOUNT,
-                        {
+                    const receipt = await zrxVault
+                        .withdrawFrom(staker, constants.ZERO_AMOUNT)
+                        .awaitTransactionSuccessAsync({
                             from: stakingProxy,
-                        },
-                    );
+                        });
                     await verifyTransferPostconditionsAsync(
                         ZrxTransfer.Withdrawal,
                         staker,
@@ -261,7 +255,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it('Staking proxy can withdraw nonzero amount on behalf of staker', async () => {
-                    const receipt = await zrxVault.withdrawFrom.awaitTransactionSuccessAsync(staker, new BigNumber(1), {
+                    const receipt = await zrxVault.withdrawFrom(staker, new BigNumber(1)).awaitTransactionSuccessAsync({
                         from: stakingProxy,
                     });
                     await verifyTransferPostconditionsAsync(
@@ -274,13 +268,11 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it('Staking proxy can withdraw entire vault balance on behalf of staker', async () => {
-                    const receipt = await zrxVault.withdrawFrom.awaitTransactionSuccessAsync(
-                        staker,
-                        initialVaultBalance,
-                        {
+                    const receipt = await zrxVault
+                        .withdrawFrom(staker, initialVaultBalance)
+                        .awaitTransactionSuccessAsync({
                             from: stakingProxy,
-                        },
-                    );
+                        });
                     await verifyTransferPostconditionsAsync(
                         ZrxTransfer.Withdrawal,
                         staker,
@@ -291,7 +283,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it("Reverts if attempting to withdraw more than staker's vault balance", async () => {
-                    const tx = zrxVault.withdrawFrom.awaitTransactionSuccessAsync(staker, initialVaultBalance.plus(1), {
+                    const tx = zrxVault.withdrawFrom(staker, initialVaultBalance.plus(1)).awaitTransactionSuccessAsync({
                         from: stakingProxy,
                     });
                     const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
@@ -317,38 +309,38 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                 );
                 expect(eventArgs.length).to.equal(1);
                 expect(eventArgs[0].sender).to.equal(sender);
-                expect(await zrxVault.isInCatastrophicFailure.callAsync()).to.be.true();
+                expect(await zrxVault.isInCatastrophicFailure().callAsync()).to.be.true();
             }
 
             it('Owner can turn on Catastrophic Failure Mode', async () => {
-                const receipt = await zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync({ from: owner });
+                const receipt = await zrxVault.enterCatastrophicFailure().awaitTransactionSuccessAsync({ from: owner });
                 await verifyCatastrophicFailureModeAsync(owner, receipt);
             });
             it('Authorized address can turn on Catastrophic Failure Mode', async () => {
                 const authorized = nonOwnerAddresses[0];
-                await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
-                const receipt = await zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync({
+                await zrxVault.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
+                const receipt = await zrxVault.enterCatastrophicFailure().awaitTransactionSuccessAsync({
                     from: authorized,
                 });
                 await verifyCatastrophicFailureModeAsync(authorized, receipt);
             });
             it('Non-authorized address cannot turn on Catastrophic Failure Mode', async () => {
                 const notAuthorized = nonOwnerAddresses[0];
-                const tx = zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync({
+                const tx = zrxVault.enterCatastrophicFailure().awaitTransactionSuccessAsync({
                     from: notAuthorized,
                 });
                 const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorized);
                 expect(tx).to.revertWith(expectedError);
-                expect(await zrxVault.isInCatastrophicFailure.callAsync()).to.be.false();
+                expect(await zrxVault.isInCatastrophicFailure().callAsync()).to.be.false();
             });
             it('Catastrophic Failure Mode can only be turned on once', async () => {
                 const authorized = nonOwnerAddresses[0];
-                await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
-                await zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync({
+                await zrxVault.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
+                await zrxVault.enterCatastrophicFailure().awaitTransactionSuccessAsync({
                     from: authorized,
                 });
                 const expectedError = new StakingRevertErrors.OnlyCallableIfNotInCatastrophicFailureError();
-                return expect(zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync()).to.revertWith(
+                return expect(zrxVault.enterCatastrophicFailure().awaitTransactionSuccessAsync()).to.revertWith(
                     expectedError,
                 );
             });
@@ -362,41 +354,41 @@ blockchainTests.resets('ZrxVault unit tests', env => {
 
             before(async () => {
                 [staker, stakingProxy, ...nonOwnerAddresses] = nonOwnerAddresses;
-                await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy, { from: owner });
-                await zrxVault.depositFrom.awaitTransactionSuccessAsync(staker, new BigNumber(10), {
+                await zrxVault.setStakingProxy(stakingProxy).awaitTransactionSuccessAsync({ from: owner });
+                await zrxVault.depositFrom(staker, new BigNumber(10)).awaitTransactionSuccessAsync({
                     from: stakingProxy,
                 });
-                await zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync({ from: owner });
+                await zrxVault.enterCatastrophicFailure().awaitTransactionSuccessAsync({ from: owner });
             });
 
             beforeEach(async () => {
-                initialVaultBalance = await zrxVault.balanceOf.callAsync(staker);
+                initialVaultBalance = await zrxVault.balanceOf(staker).callAsync();
                 initialTokenBalance = await erc20Wrapper.getBalanceAsync(staker, zrxAssetData);
             });
 
             it('Owner cannot set the ZRX proxy', async () => {
                 const newProxy = nonOwnerAddresses[0];
-                const tx = zrxVault.setZrxProxy.awaitTransactionSuccessAsync(newProxy, {
+                const tx = zrxVault.setZrxProxy(newProxy).awaitTransactionSuccessAsync({
                     from: owner,
                 });
                 const expectedError = new StakingRevertErrors.OnlyCallableIfNotInCatastrophicFailureError();
                 expect(tx).to.revertWith(expectedError);
-                const actualAddress = await zrxVault.zrxAssetProxy.callAsync();
+                const actualAddress = await zrxVault.zrxAssetProxy().callAsync();
                 expect(actualAddress).to.equal(zrxProxyAddress);
             });
             it('Authorized address cannot set the ZRX proxy', async () => {
                 const [authorized, newProxy] = nonOwnerAddresses;
-                await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
-                const tx = zrxVault.setZrxProxy.awaitTransactionSuccessAsync(newProxy, {
+                await zrxVault.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
+                const tx = zrxVault.setZrxProxy(newProxy).awaitTransactionSuccessAsync({
                     from: authorized,
                 });
                 const expectedError = new StakingRevertErrors.OnlyCallableIfNotInCatastrophicFailureError();
                 expect(tx).to.revertWith(expectedError);
-                const actualAddress = await zrxVault.zrxAssetProxy.callAsync();
+                const actualAddress = await zrxVault.zrxAssetProxy().callAsync();
                 expect(actualAddress).to.equal(zrxProxyAddress);
             });
             it('Staking proxy cannot deposit ZRX', async () => {
-                const tx = zrxVault.depositFrom.awaitTransactionSuccessAsync(staker, new BigNumber(1), {
+                const tx = zrxVault.depositFrom(staker, new BigNumber(1)).awaitTransactionSuccessAsync({
                     from: stakingProxy,
                 });
                 const expectedError = new StakingRevertErrors.OnlyCallableIfNotInCatastrophicFailureError();
@@ -405,14 +397,14 @@ blockchainTests.resets('ZrxVault unit tests', env => {
 
             describe('Withdrawal', () => {
                 it('Staking proxy cannot call `withdrawFrom`', async () => {
-                    const tx = zrxVault.withdrawFrom.awaitTransactionSuccessAsync(staker, new BigNumber(1), {
+                    const tx = zrxVault.withdrawFrom(staker, new BigNumber(1)).awaitTransactionSuccessAsync({
                         from: stakingProxy,
                     });
                     const expectedError = new StakingRevertErrors.OnlyCallableIfNotInCatastrophicFailureError();
                     expect(tx).to.revertWith(expectedError);
                 });
                 it('Staker can withdraw all their ZRX', async () => {
-                    const receipt = await zrxVault.withdrawAllFrom.awaitTransactionSuccessAsync(staker, {
+                    const receipt = await zrxVault.withdrawAllFrom(staker).awaitTransactionSuccessAsync({
                         from: staker,
                     });
                     await verifyTransferPostconditionsAsync(
@@ -425,7 +417,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it('Owner can withdraw ZRX on behalf of a staker', async () => {
-                    const receipt = await zrxVault.withdrawAllFrom.awaitTransactionSuccessAsync(staker, {
+                    const receipt = await zrxVault.withdrawAllFrom(staker).awaitTransactionSuccessAsync({
                         from: owner,
                     });
                     await verifyTransferPostconditionsAsync(
@@ -438,7 +430,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     );
                 });
                 it('Non-owner address can withdraw ZRX on behalf of a staker', async () => {
-                    const receipt = await zrxVault.withdrawAllFrom.awaitTransactionSuccessAsync(staker, {
+                    const receipt = await zrxVault.withdrawAllFrom(staker).awaitTransactionSuccessAsync({
                         from: nonOwnerAddresses[0],
                     });
                     await verifyTransferPostconditionsAsync(

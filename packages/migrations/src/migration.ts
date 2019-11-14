@@ -153,26 +153,26 @@ export async function runMigrationsAsync(
         artifacts,
     );
 
-    await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, txDefaults);
-    await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, txDefaults);
-    await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, txDefaults);
-    await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, txDefaults);
+    await erc20Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync(txDefaults);
+    await erc721Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync(txDefaults);
+    await erc1155Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync(txDefaults);
+    await multiAssetProxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync(txDefaults);
 
     // MultiAssetProxy
-    await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, txDefaults);
-    await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, txDefaults);
-    await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, txDefaults);
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, txDefaults);
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, txDefaults);
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address, txDefaults);
-    await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(staticCallProxy.address, txDefaults);
+    await erc20Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await erc721Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await erc1155Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await multiAssetProxy.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await multiAssetProxy.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await multiAssetProxy.registerAssetProxy(erc1155Proxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await multiAssetProxy.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync(txDefaults);
 
     // Register the Asset Proxies to the Exchange
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, txDefaults);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, txDefaults);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address, txDefaults);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(multiAssetProxy.address, txDefaults);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(staticCallProxy.address, txDefaults);
+    await exchange.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await exchange.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await exchange.registerAssetProxy(erc1155Proxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await exchange.registerAssetProxy(multiAssetProxy.address).awaitTransactionSuccessAsync(txDefaults);
+    await exchange.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync(txDefaults);
 
     // Forwarder
     const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
@@ -230,16 +230,16 @@ export async function runMigrationsAsync(
 
     // // Transfer Ownership to the Asset Proxy Owner
     // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await erc20Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    //     await erc20Proxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
     // );
     // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    //     await erc721Proxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
     // );
     // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await erc1155Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    //     await erc1155Proxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
     // );
     // await web3Wrapper.awaitTransactionSuccessAsync(
-    //     await multiAssetProxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    //     await multiAssetProxy.transferOwnership(assetProxyOwner.address).sendTransactionAsync(txDefaults),
     // );
 
     // Fake the above transactions so our nonce increases and we result with the same addresses
@@ -250,9 +250,9 @@ export async function runMigrationsAsync(
     }
 
     // Fund the Forwarder with ZRX
-    const zrxDecimals = await zrxToken.decimals.callAsync();
+    const zrxDecimals = await zrxToken.decimals().callAsync();
     const zrxForwarderAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5000), zrxDecimals);
-    await zrxToken.transfer.awaitTransactionSuccessAsync(forwarder.address, zrxForwarderAmount, txDefaults);
+    await zrxToken.transfer(forwarder.address, zrxForwarderAmount).awaitTransactionSuccessAsync(txDefaults);
 
     // CoordinatorRegistry
     const coordinatorRegistry = await CoordinatorRegistryContract.deployFrom0xArtifactAsync(

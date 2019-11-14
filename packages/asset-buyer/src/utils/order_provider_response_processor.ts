@@ -44,10 +44,9 @@ export const orderProviderResponseProcessor = {
         if (orderValidator !== undefined) {
             const takerAddresses = _.map(filteredOrders, () => constants.NULL_ADDRESS);
             try {
-                const [ordersInfo, tradersInfo] = await orderValidator.getOrdersAndTradersInfo.callAsync(
-                    filteredOrders,
-                    takerAddresses,
-                );
+                const [ordersInfo, tradersInfo] = await orderValidator
+                    .getOrdersAndTradersInfo(filteredOrders, takerAddresses)
+                    .callAsync();
                 const ordersAndTradersInfo = ordersInfo.map((orderInfo, index) => {
                     return {
                         orderInfo,

@@ -36,7 +36,7 @@ export class StakingApiWrapper {
         fastForwardToNextEpochAsync: async (): Promise<void> => {
             // increase timestamp of next block by how many seconds we need to
             // get to the next epoch.
-            const epochEndTime = await this.stakingContract.getCurrentEpochEarliestEndTimeInSeconds.callAsync();
+            const epochEndTime = await this.stakingContract.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
             const lastBlockTime = await this._web3Wrapper.getBlockTimestampAsync('latest');
             const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
             await this._web3Wrapper.increaseTimeAsync(dt);
@@ -49,7 +49,7 @@ export class StakingApiWrapper {
             const endOfEpochInfo = await this.utils.endEpochAsync();
             const allLogs = [] as DecodedLogs;
             for (const poolId of endOfEpochInfo.activePoolIds) {
-                const receipt = await this.stakingContract.finalizePool.awaitTransactionSuccessAsync(poolId);
+                const receipt = await this.stakingContract.finalizePool(poolId).awaitTransactionSuccessAsync();
                 allLogs.splice(allLogs.length, 0, ...(receipt.logs as DecodedLogs));
             }
             return allLogs;
@@ -57,7 +57,7 @@ export class StakingApiWrapper {
 
         endEpochAsync: async (): Promise<EndOfEpochInfo> => {
             const activePoolIds = await this.utils.findActivePoolIdsAsync();
-            const receipt = await this.stakingContract.endEpoch.awaitTransactionSuccessAsync();
+            const receipt = await this.stakingContract.endEpoch().awaitTransactionSuccessAsync();
             const [epochEndedEvent] = filterLogsToArguments<IStakingEventsEpochEndedEventArgs>(
                 receipt.logs,
                 TestStakingEvents.EpochEnded,
@@ -72,7 +72,7 @@ export class StakingApiWrapper {
         },
 
         findActivePoolIdsAsync: async (epoch?: number): Promise<string[]> => {
-            const _epoch = epoch !== undefined ? epoch : await this.stakingContract.currentEpoch.callAsync();
+            const _epoch = epoch !== undefined ? epoch : await this.stakingContract.currentEpoch().callAsync();
             const events = filterLogsToArguments<IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs>(
                 await this.stakingContract.getLogsAsync(
                     TestStakingEvents.StakingPoolEarnedRewardsInEpoch,
@@ -90,18 +90,16 @@ export class StakingApiWrapper {
             operatorShare: number,
             addOperatorAsMaker: boolean,
         ): Promise<string> => {
-            const txReceipt = await this.stakingContract.createStakingPool.awaitTransactionSuccessAsync(
-                operatorShare,
-                addOperatorAsMaker,
-                { from: operatorAddress },
-            );
+            const txReceipt = await this.stakingContract
+                .createStakingPool(operatorShare, addOperatorAsMaker)
+                .awaitTransactionSuccessAsync({ from: operatorAddress });
             const createStakingPoolLog = txReceipt.logs[0];
             const poolId = (createStakingPoolLog as any).args.poolId;
             return poolId;
         },
 
         getZrxTokenBalanceOfZrxVaultAsync: async (): Promise<BigNumber> => {
-            return this.zrxTokenContract.balanceOf.callAsync(this.zrxVaultContract.address);
+            return this.zrxTokenContract.balanceOf(this.zrxVaultContract.address).callAsync();
         },
 
         setParamsAsync: async (params: Partial<StakingParams>): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -109,20 +107,22 @@ export class StakingApiWrapper {
                 ...stakingConstants.DEFAULT_PARAMS,
                 ...params,
             };
-            return this.stakingContract.setParams.awaitTransactionSuccessAsync(
-                new BigNumber(_params.epochDurationInSeconds),
-                new BigNumber(_params.rewardDelegatedStakeWeight),
-                new BigNumber(_params.minimumPoolStake),
-                new BigNumber(_params.cobbDouglasAlphaNumerator),
-                new BigNumber(_params.cobbDouglasAlphaDenominator),
-            );
+            return this.stakingContract
+                .setParams(
+                    new BigNumber(_params.epochDurationInSeconds),
+                    new BigNumber(_params.rewardDelegatedStakeWeight),
+                    new BigNumber(_params.minimumPoolStake),
+                    new BigNumber(_params.cobbDouglasAlphaNumerator),
+                    new BigNumber(_params.cobbDouglasAlphaDenominator),
+                )
+                .awaitTransactionSuccessAsync();
         },
 
         getAvailableRewardsBalanceAsync: async (): Promise<BigNumber> => {
             const [ethBalance, wethBalance, reservedRewards] = await Promise.all([
                 this._web3Wrapper.getBalanceInWeiAsync(this.stakingProxyContract.address),
-                this.wethContract.balanceOf.callAsync(this.stakingProxyContract.address),
-                this.stakingContract.wethReservedForPoolRewards.callAsync(),
+                this.wethContract.balanceOf(this.stakingProxyContract.address).callAsync(),
+                this.stakingContract.wethReservedForPoolRewards().callAsync(),
             ]);
             return BigNumber.sum(ethBalance, wethBalance).minus(reservedRewards);
         },
@@ -138,7 +138,7 @@ export class StakingApiWrapper {
                     'wethProxyAddress',
                     'zrxVaultAddress',
                 ],
-                await this.stakingContract.getParams.callAsync(),
+                await this.stakingContract.getParams().callAsync(),
             ) as any) as StakingParams;
         },
 
@@ -150,15 +150,17 @@ export class StakingApiWrapper {
             totalStake: BigNumber,
         ): Promise<BigNumber> => {
             const { cobbDouglasAlphaNumerator, cobbDouglasAlphaDenominator } = await this.utils.getParamsAsync();
-            return this.cobbDouglasContract.cobbDouglas.callAsync(
-                totalRewards,
-                ownerFees,
-                totalFees,
-                ownerStake,
-                totalStake,
-                new BigNumber(cobbDouglasAlphaNumerator),
-                new BigNumber(cobbDouglasAlphaDenominator),
-            );
+            return this.cobbDouglasContract
+                .cobbDouglas(
+                    totalRewards,
+                    ownerFees,
+                    totalFees,
+                    ownerStake,
+                    totalStake,
+                    new BigNumber(cobbDouglasAlphaNumerator),
+                    new BigNumber(cobbDouglasAlphaDenominator),
+                )
+                .callAsync();
         },
     };
 
@@ -232,7 +234,7 @@ export async function deployAndConfigureContractsAsync(
         zrxTokenContract.address,
     );
 
-    await zrxVaultContract.addAuthorizedAddress.awaitTransactionSuccessAsync(ownerAddress);
+    await zrxVaultContract.addAuthorizedAddress(ownerAddress).awaitTransactionSuccessAsync();
 
     // deploy staking contract
     const stakingContract = await TestStakingContract.deployFrom0xArtifactAsync(
@@ -253,7 +255,7 @@ export async function deployAndConfigureContractsAsync(
         stakingContract.address,
     );
 
-    await stakingProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(ownerAddress);
+    await stakingProxyContract.addAuthorizedAddress(ownerAddress).awaitTransactionSuccessAsync();
 
     // deploy cobb douglas contract
     const cobbDouglasContract = await TestCobbDouglasContract.deployFrom0xArtifactAsync(
@@ -264,9 +266,9 @@ export async function deployAndConfigureContractsAsync(
     );
 
     // configure erc20 proxy to accept calls from zrx vault
-    await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
+    await erc20ProxyContract.addAuthorizedAddress(zrxVaultContract.address).awaitTransactionSuccessAsync();
     // set staking proxy contract in zrx vault
-    await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
+    await zrxVaultContract.setStakingProxy(stakingProxyContract.address).awaitTransactionSuccessAsync();
     return new StakingApiWrapper(
         env,
         ownerAddress,

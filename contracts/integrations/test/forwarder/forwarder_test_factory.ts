@@ -46,7 +46,7 @@ export class ForwarderTestFactory {
         const forwarderFeePercentage = options.forwarderFeePercentage || 0;
 
         const orderInfoBefore = await Promise.all(
-            orders.map(order => this._deployment.exchange.getOrderInfo.callAsync(order)),
+            orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
         );
         const expectedOrderStatuses = orderInfoBefore.map((orderInfo, i) =>
             fractionalNumberOfOrdersToFill >= i + 1 && orderInfo.orderStatus === OrderStatus.Fillable
@@ -63,17 +63,18 @@ export class ForwarderTestFactory {
         const ethSpentOnForwarderFee = getPercentageOfValue(wethSpentAmount, forwarderFeePercentage);
         const feePercentage = getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeePercentage);
 
-        const tx = this._forwarder.marketBuyOrdersWithEth.awaitTransactionSuccessAsync(
-            orders,
-            makerAssetAcquiredAmount,
-            orders.map(signedOrder => signedOrder.signature),
-            feePercentage,
-            this._forwarderFeeRecipient.address,
-            {
+        const tx = this._forwarder
+            .marketBuyOrdersWithEth(
+                orders,
+                makerAssetAcquiredAmount,
+                orders.map(signedOrder => signedOrder.signature),
+                feePercentage,
+                this._forwarderFeeRecipient.address,
+            )
+            .awaitTransactionSuccessAsync({
                 value: wethSpentAmount.plus(ethSpentOnForwarderFee).plus(ethValueAdjustment),
                 from: this._taker.address,
-            },
-        );
+            });
 
         if (options.revertError !== undefined) {
             await expect(tx).to.revertWith(options.revertError);
@@ -89,7 +90,7 @@ export class ForwarderTestFactory {
         options: Partial<MarketSellOptions> = {},
     ): Promise<void> {
         const orderInfoBefore = await Promise.all(
-            orders.map(order => this._deployment.exchange.getOrderInfo.callAsync(order)),
+            orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
         );
         const expectedOrderStatuses = orderInfoBefore.map((orderInfo, i) =>
             fractionalNumberOfOrdersToFill >= i + 1 && orderInfo.orderStatus === OrderStatus.Fillable
@@ -108,16 +109,17 @@ export class ForwarderTestFactory {
         const ethSpentOnForwarderFee = getPercentageOfValue(wethSpentAmount, forwarderFeePercentage);
         const feePercentage = getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeePercentage);
 
-        const tx = this._forwarder.marketSellOrdersWithEth.awaitTransactionSuccessAsync(
-            orders,
-            orders.map(signedOrder => signedOrder.signature),
-            feePercentage,
-            this._forwarderFeeRecipient.address,
-            {
+        const tx = this._forwarder
+            .marketSellOrdersWithEth(
+                orders,
+                orders.map(signedOrder => signedOrder.signature),
+                feePercentage,
+                this._forwarderFeeRecipient.address,
+            )
+            .awaitTransactionSuccessAsync({
                 value: wethSpentAmount.plus(ethSpentOnForwarderFee),
                 from: this._taker.address,
-            },
-        );
+            });
 
         if (options.revertError !== undefined) {
             await expect(tx).to.revertWith(options.revertError);
@@ -141,7 +143,7 @@ export class ForwarderTestFactory {
 
         // Get updated order info
         const orderInfoAfter = await Promise.all(
-            orders.map(order => this._deployment.exchange.getOrderInfo.callAsync(order)),
+            orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
         );
         // Check order statuses
         for (const [i, orderInfo] of orderInfoAfter.entries()) {

@@ -1,5 +1,5 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, expect, hexRandom, LogDecoder, orderHashUtils } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, hexRandom, orderHashUtils } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -23,7 +23,6 @@ blockchainTests('Exchange core internal functions', env => {
     const randomHash = () => hexRandom(constants.WORD_LENGTH);
     const randomAssetData = () => hexRandom(36);
     let testExchange: TestExchangeInternalsContract;
-    let logDecoder: LogDecoder;
     let senderAddress: string;
     const DEFAULT_PROTOCOL_MULTIPLIER = new BigNumber(150000);
     const DEFAULT_GAS_PRICE = new BigNumber(200000);
@@ -39,7 +38,6 @@ blockchainTests('Exchange core internal functions', env => {
             {},
             new BigNumber(CHAIN_ID),
         );
-        logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
     });
 
     blockchainTests('assertValidMatch', () => {
@@ -84,7 +82,9 @@ blockchainTests('Exchange core internal functions', env => {
                 leftOrder.makerAssetAmount,
                 rightOrder.makerAssetAmount,
             );
-            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.revertWith(expectedError);
+            return expect(testExchange.assertValidMatch(leftOrder, rightOrder).callAsync()).to.revertWith(
+                expectedError,
+            );
         });
 
         it('should revert if the taker asset multiplication should overflow', async () => {
@@ -101,7 +101,9 @@ blockchainTests('Exchange core internal functions', env => {
                 leftOrder.takerAssetAmount,
                 rightOrder.takerAssetAmount,
             );
-            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.revertWith(expectedError);
+            return expect(testExchange.assertValidMatch(leftOrder, rightOrder).callAsync()).to.revertWith(
+                expectedError,
+            );
         });
 
         it('should revert if the prices of the left order is less than the price of the right order', async () => {
@@ -116,7 +118,9 @@ blockchainTests('Exchange core internal functions', env => {
             const orderHashHexLeft = orderHashUtils.getOrderHashHex(leftOrder);
             const orderHashHexRight = orderHashUtils.getOrderHashHex(rightOrder);
             const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
-            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.revertWith(expectedError);
+            return expect(testExchange.assertValidMatch(leftOrder, rightOrder).callAsync()).to.revertWith(
+                expectedError,
+            );
         });
 
         it('should succeed if the prices of the left and right orders are equal', async () => {
@@ -128,7 +132,7 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
             });
-            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.be.fulfilled('');
+            return expect(testExchange.assertValidMatch(leftOrder, rightOrder).callAsync()).to.be.fulfilled('');
         });
 
         it('should succeed if the price of the left order is higher than the price of the right', async () => {
@@ -140,7 +144,7 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
             });
-            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.be.fulfilled('');
+            return expect(testExchange.assertValidMatch(leftOrder, rightOrder).callAsync()).to.be.fulfilled('');
         });
     });
 
@@ -187,17 +191,12 @@ blockchainTests('Exchange core internal functions', env => {
             // CAll `testUpdateFilledState()`, which will set the `filled`
             // state for this order to `orderTakerAssetFilledAmount` before
             // calling `_updateFilledState()`.
-            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await testExchange.testUpdateFilledState.sendTransactionAsync(
-                    order,
-                    takerAddress,
-                    orderHash,
-                    orderTakerAssetFilledAmount,
-                    fillResults,
-                ),
-            );
+            const receipt = await testExchange
+                .testUpdateFilledState(order, takerAddress, orderHash, orderTakerAssetFilledAmount, fillResults)
+                .awaitTransactionSuccessAsync();
+
             // Grab the new `filled` state for this order.
-            const actualFilledState = await testExchange.filled.callAsync(orderHash);
+            const actualFilledState = await testExchange.filled(orderHash).callAsync();
             // Assert the `filled` state for this order.
             expect(actualFilledState).to.bignumber.eq(expectedFilledState);
             // Assert the logs.
@@ -249,13 +248,15 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetFillAmount,
             );
             return expect(
-                testExchange.testUpdateFilledState.awaitTransactionSuccessAsync(
-                    order,
-                    randomAddress(),
-                    randomHash(),
-                    orderTakerAssetFilledAmount,
-                    fillResults,
-                ),
+                testExchange
+                    .testUpdateFilledState(
+                        order,
+                        randomAddress(),
+                        randomHash(),
+                        orderTakerAssetFilledAmount,
+                        fillResults,
+                    )
+                    .awaitTransactionSuccessAsync(),
             ).to.revertWith(expectedError);
         });
     });
@@ -289,9 +290,9 @@ blockchainTests('Exchange core internal functions', env => {
                 takerFeePaid: ONE_ETHER.times(0.025),
                 protocolFeePaid: constants.ZERO_AMOUNT,
             };
-            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await testExchange.settleOrder.sendTransactionAsync(orderHash, order, takerAddress, fillResults),
-            );
+            const receipt = await testExchange
+                .settleOrder(orderHash, order, takerAddress, fillResults)
+                .awaitTransactionSuccessAsync();
             const logs = receipt.logs as Array<
                 LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
             >;
@@ -382,14 +383,16 @@ blockchainTests('Exchange core internal functions', env => {
             );
 
             // Ensure that the call to `settleMatchOrders()` fails with the expected error.
-            const tx = testExchange.settleMatchOrders.sendTransactionAsync(
-                leftOrderHash,
-                rightOrderHash,
-                leftOrder,
-                rightOrder,
-                takerAddress,
-                matchedFillResults,
-            );
+            const tx = testExchange
+                .settleMatchOrders(
+                    leftOrderHash,
+                    rightOrderHash,
+                    leftOrder,
+                    rightOrder,
+                    takerAddress,
+                    matchedFillResults,
+                )
+                .sendTransactionAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -421,14 +424,16 @@ blockchainTests('Exchange core internal functions', env => {
 
             // The call to `settleMatchOrders()` should be successful.
             return expect(
-                testExchange.settleMatchOrders.sendTransactionAsync(
-                    leftOrderHash,
-                    rightOrderHash,
-                    leftOrder,
-                    rightOrder,
-                    takerAddress,
-                    matchedFillResults,
-                ),
+                testExchange
+                    .settleMatchOrders(
+                        leftOrderHash,
+                        rightOrderHash,
+                        leftOrder,
+                        rightOrder,
+                        takerAddress,
+                        matchedFillResults,
+                    )
+                    .sendTransactionAsync(),
             ).to.be.fulfilled('');
         });
 
@@ -462,16 +467,16 @@ blockchainTests('Exchange core internal functions', env => {
             rightOrder.takerFeeAssetData = leftOrder.takerFeeAssetData;
 
             // Call settleMatchOrders and collect the logs
-            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await testExchange.settleMatchOrders.sendTransactionAsync(
+            const receipt = await testExchange
+                .settleMatchOrders(
                     leftOrderHash,
                     rightOrderHash,
                     leftOrder,
                     rightOrder,
                     takerAddress,
                     matchedFillResults,
-                ),
-            );
+                )
+                .awaitTransactionSuccessAsync();
             const logs = receipt.logs as Array<
                 LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
             >;
@@ -556,16 +561,16 @@ blockchainTests('Exchange core internal functions', env => {
             };
 
             // Call settleMatchOrders and collect the logs
-            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await testExchange.settleMatchOrders.sendTransactionAsync(
+            const receipt = await testExchange
+                .settleMatchOrders(
                     leftOrderHash,
                     rightOrderHash,
                     leftOrder,
                     rightOrder,
                     takerAddress,
                     matchedFillResults,
-                ),
-            );
+                )
+                .awaitTransactionSuccessAsync();
             const logs = receipt.logs as Array<
                 LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
             >;

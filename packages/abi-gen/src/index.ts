@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-
-import { execSync } from 'child_process';
-
 import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import * as changeCase from 'change-case';
+import { execSync } from 'child_process';
 import * as cliFormat from 'cli-format';
 import {
     AbiDefinition,
@@ -43,10 +41,6 @@ const args = yargs
         type: 'string',
         normalize: true,
         demandOption: true,
-    })
-    .option('debug', {
-        describe: 'Includes debug functions in the wrappers such as `getABIDecodedTransactionData`',
-        type: 'boolean',
     })
     .option('partials', {
         describe: 'Glob pattern for the partial template files',

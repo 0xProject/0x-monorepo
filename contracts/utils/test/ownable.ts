@@ -25,11 +25,11 @@ blockchainTests.resets('Ownable', env => {
     describe('onlyOwner', () => {
         it('should revert if sender is not the owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
-            return expect(ownable.externalOnlyOwner.callAsync({ from: nonOwner })).to.revertWith(expectedError);
+            return expect(ownable.externalOnlyOwner().callAsync({ from: nonOwner })).to.revertWith(expectedError);
         });
 
         it('should succeed if sender is the owner', async () => {
-            const isSuccessful = await ownable.externalOnlyOwner.callAsync({ from: owner });
+            const isSuccessful = await ownable.externalOnlyOwner().callAsync({ from: owner });
             expect(isSuccessful).to.be.true();
         });
     });
@@ -37,12 +37,12 @@ blockchainTests.resets('Ownable', env => {
     describe('transferOwnership', () => {
         it('should revert if the specified new owner is the zero address', async () => {
             const expectedError = new OwnableRevertErrors.TransferOwnerToZeroError();
-            const tx = ownable.transferOwnership.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner });
+            const tx = ownable.transferOwnership(constants.NULL_ADDRESS).sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should transfer ownership if the specified new owner is not the zero address', async () => {
-            const receipt = await ownable.transferOwnership.awaitTransactionSuccessAsync(nonOwner, { from: owner });
+            const receipt = await ownable.transferOwnership(nonOwner).awaitTransactionSuccessAsync({ from: owner });
 
             // Ensure that the correct logs were emitted.
             expect(receipt.logs.length).to.be.eq(1);
@@ -53,7 +53,7 @@ blockchainTests.resets('Ownable', env => {
             expect(event).to.be.deep.eq({ previousOwner: owner, newOwner: nonOwner });
 
             // Ensure that the owner was actually updated
-            const updatedOwner = await ownable.owner.callAsync();
+            const updatedOwner = await ownable.owner().callAsync();
             expect(updatedOwner).to.be.eq(nonOwner);
         });
     });

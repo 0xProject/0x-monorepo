@@ -1,5 +1,4 @@
 import { ContractAbi, EventAbi, MethodAbi } from 'ethereum-types';
-
 export enum ParamKind {
     Input = 'input',
     Output = 'output',

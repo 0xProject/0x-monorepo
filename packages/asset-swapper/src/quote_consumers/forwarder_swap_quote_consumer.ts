@@ -196,32 +196,29 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             let txHash: string;
             if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
-                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
-                    orders,
-                    makerAssetFillAmount,
-                    orders.map(o => o.signature),
-                    formattedFeePercentage,
-                    feeRecipient,
-                    {
+                txHash = await this._contractWrappers.forwarder
+                    .marketBuyOrdersWithEth(
+                        orders,
+                        makerAssetFillAmount,
+                        orders.map(o => o.signature),
+                        formattedFeePercentage,
+                        feeRecipient,
+                    )
+                    .sendTransactionAsync({
                         value,
                         from: finalTakerAddress.toLowerCase(),
                         gas: gasLimit,
                         gasPrice,
-                    },
-                );
+                    });
             } else {
-                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.sendTransactionAsync(
-                    orders,
-                    orders.map(o => o.signature),
-                    formattedFeePercentage,
-                    feeRecipient,
-                    {
+                txHash = await this._contractWrappers.forwarder
+                    .marketSellOrdersWithEth(orders, orders.map(o => o.signature), formattedFeePercentage, feeRecipient)
+                    .sendTransactionAsync({
                         value,
                         from: finalTakerAddress.toLowerCase(),
                         gas: gasLimit,
                         gasPrice,
-                    },
-                );
+                    });
             }
             return txHash;
         } catch (err) {
@@ -236,8 +233,8 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     }
 
     private async _getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-            this._contractWrappers.contractAddresses.etherToken,
-        );
+        return this._contractWrappers.devUtils
+            .encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken)
+            .callAsync();
     }
 }

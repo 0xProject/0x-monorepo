@@ -46,7 +46,7 @@ blockchainTests('Protocol Fees unit tests', env => {
             exchangeAddress,
         );
 
-        minimumStake = (await testContract.getParams.callAsync())[2];
+        minimumStake = (await testContract.getParams().callAsync())[2];
     });
 
     interface CreateTestPoolOpts {
@@ -64,12 +64,14 @@ blockchainTests('Protocol Fees unit tests', env => {
             makers: _.times(2, () => randomAddress()),
             ...opts,
         };
-        await testContract.createTestPool.awaitTransactionSuccessAsync(
-            _opts.poolId,
-            new BigNumber(_opts.operatorStake),
-            new BigNumber(_opts.membersStake),
-            _opts.makers,
-        );
+        await testContract
+            .createTestPool(
+                _opts.poolId,
+                new BigNumber(_opts.operatorStake),
+                new BigNumber(_opts.membersStake),
+                _opts.makers,
+            )
+            .awaitTransactionSuccessAsync();
         return _opts;
     }
 
@@ -81,23 +83,17 @@ blockchainTests('Protocol Fees unit tests', env => {
 
         describe('forbidden actions', () => {
             it('should revert if called by a non-exchange', async () => {
-                const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: notExchangeAddress },
-                );
+                const tx = testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: notExchangeAddress });
                 const expectedError = new StakingRevertErrors.OnlyCallableByExchangeError(notExchangeAddress);
                 return expect(tx).to.revertWith(expectedError);
             });
 
             it('should revert if `protocolFee` is zero with non-zero value sent', async () => {
-                const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    ZERO_AMOUNT,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                const tx = testContract
+                    .payProtocolFee(makerAddress, payerAddress, ZERO_AMOUNT)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                 const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
                     ZERO_AMOUNT,
                     DEFAULT_PROTOCOL_FEE_PAID,
@@ -106,12 +102,9 @@ blockchainTests('Protocol Fees unit tests', env => {
             });
 
             it('should revert if `protocolFee` is < than the provided message value', async () => {
-                const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID.minus(1) },
-                );
+                const tx = testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID.minus(1) });
                 const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
                     DEFAULT_PROTOCOL_FEE_PAID,
                     DEFAULT_PROTOCOL_FEE_PAID.minus(1),
@@ -120,12 +113,9 @@ blockchainTests('Protocol Fees unit tests', env => {
             });
 
             it('should revert if `protocolFee` is > than the provided message value', async () => {
-                const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID.plus(1) },
-                );
+                const tx = testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID.plus(1) });
                 const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
                     DEFAULT_PROTOCOL_FEE_PAID,
                     DEFAULT_PROTOCOL_FEE_PAID.plus(1),
@@ -135,7 +125,7 @@ blockchainTests('Protocol Fees unit tests', env => {
         });
 
         async function getProtocolFeesAsync(poolId: string): Promise<BigNumber> {
-            return (await testContract.getStakingPoolStatsThisEpoch.callAsync(poolId)).feesCollected;
+            return (await testContract.getStakingPoolStatsThisEpoch(poolId).callAsync()).feesCollected;
         }
 
         describe('ETH fees', () => {
@@ -149,23 +139,17 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             it('should not transfer WETH if value is sent', async () => {
                 await createTestPoolAsync({ operatorStake: minimumStake });
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                 assertNoWETHTransferLogs(receipt.logs);
             });
 
             it('should credit pool if the maker is in a pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
 
                 assertNoWETHTransferLogs(receipt.logs);
                 const poolFees = await getProtocolFeesAsync(poolId);
@@ -174,12 +158,9 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             it('should not credit the pool if maker is not in a pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake });
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                 assertNoWETHTransferLogs(receipt.logs);
                 const poolFees = await getProtocolFeesAsync(poolId);
                 expect(poolFees).to.bignumber.eq(ZERO_AMOUNT);
@@ -188,12 +169,9 @@ blockchainTests('Protocol Fees unit tests', env => {
             it('fees paid to the same maker should go to the same pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const payAsync = async () => {
-                    const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                        makerAddress,
-                        payerAddress,
-                        DEFAULT_PROTOCOL_FEE_PAID,
-                        { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                    );
+                    const receipt = await testContract
+                        .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                        .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                     assertNoWETHTransferLogs(receipt.logs);
                 };
                 await payAsync();
@@ -220,23 +198,17 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             it('should transfer WETH if no value is sent and the maker is not in a pool', async () => {
                 await createTestPoolAsync({ operatorStake: minimumStake });
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: ZERO_AMOUNT },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: ZERO_AMOUNT });
                 assertWETHTransferLogs(receipt.logs, payerAddress, DEFAULT_PROTOCOL_FEE_PAID);
             });
 
             it('should update `protocolFeesThisEpochByPool` if the maker is in a pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: ZERO_AMOUNT },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: ZERO_AMOUNT });
                 assertWETHTransferLogs(receipt.logs, payerAddress, DEFAULT_PROTOCOL_FEE_PAID);
                 const poolFees = await getProtocolFeesAsync(poolId);
                 expect(poolFees).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
@@ -244,12 +216,9 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             it('should not update `protocolFeesThisEpochByPool` if maker is not in a pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake });
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: ZERO_AMOUNT },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: ZERO_AMOUNT });
                 assertWETHTransferLogs(receipt.logs, payerAddress, DEFAULT_PROTOCOL_FEE_PAID);
                 const poolFees = await getProtocolFeesAsync(poolId);
                 expect(poolFees).to.bignumber.eq(ZERO_AMOUNT);
@@ -258,12 +227,9 @@ blockchainTests('Protocol Fees unit tests', env => {
             it('fees paid to the same maker should go to the same pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const payAsync = async () => {
-                    const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                        makerAddress,
-                        payerAddress,
-                        DEFAULT_PROTOCOL_FEE_PAID,
-                        { from: exchangeAddress, value: ZERO_AMOUNT },
-                    );
+                    const receipt = await testContract
+                        .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                        .awaitTransactionSuccessAsync({ from: exchangeAddress, value: ZERO_AMOUNT });
                     assertWETHTransferLogs(receipt.logs, payerAddress, DEFAULT_PROTOCOL_FEE_PAID);
                 };
                 await payAsync();
@@ -276,15 +242,12 @@ blockchainTests('Protocol Fees unit tests', env => {
             it('fees paid to the same maker in WETH then ETH should go to the same pool', async () => {
                 const { poolId } = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const payAsync = async (inWETH: boolean) => {
-                    await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                        makerAddress,
-                        payerAddress,
-                        DEFAULT_PROTOCOL_FEE_PAID,
-                        {
+                    await testContract
+                        .payProtocolFee(makerAddress, payerAddress, DEFAULT_PROTOCOL_FEE_PAID)
+                        .awaitTransactionSuccessAsync({
                             from: exchangeAddress,
                             value: inWETH ? ZERO_AMOUNT : DEFAULT_PROTOCOL_FEE_PAID,
-                        },
-                    );
+                        });
                 };
                 await payAsync(true);
                 await payAsync(false);
@@ -301,12 +264,9 @@ blockchainTests('Protocol Fees unit tests', env => {
                     membersStake: 0,
                     makers: [makerAddress],
                 });
-                await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    constants.NULL_ADDRESS,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                await testContract
+                    .payProtocolFee(makerAddress, constants.NULL_ADDRESS, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                 const feesCredited = await getProtocolFeesAsync(poolId);
                 expect(feesCredited).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
@@ -317,12 +277,9 @@ blockchainTests('Protocol Fees unit tests', env => {
                     membersStake: 0,
                     makers: [makerAddress],
                 });
-                await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    constants.NULL_ADDRESS,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                await testContract
+                    .payProtocolFee(makerAddress, constants.NULL_ADDRESS, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                 const feesCredited = await getProtocolFeesAsync(poolId);
                 expect(feesCredited).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
@@ -333,12 +290,9 @@ blockchainTests('Protocol Fees unit tests', env => {
                     membersStake: 0,
                     makers: [makerAddress],
                 });
-                await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    constants.NULL_ADDRESS,
-                    DEFAULT_PROTOCOL_FEE_PAID,
-                    { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
-                );
+                await testContract
+                    .payProtocolFee(makerAddress, constants.NULL_ADDRESS, DEFAULT_PROTOCOL_FEE_PAID)
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID });
                 const feesCredited = await getProtocolFeesAsync(poolId);
                 expect(feesCredited).to.bignumber.eq(0);
             });
@@ -348,7 +302,7 @@ blockchainTests('Protocol Fees unit tests', env => {
             let membersStakeWeight: number;
 
             before(async () => {
-                membersStakeWeight = (await testContract.getParams.callAsync())[1];
+                membersStakeWeight = (await testContract.getParams().callAsync())[1];
             });
 
             interface FinalizationState {
@@ -358,7 +312,7 @@ blockchainTests('Protocol Fees unit tests', env => {
             }
 
             async function getFinalizationStateAsync(): Promise<FinalizationState> {
-                const aggregatedStats = await testContract.getAggregatedStatsForCurrentEpoch.callAsync();
+                const aggregatedStats = await testContract.getAggregatedStatsForCurrentEpoch().callAsync();
                 return {
                     numPoolsToFinalize: aggregatedStats.numPoolsToFinalize,
                     totalFeesCollected: aggregatedStats.totalFeesCollected,
@@ -373,12 +327,9 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             async function payToMakerAsync(poolMaker: string, fee?: Numberish): Promise<PayToMakerResult> {
                 const _fee = fee === undefined ? getRandomInteger(1, '1e18') : fee;
-                const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    poolMaker,
-                    payerAddress,
-                    new BigNumber(_fee),
-                    { from: exchangeAddress, value: _fee },
-                );
+                const receipt = await testContract
+                    .payProtocolFee(poolMaker, payerAddress, new BigNumber(_fee))
+                    .awaitTransactionSuccessAsync({ from: exchangeAddress, value: _fee });
                 const events = filterLogsToArguments<IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs>(
                     receipt.logs,
                     IStakingEventsEvents.StakingPoolEarnedRewardsInEpoch,
@@ -405,7 +356,7 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             it('pool is not registered to start', async () => {
                 const { poolId } = await createTestPoolAsync();
-                const pool = await testContract.getStakingPoolStatsThisEpoch.callAsync(poolId);
+                const pool = await testContract.getStakingPoolStatsThisEpoch(poolId).callAsync();
                 expect(pool.feesCollected).to.bignumber.eq(0);
                 expect(pool.membersStake).to.bignumber.eq(0);
                 expect(pool.weightedStake).to.bignumber.eq(0);
@@ -420,7 +371,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 const { fee, poolEarnedRewardsEvents } = await payToMakerAsync(poolMaker);
                 expect(poolEarnedRewardsEvents.length).to.eq(1);
                 expect(poolEarnedRewardsEvents[0].poolId).to.eq(poolId);
-                const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch.callAsync(poolId);
+                const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch(poolId).callAsync();
                 const expectedWeightedStake = toWeightedStake(pool.operatorStake, pool.membersStake);
                 expect(actualPoolStats.feesCollected).to.bignumber.eq(fee);
                 expect(actualPoolStats.membersStake).to.bignumber.eq(pool.membersStake);
@@ -440,7 +391,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 const { fee: fee1 } = await payToMakerAsync(poolMaker);
                 const { fee: fee2, poolEarnedRewardsEvents } = await payToMakerAsync(poolMaker);
                 expect(poolEarnedRewardsEvents).to.deep.eq([]);
-                const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch.callAsync(poolId);
+                const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch(poolId).callAsync();
                 const expectedWeightedStake = toWeightedStake(pool.operatorStake, pool.membersStake);
                 const fees = BigNumber.sum(fee1, fee2);
                 expect(actualPoolStats.feesCollected).to.bignumber.eq(fees);
@@ -464,7 +415,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                     const { fee, poolEarnedRewardsEvents } = await payToMakerAsync(poolMaker);
                     expect(poolEarnedRewardsEvents.length).to.eq(1);
                     expect(poolEarnedRewardsEvents[0].poolId).to.eq(poolId);
-                    const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch.callAsync(poolId);
+                    const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch(poolId).callAsync();
                     const expectedWeightedStake = toWeightedStake(pool.operatorStake, pool.membersStake);
                     expect(actualPoolStats.feesCollected).to.bignumber.eq(fee);
                     expect(actualPoolStats.membersStake).to.bignumber.eq(pool.membersStake);
@@ -485,8 +436,8 @@ blockchainTests('Protocol Fees unit tests', env => {
                     makers: [poolMaker],
                 } = pool;
                 await payToMakerAsync(poolMaker);
-                await testContract.advanceEpoch.awaitTransactionSuccessAsync();
-                const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch.callAsync(poolId);
+                await testContract.advanceEpoch().awaitTransactionSuccessAsync();
+                const actualPoolStats = await testContract.getStakingPoolStatsThisEpoch(poolId).callAsync();
                 expect(actualPoolStats.feesCollected).to.bignumber.eq(0);
                 expect(actualPoolStats.membersStake).to.bignumber.eq(0);
                 expect(actualPoolStats.weightedStake).to.bignumber.eq(0);

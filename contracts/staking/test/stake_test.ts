@@ -45,7 +45,7 @@ blockchainTests.resets('Stake Statuses', env => {
             await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 4, false),
             await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 5, false),
         ]);
-        const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId.callAsync();
+        const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId().callAsync();
         unusedPoolId = `0x${new BigNumber(lastPoolId)
             .plus(1)
             .toString(16)

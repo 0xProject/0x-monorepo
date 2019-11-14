@@ -9,6 +9,10 @@
             {
                 "note": "Add new exports orderHashUtils and transactionHashUtils",
                 "pr": 2321
+            },
+            {
+                "note": "Remove TransactionHelper and MutatorContractFunction",
+                "pr": 2325
             }
         ]
     },

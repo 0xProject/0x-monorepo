@@ -103,7 +103,7 @@ blockchainTests.resets('Exchange transactions', env => {
         exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeInstance.address, { from: owner });
+        await erc20Proxy.addAuthorizedAddress(exchangeInstance.address).awaitTransactionSuccessAsync({ from: owner });
 
         defaultMakerTokenAddress = erc20TokenA.address;
         defaultTakerTokenAddress = erc20TokenB.address;
@@ -114,10 +114,10 @@ blockchainTests.resets('Exchange transactions', env => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerTokenAddress),
-            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerTokenAddress),
-            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerFeeTokenAddress),
-            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerFeeTokenAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData(defaultMakerTokenAddress).callAsync(),
+            takerAssetData: await devUtils.encodeERC20AssetData(defaultTakerTokenAddress).callAsync(),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData(defaultMakerFeeTokenAddress).callAsync(),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData(defaultTakerFeeTokenAddress).callAsync(),
             exchangeAddress: exchangeInstance.address,
             chainId,
         };
@@ -181,11 +181,9 @@ blockchainTests.resets('Exchange transactions', env => {
                     actualGasPrice,
                     transaction.gasPrice,
                 );
-                const tx = exchangeInstance.executeTransaction.sendTransactionAsync(
-                    transaction,
-                    transaction.signature,
-                    { gasPrice: actualGasPrice, from: senderAddress },
-                );
+                const tx = exchangeInstance
+                    .executeTransaction(transaction, transaction.signature)
+                    .sendTransactionAsync({ gasPrice: actualGasPrice, from: senderAddress });
                 return expect(tx).to.revertWith(expectedError);
             });
             it('should revert if the actual gasPrice is less than expected', async () => {
@@ -202,11 +200,9 @@ blockchainTests.resets('Exchange transactions', env => {
                     actualGasPrice,
                     transaction.gasPrice,
                 );
-                const tx = exchangeInstance.executeTransaction.sendTransactionAsync(
-                    transaction,
-                    transaction.signature,
-                    { gasPrice: actualGasPrice, from: senderAddress },
-                );
+                const tx = exchangeInstance
+                    .executeTransaction(transaction, transaction.signature)
+                    .sendTransactionAsync({ gasPrice: actualGasPrice, from: senderAddress });
                 return expect(tx).to.revertWith(expectedError);
             });
         });
@@ -290,13 +286,11 @@ blockchainTests.resets('Exchange transactions', env => {
                     const orders = [order];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                     const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                    const returnData = await exchangeInstance.executeTransaction.callAsync(
-                        transaction,
-                        transaction.signature,
-                        {
+                    const returnData = await exchangeInstance
+                        .executeTransaction(transaction, transaction.signature)
+                        .callAsync({
                             from: senderAddress,
-                        },
-                    );
+                        });
                     const abi = artifacts.Exchange.compilerOutput.abi;
                     const methodAbi = abi.filter(abiItem => (abiItem as MethodAbi).name === fnName)[0] as MethodAbi;
                     const abiEncoder = new AbiEncoder.Method(methodAbi);
@@ -330,10 +324,9 @@ blockchainTests.resets('Exchange transactions', env => {
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                     const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
-                    const recursiveData = exchangeInstance.executeTransaction.getABIEncodedTransactionData(
-                        transaction,
-                        transaction.signature,
-                    );
+                    const recursiveData = exchangeInstance
+                        .executeTransaction(transaction, transaction.signature)
+                        .getABIEncodedTransactionData();
                     const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync({
                         data: recursiveData,
                     });
@@ -355,10 +348,9 @@ blockchainTests.resets('Exchange transactions', env => {
                     const orders = [await orderFactory.newSignedOrderAsync()];
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                     const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                    const recursiveData = exchangeInstance.executeTransaction.getABIEncodedTransactionData(
-                        transaction,
-                        constants.NULL_BYTES,
-                    );
+                    const recursiveData = exchangeInstance
+                        .executeTransaction(transaction, constants.NULL_BYTES)
+                        .getABIEncodedTransactionData();
                     const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync({
                         data: recursiveData,
                     });
@@ -541,7 +533,7 @@ blockchainTests.resets('Exchange transactions', env => {
         describe('cancelOrdersUpTo', () => {
             it('should be successful if signed by maker and called by sender', async () => {
                 const targetEpoch = constants.ZERO_AMOUNT;
-                const data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
+                const data = exchangeInstance.cancelOrdersUpTo(targetEpoch).getABIEncodedTransactionData();
                 const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
@@ -555,7 +547,7 @@ blockchainTests.resets('Exchange transactions', env => {
             });
             it('should be successful if called by maker without a signature', async () => {
                 const targetEpoch = constants.ZERO_AMOUNT;
-                const data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
+                const data = exchangeInstance.cancelOrdersUpTo(targetEpoch).getABIEncodedTransactionData();
                 const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
                 const cancelLogs = transactionReceipt.logs.filter(
@@ -572,34 +564,33 @@ blockchainTests.resets('Exchange transactions', env => {
             it('should preSign a hash for the signer', async () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const orderHash = orderHashUtils.getOrderHashHex(order);
-                const data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHash);
+                const data = exchangeInstance.preSign(orderHash).getABIEncodedTransactionData();
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                let isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                let isPreSigned = await exchangeInstance.preSigned(orderHash, takerAddress).callAsync();
                 expect(isPreSigned).to.be.eq(false);
                 await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
-                isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                isPreSigned = await exchangeInstance.preSigned(orderHash, takerAddress).callAsync();
                 expect(isPreSigned).to.be.eq(true);
             });
             it('should preSign a hash for the caller if called without a signature', async () => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const orderHash = orderHashUtils.getOrderHashHex(order);
-                const data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHash);
+                const data = exchangeInstance.preSign(orderHash).getABIEncodedTransactionData();
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
-                let isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                let isPreSigned = await exchangeInstance.preSigned(orderHash, takerAddress).callAsync();
                 expect(isPreSigned).to.be.eq(false);
                 await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
-                isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                isPreSigned = await exchangeInstance.preSigned(orderHash, takerAddress).callAsync();
                 expect(isPreSigned).to.be.eq(true);
             });
         });
         describe('setSignatureValidatorApproval', () => {
             it('should approve a validator for the signer', async () => {
                 const shouldApprove = true;
-                const data = exchangeInstance.setSignatureValidatorApproval.getABIEncodedTransactionData(
-                    validatorAddress,
-                    shouldApprove,
-                );
+                const data = exchangeInstance
+                    .setSignatureValidatorApproval(validatorAddress, shouldApprove)
+                    .getABIEncodedTransactionData();
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 const validatorApprovalLogs = transactionReceipt.logs.filter(
@@ -617,10 +608,9 @@ blockchainTests.resets('Exchange transactions', env => {
             });
             it('should approve a validator for the caller if called with no signature', async () => {
                 const shouldApprove = true;
-                const data = exchangeInstance.setSignatureValidatorApproval.getABIEncodedTransactionData(
-                    validatorAddress,
-                    shouldApprove,
-                );
+                const data = exchangeInstance
+                    .setSignatureValidatorApproval(validatorAddress, shouldApprove)
+                    .getABIEncodedTransactionData();
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 transaction.signature = constants.NULL_BYTES;
                 const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
@@ -841,11 +831,12 @@ blockchainTests.resets('Exchange transactions', env => {
                 const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
                 const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
                 const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
-                const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
-                    [transaction1, transaction2],
-                    [transaction1.signature, transaction2.signature],
-                    { from: senderAddress },
-                );
+                const returnData = await exchangeInstance
+                    .batchExecuteTransactions(
+                        [transaction1, transaction2],
+                        [transaction1.signature, transaction2.signature],
+                    )
+                    .callAsync({ from: senderAddress });
                 const abi = artifacts.Exchange.compilerOutput.abi;
                 const methodAbi = abi.filter(
                     abiItem => (abiItem as MethodAbi).name === ExchangeFunctionName.FillOrder,
@@ -947,11 +938,12 @@ blockchainTests.resets('Exchange transactions', env => {
                 ]);
                 const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
                 const transaction2 = await makerTransactionFactory.newSignedTransactionAsync({ data: data2 });
-                const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
-                    [transaction1, transaction2],
-                    [transaction1.signature, transaction2.signature],
-                    { from: senderAddress },
-                );
+                const returnData = await exchangeInstance
+                    .batchExecuteTransactions(
+                        [transaction1, transaction2],
+                        [transaction1.signature, transaction2.signature],
+                    )
+                    .callAsync({ from: senderAddress });
                 const abi = artifacts.Exchange.compilerOutput.abi;
                 const methodAbi = abi.filter(
                     abiItem => (abiItem as MethodAbi).name === ExchangeFunctionName.FillOrder,
