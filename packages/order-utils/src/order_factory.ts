@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils/lib/generated-wrappers/dev_utils';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider } from 'ethereum-types';
@@ -79,7 +79,7 @@ export const orderFactory = {
         );
         const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
             isEIP1193: true,
-        } as any).getOrderHash.callAsync(order, new BigNumber(order.chainId), order.exchangeAddress);
+        } as any).getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress).callAsync();
         const signature = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, makerAddress);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;

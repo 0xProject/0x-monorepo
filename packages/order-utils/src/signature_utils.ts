@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils/lib/generated-wrappers/dev_utils';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,

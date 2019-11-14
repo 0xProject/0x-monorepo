@@ -35,7 +35,7 @@ describe('DevUtils.getOrderHash', () => {
         };
         const devUtilsContract = new DevUtilsContract(NULL_ADDRESS, { isEIP1193: true } as SupportedProvider);
         expect(
-            await devUtilsContract.getOrderHash.callAsync(order, new BigNumber(chainId), exchangeAddress),
+            await devUtilsContract.getOrderHash(order, new BigNumber(chainId), exchangeAddress).callAsync(),
         ).to.be.equal(expectedOrderHash);
     });
 });

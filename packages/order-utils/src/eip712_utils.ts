@@ -1,5 +1,5 @@
 import { assert } from '@0x/assert';
-import { DevUtilsContract } from '@0x/contracts-dev-utils/lib/generated-wrappers/dev_utils';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { schemas } from '@0x/json-schemas';
 import {
     EIP712DomainWithDefaultSchema,
@@ -114,11 +114,11 @@ export const eip712Utils = {
         };
         const transactionHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
             isEIP1193: true,
-        } as any).getTransactionHash.callAsync(
+        } as any).getTransactionHash(
             transaction,
             new BigNumber(transaction.domain.chainId),
             transaction.domain.verifyingContract,
-        );
+        ).callAsync();
         const approval = {
             txOrigin,
             transactionHash,
