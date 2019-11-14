@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.5.0-beta.2",
+        "changes": [
+            {
+                "note": "Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts",
+                "pr": 2325
+            }
+        ]
+    },
+    {
         "version": "2.5.0-beta.1",
         "changes": [
             {

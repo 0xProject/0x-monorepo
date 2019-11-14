@@ -2,7 +2,7 @@ import { APIOrder } from '@0x/connect';
 import {
     AcceptedOrderInfo,
     OrderEvent,
-    OrderEventKind,
+    OrderEventEndState,
     OrderInfo,
     RejectedOrderInfo,
     WSClient,
@@ -180,20 +180,22 @@ export class MeshOrderProvider extends BaseOrderProvider {
                 addedRemovedByAssetPairKey[assetPairKey] = { added: [], removed: [], assetPairKey };
             }
             const apiOrder = MeshOrderProvider._orderInfoToAPIOrder(event);
-            switch (event.kind) {
-                case OrderEventKind.Added: {
+            switch (event.endState) {
+                case OrderEventEndState.Added:
+                case 'UNEXPIRED' as any: {
                     addedRemovedByAssetPairKey[assetPairKey].added.push(apiOrder);
                     break;
                 }
-                case OrderEventKind.Cancelled:
-                case OrderEventKind.Expired:
-                case OrderEventKind.FullyFilled:
-                case OrderEventKind.Unfunded: {
+                case OrderEventEndState.Cancelled:
+                case OrderEventEndState.Expired:
+                case OrderEventEndState.FullyFilled:
+                case OrderEventEndState.Unfunded:
+                case 'STOPPED_WATCHING' as any: {
                     addedRemovedByAssetPairKey[assetPairKey].removed.push(apiOrder);
                     break;
                 }
-                case OrderEventKind.FillabilityIncreased:
-                case OrderEventKind.Filled: {
+                case OrderEventEndState.FillabilityIncreased:
+                case OrderEventEndState.Filled: {
                     addedRemovedByAssetPairKey[assetPairKey].added.push(apiOrder);
                     break;
                 }

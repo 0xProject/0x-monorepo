@@ -21,7 +21,7 @@ blockchainTests('LibRichErrors', env => {
         it('should correctly revert the extra bytes', async () => {
             const extraBytes = hexRandom(100);
             try {
-                await lib.externalRRevert.callAsync(extraBytes);
+                await lib.externalRRevert(extraBytes).callAsync();
             } catch (err) {
                 const revertError = coerceThrownErrorAsRevertError(err);
                 return expect(revertError.encode()).to.eq(extraBytes);
@@ -33,7 +33,7 @@ blockchainTests('LibRichErrors', env => {
 
         it('should correctly revert a StringRevertError', async () => {
             const error = new StringRevertError('foo');
-            return expect(lib.externalRRevert.callAsync(error.encode())).to.revertWith(error);
+            return expect(lib.externalRRevert(error.encode()).callAsync()).to.revertWith(error);
         });
     });
 });

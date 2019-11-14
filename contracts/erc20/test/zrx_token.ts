@@ -44,25 +44,25 @@ describe('ZRXToken', () => {
     });
     describe('constants', () => {
         it('should have 18 decimals', async () => {
-            const decimals = new BigNumber(await zrxToken.decimals.callAsync());
+            const decimals = new BigNumber(await zrxToken.decimals().callAsync());
             const expectedDecimals = 18;
             expect(decimals).to.be.bignumber.equal(expectedDecimals);
         });
 
         it('should have a total supply of 1 billion tokens', async () => {
-            const totalSupply = new BigNumber(await zrxToken.totalSupply.callAsync());
+            const totalSupply = new BigNumber(await zrxToken.totalSupply().callAsync());
             const expectedTotalSupply = 1000000000;
             expect(Web3Wrapper.toUnitAmount(totalSupply, 18)).to.be.bignumber.equal(expectedTotalSupply);
         });
 
         it('should be named 0x Protocol Token', async () => {
-            const name = await zrxToken.name.callAsync();
+            const name = await zrxToken.name().callAsync();
             const expectedName = '0x Protocol Token';
             expect(name).to.be.equal(expectedName);
         });
 
         it('should have the symbol ZRX', async () => {
-            const symbol = await zrxToken.symbol.callAsync();
+            const symbol = await zrxToken.symbol().callAsync();
             const expectedSymbol = 'ZRX';
             expect(symbol).to.be.equal(expectedSymbol);
         });
@@ -70,8 +70,8 @@ describe('ZRXToken', () => {
 
     describe('constructor', () => {
         it('should initialize owner balance to totalSupply', async () => {
-            const ownerBalance = await zrxToken.balanceOf.callAsync(owner);
-            const totalSupply = new BigNumber(await zrxToken.totalSupply.callAsync());
+            const ownerBalance = await zrxToken.balanceOf(owner).callAsync();
+            const totalSupply = new BigNumber(await zrxToken.totalSupply().callAsync());
             expect(totalSupply).to.be.bignumber.equal(ownerBalance);
         });
     });
@@ -79,14 +79,14 @@ describe('ZRXToken', () => {
     describe('transfer', () => {
         it('should transfer balance from sender to receiver', async () => {
             const receiver = spender;
-            const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
+            const initOwnerBalance = await zrxToken.balanceOf(owner).callAsync();
             const amountToTransfer = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.transfer.sendTransactionAsync(receiver, amountToTransfer, { from: owner }),
+                await zrxToken.transfer(receiver, amountToTransfer).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const finalOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
-            const finalReceiverBalance = await zrxToken.balanceOf.callAsync(receiver);
+            const finalOwnerBalance = await zrxToken.balanceOf(owner).callAsync();
+            const finalReceiverBalance = await zrxToken.balanceOf(receiver).callAsync();
 
             const expectedFinalOwnerBalance = initOwnerBalance.minus(amountToTransfer);
             const expectedFinalReceiverBalance = amountToTransfer;
@@ -95,7 +95,7 @@ describe('ZRXToken', () => {
         });
 
         it('should return true on a 0 value transfer', async () => {
-            const didReturnTrue = await zrxToken.transfer.callAsync(spender, new BigNumber(0), {
+            const didReturnTrue = await zrxToken.transfer(spender, new BigNumber(0)).callAsync({
                 from: owner,
             });
             expect(didReturnTrue).to.be.true();
@@ -104,30 +104,30 @@ describe('ZRXToken', () => {
 
     describe('transferFrom', () => {
         it('should return false if owner has insufficient balance', async () => {
-            const ownerBalance = await zrxToken.balanceOf.callAsync(owner);
+            const ownerBalance = await zrxToken.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance.plus(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.approve.sendTransactionAsync(spender, amountToTransfer, {
+                await zrxToken.approve(spender, amountToTransfer).sendTransactionAsync({
                     from: owner,
                     gas: constants.MAX_TOKEN_APPROVE_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {
+            const didReturnTrue = await zrxToken.transferFrom(owner, spender, amountToTransfer).callAsync({
                 from: spender,
             });
             expect(didReturnTrue).to.be.false();
         });
 
         it('should return false if spender has insufficient allowance', async () => {
-            const ownerBalance = await zrxToken.balanceOf.callAsync(owner);
+            const ownerBalance = await zrxToken.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance;
 
-            const spenderAllowance = await zrxToken.allowance.callAsync(owner, spender);
+            const spenderAllowance = await zrxToken.allowance(owner, spender).callAsync();
             const isSpenderAllowanceInsufficient = spenderAllowance.comparedTo(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
-            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {
+            const didReturnTrue = await zrxToken.transferFrom(owner, spender, amountToTransfer).callAsync({
                 from: spender,
             });
             expect(didReturnTrue).to.be.false();
@@ -135,75 +135,75 @@ describe('ZRXToken', () => {
 
         it('should return true on a 0 value transfer', async () => {
             const amountToTransfer = new BigNumber(0);
-            const didReturnTrue = await zrxToken.transferFrom.callAsync(owner, spender, amountToTransfer, {
+            const didReturnTrue = await zrxToken.transferFrom(owner, spender, amountToTransfer).callAsync({
                 from: spender,
             });
             expect(didReturnTrue).to.be.true();
         });
 
         it('should not modify spender allowance if spender allowance is 2^256 - 1', async () => {
-            const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
+            const initOwnerBalance = await zrxToken.balanceOf(owner).callAsync();
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = MAX_UINT;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.approve.sendTransactionAsync(spender, initSpenderAllowance, {
+                await zrxToken.approve(spender, initSpenderAllowance).sendTransactionAsync({
                     from: owner,
                     gas: constants.MAX_TOKEN_APPROVE_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                await zrxToken.transferFrom(owner, spender, amountToTransfer).sendTransactionAsync({
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            const newSpenderAllowance = await zrxToken.allowance.callAsync(owner, spender);
+            const newSpenderAllowance = await zrxToken.allowance(owner, spender).callAsync();
             expect(initSpenderAllowance).to.be.bignumber.equal(newSpenderAllowance);
         });
 
         it('should transfer the correct balances if spender has sufficient allowance', async () => {
-            const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
-            const initSpenderBalance = await zrxToken.balanceOf.callAsync(spender);
+            const initOwnerBalance = await zrxToken.balanceOf(owner).callAsync();
+            const initSpenderBalance = await zrxToken.balanceOf(spender).callAsync();
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.approve.sendTransactionAsync(spender, initSpenderAllowance),
+                await zrxToken.approve(spender, initSpenderAllowance).sendTransactionAsync(),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                await zrxToken.transferFrom(owner, spender, amountToTransfer).sendTransactionAsync({
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            const newOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
-            const newSpenderBalance = await zrxToken.balanceOf.callAsync(spender);
+            const newOwnerBalance = await zrxToken.balanceOf(owner).callAsync();
+            const newSpenderBalance = await zrxToken.balanceOf(spender).callAsync();
 
             expect(newOwnerBalance).to.be.bignumber.equal(0);
             expect(newSpenderBalance).to.be.bignumber.equal(initSpenderBalance.plus(initOwnerBalance));
         });
 
         it('should modify allowance if spender has sufficient allowance less than 2^256 - 1', async () => {
-            const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
+            const initOwnerBalance = await zrxToken.balanceOf(owner).callAsync();
             const amountToTransfer = initOwnerBalance;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.approve.sendTransactionAsync(spender, amountToTransfer),
+                await zrxToken.approve(spender, amountToTransfer).sendTransactionAsync(),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
+                await zrxToken.transferFrom(owner, spender, amountToTransfer).sendTransactionAsync({
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            const newSpenderAllowance = await zrxToken.allowance.callAsync(owner, spender);
+            const newSpenderAllowance = await zrxToken.allowance(owner, spender).callAsync();
             expect(newSpenderAllowance).to.be.bignumber.equal(0);
         });
     });

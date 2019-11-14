@@ -11,6 +11,10 @@
                 "pr": 2324
             },
             {
+                "note": "[Breaking] Big refactor of contract wrapper interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details",
+                "pr": 2325
+            },
+            {
                 "note": "Remove IWallet and IValidator contract wrappers",
                 "pr": 2337
             }

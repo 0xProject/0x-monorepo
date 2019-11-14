@@ -52,10 +52,10 @@ blockchainTests.resets('fillOrder integration tests', env => {
         });
         const orderConfig = {
             feeRecipientAddress: feeRecipient.address,
-            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(makerToken.address),
-            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(takerToken.address),
-            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(makerToken.address),
-            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(takerToken.address),
+            makerAssetData: await devUtils.encodeERC20AssetData(makerToken.address).callAsync(),
+            takerAssetData: await devUtils.encodeERC20AssetData(takerToken.address).callAsync(),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData(makerToken.address).callAsync(),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData(takerToken.address).callAsync(),
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
         };
@@ -136,7 +136,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,
-                await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address),
+                await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync(),
             );
         }
 
@@ -227,7 +227,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         // now expect a `StakingPoolEarnedRewardsInEpoch` event to be emitted because the staking
         // pool now has enough stake in the current epoch to earn rewards.
         verifyFillEvents(order, receipt);
-        const currentEpoch = await deployment.staking.stakingWrapper.currentEpoch.callAsync();
+        const currentEpoch = await deployment.staking.stakingWrapper.currentEpoch().callAsync();
         verifyEvents<IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs>(
             receipt,
             [
@@ -256,7 +256,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
 
         // End the epoch. This should wrap the staking proxy's ETH balance.
         const endEpochReceipt = await delegator.endEpochAsync();
-        const newEpoch = await deployment.staking.stakingWrapper.currentEpoch.callAsync();
+        const newEpoch = await deployment.staking.stakingWrapper.currentEpoch().callAsync();
 
         // Check balances
         expectedBalances.wrapEth(
@@ -300,7 +300,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
-            await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address),
+            await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync(),
         );
         expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
         await balanceStore.updateBalancesAsync();
@@ -341,7 +341,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         await taker.fillOrderAsync(order, order.takerAssetAmount);
 
         // Check that the pool has collected fees from the above fill.
-        const poolStats = await deployment.staking.stakingWrapper.getStakingPoolStatsThisEpoch.callAsync(poolId);
+        const poolStats = await deployment.staking.stakingWrapper.getStakingPoolStatsThisEpoch(poolId).callAsync();
         expect(poolStats.feesCollected).to.bignumber.equal(DeploymentManager.protocolFee);
     });
     it('should collect WETH fees and pay out rewards', async () => {
@@ -382,7 +382,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
-            await devUtils.encodeERC20AssetData.callAsync(deployment.tokens.weth.address),
+            await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync(),
         );
         expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
         await balanceStore.updateBalancesAsync();

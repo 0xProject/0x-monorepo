@@ -31,12 +31,12 @@ describe('LibAddress', () => {
 
     describe('isContract', () => {
         it('should return false for a non-contract address', async () => {
-            const isContract = await lib.externalIsContract.callAsync(nonContract);
+            const isContract = await lib.externalIsContract(nonContract).callAsync();
             expect(isContract).to.be.false();
         });
 
         it('should return true for a non-contract address', async () => {
-            const isContract = await lib.externalIsContract.callAsync(lib.address);
+            const isContract = await lib.externalIsContract(lib.address).callAsync();
             expect(isContract).to.be.true();
         });
     });

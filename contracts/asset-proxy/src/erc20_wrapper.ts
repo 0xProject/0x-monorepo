@@ -58,7 +58,7 @@ export class ERC20Wrapper {
             txDefaults,
             artifacts,
         );
-        this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
+        this._proxyIdIfExists = await this._proxyContract.getProxyId().callAsync();
         return this._proxyContract;
     }
     public getProxyId(): string {
@@ -70,43 +70,39 @@ export class ERC20Wrapper {
         this._validateProxyContractExistsOrThrow();
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                await dummyTokenContract.setBalance.awaitTransactionSuccessAsync(
-                    tokenOwnerAddress,
-                    constants.INITIAL_ERC20_BALANCE,
-                    { from: this._contractOwnerAddress },
-                );
-                await dummyTokenContract.approve.awaitTransactionSuccessAsync(
-                    (this._proxyContract as ERC20ProxyContract).address,
-                    constants.INITIAL_ERC20_ALLOWANCE,
-                    { from: tokenOwnerAddress },
-                );
+                await dummyTokenContract
+                    .setBalance(tokenOwnerAddress, constants.INITIAL_ERC20_BALANCE)
+                    .awaitTransactionSuccessAsync({ from: this._contractOwnerAddress });
+                await dummyTokenContract
+                    .approve((this._proxyContract as ERC20ProxyContract).address, constants.INITIAL_ERC20_ALLOWANCE)
+                    .awaitTransactionSuccessAsync({ from: tokenOwnerAddress });
             }
         }
     }
     public async getBalanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
         const tokenContract = await this._getTokenContractFromAssetDataAsync(assetData);
-        const balance = new BigNumber(await tokenContract.balanceOf.callAsync(userAddress));
+        const balance = new BigNumber(await tokenContract.balanceOf(userAddress).callAsync());
         return balance;
     }
     public async setBalanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = await this._getTokenContractFromAssetDataAsync(assetData);
-        await tokenContract.setBalance.awaitTransactionSuccessAsync(
-            userAddress,
-            amount,
-            { from: this._contractOwnerAddress },
-            { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
+        await tokenContract
+            .setBalance(userAddress, amount)
+            .awaitTransactionSuccessAsync(
+                { from: this._contractOwnerAddress },
+                { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS },
+            );
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
         const tokenContract = await this._getTokenContractFromAssetDataAsync(assetData);
         const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
-        const allowance = new BigNumber(await tokenContract.allowance.callAsync(userAddress, proxyAddress));
+        const allowance = new BigNumber(await tokenContract.allowance(userAddress, proxyAddress).callAsync());
         return allowance;
     }
     public async setAllowanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = await this._getTokenContractFromAssetDataAsync(assetData);
         const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
-        await tokenContract.approve.awaitTransactionSuccessAsync(proxyAddress, amount, { from: userAddress });
+        await tokenContract.approve(proxyAddress, amount).awaitTransactionSuccessAsync({ from: userAddress });
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
         this._validateDummyTokenContractsExistOrThrow();
@@ -115,7 +111,7 @@ export class ERC20Wrapper {
         const balanceInfo: Array<{ tokenOwnerAddress: string; tokenAddress: string }> = [];
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                balances.push(await dummyTokenContract.balanceOf.callAsync(tokenOwnerAddress));
+                balances.push(await dummyTokenContract.balanceOf(tokenOwnerAddress).callAsync());
                 balanceInfo.push({
                     tokenOwnerAddress,
                     tokenAddress: dummyTokenContract.address,
@@ -149,7 +145,7 @@ export class ERC20Wrapper {
         return tokenAddresses;
     }
     private async _getTokenContractFromAssetDataAsync(assetData: string): Promise<DummyERC20TokenContract> {
-        const [proxyId, tokenAddress] = await this._devUtils.decodeERC20AssetData.callAsync(assetData); // tslint:disable-line:no-unused-variable
+        const [proxyId, tokenAddress] = await this._devUtils.decodeERC20AssetData(assetData).callAsync(); // tslint:disable-line:no-unused-variable
         const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
         if (tokenContractIfExists === undefined) {
             throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);

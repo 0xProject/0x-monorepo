@@ -102,3 +102,11 @@ export {
 } from './generated-wrappers/coordinator_registry';
 
 export * from '@0x/contract-addresses';
+export {
+    ContractEvent,
+    SendTransactionOpts,
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SubscriptionErrors,
+} from '@0x/base-contract';

@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 import { artifacts } from './artifacts';
 import { TestLibExchangeRichErrorDecoderContract } from './wrappers';
 
-blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
+blockchainTests.resets.only('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
     const ASSET_PROXY_ID_LENGTH = 4;
     const SIGNATURE_LENGTH = 66;
     const ASSET_DATA_LENGTH = 36;
@@ -38,7 +38,7 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
         // Solidity counterparts.
         const endpointName = `decode${revert.name}`;
         const callAsync = (_encoded: string) => {
-            return (decoder as any)[endpointName].callAsync.call((decoder as any)[endpointName], _encoded);
+            return (decoder as any)[endpointName](_encoded).callAsync.call((decoder as any)[endpointName]);
         };
         describe(`${endpointName}()`, async () => {
             it('decodes encoded parameters', async () => {

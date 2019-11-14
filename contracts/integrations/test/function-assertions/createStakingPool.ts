@@ -15,13 +15,13 @@ import { DeploymentManager } from '../deployment_manager';
 export function validCreateStakingPoolAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
-): FunctionAssertion<string> {
+): FunctionAssertion<string, string> {
     const { stakingWrapper } = deployment.staking;
 
     return new FunctionAssertion(stakingWrapper.createStakingPool, {
         // Returns the expected ID of th created pool
         before: async () => {
-            const lastPoolId = await stakingWrapper.lastPoolId.callAsync();
+            const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
             // Effectively the last poolId + 1, but as a bytestring
             return `0x${new BigNumber(lastPoolId)
                 .plus(1)

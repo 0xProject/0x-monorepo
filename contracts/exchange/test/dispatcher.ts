@@ -79,10 +79,10 @@ describe('AssetProxyDispatcher', () => {
             txDefaults,
             dependencyArtifacts,
         );
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyDispatcher.address, {
+        await erc20Proxy.addAuthorizedAddress(assetProxyDispatcher.address).awaitTransactionSuccessAsync({
             from: owner,
         });
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyDispatcher.address, {
+        await erc721Proxy.addAuthorizedAddress(assetProxyDispatcher.address).awaitTransactionSuccessAsync({
             from: owner,
         });
     });
@@ -94,34 +94,34 @@ describe('AssetProxyDispatcher', () => {
     });
     describe('registerAssetProxy', () => {
         it('should record proxy upon registration', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
+            const proxyAddress = await assetProxyDispatcher.getAssetProxy(AssetProxyId.ERC20).callAsync();
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
         });
 
         it('should be able to record multiple proxies', async () => {
             // Record first proxy
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
+            let proxyAddress = await assetProxyDispatcher.getAssetProxy(AssetProxyId.ERC20).callAsync();
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Record another proxy
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC721);
+            proxyAddress = await assetProxyDispatcher.getAssetProxy(AssetProxyId.ERC721).callAsync();
             expect(proxyAddress).to.be.equal(erc721Proxy.address);
         });
 
         it('should revert if a proxy with the same id is already registered', async () => {
             // Initial registration
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
+            const proxyAddress = await assetProxyDispatcher.getAssetProxy(AssetProxyId.ERC20).callAsync();
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Deploy a new version of the ERC20 Transfer Proxy contract
             const newErc20TransferProxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
@@ -131,7 +131,7 @@ describe('AssetProxyDispatcher', () => {
                 dependencyArtifacts,
             );
             const expectedError = new ExchangeRevertErrors.AssetProxyExistsError(AssetProxyId.ERC20, proxyAddress);
-            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
+            const tx = assetProxyDispatcher.registerAssetProxy(newErc20TransferProxy.address).sendTransactionAsync({
                 from: owner,
             });
             return expect(tx).to.revertWith(expectedError);
@@ -139,7 +139,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should revert if requesting address is not owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
-            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
+            const tx = assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).sendTransactionAsync({
                 from: notOwner,
             });
             return expect(tx).to.revertWith(expectedError);
@@ -147,7 +147,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should revert if the proxy is not a contract address', async () => {
             const errMessage = 'VM Exception while processing transaction: revert';
-            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(notOwner, {
+            const tx = assetProxyDispatcher.registerAssetProxy(notOwner).sendTransactionAsync({
                 from: owner,
             });
             return expect(tx).to.be.rejectedWith(errMessage);
@@ -156,7 +156,7 @@ describe('AssetProxyDispatcher', () => {
         it('should log an event with correct arguments when an asset proxy is registered', async () => {
             const logDecoder = new LogDecoder(web3Wrapper, artifacts);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
+                await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).sendTransactionAsync({
                     from: owner,
                 }),
             );
@@ -169,15 +169,15 @@ describe('AssetProxyDispatcher', () => {
 
     describe('getAssetProxy', () => {
         it('should return correct address of registered proxy', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
+            const proxyAddress = await assetProxyDispatcher.getAssetProxy(AssetProxyId.ERC20).callAsync();
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
         });
 
         it('should return NULL address if requesting non-existent proxy', async () => {
-            const proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
+            const proxyAddress = await assetProxyDispatcher.getAssetProxy(AssetProxyId.ERC20).callAsync();
             expect(proxyAddress).to.be.equal(constants.NULL_ADDRESS);
         });
     });
@@ -186,23 +186,18 @@ describe('AssetProxyDispatcher', () => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
         it('should dispatch transfer to registered proxy', async () => {
             // Register ERC20 proxy
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
             // Construct metadata for ERC20 proxy
-            const encodedAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
+            const encodedAssetData = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
 
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
-            await assetProxyDispatcher.dispatchTransferFrom.awaitTransactionSuccessAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
-            );
+            await assetProxyDispatcher
+                .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
+                .awaitTransactionSuccessAsync({ from: owner });
             // Verify transfer was successful
             const newBalances = await erc20Wrapper.getBalancesAsync();
             expect(newBalances[makerAddress][erc20TokenA.address]).to.be.bignumber.equal(
@@ -215,23 +210,18 @@ describe('AssetProxyDispatcher', () => {
 
         it('should not dispatch a transfer if amount == 0', async () => {
             // Register ERC20 proxy
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
             // Construct metadata for ERC20 proxy
-            const encodedAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
+            const encodedAssetData = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
 
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = constants.ZERO_AMOUNT;
-            const txReceipt = await assetProxyDispatcher.dispatchTransferFrom.awaitTransactionSuccessAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
-            );
+            const txReceipt = await assetProxyDispatcher
+                .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
+                .awaitTransactionSuccessAsync({ from: owner });
             expect(txReceipt.logs.length).to.be.equal(0);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             expect(newBalances).to.deep.equal(erc20Balances);
@@ -239,7 +229,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should revert if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
-            const encodedAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
+            const encodedAssetData = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
 
             // Perform a transfer from makerAddress to takerAddress
             const amount = new BigNumber(10);
@@ -248,70 +238,58 @@ describe('AssetProxyDispatcher', () => {
                 orderHash,
                 encodedAssetData,
             );
-            const tx = assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
-            );
+            const tx = assetProxyDispatcher
+                .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
+                .sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert with the correct error when assetData length < 4 bytes', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            const encodedAssetData = (await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address)).slice(0, 8);
+            const encodedAssetData = (await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync()).slice(0, 8);
             const amount = new BigNumber(1);
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
                 ExchangeRevertErrors.AssetProxyDispatchErrorCode.InvalidAssetDataLength,
                 orderHash,
                 encodedAssetData,
             );
-            const tx = assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
-            );
+            const tx = assetProxyDispatcher
+                .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
+                .sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert if assetData is not padded to 32 bytes (excluding the id)', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
             // Shave off the last byte
-            const encodedAssetData = (await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address)).slice(0, 72);
+            const encodedAssetData = (await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync()).slice(
+                0,
+                72,
+            );
             const amount = new BigNumber(1);
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
                 ExchangeRevertErrors.AssetProxyDispatchErrorCode.InvalidAssetDataLength,
                 orderHash,
                 encodedAssetData,
             );
-            const tx = assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
-            );
+            const tx = assetProxyDispatcher
+                .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
+                .sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert with the reason provided by the AssetProxy when a transfer fails', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            await erc20TokenA.approve.awaitTransactionSuccessAsync(erc20Proxy.address, constants.ZERO_AMOUNT, {
+            await erc20TokenA.approve(erc20Proxy.address, constants.ZERO_AMOUNT).awaitTransactionSuccessAsync({
                 from: makerAddress,
             });
-            const encodedAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
+            const encodedAssetData = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
             const amount = new BigNumber(1);
             const nestedError = new StringRevertError(RevertReason.TransferFailed).encode();
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
@@ -319,25 +297,20 @@ describe('AssetProxyDispatcher', () => {
                 encodedAssetData,
                 nestedError,
             );
-            const tx = assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                takerAddress,
-                amount,
-                { from: owner },
-            );
+            const tx = assetProxyDispatcher
+                .dispatchTransferFrom(orderHash, encodedAssetData, makerAddress, takerAddress, amount)
+                .sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(expectedError);
         });
     });
     describe('simulateDispatchTransferFromCalls', () => {
         it('should revert with the information specific to the failed transfer', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
-            const assetDataA = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
-            const assetDataB = await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address);
-            await erc20TokenB.approve.awaitTransactionSuccessAsync(erc20Proxy.address, constants.ZERO_AMOUNT, {
+            const assetDataA = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
+            const assetDataB = await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync();
+            await erc20TokenB.approve(erc20Proxy.address, constants.ZERO_AMOUNT).awaitTransactionSuccessAsync({
                 from: makerAddress,
             });
             const transferIndexAsBytes32 = '0x0000000000000000000000000000000000000000000000000000000000000001';
@@ -347,59 +320,67 @@ describe('AssetProxyDispatcher', () => {
                 assetDataB,
                 nestedError,
             );
-            const tx = assetProxyDispatcher.simulateDispatchTransferFromCalls.sendTransactionAsync(
-                [assetDataA, assetDataB],
-                [makerAddress, makerAddress],
-                [takerAddress, takerAddress],
-                [new BigNumber(1), new BigNumber(1)],
-            );
+            const tx = assetProxyDispatcher
+                .simulateDispatchTransferFromCalls(
+                    [assetDataA, assetDataB],
+                    [makerAddress, makerAddress],
+                    [takerAddress, takerAddress],
+                    [new BigNumber(1), new BigNumber(1)],
+                )
+                .sendTransactionAsync();
             return expect(tx).to.revertWith(expectedError);
         });
         it('should forward the revert reason from the underlying failed transfer', async () => {
-            const assetDataA = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
-            const assetDataB = await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address);
+            const assetDataA = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
+            const assetDataB = await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync();
             const transferIndexAsBytes32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
                 ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy,
                 transferIndexAsBytes32,
                 assetDataA,
             );
-            const tx = assetProxyDispatcher.simulateDispatchTransferFromCalls.sendTransactionAsync(
-                [assetDataA, assetDataB],
-                [makerAddress, makerAddress],
-                [takerAddress, takerAddress],
-                [new BigNumber(1), new BigNumber(1)],
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
-        it('should revert with TRANSFERS_SUCCESSFUL if no transfers fail', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
-                from: owner,
-            });
-            const assetDataA = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
-            const assetDataB = await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address);
-            const tx = assetProxyDispatcher.simulateDispatchTransferFromCalls.sendTransactionAsync(
-                [assetDataA, assetDataB],
-                [makerAddress, makerAddress],
-                [takerAddress, takerAddress],
-                [new BigNumber(1), new BigNumber(1)],
-            );
-            return expect(tx).to.revertWith(RevertReason.TransfersSuccessful);
-        });
-        it('should not modify balances if all transfers are successful', async () => {
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
-                from: owner,
-            });
-            const assetDataA = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
-            const assetDataB = await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address);
-            const balances = await erc20Wrapper.getBalancesAsync();
-            try {
-                await assetProxyDispatcher.simulateDispatchTransferFromCalls.awaitTransactionSuccessAsync(
+            const tx = assetProxyDispatcher
+                .simulateDispatchTransferFromCalls(
                     [assetDataA, assetDataB],
                     [makerAddress, makerAddress],
                     [takerAddress, takerAddress],
                     [new BigNumber(1), new BigNumber(1)],
-                );
+                )
+                .sendTransactionAsync();
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('should revert with TRANSFERS_SUCCESSFUL if no transfers fail', async () => {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
+                from: owner,
+            });
+            const assetDataA = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
+            const assetDataB = await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync();
+            const tx = assetProxyDispatcher
+                .simulateDispatchTransferFromCalls(
+                    [assetDataA, assetDataB],
+                    [makerAddress, makerAddress],
+                    [takerAddress, takerAddress],
+                    [new BigNumber(1), new BigNumber(1)],
+                )
+                .sendTransactionAsync();
+            return expect(tx).to.revertWith(RevertReason.TransfersSuccessful);
+        });
+        it('should not modify balances if all transfers are successful', async () => {
+            await assetProxyDispatcher.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
+                from: owner,
+            });
+            const assetDataA = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
+            const assetDataB = await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync();
+            const balances = await erc20Wrapper.getBalancesAsync();
+            try {
+                await assetProxyDispatcher
+                    .simulateDispatchTransferFromCalls(
+                        [assetDataA, assetDataB],
+                        [makerAddress, makerAddress],
+                        [takerAddress, takerAddress],
+                        [new BigNumber(1), new BigNumber(1)],
+                    )
+                    .awaitTransactionSuccessAsync();
             } catch (err) {
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(newBalances).to.deep.equal(balances);

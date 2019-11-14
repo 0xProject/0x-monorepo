@@ -115,7 +115,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         );
 
         // Authorize owner in the staking proxy.
-        await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(owner);
+        await stakingProxy.addAuthorizedAddress(owner).awaitTransactionSuccessAsync();
 
         // Deploy the asset proxy contracts.
         erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
@@ -163,12 +163,11 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 assetProxyId: string,
             ): Promise<void> {
                 // Register the asset proxy.
-                const receipt = await registrationContract.registerAssetProxy.awaitTransactionSuccessAsync(
-                    assetProxyAddress,
-                    {
+                const receipt = await registrationContract
+                    .registerAssetProxy(assetProxyAddress)
+                    .awaitTransactionSuccessAsync({
                         from: owner,
-                    },
-                );
+                    });
 
                 // Ensure that the correct event was logged.
                 const logs = filterLogsToArguments<ExchangeAssetProxyRegisteredEventArgs>(
@@ -178,7 +177,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 expect(logs).to.be.deep.eq([{ id: assetProxyId, assetProxy: assetProxyAddress }]);
 
                 // Ensure that the asset proxy was actually registered.
-                const proxyAddress = await registrationContract.getAssetProxy.callAsync(assetProxyId);
+                const proxyAddress = await registrationContract.getAssetProxy(assetProxyId).callAsync();
                 expect(proxyAddress).to.be.eq(assetProxyAddress);
             }
 
@@ -188,10 +187,9 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 newAuthorityAddress: string,
             ): Promise<void> {
                 // Authorize the address.
-                const receipt = await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                    newAuthorityAddress,
-                    { from: owner },
-                );
+                const receipt = await authorizable
+                    .addAuthorizedAddress(newAuthorityAddress)
+                    .awaitTransactionSuccessAsync({ from: owner });
 
                 // Ensure that the correct log was emitted.
                 const logs = filterLogsToArguments<AuthorizableAuthorizedAddressAddedEventArgs>(
@@ -201,7 +199,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 expect(logs).to.be.deep.eq([{ target: newAuthorityAddress, caller: owner }]);
 
                 // Ensure that the address was actually authorized.
-                const wasAuthorized = await authorizable.authorized.callAsync(newAuthorityAddress);
+                const wasAuthorized = await authorizable.authorized(newAuthorityAddress).callAsync();
                 expect(wasAuthorized).to.be.true();
             }
 
@@ -261,13 +259,13 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         describe('staking specific', () => {
             it('should have properly configured the staking proxy with the logic contract', async () => {
                 // Ensure that the registered staking contract is correct.
-                const stakingAddress = await stakingProxy.stakingContract.callAsync();
+                const stakingAddress = await stakingProxy.stakingContract().callAsync();
                 expect(stakingAddress).to.be.eq(staking.address);
             });
 
             it('should have initialized the correct parameters in the staking proxy', async () => {
                 // Ensure that the correct parameters were set.
-                const params = await stakingWrapper.getParams.callAsync();
+                const params = await stakingWrapper.getParams().callAsync();
                 expect(params).to.be.deep.eq([
                     stakingConstants.DEFAULT_PARAMS.epochDurationInSeconds,
                     stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
@@ -281,7 +279,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         describe('exchange and staking integration', () => {
             it('should successfully register the exchange in the staking contract', async () => {
                 // Register the exchange.
-                const receipt = await stakingWrapper.addExchangeAddress.awaitTransactionSuccessAsync(exchange.address, {
+                const receipt = await stakingWrapper.addExchangeAddress(exchange.address).awaitTransactionSuccessAsync({
                     from: owner,
                 });
 
@@ -293,18 +291,17 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 expect(logs).to.be.deep.eq([{ exchangeAddress: exchange.address }]);
 
                 // Ensure that the exchange was registered.
-                const wasRegistered = await stakingWrapper.validExchanges.callAsync(exchange.address);
+                const wasRegistered = await stakingWrapper.validExchanges(exchange.address).callAsync();
                 expect(wasRegistered).to.be.true();
             });
 
             it('should successfully register the staking contract in the exchange', async () => {
                 // Register the staking contract.
-                const receipt = await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(
-                    stakingProxy.address,
-                    {
+                const receipt = await exchange
+                    .setProtocolFeeCollectorAddress(stakingProxy.address)
+                    .awaitTransactionSuccessAsync({
                         from: owner,
-                    },
-                );
+                    });
 
                 // Ensure that the correct events were logged.
                 const logs = filterLogsToArguments<ExchangeProtocolFeeCollectorAddressEventArgs>(
@@ -319,15 +316,15 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 ]);
 
                 // Ensure that the staking contract was registered.
-                const feeCollector = await exchange.protocolFeeCollector.callAsync();
+                const feeCollector = await exchange.protocolFeeCollector().callAsync();
                 expect(feeCollector).to.be.eq(stakingProxy.address);
             });
 
             it('should successfully update the protocol fee multiplier in the staking contract', async () => {
                 // Update the protocol fee multiplier.
-                const receipt = await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(
-                    protocolFeeMultiplier,
-                );
+                const receipt = await exchange
+                    .setProtocolFeeMultiplier(protocolFeeMultiplier)
+                    .awaitTransactionSuccessAsync();
 
                 // Ensure that the correct events were logged.
                 const logs = filterLogsToArguments<ExchangeProtocolFeeMultiplierEventArgs>(
@@ -342,7 +339,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 ]);
 
                 // Ensure that the protocol fee multiplier was set correctly.
-                const multiplier = await exchange.protocolFeeMultiplier.callAsync();
+                const multiplier = await exchange.protocolFeeMultiplier().callAsync();
                 expect(multiplier).bignumber.to.be.eq(protocolFeeMultiplier);
             });
         });
@@ -353,7 +350,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         // to the asset proxy owner.
         async function transferAuthorizationAndAssertSuccessAsync(contract: Authorizable): Promise<void> {
             // Remove authorization from the old owner.
-            let receipt = await contract.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
+            let receipt = await contract.removeAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
 
             // Ensure that the correct log was recorded.
             let logs = filterLogsToArguments<AuthorizableAuthorizedAddressRemovedEventArgs>(
@@ -363,11 +360,11 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             expect(logs).to.be.deep.eq([{ target: owner, caller: owner }]);
 
             // Ensure that the owner was actually removed.
-            let isAuthorized = await contract.authorized.callAsync(owner);
+            let isAuthorized = await contract.authorized(owner).callAsync();
             expect(isAuthorized).to.be.false();
 
             // Authorize the asset-proxy owner.
-            receipt = await contract.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address, {
+            receipt = await contract.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync({
                 from: owner,
             });
 
@@ -379,17 +376,17 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             expect(logs).to.be.deep.eq([{ target: governor.address, caller: owner }]);
 
             // Ensure that the asset-proxy owner was actually authorized.
-            isAuthorized = await contract.authorized.callAsync(governor.address);
+            isAuthorized = await contract.authorized(governor.address).callAsync();
             expect(isAuthorized).to.be.true();
         }
 
         // Transfers ownership of a contract to the asset-proxy owner, and ensures that the change was actually made.
         async function transferOwnershipAndAssertSuccessAsync(contract: Ownable): Promise<void> {
             // Transfer ownership to the new owner.
-            await contract.transferOwnership.awaitTransactionSuccessAsync(governor.address, { from: owner });
+            await contract.transferOwnership(governor.address).awaitTransactionSuccessAsync({ from: owner });
 
             // Ensure that the owner address has been updated.
-            const ownerAddress = await contract.owner.callAsync();
+            const ownerAddress = await contract.owner().callAsync();
             expect(ownerAddress).to.be.eq(governor.address);
         }
 

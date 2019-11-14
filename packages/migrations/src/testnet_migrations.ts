@@ -29,15 +29,13 @@ async function submitAndExecuteTransactionAsync(
     destination: string,
     data: string,
 ): Promise<void> {
-    const txReceipt = await governor.submitTransaction.awaitTransactionSuccessAsync(
-        destination,
-        constants.ZERO_AMOUNT,
-        data,
-    );
+    const { logs } = await governor
+        .submitTransaction(destination, constants.ZERO_AMOUNT, data)
+        .awaitTransactionSuccessAsync();
     // tslint:disable-next-line:no-unnecessary-type-assertion
-    const txId = (txReceipt.logs[0] as LogWithDecodedArgs<ZeroExGovernorSubmissionEventArgs>).args.transactionId;
+    const txId = (logs[0] as LogWithDecodedArgs<ZeroExGovernorSubmissionEventArgs>).args.transactionId;
     logUtils.log(`${txId} submitted`);
-    await governor.executeTransaction.awaitTransactionSuccessAsync(txId);
+    await governor.executeTransaction(txId).awaitTransactionSuccessAsync();
     logUtils.log(`${txId} executed`);
 }
 
@@ -105,38 +103,38 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     );
 
     logUtils.log('Configuring Exchange...');
-    await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(stakingProxy.address);
-    await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(new BigNumber(150000));
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc20Proxy);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc721Proxy);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc1155Proxy);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.multiAssetProxy);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.staticCallProxy);
-    await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20BridgeProxy.address);
-    await exchange.transferOwnership.awaitTransactionSuccessAsync(governor.address);
+    await exchange.setProtocolFeeCollectorAddress(stakingProxy.address).awaitTransactionSuccessAsync();
+    await exchange.setProtocolFeeMultiplier(new BigNumber(150000)).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.erc20Proxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.erc721Proxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.erc1155Proxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.multiAssetProxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.staticCallProxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(erc20BridgeProxy.address).awaitTransactionSuccessAsync();
+    await exchange.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('Exchange configured!');
 
     logUtils.log('Configuring ERC20BridgeProxy...');
-    await erc20BridgeProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address);
-    await erc20BridgeProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(deployedAddresses.multiAssetProxy);
-    await erc20BridgeProxy.transferOwnership.awaitTransactionSuccessAsync(governor.address);
+    await erc20BridgeProxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync();
+    await erc20BridgeProxy.addAuthorizedAddress(deployedAddresses.multiAssetProxy).awaitTransactionSuccessAsync();
+    await erc20BridgeProxy.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('ERC20BridgeProxy configured!');
 
     logUtils.log('Configuring ZrxVault...');
-    await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
-    await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address);
-    await zrxVault.removeAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
-    await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
-    await zrxVault.transferOwnership.awaitTransactionSuccessAsync(governor.address);
+    await zrxVault.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    await zrxVault.setStakingProxy(stakingProxy.address).awaitTransactionSuccessAsync();
+    await zrxVault.removeAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    await zrxVault.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync();
+    await zrxVault.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('ZrxVault configured!');
 
     logUtils.log('Configuring StakingProxy...');
-    await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
+    await stakingProxy.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
     const staking = new StakingContract(stakingProxy.address, provider, txDefaults);
-    await staking.addExchangeAddress.awaitTransactionSuccessAsync(exchange.address);
-    await stakingProxy.removeAuthorizedAddress.awaitTransactionSuccessAsync(txDefaults.from);
-    await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
-    await stakingProxy.transferOwnership.awaitTransactionSuccessAsync(governor.address);
+    await staking.addExchangeAddress(exchange.address).awaitTransactionSuccessAsync();
+    await stakingProxy.removeAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    await stakingProxy.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync();
+    await stakingProxy.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('StakingProxy configured!');
 
     logUtils.log('Transfering ownership of 2.0 contracts...');
@@ -144,27 +142,27 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.exchangeV2, // Exchange 2.1 address
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
+        ownableInterface.transferOwnership(governor.address).getABIEncodedTransactionData(),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.erc20Proxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
+        ownableInterface.transferOwnership(governor.address).getABIEncodedTransactionData(),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.erc721Proxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
+        ownableInterface.transferOwnership(governor.address).getABIEncodedTransactionData(),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.erc1155Proxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
+        ownableInterface.transferOwnership(governor.address).getABIEncodedTransactionData(),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.multiAssetProxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
+        ownableInterface.transferOwnership(governor.address).getABIEncodedTransactionData(),
     );
     logUtils.log('Ownership transferred!');
 
@@ -172,27 +170,27 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         // AssetProxy configs
         {
             destination: deployedAddresses.erc20Proxy,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(exchange.address),
+            data: authorizableInterface.addAuthorizedAddress(exchange.address).getABIEncodedTransactionData(),
         },
         {
             destination: deployedAddresses.erc20Proxy,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(zrxVault.address),
+            data: authorizableInterface.addAuthorizedAddress(zrxVault.address).getABIEncodedTransactionData(),
         },
         {
             destination: deployedAddresses.erc721Proxy,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(exchange.address),
+            data: authorizableInterface.addAuthorizedAddress(exchange.address).getABIEncodedTransactionData(),
         },
         {
             destination: deployedAddresses.erc1155Proxy,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(exchange.address),
+            data: authorizableInterface.addAuthorizedAddress(exchange.address).getABIEncodedTransactionData(),
         },
         {
             destination: deployedAddresses.multiAssetProxy,
-            data: authorizableInterface.addAuthorizedAddress.getABIEncodedTransactionData(exchange.address),
+            data: authorizableInterface.addAuthorizedAddress(exchange.address).getABIEncodedTransactionData(),
         },
         {
             destination: deployedAddresses.multiAssetProxy,
-            data: exchange.registerAssetProxy.getABIEncodedTransactionData(erc20BridgeProxy.address),
+            data: exchange.registerAssetProxy(erc20BridgeProxy.address).getABIEncodedTransactionData(),
         },
     ];
 
@@ -221,7 +219,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         chainId,
     );
 
-    const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployedAddresses.etherToken);
+    const wethAssetData = await devUtils.encodeERC20AssetData(deployedAddresses.etherToken).callAsync();
     const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
         forwarderArtifacts.Forwarder,
         provider,
@@ -230,7 +228,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         exchange.address,
         wethAssetData,
     );
-    await forwarder.approveMakerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.etherToken);
+    await forwarder.approveMakerAssetProxy(deployedAddresses.etherToken).awaitTransactionSuccessAsync();
 }
 
 (async () => {

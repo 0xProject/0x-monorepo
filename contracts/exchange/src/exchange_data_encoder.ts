@@ -9,44 +9,38 @@ export const exchangeDataEncoder = {
         const exchangeInstance = new IExchangeContract(constants.NULL_ADDRESS, provider);
         let data;
         if (constants.SINGLE_FILL_FN_NAMES.indexOf(fnName) !== -1) {
-            data = (exchangeInstance as any)[fnName].getABIEncodedTransactionData(
-                orders[0],
-                orders[0].takerAssetAmount,
-                orders[0].signature,
-            );
+            data = (exchangeInstance as any)
+                [fnName](orders[0], orders[0].takerAssetAmount, orders[0].signature)
+                .getABIEncodedTransactionData();
         } else if (constants.BATCH_FILL_FN_NAMES.indexOf(fnName) !== -1) {
-            data = (exchangeInstance as any)[fnName].getABIEncodedTransactionData(
-                orders,
-                orders.map(order => order.takerAssetAmount),
-                orders.map(order => order.signature),
-            );
+            data = (exchangeInstance as any)
+                [fnName](orders, orders.map(order => order.takerAssetAmount), orders.map(order => order.signature))
+                .getABIEncodedTransactionData();
         } else if (constants.MARKET_FILL_FN_NAMES.indexOf(fnName) !== -1) {
             const fillAsset = /Buy/.test(fnName) ? 'makerAssetAmount' : 'takerAssetAmount';
-            data = (exchangeInstance as any)[fnName].getABIEncodedTransactionData(
-                orders,
-                orders.map(order => order[fillAsset]).reduce((prev, curr) => prev.plus(curr)),
-                orders.map(order => order.signature),
-            );
+            data = (exchangeInstance as any)
+                [fnName](
+                    orders,
+                    orders.map(order => order[fillAsset]).reduce((prev, curr) => prev.plus(curr)),
+                    orders.map(order => order.signature),
+                )
+                .getABIEncodedTransactionData();
         } else if (constants.MATCH_ORDER_FN_NAMES.indexOf(fnName) !== -1) {
-            data = exchangeInstance.matchOrders.getABIEncodedTransactionData(
-                orders[0],
-                orders[1],
-                orders[0].signature,
-                orders[1].signature,
-            );
+            data = exchangeInstance
+                .matchOrders(orders[0], orders[1], orders[0].signature, orders[1].signature)
+                .getABIEncodedTransactionData();
         } else if (fnName === ExchangeFunctionName.CancelOrder) {
-            data = exchangeInstance.cancelOrder.getABIEncodedTransactionData(orders[0]);
+            data = exchangeInstance.cancelOrder(orders[0]).getABIEncodedTransactionData();
         } else if (fnName === ExchangeFunctionName.BatchCancelOrders) {
-            data = exchangeInstance.batchCancelOrders.getABIEncodedTransactionData(orders);
+            data = exchangeInstance.batchCancelOrders(orders).getABIEncodedTransactionData();
         } else if (fnName === ExchangeFunctionName.CancelOrdersUpTo) {
-            data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(constants.ZERO_AMOUNT);
+            data = exchangeInstance.cancelOrdersUpTo(constants.ZERO_AMOUNT).getABIEncodedTransactionData();
         } else if (fnName === ExchangeFunctionName.PreSign) {
-            data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHashUtils.getOrderHashHex(orders[0]));
+            data = exchangeInstance.preSign(orderHashUtils.getOrderHashHex(orders[0])).getABIEncodedTransactionData();
         } else if (fnName === ExchangeFunctionName.SetSignatureValidatorApproval) {
-            data = exchangeInstance.setSignatureValidatorApproval.getABIEncodedTransactionData(
-                constants.NULL_ADDRESS,
-                true,
-            );
+            data = exchangeInstance
+                .setSignatureValidatorApproval(constants.NULL_ADDRESS, true)
+                .getABIEncodedTransactionData();
         } else {
             throw new Error(`Error: ${fnName} not a supported function`);
         }

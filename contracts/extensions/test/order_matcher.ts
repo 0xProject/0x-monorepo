@@ -116,17 +116,17 @@ describe('OrderMatcher', () => {
             provider,
             txDefaults,
             artifacts,
-            await devUtils.encodeERC20AssetData.callAsync(zrxToken.address),
+            await devUtils.encodeERC20AssetData(zrxToken.address).callAsync(),
             new BigNumber(chainId),
         );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+        await exchange.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
             from: owner,
         });
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+        await exchange.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync({
             from: owner,
         }); // Authorize ERC20 trades by exchange
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+            await erc20Proxy.addAuthorizedAddress(exchange.address).sendTransactionAsync({
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
@@ -142,35 +142,24 @@ describe('OrderMatcher', () => {
         // Set default addresses
         defaultERC20MakerAssetAddress = erc20TokenA.address;
         defaultERC20TakerAssetAddress = erc20TokenB.address;
-        leftMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress);
-        leftTakerAssetData = await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress);
+        leftMakerAssetData = await devUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress).callAsync();
+        leftTakerAssetData = await devUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress).callAsync();
         // Set OrderMatcher balances and allowances
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20TokenA.setBalance.sendTransactionAsync(orderMatcher.address, constants.INITIAL_ERC20_BALANCE, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20TokenB.setBalance.sendTransactionAsync(orderMatcher.address, constants.INITIAL_ERC20_BALANCE, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await orderMatcher.approveAssetProxy.sendTransactionAsync(
-                leftMakerAssetData,
-                constants.INITIAL_ERC20_ALLOWANCE,
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await orderMatcher.approveAssetProxy.sendTransactionAsync(
-                leftTakerAssetData,
-                constants.INITIAL_ERC20_ALLOWANCE,
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc20TokenA
+            .setBalance(orderMatcher.address, constants.INITIAL_ERC20_BALANCE)
+            .awaitTransactionSuccessAsync({ from: owner }, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
+
+        await erc20TokenB
+            .setBalance(orderMatcher.address, constants.INITIAL_ERC20_BALANCE)
+            .awaitTransactionSuccessAsync({ from: owner }, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
+
+        await orderMatcher
+            .approveAssetProxy(leftMakerAssetData, constants.INITIAL_ERC20_ALLOWANCE)
+            .awaitTransactionSuccessAsync({}, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
+
+        await orderMatcher
+            .approveAssetProxy(leftTakerAssetData, constants.INITIAL_ERC20_ALLOWANCE)
+            .awaitTransactionSuccessAsync({}, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
 
         // Create default order parameters
         const defaultOrderParamsLeft = {
@@ -242,12 +231,9 @@ describe('OrderMatcher', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             const tx = web3Wrapper.sendTransactionAsync({
                 data,
                 to: orderMatcher.address,
@@ -277,13 +263,10 @@ describe('OrderMatcher', () => {
                 // Taker
                 leftMakerAssetSpreadAmount: signedOrderLeft.makerAssetAmount.minus(signedOrderRight.takerAssetAmount),
             };
-            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -293,7 +276,7 @@ describe('OrderMatcher', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
+            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
             const newErc20Balances = await erc20Wrapper.getBalancesAsync();
             expect(newErc20Balances[makerAddressLeft][defaultERC20MakerAssetAddress]).to.be.bignumber.equal(
                 erc20BalancesByOwner[makerAddressLeft][defaultERC20MakerAssetAddress].minus(
@@ -338,13 +321,10 @@ describe('OrderMatcher', () => {
                 amountSoldByRightMaker: signedOrderRight.makerAssetAmount,
                 amountBoughtByRightMaker: signedOrderRight.takerAssetAmount,
             };
-            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -354,7 +334,7 @@ describe('OrderMatcher', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
+            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
             const newErc20Balances = await erc20Wrapper.getBalancesAsync();
             expect(newErc20Balances[makerAddressLeft][defaultERC20MakerAssetAddress]).to.be.bignumber.equal(
                 erc20BalancesByOwner[makerAddressLeft][defaultERC20MakerAssetAddress].minus(
@@ -400,15 +380,12 @@ describe('OrderMatcher', () => {
                 leftMakerAssetSpreadAmount: signedOrderLeft.makerAssetAmount.minus(signedOrderRight.takerAssetAmount),
                 leftTakerAssetSpreadAmount: signedOrderRight.makerAssetAmount.minus(signedOrderLeft.takerAssetAmount),
             };
-            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const initialLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf.callAsync(orderMatcher.address);
+            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const initialLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf(orderMatcher.address).callAsync();
             // Match signedOrderLeft with signedOrderRight
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -418,8 +395,8 @@ describe('OrderMatcher', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const newLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf.callAsync(orderMatcher.address);
+            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const newLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf(orderMatcher.address).callAsync();
             const newErc20Balances = await erc20Wrapper.getBalancesAsync();
             expect(newErc20Balances[makerAddressLeft][defaultERC20MakerAssetAddress]).to.be.bignumber.equal(
                 erc20BalancesByOwner[makerAddressLeft][defaultERC20MakerAssetAddress].minus(
@@ -458,12 +435,9 @@ describe('OrderMatcher', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             const logDecoder = new LogDecoder(web3Wrapper, artifacts);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
@@ -491,25 +465,16 @@ describe('OrderMatcher', () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
             let params = orderUtils.createFill(signedOrderLeft, signedOrderLeft.takerAssetAmount.dividedToIntegerBy(5));
-            await exchange.fillOrder.awaitTransactionSuccessAsync(
-                params.order,
-                params.takerAssetFillAmount,
-                params.signature,
-                { from: takerAddress },
-            );
+            await exchange
+                .fillOrder(params.order, params.takerAssetFillAmount, params.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             params = orderUtils.createFill(signedOrderRight, signedOrderRight.takerAssetAmount.dividedToIntegerBy(5));
-            await exchange.fillOrder.awaitTransactionSuccessAsync(
-                params.order,
-                params.takerAssetFillAmount,
-                params.signature,
-                { from: takerAddress },
-            );
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            await exchange
+                .fillOrder(params.order, params.takerAssetFillAmount, params.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             const logDecoder = new LogDecoder(web3Wrapper, artifacts);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
@@ -552,15 +517,12 @@ describe('OrderMatcher', () => {
                 leftMakerAssetSpreadAmount: constants.ZERO_AMOUNT,
                 leftTakerAssetSpreadAmount,
             };
-            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const initialLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf.callAsync(orderMatcher.address);
+            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const initialLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf(orderMatcher.address).callAsync();
             // Match signedOrderLeft with signedOrderRight
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -570,8 +532,8 @@ describe('OrderMatcher', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const newLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf.callAsync(orderMatcher.address);
+            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const newLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf(orderMatcher.address).callAsync();
             const newErc20Balances = await erc20Wrapper.getBalancesAsync();
             expect(newErc20Balances[makerAddressLeft][defaultERC20MakerAssetAddress]).to.be.bignumber.equal(
                 erc20BalancesByOwner[makerAddressLeft][defaultERC20MakerAssetAddress].minus(
@@ -622,17 +584,14 @@ describe('OrderMatcher', () => {
                 leftMakerAssetSpreadAmount: signedOrderLeft.makerAssetAmount.minus(signedOrderRight.takerAssetAmount),
                 leftTakerAssetSpreadAmount: signedOrderRight.makerAssetAmount.minus(signedOrderLeft.takerAssetAmount),
             };
-            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const initialLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf.callAsync(orderMatcher.address);
+            const initialLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const initialLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf(orderMatcher.address).callAsync();
             // Match signedOrderLeft with signedOrderRight
             signedOrderRight.makerAssetData = constants.NULL_BYTES;
             signedOrderRight.takerAssetData = constants.NULL_BYTES;
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -642,8 +601,8 @@ describe('OrderMatcher', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
-            const newLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf.callAsync(orderMatcher.address);
+            const newLeftMakerAssetTakerBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
+            const newLeftTakerAssetTakerBalance = await erc20TokenB.balanceOf(orderMatcher.address).callAsync();
             const newErc20Balances = await erc20Wrapper.getBalancesAsync();
             expect(newErc20Balances[makerAddressLeft][defaultERC20MakerAssetAddress]).to.be.bignumber.equal(
                 erc20BalancesByOwner[makerAddressLeft][defaultERC20MakerAssetAddress].minus(
@@ -683,12 +642,9 @@ describe('OrderMatcher', () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
             });
             signedOrderRight.signature = `0xff${signedOrderRight.signature.slice(4)}`;
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             const expectedError = new ExchangeRevertErrors.SignatureError();
             const tx = web3Wrapper.sendTransactionAsync({
                 data,
@@ -710,17 +666,14 @@ describe('OrderMatcher', () => {
             });
             // Matcher will not have enough allowance to fill rightOrder
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await orderMatcher.approveAssetProxy.sendTransactionAsync(leftMakerAssetData, constants.ZERO_AMOUNT, {
+                await orderMatcher.approveAssetProxy(leftMakerAssetData, constants.ZERO_AMOUNT).sendTransactionAsync({
                     from: owner,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const data = exchange.matchOrders.getABIEncodedTransactionData(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-            );
+            const data = exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .getABIEncodedTransactionData();
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError();
             const tx = web3Wrapper.sendTransactionAsync({
                 data,
@@ -733,14 +686,14 @@ describe('OrderMatcher', () => {
     });
     describe('withdrawAsset', () => {
         it('should allow owner to withdraw ERC20 tokens', async () => {
-            const erc20AWithdrawAmount = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
+            const erc20AWithdrawAmount = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
             expect(erc20AWithdrawAmount).to.be.bignumber.gt(constants.ZERO_AMOUNT);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await orderMatcher.withdrawAsset.sendTransactionAsync(leftMakerAssetData, erc20AWithdrawAmount, {
+                await orderMatcher.withdrawAsset(leftMakerAssetData, erc20AWithdrawAmount).sendTransactionAsync({
                     from: owner,
                 }),
             );
-            const newBalance = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
+            const newBalance = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
             expect(newBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should allow owner to withdraw ERC721 tokens', async () => {
@@ -754,22 +707,22 @@ describe('OrderMatcher', () => {
             );
             const tokenId = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.mint.sendTransactionAsync(orderMatcher.address, tokenId, { from: owner }),
+                await erc721Token.mint(orderMatcher.address, tokenId).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const assetData = await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, tokenId);
+            const assetData = await devUtils.encodeERC721AssetData(erc721Token.address, tokenId).callAsync();
             const withdrawAmount = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await orderMatcher.withdrawAsset.sendTransactionAsync(assetData, withdrawAmount, { from: owner }),
+                await orderMatcher.withdrawAsset(assetData, withdrawAmount).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const erc721Owner = await erc721Token.ownerOf.callAsync(tokenId);
+            const erc721Owner = await erc721Token.ownerOf(tokenId).callAsync();
             expect(erc721Owner).to.be.equal(owner);
         });
         it('should revert if not called by owner', async () => {
-            const erc20AWithdrawAmount = await erc20TokenA.balanceOf.callAsync(orderMatcher.address);
+            const erc20AWithdrawAmount = await erc20TokenA.balanceOf(orderMatcher.address).callAsync();
             expect(erc20AWithdrawAmount).to.be.bignumber.gt(constants.ZERO_AMOUNT);
-            const tx = orderMatcher.withdrawAsset.sendTransactionAsync(leftMakerAssetData, erc20AWithdrawAmount, {
+            const tx = orderMatcher.withdrawAsset(leftMakerAssetData, erc20AWithdrawAmount).sendTransactionAsync({
                 from: takerAddress,
             });
             return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
@@ -779,12 +732,12 @@ describe('OrderMatcher', () => {
         it('should be able to set an allowance for ERC20 tokens', async () => {
             const allowance = new BigNumber(55465465426546);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await orderMatcher.approveAssetProxy.sendTransactionAsync(leftMakerAssetData, allowance, {
+                await orderMatcher.approveAssetProxy(leftMakerAssetData, allowance).sendTransactionAsync({
                     from: owner,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const newAllowance = await erc20TokenA.allowance.callAsync(orderMatcher.address, erc20Proxy.address);
+            const newAllowance = await erc20TokenA.allowance(orderMatcher.address, erc20Proxy.address).callAsync();
             expect(newAllowance).to.be.bignumber.equal(allowance);
         });
         it('should be able to approve an ERC721 token by passing in allowance = 1', async () => {
@@ -796,16 +749,17 @@ describe('OrderMatcher', () => {
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
-            const assetData = await devUtils.encodeERC721AssetData.callAsync(
-                erc721Token.address,
-                constants.ZERO_AMOUNT,
-            );
+            const assetData = await devUtils
+                .encodeERC721AssetData(erc721Token.address, constants.ZERO_AMOUNT)
+                .callAsync();
             const allowance = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await orderMatcher.approveAssetProxy.sendTransactionAsync(assetData, allowance, { from: owner }),
+                await orderMatcher.approveAssetProxy(assetData, allowance).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const isApproved = await erc721Token.isApprovedForAll.callAsync(orderMatcher.address, erc721Proxy.address);
+            const isApproved = await erc721Token
+                .isApprovedForAll(orderMatcher.address, erc721Proxy.address)
+                .callAsync();
             expect(isApproved).to.be.equal(true);
         });
         it('should be able to approve an ERC721 token by passing in allowance > 1', async () => {
@@ -817,21 +771,22 @@ describe('OrderMatcher', () => {
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
-            const assetData = await devUtils.encodeERC721AssetData.callAsync(
-                erc721Token.address,
-                constants.ZERO_AMOUNT,
-            );
+            const assetData = await devUtils
+                .encodeERC721AssetData(erc721Token.address, constants.ZERO_AMOUNT)
+                .callAsync();
             const allowance = new BigNumber(2);
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await orderMatcher.approveAssetProxy.sendTransactionAsync(assetData, allowance, { from: owner }),
+                await orderMatcher.approveAssetProxy(assetData, allowance).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const isApproved = await erc721Token.isApprovedForAll.callAsync(orderMatcher.address, erc721Proxy.address);
+            const isApproved = await erc721Token
+                .isApprovedForAll(orderMatcher.address, erc721Proxy.address)
+                .callAsync();
             expect(isApproved).to.be.equal(true);
         });
         it('should revert if not called by owner', async () => {
             const approval = new BigNumber(1);
-            const tx = orderMatcher.approveAssetProxy.sendTransactionAsync(leftMakerAssetData, approval, {
+            const tx = orderMatcher.approveAssetProxy(leftMakerAssetData, approval).sendTransactionAsync({
                 from: takerAddress,
             });
             return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);

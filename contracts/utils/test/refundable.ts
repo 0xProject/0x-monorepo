@@ -36,14 +36,14 @@ blockchainTests('Refundable', env => {
     blockchainTests.resets('refundNonzeroBalance', () => {
         it('should not send a refund when no value is sent', async () => {
             // Send 100 wei to the refundable contract that should be refunded.
-            await receiver.testRefundNonZeroBalance.awaitTransactionSuccessAsync(refundable.address, {
+            await receiver.testRefundNonZeroBalance(refundable.address).awaitTransactionSuccessAsync({
                 value: constants.ZERO_AMOUNT,
             });
         });
 
         it('should send a full refund when nonzero value is sent', async () => {
             // Send 100 wei to the refundable contract that should be refunded.
-            await receiver.testRefundNonZeroBalance.awaitTransactionSuccessAsync(refundable.address, {
+            await receiver.testRefundNonZeroBalance(refundable.address).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
@@ -54,7 +54,7 @@ blockchainTests('Refundable', env => {
     blockchainTests.resets('refundFinalBalance', () => {
         it('should fully refund the sender when `shouldNotRefund` is false', async () => {
             // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
-            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testRefundFinalBalance(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
@@ -62,19 +62,19 @@ blockchainTests('Refundable', env => {
         // This test may not be necessary, but it is included here as a sanity check.
         it('should fully refund the sender when `shouldNotRefund` is false for two calls in a row', async () => {
             // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
-            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testRefundFinalBalance(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
 
             // Send 1000 wei to the refundable contract that should be refunded to the receiver contract.
-            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testRefundFinalBalance(refundable.address, false).awaitTransactionSuccessAsync({
                 value: new BigNumber(1000),
             });
         });
 
         it('should not refund the sender if `shouldNotRefund` is true', async () => {
             /// Send 100 wei to the refundable contract that should not be refunded.
-            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, true, {
+            await receiver.testRefundFinalBalance(refundable.address, true).awaitTransactionSuccessAsync({
                 value: new BigNumber(1000),
             });
         });
@@ -85,7 +85,7 @@ blockchainTests('Refundable', env => {
     blockchainTests.resets('disableRefundUntilEnd', () => {
         it('should fully refund the sender when `shouldNotRefund` is false', async () => {
             // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
-            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testDisableRefundUntilEnd(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
@@ -93,47 +93,47 @@ blockchainTests('Refundable', env => {
         // This test may not be necessary, but it is included here as a sanity check.
         it('should fully refund the sender when `shouldNotRefund` is false for two calls in a row', async () => {
             // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
-            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testDisableRefundUntilEnd(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
 
             // Send 1000 wei to the refundable contract that should be refunded to the receiver contract.
-            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testDisableRefundUntilEnd(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_THOUSAND,
             });
         });
 
         it('should not refund the sender if `shouldNotRefund` is true', async () => {
             /// Send 100 wei to the refundable contract that should not be refunded.
-            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testDisableRefundUntilEnd(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
 
         it('should disable the `disableRefundUntilEnd` modifier and refund when `shouldNotRefund` is false', async () => {
             /// Send 100 wei to the refundable contract that should be refunded.
-            await receiver.testNestedDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testNestedDisableRefundUntilEnd(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
 
         it('should disable the `refundFinalBalance` modifier and send no refund when `shouldNotRefund` is true', async () => {
             /// Send 100 wei to the refundable contract that should not be refunded.
-            await receiver.testNestedDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, true, {
+            await receiver.testNestedDisableRefundUntilEnd(refundable.address, true).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
 
         it('should disable the `refundFinalBalance` modifier and refund when `shouldNotRefund` is false', async () => {
             /// Send 100 wei to the refundable contract that should be refunded.
-            await receiver.testMixedRefunds.awaitTransactionSuccessAsync(refundable.address, false, {
+            await receiver.testMixedRefunds(refundable.address, false).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });
 
         it('should disable the `refundFinalBalance` modifier and send no refund when `shouldNotRefund` is true', async () => {
             /// Send 100 wei to the refundable contract that should not be refunded.
-            await receiver.testMixedRefunds.awaitTransactionSuccessAsync(refundable.address, true, {
+            await receiver.testMixedRefunds(refundable.address, true).awaitTransactionSuccessAsync({
                 value: ONE_HUNDRED,
             });
         });

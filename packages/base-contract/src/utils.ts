@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 // tslint:disable-next-line:completed-docs
@@ -22,4 +22,23 @@ export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: s
     } else {
         return formatter(abi.type, value);
     }
+}
+
+function dataItemsToABIString(dataItems: DataItem[]): string {
+    const types = dataItems.map(item => {
+        if (item.components) {
+            return `(${dataItemsToABIString(item.components)})`;
+        } else {
+            return item.type;
+        }
+    });
+    return `${types.join(',')}`;
+}
+/**
+ * Takes a MethodAbi and returns a function signature for ABI encoding/decoding
+ * @return a function signature as a string, e.g. 'functionName(uint256, bytes[])'
+ */
+export function methodAbiToFunctionSignature(methodAbi: MethodAbi): string {
+    const inputs = dataItemsToABIString(methodAbi.inputs);
+    return `${methodAbi.name}(${inputs})`;
 }

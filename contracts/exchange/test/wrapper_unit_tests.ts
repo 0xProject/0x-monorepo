@@ -1,13 +1,6 @@
+import { ContractTxFunctionObj } from '@0x/base-contract';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import {
-    blockchainTests,
-    constants,
-    describe,
-    expect,
-    hexRandom,
-    MutatorContractFunction,
-    TransactionHelper,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilReferenceFunctions } from '@0x/contracts-utils';
 import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, Order } from '@0x/types';
@@ -44,13 +37,11 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         protocolFeePaid: constants.ZERO_AMOUNT,
     };
     let testContract: TestWrapperFunctionsContract;
-    let txHelper: TransactionHelper;
     let owner: string;
     let senderAddress: string;
 
     before(async () => {
         [owner, senderAddress] = await env.getAccountAddressesAsync();
-        txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
         testContract = await TestWrapperFunctionsContract.deployFrom0xArtifactAsync(
             artifacts.TestWrapperFunctions,
             env.provider,
@@ -62,7 +53,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         );
 
         // Set the protocol fee multiplier.
-        await testContract.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(protocolFeeMultiplier, {
+        await testContract.setProtocolFeeMultiplier(protocolFeeMultiplier).awaitTransactionSuccessAsync({
             from: owner,
         });
     });
@@ -152,12 +143,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signature = createOrderSignature(order);
             const expectedResult = getExpectedFillResults(order, signature);
             const expectedCalls = [[order, fillAmount, signature]];
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.fillOrKillOrder,
-                order,
-                fillAmount,
-                signature,
-            );
+            const contractFn = testContract.fillOrKillOrder(order, fillAmount, signature);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -175,7 +163,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 fillAmount,
                 fillAmount.minus(1),
             );
-            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
+            const tx = testContract.fillOrKillOrder(order, fillAmount, signature).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -192,7 +180,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 fillAmount,
                 fillAmount.plus(1),
             );
-            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
+            const tx = testContract.fillOrKillOrder(order, fillAmount, signature).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -203,7 +191,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             });
             const signature = createOrderSignature(order);
             const expectedError = ALWAYS_FAILING_SALT_REVERT_ERROR;
-            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
+            const tx = testContract.fillOrKillOrder(order, fillAmount, signature).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -215,12 +203,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signature = createOrderSignature(order);
             const expectedResult = getExpectedFillResults(order, signature);
             const expectedCalls = [[order, fillAmount, signature]];
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.fillOrderNoThrow,
-                order,
-                fillAmount,
-                signature,
-            );
+            const contractFn = testContract.fillOrderNoThrow(order, fillAmount, signature);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -232,12 +217,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             });
             const signature = createOrderSignature(order);
             const expectedResult = EMPTY_FILL_RESULTS;
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.fillOrderNoThrow,
-                order,
-                fillAmount,
-                signature,
-            );
+            const contractFn = testContract.fillOrderNoThrow(order, fillAmount, signature);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, []);
         });
@@ -245,12 +227,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
 
     describe('batchFillOrders', () => {
         it('works with no fills', async () => {
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrders,
-                [],
-                [],
-                [],
-            );
+            const contractFn = testContract.batchFillOrders([], [], []);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq([]);
             assertFillOrderCallsFromLogs(receipt.logs, []);
         });
@@ -262,12 +241,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrders(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -279,12 +255,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrders(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -298,12 +271,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrders(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -314,7 +284,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const fillAmounts = _.times(COUNT - 1, i => orders[i].takerAssetAmount);
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedError = new AnyRevertError(); // Just a generic revert.
-            const tx = txHelper.getResultAndReceiptAsync(testContract.batchFillOrders, orders, fillAmounts, signatures);
+            const tx = testContract.batchFillOrders(orders, fillAmounts, signatures).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -324,19 +294,16 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
             const signatures = _.times(COUNT - 1, i => createOrderSignature(orders[i]));
             const expectedError = new AnyRevertError(); // Just a generic revert.
-            const tx = txHelper.getResultAndReceiptAsync(testContract.batchFillOrders, orders, fillAmounts, signatures);
+            const tx = testContract.batchFillOrders(orders, fillAmounts, signatures).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
     });
 
     describe('batchFillOrKillOrders', () => {
         it('works with no fills', async () => {
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                [],
-                [],
-                [],
-            );
+            const contractFn = testContract.batchFillOrKillOrders([], [], []);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq([]);
             assertFillOrderCallsFromLogs(receipt.logs, []);
         });
@@ -348,12 +315,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrKillOrders(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -365,12 +329,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrKillOrders(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -384,12 +345,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrKillOrders(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -410,12 +368,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 failingAmount,
                 failingAmount.minus(1),
             );
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const tx = testContract
+                .batchFillOrKillOrders(orders, fillAmounts, signatures)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -435,12 +390,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 failingAmount,
                 failingAmount.plus(1),
             );
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const tx = testContract
+                .batchFillOrKillOrders(orders, fillAmounts, signatures)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -450,12 +402,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const fillAmounts = _.times(COUNT - 1, i => orders[i].takerAssetAmount);
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedError = new AnyRevertError(); // Just a generic revert.
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const tx = testContract
+                .batchFillOrKillOrders(orders, fillAmounts, signatures)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -465,24 +414,18 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
             const signatures = _.times(COUNT - 1, i => createOrderSignature(orders[i]));
             const expectedError = new AnyRevertError(); // Just a generic revert.
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrKillOrders,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const tx = testContract
+                .batchFillOrKillOrders(orders, fillAmounts, signatures)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
     });
 
     describe('batchFillOrdersNoThrow', () => {
         it('works with no fills', async () => {
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                [],
-                [],
-                [],
-            );
+            const contractFn = testContract.batchFillOrdersNoThrow([], [], []);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq([]);
             assertFillOrderCallsFromLogs(receipt.logs, []);
         });
@@ -494,12 +437,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrdersNoThrow(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -511,12 +451,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrdersNoThrow(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -530,12 +467,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrdersNoThrow(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -551,12 +485,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
             expectedCalls.splice(FAILING_ORDER_INDEX, 1);
-            const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const contractFn = testContract.batchFillOrdersNoThrow(orders, fillAmounts, signatures);
+            const actualResult = await contractFn.callAsync();
+            const receipt = await contractFn.awaitTransactionSuccessAsync();
             expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
@@ -567,12 +498,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const fillAmounts = _.times(COUNT - 1, i => orders[i].takerAssetAmount);
             const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedError = new AnyRevertError(); // Just a generic revert.
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const tx = testContract
+                .batchFillOrdersNoThrow(orders, fillAmounts, signatures)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -582,24 +510,21 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
             const signatures = _.times(COUNT - 1, i => createOrderSignature(orders[i]));
             const expectedError = new AnyRevertError(); // Just a generic revert.
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.batchFillOrdersNoThrow,
-                orders,
-                fillAmounts,
-                signatures,
-            );
+            const tx = testContract
+                .batchFillOrdersNoThrow(orders, fillAmounts, signatures)
+                .awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
     });
 
     type ExpectedFillOrderCallArgs = [Order, BigNumber, string];
     type MarketSellBuyArgs = [Order[], BigNumber, string[], ...any[]];
-    type MarketSellBuyContractFunction = MutatorContractFunction<MarketSellBuyArgs, MarketSellBuyArgs, FillResults>;
+    type MarketSellBuyContractFn = (...args: MarketSellBuyArgs) => ContractTxFunctionObj<FillResults>;
     type MarketSellBuySimulator = (...args: MarketSellBuyArgs) => [FillResults, ExpectedFillOrderCallArgs[]];
 
     describe('marketSell*', () => {
         function defineCommonMarketSellOrdersTests(
-            getContractFn: () => MarketSellBuyContractFunction,
+            getContractFn: () => MarketSellBuyContractFn,
             simulator: MarketSellBuySimulator,
         ): void {
             it('works with one order', async () => {
@@ -613,12 +538,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 );
                 const [expectedResult, expectedCalls] = simulator(orders, takerAssetFillAmount, signatures);
                 expect(expectedCalls.length).to.eq(COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, takerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -634,12 +556,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 );
                 const [expectedResult, expectedCalls] = simulator(orders, takerAssetFillAmount, signatures);
                 expect(expectedCalls.length).to.eq(COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, takerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -657,12 +576,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 );
                 const [expectedResult, expectedCalls] = simulator(orders, takerAssetFillAmount, signatures);
                 expect(expectedCalls.length).to.eq(COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, takerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -680,12 +596,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const [expectedResult, expectedCalls] = simulator(orders, takerAssetFillAmount, signatures);
                 // It should stop filling after the penultimate order.
                 expect(expectedCalls.length).to.eq(COUNT - 1);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, takerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -706,12 +619,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const [expectedResult, expectedCalls] = simulator(orders, takerAssetFillAmount, signatures);
                 // It should stop filling after first order.
                 expect(expectedCalls.length).to.eq(1);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, takerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -727,20 +637,16 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].takerAssetAmount,
                     orders[1].takerAssetAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, takerAssetFillAmount, signatures);
+                const tx = getContractFn()(orders, takerAssetFillAmount, signatures).awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
 
             it('returns empty fill results with no orders', async () => {
                 const [expectedResult, expectedCalls] = simulator([], constants.ZERO_AMOUNT, []);
                 expect(expectedCalls.length).to.eq(0);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    [],
-                    constants.ZERO_AMOUNT,
-                    [],
-                );
-
+                const fnWithArgs = getContractFn()([], constants.ZERO_AMOUNT, []);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -767,7 +673,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
 
         describe('marketSellOrdersNoThrow', () => {
-            defineCommonMarketSellOrdersTests(() => testContract.marketSellOrdersNoThrow, simulateMarketSellOrders);
+            defineCommonMarketSellOrdersTests(
+                () => testContract.marketSellOrdersNoThrow.bind(testContract),
+                simulateMarketSellOrders,
+            );
 
             it('works when any fills revert', async () => {
                 const COUNT = 4;
@@ -789,12 +698,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     signatures,
                 );
                 expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    testContract.marketSellOrdersNoThrow,
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const contractFn = testContract.marketSellOrdersNoThrow(orders, takerAssetFillAmount, signatures);
+                const actualResult = await contractFn.callAsync();
+                const receipt = await contractFn.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -814,19 +720,19 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     signatures,
                 );
                 expect(expectedCalls.length).to.eq(0);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    testContract.marketSellOrdersNoThrow,
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const contractFn = testContract.marketSellOrdersNoThrow(orders, takerAssetFillAmount, signatures);
+                const actualResult = await contractFn.callAsync();
+                const receipt = await contractFn.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
         });
 
         describe('marketSellOrdersFillOrKill', () => {
-            defineCommonMarketSellOrdersTests(() => testContract.marketSellOrdersNoThrow, simulateMarketSellOrders);
+            defineCommonMarketSellOrdersTests(
+                () => testContract.marketSellOrdersNoThrow.bind(testContract),
+                simulateMarketSellOrders,
+            );
 
             it('reverts when filled < `takerAssetFillAmount`', async () => {
                 const COUNT = 4;
@@ -842,12 +748,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     takerAssetFillAmount,
                     takerAssetFillAmount.minus(1),
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    testContract.marketSellOrdersFillOrKill,
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const tx = testContract
+                    .marketSellOrdersFillOrKill(orders, takerAssetFillAmount, signatures)
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -871,12 +774,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     signatures,
                 );
                 expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    testContract.marketSellOrdersFillOrKill,
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const contractFn = testContract.marketSellOrdersFillOrKill(orders, takerAssetFillAmount, signatures);
+                const actualResult = await contractFn.callAsync();
+                const receipt = await contractFn.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -907,12 +807,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     takerAssetFillAmount,
                     takerAssetFillAmount.minus(1),
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    testContract.marketSellOrdersFillOrKill,
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const tx = testContract
+                    .marketSellOrdersFillOrKill(orders, takerAssetFillAmount, signatures)
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
         });
@@ -920,7 +817,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
 
     describe('marketBuy*', () => {
         function defineCommonMarketBuyOrdersTests(
-            getContractFn: () => MarketSellBuyContractFunction,
+            getContractFn: () => MarketSellBuyContractFn,
             simulator: MarketSellBuySimulator,
         ): void {
             it('works with one order', async () => {
@@ -934,12 +831,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 );
                 const [expectedResult, expectedCalls] = simulator(orders, makerAssetFillAmount, signatures);
                 expect(expectedCalls.length).to.eq(COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, makerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
+
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -955,12 +850,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 );
                 const [expectedResult, expectedCalls] = simulator(orders, makerAssetFillAmount, signatures);
                 expect(expectedCalls.length).to.eq(COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, makerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -978,12 +870,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 );
                 const [expectedResult, expectedCalls] = simulator(orders, makerAssetFillAmount, signatures);
                 expect(expectedCalls.length).to.eq(COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, makerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1001,12 +890,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const [expectedResult, expectedCalls] = simulator(orders, makerAssetFillAmount, signatures);
                 // It should stop filling after the penultimate order.
                 expect(expectedCalls.length).to.eq(COUNT - 1);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, makerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1027,12 +913,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const [expectedResult, expectedCalls] = simulator(orders, makerAssetFillAmount, signatures);
                 // It should stop filling after first order.
                 expect(expectedCalls.length).to.eq(1);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = getContractFn()(orders, makerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1046,7 +929,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].takerAssetAmount,
                     makerAssetFillAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, makerAssetFillAmount, signatures);
+                const tx = getContractFn()(orders, makerAssetFillAmount, signatures).awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -1059,7 +942,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].takerAssetAmount.times(makerAssetFillAmount),
                     orders[0].makerAssetAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, makerAssetFillAmount, signatures);
+                const tx = getContractFn()(orders, makerAssetFillAmount, signatures).awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -1081,20 +964,16 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].makerAssetAmount,
                     orders[1].makerAssetAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, makerAssetFillAmount, signatures);
+                const tx = getContractFn()(orders, makerAssetFillAmount, signatures).awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
 
             it('returns empty fill results with no orders', async () => {
                 const [expectedResult, expectedCalls] = simulator([], constants.ZERO_AMOUNT, []);
                 expect(expectedCalls.length).to.eq(0);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    [],
-                    constants.ZERO_AMOUNT,
-                    [],
-                );
-
+                const fnWithArgs = getContractFn()([], constants.ZERO_AMOUNT, []);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1126,7 +1005,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
 
         describe('marketBuyOrdersNoThrow', () => {
-            defineCommonMarketBuyOrdersTests(() => testContract.marketBuyOrdersNoThrow, simulateMarketBuyOrdersNoThrow);
+            defineCommonMarketBuyOrdersTests(
+                () => testContract.marketBuyOrdersNoThrow.bind(testContract),
+                simulateMarketBuyOrdersNoThrow,
+            );
 
             it('works when any fills revert', async () => {
                 const COUNT = 4;
@@ -1148,12 +1030,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     signatures,
                 );
                 expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    testContract.marketBuyOrdersNoThrow,
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const contractFn = testContract.marketBuyOrdersNoThrow(orders, makerAssetFillAmount, signatures);
+                const actualResult = await contractFn.callAsync();
+                const receipt = await contractFn.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1173,12 +1052,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     signatures,
                 );
                 expect(expectedCalls.length).to.eq(0);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    testContract.marketBuyOrdersNoThrow,
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const contractFn = testContract.marketBuyOrdersNoThrow(orders, makerAssetFillAmount, signatures);
+                const actualResult = await contractFn.callAsync();
+                const receipt = await contractFn.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1186,7 +1062,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
 
         describe('marketBuyOrdersFillOrKill', () => {
             defineCommonMarketBuyOrdersTests(
-                () => testContract.marketBuyOrdersFillOrKill,
+                () => testContract.marketBuyOrdersFillOrKill.bind(testContract),
                 simulateMarketBuyOrdersNoThrow,
             );
 
@@ -1204,12 +1080,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     makerAssetFillAmount,
                     makerAssetFillAmount.minus(1),
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    testContract.marketBuyOrdersFillOrKill,
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const tx = testContract
+                    .marketBuyOrdersFillOrKill(orders, makerAssetFillAmount, signatures)
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -1233,12 +1106,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     signatures,
                 );
                 expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
-                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
-                    testContract.marketBuyOrdersFillOrKill,
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const fnWithArgs = testContract.marketBuyOrdersFillOrKill(orders, makerAssetFillAmount, signatures);
+                const actualResult = await fnWithArgs.callAsync();
+                const receipt = await fnWithArgs.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
@@ -1269,12 +1139,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     makerAssetFillAmount,
                     makerAssetFillAmount.minus(1),
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    testContract.marketBuyOrdersFillOrKill,
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const tx = testContract
+                    .marketBuyOrdersFillOrKill(orders, makerAssetFillAmount, signatures)
+                    .awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
             });
         });
@@ -1294,15 +1161,15 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
 
         it('works with no orders', async () => {
-            const [, receipt] = await txHelper.getResultAndReceiptAsync(testContract.batchCancelOrders, []);
-            assertCancelOrderCallsFromLogs(receipt.logs, []);
+            const { logs } = await testContract.batchCancelOrders([]).awaitTransactionSuccessAsync();
+            assertCancelOrderCallsFromLogs(logs, []);
         });
 
         it('works with many orders', async () => {
             const COUNT = 8;
             const orders = _.times(COUNT, () => randomOrder({ makerAddress: senderAddress }));
-            const [, receipt] = await txHelper.getResultAndReceiptAsync(testContract.batchCancelOrders, orders);
-            assertCancelOrderCallsFromLogs(receipt.logs, orders);
+            const { logs } = await testContract.batchCancelOrders(orders).awaitTransactionSuccessAsync();
+            assertCancelOrderCallsFromLogs(logs, orders);
         });
 
         it('works with duplicate orders', async () => {
@@ -1310,8 +1177,8 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const COUNT = 6;
             const uniqueOrders = _.times(UNIQUE_ORDERS, () => randomOrder({ makerAddress: senderAddress }));
             const orders = _.shuffle(_.flatten(_.times(COUNT / UNIQUE_ORDERS, () => uniqueOrders)));
-            const [, receipt] = await txHelper.getResultAndReceiptAsync(testContract.batchCancelOrders, orders);
-            assertCancelOrderCallsFromLogs(receipt.logs, orders);
+            const { logs } = await testContract.batchCancelOrders(orders).awaitTransactionSuccessAsync();
+            assertCancelOrderCallsFromLogs(logs, orders);
         });
 
         it('reverts if one `_cancelOrder()` reverts', async () => {
@@ -1321,7 +1188,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             const failingOrder = orders[FAILING_ORDER_INDEX];
             failingOrder.salt = ALWAYS_FAILING_SALT;
             const expectedError = ALWAYS_FAILING_SALT_REVERT_ERROR;
-            const tx = txHelper.getResultAndReceiptAsync(testContract.batchCancelOrders, orders);
+            const tx = testContract.batchCancelOrders(orders).awaitTransactionSuccessAsync();
             return expect(tx).to.revertWith(expectedError);
         });
     });

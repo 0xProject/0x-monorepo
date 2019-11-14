@@ -12,15 +12,15 @@ import { DeploymentManager } from '../deployment_manager';
 export function validDecreaseStakingPoolOperatorShareAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
-): FunctionAssertion<{}> {
+): FunctionAssertion<{}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<{}>(stakingWrapper.decreaseStakingPoolOperatorShare, {
+    return new FunctionAssertion<{}, void>(stakingWrapper.decreaseStakingPoolOperatorShare, {
         after: async (_beforeInfo, _result: FunctionResult, poolId: string, expectedOperatorShare: number) => {
             logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
 
             // Checks that the on-chain pool's operator share has been updated.
-            const { operatorShare } = await stakingWrapper.getStakingPool.callAsync(poolId);
+            const { operatorShare } = await stakingWrapper.getStakingPool(poolId).callAsync();
             expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
             // Updates the pool in local state.
             pools[poolId].operatorShare = operatorShare;

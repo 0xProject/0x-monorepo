@@ -1,7 +1,15 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    AwaitTransactionSuccessOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+    SendTransactionOpts,
+    BaseContract,
+    PromiseWithTransactionHash,
+    methodAbiToFunctionSignature,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -18,13 +26,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import {
-    AwaitTransactionSuccessOpts,
-    EventCallback,
-    IndexedFilterValues,
-    SendTransactionOpts,
-    SimpleContractArtifact,
-} from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -39,166 +41,7 @@ export class TestLibDummyContract extends BaseContract {
      */
     public static deployedBytecode =
         '0x6080604052348015600f57600080fd5b506004361060325760003560e01c806322935e921460375780632b82fdf0146063575b600080fd5b605160048036036020811015604b57600080fd5b5035607d565b60408051918252519081900360200190f35b605160048036036020811015607757600080fd5b5035608c565b60006086826095565b92915050565b6000608682609c565b6104d20190565b6001019056fea265627a7a72315820863e53f0da474a1275d583d88852313fe053941e79bddd5279abd812b31e020c64736f6c634300050c0032';
-    public publicAddConstant = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-            assert.isBigNumber('x', x);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as TestLibDummyContract;
-            const encodedData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
-            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-
-            let rawCallResult;
-            try {
-                rawCallResult = await self._evmExecAsync(encodedDataBytes);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-
-            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(x: BigNumber): string {
-            assert.isBigNumber('x', x);
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): BigNumber {
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
-            return abiEncoder.getSelector();
-        },
-    };
-    public publicAddOne = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-            assert.isBigNumber('x', x);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as TestLibDummyContract;
-            const encodedData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
-            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-
-            let rawCallResult;
-            try {
-                rawCallResult = await self._evmExecAsync(encodedDataBytes);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-
-            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(x: BigNumber): string {
-            assert.isBigNumber('x', x);
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): BigNumber {
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
-        },
-        /**
-         * Returns the 4 byte function selector as a hex string.
-         */
-        getSelector(): string {
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
-            return abiEncoder.getSelector();
-        },
-    };
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -309,6 +152,111 @@ export class TestLibDummyContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
+
+    public getFunctionSignature(methodName: string): string {
+        const index = this._methodABIIndex[methodName];
+        const methodAbi = TestLibDummyContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
+        const functionSignature = methodAbiToFunctionSignature(methodAbi);
+        return functionSignature;
+    }
+    public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as TestLibDummyContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as TestLibDummyContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
+        return abiDecodedCallData;
+    }
+    public getSelector(methodName: string): string {
+        const functionSignature = this.getFunctionSignature(methodName);
+        const self = (this as any) as TestLibDummyContract;
+        const abiEncoder = self._lookupAbiEncoder(functionSignature);
+        return abiEncoder.getSelector();
+    }
+
+    public publicAddConstant(x: BigNumber): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as TestLibDummyContract;
+        assert.isBigNumber('x', x);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
+                let rawCallResult;
+
+                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+                try {
+                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    public publicAddOne(x: BigNumber): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as TestLibDummyContract;
+        assert.isBigNumber('x', x);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
+                let rawCallResult;
+
+                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+                try {
+                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+
     constructor(
         address: string,
         supportedProvider: SupportedProvider,
@@ -326,6 +274,12 @@ export class TestLibDummyContract extends BaseContract {
             deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        TestLibDummyContract.ABI().forEach((item, index) => {
+            if (item.type === 'function') {
+                const methodAbi = item as MethodAbi;
+                this._methodABIIndex[methodAbi.name] = index;
+            }
+        });
     }
 }
 

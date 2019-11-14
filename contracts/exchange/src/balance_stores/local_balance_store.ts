@@ -81,11 +81,11 @@ export class LocalBalanceStore extends BalanceStore {
         if (fromAddress === toAddress) {
             return;
         }
-        const assetProxyId = await this._devUtils.decodeAssetProxyId.callAsync(assetData);
+        const assetProxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
                 // tslint:disable-next-line:no-unused-variable
-                const [_proxyId, tokenAddress] = await this._devUtils.decodeERC20AssetData.callAsync(assetData);
+                const [_proxyId, tokenAddress] = await this._devUtils.decodeERC20AssetData(assetData).callAsync();
                 _.update(this.balances.erc20, [fromAddress, tokenAddress], balance => balance.minus(amount));
                 _.update(this.balances.erc20, [toAddress, tokenAddress], balance =>
                     (balance || constants.ZERO_AMOUNT).plus(amount),
@@ -94,9 +94,9 @@ export class LocalBalanceStore extends BalanceStore {
             }
             case AssetProxyId.ERC721: {
                 // tslint:disable-next-line:no-unused-variable
-                const [_proxyId, tokenAddress, tokenId] = await this._devUtils.decodeERC721AssetData.callAsync(
-                    assetData,
-                );
+                const [_proxyId, tokenAddress, tokenId] = await this._devUtils
+                    .decodeERC721AssetData(assetData)
+                    .callAsync();
                 const fromTokens = _.get(this.balances.erc721, [fromAddress, tokenAddress], []);
                 const toTokens = _.get(this.balances.erc721, [toAddress, tokenAddress], []);
                 if (amount.gte(1)) {
@@ -117,7 +117,7 @@ export class LocalBalanceStore extends BalanceStore {
                     tokenAddress,
                     tokenIds,
                     tokenValues,
-                ] = await this._devUtils.decodeERC1155AssetData.callAsync(assetData);
+                ] = await this._devUtils.decodeERC1155AssetData(assetData).callAsync();
                 const fromBalances = {
                     // tslint:disable-next-line:no-inferred-empty-object-type
                     fungible: _.get(this.balances.erc1155, [fromAddress, tokenAddress, 'fungible'], {}),
@@ -155,9 +155,9 @@ export class LocalBalanceStore extends BalanceStore {
             }
             case AssetProxyId.MultiAsset: {
                 // tslint:disable-next-line:no-unused-variable
-                const [_proxyId, amounts, nestedAssetData] = await this._devUtils.decodeMultiAssetData.callAsync(
-                    assetData,
-                );
+                const [_proxyId, amounts, nestedAssetData] = await this._devUtils
+                    .decodeMultiAssetData(assetData)
+                    .callAsync();
                 for (const [i, amt] of amounts.entries()) {
                     const nestedAmount = amount.times(amt);
                     await this.transferAssetAsync(fromAddress, toAddress, nestedAmount, nestedAssetData[i]);

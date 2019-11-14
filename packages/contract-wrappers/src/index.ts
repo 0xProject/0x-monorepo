@@ -133,8 +133,6 @@ export {
     SignedZeroExTransaction,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
-    AwaitTransactionSuccessOpts,
-    SendTransactionOpts,
     EIP712DomainWithDefaultSchema,
     EventCallback,
     DecodedLogEvent,
@@ -142,3 +140,9 @@ export {
 } from '@0x/types';
 
 export { AbiDecoder, DecodedCalldata } from '@0x/utils';
+export {
+    AwaitTransactionSuccessOpts,
+    SendTransactionOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+} from '@0x/base-contract';

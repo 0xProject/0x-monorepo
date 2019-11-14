@@ -152,22 +152,22 @@ blockchainTests.resets('Exchange core', () => {
             exchange.address,
         );
         // Configure ERC20Proxy
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
+        await erc20Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
+        await erc20Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({ from: owner });
 
         // Configure ERC721Proxy
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
+        await erc721Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
+        await erc721Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({ from: owner });
 
         // Configure ERC1155Proxy
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
+        await erc1155Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
+        await erc1155Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({ from: owner });
 
         // Configure MultiAssetProxy
-        await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
-        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: owner });
-        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, { from: owner });
-        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(staticCallProxy.address, { from: owner });
+        await multiAssetProxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
+        await multiAssetProxy.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({ from: owner });
+        await multiAssetProxy.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync({ from: owner });
+        await multiAssetProxy.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync({ from: owner });
 
         // Configure Exchange
         exchangeWrapper = new ExchangeWrapper(exchange);
@@ -211,10 +211,10 @@ blockchainTests.resets('Exchange core', () => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
-            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
-            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeAssetAddress),
-            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeAssetAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(),
+            takerAssetData: await devUtils.encodeERC20AssetData(defaultTakerAssetAddress).callAsync(),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData(defaultFeeAssetAddress).callAsync(),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData(defaultFeeAssetAddress).callAsync(),
             exchangeAddress: exchange.address,
             chainId,
         };
@@ -252,24 +252,19 @@ blockchainTests.resets('Exchange core', () => {
         describe('callback signature types', () => {
             beforeEach(async () => {
                 // Approve the ERC20 proxy with the test validator wallet.
-                await validatorWallet.approveERC20.awaitTransactionSuccessAsync(
-                    erc20TokenA.address,
-                    erc20Proxy.address,
-                    constants.INITIAL_ERC20_ALLOWANCE,
-                );
+                await validatorWallet
+                    .approveERC20(erc20TokenA.address, erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE)
+                    .awaitTransactionSuccessAsync();
                 // Mint some ERC20 tokens to the test validator wallet.
-                await erc20TokenA.setBalance.awaitTransactionSuccessAsync(
-                    validatorWallet.address,
-                    constants.INITIAL_ERC20_BALANCE,
-                );
+                await erc20TokenA
+                    .setBalance(validatorWallet.address, constants.INITIAL_ERC20_BALANCE)
+                    .awaitTransactionSuccessAsync();
                 // Approve the validator.
-                await exchange.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
-                    validatorWallet.address,
-                    true,
-                    {
+                await exchange
+                    .setSignatureValidatorApproval(validatorWallet.address, true)
+                    .awaitTransactionSuccessAsync({
                         from: makerAddress,
-                    },
-                );
+                    });
                 signedOrder = await orderFactory.newSignedOrderAsync({
                     makerFee: constants.ZERO_AMOUNT,
                     takerFee: constants.ZERO_AMOUNT,
@@ -281,19 +276,15 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.signature = signatureHex;
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
-                await validatorWallet.prepare.awaitTransactionSuccessAsync(
-                    orderHashHex,
-                    ValidatorWalletAction.Accept,
-                    constants.NULL_BYTES,
-                );
+                await validatorWallet
+                    .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync();
                 const fillAmount = signedOrder.takerAssetAmount.div(10);
                 await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
                 // Reject the signature check for the second fill.
-                await validatorWallet.prepare.awaitTransactionSuccessAsync(
-                    orderHashHex,
-                    ValidatorWalletAction.Reject,
-                    constants.NULL_BYTES,
-                );
+                await validatorWallet
+                    .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync();
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillAmount,
                 });
@@ -312,19 +303,15 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.signature = signatureHex;
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
-                await validatorWallet.prepare.awaitTransactionSuccessAsync(
-                    orderHashHex,
-                    ValidatorWalletAction.Accept,
-                    constants.NULL_BYTES,
-                );
+                await validatorWallet
+                    .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync();
                 const fillAmount = signedOrder.takerAssetAmount.div(10);
                 await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
                 // Reject the signature check for the second fill.
-                await validatorWallet.prepare.awaitTransactionSuccessAsync(
-                    orderHashHex,
-                    ValidatorWalletAction.Reject,
-                    constants.NULL_BYTES,
-                );
+                await validatorWallet
+                    .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync();
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillAmount,
                 });
@@ -343,19 +330,15 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.signature = signatureHex;
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
-                await validatorWallet.prepare.awaitTransactionSuccessAsync(
-                    orderHashHex,
-                    ValidatorWalletAction.Accept,
-                    constants.NULL_BYTES,
-                );
+                await validatorWallet
+                    .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync();
                 const fillAmount = signedOrder.takerAssetAmount.div(10);
                 await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
                 // Reject the signature check for the second fill.
-                await validatorWallet.prepare.awaitTransactionSuccessAsync(
-                    orderHashHex,
-                    ValidatorWalletAction.Reject,
-                    constants.NULL_BYTES,
-                );
+                await validatorWallet
+                    .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync();
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillAmount,
                 });
@@ -420,9 +403,11 @@ blockchainTests.resets('Exchange core', () => {
     describe('Fill transfer ordering', () => {
         it('should allow the maker to exchange assets received by the taker', async () => {
             // Set maker/taker assetData to the same asset
-            const takerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
+            const takerAssetData = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
             const takerAssetAmount = new BigNumber(1);
-            const makerAssetData = await devUtils.encodeMultiAssetData.callAsync([takerAssetAmount], [takerAssetData]);
+            const makerAssetData = await devUtils
+                .encodeMultiAssetData([takerAssetAmount], [takerAssetData])
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -432,33 +417,33 @@ blockchainTests.resets('Exchange core', () => {
                 takerFee: constants.ZERO_AMOUNT,
             });
             // Set maker balance to 0 so that the asset must be received by the taker in order for the fill to succeed
-            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
+            await erc20TokenA.setBalance(makerAddress, constants.ZERO_AMOUNT).awaitTransactionSuccessAsync({
                 from: owner,
             });
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should allow the taker to pay fees with an asset that received by the maker', async () => {
-            const makerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address);
+            const makerAssetData = await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerFeeAssetData: makerAssetData,
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: new BigNumber(1),
             });
             // Set taker balance to 0 so that the asset must be received by the maker in order for the fill to succeed
-            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(takerAddress, constants.ZERO_AMOUNT, {
+            await erc20TokenA.setBalance(takerAddress, constants.ZERO_AMOUNT).awaitTransactionSuccessAsync({
                 from: owner,
             });
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should allow the maker to pay fees with an asset that received by the taker', async () => {
-            const takerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address);
+            const takerAssetData = await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerFeeAssetData: takerAssetData,
                 makerFee: new BigNumber(1),
                 takerFee: constants.ZERO_AMOUNT,
             });
             // Set maker balance to 0 so that the asset must be received by the taker in order for the fill to succeed
-            await erc20TokenB.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
+            await erc20TokenB.setBalance(makerAddress, constants.ZERO_AMOUNT).awaitTransactionSuccessAsync({
                 from: owner,
             });
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
@@ -466,19 +451,16 @@ blockchainTests.resets('Exchange core', () => {
     });
     describe('Testing exchange of ERC20 tokens with no return values', () => {
         before(async () => {
-            await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
-                makerAddress,
-                constants.INITIAL_ERC20_BALANCE,
-            );
-            await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
-                erc20Proxy.address,
-                constants.INITIAL_ERC20_ALLOWANCE,
-                { from: makerAddress },
-            );
+            await noReturnErc20Token
+                .setBalance(makerAddress, constants.INITIAL_ERC20_BALANCE)
+                .awaitTransactionSuccessAsync();
+            await noReturnErc20Token
+                .approve(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE)
+                .awaitTransactionSuccessAsync({ from: makerAddress });
         });
         it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(noReturnErc20Token.address),
+                makerAssetData: await devUtils.encodeERC20AssetData(noReturnErc20Token.address).callAsync(),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
             });
@@ -486,7 +468,7 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(noReturnErc20Token.address),
+                makerAssetData: await devUtils.encodeERC20AssetData(noReturnErc20Token.address).callAsync(),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
             });
@@ -494,7 +476,7 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(noReturnErc20Token.address),
+                makerAssetData: await devUtils.encodeERC20AssetData(noReturnErc20Token.address).callAsync(),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
@@ -671,14 +653,14 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
-                takerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, takerAssetId),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).callAsync(),
+                takerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, takerAssetId).callAsync(),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             // Verify pre-conditions
-            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            const initialOwnerMakerAsset = await erc721Token.ownerOf(makerAssetId).callAsync();
             expect(initialOwnerMakerAsset).to.be.bignumber.not.equal(makerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf(takerAssetId).callAsync();
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
@@ -698,14 +680,14 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
-                takerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, takerAssetId),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).callAsync(),
+                takerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, takerAssetId).callAsync(),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             // Verify pre-conditions
-            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            const initialOwnerMakerAsset = await erc721Token.ownerOf(makerAssetId).callAsync();
             expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf(takerAssetId).callAsync();
             expect(initialOwnerTakerAsset).to.be.bignumber.not.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
@@ -725,14 +707,14 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(2),
                 takerAssetAmount: new BigNumber(1),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
-                takerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, takerAssetId),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).callAsync(),
+                takerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, takerAssetId).callAsync(),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             // Verify pre-conditions
-            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            const initialOwnerMakerAsset = await erc721Token.ownerOf(makerAssetId).callAsync();
             expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf(takerAssetId).callAsync();
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
@@ -752,14 +734,14 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(500),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
-                takerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, takerAssetId),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).callAsync(),
+                takerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, takerAssetId).callAsync(),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             // Verify pre-conditions
-            const initialOwnerMakerAsset = await erc721Token.ownerOf.callAsync(makerAssetId);
+            const initialOwnerMakerAsset = await erc721Token.ownerOf(makerAssetId).callAsync();
             expect(initialOwnerMakerAsset).to.be.bignumber.equal(makerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf(takerAssetId).callAsync();
             expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
@@ -778,8 +760,8 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
-                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC721AssetData(erc721Token.address, makerAssetId).callAsync(),
+                takerAssetData: await devUtils.encodeERC20AssetData(defaultTakerAssetAddress).callAsync(),
             });
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -797,12 +779,12 @@ blockchainTests.resets('Exchange core', () => {
         it('should allow multiple assets to be exchanged for a single asset', async () => {
             const makerAmounts = [new BigNumber(10), new BigNumber(20)];
             const makerNestedAssetData = [
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address),
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address),
+                await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync(),
+                await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync(),
             ];
-            const makerAssetData = await devUtils.encodeMultiAssetData.callAsync(makerAmounts, makerNestedAssetData);
+            const makerAssetData = await devUtils.encodeMultiAssetData(makerAmounts, makerNestedAssetData).callAsync();
             const makerAssetAmount = new BigNumber(1);
-            const takerAssetData = await devUtils.encodeERC20AssetData.callAsync(feeToken.address);
+            const takerAssetData = await devUtils.encodeERC20AssetData(feeToken.address).callAsync();
             const takerAssetAmount = new BigNumber(10);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -817,18 +799,18 @@ blockchainTests.resets('Exchange core', () => {
         it('should allow multiple assets to be exchanged for multiple assets', async () => {
             const makerAmounts = [new BigNumber(10), new BigNumber(20)];
             const makerNestedAssetData = [
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address),
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address),
+                await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync(),
+                await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync(),
             ];
-            const makerAssetData = await devUtils.encodeMultiAssetData.callAsync(makerAmounts, makerNestedAssetData);
+            const makerAssetData = await devUtils.encodeMultiAssetData(makerAmounts, makerNestedAssetData).callAsync();
             const makerAssetAmount = new BigNumber(1);
             const takerAmounts = [new BigNumber(10), new BigNumber(1)];
             const takerAssetId = erc721TakerAssetIds[0];
             const takerNestedAssetData = [
-                await devUtils.encodeERC20AssetData.callAsync(feeToken.address),
-                await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, takerAssetId),
+                await devUtils.encodeERC20AssetData(feeToken.address).callAsync(),
+                await devUtils.encodeERC721AssetData(erc721Token.address, takerAssetId).callAsync(),
             ];
-            const takerAssetData = await devUtils.encodeMultiAssetData.callAsync(takerAmounts, takerNestedAssetData);
+            const takerAssetData = await devUtils.encodeMultiAssetData(takerAmounts, takerNestedAssetData).callAsync();
             const takerAssetAmount = new BigNumber(1);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -843,12 +825,12 @@ blockchainTests.resets('Exchange core', () => {
         it('should allow an order selling multiple assets to be partially filled', async () => {
             const makerAmounts = [new BigNumber(10), new BigNumber(20)];
             const makerNestedAssetData = [
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address),
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address),
+                await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync(),
+                await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync(),
             ];
-            const makerAssetData = await devUtils.encodeMultiAssetData.callAsync(makerAmounts, makerNestedAssetData);
+            const makerAssetData = await devUtils.encodeMultiAssetData(makerAmounts, makerNestedAssetData).callAsync();
             const makerAssetAmount = new BigNumber(30);
-            const takerAssetData = await devUtils.encodeERC20AssetData.callAsync(feeToken.address);
+            const takerAssetData = await devUtils.encodeERC20AssetData(feeToken.address).callAsync();
             const takerAssetAmount = new BigNumber(10);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -865,12 +847,12 @@ blockchainTests.resets('Exchange core', () => {
         it('should allow an order buying multiple assets to be partially filled', async () => {
             const takerAmounts = [new BigNumber(10), new BigNumber(20)];
             const takerNestedAssetData = [
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address),
-                await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address),
+                await devUtils.encodeERC20AssetData(erc20TokenA.address).callAsync(),
+                await devUtils.encodeERC20AssetData(erc20TokenB.address).callAsync(),
             ];
-            const takerAssetData = await devUtils.encodeMultiAssetData.callAsync(takerAmounts, takerNestedAssetData);
+            const takerAssetData = await devUtils.encodeMultiAssetData(takerAmounts, takerNestedAssetData).callAsync();
             const takerAssetAmount = new BigNumber(30);
-            const makerAssetData = await devUtils.encodeERC20AssetData.callAsync(feeToken.address);
+            const makerAssetData = await devUtils.encodeERC20AssetData(feeToken.address).callAsync();
             const makerAssetAmount = new BigNumber(10);
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -896,18 +878,22 @@ blockchainTests.resets('Exchange core', () => {
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
-            const makerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                makerAssetsToTransfer,
-                makerValuesToTransfer,
-                receiverCallbackData,
-            );
-            const takerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                takerAssetsToTransfer,
-                takerValuesToTransfer,
-                receiverCallbackData,
-            );
+            const makerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    makerAssetsToTransfer,
+                    makerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
+            const takerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    takerAssetsToTransfer,
+                    takerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -931,18 +917,22 @@ blockchainTests.resets('Exchange core', () => {
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
-            const makerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                makerAssetsToTransfer,
-                makerValuesToTransfer,
-                receiverCallbackData,
-            );
-            const takerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                takerAssetsToTransfer,
-                takerValuesToTransfer,
-                receiverCallbackData,
-            );
+            const makerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    makerAssetsToTransfer,
+                    makerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
+            const takerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    takerAssetsToTransfer,
+                    takerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -965,18 +955,22 @@ blockchainTests.resets('Exchange core', () => {
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
-            const makerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                makerAssetsToTransfer,
-                makerValuesToTransfer,
-                receiverCallbackData,
-            );
-            const takerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                takerAssetsToTransfer,
-                takerValuesToTransfer,
-                receiverCallbackData,
-            );
+            const makerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    makerAssetsToTransfer,
+                    makerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
+            const takerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    takerAssetsToTransfer,
+                    takerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1005,18 +999,22 @@ blockchainTests.resets('Exchange core', () => {
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
-            const makerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                makerAssetsToTransfer,
-                makerValuesToTransfer,
-                receiverCallbackData,
-            );
-            const takerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                takerAssetsToTransfer,
-                takerValuesToTransfer,
-                receiverCallbackData,
-            );
+            const makerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    makerAssetsToTransfer,
+                    makerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
+            const takerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    takerAssetsToTransfer,
+                    takerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1050,18 +1048,22 @@ blockchainTests.resets('Exchange core', () => {
             const makerAssetAmount = new BigNumber(10);
             const takerAssetAmount = new BigNumber(20);
             const receiverCallbackData = '0x';
-            const makerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                makerAssetsToTransfer,
-                makerValuesToTransfer,
-                receiverCallbackData,
-            );
-            const takerAssetData = await devUtils.encodeERC1155AssetData.callAsync(
-                erc1155Contract.address,
-                takerAssetsToTransfer,
-                takerValuesToTransfer,
-                receiverCallbackData,
-            );
+            const makerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    makerAssetsToTransfer,
+                    makerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
+            const takerAssetData = await devUtils
+                .encodeERC1155AssetData(
+                    erc1155Contract.address,
+                    takerAssetsToTransfer,
+                    takerValuesToTransfer,
+                    receiverCallbackData,
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -1086,12 +1088,10 @@ blockchainTests.resets('Exchange core', () => {
             );
         });
         it('should revert if the staticcall is unsuccessful', async () => {
-            const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(new BigNumber(1));
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                constants.KECCAK256_NULL,
-            );
+            const staticCallData = staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData();
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL)
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
@@ -1103,28 +1103,26 @@ blockchainTests.resets('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
         it('should fill the order if the staticcall is successful', async () => {
-            const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(
-                constants.ZERO_AMOUNT,
-            );
-            const assetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                constants.KECCAK256_NULL,
-            );
+            const staticCallData = staticCallTarget
+                .assertEvenNumber(constants.ZERO_AMOUNT)
+                .getABIEncodedTransactionData();
+            const assetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL)
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should revert if the staticcall is unsuccessful using the MultiAssetProxy', async () => {
-            const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(new BigNumber(1));
-            const staticCallAssetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                constants.KECCAK256_NULL,
-            );
-            const assetData = await devUtils.encodeMultiAssetData.callAsync(
-                [new BigNumber(1), new BigNumber(1)],
-                [await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress), staticCallAssetData],
-            );
+            const staticCallData = staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData();
+            const staticCallAssetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL)
+                .callAsync();
+            const assetData = await devUtils
+                .encodeMultiAssetData(
+                    [new BigNumber(1), new BigNumber(1)],
+                    [await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(), staticCallAssetData],
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
@@ -1136,18 +1134,18 @@ blockchainTests.resets('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
         it('should fill the order is the staticcall is successful using the MultiAssetProxy', async () => {
-            const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(
-                constants.ZERO_AMOUNT,
-            );
-            const staticCallAssetData = await devUtils.encodeStaticCallAssetData.callAsync(
-                staticCallTarget.address,
-                staticCallData,
-                constants.KECCAK256_NULL,
-            );
-            const assetData = await devUtils.encodeMultiAssetData.callAsync(
-                [new BigNumber(1), new BigNumber(1)],
-                [await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress), staticCallAssetData],
-            );
+            const staticCallData = staticCallTarget
+                .assertEvenNumber(constants.ZERO_AMOUNT)
+                .getABIEncodedTransactionData();
+            const staticCallAssetData = await devUtils
+                .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL)
+                .callAsync();
+            const assetData = await devUtils
+                .encodeMultiAssetData(
+                    [new BigNumber(1), new BigNumber(1)],
+                    [await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(), staticCallAssetData],
+                )
+                .callAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });

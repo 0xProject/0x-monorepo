@@ -41,89 +41,79 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
         // Create a test pool
         const operatorShare = new BigNumber(1);
         const addOperatorAsMaker = true;
-        const txReceipt = await testContract.createStakingPool.awaitTransactionSuccessAsync(
-            operatorShare,
-            addOperatorAsMaker,
-        );
+        const txReceipt = await testContract
+            .createStakingPool(operatorShare, addOperatorAsMaker)
+            .awaitTransactionSuccessAsync();
         const createStakingPoolLog = txReceipt.logs[0];
         testPoolId = (createStakingPoolLog as any).args.poolId;
     });
 
     describe('_isCumulativeRewardSet', () => {
         it('Should return true iff denominator is non-zero', async () => {
-            const isSet = await testContract.isCumulativeRewardSet.callAsync({
-                numerator: ZERO,
-                denominator: new BigNumber(1),
-            });
+            const isSet = await testContract
+                .isCumulativeRewardSet({
+                    numerator: ZERO,
+                    denominator: new BigNumber(1),
+                })
+                .callAsync();
             expect(isSet).to.be.true();
         });
         it('Should return false iff denominator is zero', async () => {
-            const isSet = await testContract.isCumulativeRewardSet.callAsync({
-                numerator: new BigNumber(1),
-                denominator: ZERO,
-            });
+            const isSet = await testContract
+                .isCumulativeRewardSet({
+                    numerator: new BigNumber(1),
+                    denominator: ZERO,
+                })
+                .callAsync();
             expect(isSet).to.be.false();
         });
     });
 
     describe('_addCumulativeReward', () => {
         it('Should set value to `reward/stake` if this is the first cumulative reward', async () => {
-            await testContract.addCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[0].numerator,
-                testRewards[0].denominator,
-            );
-            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward.callAsync(testPoolId);
+            await testContract
+                .addCumulativeReward(testPoolId, testRewards[0].numerator, testRewards[0].denominator)
+                .awaitTransactionSuccessAsync();
+            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward(testPoolId).callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(testRewards[0]);
         });
 
         it('Should do nothing if a cumulative reward has already been recorded in the current epoch (`lastStoredEpoch == currentEpoch_`)', async () => {
-            await testContract.addCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[0].numerator,
-                testRewards[0].denominator,
-            );
+            await testContract
+                .addCumulativeReward(testPoolId, testRewards[0].numerator, testRewards[0].denominator)
+                .awaitTransactionSuccessAsync();
             // this call should not overwrite existing value (testRewards[0])
-            await testContract.addCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[1].numerator,
-                testRewards[1].denominator,
-            );
-            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward.callAsync(testPoolId);
+            await testContract
+                .addCumulativeReward(testPoolId, testRewards[1].numerator, testRewards[1].denominator)
+                .awaitTransactionSuccessAsync();
+            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward(testPoolId).callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(testRewards[0]);
         });
 
         it('Should set value to normalized sum of `reward/stake` plus most recent cumulative reward, given one exists', async () => {
-            await testContract.addCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[0].numerator,
-                testRewards[0].denominator,
-            );
-            await testContract.incrementEpoch.awaitTransactionSuccessAsync();
-            await testContract.addCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[1].numerator,
-                testRewards[1].denominator,
-            );
-            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward.callAsync(testPoolId);
+            await testContract
+                .addCumulativeReward(testPoolId, testRewards[0].numerator, testRewards[0].denominator)
+                .awaitTransactionSuccessAsync();
+            await testContract.incrementEpoch().awaitTransactionSuccessAsync();
+            await testContract
+                .addCumulativeReward(testPoolId, testRewards[1].numerator, testRewards[1].denominator)
+                .awaitTransactionSuccessAsync();
+            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward(testPoolId).callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(sumOfTestRewardsNormalized);
         });
     });
 
     describe('_updateCumulativeReward', () => {
         it('Should set current cumulative reward to most recent cumulative reward', async () => {
-            await testContract.addCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[0].numerator,
-                testRewards[0].denominator,
-            );
-            await testContract.incrementEpoch.awaitTransactionSuccessAsync();
-            await testContract.updateCumulativeReward.awaitTransactionSuccessAsync(testPoolId);
+            await testContract
+                .addCumulativeReward(testPoolId, testRewards[0].numerator, testRewards[0].denominator)
+                .awaitTransactionSuccessAsync();
+            await testContract.incrementEpoch().awaitTransactionSuccessAsync();
+            await testContract.updateCumulativeReward(testPoolId).awaitTransactionSuccessAsync();
             const epoch = new BigNumber(2);
-            const mostRecentCumulativeReward = await testContract.getCumulativeRewardAtEpochRaw.callAsync(
-                testPoolId,
-                epoch,
-            );
+            const mostRecentCumulativeReward = await testContract
+                .getCumulativeRewardAtEpochRaw(testPoolId, epoch)
+                .callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(testRewards[0]);
         });
     });
@@ -137,22 +127,15 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             epochOfIntervalEnd: BigNumber,
         ): Promise<void> => {
             // Simulate earning reward
-            await testContract.storeCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                testRewards[0],
-                epochOfFirstReward,
-            );
-            await testContract.storeCumulativeReward.awaitTransactionSuccessAsync(
-                testPoolId,
-                sumOfTestRewardsNormalized,
-                epochOfSecondReward,
-            );
-            const reward = await testContract.computeMemberRewardOverInterval.callAsync(
-                testPoolId,
-                amountToStake,
-                epochOfIntervalStart,
-                epochOfIntervalEnd,
-            );
+            await testContract
+                .storeCumulativeReward(testPoolId, testRewards[0], epochOfFirstReward)
+                .awaitTransactionSuccessAsync();
+            await testContract
+                .storeCumulativeReward(testPoolId, sumOfTestRewardsNormalized, epochOfSecondReward)
+                .awaitTransactionSuccessAsync();
+            const reward = await testContract
+                .computeMemberRewardOverInterval(testPoolId, amountToStake, epochOfIntervalStart, epochOfIntervalEnd)
+                .callAsync();
             // Compute expected reward
             const lhs = sumOfTestRewardsNormalized.numerator.dividedBy(sumOfTestRewardsNormalized.denominator);
             const rhs = testRewards[0].numerator.dividedBy(testRewards[0].denominator);
@@ -213,12 +196,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             const stake = toBaseUnitAmount(1);
             const beginEpoch = new BigNumber(1);
             const endEpoch = new BigNumber(2);
-            const reward = await testContract.computeMemberRewardOverInterval.callAsync(
-                testPoolId,
-                stake,
-                beginEpoch,
-                endEpoch,
-            );
+            const reward = await testContract
+                .computeMemberRewardOverInterval(testPoolId, stake, beginEpoch, endEpoch)
+                .callAsync();
             expect(reward).to.bignumber.equal(ZERO);
         });
 
@@ -226,12 +206,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             const stake = toBaseUnitAmount(0);
             const beginEpoch = new BigNumber(1);
             const endEpoch = new BigNumber(2);
-            const reward = await testContract.computeMemberRewardOverInterval.callAsync(
-                testPoolId,
-                stake,
-                beginEpoch,
-                endEpoch,
-            );
+            const reward = await testContract
+                .computeMemberRewardOverInterval(testPoolId, stake, beginEpoch, endEpoch)
+                .callAsync();
             expect(reward).to.bignumber.equal(ZERO);
         });
 
@@ -239,12 +216,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             const stake = toBaseUnitAmount(1);
             const beginEpoch = new BigNumber(1);
             const endEpoch = new BigNumber(1);
-            const reward = await testContract.computeMemberRewardOverInterval.callAsync(
-                testPoolId,
-                stake,
-                beginEpoch,
-                endEpoch,
-            );
+            const reward = await testContract
+                .computeMemberRewardOverInterval(testPoolId, stake, beginEpoch, endEpoch)
+                .callAsync();
             expect(reward).to.bignumber.equal(ZERO);
         });
 
@@ -252,7 +226,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             const stake = toBaseUnitAmount(1);
             const beginEpoch = new BigNumber(2);
             const endEpoch = new BigNumber(1);
-            const tx = testContract.computeMemberRewardOverInterval.callAsync(testPoolId, stake, beginEpoch, endEpoch);
+            const tx = testContract
+                .computeMemberRewardOverInterval(testPoolId, stake, beginEpoch, endEpoch)
+                .callAsync();
             return expect(tx).to.revertWith('CR_INTERVAL_INVALID');
         });
     });

@@ -76,7 +76,7 @@ export class ERC1155ProxyWrapper {
             txDefaults,
             artifacts,
         );
-        this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
+        this._proxyIdIfExists = await this._proxyContract.getProxyId().callAsync();
         return this._proxyContract;
     }
     /**
@@ -113,19 +113,13 @@ export class ERC1155ProxyWrapper {
         this._validateProxyContractExistsOrThrow();
         const assetData =
             assetData_ === undefined
-                ? await this._devUtils.encodeERC1155AssetData.callAsync(
-                      contractAddress,
-                      tokensToTransfer,
-                      valuesToTransfer,
-                      receiverCallbackData,
-                  )
+                ? await this._devUtils
+                      .encodeERC1155AssetData(contractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
+                      .callAsync()
                 : assetData_;
-        const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-            assetData,
-            from,
-            to,
-            valueMultiplier,
-        );
+        const data = this._assetProxyInterface
+            .transferFrom(assetData, from, to, valueMultiplier)
+            .getABIEncodedTransactionData();
         return data;
     }
     /**
@@ -173,19 +167,13 @@ export class ERC1155ProxyWrapper {
         this._validateProxyContractExistsOrThrow();
         const assetData =
             assetData_ === undefined
-                ? await this._devUtils.encodeERC1155AssetData.callAsync(
-                      contractAddress,
-                      tokensToTransfer,
-                      valuesToTransfer,
-                      receiverCallbackData,
-                  )
+                ? await this._devUtils
+                      .encodeERC1155AssetData(contractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
+                      .callAsync()
                 : assetData_;
-        const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-            assetData,
-            from,
-            to,
-            valueMultiplier,
-        );
+        const data = this._assetProxyInterface
+            .transferFrom(assetData, from, to, valueMultiplier)
+            .getABIEncodedTransactionData();
         const txHash = await this._web3Wrapper.sendTransactionAsync({
             to: (this._proxyContract as ERC1155ProxyContract).address,
             data,
@@ -366,7 +354,7 @@ export class ERC1155ProxyWrapper {
         this._validateProxyContractExistsOrThrow();
         const tokenContract = this._getContractFromAddress(contractAddress);
         const operator = (this._proxyContract as ERC1155ProxyContract).address;
-        const didApproveAll = await tokenContract.isApprovedForAll.callAsync(userAddress, operator);
+        const didApproveAll = await tokenContract.isApprovedForAll(userAddress, operator).callAsync();
         return didApproveAll;
     }
     public getFungibleTokenIds(): BigNumber[] {

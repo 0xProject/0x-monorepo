@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 import 'mocha';
 
 import { ContractAddresses, ContractWrappers } from '../src';
-import { getAbiEncodedTransactionData } from '../src/utils/getAbiEncodedTransactionData';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -56,48 +55,48 @@ describe('ABI Decoding Calldata', () => {
         // Values are arbitrary, with the exception of maker addresses (generated above).
         orderLeft = {
             makerAddress: makerAddressLeft,
-            makerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
+            makerAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
             makerAssetAmount: new BigNumber(10),
             takerAddress: '0x0000000000000000000000000000000000000000',
-            takerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
+            takerAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
             takerAssetAmount: new BigNumber(1),
             feeRecipientAddress,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
-            makerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
-            takerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
+            makerFeeAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
+            takerFeeAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
             senderAddress: '0x0000000000000000000000000000000000000000',
             expirationTimeSeconds: new BigNumber(1549498915),
             salt: new BigNumber(217),
         };
         orderRight = {
             makerAddress: makerAddressRight,
-            makerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
+            makerAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
             makerAssetAmount: new BigNumber(1),
             takerAddress: '0x0000000000000000000000000000000000000000',
-            takerAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
+            takerAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
             takerAssetAmount: new BigNumber(8),
             feeRecipientAddress,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
-            makerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
-            takerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
-                defaultERC20MakerAssetAddress,
-            ),
+            makerFeeAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
+            takerFeeAssetData: await contractWrappers.devUtils
+                .encodeERC20AssetData(defaultERC20MakerAssetAddress)
+                .callAsync(),
             senderAddress: '0x0000000000000000000000000000000000000000',
             expirationTimeSeconds: new BigNumber(1549498915),
             salt: new BigNumber(50010),
@@ -107,14 +106,9 @@ describe('ABI Decoding Calldata', () => {
         const orderFactoryRight = new OrderFactory(privateKeyRight, orderRight);
         signedOrderRight = await orderFactoryRight.newSignedOrderAsync(domainInfo);
         // Encode match orders transaction
-        matchOrdersTxData = getAbiEncodedTransactionData(
-            contractWrappers.exchange,
-            'matchOrders',
-            signedOrderLeft,
-            signedOrderRight,
-            signedOrderLeft.signature,
-            signedOrderRight.signature,
-        );
+        matchOrdersTxData = contractWrappers.exchange
+            .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+            .getABIEncodedTransactionData();
     });
 
     describe('decode', () => {
