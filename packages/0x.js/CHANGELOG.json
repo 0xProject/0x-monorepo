@@ -9,6 +9,10 @@
             {
                 "note": "ContractWrappers no longer exposes `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers",
                 "pr": 2324
+            },
+            {
+                "note": "Remove IWallet and IValidator contract wrappers",
+                "pr": 2337
             }
         ]
     },
