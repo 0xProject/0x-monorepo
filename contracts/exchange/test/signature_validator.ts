@@ -14,7 +14,6 @@ import {
     randomAddress,
     TransactionFactory,
     transactionHashUtils,
-    ValidatorWalletAction,
 } from '@0x/contracts-test-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
@@ -30,6 +29,17 @@ import {
     IEIP1271DataContract,
     TestValidatorWalletContract,
 } from './wrappers';
+
+enum ValidatorWalletAction {
+    Reject = 0,
+    Accept = 1,
+    Revert = 2,
+    UpdateState = 3,
+    MatchSignatureHash = 4,
+    ReturnTrue = 5,
+    ReturnNothing = 6,
+    NTypes = 7,
+}
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('MixinSignatureValidator', env => {

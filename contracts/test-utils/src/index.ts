@@ -57,7 +57,6 @@ export {
     TokenBalances,
     TransactionDataParams,
     ExchangeFunctionName,
-    ValidatorWalletAction,
 } from './types';
 export { blockchainTests, BlockchainTestsEnvironment, describe } from './mocha_blockchain';
 export { chaiSetup, expect } from './chai_setup';
