@@ -265,9 +265,6 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         const stakingProxyOwner = await stakingProxy.owner.callAsync();
         warnIfMismatch(stakingProxyOwner, addresses.zeroExGovernor, 'Unexpected StakingProxy owner');
 
-        const zrxVaultOwner = await zrxVault.owner.callAsync();
-        warnIfMismatch(zrxVaultOwner, addresses.zeroExGovernor, 'Unexpected ZrxVault owner');
-
         const stakingProxyAuthorizedAddresses = await stakingProxy.getAuthorizedAddresses.callAsync();
         warnIfMismatch(
             stakingProxyAuthorizedAddresses.length,
@@ -277,10 +274,20 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         const isGovernorAuthorizedInStakingProxy = await stakingProxy.authorized.callAsync(addresses.zeroExGovernor);
         warnIfMismatch(isGovernorAuthorizedInStakingProxy, true, 'ZeroExGovernor not authorized in StakingProxy');
 
+        const zrxVaultOwner = await zrxVault.owner.callAsync();
+        warnIfMismatch(zrxVaultOwner, addresses.zeroExGovernor, 'Unexpected ZrxVault owner');
+
         const zrxVaultAuthorizedAddresses = await zrxVault.getAuthorizedAddresses.callAsync();
         warnIfMismatch(zrxVaultAuthorizedAddresses.length, 1, 'Unexpected number of authorized addresses in ZrxVault');
+
         const isGovernorAuthorizedInZrxVault = await zrxVault.authorized.callAsync(addresses.zeroExGovernor);
         warnIfMismatch(isGovernorAuthorizedInZrxVault, true, 'ZeroExGovernor not authorized in ZrxVault');
+
+        const zrxAssetProxy = await zrxVault.zrxAssetProxy.callAsync();
+        warnIfMismatch(zrxAssetProxy, addresses.erc20Proxy, 'Unexpected ERC20Proxy set in ZrxVault');
+
+        const zrxVaultStakingProxy = await zrxVault.stakingProxyAddress.callAsync();
+        warnIfMismatch(zrxVaultStakingProxy, addresses.stakingProxy, 'Unexpected StakingProxy set in ZrxVault');
 
         const params = await stakingContract.getParams.callAsync();
         warnIfMismatch(
