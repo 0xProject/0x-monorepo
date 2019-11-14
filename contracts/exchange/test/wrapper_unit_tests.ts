@@ -1094,11 +1094,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     ];
                     const signatures = [hexRandom()];
                     const fillAmount = new BigNumber(10000);
-                    const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
-                        orders,
-                        fillAmount,
-                        signatures,
-                    ).callAsync();
+                    const fillResults = await roundingTestContract
+                        .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
+                        .callAsync();
                     expect(fillResults.makerAssetFilledAmount).to.bignumber.eq(10000);
                 });
 
@@ -1111,11 +1109,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     ];
                     const signatures = [hexRandom()];
                     const fillAmount = new BigNumber('2400000000000000000');
-                    const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
-                        orders,
-                        fillAmount,
-                        signatures,
-                    ).callAsync();
+                    const fillResults = await roundingTestContract
+                        .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
+                        .callAsync();
                     expect(fillResults.makerAssetFilledAmount).to.bignumber.eq('2400000000000000002');
                 });
 
@@ -1128,11 +1124,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     ];
                     const signatures = [hexRandom()];
                     const fillAmount = new BigNumber('84819838457312347759');
-                    const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
-                        orders,
-                        fillAmount,
-                        signatures,
-                    ).callAsync();
+                    const fillResults = await roundingTestContract
+                        .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
+                        .callAsync();
                     expect(fillResults.makerAssetFilledAmount).to.bignumber.eq('84819838457312347760');
                 });
 
@@ -1145,11 +1139,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                             const signatures = orders.map(() => hexRandom());
                             const totalMakerAssetAmount = BigNumber.sum(...orders.map(o => o.makerAssetAmount));
                             const fillAmount = getRandomPortion(totalMakerAssetAmount);
-                            const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
-                                orders,
-                                fillAmount,
-                                signatures,
-                            ).callAsync();
+                            const fillResults = await roundingTestContract
+                                .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
+                                .callAsync();
                             expect(fillResults.makerAssetFilledAmount).to.bignumber.gte(fillAmount);
                         });
                     }
