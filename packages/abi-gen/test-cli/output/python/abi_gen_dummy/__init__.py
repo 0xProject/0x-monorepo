@@ -415,9 +415,7 @@ class EmitSimpleEventMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def call(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[None, Union[HexBytes, bytes]]:
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -764,9 +762,7 @@ class NonPureMethodMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def call(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[int, Union[HexBytes, bytes]]:
+    def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -810,9 +806,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def call(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[None, Union[HexBytes, bytes]]:
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -1420,9 +1414,7 @@ class WithdrawMethod(ContractMethod):
         wad = int(wad)
         return wad
 
-    def call(
-        self, wad: int, tx_params: Optional[TxParams] = None
-    ) -> Union[None, Union[HexBytes, bytes]]:
+    def call(self, wad: int, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters

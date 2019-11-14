@@ -26,7 +26,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         return ({{> params }})
 
     {{/if}}
-    def call(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> {{> return_type outputs=outputs type='call'~}}:
+    def call(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> {{> call_return_type outputs=outputs type='call'~}}:
         """Execute underlying contract method via eth_call.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
 {{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}

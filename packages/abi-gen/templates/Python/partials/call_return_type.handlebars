@@ -1,0 +1,11 @@
+{{~#if outputs~}}
+{{#if outputs.length}}
+{{#singleReturnValue}}
+{{#returnType outputs.0.type outputs.0.components}}{{~/returnType~}}
+{{/singleReturnValue}}
+{{^singleReturnValue}}
+Tuple[{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
+{{~/singleReturnValue}}
+{{else}}None
+{{/if}}
+{{else}}None{{/if~}}
