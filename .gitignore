@@ -175,6 +175,8 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_validator/__in
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_wallet/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/multi_asset_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/order_validator/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/staking/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/staking_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/static_call_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/weth9/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_token/__init__.py
