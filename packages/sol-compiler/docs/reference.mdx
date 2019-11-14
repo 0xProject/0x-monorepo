@@ -1,3 +1,81 @@
+# Class: Compiler
+
+The Compiler facilitates compiling Solidity smart contracts and saves the results
+to artifact files.
+
+
+##   Constructors
+
+
+
+\+ **new Compiler**(`opts?`: [CompilerOptions](#interface-compileroptions)): *[Compiler](#class-compiler)*
+
+*Defined in [sol-compiler/src/compiler.ts:97](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-compiler/src/compiler.ts#L97)*
+
+Instantiates a new instance of the Compiler class.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`opts?` | [CompilerOptions](#interface-compileroptions) | Optional compiler options |
+
+**Returns:** *[Compiler](#class-compiler)*
+
+An instance of the Compiler class.
+
+## Methods
+
+###  compileAsync
+
+▸ **compileAsync**(): *`Promise<void>`*
+
+*Defined in [sol-compiler/src/compiler.ts:138](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-compiler/src/compiler.ts#L138)*
+
+Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  getCompilerOutputsAsync
+
+▸ **getCompilerOutputsAsync**(): *`Promise<StandardOutput[]>`*
+
+*Defined in [sol-compiler/src/compiler.ts:151](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-compiler/src/compiler.ts#L151)*
+
+Compiles Solidity files specified during instantiation, and returns the
+compiler output given by solc.  Return value is an array of outputs:
+Solidity modules are batched together by version required, and each
+element of the returned array corresponds to a compiler version, and
+each element contains the output for all of the modules compiled with
+that version.
+
+**Returns:** *`Promise<StandardOutput[]>`*
+
+___
+
+###  getContractNamesToCompile
+
+▸ **getContractNamesToCompile**(): *string[]*
+
+*Defined in [sol-compiler/src/compiler.ts:192](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-compiler/src/compiler.ts#L192)*
+
+Gets a list of contracts to compile.
+
+**Returns:** *string[]*
+
+___
+
+###  watchAsync
+
+▸ **watchAsync**(): *`Promise<void>`*
+
+*Defined in [sol-compiler/src/compiler.ts:155](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-compiler/src/compiler.ts#L155)*
+
+**Returns:** *`Promise<void>`*
+
+<hr />
 
 
 
@@ -6,11 +84,6 @@
 
 
 
-
-
-
-
-<hr /> 
 
 
 
@@ -37,7 +110,6 @@ useDockerisedSolc: If set to true - sol-compiler will try calling a dockerized i
 isOfflineMode: If set to true - sol-compiler will not fetch the list of solc releases from github. It will use the hardcoded list. Defaults to false.
 solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
 contracts to compile with the the version specified here.
-shouldSaveStandardInput: Write the standard JSON input in ${contractsDir}/${contractName}.input.json
 
 
 ##   Properties
@@ -46,7 +118,7 @@ shouldSaveStandardInput: Write the standard JSON input in ${contractsDir}/${cont
 
 • **artifactsDir**? : *undefined | string*
 
-*Defined in [ethereum-types/src/index.ts:732](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L732)*
+*Defined in [ethereum-types/src/index.ts:731](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L731)*
 
 ___
 
@@ -54,7 +126,7 @@ ___
 
 • **compilerSettings**? : *[CompilerSettings](#class-compilersettings)*
 
-*Defined in [ethereum-types/src/index.ts:733](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L733)*
+*Defined in [ethereum-types/src/index.ts:732](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L732)*
 
 ___
 
@@ -62,7 +134,7 @@ ___
 
 • **contracts**? : *string[] | "*"*
 
-*Defined in [ethereum-types/src/index.ts:734](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L734)*
+*Defined in [ethereum-types/src/index.ts:733](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L733)*
 
 ___
 
@@ -70,7 +142,7 @@ ___
 
 • **contractsDir**? : *undefined | string*
 
-*Defined in [ethereum-types/src/index.ts:731](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L731)*
+*Defined in [ethereum-types/src/index.ts:730](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L730)*
 
 ___
 
@@ -78,15 +150,7 @@ ___
 
 • **isOfflineMode**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:736](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L736)*
-
-___
-
-### `Optional` shouldSaveStandardInput
-
-• **shouldSaveStandardInput**? : *undefined | false | true*
-
-*Defined in [ethereum-types/src/index.ts:738](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L738)*
+*Defined in [ethereum-types/src/index.ts:735](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L735)*
 
 ___
 
@@ -94,7 +158,7 @@ ___
 
 • **solcVersion**? : *undefined | string*
 
-*Defined in [ethereum-types/src/index.ts:737](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L737)*
+*Defined in [ethereum-types/src/index.ts:736](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L736)*
 
 ___
 
@@ -102,7 +166,7 @@ ___
 
 • **useDockerisedSolc**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:735](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L735)*
+*Defined in [ethereum-types/src/index.ts:734](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L734)*
 
 <hr />
 
@@ -117,7 +181,7 @@ ___
 
 • **evmVersion**? : *"homestead" | "tangerineWhistle" | "spuriousDragon" | "byzantium" | "constantinople"*
 
-*Defined in [ethereum-types/src/index.ts:689](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L689)*
+*Defined in [ethereum-types/src/index.ts:689](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L689)*
 
 ___
 
@@ -125,7 +189,7 @@ ___
 
 • **libraries**? : *undefined | object*
 
-*Defined in [ethereum-types/src/index.ts:691](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L691)*
+*Defined in [ethereum-types/src/index.ts:691](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L691)*
 
 ___
 
@@ -133,7 +197,7 @@ ___
 
 • **metadata**? : *[CompilerSettingsMetadata](#class-compilersettingsmetadata)*
 
-*Defined in [ethereum-types/src/index.ts:690](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L690)*
+*Defined in [ethereum-types/src/index.ts:690](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L690)*
 
 ___
 
@@ -141,7 +205,7 @@ ___
 
 • **optimizer**? : *[OptimizerSettings](#class-optimizersettings)*
 
-*Defined in [ethereum-types/src/index.ts:688](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L688)*
+*Defined in [ethereum-types/src/index.ts:688](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L688)*
 
 ___
 
@@ -149,7 +213,7 @@ ___
 
 • **outputSelection**: *object*
 
-*Defined in [ethereum-types/src/index.ts:696](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L696)*
+*Defined in [ethereum-types/src/index.ts:696](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L696)*
 
 #### Type declaration:
 
@@ -163,7 +227,7 @@ ___
 
 • **remappings**? : *string[]*
 
-*Defined in [ethereum-types/src/index.ts:687](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L687)*
+*Defined in [ethereum-types/src/index.ts:687](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L687)*
 
 <hr />
 
@@ -176,7 +240,7 @@ ___
 
 • **useLiteralContent**: *true*
 
-*Defined in [ethereum-types/src/index.ts:704](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L704)*
+*Defined in [ethereum-types/src/index.ts:704](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L704)*
 
 <hr />
 
@@ -189,7 +253,7 @@ ___
 
 • **inputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:103](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L103)*
+*Defined in [ethereum-types/src/index.ts:103](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L103)*
 
 ___
 
@@ -197,7 +261,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:104](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L104)*
+*Defined in [ethereum-types/src/index.ts:104](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L104)*
 
 ___
 
@@ -205,7 +269,7 @@ ___
 
 • **stateMutability**: *[ConstructorStateMutability](#constructorstatemutability)*
 
-*Defined in [ethereum-types/src/index.ts:105](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L105)*
+*Defined in [ethereum-types/src/index.ts:105](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L105)*
 
 ___
 
@@ -213,7 +277,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:102](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L102)*
+*Defined in [ethereum-types/src/index.ts:102](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L102)*
 
 <hr />
 
@@ -232,7 +296,7 @@ ___
 
 • **components**? : *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:137](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L137)*
+*Defined in [ethereum-types/src/index.ts:137](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L137)*
 
 ___
 
@@ -240,7 +304,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L135)*
+*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L135)*
 
 ___
 
@@ -248,7 +312,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L136)*
+*Defined in [ethereum-types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L136)*
 
 <hr />
 
@@ -265,7 +329,7 @@ ___
 
 • **author**? : *undefined | string*
 
-*Defined in [ethereum-types/src/index.ts:628](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L628)*
+*Defined in [ethereum-types/src/index.ts:628](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L628)*
 
 ___
 
@@ -273,7 +337,7 @@ ___
 
 • **methods**: *object*
 
-*Defined in [ethereum-types/src/index.ts:629](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L629)*
+*Defined in [ethereum-types/src/index.ts:629](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L629)*
 
 #### Type declaration:
 
@@ -285,7 +349,7 @@ ___
 
 • **title**? : *undefined | string*
 
-*Defined in [ethereum-types/src/index.ts:627](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L627)*
+*Defined in [ethereum-types/src/index.ts:627](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L627)*
 
 <hr />
 
@@ -300,7 +364,7 @@ ___
 
 • **anonymous**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L131)*
+*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L131)*
 
 ___
 
@@ -308,7 +372,7 @@ ___
 
 • **inputs**: *[EventParameter](#class-eventparameter)[]*
 
-*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L130)*
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L130)*
 
 ___
 
@@ -316,7 +380,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L129)*
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
@@ -324,7 +388,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:128](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L128)*
+*Defined in [ethereum-types/src/index.ts:128](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L128)*
 
 <hr />
 
@@ -339,7 +403,7 @@ ___
 
 *Inherited from [DataItem](#interface-dataitem).[components](#optional-components)*
 
-*Defined in [ethereum-types/src/index.ts:137](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L137)*
+*Defined in [ethereum-types/src/index.ts:137](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L137)*
 
 ___
 
@@ -347,7 +411,7 @@ ___
 
 • **indexed**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:116](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L116)*
+*Defined in [ethereum-types/src/index.ts:116](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L116)*
 
 ___
 
@@ -357,7 +421,7 @@ ___
 
 *Inherited from [DataItem](#interface-dataitem).[name](#name)*
 
-*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L135)*
+*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L135)*
 
 ___
 
@@ -367,7 +431,7 @@ ___
 
 *Inherited from [DataItem](#interface-dataitem).[type](#type)*
 
-*Defined in [ethereum-types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L136)*
+*Defined in [ethereum-types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L136)*
 
 <hr />
 
@@ -380,7 +444,7 @@ ___
 
 • **object**: *string*
 
-*Defined in [ethereum-types/src/index.ts:622](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L622)*
+*Defined in [ethereum-types/src/index.ts:622](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L622)*
 
 ___
 
@@ -388,7 +452,7 @@ ___
 
 • **sourceMap**: *string*
 
-*Defined in [ethereum-types/src/index.ts:623](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L623)*
+*Defined in [ethereum-types/src/index.ts:623](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L623)*
 
 <hr />
 
@@ -401,7 +465,7 @@ ___
 
 • **bytecode**: *[EvmBytecodeOutput](#class-evmbytecodeoutput)*
 
-*Defined in [ethereum-types/src/index.ts:617](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L617)*
+*Defined in [ethereum-types/src/index.ts:617](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L617)*
 
 ___
 
@@ -409,7 +473,7 @@ ___
 
 • **deployedBytecode**: *[EvmBytecodeOutput](#class-evmbytecodeoutput)*
 
-*Defined in [ethereum-types/src/index.ts:618](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L618)*
+*Defined in [ethereum-types/src/index.ts:618](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L618)*
 
 <hr />
 
@@ -422,7 +486,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:112](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L112)*
+*Defined in [ethereum-types/src/index.ts:112](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L112)*
 
 ___
 
@@ -430,90 +494,13 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:111](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L111)*
+*Defined in [ethereum-types/src/index.ts:111](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L111)*
 
 <hr />
 
 
 
-# Class: Compiler
 
-The Compiler facilitates compiling Solidity smart contracts and saves the results
-to artifact files.
-
-
-##   Constructors
-
-
-
-\+ **new Compiler**(`opts?`: [CompilerOptions](#interface-compileroptions)): *[Compiler](#class-compiler)*
-
-*Defined in [sol-compiler/src/compiler.ts:100](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-compiler/src/compiler.ts#L100)*
-
-Instantiates a new instance of the Compiler class.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`opts?` | [CompilerOptions](#interface-compileroptions) | Optional compiler options |
-
-**Returns:** *[Compiler](#class-compiler)*
-
-An instance of the Compiler class.
-
-## Methods
-
-###  compileAsync
-
-▸ **compileAsync**(): *`Promise<void>`*
-
-*Defined in [sol-compiler/src/compiler.ts:143](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-compiler/src/compiler.ts#L143)*
-
-Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
-
-**Returns:** *`Promise<void>`*
-
-___
-
-###  getCompilerOutputsAsync
-
-▸ **getCompilerOutputsAsync**(): *`Promise<StandardOutput[]>`*
-
-*Defined in [sol-compiler/src/compiler.ts:156](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-compiler/src/compiler.ts#L156)*
-
-Compiles Solidity files specified during instantiation, and returns the
-compiler output given by solc.  Return value is an array of outputs:
-Solidity modules are batched together by version required, and each
-element of the returned array corresponds to a compiler version, and
-each element contains the output for all of the modules compiled with
-that version.
-
-**Returns:** *`Promise<StandardOutput[]>`*
-
-___
-
-###  getContractNamesToCompile
-
-▸ **getContractNamesToCompile**(): *string[]*
-
-*Defined in [sol-compiler/src/compiler.ts:197](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-compiler/src/compiler.ts#L197)*
-
-Gets a list of contracts to compile.
-
-**Returns:** *string[]*
-
-___
-
-###  watchAsync
-
-▸ **watchAsync**(): *`Promise<void>`*
-
-*Defined in [sol-compiler/src/compiler.ts:160](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-compiler/src/compiler.ts#L160)*
-
-**Returns:** *`Promise<void>`*
-
-<hr />
 
 
 
@@ -538,7 +525,7 @@ ___
 
 • **constant**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L94)*
+*Defined in [ethereum-types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L94)*
 
 ___
 
@@ -546,7 +533,7 @@ ___
 
 • **inputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L92)*
+*Defined in [ethereum-types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L92)*
 
 ___
 
@@ -554,7 +541,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [ethereum-types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L91)*
+*Defined in [ethereum-types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L91)*
 
 ___
 
@@ -562,7 +549,7 @@ ___
 
 • **outputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L93)*
+*Defined in [ethereum-types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L93)*
 
 ___
 
@@ -570,7 +557,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L96)*
+*Defined in [ethereum-types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L96)*
 
 ___
 
@@ -578,7 +565,7 @@ ___
 
 • **stateMutability**: *[StateMutability](#statemutability)*
 
-*Defined in [ethereum-types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L95)*
+*Defined in [ethereum-types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L95)*
 
 ___
 
@@ -586,7 +573,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L90)*
+*Defined in [ethereum-types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L90)*
 
 <hr />
 
@@ -599,7 +586,7 @@ ___
 
 • **enabled**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:708](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L708)*
+*Defined in [ethereum-types/src/index.ts:708](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L708)*
 
 ___
 
@@ -607,7 +594,7 @@ ___
 
 • **runs**? : *undefined | number*
 
-*Defined in [ethereum-types/src/index.ts:709](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L709)*
+*Defined in [ethereum-types/src/index.ts:709](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L709)*
 
 <hr />
 
@@ -624,7 +611,7 @@ ___
 
 • **arguments**? : *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:122](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L122)*
+*Defined in [ethereum-types/src/index.ts:122](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L122)*
 
 ___
 
@@ -632,7 +619,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [ethereum-types/src/index.ts:121](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L121)*
+*Defined in [ethereum-types/src/index.ts:121](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L121)*
 
 ___
 
@@ -640,7 +627,7 @@ ___
 
 • **type**: *"error"*
 
-*Defined in [ethereum-types/src/index.ts:120](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L120)*
+*Defined in [ethereum-types/src/index.ts:120](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L120)*
 
 <hr />
 
@@ -653,7 +640,7 @@ ___
 
 • **component**: *"general" | "ewasm"*
 
-*Defined in [ethereum-types/src/index.ts:604](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L604)*
+*Defined in [ethereum-types/src/index.ts:604](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L604)*
 
 ___
 
@@ -661,7 +648,7 @@ ___
 
 • **formattedMessage**? : *undefined | string*
 
-*Defined in [ethereum-types/src/index.ts:607](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L607)*
+*Defined in [ethereum-types/src/index.ts:607](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L607)*
 
 ___
 
@@ -669,7 +656,7 @@ ___
 
 • **message**: *string*
 
-*Defined in [ethereum-types/src/index.ts:606](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L606)*
+*Defined in [ethereum-types/src/index.ts:606](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L606)*
 
 ___
 
@@ -677,7 +664,7 @@ ___
 
 • **severity**: *[ErrorSeverity](#errorseverity)*
 
-*Defined in [ethereum-types/src/index.ts:605](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L605)*
+*Defined in [ethereum-types/src/index.ts:605](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L605)*
 
 ___
 
@@ -685,7 +672,7 @@ ___
 
 • **sourceLocation**? : *[SourceLocation](#class-sourcelocation)*
 
-*Defined in [ethereum-types/src/index.ts:602](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L602)*
+*Defined in [ethereum-types/src/index.ts:602](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L602)*
 
 ___
 
@@ -693,7 +680,7 @@ ___
 
 • **type**: *[ErrorType](#errortype)*
 
-*Defined in [ethereum-types/src/index.ts:603](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L603)*
+*Defined in [ethereum-types/src/index.ts:603](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L603)*
 
 <hr />
 
@@ -710,7 +697,7 @@ ___
 
 • **abi**: *[ContractAbi](#contractabi)*
 
-*Defined in [ethereum-types/src/index.ts:564](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L564)*
+*Defined in [ethereum-types/src/index.ts:564](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L564)*
 
 ___
 
@@ -718,7 +705,7 @@ ___
 
 • **devdoc**? : *[DevdocOutput](#class-devdocoutput)*
 
-*Defined in [ethereum-types/src/index.ts:566](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L566)*
+*Defined in [ethereum-types/src/index.ts:566](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L566)*
 
 ___
 
@@ -726,7 +713,7 @@ ___
 
 • **evm**: *[EvmOutput](#class-evmoutput)*
 
-*Defined in [ethereum-types/src/index.ts:565](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L565)*
+*Defined in [ethereum-types/src/index.ts:565](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L565)*
 
 <hr />
 
@@ -739,7 +726,7 @@ ___
 
 • **contracts**: *object*
 
-*Defined in [ethereum-types/src/index.ts:578](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L578)*
+*Defined in [ethereum-types/src/index.ts:578](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L578)*
 
 #### Type declaration:
 
@@ -753,7 +740,7 @@ ___
 
 • **errors**: *[SolcError](#class-solcerror)[]*
 
-*Defined in [ethereum-types/src/index.ts:570](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L570)*
+*Defined in [ethereum-types/src/index.ts:570](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L570)*
 
 ___
 
@@ -761,7 +748,7 @@ ___
 
 • **sources**: *object*
 
-*Defined in [ethereum-types/src/index.ts:571](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L571)*
+*Defined in [ethereum-types/src/index.ts:571](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L571)*
 
 #### Type declaration:
 
@@ -792,7 +779,7 @@ ___
 
 *Overrides [DataItem](_ethereum_types_src_index_.dataitem.md).[components](#optional-components)*
 
-*Defined in [ethereum-types/src/index.ts:141](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L141)*
+*Defined in [ethereum-types/src/index.ts:141](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L141)*
 
 ___
 
@@ -802,7 +789,7 @@ ___
 
 *Inherited from [DataItem](#interface-dataitem).[name](#name)*
 
-*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L135)*
+*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L135)*
 
 ___
 
@@ -812,7 +799,7 @@ ___
 
 *Inherited from [DataItem](#interface-dataitem).[type](#type)*
 
-*Defined in [ethereum-types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L136)*
+*Defined in [ethereum-types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L136)*
 
 <hr />
 
@@ -837,7 +824,7 @@ ___
 
 Ƭ **AbiDefinition**: *[FunctionAbi](_ethereum_types_src_index_.md#functionabi) | [EventAbi](#interface-eventabi) | [RevertErrorAbi](#interface-reverterrorabi)*
 
-*Defined in [ethereum-types/src/index.ts:80](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L80)*
+*Defined in [ethereum-types/src/index.ts:80](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L80)*
 
 ___
 
@@ -847,7 +834,7 @@ ___
 
 Ƭ **ConstructorStateMutability**: *"nonpayable" | "payable"*
 
-*Defined in [ethereum-types/src/index.ts:84](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L84)*
+*Defined in [ethereum-types/src/index.ts:84](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L84)*
 
 ___
 
@@ -855,7 +842,7 @@ ___
 
 Ƭ **ContractAbi**: *[AbiDefinition](#abidefinition)[]*
 
-*Defined in [ethereum-types/src/index.ts:78](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L78)*
+*Defined in [ethereum-types/src/index.ts:78](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L78)*
 
 ___
 
@@ -869,7 +856,7 @@ ___
 
 Ƭ **ErrorSeverity**: *"error" | "warning"*
 
-*Defined in [ethereum-types/src/index.ts:599](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L599)*
+*Defined in [ethereum-types/src/index.ts:599](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L599)*
 
 ___
 
@@ -877,7 +864,7 @@ ___
 
 Ƭ **ErrorType**: *"JSONError" | "IOError" | "ParserError" | "DocstringParsingError" | "SyntaxError" | "DeclarationError" | "TypeError" | "UnimplementedFeatureError" | "InternalCompilerError" | "Exception" | "CompilerError" | "FatalError" | "Warning"*
 
-*Defined in [ethereum-types/src/index.ts:585](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L585)*
+*Defined in [ethereum-types/src/index.ts:585](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L585)*
 
 ___
 
@@ -885,7 +872,7 @@ ___
 
 Ƭ **FunctionAbi**: *[MethodAbi](#interface-methodabi) | [ConstructorAbi](#interface-constructorabi) | [FallbackAbi](#interface-fallbackabi)*
 
-*Defined in [ethereum-types/src/index.ts:82](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L82)*
+*Defined in [ethereum-types/src/index.ts:82](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L82)*
 
 ___
 
@@ -897,7 +884,7 @@ ___
 
 Ƭ **OutputField**: *"*" | "ast" | "legacyAST" | "abi" | "devdoc" | "userdoc" | "metadata" | "ir" | "evm.assembly" | "evm.legacyAssembly" | "evm.bytecode.object" | "evm.bytecode.opcodes" | "evm.bytecode.sourceMap" | "evm.bytecode.linkReferences" | "evm.deployedBytecode.object" | "evm.deployedBytecode.opcodes" | "evm.deployedBytecode.sourceMap" | "evm.deployedBytecode.linkReferences" | "evm.methodIdentifiers" | "evm.gasEstimates" | "ewasm.wast" | "ewasm.wasm"*
 
-*Defined in [ethereum-types/src/index.ts:525](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L525)*
+*Defined in [ethereum-types/src/index.ts:525](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L525)*
 
 ___
 
@@ -905,7 +892,7 @@ ___
 
 Ƭ **ParamDescription**: *string*
 
-*Defined in [ethereum-types/src/index.ts:561](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L561)*
+*Defined in [ethereum-types/src/index.ts:561](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L561)*
 
 ___
 
@@ -915,7 +902,7 @@ ___
 
 Ƭ **StateMutability**: *"pure" | "view" | [ConstructorStateMutability](#constructorstatemutability)*
 
-*Defined in [ethereum-types/src/index.ts:85](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L85)*
+*Defined in [ethereum-types/src/index.ts:85](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L85)*
 
 ___
 
@@ -926,4 +913,8 @@ ___
 
 
 
+
+
+
+<hr /> 
 

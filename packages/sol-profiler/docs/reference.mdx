@@ -1,367 +1,3 @@
-
-
-# Class: AbstractArtifactAdapter
-
-
-##   Methods
-
-### `Abstract` collectContractsDataAsync
-
-▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
-
-*Defined in [sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts:4](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts#L4)*
-
-**Returns:** *`Promise<ContractData[]>`*
-
-<hr />
-
-# Class: SolCompilerArtifactAdapter
-
-
-##   Constructors
-
-
-
-\+ **new SolCompilerArtifactAdapter**(`artifactsPath?`: undefined | string, `sourcesPath?`: undefined | string): *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
-
-*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:18](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L18)*
-
-Instantiates a SolCompilerArtifactAdapter
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`artifactsPath?` | undefined \| string | Path to your artifacts directory |
-`sourcesPath?` | undefined \| string | Path to your contract sources directory  |
-
-**Returns:** *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
-
-## Methods
-
-###  collectContractsDataAsync
-
-▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
-
-*Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
-
-*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:44](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L44)*
-
-**Returns:** *`Promise<ContractData[]>`*
-
-<hr />
-
-# Class: TruffleArtifactAdapter
-
-
-##   Constructors
-
-
-
-\+ **new TruffleArtifactAdapter**(`projectRoot`: string, `solcVersion`: string): *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
-
-*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:29](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L29)*
-
-Instantiates a TruffleArtifactAdapter
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`projectRoot` | string | Path to the truffle project's root directory |
-`solcVersion` | string | Solidity version with which to compile all the contracts  |
-
-**Returns:** *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
-
-## Methods
-
-###  collectContractsDataAsync
-
-▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
-
-*Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
-
-*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:40](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L40)*
-
-**Returns:** *`Promise<ContractData[]>`*
-
-<hr />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##  Type aliases
-
-###  Callback
-
-Ƭ **Callback**: *function*
-
-*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/subproviders/src/types.ts#L131)*
-
-#### Type declaration:
-
-▸ (): *void*
-
-___
-
-
-
-###  ErrorCallback
-
-Ƭ **ErrorCallback**: *function*
-
-*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/subproviders/src/types.ts#L130)*
-
-#### Type declaration:
-
-▸ (`err`: `Error` | null, `data?`: any): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`err` | `Error` \| null |
-`data?` | any |
-
-___
-
-
-
-###  NextCallback
-
-Ƭ **NextCallback**: *function*
-
-*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/subproviders/src/types.ts#L133)*
-
-#### Type declaration:
-
-▸ (`callback?`: [OnNextCompleted](#onnextcompleted)): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`callback?` | [OnNextCompleted](#onnextcompleted) |
-
-___
-
-###  OnNextCompleted
-
-Ƭ **OnNextCompleted**: *function*
-
-*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/subproviders/src/types.ts#L132)*
-
-#### Type declaration:
-
-▸ (`err`: `Error` | null, `result`: any, `cb`: [Callback](#callback)): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`err` | `Error` \| null |
-`result` | any |
-`cb` | [Callback](#callback) |
-
-<hr />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Interface: JSONRPCRequestPayload
-
-
-##   Properties
-
-###  id
-
-• **id**: *number*
-
-*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L330)*
-
-___
-
-###  jsonrpc
-
-• **jsonrpc**: *string*
-
-*Defined in [ethereum-types/src/index.ts:331](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L331)*
-
-___
-
-###  method
-
-• **method**: *string*
-
-*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L329)*
-
-___
-
-###  params
-
-• **params**: *any[]*
-
-*Defined in [ethereum-types/src/index.ts:328](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L328)*
-
-<hr />
-
-# Interface: JSONRPCResponseError
-
-
-##   Properties
-
-###  code
-
-• **code**: *number*
-
-*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L336)*
-
-___
-
-###  message
-
-• **message**: *string*
-
-*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L335)*
-
-<hr />
-
-# Interface: JSONRPCResponsePayload
-
-
-##   Properties
-
-### `Optional` error
-
-• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
-
-*Defined in [ethereum-types/src/index.ts:343](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L343)*
-
-___
-
-###  id
-
-• **id**: *number*
-
-*Defined in [ethereum-types/src/index.ts:341](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L341)*
-
-___
-
-###  jsonrpc
-
-• **jsonrpc**: *string*
-
-*Defined in [ethereum-types/src/index.ts:342](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L342)*
-
-___
-
-###  result
-
-• **result**: *any*
-
-*Defined in [ethereum-types/src/index.ts:340](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/ethereum-types/src/index.ts#L340)*
-
-<hr />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Class: ProfilerSubprovider
 
 This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
@@ -376,7 +12,7 @@ ProfilerSubprovider is used to profile Solidity code while running tests.
 
 *Overrides void*
 
-*Defined in [sol-profiler/src/profiler_subprovider.ts:30](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-profiler/src/profiler_subprovider.ts#L30)*
+*Defined in [sol-profiler/src/profiler_subprovider.ts:30](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-profiler/src/profiler_subprovider.ts#L30)*
 
 Instantiates a ProfilerSubprovider instance
 
@@ -498,13 +134,299 @@ ___
 
 ▸ **writeProfilerOutputAsync**(): *`Promise<void>`*
 
-*Defined in [sol-profiler/src/profiler_subprovider.ts:104](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-profiler/src/profiler_subprovider.ts#L104)*
+*Defined in [sol-profiler/src/profiler_subprovider.ts:104](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-profiler/src/profiler_subprovider.ts#L104)*
 
 Write the test profiler results to a file in Istanbul format.
 
 **Returns:** *`Promise<void>`*
 
 <hr />
+
+# Class: AbstractArtifactAdapter
+
+
+##   Methods
+
+### `Abstract` collectContractsDataAsync
+
+▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts:4](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts#L4)*
+
+**Returns:** *`Promise<ContractData[]>`*
+
+<hr />
+
+# Class: SolCompilerArtifactAdapter
+
+
+##   Constructors
+
+
+
+\+ **new SolCompilerArtifactAdapter**(`artifactsPath?`: undefined | string, `sourcesPath?`: undefined | string): *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:18](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L18)*
+
+Instantiates a SolCompilerArtifactAdapter
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`artifactsPath?` | undefined \| string | Path to your artifacts directory |
+`sourcesPath?` | undefined \| string | Path to your contract sources directory  |
+
+**Returns:** *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
+
+## Methods
+
+###  collectContractsDataAsync
+
+▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
+
+*Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:44](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L44)*
+
+**Returns:** *`Promise<ContractData[]>`*
+
+<hr />
+
+# Class: TruffleArtifactAdapter
+
+
+##   Constructors
+
+
+
+\+ **new TruffleArtifactAdapter**(`projectRoot`: string, `solcVersion`: string): *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:29](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L29)*
+
+Instantiates a TruffleArtifactAdapter
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`projectRoot` | string | Path to the truffle project's root directory |
+`solcVersion` | string | Solidity version with which to compile all the contracts  |
+
+**Returns:** *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
+
+## Methods
+
+###  collectContractsDataAsync
+
+▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
+
+*Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:40](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L40)*
+
+**Returns:** *`Promise<ContractData[]>`*
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: JSONRPCRequestPayload
+
+
+##   Properties
+
+###  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L330)*
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:331](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L331)*
+
+___
+
+###  method
+
+• **method**: *string*
+
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L329)*
+
+___
+
+###  params
+
+• **params**: *any[]*
+
+*Defined in [ethereum-types/src/index.ts:328](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L328)*
+
+<hr />
+
+# Interface: JSONRPCResponseError
+
+
+##   Properties
+
+###  code
+
+• **code**: *number*
+
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L336)*
+
+___
+
+###  message
+
+• **message**: *string*
+
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L335)*
+
+<hr />
+
+# Interface: JSONRPCResponsePayload
+
+
+##   Properties
+
+### `Optional` error
+
+• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
+
+*Defined in [ethereum-types/src/index.ts:343](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L343)*
+
+___
+
+###  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:341](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L341)*
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:342](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L342)*
+
+___
+
+###  result
+
+• **result**: *any*
+
+*Defined in [ethereum-types/src/index.ts:340](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/ethereum-types/src/index.ts#L340)*
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -593,7 +515,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/subproviders/src/types.ts#L136)*
+*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/subproviders/src/types.ts#L136)*
 
 ___
 
@@ -628,19 +550,6 @@ Defined in ethereum-types/lib/index.d.ts:265
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-##  Type aliases
 
 
 
@@ -704,7 +613,7 @@ Defined in ethereum-types/lib/index.d.ts:265
 
 ▸ **profilerHandler**(`contractData`: `ContractData`, `subtrace`: [Subtrace](#subtrace), `pcToSourceRange`: object, `fileIndex`: number): *`Coverage`*
 
-*Defined in [sol-profiler/src/profiler_subprovider.ts:118](https://github.com/0xProject/0x-monorepo/blob/c61ada8a1/packages/sol-profiler/src/profiler_subprovider.ts#L118)*
+*Defined in [sol-profiler/src/profiler_subprovider.ts:118](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/sol-profiler/src/profiler_subprovider.ts#L118)*
 
 Computed partial coverage for a single file & subtrace for the purposes of
 gas profiling.
@@ -735,4 +644,95 @@ Partial istanbul coverage for that file & subtrace
 
 
 <hr /> 
+
+
+
+
+##  Type aliases
+
+
+
+
+
+
+
+
+
+
+
+
+##  Type aliases
+
+###  Callback
+
+Ƭ **Callback**: *function*
+
+*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/subproviders/src/types.ts#L131)*
+
+#### Type declaration:
+
+▸ (): *void*
+
+___
+
+
+
+###  ErrorCallback
+
+Ƭ **ErrorCallback**: *function*
+
+*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/subproviders/src/types.ts#L130)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `data?`: any): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`data?` | any |
+
+___
+
+
+
+###  NextCallback
+
+Ƭ **NextCallback**: *function*
+
+*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/subproviders/src/types.ts#L133)*
+
+#### Type declaration:
+
+▸ (`callback?`: [OnNextCompleted](#onnextcompleted)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`callback?` | [OnNextCompleted](#onnextcompleted) |
+
+___
+
+###  OnNextCompleted
+
+Ƭ **OnNextCompleted**: *function*
+
+*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/c93b02d55/packages/subproviders/src/types.ts#L132)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `result`: any, `cb`: [Callback](#callback)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`result` | any |
+`cb` | [Callback](#callback) |
+
+<hr />
 
