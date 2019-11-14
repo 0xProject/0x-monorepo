@@ -23,8 +23,8 @@ describe('Utils', () => {
                 '0x1cf16c2f3a210965b5e17f51b57b869ba4ddda33df92b0017b4d8da9dacd3152b122a73844eaf50ccde29a42950239ba36a525ed7f1698a8a5e1896cf7d651aed203',
         };
         test('calculates the orderhash if it does not exist', async () => {
-            const orderHash = utils.getOrderHash(order as any);
-            const calculatedOrderHash = utils.getOrderHash({ order: order as any, metaData: {} });
+            const orderHash = await utils.getOrderHashAsync(order as any);
+            const calculatedOrderHash = await utils.getOrderHashAsync({ order: order as any, metaData: {} });
             expect(orderHash).toBe(calculatedOrderHash);
             expect(orderHash).toBe('0x5a0f346c671a39b832a487d2d7eb63ca19301554cf1f8a98a19d478a3a8be32c');
         });

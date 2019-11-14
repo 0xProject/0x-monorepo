@@ -1,7 +1,5 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { orderParsingUtils } from '@0x/order-utils';
-
 import {
     APIOrder,
     AssetPairsItem,
@@ -11,6 +9,7 @@ import {
     OrdersResponse,
 } from '@0x/types';
 
+import { orderParsingUtils } from './order_parsing_utils';
 import { typeConverters } from './type_converters';
 
 export const relayerResponseJsonParsers = {

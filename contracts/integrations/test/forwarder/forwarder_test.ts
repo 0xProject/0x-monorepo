@@ -7,7 +7,7 @@ import {
     ExchangeContract,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
-import { artifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
+import { artifacts, ForwarderContract, ForwarderRevertErrors } from '@0x/contracts-exchange-forwarder';
 import {
     blockchainTests,
     constants,
@@ -17,7 +17,6 @@ import {
     provider,
     toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
-import { ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';

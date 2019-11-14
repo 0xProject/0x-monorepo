@@ -1,9 +1,10 @@
-import { generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { getLatestBlockTimestampAsync } from './block_timestamp';
 import { constants } from './constants';
+import { orderHashUtils } from './order_hash';
 import { signingUtils } from './signing_utils';
 
 export class OrderFactory {

@@ -2,6 +2,7 @@ import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     BlockchainBalanceStore,
+    ExchangeRevertErrors,
     IExchangeEvents,
     IExchangeFillEventArgs,
     LocalBalanceStore,
@@ -14,11 +15,11 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     Numberish,
+    orderHashUtils,
     provider,
     toBaseUnitAmount,
     verifyEvents,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';

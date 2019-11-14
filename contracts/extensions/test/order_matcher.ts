@@ -7,7 +7,7 @@ import {
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ExchangeContract } from '@0x/contracts-exchange';
+import { ExchangeContract, ExchangeRevertErrors } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -22,7 +22,6 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { ExchangeRevertErrors } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

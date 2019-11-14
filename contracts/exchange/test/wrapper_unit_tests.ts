@@ -1,13 +1,14 @@
 import { ContractTxFunctionObj } from '@0x/base-contract';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
-import { ReferenceFunctions as UtilReferenceFunctions } from '@0x/contracts-utils';
-import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { blockchainTests, constants, describe, expect, hexRandom, orderHashUtils } from '@0x/contracts-test-utils';
+import { ReferenceFunctions as UtilReferenceFunctions, SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, Order } from '@0x/types';
-import { AnyRevertError, BigNumber, SafeMathRevertErrors, StringRevertError } from '@0x/utils';
+import { AnyRevertError, BigNumber, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
+
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {

@@ -15,8 +15,15 @@ import {
     IStakingEventsRewardsPaidEventArgs,
     IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
 } from '@0x/contracts-staking';
-import { blockchainTests, constants, expect, provider, toBaseUnitAmount, verifyEvents } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    orderHashUtils,
+    provider,
+    toBaseUnitAmount,
+    verifyEvents,
+} from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';

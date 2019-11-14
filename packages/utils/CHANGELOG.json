@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.6.0-beta.2",
+        "changes": [
+            {
+                "note": "Removed exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors",
+                "pr": 2321
+            }
+        ]
+    },
+    {
         "version": "4.6.0-beta.1",
         "changes": [
             {

@@ -1,8 +1,9 @@
 import { chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { ReentrancyGuardRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
+
+import ReentrancyGuardRevertErrors = require('../src/reentrancy_guard_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestReentrancyGuardContract } from './wrappers';

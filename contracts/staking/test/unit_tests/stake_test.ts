@@ -9,10 +9,10 @@ import {
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import StakingRevertErrors = require('../../src/staking_revert_errors');
 import { StakeStatus } from '../../src/types';
 
 import { artifacts } from '../artifacts';

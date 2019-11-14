@@ -3,6 +3,10 @@
         "version": "0.1.0-beta.2",
         "changes": [
             {
+                "note": "Added dependency on @0x/contracts-dev-utils",
+                "pr": 2321
+            },
+            {
                 "note": "Update Mesh RPC logic to v6.0.1-beta",
                 "pr": 2325
             }

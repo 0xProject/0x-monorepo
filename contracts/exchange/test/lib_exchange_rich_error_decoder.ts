@@ -7,9 +7,11 @@ import {
     orderUtils,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
+
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestLibExchangeRichErrorDecoderContract } from './wrappers';

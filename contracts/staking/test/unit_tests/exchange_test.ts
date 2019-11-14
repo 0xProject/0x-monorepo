@@ -1,7 +1,8 @@
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
-import { AuthorizableRevertErrors } from '@0x/utils';
+import { AuthorizableRevertErrors } from '@0x/contracts-utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+
+import StakingRevertErrors = require('../../src/staking_revert_errors');
 
 import { artifacts } from '../artifacts';
 import {

@@ -10,11 +10,11 @@ interface FeeRecipientConfig extends ActorConfig {
 
 export interface FeeRecipientInterface {
     approvalFactory?: ApprovalFactory;
-    signCoordinatorApproval: (
+    signCoordinatorApprovalAsync: (
         transaction: SignedZeroExTransaction,
         txOrigin: string,
         signatureType?: SignatureType,
-    ) => SignedCoordinatorApproval;
+    ) => Promise<SignedCoordinatorApproval>;
 }
 
 /**
@@ -45,15 +45,15 @@ export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase
         /**
          * Signs an coordinator transaction.
          */
-        public signCoordinatorApproval(
+        public async signCoordinatorApprovalAsync(
             transaction: SignedZeroExTransaction,
             txOrigin: string,
             signatureType: SignatureType = SignatureType.EthSign,
-        ): SignedCoordinatorApproval {
+        ): Promise<SignedCoordinatorApproval> {
             if (this.approvalFactory === undefined) {
                 throw new Error('No verifying contract provided in FeeRecipient constructor');
             }
-            return this.approvalFactory.newSignedApproval(transaction, txOrigin, signatureType);
+            return this.approvalFactory.newSignedApprovalAsync(transaction, txOrigin, signatureType);
         }
     };
 }

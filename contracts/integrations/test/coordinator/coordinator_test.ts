@@ -1,4 +1,4 @@
-import { CoordinatorContract, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
+import { CoordinatorContract, CoordinatorRevertErrors, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     BlockchainBalanceStore,
@@ -16,10 +16,11 @@ import {
     expect,
     hexConcat,
     hexSlice,
+    orderHashUtils,
     provider,
+    transactionHashUtils,
     verifyEvents,
 } from '@0x/contracts-test-utils';
-import { CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -181,7 +182,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     data,
                     gasPrice: DeploymentManager.gasPrice,
                 });
-                approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
+                approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
             });
 
             it(`${fnName} should fill the order with a signed approval`, async () => {
@@ -299,7 +300,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     data,
                     gasPrice: DeploymentManager.gasPrice,
                 });
-                approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
+                approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
             });
 
             it(`${fnName} should fill the orders with a signed approval`, async () => {

@@ -1,9 +1,9 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import * as _ from 'lodash';
 
 import { constants as stakingConstants } from '../src/constants';
+import StakingRevertErrors = require('../src/staking_revert_errors');
 
 import { MakerActor } from './actors/maker_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';

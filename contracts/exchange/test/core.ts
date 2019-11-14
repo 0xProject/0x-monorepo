@@ -18,6 +18,7 @@ import {
     DummyNoReturnERC20TokenContract,
 } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { LibMathRevertErrors } from '@0x/contracts-exchange-libs';
 import {
     blockchainTests,
     constants,
@@ -28,17 +29,19 @@ import {
     hexConcat,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
+    orderHashUtils,
     OrderStatus,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, LibMathRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { ValidatorWalletAction } from './utils/constants';
 import { ExchangeWrapper } from './utils/exchange_wrapper';

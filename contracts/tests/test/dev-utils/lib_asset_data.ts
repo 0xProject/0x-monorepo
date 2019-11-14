@@ -26,7 +26,7 @@ import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, LibAssetDataContract } from '@0x/contracts-dev-utils';
-import { InvalidByteOperationError } from '@0x/utils/lib/src/lib_bytes_revert_errors';
+import { InvalidByteOperationError } from '@0x/contracts-utils/lib/src/lib_bytes_revert_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;

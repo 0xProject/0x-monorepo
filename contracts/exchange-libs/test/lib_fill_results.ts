@@ -7,12 +7,13 @@ import {
     testCombinatoriallyWithReferenceFunc,
     uint256Values,
 } from '@0x/contracts-test-utils';
-import { LibMathRevertErrors } from '@0x/order-utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, MatchedFillResults, Order } from '@0x/types';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
+import LibMathRevertErrors = require('../src/lib_math_revert_errors');
 import { addFillResults, calculateFillResults, getPartialAmountFloor } from '../src/reference_functions';
 
 import { artifacts } from './artifacts';

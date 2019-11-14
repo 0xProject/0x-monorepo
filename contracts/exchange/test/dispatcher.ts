@@ -16,13 +16,15 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import { OwnableRevertErrors } from '@0x/contracts-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { ExchangeRevertErrors } from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
-import { BigNumber, OwnableRevertErrors, StringRevertError } from '@0x/utils';
+import { BigNumber, StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestAssetProxyDispatcherAssetProxyRegisteredEventArgs, TestAssetProxyDispatcherContract } from './wrappers';

@@ -1,12 +1,6 @@
 export { getContractAddressesForChainOrThrow, ChainId, ContractAddresses } from '@0x/contract-addresses';
 
-export {
-    assetDataUtils,
-    signatureUtils,
-    generatePseudoRandomSalt,
-    orderHashUtils,
-    transactionHashUtils,
-} from '@0x/order-utils';
+export { assetDataUtils, signatureUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 
 export {
     ExchangeEventArgs,

@@ -5,6 +5,14 @@
             {
                 "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
                 "pr": 2330
+            },
+            {
+                "note": "Introduced new export CoordinatorRevertErrors",
+                "pr": 2321
+            },
+            {
+                "note": "Added dependency on @0x/contracts-utils",
+                "pr": 2321
             }
         ]
     },

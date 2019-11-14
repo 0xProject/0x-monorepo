@@ -1,10 +1,10 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
 import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
@@ -77,7 +77,11 @@ export const orderFactory = {
             await providerUtils.getChainIdAsync(supportedProvider),
             createOrderOpts,
         );
-        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+            isEIP1193: true,
+        } as any)
+            .getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress)
+            .callAsync();
         const signature = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, makerAddress);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;

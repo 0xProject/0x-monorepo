@@ -61,11 +61,11 @@
         "files": [
             {
                 "path": "packages/0x.js/_bundles/index.min.js",
-                "maxSize": "1260kB"
+                "maxSize": "1300kB"
             },
             {
                 "path": "packages/instant/umd/instant.js",
-                "maxSize": "1960kB"
+                "maxSize": "2100kB"
             }
         ],
         "ci": {

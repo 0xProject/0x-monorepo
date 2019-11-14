@@ -56,7 +56,7 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
         // first time we have had this request, preload the local storage
         const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
         // Set the OrderSet for the polling to diff against
-        this._updateStore({ added: orders, removed: [], assetPairKey });
+        await this._updateStoreAsync({ added: orders, removed: [], assetPairKey });
         // Create a HTTP polling subscription
         const pollingIntervalId = (this._createPollingSubscription(makerAssetData, takerAssetData) as any) as number;
         this._assetPairKeyToPollingIntervalId.set(assetPairKey, pollingIntervalId);
@@ -71,8 +71,10 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
             async () => {
                 const previousOrderSet = this._orderStore.getOrderSetForAssetPair(assetPairKey);
                 const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
-                const diff = previousOrderSet.diff(new OrderSet(orders));
-                this._updateStore({ ...diff, assetPairKey });
+                const orderSet = new OrderSet();
+                await orderSet.addManyAsync(orders);
+                const diff = await previousOrderSet.diffAsync(orderSet);
+                await this._updateStoreAsync({ ...diff, assetPairKey });
             },
             this._pollingIntervalMs,
             (_: Error) => {

@@ -8,7 +8,8 @@
     "main": "lib/src/index.js",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
-        "test": "echo !!! Run tests in @0x/contracts-tests instead !!!",
+        "test": "yarn assert_deployable && echo !!! Tests are run via @0x/contracts-tests !!!",
+        "assert_deployable": "node -e \"const bytecodeLen = (require('./generated-artifacts/DevUtils.json').compilerOutput.evm.bytecode.object.length-2)/2; assert(bytecodeLen<=0x6000,'DevUtils contract is too big to deploy, per EIP-170. '+bytecodeLen+'>'+0x6000)\"",
         "build:ci": "yarn build",
         "pre_build": "run-s compile quantify_bytecode contracts:gen generate_contract_wrappers contracts:copy",
         "compile": "sol-compiler",

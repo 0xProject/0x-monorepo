@@ -102,9 +102,10 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
         const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         const currentOrders = this._orderStore.getOrderSetForAssetPair(assetPairKey);
-        const newOrders = new OrderSet(orders);
-        const diff = currentOrders.diff(newOrders);
-        this._updateStore({
+        const newOrders = new OrderSet();
+        await newOrders.addManyAsync(orders);
+        const diff = await currentOrders.diffAsync(newOrders);
+        await this._updateStoreAsync({
             added: diff.added,
             removed: diff.removed,
             assetPairKey,
@@ -123,7 +124,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      */
     private async _createOrdersChannelAsync(): Promise<OrdersChannel> {
         const ordersChannelHandler: OrdersChannelHandler = {
-            onUpdate: async (_channel, _opts, apiOrders) => this._handleOrderUpdates(apiOrders),
+            onUpdate: async (_channel, _opts, apiOrders) => this._handleOrderUpdatesAsync(apiOrders),
             // tslint:disable-next-line:no-empty
             onError: (_channel, _err) => {},
             onClose: async () => {
@@ -154,7 +155,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      * which have remainingFillableTakerAssetAmount as 0.
      * @param orders the set of API Orders returned from the websocket channel
      */
-    private _handleOrderUpdates(orders: APIOrder[]): void {
+    private async _handleOrderUpdatesAsync(orders: APIOrder[]): Promise<void> {
         const addedRemovedByKey: { [assetPairKey: string]: AddedRemovedOrders } = {};
         for (const order of orders) {
             const assetPairKey = OrderStore.getKeyForAssetPair(order.order.makerAssetData, order.order.takerAssetData);
@@ -172,7 +173,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
         }
 
         for (const assetPairKey of Object.keys(addedRemovedByKey)) {
-            this._updateStore(addedRemovedByKey[assetPairKey]);
+            await this._updateStoreAsync(addedRemovedByKey[assetPairKey]);
         }
     }
 }

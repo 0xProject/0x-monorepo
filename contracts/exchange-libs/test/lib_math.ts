@@ -6,9 +6,10 @@ import {
     testCombinatoriallyWithReferenceFunc,
     uint256Values,
 } from '@0x/contracts-test-utils';
-import { LibMathRevertErrors } from '@0x/order-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 
+import LibMathRevertErrors = require('../src/lib_math_revert_errors');
 import {
     getPartialAmountCeil,
     getPartialAmountFloor,

@@ -1,14 +1,26 @@
 import { APIOrder, SignedOrder } from '@0x/connect';
-import { orderHashUtils } from '@0x/order-utils';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { BigNumber } from '@0x/utils';
+
+const devUtilsContract = new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+    isEIP1193: true,
+} as any);
 
 export const utils = {
-    getOrderHash: (order: APIOrder | SignedOrder): string => {
+    async getOrderHashAsync(order: APIOrder | SignedOrder): Promise<string> {
         if ((order as APIOrder).metaData) {
             const apiOrder = order as APIOrder;
-            const orderHash = (apiOrder.metaData as any).orderHash || orderHashUtils.getOrderHashHex(apiOrder.order);
+            const orderHash =
+                (apiOrder.metaData as any).orderHash ||
+                (await devUtilsContract
+                    .getOrderHash(apiOrder.order, new BigNumber(apiOrder.order.chainId), apiOrder.order.exchangeAddress)
+                    .callAsync());
             return orderHash;
         } else {
-            const orderHash = orderHashUtils.getOrderHashHex(order as SignedOrder);
+            const signedOrder = order as SignedOrder;
+            const orderHash = await devUtilsContract
+                .getOrderHash(signedOrder, new BigNumber(signedOrder.chainId), signedOrder.exchangeAddress)
+                .callAsync();
             return orderHash;
         }
     },

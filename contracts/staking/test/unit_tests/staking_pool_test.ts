@@ -8,9 +8,11 @@ import {
     toHex,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
+
+import { StakingRevertErrors } from '../../src';
 
 import { artifacts } from '../artifacts';
 import {

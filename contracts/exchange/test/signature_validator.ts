@@ -7,15 +7,18 @@ import {
     hexRandom,
     LogDecoder,
     OrderFactory,
+    orderHashUtils,
     orderUtils,
     randomAddress,
     TransactionFactory,
+    transactionHashUtils,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
+
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {

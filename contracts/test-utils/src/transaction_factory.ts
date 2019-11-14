@@ -1,7 +1,9 @@
-import { generatePseudoRandomSalt, transactionHashUtils } from '@0x/order-utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
+
+import { transactionHashUtils } from '../src';
 
 import { getLatestBlockTimestampAsync } from './block_timestamp';
 import { constants } from './constants';

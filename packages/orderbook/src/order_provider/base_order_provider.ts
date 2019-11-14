@@ -26,9 +26,9 @@ export abstract class BaseOrderProvider {
 
     public abstract async addOrdersAsync(orders: SignedOrder[]): Promise<AcceptedRejectedOrders>;
 
-    protected _updateStore(addedRemoved: AddedRemovedOrders): void {
+    protected async _updateStoreAsync(addedRemoved: AddedRemovedOrders): Promise<void> {
         const orderSet = this._orderStore.getOrderSetForAssetPair(addedRemoved.assetPairKey);
-        orderSet.addMany(addedRemoved.added);
-        orderSet.deleteMany(addedRemoved.removed);
+        await orderSet.addManyAsync(addedRemoved.added);
+        await orderSet.deleteManyAsync(addedRemoved.removed);
     }
 }

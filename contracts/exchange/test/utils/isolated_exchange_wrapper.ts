@@ -1,5 +1,9 @@
-import { constants, filterLogsToArguments, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import {
+    constants,
+    filterLogsToArguments,
+    orderHashUtils,
+    txDefaults as testTxDefaults,
+} from '@0x/contracts-test-utils';
 import { FillResults, Order, OrderInfo, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TxData, Web3Wrapper } from '@0x/web3-wrapper';

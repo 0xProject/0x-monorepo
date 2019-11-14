@@ -7,10 +7,11 @@ import {
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import StakingRevertErrors = require('../../src/staking_revert_errors');
 
 import { artifacts } from '../artifacts';
 import {

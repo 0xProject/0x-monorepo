@@ -17,6 +17,10 @@
             {
                 "note": "Remove IWallet and IValidator contract wrappers",
                 "pr": 2337
+            },
+            {
+                "note": "Remove exports orderHashUtils and transactionHashUtils",
+                "pr": 2321
             }
         ]
     },

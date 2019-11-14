@@ -1,5 +1,6 @@
 import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
+import { BigNumber } from '@0x/utils';
 
 import { artifacts } from '../artifacts';
 import { TestLibSafeDowncastContract } from '../wrappers';

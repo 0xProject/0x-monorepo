@@ -12,6 +12,7 @@ import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-
 import {
     chaiSetup,
     constants,
+    orderHashUtils,
     OrderFactory,
     OrderStatus,
     provider,
@@ -19,7 +20,6 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { orderHashUtils } from '@0x/order-utils';
 import { OrderTransferResults, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';

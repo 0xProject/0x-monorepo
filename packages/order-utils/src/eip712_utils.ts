@@ -1,4 +1,5 @@
 import { assert } from '@0x/assert';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { schemas } from '@0x/json-schemas';
 import {
     EIP712DomainWithDefaultSchema,
@@ -9,10 +10,10 @@ import {
     SignedZeroExTransaction,
     ZeroExTransaction,
 } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { transactionHashUtils } from './transaction_hash';
 
 export const eip712Utils = {
     /**
@@ -100,18 +101,26 @@ export const eip712Utils = {
      * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
      * @return  A typed data object
      */
-    createCoordinatorApprovalTypedData: (
+    async createCoordinatorApprovalTypedDataAsync(
         transaction: SignedZeroExTransaction,
         verifyingContract: string,
         txOrigin: string,
-    ): EIP712TypedData => {
+    ): Promise<EIP712TypedData> {
         const domain = {
             ...transaction.domain,
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
             verifyingContract,
         };
-        const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+        const transactionHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
+            isEIP1193: true,
+        } as any)
+            .getTransactionHash(
+                transaction,
+                new BigNumber(transaction.domain.chainId),
+                transaction.domain.verifyingContract,
+            )
+            .callAsync();
         const approval = {
             txOrigin,
             transactionHash,

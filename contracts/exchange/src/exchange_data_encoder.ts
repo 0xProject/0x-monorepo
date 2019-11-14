@@ -1,5 +1,4 @@
-import { constants, ExchangeFunctionName, provider } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import { constants, ExchangeFunctionName, orderHashUtils, provider } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 
 import { IExchangeContract } from './wrappers';

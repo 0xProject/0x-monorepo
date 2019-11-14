@@ -5,6 +5,10 @@
             {
                 "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
                 "pr": 2330
+            },
+            {
+                "note": "Introduced new export ExchangeRevertErrors",
+                "pr": 2321
             }
         ]
     },

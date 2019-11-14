@@ -113,7 +113,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
         if (this._wsSubscriptionId) {
             return;
         }
-        this._wsSubscriptionId = await this._wsClient.subscribeToOrdersAsync(this._handleOrderUpdates.bind(this));
+        this._wsSubscriptionId = await this._wsClient.subscribeToOrdersAsync(this._handleOrderUpdatesAsync.bind(this));
         await this._fetchOrdersAndStoreAsync();
         // On Reconnnect sync all of the orders currently stored
         this._wsClient.onReconnected(() => {
@@ -133,7 +133,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
                 this._wsClient.addOrdersAsync(Array.from(currentOrders.values()).map(o => o.order)),
             );
             // Remove any rejected orders
-            this._updateStore({
+            await this._updateStoreAsync({
                 assetPairKey,
                 added: [],
                 removed: rejected.map(o => MeshOrderProvider._orderInfoToAPIOrder(o)),
@@ -159,7 +159,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
             ordersByAssetPairKey[assetPairKey].push(MeshOrderProvider._orderInfoToAPIOrder(order));
         }
         for (const assetPairKey of Object.keys(ordersByAssetPairKey)) {
-            this._updateStore({
+            await this._updateStoreAsync({
                 added: ordersByAssetPairKey[assetPairKey],
                 removed: [],
                 assetPairKey,
@@ -171,7 +171,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
      * Handles the order events converting to APIOrders and either adding or removing based on its kind.
      * @param orderEvents The set of `OrderEvents` returned from a mesh subscription update
      */
-    private _handleOrderUpdates(orderEvents: OrderEvent[]): void {
+    private async _handleOrderUpdatesAsync(orderEvents: OrderEvent[]): Promise<void> {
         const addedRemovedByAssetPairKey: { [assetPairKey: string]: AddedRemovedOrders } = {};
         for (const event of orderEvents) {
             const { makerAssetData, takerAssetData } = event.signedOrder;
@@ -204,7 +204,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
             }
         }
         for (const assetPairKey of Object.keys(addedRemovedByAssetPairKey)) {
-            this._updateStore(addedRemovedByAssetPairKey[assetPairKey]);
+            await this._updateStoreAsync(addedRemovedByAssetPairKey[assetPairKey]);
         }
     }
 }
