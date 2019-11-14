@@ -79,7 +79,9 @@ export const orderFactory = {
         );
         const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
             isEIP1193: true,
-        } as any).getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress).callAsync();
+        } as any)
+            .getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress)
+            .callAsync();
         const signature = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, makerAddress);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;

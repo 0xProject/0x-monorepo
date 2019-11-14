@@ -114,11 +114,13 @@ export const eip712Utils = {
         };
         const transactionHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
             isEIP1193: true,
-        } as any).getTransactionHash(
-            transaction,
-            new BigNumber(transaction.domain.chainId),
-            transaction.domain.verifyingContract,
-        ).callAsync();
+        } as any)
+            .getTransactionHash(
+                transaction,
+                new BigNumber(transaction.domain.chainId),
+                transaction.domain.verifyingContract,
+            )
+            .callAsync();
         const approval = {
             txOrigin,
             transactionHash,

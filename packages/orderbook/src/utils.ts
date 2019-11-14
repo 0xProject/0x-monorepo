@@ -12,19 +12,15 @@ export const utils = {
             const apiOrder = order as APIOrder;
             const orderHash =
                 (apiOrder.metaData as any).orderHash ||
-                (await devUtilsContract.getOrderHash(
-                    apiOrder.order,
-                    new BigNumber(apiOrder.order.chainId),
-                    apiOrder.order.exchangeAddress,
-                ).callAsync());
+                (await devUtilsContract
+                    .getOrderHash(apiOrder.order, new BigNumber(apiOrder.order.chainId), apiOrder.order.exchangeAddress)
+                    .callAsync());
             return orderHash;
         } else {
             const signedOrder = order as SignedOrder;
-            const orderHash = await devUtilsContract.getOrderHash(
-                signedOrder,
-                new BigNumber(signedOrder.chainId),
-                signedOrder.exchangeAddress,
-            ).callAsync();
+            const orderHash = await devUtilsContract
+                .getOrderHash(signedOrder, new BigNumber(signedOrder.chainId), signedOrder.exchangeAddress)
+                .callAsync();
             return orderHash;
         }
     },
