@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.0-beta.2",
+        "changes": [
+            {
+                "note": "Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details.",
+                "pr": 2284
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.1",
         "changes": [
             {
