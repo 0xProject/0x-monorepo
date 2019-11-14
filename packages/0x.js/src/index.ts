@@ -18,8 +18,6 @@ export {
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
     DevUtilsContract,
-    IValidatorContract,
-    IWalletContract,
     WETH9EventArgs,
     WETH9Events,
     WETH9ApprovalEventArgs,
