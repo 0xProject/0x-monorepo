@@ -31,6 +31,7 @@ export class SwapQuoter {
     public readonly provider: ZeroExProvider;
     public readonly orderbook: Orderbook;
     public readonly expiryBufferMs: number;
+    public readonly chainId: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
     private readonly _contractAddresses: ContractAddresses;
     private readonly _orderPruner: OrderPruner;
@@ -146,6 +147,7 @@ export class SwapQuoter {
         assert.isValidOrderbook('orderbook', orderbook);
         assert.isNumber('chainId', chainId);
         assert.isNumber('expiryBufferMs', expiryBufferMs);
+        this.chainId = chainId;
         this.provider = provider;
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
