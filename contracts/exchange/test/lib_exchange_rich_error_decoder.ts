@@ -11,7 +11,7 @@ import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ExchangeRevertErrors } from '../src';
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestLibExchangeRichErrorDecoderContract } from './wrappers';

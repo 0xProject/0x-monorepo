@@ -3,7 +3,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { ReentrancyGuardRevertErrors } from '../src';
+import ReentrancyGuardRevertErrors = require('../src/reentrancy_guard_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestReentrancyGuardContract } from './wrappers';

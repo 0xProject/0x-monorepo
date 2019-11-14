@@ -14,7 +14,7 @@ import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { ExchangeRevertErrors } from '../../src';
+import ExchangeRevertErrors = require('../../src/revert_errors');
 
 import { artifacts } from '../artifacts';
 

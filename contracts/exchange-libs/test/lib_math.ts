@@ -9,7 +9,7 @@ import {
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { BigNumber } from '@0x/utils';
 
-import { LibMathRevertErrors } from '../src';
+import LibMathRevertErrors = require('../src/lib_math_revert_errors');
 import {
     getPartialAmountCeil,
     getPartialAmountFloor,

@@ -41,7 +41,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeRevertErrors } from '../src';
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { ValidatorWalletAction } from './utils/constants';
 import { ExchangeWrapper } from './utils/exchange_wrapper';

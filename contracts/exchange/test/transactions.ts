@@ -20,8 +20,8 @@ import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { ExchangeRevertErrors } from '../src';
 import { exchangeDataEncoder } from '../src/exchange_data_encoder';
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts as localArtifacts } from './artifacts';
 import { ExchangeWrapper } from './utils/exchange_wrapper';

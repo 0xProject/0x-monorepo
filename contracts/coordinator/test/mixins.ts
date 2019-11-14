@@ -14,7 +14,7 @@ import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { CoordinatorRevertErrors } from '../src';
+import CoordinatorRevertErrors = require('../src/revert_errors');
 
 import { ApprovalFactory } from '../src/approval_factory';
 

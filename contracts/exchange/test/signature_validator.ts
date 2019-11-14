@@ -18,7 +18,7 @@ import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
-import { ExchangeRevertErrors } from '../src';
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {

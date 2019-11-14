@@ -4,7 +4,8 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { AuthorizableRevertErrors, OwnableRevertErrors } from '../src';
+import AuthorizableRevertErrors = require('../src/authorizable_revert_errors');
+import OwnableRevertErrors = require('../src/ownable_revert_errors');
 
 import { artifacts } from './artifacts';
 import { AuthorizableContract } from './wrappers';

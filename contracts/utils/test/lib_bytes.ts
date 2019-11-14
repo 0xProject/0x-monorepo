@@ -4,7 +4,7 @@ import BN = require('bn.js');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { LibBytesRevertErrors } from '../src';
+import LibBytesRevertErrors = require('../src/lib_bytes_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestLibBytesContract } from './wrappers';

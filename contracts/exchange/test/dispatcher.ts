@@ -24,7 +24,7 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeRevertErrors } from '../src';
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestAssetProxyDispatcherAssetProxyRegisteredEventArgs, TestAssetProxyDispatcherContract } from './wrappers';

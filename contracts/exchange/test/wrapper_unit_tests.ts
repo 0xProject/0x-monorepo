@@ -16,7 +16,7 @@ import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { ExchangeRevertErrors } from '../src';
+import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {

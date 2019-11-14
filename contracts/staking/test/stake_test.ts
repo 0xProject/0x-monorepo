@@ -3,8 +3,7 @@ import { blockchainTests, describe } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { StakingRevertErrors } from '../src';
-
+import StakingRevertErrors = require('../src/staking_revert_errors');
 import { StakeInfo, StakeStatus } from '../src/types';
 
 import { StakerActor } from './actors/staker_actor';

@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { LibAddressArrayRevertErrors } from '../src';
+import LibAddressArrayRevertErrors = require('../src/lib_address_array_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestLibAddressArrayContract } from './wrappers';

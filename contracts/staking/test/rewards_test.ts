@@ -3,8 +3,7 @@ import { blockchainTests, constants, describe, expect, shortZip } from '@0x/cont
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { StakingRevertErrors } from '../src';
-
+import StakingRevertErrors = require('../src/staking_revert_errors');
 import { DelegatorsByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from '../src/types';
 
 import { FinalizerActor } from './actors/finalizer_actor';

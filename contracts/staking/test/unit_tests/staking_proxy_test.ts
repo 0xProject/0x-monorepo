@@ -11,8 +11,8 @@ import {
     TestStakingProxyUnitContract,
 } from '../wrappers';
 
-import { StakingRevertErrors } from '../../src';
 import { constants as stakingConstants } from '../../src/constants';
+import StakingRevertErrors = require('../../src/staking_revert_errors');
 
 blockchainTests.resets('StakingProxy unit tests', env => {
     const testString = 'Hello, World!';

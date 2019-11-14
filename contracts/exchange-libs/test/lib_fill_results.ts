@@ -13,7 +13,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { LibMathRevertErrors } from '../src';
+import LibMathRevertErrors = require('../src/lib_math_revert_errors');
 import { addFillResults, calculateFillResults, getPartialAmountFloor } from '../src/reference_functions';
 
 import { artifacts } from './artifacts';
