@@ -91,11 +91,11 @@ def test_exchange_wrapper__fill_order(
         signature=order_signature,
         tx_params=TxParams(from_=taker),
     )
-    assert fill_results[0] == 1
-    assert fill_results[1] == 1
-    assert fill_results[2] == 0
-    assert fill_results[3] == 0
-    assert fill_results[4] == 0
+    assert fill_results["makerAssetFilledAmount"] == 1
+    assert fill_results["takerAssetFilledAmount"] == 1
+    assert fill_results["makerFeePaid"] == 0
+    assert fill_results["takerFeePaid"] == 0
+    assert fill_results["protocolFeePaid"] == 0
 
     tx_hash = exchange_wrapper.fill_order.send_transaction(
         order=order,

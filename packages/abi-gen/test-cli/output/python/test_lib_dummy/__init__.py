@@ -79,7 +79,8 @@ class PublicAddConstantMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).call(tx_params.as_dict())
+        returned = self.underlying_method(x).call(tx_params.as_dict())
+        return int(returned)
 
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
@@ -121,7 +122,8 @@ class PublicAddOneMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).call(tx_params.as_dict())
+        returned = self.underlying_method(x).call(tx_params.as_dict())
+        return int(returned)
 
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
