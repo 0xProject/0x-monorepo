@@ -14,14 +14,15 @@ import { BigNumber, RawRevertError } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
+
 import {
-    artifacts,
     TestEth2DaiBridgeContract,
     TestEth2DaiBridgeEvents,
     TestEth2DaiBridgeSellAllAmountEventArgs,
     TestEth2DaiBridgeTokenApproveEventArgs,
     TestEth2DaiBridgeTokenTransferEventArgs,
-} from '../src';
+} from './wrappers';
 
 blockchainTests.resets('Eth2DaiBridge unit tests', env => {
     let testContract: TestEth2DaiBridgeContract;

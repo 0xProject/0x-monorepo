@@ -2,9 +2,10 @@ import { blockchainTests, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestCobbDouglasContract } from '../../src/';
-
 import { assertRoughlyEquals, getRandomInteger, getRandomPortion, toDecimal } from '../utils/number_utils';
+
+import { artifacts } from '../artifacts';
+import { TestCobbDouglasContract } from '../wrappers';
 
 // tslint:disable: no-unnecessary-type-assertion
 blockchainTests('LibCobbDouglas unit tests', env => {

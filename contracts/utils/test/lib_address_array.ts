@@ -4,7 +4,8 @@ import { BigNumber, LibAddressArrayRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibAddressArrayContract } from '../src';
+import { artifacts } from './artifacts';
+import { TestLibAddressArrayContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

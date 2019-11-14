@@ -33,12 +33,14 @@ describe('swapQuoteCalculator', () => {
             // generate one order for fees
             // the fee order has a rate of 1 ZRX / WETH with no taker fee and has 100 ZRX left to fill (completely fillable)
             firstOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(400),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(200),
             });
             firstRemainingFillAmount = new BigNumber(200);
             secondOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(200),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(100),
@@ -49,6 +51,7 @@ describe('swapQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [firstRemainingFillAmount, secondRemainingFillAmount],
             };
             const smallFeeOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(100),
                 takerAssetAmount: new BigNumber(100),
             });
@@ -57,6 +60,7 @@ describe('swapQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount],
             };
             const largeFeeOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(113),
                 takerAssetAmount: new BigNumber(200),
                 takerFee: new BigNumber(11),
@@ -132,6 +136,7 @@ describe('swapQuoteCalculator', () => {
             });
             it('should throw if not enough taker asset liquidity (completely fillable order)', () => {
                 const completelyFillableOrder = orderFactory.createSignedOrderFromPartial({
+                    chainId: 42,
                     makerAssetAmount: new BigNumber(123),
                     takerAssetAmount: new BigNumber(80),
                     takerFee: new BigNumber(200),
@@ -154,6 +159,7 @@ describe('swapQuoteCalculator', () => {
             });
             it('should throw with 1 amount available if no slippage', () => {
                 const smallOrder = orderFactory.createSignedOrderFromPartial({
+                    chainId: 42,
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
                     takerFee: new BigNumber(0),
@@ -172,6 +178,7 @@ describe('swapQuoteCalculator', () => {
             });
             it('should throw with 0 available to fill if amount rounds to 0', () => {
                 const smallOrder = orderFactory.createSignedOrderFromPartial({
+                    chainId: 42,
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
                     takerFee: new BigNumber(0),
@@ -391,12 +398,14 @@ describe('swapQuoteCalculator', () => {
             // generate one order for fees
             // the fee order has a rate of 1 ZRX / WETH with no taker fee and has 100 ZRX left to fill (completely fillable)
             firstOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(400),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(200),
             });
             firstRemainingFillAmount = new BigNumber(200);
             secondOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(200),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(100),
@@ -407,6 +416,7 @@ describe('swapQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [firstRemainingFillAmount, secondRemainingFillAmount],
             };
             const smallFeeOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(100),
                 takerAssetAmount: new BigNumber(100),
             });
@@ -415,6 +425,7 @@ describe('swapQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount],
             };
             const largeFeeOrder = orderFactory.createSignedOrderFromPartial({
+                chainId: 42,
                 makerAssetAmount: new BigNumber(113),
                 takerAssetAmount: new BigNumber(200),
                 takerFee: new BigNumber(11),
@@ -490,6 +501,7 @@ describe('swapQuoteCalculator', () => {
             });
             it('should throw if not enough maker asset liquidity (completely fillable order)', () => {
                 const completelyFillableOrder = orderFactory.createSignedOrderFromPartial({
+                    chainId: 42,
                     makerAssetAmount: new BigNumber(123),
                     takerAssetAmount: new BigNumber(100),
                     takerFee: new BigNumber(200),
@@ -512,6 +524,7 @@ describe('swapQuoteCalculator', () => {
             });
             it('should throw with 1 amount available if no slippage', () => {
                 const smallOrder = orderFactory.createSignedOrderFromPartial({
+                    chainId: 42,
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
                     takerFee: new BigNumber(0),
@@ -530,6 +543,7 @@ describe('swapQuoteCalculator', () => {
             });
             it('should throw with 0 available to fill if amount rounds to 0', () => {
                 const smallOrder = orderFactory.createSignedOrderFromPartial({
+                    chainId: 42,
                     makerAssetAmount: new BigNumber(1),
                     takerAssetAmount: new BigNumber(1),
                     takerFee: new BigNumber(0),

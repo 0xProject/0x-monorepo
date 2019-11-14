@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.0-beta.1 - _November 7, 2019_
+
+    * LocalBalanceStore.create and constructor now require an instance of DevUtilsContract (#2304)
+    * In LocalBalanceStore, `transferAsset` is now `transferAssetAsync` (#2304)
+    * Test utility classes AssetWrapper, MatchOrderTester, and OrderFactoryFromScenario constructors now require an instance of DevUtilsContract (#2304)
+    * In OrderFactoryFromScenario, `generateOrder` is now `generateOrderAsync` (#2304)
+
 ## v2.2.0-beta.0 - _October 3, 2019_
 
     * Use new/cheaper reentrancy guard/mutex (#1699)

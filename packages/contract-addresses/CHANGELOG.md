@@ -5,11 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0-beta.2 - _November 7, 2019_
+
+    * Updated devUtils contract addresses on testnets
+
 ## v3.3.0-beta.1 - _November 6, 2019_
 
     * Remove `readOnlyProxy` from addresses interface (#2295)
     * Add `zeroExGovernor` and `erc20BridgeProxy` to addresses interface (#2296)
     * Update `exchange`, `staking`, `stakingProxy`, `zeroExGovernor`, `assetProxyOwner`, and `erc20BridgeProxy` addresses for each tesnet (#2296)
+    * Contract addresses are no longer indexed by network ID.  Now they're indexed by chain ID. (#2313)
 
 ## v3.3.0-beta.0 - _October 3, 2019_
 

@@ -3,7 +3,7 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { TestZeroExGovernorContract, ZeroExGovernorContract, ZeroExGovernorSubmissionEventArgs } from '../../src';
+import { TestZeroExGovernorContract, ZeroExGovernorContract, ZeroExGovernorSubmissionEventArgs } from '../wrappers';
 
 // tslint:disable: no-unnecessary-type-assertion
 export class ZeroExGovernorWrapper {

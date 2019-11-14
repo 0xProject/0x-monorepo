@@ -14,7 +14,6 @@ export {
     ExchangeContract,
     DevUtilsContract,
     ForwarderContract,
-    DutchAuctionContract,
     CoordinatorContract,
     CoordinatorRegistryEventArgs,
     CoordinatorRegistryEvents,
@@ -40,16 +39,6 @@ export {
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenContract,
-    ERC1155ProxyEventArgs,
-    ERC1155ProxyEvents,
-    ERC1155ProxyAuthorizedAddressAddedEventArgs,
-    ERC1155ProxyAuthorizedAddressRemovedEventArgs,
-    ERC1155ProxyContract,
-    ZRXTokenEventArgs,
-    ZRXTokenEvents,
-    ZRXTokenTransferEventArgs,
-    ZRXTokenApprovalEventArgs,
-    ZRXTokenContract,
     DummyERC20TokenEventArgs,
     DummyERC20TokenEvents,
     DummyERC20TokenTransferEventArgs,
@@ -61,16 +50,6 @@ export {
     DummyERC721TokenApprovalEventArgs,
     DummyERC721TokenApprovalForAllEventArgs,
     DummyERC721TokenContract,
-    ERC20ProxyEventArgs,
-    ERC20ProxyEvents,
-    ERC20ProxyContract,
-    ERC20ProxyAuthorizedAddressAddedEventArgs,
-    ERC20ProxyAuthorizedAddressRemovedEventArgs,
-    ERC721ProxyEventArgs,
-    ERC721ProxyEvents,
-    ERC721ProxyAuthorizedAddressAddedEventArgs,
-    ERC721ProxyAuthorizedAddressRemovedEventArgs,
-    ERC721ProxyContract,
     OrderValidatorContract,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
@@ -161,4 +140,9 @@ export {
 } from '@0x/types';
 
 export { AbiDecoder, DecodedCalldata } from '@0x/utils';
-export { AwaitTransactionSuccessOpts, SendTransactionOpts, ContractFunctionObj, ContractTxFunctionObj } from '@0x/base-contract';
+export {
+    AwaitTransactionSuccessOpts,
+    SendTransactionOpts,
+    ContractFunctionObj,
+    ContractTxFunctionObj,
+} from '@0x/base-contract';

@@ -1,13 +1,28 @@
 [
     {
+        "version": "4.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            }
+        ]
+    },
+    {
+        "version": "4.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Replaced the use of `SafeMath` with `LibSafeMath`",
+                "pr": 2254
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
         "version": "4.1.0-beta.0",
         "changes": [
             {
                 "note": "Dependencies updated"
-            },
-            {
-                "note": "Replaced the use of `SafeMath` with `LibSafeMath`",
-                "pr": 2254
             }
         ],
         "timestamp": 1570135330

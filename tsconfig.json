@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "lib": ["es2017", "dom"],
+        "lib": ["es2017", "dom", "esnext.asynciterable"],
         "experimentalDecorators": true,
         "downlevelIteration": true,
         "noImplicitReturns": true,
@@ -60,7 +60,6 @@
         { "path": "./packages/sol-resolver" },
         { "path": "./packages/sra-spec" },
         { "path": "./packages/subproviders" },
-        { "path": "./packages/testnet-faucets" },
         { "path": "./packages/tslint-config" },
         { "path": "./packages/types" },
         { "path": "./packages/typescript-typings" },

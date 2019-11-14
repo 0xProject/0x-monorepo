@@ -1,16 +1,26 @@
 [
     {
-        "version": "4.0.0-beta.0",
+        "version": "3.2.0-beta.2",
         "changes": [
             {
-                "note": "OrderFactory default order expiration time increased from ten minutes to fifteen minutes ",
-                "pr": 2304
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
             },
             {
                 "note": "Remove TransactionHelper and MutatorContractFunction",
                 "pr": 2325
             }
         ]
+    },
+    {
+        "version": "3.2.0-beta.1",
+        "changes": [
+            {
+                "note": "OrderFactory default order expiration time increased from ten minutes to fifteen minutes ",
+                "pr": 2304
+            }
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "3.2.0-beta.0",

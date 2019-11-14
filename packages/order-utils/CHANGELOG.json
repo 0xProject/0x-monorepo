@@ -1,6 +1,15 @@
 [
     {
-        "version": "9.0.0-beta.0",
+        "version": "8.5.0-beta.2",
+        "changes": [
+            {
+                "note": "[Breaking] Removed `OrderStateUtils`, `OrderValidationUtils`, `ExchangeTransferSimulator` and all abstract and store classes. For order validation, please use the `DevUtils` contract wrapper method `getOrderRelevantState`|`getOrderRelevantStates`",
+                "pr": 2324
+            }
+        ]
+    },
+    {
+        "version": "8.5.0-beta.1",
         "changes": [
             {
                 "note": "Remove `TransferFailedError` from `ForwarderRevertErrors`.",
@@ -10,7 +19,8 @@
                 "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
                 "pr": 2313
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "8.5.0-beta.0",

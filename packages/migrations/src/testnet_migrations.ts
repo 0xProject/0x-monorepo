@@ -19,19 +19,21 @@ import { IAuthorizableContract, IOwnableContract } from '@0x/contracts-utils';
 import { AbiEncoder, BigNumber, logUtils, providerUtils } from '@0x/utils';
 import { LogWithDecodedArgs, SupportedProvider, TxData } from 'ethereum-types';
 
+import { getConfigsByChainId } from './utils/configs_by_chain';
 import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
+import { getTimelockRegistrationsAsync } from './utils/timelocks';
 
 async function submitAndExecuteTransactionAsync(
     governor: ZeroExGovernorContract,
     destination: string,
     data: string,
 ): Promise<void> {
-    const txReceipt = await governor
+    const { logs } = await governor
         .submitTransaction(destination, constants.ZERO_AMOUNT, data)
         .awaitTransactionSuccessAsync();
     // tslint:disable-next-line:no-unnecessary-type-assertion
-    const txId = (txReceipt.logs[0] as LogWithDecodedArgs<ZeroExGovernorSubmissionEventArgs>).args.transactionId;
+    const txId = (logs[0] as LogWithDecodedArgs<ZeroExGovernorSubmissionEventArgs>).args.transactionId;
     logUtils.log(`${txId} submitted`);
     await governor.executeTransaction(txId).awaitTransactionSuccessAsync();
     logUtils.log(`${txId} executed`);
@@ -46,6 +48,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
     const deployedAddresses = getContractAddressesForChainOrThrow(chainId.toNumber());
+    const configs = getConfigsByChainId(chainId.toNumber());
 
     // NOTE: This must be deployed before running these migrations, since its address is hard coded in the
     // staking logic contract.
@@ -81,187 +84,10 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         assetProxyArtifacts,
     );
 
-    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
-        devUtilsArtifacts.DevUtils,
-        provider,
-        txDefaults,
-        devUtilsArtifacts,
-        exchange.address,
-    );
-
-    await CoordinatorContract.deployFrom0xArtifactAsync(
-        coordinatorArtifacts.Coordinator,
-        provider,
-        txDefaults,
-        coordinatorArtifacts,
-        exchange.address,
-        chainId,
-    );
-
-    const wethAssetData = await devUtils.encodeERC20AssetData(deployedAddresses.etherToken).callAsync();
-    await ForwarderContract.deployFrom0xArtifactAsync(
-        forwarderArtifacts.Forwarder,
-        provider,
-        txDefaults,
-        forwarderArtifacts,
-        exchange.address,
-        wethAssetData,
-    );
-
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider, txDefaults);
     const ownableInterface = new IOwnableContract(constants.NULL_ADDRESS, provider, txDefaults);
 
-    const customTimeLocks = [
-        // AssetProxy timelocks
-        {
-            destination: deployedAddresses.erc20Proxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc20Proxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc721Proxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc721Proxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc1155Proxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.erc1155Proxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.multiAssetProxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.multiAssetProxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: erc20BridgeProxy.address,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: erc20BridgeProxy.address,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        // ZrxVault timelocks
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.getSelector('enterCatastrophicFailure'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.getSelector('setStakingProxy'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: zrxVault.getSelector('setZrxProxy'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: ownableInterface.getSelector('transferOwnership'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.getSelector('addAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.zrxVault,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        // StakingProxy timelocks
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.getSelector('attachStakingContract'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.getSelector('detachStakingContract'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.getSelector('setParams'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 10 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.getSelector('addExchangeAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingLogic.getSelector('removeExchangeAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: ownableInterface.getSelector('transferOwnership'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.getSelector('addAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: authorizableInterface.getSelector('removeAuthorizedAddressAtIndex'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        // Exchange timelocks
-        {
-            destination: exchange.address,
-            functionSelector: exchange.getSelector('setProtocolFeeMultiplier'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 10 days on mainnet
-        },
-        {
-            destination: exchange.address,
-            functionSelector: exchange.getSelector('setProtocolFeeCollectorAddress'),
-            secondsTimeLocked: constants.ZERO_AMOUNT, // 20 days on mainnet
-        },
-        {
-            destination: exchange.address,
-            functionSelector: exchange.getSelector('detachProtocolFeeCollector'),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-    ];
+    const customTimeLocks = await getTimelockRegistrationsAsync(provider);
 
     const governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
         multisigArtifacts.ZeroExGovernor,
@@ -271,24 +97,43 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         customTimeLocks.map(timeLockInfo => timeLockInfo.functionSelector),
         customTimeLocks.map(timeLockInfo => timeLockInfo.destination),
         customTimeLocks.map(timeLockInfo => timeLockInfo.secondsTimeLocked),
-        constants.ASSET_PROXY_OWNER_OWNERS,
-        constants.ASSET_PROXY_OWNER_CONFIRMATIONS,
-        constants.ASSET_PROXY_OWNER_TIMELOCK,
+        configs.zeroExGovernor.owners,
+        configs.zeroExGovernor.required,
+        configs.zeroExGovernor.secondsTimeLocked,
     );
 
     logUtils.log('Configuring Exchange...');
+    await exchange.setProtocolFeeCollectorAddress(stakingProxy.address).awaitTransactionSuccessAsync();
+    await exchange.setProtocolFeeMultiplier(new BigNumber(150000)).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.erc20Proxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.erc721Proxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.erc1155Proxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.multiAssetProxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(deployedAddresses.staticCallProxy).awaitTransactionSuccessAsync();
+    await exchange.registerAssetProxy(erc20BridgeProxy.address).awaitTransactionSuccessAsync();
     await exchange.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('Exchange configured!');
 
     logUtils.log('Configuring ERC20BridgeProxy...');
+    await erc20BridgeProxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync();
+    await erc20BridgeProxy.addAuthorizedAddress(deployedAddresses.multiAssetProxy).awaitTransactionSuccessAsync();
     await erc20BridgeProxy.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('ERC20BridgeProxy configured!');
 
     logUtils.log('Configuring ZrxVault...');
+    await zrxVault.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    await zrxVault.setStakingProxy(stakingProxy.address).awaitTransactionSuccessAsync();
+    await zrxVault.removeAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    await zrxVault.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync();
     await zrxVault.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('ZrxVault configured!');
 
     logUtils.log('Configuring StakingProxy...');
+    await stakingProxy.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    const staking = new StakingContract(stakingProxy.address, provider, txDefaults);
+    await staking.addExchangeAddress(exchange.address).awaitTransactionSuccessAsync();
+    await stakingProxy.removeAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync();
+    await stakingProxy.addAuthorizedAddress(governor.address).awaitTransactionSuccessAsync();
     await stakingProxy.transferOwnership(governor.address).awaitTransactionSuccessAsync();
     logUtils.log('StakingProxy configured!');
 
@@ -322,58 +167,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     logUtils.log('Ownership transferred!');
 
     const functionCalls = [
-        // Exchange staking configs
-        {
-            destination: exchange.address,
-            data: exchange.setProtocolFeeCollectorAddress(stakingProxy.address).getABIEncodedTransactionData(),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.setProtocolFeeMultiplier(new BigNumber(150000)).getABIEncodedTransactionData(),
-        },
-        // Exchange AssetProxy registrations
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy(deployedAddresses.erc20Proxy).getABIEncodedTransactionData(),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy(deployedAddresses.erc721Proxy).getABIEncodedTransactionData(),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy(deployedAddresses.erc1155Proxy).getABIEncodedTransactionData(),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy(deployedAddresses.multiAssetProxy).getABIEncodedTransactionData(),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy(deployedAddresses.staticCallProxy).getABIEncodedTransactionData(),
-        },
-        {
-            destination: exchange.address,
-            data: exchange.registerAssetProxy(erc20BridgeProxy.address).getABIEncodedTransactionData(),
-        },
-        // ZrxVault configs
-        {
-            destination: zrxVault.address,
-            data: authorizableInterface.addAuthorizedAddress(governor.address).getABIEncodedTransactionData(),
-        },
-        {
-            destination: zrxVault.address,
-            data: zrxVault.setStakingProxy(stakingProxy.address).getABIEncodedTransactionData(),
-        },
-        // StakingProxy configs
-        {
-            destination: stakingProxy.address,
-            data: authorizableInterface.addAuthorizedAddress(governor.address).getABIEncodedTransactionData(),
-        },
-        {
-            destination: stakingProxy.address,
-            data: stakingLogic.addExchangeAddress(exchange.address).getABIEncodedTransactionData(),
-        },
         // AssetProxy configs
         {
             destination: deployedAddresses.erc20Proxy,
@@ -399,16 +192,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
             destination: deployedAddresses.multiAssetProxy,
             data: exchange.registerAssetProxy(erc20BridgeProxy.address).getABIEncodedTransactionData(),
         },
-        {
-            destination: erc20BridgeProxy.address,
-            data: authorizableInterface.addAuthorizedAddress(exchange.address).getABIEncodedTransactionData(),
-        },
-        {
-            destination: erc20BridgeProxy.address,
-            data: authorizableInterface
-                .addAuthorizedAddress(deployedAddresses.multiAssetProxy)
-                .getABIEncodedTransactionData(),
-        },
     ];
 
     const batchTransactionEncoder = AbiEncoder.create('(bytes[],address[],uint256[])');
@@ -418,13 +201,41 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         functionCalls.map(() => constants.ZERO_AMOUNT),
     ]);
     await submitAndExecuteTransactionAsync(governor, governor.address, batchTransactionData);
+
+    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+        devUtilsArtifacts.DevUtils,
+        provider,
+        txDefaults,
+        devUtilsArtifacts,
+        exchange.address,
+    );
+
+    await CoordinatorContract.deployFrom0xArtifactAsync(
+        coordinatorArtifacts.Coordinator,
+        provider,
+        txDefaults,
+        coordinatorArtifacts,
+        exchange.address,
+        chainId,
+    );
+
+    const wethAssetData = await devUtils.encodeERC20AssetData(deployedAddresses.etherToken).callAsync();
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+        forwarderArtifacts.Forwarder,
+        provider,
+        txDefaults,
+        forwarderArtifacts,
+        exchange.address,
+        wethAssetData,
+    );
+    await forwarder.approveMakerAssetProxy(deployedAddresses.etherToken).awaitTransactionSuccessAsync();
 }
 
 (async () => {
-    const networkId = 4;
-    const rpcUrl = 'https://rinkeby.infura.io/v3/';
+    const networkId = 1;
+    const rpcUrl = 'https://mainnet.infura.io/v3/';
     const provider = await providerFactory.getLedgerProviderAsync(networkId, rpcUrl);
-    await runMigrationsAsync(provider, { from: constants.ASSET_PROXY_OWNER_OWNERS[0], gasPrice: 60000000000 });
+    await runMigrationsAsync(provider, { from: '0x3b39078f2a3e1512eecc8d6792fdc7f33e1cd2cf', gasPrice: 10000000000 });
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);

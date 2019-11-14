@@ -9,12 +9,12 @@ import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     TestWrapperFunctionsCancelOrderCalledEventArgs as CancelOrderCalledEventArgs,
     TestWrapperFunctionsContract,
     TestWrapperFunctionsFillOrderCalledEventArgs as FillOrderCalledEventArgs,
-} from '../src';
+} from './wrappers';
 
 blockchainTests('Exchange wrapper functions unit tests.', env => {
     const CHAIN_ID = 0x74657374;
@@ -673,7 +673,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
 
         describe('marketSellOrdersNoThrow', () => {
-            defineCommonMarketSellOrdersTests(() => testContract.marketSellOrdersNoThrow, simulateMarketSellOrders);
+            defineCommonMarketSellOrdersTests(
+                () => testContract.marketSellOrdersNoThrow.bind(testContract),
+                simulateMarketSellOrders,
+            );
 
             it('works when any fills revert', async () => {
                 const COUNT = 4;
@@ -726,7 +729,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         });
 
         describe('marketSellOrdersFillOrKill', () => {
-            defineCommonMarketSellOrdersTests(() => testContract.marketSellOrdersNoThrow, simulateMarketSellOrders);
+            defineCommonMarketSellOrdersTests(
+                () => testContract.marketSellOrdersNoThrow.bind(testContract),
+                simulateMarketSellOrders,
+            );
 
             it('reverts when filled < `takerAssetFillAmount`', async () => {
                 const COUNT = 4;
@@ -999,7 +1005,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
 
         describe('marketBuyOrdersNoThrow', () => {
-            defineCommonMarketBuyOrdersTests(() => testContract.marketBuyOrdersNoThrow, simulateMarketBuyOrdersNoThrow);
+            defineCommonMarketBuyOrdersTests(
+                () => testContract.marketBuyOrdersNoThrow.bind(testContract),
+                simulateMarketBuyOrdersNoThrow,
+            );
 
             it('works when any fills revert', async () => {
                 const COUNT = 4;
@@ -1053,7 +1062,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
 
         describe('marketBuyOrdersFillOrKill', () => {
             defineCommonMarketBuyOrdersTests(
-                () => testContract.marketBuyOrdersFillOrKill,
+                () => testContract.marketBuyOrdersFillOrKill.bind(testContract),
                 simulateMarketBuyOrdersNoThrow,
             );
 

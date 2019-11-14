@@ -2,8 +2,10 @@ import { blockchainTests, constants, expect, filterLogsToArguments, getRandomInt
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, TestFrameworkContract, TestFrameworkEventEventArgs, TestFrameworkEvents } from '../../src';
-import { FunctionAssertion, Result } from '../utils/function_assertions';
+import { FunctionAssertion, FunctionResult } from '../../src/function_assertions';
+
+import { artifacts } from '../artifacts';
+import { TestFrameworkContract, TestFrameworkEventEventArgs, TestFrameworkEvents } from '../wrappers';
 
 const { ZERO_AMOUNT, MAX_UINT256 } = constants;
 
@@ -22,7 +24,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
     describe('executeAsync', () => {
         it('should call the before function with the provided arguments', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
-            const assertion = new FunctionAssertion(exampleContract.returnInteger.bind(exampleContract), {
+            const assertion = new FunctionAssertion<void, BigNumber>(exampleContract.returnInteger.bind(exampleContract), {
                 before: async (_input: BigNumber) => {
                     sideEffectTarget = randomInput;
                 },
@@ -34,8 +36,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should call the after function with the provided arguments', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
-            const assertion = new FunctionAssertion(exampleContract.returnInteger.bind(exampleContract), {
-                after: async (_beforeInfo: any, _result: Result, input: BigNumber) => {
+            const assertion = new FunctionAssertion<void, BigNumber>(exampleContract.returnInteger.bind(exampleContract), {
+                after: async (_beforeInfo: any, _result: FunctionResult, input: BigNumber) => {
                     sideEffectTarget = input;
                 },
             });
@@ -45,18 +47,18 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         });
 
         it('should not fail immediately if the wrapped function fails', async () => {
-            const assertion = new FunctionAssertion<{}, void>(exampleContract.emptyRevert);
+            const assertion = new FunctionAssertion<{}, void>(exampleContract.emptyRevert.bind(exampleContract));
             await assertion.executeAsync();
         });
 
         it('should pass the return value of "before" to "after"', async () => {
             const randomInput = getRandomInteger(ZERO_AMOUNT, MAX_UINT256);
             let sideEffectTarget = ZERO_AMOUNT;
-            const assertion = new FunctionAssertion(exampleContract.returnInteger.bind(exampleContract), {
+            const assertion = new FunctionAssertion<BigNumber, BigNumber>(exampleContract.returnInteger.bind(exampleContract), {
                 before: async (_input: BigNumber) => {
                     return randomInput;
                 },
-                after: async (beforeInfo: any, _result: Result, _input: BigNumber) => {
+                after: async (beforeInfo: any, _result: FunctionResult, _input: BigNumber) => {
                     sideEffectTarget = beforeInfo;
                 },
             });
@@ -66,8 +68,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should pass the result from the function call to "after"', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
-            const assertion = new FunctionAssertion(exampleContract.returnInteger.bind(exampleContract), {
-                after: async (_beforeInfo: any, result: Result, _input: BigNumber) => {
+            const assertion = new FunctionAssertion<void, BigNumber>(exampleContract.returnInteger.bind(exampleContract), {
+                after: async (_beforeInfo: any, result: FunctionResult, _input: BigNumber) => {
                     sideEffectTarget = result.data;
                 },
             });
@@ -78,8 +80,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should pass the receipt from the function call to "after"', async () => {
             let sideEffectTarget: TransactionReceiptWithDecodedLogs;
-            const assertion = new FunctionAssertion(exampleContract.emitEvent.bind(exampleContract), {
-                after: async (_beforeInfo: any, result: Result, _input: string) => {
+            const assertion = new FunctionAssertion<void, void>(exampleContract.emitEvent.bind(exampleContract), {
+                after: async (_beforeInfo: any, result: FunctionResult, _input: string) => {
                     if (result.receipt) {
                         sideEffectTarget = result.receipt;
                     }
@@ -99,8 +101,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should pass the error to "after" if the function call fails', async () => {
             let sideEffectTarget: Error;
-            const assertion = new FunctionAssertion(exampleContract.stringRevert.bind(exampleContract), {
-                after: async (_beforeInfo: any, result: Result, _input: string) => {
+            const assertion = new FunctionAssertion<void, void>(exampleContract.stringRevert.bind(exampleContract), {
+                after: async (_beforeInfo: any, result: FunctionResult, _input: string) => {
                     sideEffectTarget = result.data;
                 },
             });

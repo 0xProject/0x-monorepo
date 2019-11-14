@@ -38,9 +38,24 @@ To replicate this setup, one could run the following commands:
 
     docker run -d -p 8545:8545 0xorg/ganache-cli
 
+    docker run -d -p 60557:60557 --network host \
+        -e ETHEREUM_RPC_URL=http://localhost:8545 \
+        -e ETHEREUM_NETWORK_ID=50 \
+        -e ETHEREUM_CHAIN_ID=1337 \
+        -e USE_BOOTSTRAP_LIST=false \
+        -e VERBOSITY=3 \
+        -e PRIVATE_KEY_PATH= \
+        -e BLOCK_POLLING_INTERVAL=5s \
+        -e P2P_LISTEN_PORT=60557
+        0xorg/mesh:6.0.0-beta-0xv3
+
     docker run -d --network host \
         -e RPC_URL=http://localhost:8545 \
-        -e NETWORK_ID=50 \
+        -e CHAIN_ID=1337 \
+        -e FEE_RECIPIENT=0x0000000000000000000000000000000000000001 \
+        -e MAKER_FEE_UNIT_AMOUNT=0 \
+        -e TAKER_FEE_UNIT_AMOUNT=0
+        -e MESH_ENDPOINT=ws://localhost:60557
         -e WHITELIST_ALL_TOKENS=True \
         0xorg/launch-kit-ci
 
@@ -69,11 +84,6 @@ To start, connect to the Ethereum network:
 >>> from web3 import HTTPProvider, Web3
 >>> eth_node = HTTPProvider("http://localhost:8545")
 
-What chain are we on?
-
->>> from zero_ex.contract_addresses import ChainId
->>> chain_id = ChainId.GANACHE  # you might use .MAINNET or .KOVAN
-
 For our Maker role, we'll just use the first address available in the node:
 
 >>> maker_address = Web3(eth_node).eth.accounts[0]
@@ -83,8 +93,8 @@ for this account, so the example orders below have the maker trading away ZRX.
 Before such an order can be valid, though, the maker must give the 0x contracts
 permission to trade their ZRX tokens:
 
->>> from zero_ex.contract_addresses import chain_to_addresses
->>> contract_addresses = chain_to_addresses(chain_id)
+>>> from zero_ex.contract_addresses import chain_to_addresses, ChainId
+>>> contract_addresses = chain_to_addresses(ChainId(Web3(eth_node).eth.chainId))
 >>>
 >>> from zero_ex.contract_artifacts import abi_by_name
 >>> zrx_token_contract = Web3(eth_node).eth.contract(
@@ -141,7 +151,6 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     order, contract_addresses.exchange, Web3(eth_node).eth.chainId
 ... )
 >>> relayer.post_order_with_http_info(
-...     chain_id=chain_id.value,
 ...     signed_order_schema=order_to_jsdict(
 ...         order=order,
 ...         exchange_address=contract_addresses.exchange,
@@ -168,7 +177,7 @@ Retrieve the order we just posted:
 >>> relayer.get_order("0x" + order_hash_hex)
 {'meta_data': {'orderHash': '0x...',
                'remainingFillableTakerAssetAmount': '2'},
- 'order': {'chainId': 50,
+ 'order': {'chainId': 1337,
            'exchangeAddress': '0x...',
            'expirationTimeSeconds': '...',
            'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -195,7 +204,7 @@ of the one we just posted:
 >>> relayer.get_orders()
 {'records': [{'meta_data': {'orderHash': '0x...',
                             'remainingFillableTakerAssetAmount': '2'},
-              'order': {'chainId': 50,
+              'order': {'chainId': 1337,
                         'exchangeAddress': '0x...',
                         'expirationTimeSeconds': '...',
                         'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -255,7 +264,7 @@ consists just of our order):
 {'asks': {'records': [...]},
  'bids': {'records': [{'meta_data': {'orderHash': '0x...',
                                      'remainingFillableTakerAssetAmount': '2'},
-                       'order': {'chainId': 50,
+                       'order': {'chainId': 1337,
                                  'exchangeAddress': '0x...',
                                  'expirationTimeSeconds': '...',
                                  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
@@ -280,7 +289,7 @@ Select an order from the orderbook
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)
-{'chainId': 50,
+{'chainId': 1337,
  'expirationTimeSeconds': ...,
  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',

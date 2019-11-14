@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.6.0-beta.1 - _November 7, 2019_
+
+    * Consolidated FixedMathRevertErrors (#2255)
+    * Changed provider_utils.providerUtils.getChainIdAsync() to invoke RPC method eth_chainId rather than net_version (#2270)
+
 ## v4.6.0-beta.0 - _October 3, 2019_
 
     * Allow for array types in `RevertError`s. (#2075)

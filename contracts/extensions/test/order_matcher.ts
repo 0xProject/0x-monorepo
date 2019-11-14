@@ -7,7 +7,7 @@ import {
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -15,6 +15,7 @@ import {
     expectContractCreationFailedAsync,
     LogDecoder,
     OrderFactory,
+    orderUtils,
     provider,
     sendTransactionResult,
     txDefaults,
@@ -29,7 +30,9 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeFillEventArgs, OrderMatcherContract } from '../src';
+import { ExchangeFillEventArgs, OrderMatcherContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -53,7 +56,6 @@ describe('OrderMatcher', () => {
     let orderMatcher: OrderMatcherContract;
 
     let erc20BalancesByOwner: ERC20BalancesByOwner;
-    let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
     let orderFactoryLeft: OrderFactory;
     let orderFactoryRight: OrderFactory;
@@ -117,10 +119,12 @@ describe('OrderMatcher', () => {
             await devUtils.encodeERC20AssetData(zrxToken.address).callAsync(),
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-        // Authorize ERC20 trades by exchange
+        await exchange.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
+            from: owner,
+        });
+        await exchange.registerAssetProxy(erc721Proxy.address).awaitTransactionSuccessAsync({
+            from: owner,
+        }); // Authorize ERC20 trades by exchange
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress(exchange.address).sendTransactionAsync({
                 from: owner,
@@ -141,30 +145,21 @@ describe('OrderMatcher', () => {
         leftMakerAssetData = await devUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress).callAsync();
         leftTakerAssetData = await devUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress).callAsync();
         // Set OrderMatcher balances and allowances
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20TokenA.setBalance(orderMatcher.address, constants.INITIAL_ERC20_BALANCE).sendTransactionAsync({
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20TokenB.setBalance(orderMatcher.address, constants.INITIAL_ERC20_BALANCE).sendTransactionAsync({
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper
-            .awaitTransactionSuccessAsync(
-                await orderMatcher.approveAssetProxy(leftMakerAssetData, constants.INITIAL_ERC20_ALLOWANCE),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            )
-            .sendTransactionAsync();
-        await web3Wrapper
-            .awaitTransactionSuccessAsync(
-                await orderMatcher.approveAssetProxy(leftTakerAssetData, constants.INITIAL_ERC20_ALLOWANCE),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            )
-            .sendTransactionAsync();
+        await erc20TokenA
+            .setBalance(orderMatcher.address, constants.INITIAL_ERC20_BALANCE)
+            .awaitTransactionSuccessAsync({ from: owner }, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
+
+        await erc20TokenB
+            .setBalance(orderMatcher.address, constants.INITIAL_ERC20_BALANCE)
+            .awaitTransactionSuccessAsync({ from: owner }, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
+
+        await orderMatcher
+            .approveAssetProxy(leftMakerAssetData, constants.INITIAL_ERC20_ALLOWANCE)
+            .awaitTransactionSuccessAsync({}, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
+
+        await orderMatcher
+            .approveAssetProxy(leftTakerAssetData, constants.INITIAL_ERC20_ALLOWANCE)
+            .awaitTransactionSuccessAsync({}, { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS });
 
         // Create default order parameters
         const defaultOrderParamsLeft = {
@@ -469,12 +464,14 @@ describe('OrderMatcher', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            await exchangeWrapper.fillOrderAsync(signedOrderLeft, takerAddress, {
-                takerAssetFillAmount: signedOrderLeft.takerAssetAmount.dividedToIntegerBy(5),
-            });
-            await exchangeWrapper.fillOrderAsync(signedOrderRight, takerAddress, {
-                takerAssetFillAmount: signedOrderRight.takerAssetAmount.dividedToIntegerBy(5),
-            });
+            let params = orderUtils.createFill(signedOrderLeft, signedOrderLeft.takerAssetAmount.dividedToIntegerBy(5));
+            await exchange
+                .fillOrder(params.order, params.takerAssetFillAmount, params.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
+            params = orderUtils.createFill(signedOrderRight, signedOrderRight.takerAssetAmount.dividedToIntegerBy(5));
+            await exchange
+                .fillOrder(params.order, params.takerAssetFillAmount, params.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             const data = exchange
                 .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
                 .getABIEncodedTransactionData();

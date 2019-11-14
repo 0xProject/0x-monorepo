@@ -4,15 +4,16 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/Forwarder.json",
-        "generated-artifacts/IAssets.json",
-        "generated-artifacts/IForwarder.json",
-        "generated-artifacts/IForwarderCore.json",
-        "generated-artifacts/LibConstants.json",
-        "generated-artifacts/LibForwarderRichErrors.json",
-        "generated-artifacts/MixinAssets.json",
-        "generated-artifacts/MixinExchangeWrapper.json",
-        "generated-artifacts/MixinForwarderCore.json",
-        "generated-artifacts/MixinWeth.json"
+        "test/generated-artifacts/Forwarder.json",
+        "test/generated-artifacts/IAssets.json",
+        "test/generated-artifacts/IForwarder.json",
+        "test/generated-artifacts/IForwarderCore.json",
+        "test/generated-artifacts/LibConstants.json",
+        "test/generated-artifacts/LibForwarderRichErrors.json",
+        "test/generated-artifacts/MixinAssets.json",
+        "test/generated-artifacts/MixinExchangeWrapper.json",
+        "test/generated-artifacts/MixinForwarderCore.json",
+        "test/generated-artifacts/MixinWeth.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

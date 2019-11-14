@@ -34,41 +34,6 @@ All endpoints that are paginated should return a `total`, `page`, `perPage` and 
 
 These requests include the [`/v3/asset_pairs`](#operation/getAssetPairs), [`/v3/orders`](#operation/getOrders), [`/v3/fee_recipients`](#operation/getFeeRecipients) and [`/v3/orderbook`](#operation/getOrderbook) endpoints.
 
-# Chain Id
-
-All requests should be able to specify a **?chainId** query param for all supported chains. For example:
-
-```bash
-$ curl https://api.example-relayer.com/v3/asset_pairs?chainId=1
-```
-
-If the query param is not provided, it should default to **1** (mainnet).
-
-Chains and their Ids:
-
-| Chain Id | Chain Name |
-| -------- | ---------- |
-| 1        | Mainnet    |
-| 42       | Kovan      |
-| 3        | Ropsten    |
-| 4        | Rinkeby    |
-
-If a certain chain is not supported, the response should **400** as specified in the [error response](#section/Errors) section. For example:
-
-```json
-{
-    "code": 100,
-    "reason": "Validation failed",
-    "validationErrors": [
-        {
-            "field": "chainId",
-            "code": 1006,
-            "reason": "Chain id 42 is not supported"
-        }
-    ]
-}
-```
-
 # Link Header
 
 A [Link Header](https://tools.ietf.org/html/rfc5988) can be included in a response to provide clients with more context about paging

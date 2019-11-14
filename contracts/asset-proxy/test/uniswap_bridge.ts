@@ -15,8 +15,9 @@ import { BigNumber } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
+
 import {
-    artifacts,
     TestUniswapBridgeContract,
     TestUniswapBridgeEthToTokenTransferInputEventArgs as EthToTokenTransferInputArgs,
     TestUniswapBridgeEvents as ContractEvents,
@@ -26,7 +27,7 @@ import {
     TestUniswapBridgeTokenTransferEventArgs as TokenTransferArgs,
     TestUniswapBridgeWethDepositEventArgs as WethDepositArgs,
     TestUniswapBridgeWethWithdrawEventArgs as WethWithdrawArgs,
-} from '../src';
+} from './wrappers';
 
 blockchainTests.resets('UniswapBridge unit tests', env => {
     let testContract: TestUniswapBridgeContract;

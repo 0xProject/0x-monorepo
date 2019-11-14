@@ -3,10 +3,11 @@ import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import * as _ from 'lodash';
 
+import { constants as stakingConstants } from '../src/constants';
+
 import { MakerActor } from './actors/maker_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
@@ -173,7 +174,7 @@ blockchainTests('Staking Pool Management', env => {
             // decrease operator share
             await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, increasedOperatorShare, revertError);
         });
-        it('Should fail if operator calls decreaseStakingPoolOperatorShare but newOperatorShare == oldOperatorShare', async () => {
+        it('Should be successful if operator calls decreaseStakingPoolOperatorShare and newOperatorShare == oldOperatorShare', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = (39 / 100) * PPM_DENOMINATOR;
@@ -183,13 +184,8 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
 
-            const revertError = new StakingRevertErrors.OperatorShareError(
-                StakingRevertErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
-                poolId,
-                operatorShare,
-            );
             // decrease operator share
-            await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare, revertError);
+            await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare);
         });
         it('should fail to decrease operator share if not called by operator', async () => {
             // test parameters

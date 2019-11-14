@@ -164,8 +164,8 @@ contract MixinStakingPool is
                 poolId,
                 newOperatorShare
             ));
-        } else if (newOperatorShare >= currentOperatorShare) {
-            // new share must be less than the current share
+        } else if (newOperatorShare > currentOperatorShare) {
+            // new share must be less than or equal to the current share
             LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
                 LibStakingRichErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
                 poolId,

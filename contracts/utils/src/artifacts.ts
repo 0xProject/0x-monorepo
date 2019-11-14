@@ -25,20 +25,10 @@ import * as LibSafeMathRichErrors from '../generated-artifacts/LibSafeMathRichEr
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../generated-artifacts/ReentrancyGuard.json';
 import * as Refundable from '../generated-artifacts/Refundable.json';
-import * as TestLibAddress from '../generated-artifacts/TestLibAddress.json';
-import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
-import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
-import * as TestLibEIP712 from '../generated-artifacts/TestLibEIP712.json';
-import * as TestLibRichErrors from '../generated-artifacts/TestLibRichErrors.json';
-import * as TestLibSafeMath from '../generated-artifacts/TestLibSafeMath.json';
-import * as TestLogDecoding from '../generated-artifacts/TestLogDecoding.json';
-import * as TestLogDecodingDownstream from '../generated-artifacts/TestLogDecodingDownstream.json';
-import * as TestOwnable from '../generated-artifacts/TestOwnable.json';
-import * as TestReentrancyGuard from '../generated-artifacts/TestReentrancyGuard.json';
-import * as TestRefundable from '../generated-artifacts/TestRefundable.json';
-import * as TestRefundableReceiver from '../generated-artifacts/TestRefundableReceiver.json';
 export const artifacts = {
     Authorizable: Authorizable as ContractArtifact,
+    IAuthorizable: IAuthorizable as ContractArtifact,
+    IOwnable: IOwnable as ContractArtifact,
     LibAddress: LibAddress as ContractArtifact,
     LibAddressArray: LibAddressArray as ContractArtifact,
     LibAddressArrayRichErrors: LibAddressArrayRichErrors as ContractArtifact,
@@ -56,18 +46,4 @@ export const artifacts = {
     Ownable: Ownable as ContractArtifact,
     ReentrancyGuard: ReentrancyGuard as ContractArtifact,
     Refundable: Refundable as ContractArtifact,
-    IAuthorizable: IAuthorizable as ContractArtifact,
-    IOwnable: IOwnable as ContractArtifact,
-    TestLibAddress: TestLibAddress as ContractArtifact,
-    TestLibAddressArray: TestLibAddressArray as ContractArtifact,
-    TestLibBytes: TestLibBytes as ContractArtifact,
-    TestLibEIP712: TestLibEIP712 as ContractArtifact,
-    TestLibRichErrors: TestLibRichErrors as ContractArtifact,
-    TestLibSafeMath: TestLibSafeMath as ContractArtifact,
-    TestLogDecoding: TestLogDecoding as ContractArtifact,
-    TestLogDecodingDownstream: TestLogDecodingDownstream as ContractArtifact,
-    TestOwnable: TestOwnable as ContractArtifact,
-    TestReentrancyGuard: TestReentrancyGuard as ContractArtifact,
-    TestRefundable: TestRefundable as ContractArtifact,
-    TestRefundableReceiver: TestRefundableReceiver as ContractArtifact,
 };

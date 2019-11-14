@@ -2,7 +2,6 @@ import { constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { StakingApiWrapper } from '../utils/api_wrapper';
 import {
     BalanceByOwner,
     DelegatorBalancesByPoolId,
@@ -12,7 +11,8 @@ import {
     OperatorShareByPoolId,
     RewardBalanceByPoolId,
     RewardByPoolId,
-} from '../utils/types';
+} from '../../src/types';
+import { StakingApiWrapper } from '../utils/api_wrapper';
 
 import { BaseActor } from './base_actor';
 

@@ -11,7 +11,7 @@ import {
     TestStaticCallTargetContract,
 } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ERC1155MintableContract } from '@0x/contracts-erc1155';
+import { ERC1155MintableContract, Erc1155Wrapper } from '@0x/contracts-erc1155';
 import {
     artifacts as erc20Artifacts,
     DummyERC20TokenContract,
@@ -40,17 +40,12 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Erc1155Wrapper } from '../../erc1155/lib/src';
-import {
-    artifacts,
-    ExchangeCancelEventArgs,
-    ExchangeContract,
-    ExchangeWrapper,
-    TestValidatorWalletContract,
-    ValidatorWalletAction,
-} from '../src';
+import { ValidatorWalletAction } from './utils/constants';
+import { ExchangeWrapper } from './utils/exchange_wrapper';
 
+import { artifacts } from './artifacts';
 import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
+import { ExchangeCancelEventArgs, ExchangeContract, TestValidatorWalletContract } from './wrappers';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Exchange core', () => {

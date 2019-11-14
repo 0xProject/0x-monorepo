@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-compiler",
-    "version": "3.2.0-beta.0",
+    "version": "3.2.0-beta.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -46,9 +46,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
-        "@0x/dev-utils": "^2.4.0-beta.0",
+        "@0x/dev-utils": "^2.4.0-beta.1",
         "@0x/ts-doc-gen": "^0.0.22",
-        "@0x/tslint-config": "^3.0.1",
+        "@0x/tslint-config": "^3.1.0-beta.1",
         "@types/mkdirp": "^0.5.2",
         "@types/mocha": "^5.2.7",
         "@types/pluralize": "^0.0.29",
@@ -74,17 +74,17 @@
         "zeppelin-solidity": "1.8.0"
     },
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.0",
-        "@0x/json-schemas": "^4.1.0-beta.0",
-        "@0x/sol-resolver": "^2.1.0-beta.0",
-        "@0x/types": "^2.5.0-beta.0",
-        "@0x/typescript-typings": "^4.4.0-beta.0",
-        "@0x/utils": "^4.6.0-beta.0",
-        "@0x/web3-wrapper": "^6.1.0-beta.0",
+        "@0x/assert": "^2.2.0-beta.1",
+        "@0x/json-schemas": "^4.1.0-beta.1",
+        "@0x/sol-resolver": "^2.1.0-beta.1",
+        "@0x/types": "^2.5.0-beta.1",
+        "@0x/typescript-typings": "^4.4.0-beta.1",
+        "@0x/utils": "^4.6.0-beta.1",
+        "@0x/web3-wrapper": "^6.1.0-beta.1",
         "@types/yargs": "^11.0.0",
         "chalk": "^2.3.0",
         "chokidar": "^3.0.2",
-        "ethereum-types": "^2.2.0-beta.0",
+        "ethereum-types": "^2.2.0-beta.1",
         "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",

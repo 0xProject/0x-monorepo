@@ -7,12 +7,12 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     TestExchangeInternalsContract,
     TestExchangeInternalsDispatchTransferFromCalledEventArgs,
     TestExchangeInternalsFillEventArgs,
-} from '../src';
+} from './wrappers';
 
 blockchainTests('Exchange core internal functions', env => {
     const CHAIN_ID = 1337;

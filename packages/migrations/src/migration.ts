@@ -1,6 +1,20 @@
-import * as wrappers from '@0x/abi-gen-wrappers';
+import { CoordinatorContract, OrderValidatorContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
+import {
+    ERC1155ProxyContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    MultiAssetProxyContract,
+    StaticCallProxyContract,
+} from '@0x/contracts-asset-proxy';
+import { CoordinatorRegistryContract } from '@0x/contracts-coordinator';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { ERC1155MintableContract } from '@0x/contracts-erc1155';
+import { DummyERC20TokenContract, WETH9Contract, ZRXTokenContract } from '@0x/contracts-erc20';
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { ExchangeContract } from '@0x/contracts-exchange';
+import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -55,13 +69,13 @@ export async function runMigrationsAsync(
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
 
     // Proxies
-    const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
+    const erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
         artifacts.ERC20Proxy,
         provider,
         txDefaults,
         artifacts,
     );
-    const erc721Proxy = await wrappers.ERC721ProxyContract.deployFrom0xArtifactAsync(
+    const erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(
         artifacts.ERC721Proxy,
         provider,
         txDefaults,
@@ -69,7 +83,7 @@ export async function runMigrationsAsync(
     );
 
     // ZRX
-    const zrxToken = await wrappers.ZRXTokenContract.deployFrom0xArtifactAsync(
+    const zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(
         artifacts.ZRXToken,
         provider,
         txDefaults,
@@ -77,16 +91,12 @@ export async function runMigrationsAsync(
     );
 
     // Ether token
-    const etherToken = await wrappers.WETH9Contract.deployFrom0xArtifactAsync(
-        artifacts.WETH9,
-        provider,
-        txDefaults,
-        artifacts,
-    );
+    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults, artifacts);
 
     // Exchange
+    // tslint:disable-next-line:no-unused-variable
     const zrxAssetData = encodeERC20AssetData(zrxToken.address);
-    const exchange = await wrappers.ExchangeContract.deployFrom0xArtifactAsync(
+    const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
         txDefaults,
@@ -98,7 +108,7 @@ export async function runMigrationsAsync(
     for (const token of erc20TokenInfo) {
         const totalSupply = new BigNumber(1000000000000000000000000000);
         // tslint:disable-next-line:no-unused-variable
-        const dummyErc20Token = await wrappers.DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        const dummyErc20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC20Token,
             provider,
             txDefaults,
@@ -112,7 +122,7 @@ export async function runMigrationsAsync(
 
     // ERC721
     // tslint:disable-next-line:no-unused-variable
-    const cryptoKittieToken = await wrappers.DummyERC721TokenContract.deployFrom0xArtifactAsync(
+    const cryptoKittieToken = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
         artifacts.DummyERC721Token,
         provider,
         txDefaults,
@@ -122,21 +132,21 @@ export async function runMigrationsAsync(
     );
 
     // 1155 Asset Proxy
-    const erc1155Proxy = await wrappers.ERC1155ProxyContract.deployFrom0xArtifactAsync(
+    const erc1155Proxy = await ERC1155ProxyContract.deployFrom0xArtifactAsync(
         artifacts.ERC1155Proxy,
         provider,
         txDefaults,
         artifacts,
     );
 
-    const staticCallProxy = await wrappers.StaticCallProxyContract.deployFrom0xArtifactAsync(
+    const staticCallProxy = await StaticCallProxyContract.deployFrom0xArtifactAsync(
         artifacts.StaticCallProxy,
         provider,
         txDefaults,
         artifacts,
     );
 
-    const multiAssetProxy = await wrappers.MultiAssetProxyContract.deployFrom0xArtifactAsync(
+    const multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
         artifacts.MultiAssetProxy,
         provider,
         txDefaults,
@@ -165,7 +175,7 @@ export async function runMigrationsAsync(
     await exchange.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync(txDefaults);
 
     // Forwarder
-    const forwarder = await wrappers.ForwarderContract.deployFrom0xArtifactAsync(
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
         artifacts.Forwarder,
         provider,
         txDefaults,
@@ -174,8 +184,9 @@ export async function runMigrationsAsync(
         encodeERC20AssetData(etherToken.address),
     );
 
+    // TODO(fabio): Remove orderValidator after @0x/asset-buyer is deleted
     // OrderValidator
-    const orderValidator = await wrappers.OrderValidatorContract.deployFrom0xArtifactAsync(
+    const orderValidator = await OrderValidatorContract.deployFrom0xArtifactAsync(
         artifacts.OrderValidator,
         provider,
         txDefaults,
@@ -184,14 +195,16 @@ export async function runMigrationsAsync(
         zrxAssetData,
     );
 
-    // DutchAuction
-    const dutchAuction = await wrappers.DutchAuctionContract.deployFrom0xArtifactAsync(
-        artifacts.DutchAuction,
-        provider,
-        txDefaults,
-        artifacts,
-        exchange.address,
-    );
+    // TODO(fabio): Uncomment dutchAuction once the @0x/contracts-extensions is refactored
+    // for V3
+    // // DutchAuction
+    // const dutchAuction = await DutchAuctionContract.deployFrom0xArtifactAsync(
+    //     artifacts.DutchAuction,
+    //     provider,
+    //     txDefaults,
+    //     artifacts,
+    //     exchange.address,
+    // );
 
     // TODO (xianny): figure out how to deploy AssetProxyOwnerContract properly
     // // Multisigs
@@ -202,7 +215,7 @@ export async function runMigrationsAsync(
 
     // // AssetProxyOwner
 
-    // const assetProxyOwner = await wrappers.AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+    // const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
     //     artifacts.AssetProxyOwner,
     //     provider,
     //     txDefaults,
@@ -231,7 +244,7 @@ export async function runMigrationsAsync(
 
     // Fake the above transactions so our nonce increases and we result with the same addresses
     // while AssetProxyOwner is disabled (TODO: @dekz remove)
-    const dummyTransactionCount = 5;
+    const dummyTransactionCount = 6;
     for (let index = 0; index < dummyTransactionCount; index++) {
         await web3Wrapper.sendTransactionAsync({ to: txDefaults.from, from: txDefaults.from, value: new BigNumber(0) });
     }
@@ -242,7 +255,7 @@ export async function runMigrationsAsync(
     await zrxToken.transfer(forwarder.address, zrxForwarderAmount).awaitTransactionSuccessAsync(txDefaults);
 
     // CoordinatorRegistry
-    const coordinatorRegistry = await wrappers.CoordinatorRegistryContract.deployFrom0xArtifactAsync(
+    const coordinatorRegistry = await CoordinatorRegistryContract.deployFrom0xArtifactAsync(
         artifacts.CoordinatorRegistry,
         provider,
         txDefaults,
@@ -250,7 +263,7 @@ export async function runMigrationsAsync(
     );
 
     // Coordinator
-    const coordinator = await wrappers.CoordinatorContract.deployFrom0xArtifactAsync(
+    const coordinator = await CoordinatorContract.deployFrom0xArtifactAsync(
         artifacts.Coordinator,
         provider,
         txDefaults,
@@ -259,7 +272,7 @@ export async function runMigrationsAsync(
     );
 
     // Dev Utils
-    const devUtils = await wrappers.DevUtilsContract.deployFrom0xArtifactAsync(
+    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
         artifacts.DevUtils,
         provider,
         txDefaults,
@@ -268,7 +281,7 @@ export async function runMigrationsAsync(
     );
 
     // tslint:disable-next-line:no-unused-variable
-    const erc1155DummyToken = await wrappers.ERC1155MintableContract.deployFrom0xArtifactAsync(
+    const erc1155DummyToken = await ERC1155MintableContract.deployFrom0xArtifactAsync(
         artifacts.ERC1155Mintable,
         provider,
         txDefaults,
@@ -288,7 +301,7 @@ export async function runMigrationsAsync(
         zeroExGovernor: constants.NULL_ADDRESS,
         forwarder: forwarder.address,
         orderValidator: orderValidator.address,
-        dutchAuction: dutchAuction.address,
+        dutchAuction: constants.NULL_ADDRESS,
         coordinatorRegistry: coordinatorRegistry.address,
         coordinator: coordinator.address,
         multiAssetProxy: multiAssetProxy.address,

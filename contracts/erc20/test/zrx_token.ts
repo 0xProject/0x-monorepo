@@ -4,7 +4,9 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 
-import { artifacts, ZRXTokenContract } from '../src';
+import { ZRXTokenContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 chaiSetup.configure();
 const expect = chai.expect;

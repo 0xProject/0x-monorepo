@@ -50,7 +50,6 @@
         "./schemas/orderbook_request_schema.json",
         "./schemas/orders_request_opts_schema.json",
         "./schemas/paged_request_opts_schema.json",
-        "./schemas/request_opts_schema.json",
         "./schemas/order_config_request_schema.json"
     ]
 }

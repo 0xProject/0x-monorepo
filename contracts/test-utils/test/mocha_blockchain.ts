@@ -1,7 +1,9 @@
 import * as _ from 'lodash';
 import * as process from 'process';
 
-import { blockchainTests, constants, describe, expect } from '../src';
+import { expect } from '../src/chai_setup';
+import { constants } from '../src/constants';
+import { blockchainTests, describe } from '../src/mocha_blockchain';
 
 blockchainTests('mocha blockchain extensions', env => {
     describe('blockchainTests()', () => {

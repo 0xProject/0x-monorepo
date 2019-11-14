@@ -11,7 +11,7 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 import { MethodAbi, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../../src';
+import { ExchangeContract } from '../wrappers';
 
 import { AbiDecodedFillOrderData } from './types';
 

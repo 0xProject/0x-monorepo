@@ -24,11 +24,8 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
-    TestAssetProxyDispatcherContract,
-} from '../src';
+import { artifacts } from './artifacts';
+import { TestAssetProxyDispatcherAssetProxyRegisteredEventArgs, TestAssetProxyDispatcherContract } from './wrappers';
 
 import { dependencyArtifacts } from './utils/dependency_artifacts';
 

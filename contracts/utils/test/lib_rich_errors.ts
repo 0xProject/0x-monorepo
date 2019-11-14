@@ -1,7 +1,8 @@
 import { blockchainTests, expect, hexRandom } from '@0x/contracts-test-utils';
 import { coerceThrownErrorAsRevertError, StringRevertError } from '@0x/utils';
 
-import { artifacts, TestLibRichErrorsContract } from '../src';
+import { artifacts } from './artifacts';
+import { TestLibRichErrorsContract } from './wrappers';
 
 blockchainTests('LibRichErrors', env => {
     let lib: TestLibRichErrorsContract;

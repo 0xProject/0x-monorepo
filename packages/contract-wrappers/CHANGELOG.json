@@ -1,12 +1,22 @@
 [
     {
-        "version": "13.0.0-beta.0",
+        "version": "12.2.0-beta.2",
+        "changes": [
+            {
+                "note": "[Breaking] Remove `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers",
+                "pr": 2324
+            }
+        ]
+    },
+    {
+        "version": "12.2.0-beta.1",
         "changes": [
             {
                 "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
                 "pr": 2313
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "12.2.0-beta.0",

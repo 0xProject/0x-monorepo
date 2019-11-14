@@ -1,6 +1,8 @@
 import { blockchainTests, expect, verifyEvents } from '@0x/contracts-test-utils';
 
-import { artifacts, CoordinatorRegistryContract, CoordinatorRegistryCoordinatorEndpointSetEventArgs } from '../src';
+import { artifacts } from './artifacts';
+
+import { CoordinatorRegistryContract, CoordinatorRegistryCoordinatorEndpointSetEventArgs } from './wrappers';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Coordinator Registry tests', env => {

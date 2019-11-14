@@ -69,7 +69,6 @@ export class SwapQuoter {
             httpEndpoint: sraApiUrl,
             pollingIntervalMs:
                 options.orderRefreshIntervalMs || constants.DEFAULT_SWAP_QUOTER_OPTS.orderRefreshIntervalMs,
-            chainId: options.chainId || constants.DEFAULT_SWAP_QUOTER_OPTS.chainId,
             perPage: options.perPage || constants.DEFAULT_PER_PAGE,
         });
         const swapQuoter = new SwapQuoter(provider, orderbook, options);
@@ -97,7 +96,6 @@ export class SwapQuoter {
         const orderbook = Orderbook.getOrderbookForWebsocketProvider({
             httpEndpoint: sraApiUrl,
             websocketEndpoint: sraWebsocketAPIUrl,
-            chainId: options.chainId,
         });
         const swapQuoter = new SwapQuoter(provider, orderbook, options);
         return swapQuoter;

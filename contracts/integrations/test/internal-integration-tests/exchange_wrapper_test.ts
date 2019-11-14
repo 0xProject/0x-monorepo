@@ -1,5 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
+import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     BlockchainBalanceStore,
     IExchangeEvents,
@@ -26,7 +26,7 @@ import * as _ from 'lodash';
 
 import { Actor } from '../actors/base';
 import { Maker } from '../actors/maker';
-import { DeploymentManager } from '../utils/deployment_manager';
+import { DeploymentManager } from '../deployment_manager';
 
 const { addFillResults, safeGetPartialAmountFloor } = ReferenceFunctions;
 
@@ -181,7 +181,7 @@ blockchainTests.resets('Exchange wrappers', env => {
     function verifyFillEvents(receipt: TransactionReceiptWithDecodedLogs, fillTestInfos: FillTestInfo[]): void {
         const expectedFillEvents: IExchangeFillEventArgs[] = [];
 
-        let expectedTransferEvents: IERC20TokenTransferEventArgs[] = [];
+        let expectedTransferEvents: ERC20TokenTransferEventArgs[] = [];
 
         for (const { signedOrder, expectedFillResults, shouldPayWethFees } of fillTestInfos) {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
@@ -237,7 +237,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             expectedTransferEvents = expectedTransferEvents.concat(transferEvents);
         }
         verifyEvents<IExchangeFillEventArgs>(receipt, expectedFillEvents, IExchangeEvents.Fill);
-        verifyEvents<IERC20TokenTransferEventArgs>(receipt, expectedTransferEvents, IERC20TokenEvents.Transfer);
+        verifyEvents<ERC20TokenTransferEventArgs>(receipt, expectedTransferEvents, ERC20TokenEvents.Transfer);
     }
 
     function calculateScaledFillResultsWithMaker(signedOrder: SignedOrder, fillAmount: BigNumber): FillResults {

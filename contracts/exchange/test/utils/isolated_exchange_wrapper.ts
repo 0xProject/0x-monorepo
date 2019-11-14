@@ -6,12 +6,13 @@ import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
 import { LogEntry } from 'ethereum-types';
 
+import { artifacts } from '../artifacts';
+
 import {
-    artifacts,
     IsolatedExchangeContract,
     IsolatedExchangeDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
     IsolatedExchangeFillEventArgs as FillEventArgs,
-} from '../../src';
+} from '../wrappers';
 
 export interface AssetBalances {
     [assetData: string]: { [address: string]: BigNumber };

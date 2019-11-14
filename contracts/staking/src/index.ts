@@ -1,4 +1,11 @@
 export * from './wrappers';
 export * from './artifacts';
-export { constants } from '../test/utils/constants';
-export * from '../test/utils/types';
+export { constants } from './constants';
+export {
+    GlobalStakeByStatus,
+    OwnerStakeByStatus,
+    StakeInfo,
+    StakingPoolById,
+    StakeStatus,
+    StoredBalance,
+} from './types';

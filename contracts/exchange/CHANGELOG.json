@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0-beta.2",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            }
+        ]
+    },
+    {
         "version": "2.2.0-beta.1",
         "changes": [
             {
@@ -18,7 +27,8 @@
                 "note": "In OrderFactoryFromScenario, `generateOrder` is now `generateOrderAsync`",
                 "pr": 2304
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "2.2.0-beta.0",

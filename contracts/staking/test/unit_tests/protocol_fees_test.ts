@@ -12,14 +12,14 @@ import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from '../artifacts';
 import {
-    artifacts,
     IStakingEventsEvents,
     IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
     TestProtocolFeesContract,
     TestProtocolFeesERC20ProxyTransferFromEventArgs,
     TestProtocolFeesEvents,
-} from '../../src';
+} from '../wrappers';
 
 import { getRandomInteger } from '../utils/number_utils';
 

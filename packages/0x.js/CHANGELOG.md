@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.0.0-beta.0 - _November 7, 2019_
+
+    * Exported intefaces changed: from getContractAddressesForNetworkOrThrow to getContractAddressesForChainOrThrow, from NetworkId to ChainId, from ContractNetworks to ContractChains, and from ContractNetworkData to ContractChainData. (#2313)
+
 ## v7.1.0-beta.0 - _October 3, 2019_
 
     * Updated to work with 0x v3

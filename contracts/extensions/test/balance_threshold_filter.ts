@@ -1,5 +1,5 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { ExchangeRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
@@ -24,7 +24,11 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 
-import { artifacts, BalanceThresholdFilterContract, BalanceThresholdWrapper } from '../src';
+import { BalanceThresholdWrapper } from './utils/balance_threshold_wrapper';
+
+import { BalanceThresholdFilterContract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -52,7 +56,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
     let zrxAssetData: string;
     let zrxToken: DummyERC20TokenContract;
     let exchangeInstance: ExchangeContract;
-    let exchangeWrapper: ExchangeWrapper;
     let devUtils: DevUtilsContract;
 
     let orderFactory: OrderFactory;
@@ -139,10 +142,11 @@ describe(ContractName.BalanceThresholdFilter, () => {
             zrxAssetData,
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         // Register proxies
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await erc20Proxy.addAuthorizedAddress(exchangeInstance.address).sendTransactionAsync({
+        await exchangeInstance.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({
+            from: owner,
+        });
+        await erc20Proxy.addAuthorizedAddress(exchangeInstance.address).awaitTransactionSuccessAsync({
             from: owner,
         });
         // Deploy Balance Threshold Filters

@@ -4,12 +4,13 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { DelegatorsByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from '../src/types';
+
 import { FinalizerActor } from './actors/finalizer_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { toBaseUnitAmount } from './utils/number_utils';
-import { DelegatorsByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count

@@ -1,12 +1,26 @@
 [
     {
+        "version": "8.0.0-beta.1",
+        "changes": [
+            {
+                "note": "Remove ZRXToken contract wrapper",
+                "pr": 2324
+            },
+            {
+                "note": "ContractWrappers no longer exposes `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers",
+                "pr": 2324
+            }
+        ]
+    },
+    {
         "version": "8.0.0-beta.0",
         "changes": [
             {
                 "note": "Exported intefaces changed: from getContractAddressesForNetworkOrThrow to getContractAddressesForChainOrThrow, from NetworkId to ChainId, from ContractNetworks to ContractChains, and from ContractNetworkData to ContractChainData.",
                 "pr": 2313
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "7.1.0-beta.0",

@@ -3,8 +3,8 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { MultiSigWalletContract, MultiSigWalletWithTimeLockContract } from '../../src';
-import { artifacts } from '../../src/artifacts';
+import { artifacts } from '../artifacts';
+import { MultiSigWalletContract, MultiSigWalletWithTimeLockContract } from '../wrappers';
 
 export class MultiSigWrapper {
     private readonly _multiSig: MultiSigWalletContract | MultiSigWalletWithTimeLockContract;

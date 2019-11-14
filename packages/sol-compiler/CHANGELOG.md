@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0-beta.1 - _November 7, 2019_
+
+    * Output artifacts now include a 'chains' attribute rather than 'networks' (#2313)
+
 ## v3.2.0-beta.0 - _October 3, 2019_
 
     * Convert `getContractNamesToCompile` to public function of `Compiler` class (#2055)

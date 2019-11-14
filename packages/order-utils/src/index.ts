@@ -15,17 +15,6 @@ export { sortingUtils } from './sorting_utils';
 export { orderParsingUtils } from './parsing_utils';
 export { orderCalculationUtils } from './order_calculation_utils';
 
-export { OrderStateUtils } from './order_state_utils';
-export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
-export { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
-export { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
-export { AbstractOrderFilledCancelledLazyStore } from './abstract/abstract_order_filled_cancelled_lazy_store';
-
-export { OrderValidationUtils } from './order_validation_utils';
-export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
-export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
-export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
-
 export { eip712Utils } from './eip712_utils';
 
 export {
@@ -47,8 +36,6 @@ export {
 export {
     SignedOrder,
     Order,
-    OrderRelevantState,
-    OrderState,
     ECSignature,
     AssetData,
     SingleAssetData,
@@ -61,10 +48,6 @@ export {
     MultiAssetDataWithRecursiveDecoding,
     AssetProxyId,
     SignatureType,
-    ObjectMap,
-    OrderStateValid,
-    OrderStateInvalid,
-    ExchangeContractErrs,
     EIP712Parameter,
     EIP712TypedData,
     EIP712Types,
@@ -78,8 +61,6 @@ export {
 
 export {
     TypedDataError,
-    TradeSide,
-    TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FindOrdersThatCoverTakerAssetFillAmountOpts,

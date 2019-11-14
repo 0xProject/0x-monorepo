@@ -5,7 +5,9 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, MixinAuthorizableContract } from '../src';
+import { artifacts } from './artifacts';
+
+import { MixinAuthorizableContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;

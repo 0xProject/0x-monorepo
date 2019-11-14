@@ -17,15 +17,15 @@ import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     IEIP1271DataContract,
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
     TestValidatorWalletContract,
-} from '../src';
+} from './wrappers';
 
-import { ValidatorWalletAction } from './utils';
+import { ValidatorWalletAction } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('MixinSignatureValidator', env => {

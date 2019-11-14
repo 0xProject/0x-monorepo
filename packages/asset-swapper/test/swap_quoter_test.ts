@@ -155,10 +155,12 @@ describe('SwapQuoter', () => {
             const sellTwoTokensFor1Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: baseUnitAmount(2),
                 takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
+                chainId: 42,
             });
             const sellTenTokensFor10Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: baseUnitAmount(10),
                 takerAssetAmount: baseUnitAmount(10, WETH_DECIMALS),
+                chainId: 42,
             });
 
             beforeEach(() => {

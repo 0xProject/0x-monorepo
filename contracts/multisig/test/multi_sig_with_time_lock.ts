@@ -15,17 +15,18 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
 import {
-    artifacts,
     MultiSigWalletWithTimeLockConfirmationEventArgs,
     MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs,
     MultiSigWalletWithTimeLockContract,
     MultiSigWalletWithTimeLockExecutionEventArgs,
     MultiSigWalletWithTimeLockExecutionFailureEventArgs,
     MultiSigWalletWithTimeLockSubmissionEventArgs,
-    MultiSigWrapper,
     TestRejectEtherContract,
-} from '../src';
+} from './wrappers';
+
+import { MultiSigWrapper } from './utils/multi_sig_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

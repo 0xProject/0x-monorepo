@@ -725,6 +725,7 @@ export interface Source {
  * isOfflineMode: If set to true - sol-compiler will not fetch the list of solc releases from github. It will use the hardcoded list. Defaults to false.
  * solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
  * contracts to compile with the the version specified here.
+ * shouldSaveStandardInput: Write the standard JSON input in ${contractsDir}/${contractName}.input.json
  */
 export interface CompilerOptions {
     contractsDir?: string;
@@ -734,6 +735,7 @@ export interface CompilerOptions {
     useDockerisedSolc?: boolean;
     isOfflineMode?: boolean;
     solcVersion?: string;
+    shouldSaveStandardInput?: boolean;
 }
 
 export interface BlockRange {

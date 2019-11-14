@@ -12,7 +12,9 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 
-import { artifacts, WETH9Contract } from '../src';
+import { WETH9Contract } from './wrappers';
+
+import { artifacts } from './artifacts';
 
 chaiSetup.configure();
 const expect = chai.expect;

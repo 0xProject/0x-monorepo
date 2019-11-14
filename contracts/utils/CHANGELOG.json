@@ -1,5 +1,23 @@
 [
     {
+        "version": "3.3.0-beta.2",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            }
+        ]
+    },
+    {
+        "version": "3.3.0-beta.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1573159180
+    },
+    {
         "version": "3.3.0-beta.0",
         "changes": [
             {

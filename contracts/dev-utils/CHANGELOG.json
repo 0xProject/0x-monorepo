@@ -1,5 +1,14 @@
 [
     {
+        "version": "0.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            }
+        ]
+    },
+    {
         "version": "0.1.0-beta.1",
         "changes": [
             {
@@ -10,7 +19,8 @@
                 "note": "Add `revertIfInvalidAssetData` in LibAssetData",
                 "pr": 2034
             }
-        ]
+        ],
+        "timestamp": 1573159180
     },
     {
         "version": "0.1.0-beta.0",

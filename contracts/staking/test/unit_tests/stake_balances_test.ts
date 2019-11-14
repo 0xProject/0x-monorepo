@@ -8,9 +8,11 @@ import {
 } from '@0x/contracts-test-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 
-import { artifacts, TestMixinStakeBalancesContract } from '../../src';
-import { constants as stakingConstants } from '../utils/constants';
-import { StakeStatus, StoredBalance } from '../utils/types';
+import { artifacts } from '../artifacts';
+import { TestMixinStakeBalancesContract } from '../wrappers';
+
+import { constants as stakingConstants } from '../../src/constants';
+import { StakeStatus, StoredBalance } from '../../src/types';
 
 blockchainTests.resets('MixinStakeBalances unit tests', env => {
     let testContract: TestMixinStakeBalancesContract;

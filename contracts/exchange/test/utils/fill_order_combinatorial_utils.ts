@@ -7,7 +7,7 @@ import {
 } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, expect, LogDecoder, orderUtils, signingUtils } from '@0x/contracts-test-utils';
-import { BalanceAndProxyAllowanceLazyStore, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
@@ -15,7 +15,9 @@ import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
+import { artifacts } from '../artifacts';
+
+import { ExchangeContract, ExchangeFillEventArgs } from '../wrappers';
 
 import { AssetWrapper } from './asset_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
@@ -35,6 +37,7 @@ import {
 import { FillOrderError, FillOrderSimulator } from './fill_order_simulator';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
+import { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 
 const EMPTY_FILL_RESULTS = {
     takerAssetFilledAmount: constants.ZERO_AMOUNT,
@@ -439,24 +442,29 @@ export class FillOrderCombinatorialUtils {
         this.balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(assetWrapper);
     }
 
-    public async testFillOrderScenarioAsync(fillScenario: FillScenario): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario);
+    public async testFillOrderScenarioAsync(fillScenario: FillScenario, devUtils: DevUtilsContract): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Any, devUtils);
     }
 
-    public async testFillOrderScenarioSuccessAsync(fillScenario: FillScenario): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success);
+    public async testFillOrderScenarioSuccessAsync(
+        fillScenario: FillScenario,
+        devUtils: DevUtilsContract,
+    ): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success, devUtils);
     }
 
     public async testFillOrderScenarioFailureAsync(
         fillScenario: FillScenario,
+        devUtils: DevUtilsContract,
         fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, fillErrorIfExists);
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, devUtils, fillErrorIfExists);
     }
 
     private async _testFillOrderScenarioAsync(
         fillScenario: FillScenario,
         expectedTestResult: TestOutlook = TestOutlook.Any,
+        devUtils: DevUtilsContract,
         fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(this.balanceAndProxyAllowanceFetcher);
@@ -469,7 +477,12 @@ export class FillOrderCombinatorialUtils {
         let _fillErrorIfExists = fillErrorIfExists;
         if (expectedTestResult !== TestOutlook.Failure || fillErrorIfExists === undefined) {
             try {
-                expectedFillResults = await this._simulateFillOrderAsync(signedOrder, takerAssetFillAmount, lazyStore);
+                expectedFillResults = await this._simulateFillOrderAsync(
+                    signedOrder,
+                    takerAssetFillAmount,
+                    lazyStore,
+                    devUtils,
+                );
             } catch (err) {
                 _fillErrorIfExists = err.message;
                 if (expectedTestResult === TestOutlook.Success) {
@@ -502,8 +515,9 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
+        devUtils: DevUtilsContract,
     ): Promise<FillResults> {
-        const simulator = new FillOrderSimulator(lazyStore);
+        const simulator = new FillOrderSimulator(lazyStore, devUtils);
         return simulator.simulateFillOrderAsync(signedOrder, this.takerAddress, takerAssetFillAmount);
     }
 

@@ -21,6 +21,7 @@ export const compilerOptionsSchema = {
         },
         useDockerisedSolc: { type: 'boolean' },
         isOfflineMode: { type: 'boolean' },
+        shouldSaveStandardInput: { type: 'boolean' },
     },
     type: 'object',
     required: [],
