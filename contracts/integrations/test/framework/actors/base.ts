@@ -113,7 +113,7 @@ export class Actor {
         await token.mintFungible.awaitTransactionSuccessAsync(
             id,
             [this.address],
-            [amount || constants.INITIAL_ERC20_BALANCE],
+            [amount || new BigNumber(constants.NUM_ERC1155_FUNGIBLE_TOKENS_MINT)],
             { from: this.address },
         );
 

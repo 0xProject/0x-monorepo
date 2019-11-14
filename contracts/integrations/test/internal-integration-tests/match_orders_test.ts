@@ -1,3 +1,4 @@
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { BlockchainBalanceStore, TokenIds } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
@@ -24,9 +25,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
     let makerRight: Maker;
 
     // The addresses of important assets for testing.
-    let makerAssetAddressLeft: string;
-    let makerAssetAddressRight: string;
-    let feeAssetAddress: string;
+    let makerAssetLeft: DummyERC20TokenContract;
+    let makerAssetRight: DummyERC20TokenContract;
+    let feeAsset: DummyERC20TokenContract;
 
     let makerAssetDataLeft: string;
     let makerAssetDataRight: string;
@@ -44,9 +45,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
             numErc1155TokensToDeploy: 1,
         });
 
-        makerAssetAddressLeft = deployment.tokens.erc20[0].address;
-        makerAssetAddressRight = deployment.tokens.erc20[1].address;
-        feeAssetAddress = deployment.tokens.erc20[2].address;
+        makerAssetLeft = deployment.tokens.erc20[0];
+        makerAssetRight = deployment.tokens.erc20[1];
+        feeAsset = deployment.tokens.erc20[2];
 
         // Create the fee recipient actors.
         feeRecipientLeft = new Actor({
@@ -59,11 +60,13 @@ blockchainTests.resets('matchOrders integration tests', env => {
         });
 
         // Encode the asset data.
-        makerAssetDataLeft = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerAssetAddressLeft);
-        makerAssetDataRight = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-            makerAssetAddressRight,
+        makerAssetDataLeft = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
+            makerAssetLeft.address,
         );
-        feeAssetData = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(feeAssetAddress);
+        makerAssetDataRight = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
+            makerAssetRight.address,
+        );
+        feeAssetData = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(feeAsset.address);
 
         // Create two market makers with compatible orders for matching.
         makerLeft = new Maker({
@@ -101,11 +104,11 @@ blockchainTests.resets('matchOrders integration tests', env => {
             ...deployment.tokens.erc20.map(async token => makerRight.configureERC20TokenAsync(token)),
             makerLeft.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address),
             makerRight.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address),
-            matcher.configureERC20TokenAsync(deployment.tokens.erc20[2]),
+            matcher.configureERC20TokenAsync(feeAsset),
             matcher.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address),
-            feeRecipientLeft.configureERC20TokenAsync(deployment.tokens.erc20[2]),
+            feeRecipientLeft.configureERC20TokenAsync(feeAsset),
             feeRecipientLeft.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address),
-            feeRecipientRight.configureERC20TokenAsync(deployment.tokens.erc20[2]),
+            feeRecipientRight.configureERC20TokenAsync(feeAsset),
             feeRecipientRight.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address),
         ]);
 
@@ -149,7 +152,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
         rightOrder: Partial<Order>,
         expectedTransferAmounts: Partial<MatchTransferAmounts>,
         withMaximalFill: boolean,
-        matcherAddress?: string,
+        matcherAddress: string = matcher.address,
     ): Promise<void> {
         // Create orders to match.
         const signedOrderLeft = await makerLeft.signOrderAsync(leftOrder);
@@ -1063,7 +1066,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
             });
             const signedOrderRight = await makerRight.signOrderAsync({
                 takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetAddressRight,
+                    makerAssetRight.address,
                 ),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
@@ -1100,7 +1103,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetAddressLeft,
+                    makerAssetLeft.address,
                 ),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
@@ -1972,7 +1975,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
             });
             const signedOrderRight = await makerRight.signOrderAsync({
                 takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetAddressRight,
+                    makerAssetRight.address,
                 ),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
@@ -2007,7 +2010,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetAddressLeft,
+                    makerAssetLeft.address,
                 ),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
