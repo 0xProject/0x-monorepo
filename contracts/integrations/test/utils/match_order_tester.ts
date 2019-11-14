@@ -1,5 +1,4 @@
-import { IAssetDataContract } from '@0x/contracts-asset-proxy';
-import { BlockchainBalanceStore, ExchangeContract, LocalBalanceStore } from '@0x/contracts-exchange';
+import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
 import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';

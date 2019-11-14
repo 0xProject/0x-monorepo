@@ -54,7 +54,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
             deployment,
         });
         feeRecipientRight = new Actor({
-            name: 'left fee recipient',
+            name: 'right fee recipient',
             deployment,
         });
 
