@@ -182,7 +182,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
             const apiOrder = MeshOrderProvider._orderInfoToAPIOrder(event);
             switch (event.endState) {
                 case OrderEventEndState.Added:
-                case 'UNEXPIRED' as any: {
+                case OrderEventEndState.Unexpired: {
                     addedRemovedByAssetPairKey[assetPairKey].added.push(apiOrder);
                     break;
                 }
@@ -190,7 +190,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
                 case OrderEventEndState.Expired:
                 case OrderEventEndState.FullyFilled:
                 case OrderEventEndState.Unfunded:
-                case 'STOPPED_WATCHING' as any: {
+                case OrderEventEndState.StoppedWatching: {
                     addedRemovedByAssetPairKey[assetPairKey].removed.push(apiOrder);
                     break;
                 }

@@ -651,7 +651,7 @@
     "@0x/contract-addresses" "^3.2.0"
     "@0x/contract-artifacts" "^2.2.2"
 
-"@0x/assert@^2.1.0", "@0x/assert@^2.1.1", "@0x/assert@^2.1.2", "@0x/assert@^2.1.6":
+"@0x/assert@^2.1.0", "@0x/assert@^2.1.1", "@0x/assert@^2.1.6":
   version "2.1.6"
   resolved "https://registry.npmjs.org/@0x/assert/-/assert-2.1.6.tgz#61c5854b555bca1f1f0503754f2fd0169bee0ef1"
   dependencies:
@@ -822,21 +822,22 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0x/mesh-rpc-client@^6.0.1-beta":
-  version "6.0.1-beta"
-  resolved "https://registry.yarnpkg.com/@0x/mesh-rpc-client/-/mesh-rpc-client-6.0.1-beta.tgz#9159cf5f50a43a9c3a9307d7536eeefdc8ec9d31"
-  integrity sha512-IxZdZk0YpHmSOIKJbh799eeSmZhuSr895dF1E2FTZ5Elit18PNH2godMTAO+DklyglcpoMReXMcaG6qt1fkKbQ==
+"@0x/mesh-rpc-client@^7.0.3-beta-0xv3":
+  version "7.0.3-beta-0xv3"
+  resolved "https://registry.yarnpkg.com/@0x/mesh-rpc-client/-/mesh-rpc-client-7.0.3-beta-0xv3.tgz#dfe5e9479c7b8ff17a028d2a91d730d33acd1bc7"
+  integrity sha512-48/Kex0GETDu7s7dOL0+eU9RbPvi9RVDi3PwE+kTzR6pnydYLdc4evwJcjxtaU5ph1oT2Dw0CTLNvvUCEDLwdQ==
   dependencies:
-    "@0x/assert" "^2.1.2"
-    "@0x/order-utils" "^8.2.4"
-    "@0x/types" "^2.4.1"
-    "@0x/typescript-typings" "^4.2.4"
-    "@0x/utils" "^4.4.2"
+    "@0x/assert" "2.2.0-beta.1"
+    "@0x/order-utils" "8.5.0-beta.1"
+    "@0x/types" "2.5.0-beta.1"
+    "@0x/typescript-typings" "4.4.0-beta.1"
     "@0x/web3-providers-fork" "0.0.7"
+    bignumber.js "~9.0.0"
+    detect-node "2.0.3"
     uuid "^3.3.2"
     websocket "^1.0.29"
 
-"@0x/order-utils@^8.2.1", "@0x/order-utils@^8.2.2", "@0x/order-utils@^8.2.3", "@0x/order-utils@^8.2.4", "@0x/order-utils@^8.4.0":
+"@0x/order-utils@^8.2.1", "@0x/order-utils@^8.2.2", "@0x/order-utils@^8.2.3", "@0x/order-utils@^8.4.0":
   version "8.4.0"
   resolved "https://registry.npmjs.org/@0x/order-utils/-/order-utils-8.4.0.tgz#f7fe9c73f9fd82ab05ec3c04951049e904aab46a"
   dependencies:
@@ -918,7 +919,7 @@
     ethereum-types "^2.1.6"
     popper.js "1.14.3"
 
-"@0x/utils@^4.3.3", "@0x/utils@^4.4.0", "@0x/utils@^4.4.1", "@0x/utils@^4.4.2", "@0x/utils@^4.5.2":
+"@0x/utils@^4.3.3", "@0x/utils@^4.4.0", "@0x/utils@^4.4.1", "@0x/utils@^4.5.2":
   version "4.5.2"
   resolved "https://registry.npmjs.org/@0x/utils/-/utils-4.5.2.tgz#6cc89f2d0dda341e0fb4e76049a35abfb67a4ac5"
   dependencies:
@@ -3881,6 +3882,11 @@ bignumber.js@~4.1.0:
 bignumber.js@~8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
+
+bignumber.js@~9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.0.tgz#805880f84a329b5eac6e7cb6f8274b6d82bdf075"
+  integrity sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==
 
 binary-extensions@^1.0.0:
   version "1.11.0"
