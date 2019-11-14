@@ -16,7 +16,7 @@ import ExchangeRevertErrors = require('../src/revert_errors');
 import { artifacts } from './artifacts';
 import { TestLibExchangeRichErrorDecoderContract } from './wrappers';
 
-blockchainTests.resets.only('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
+blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
     const ASSET_PROXY_ID_LENGTH = 4;
     const SIGNATURE_LENGTH = 66;
     const ASSET_DATA_LENGTH = 36;

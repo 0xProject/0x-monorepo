@@ -205,7 +205,7 @@ contract MixinWrapperFunctions is
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountFloor(
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount

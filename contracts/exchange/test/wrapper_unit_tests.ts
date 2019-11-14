@@ -1,6 +1,14 @@
 import { ContractTxFunctionObj } from '@0x/base-contract';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, describe, expect, hexRandom, orderHashUtils } from '@0x/contracts-test-utils';
+import {
+    blockchainTests,
+    constants,
+    describe,
+    expect,
+    getRandomPortion,
+    hexRandom,
+    orderHashUtils,
+} from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilReferenceFunctions, SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, Order } from '@0x/types';
 import { AnyRevertError, BigNumber, StringRevertError } from '@0x/utils';
@@ -12,6 +20,7 @@ import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {
+    TestFillRoundingContract,
     TestWrapperFunctionsCancelOrderCalledEventArgs as CancelOrderCalledEventArgs,
     TestWrapperFunctionsContract,
     TestWrapperFunctionsFillOrderCalledEventArgs as FillOrderCalledEventArgs,
@@ -20,7 +29,7 @@ import {
 blockchainTests('Exchange wrapper functions unit tests.', env => {
     const CHAIN_ID = 0x74657374;
     const { ONE_ETHER, MAX_UINT256 } = constants;
-    const { addFillResults, getPartialAmountFloor } = LibReferenceFunctions;
+    const { addFillResults, getPartialAmountCeil } = LibReferenceFunctions;
     const { safeSub } = UtilReferenceFunctions;
     const protocolFeeMultiplier = new BigNumber(150000);
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
@@ -939,9 +948,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
                 const makerAssetFillAmount = ONE_ETHER;
                 const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
-                    SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
-                    orders[0].takerAssetAmount.times(makerAssetFillAmount),
-                    orders[0].makerAssetAmount,
+                    SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
+                    constants.ZERO_AMOUNT,
+                    new BigNumber(1),
                 );
                 const tx = getContractFn()(orders, makerAssetFillAmount, signatures).awaitTransactionSuccessAsync();
                 return expect(tx).to.revertWith(expectedError);
@@ -989,7 +998,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             let fillResults = _.cloneDeep(EMPTY_FILL_RESULTS);
             for (const [order, signature] of _.zip(orders, signatures) as [[Order, string]]) {
                 const remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
-                const remainingTakerAssetFillAmount = getPartialAmountFloor(
+                const remainingTakerAssetFillAmount = getPartialAmountCeil(
                     order.takerAssetAmount,
                     order.makerAssetAmount,
                     remainingMakerAssetFillAmount,
@@ -1058,6 +1067,93 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const receipt = await contractFn.awaitTransactionSuccessAsync();
                 expect(actualResult).to.deep.eq(expectedResult);
                 assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+            });
+
+            describe('partial fills', () => {
+                let roundingTestContract: TestFillRoundingContract;
+                // Use another test contract with `_fillOrder()` preserved so the
+                // correct fill results are returned and we can test partial fills.
+                // TODO(dorothy-zbornak): Consolidate these contracts into one.
+                before(async () => {
+                    roundingTestContract = await TestFillRoundingContract.deployFrom0xArtifactAsync(
+                        artifacts.TestFillRounding,
+                        env.provider,
+                        {
+                            ...env.txDefaults,
+                        },
+                        {},
+                    );
+                });
+
+                it('small quantities', async () => {
+                    const orders = [
+                        randomOrder({
+                            makerAssetAmount: new BigNumber(30000),
+                            takerAssetAmount: new BigNumber(20000),
+                        }),
+                    ];
+                    const signatures = [hexRandom()];
+                    const fillAmount = new BigNumber(10000);
+                    const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
+                        orders,
+                        fillAmount,
+                        signatures,
+                    ).callAsync();
+                    expect(fillResults.makerAssetFilledAmount).to.bignumber.eq(10000);
+                });
+
+                it('large quantities', async () => {
+                    const orders = [
+                        randomOrder({
+                            makerAssetAmount: new BigNumber('21400000000000000000'),
+                            takerAssetAmount: new BigNumber('6300000000000000000'),
+                        }),
+                    ];
+                    const signatures = [hexRandom()];
+                    const fillAmount = new BigNumber('2400000000000000000');
+                    const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
+                        orders,
+                        fillAmount,
+                        signatures,
+                    ).callAsync();
+                    expect(fillResults.makerAssetFilledAmount).to.bignumber.eq('2400000000000000002');
+                });
+
+                it('large full precision quantities', async () => {
+                    const orders = [
+                        randomOrder({
+                            makerAssetAmount: new BigNumber('942848588381848588533'),
+                            takerAssetAmount: new BigNumber('103048102885858024121'),
+                        }),
+                    ];
+                    const signatures = [hexRandom()];
+                    const fillAmount = new BigNumber('84819838457312347759');
+                    const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
+                        orders,
+                        fillAmount,
+                        signatures,
+                    ).callAsync();
+                    expect(fillResults.makerAssetFilledAmount).to.bignumber.eq('84819838457312347760');
+                });
+
+                describe.optional('full precision fuzzing', () => {
+                    const FUZZ_COUNT = 256;
+                    for (const i of _.times(FUZZ_COUNT)) {
+                        it(`${i + 1}/${FUZZ_COUNT}`, async () => {
+                            const ordersCount = _.random(1, 10);
+                            const orders = _.times(ordersCount, () => randomOrder());
+                            const signatures = orders.map(() => hexRandom());
+                            const totalMakerAssetAmount = BigNumber.sum(...orders.map(o => o.makerAssetAmount));
+                            const fillAmount = getRandomPortion(totalMakerAssetAmount);
+                            const fillResults = await roundingTestContract.marketBuyOrdersNoThrow(
+                                orders,
+                                fillAmount,
+                                signatures,
+                            ).callAsync();
+                            expect(fillResults.makerAssetFilledAmount).to.bignumber.gte(fillAmount);
+                        });
+                    }
+                });
             });
         });
 
