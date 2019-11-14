@@ -31,6 +31,7 @@ export { InsufficientAssetLiquidityError } from './errors';
 
 export {
     SwapQuoterError,
+    SwapQuoteConsumerError,
     SwapQuoterOpts,
     SwapQuote,
     SwapQuoteConsumerOpts,
