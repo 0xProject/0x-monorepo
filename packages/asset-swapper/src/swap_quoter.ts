@@ -226,7 +226,7 @@ export class SwapQuoter {
         takerTokenAddress: string,
         makerAssetBuyAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
-    ): Promise<SwapQuote> {
+    ): Promise<MarketBuySwapQuote> {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
@@ -256,7 +256,7 @@ export class SwapQuoter {
         takerTokenAddress: string,
         takerAssetSellAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
-    ): Promise<SwapQuote> {
+    ): Promise<MarketSellSwapQuote> {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);

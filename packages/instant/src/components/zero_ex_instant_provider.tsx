@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
+import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, SWAP_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
@@ -17,7 +17,7 @@ import { errorFlasher } from '../util/error_flasher';
 import { setupRollbar } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
-import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
+import { generateAccountHeartbeater, generateSwapQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
 export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
@@ -25,7 +25,7 @@ export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProviderProps> {
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
-    private _buyQuoteHeartbeat?: Heartbeater;
+    private _swapQuoteHeartbeat?: Heartbeater;
 
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
@@ -114,14 +114,14 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
             this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
         }
 
-        this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater({
+        this._swapQuoteHeartbeat = generateSwapQuoteHeartbeater({
             store: this._store,
             shouldPerformImmediatelyOnStart: false,
         });
-        this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
+        this._swapQuoteHeartbeat.start(SWAP_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // Trigger first buyquote fetch
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, QuoteFetchOrigin.Manual, {
+        asyncData.fetchCurrentSwapQuoteAndDispatchToStore(state, dispatch, QuoteFetchOrigin.Manual, {
             updateSilently: false,
         });
         // warm up the gas price estimator cache just in case we can't
@@ -150,8 +150,8 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         if (this._accountUpdateHeartbeat) {
             this._accountUpdateHeartbeat.stop();
         }
-        if (this._buyQuoteHeartbeat) {
-            this._buyQuoteHeartbeat.stop();
+        if (this._swapQuoteHeartbeat) {
+            this._swapQuoteHeartbeat.stop();
         }
     }
     public render(): React.ReactNode {

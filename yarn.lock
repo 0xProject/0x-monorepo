@@ -2006,6 +2006,12 @@
   dependencies:
     "@types/node" "*"
 
+"@types/bn.js@^4.11.0":
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.0.tgz#401cb20874f0a7b8414e46308a99c449759b7de9"
+  dependencies:
+    "@types/node" "*"
+
 "@types/cheerio@*":
   version "0.22.9"
   resolved "https://registry.npmjs.org/@types/cheerio/-/cheerio-0.22.9.tgz#b5990152604c2ada749b7f88cab3476f21f39d7b"

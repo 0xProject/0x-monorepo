@@ -1,4 +1,4 @@
-import { SwapQuote, SwapQuoter } from '@0x/asset-swapper';
+import { SwapQuote, SwapQuoter, MarketBuySwapQuote } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -39,7 +39,7 @@ export const swapQuoteUpdater = {
         // TODO(dave4506) expose wethAssetData + feePercentage utils
         const wethAssetData = '';
         const feePercentage = oc(options.affiliateInfo).feePercentage();
-        let newSwapQuote: SwapQuote | undefined;
+        let newSwapQuote: MarketBuySwapQuote | undefined;
         const slippagePercentage =
             asset.metaData.assetProxyId === AssetProxyId.ERC20
                 ? ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE

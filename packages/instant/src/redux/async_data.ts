@@ -32,8 +32,7 @@ export const asyncData = {
         const { providerState, assetMetaDataMap, network } = state;
         const swapQuoter = providerState.swapQuoter;
         try {
-            // TODO(dave4506)
-            const wethAssetData = '';
+            const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
             const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);
             const deduplicatedAssetDatas = _.uniq(assetDatas);
             const assets = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);

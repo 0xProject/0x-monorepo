@@ -1,4 +1,4 @@
-import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { SwapQuoter, SwapQuoterError, MarketBuySwapQuote, SwapQuoteConsumer, SwapQuote } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -16,9 +16,10 @@ import { etherscanUtil } from '../util/etherscan';
 interface ConnectedState {
     accountAddress?: string;
     accountEthBalanceInWei?: BigNumber;
-    buyQuote?: BuyQuote;
-    buyOrderProcessingState: OrderProcessState;
-    assetBuyer: AssetBuyer;
+    swapQuote?: MarketBuySwapQuote;
+    swapOrderProcessingState: OrderProcessState;
+    swapQuoter: SwapQuoter;
+    swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
     selectedAsset?: Asset;
@@ -27,17 +28,19 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onValidationPending: (buyQuote: BuyQuote) => void;
-    onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
+    onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
+    onBuyProcessing: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
+    onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onRetry: () => void;
-    onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
+    onValidationFail: (swapQuote: MarketBuySwapQuote, errorMessage: SwapQuoterError | ZeroExInstantError) => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
-    const assetBuyer = state.providerState.assetBuyer;
+    const swapQuoter = state.providerState.swapQuoter;
+    const swapQuoteConsumer = state.providerState.swapQuoteConsumer;
+    const chainId = swapQuoteConsumer.chainId;
     const web3Wrapper = state.providerState.web3Wrapper;
     const account = state.providerState.account;
     const accountAddress = account.state === AccountState.Ready ? account.address : undefined;
@@ -46,25 +49,26 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
     return {
         accountAddress,
         accountEthBalanceInWei,
-        buyOrderProcessingState: state.buyOrderState.processState,
-        assetBuyer,
+        swapOrderProcessingState: state.swapOrderState.processState,
+        swapQuoter,
+        swapQuoteConsumer,
         web3Wrapper,
-        buyQuote: state.latestBuyQuote,
+        swapQuote: state.latestSwapQuote,
         affiliateInfo: state.affiliateInfo,
         selectedAsset,
         onSuccess: state.onSuccess,
         onViewTransaction: () => {
             if (
-                state.buyOrderState.processState === OrderProcessState.Processing ||
-                state.buyOrderState.processState === OrderProcessState.Success ||
-                state.buyOrderState.processState === OrderProcessState.Failure
+                state.swapOrderState.processState === OrderProcessState.Processing ||
+                state.swapOrderState.processState === OrderProcessState.Success ||
+                state.swapOrderState.processState === OrderProcessState.Failure
             ) {
                 const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
-                    state.buyOrderState.txHash,
-                    assetBuyer.networkId,
+                    state.swapOrderState.txHash,
+                    chainId,
                 );
                 if (etherscanUrl) {
-                    analytics.trackTransactionViewed(state.buyOrderState.processState);
+                    analytics.trackTransactionViewed(state.swapOrderState.processState);
 
                     window.open(etherscanUrl, '_blank');
                     return;
@@ -78,21 +82,21 @@ const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     ownProps: SelectedAssetBuyOrderStateButtons,
 ): ConnectedDispatch => ({
-    onValidationPending: (buyQuote: BuyQuote) => {
-        dispatch(actions.setBuyOrderStateValidating());
+    onValidationPending: (swapQuote: MarketBuySwapQuote) => {
+        dispatch(actions.setSwapOrderStateValidating());
     },
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => {
-        dispatch(actions.setBuyOrderStateProcessing(txHash, startTimeUnix, expectedEndTimeUnix));
+    onBuyProcessing: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => {
+        dispatch(actions.setSwapOrderStateProcessing(txHash, startTimeUnix, expectedEndTimeUnix));
     },
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => dispatch(actions.setBuyOrderStateSuccess(txHash)),
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => dispatch(actions.setBuyOrderStateFailure(txHash)),
+    onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => dispatch(actions.setSwapOrderStateSuccess(txHash)),
+    onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => dispatch(actions.setSwapOrderStateFailure(txHash)),
     onSignatureDenied: () => {
         dispatch(actions.resetAmount());
         const errorMessage = 'You denied this transaction';
         errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
     },
-    onValidationFail: (buyQuote, error) => {
-        dispatch(actions.setBuyOrderStateNone());
+    onValidationFail: (swapQuote, error) => {
+        dispatch(actions.setSwapOrderStateNone());
         if (error === ZeroExInstantError.InsufficientETH) {
             const errorMessage = "You don't have enough ETH";
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
@@ -117,8 +121,8 @@ const mergeProps = (
         ...ownProps,
         ...connectedState,
         ...connectedDispatch,
-        onBuySuccess: (buyQuote: BuyQuote, txHash: string) => {
-            connectedDispatch.onBuySuccess(buyQuote, txHash);
+        onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => {
+            connectedDispatch.onBuySuccess(swapQuote, txHash);
             if (connectedState.onSuccess) {
                 connectedState.onSuccess(txHash);
             }

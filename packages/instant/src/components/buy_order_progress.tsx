@@ -7,18 +7,18 @@ import { Container } from '../components/ui/container';
 import { OrderProcessState, OrderState } from '../types';
 
 export interface BuyOrderProgressProps {
-    buyOrderState: OrderState;
+    swapOrderState: OrderState;
 }
 
 export const BuyOrderProgress: React.StatelessComponent<BuyOrderProgressProps> = props => {
-    const { buyOrderState } = props;
+    const { swapOrderState } = props;
     if (
-        buyOrderState.processState === OrderProcessState.Processing ||
-        buyOrderState.processState === OrderProcessState.Success ||
-        buyOrderState.processState === OrderProcessState.Failure
+        swapOrderState.processState === OrderProcessState.Processing ||
+        swapOrderState.processState === OrderProcessState.Success ||
+        swapOrderState.processState === OrderProcessState.Failure
     ) {
-        const progress = buyOrderState.progress;
-        const hasEnded = buyOrderState.processState !== OrderProcessState.Processing;
+        const progress = swapOrderState.progress;
+        const hasEnded = swapOrderState.processState !== OrderProcessState.Processing;
         const expectedTimeMs = progress.expectedEndTimeUnix - progress.startTimeUnix;
         return (
             <Container width="100%" padding="20px 20px 0px 20px">
