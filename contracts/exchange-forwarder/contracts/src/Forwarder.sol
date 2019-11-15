@@ -32,13 +32,13 @@ contract Forwarder is
 {
     constructor (
         address _exchange,
-        bytes memory _wethAssetData
+        address _weth
     )
         public
         Ownable()
         LibConstants(
             _exchange,
-            _wethAssetData
+            _weth
         )
         MixinForwarderCore()
     {}

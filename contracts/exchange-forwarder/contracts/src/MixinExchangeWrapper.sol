@@ -88,7 +88,7 @@ contract MixinExchangeWrapper is
         )
     {
         // No taker fee or percentage fee
-        if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.makerAssetData)) {
+        if (order.takerFee == 0 || _isPercentageFee(order.takerFeeAssetData, order.makerAssetData)) {
             // Attempt to sell the remaining amount of WETH
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
@@ -228,7 +228,7 @@ contract MixinExchangeWrapper is
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
         // Percentage fee
-        } else if (order.takerFeeAssetData.equals(order.makerAssetData)) {
+        } else if (_isPercentageFee(order.takerFeeAssetData, order.makerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
@@ -314,6 +314,42 @@ contract MixinExchangeWrapper is
                 makerAssetBuyAmount,
                 totalMakerAssetAcquiredAmount
             ));
+        }
+    }
+
+    /// @dev Checks whether an order's taker fee is effectively denominated in the maker asset.
+    ///      This is the case if they have the same ERC20Proxy asset data, or if the makerAssetData
+    ///      is the ERC20Bridge equivalent of the takerFeeAssetData.
+    /// @param takerFeeAssetData Byte array encoded for the takerFee asset proxy.
+    /// @param makerAssetData Byte array encoded for the maker asset proxy.
+    /// @return isPercentageFee Whether or not the taker fee asset matches the maker asset.
+    function _isPercentageFee(
+        bytes memory takerFeeAssetData,
+        bytes memory makerAssetData
+    )
+        internal
+        pure
+        returns (bool)
+    {
+        bytes4 takerFeeAssetProxyId = takerFeeAssetData.readBytes4(0);
+        // If the takerFee asset is not ERC20, it cannot be a percentage fee (and will revert with
+        // an UnsupportedFeeError in the calling function).
+        if (takerFeeAssetProxyId != ERC20_PROXY_ID) {
+            return false;
+        }
+
+        bytes4 makerAssetProxyId = makerAssetData.readBytes4(0);
+        if (makerAssetProxyId == ERC20_PROXY_ID) {
+            // If the maker asset is ERC20, we can directly compare the asset data.
+            return takerFeeAssetData.equals(makerAssetData);
+        } else if (makerAssetProxyId == ERC20_BRIDGE_PROXY_ID) {
+            // If the maker asset is from an ERC20Bridge, compare the underlying token addresses.
+            address takerFeeToken = takerFeeAssetData.readAddress(16);
+            address makerToken = makerAssetData.readAddress(16);
+            return (takerFeeToken == makerToken);
+        } else {
+            // If the maker asset is of any other type, the taker fee cannot be a percentage fee.
+            return false;
         }
     }
 }

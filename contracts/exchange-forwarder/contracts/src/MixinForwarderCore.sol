@@ -46,7 +46,7 @@ contract MixinForwarderCore is
     constructor ()
         public
     {
-        address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
+        address proxyAddress = EXCHANGE.getAssetProxy(ERC20_PROXY_ID);
         if (proxyAddress == address(0)) {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
         }

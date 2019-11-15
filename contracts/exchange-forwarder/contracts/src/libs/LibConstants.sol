@@ -27,8 +27,10 @@ contract LibConstants {
 
     using LibBytes for bytes;
 
-    bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
+    bytes4 constant internal ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant internal ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
+    bytes4 constant internal ERC20_BRIDGE_PROXY_ID = bytes4(keccak256("ERC20Bridge(address,address,bytes)"));
+
     uint256 constant internal MAX_UINT = 2**256 - 1;
     uint256 constant internal PERCENTAGE_DENOMINATOR = 10**18;
     uint256 constant internal MAX_FEE_PERCENTAGE = 5 * PERCENTAGE_DENOMINATOR / 100;         // 5%
@@ -36,19 +38,15 @@ contract LibConstants {
      // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
     IEtherToken internal ETHER_TOKEN;
-    bytes internal WETH_ASSET_DATA;
     // solhint-enable var-name-mixedcase
 
     constructor (
         address _exchange,
-        bytes memory _wethAssetData
+        address _weth
     )
         public
     {
         EXCHANGE = IExchange(_exchange);
-        WETH_ASSET_DATA = _wethAssetData;
-
-        address etherToken = _wethAssetData.readAddress(16);
-        ETHER_TOKEN = IEtherToken(etherToken);
+        ETHER_TOKEN = IEtherToken(_weth);
     }
 }
