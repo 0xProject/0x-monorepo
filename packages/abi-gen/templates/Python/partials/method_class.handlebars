@@ -5,7 +5,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
     def __init__(self, web3_or_provider: Union[Web3, BaseProvider], contract_address: str, contract_function: ContractFunction{{#if inputs}}, validator: Validator=None{{/if}}):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address{{#if inputs}}, validator{{/if}})
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     {{#if inputs}}
     def validate_and_normalize_inputs(self, {{> typed_params inputs=inputs}}):
@@ -42,7 +42,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        {{#hasReturnValue}}returned = {{/hasReturnValue}}self.underlying_method({{> params}}).call(tx_params.as_dict())
+        {{#hasReturnValue}}returned = {{/hasReturnValue}}self._underlying_method({{> params}}).call(tx_params.as_dict())
         {{#hasReturnValue}}
         return {{makeOutputsValue 'returned' outputs}}
         {{/hasReturnValue}}
@@ -58,7 +58,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).transact(tx_params.as_dict())
+        return self._underlying_method({{> params}}).transact(tx_params.as_dict())
 
     def build_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> dict:
         """Construct calldata to be used as input to the method."""
@@ -66,7 +66,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).buildTransaction(tx_params.as_dict())
+        return self._underlying_method({{> params}}).buildTransaction(tx_params.as_dict())
 
 {{/if}}
     def estimate_gas(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> int:
@@ -75,4 +75,4 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).estimateGas(tx_params.as_dict())
+        return self._underlying_method({{> params}}).estimateGas(tx_params.as_dict())

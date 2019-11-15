@@ -190,7 +190,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: List[Union[bytes, str]]):
         """Validate the inputs to the acceptsAnArrayOfBytes method."""
@@ -214,7 +214,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(a).call(tx_params.as_dict())
+        self._underlying_method(a).call(tx_params.as_dict())
 
     def estimate_gas(
         self, a: List[Union[bytes, str]], tx_params: Optional[TxParams] = None
@@ -222,7 +222,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+        return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
 class AcceptsBytesMethod(ContractMethod):
@@ -237,7 +237,7 @@ class AcceptsBytesMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: Union[bytes, str]):
         """Validate the inputs to the acceptsBytes method."""
@@ -256,7 +256,7 @@ class AcceptsBytesMethod(ContractMethod):
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(a).call(tx_params.as_dict())
+        self._underlying_method(a).call(tx_params.as_dict())
 
     def estimate_gas(
         self, a: Union[bytes, str], tx_params: Optional[TxParams] = None
@@ -264,7 +264,7 @@ class AcceptsBytesMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+        return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
 class ComplexInputComplexOutputMethod(ContractMethod):
@@ -279,7 +279,7 @@ class ComplexInputComplexOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(
         self, complex_input: AbiGenDummyComplexInput
@@ -306,7 +306,7 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         """
         (complex_input) = self.validate_and_normalize_inputs(complex_input)
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method(complex_input).call(
+        returned = self._underlying_method(complex_input).call(
             tx_params.as_dict()
         )
         return AbiGenDummyComplexOutput(
@@ -324,7 +324,7 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (complex_input) = self.validate_and_normalize_inputs(complex_input)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(complex_input).estimateGas(
+        return self._underlying_method(complex_input).estimateGas(
             tx_params.as_dict()
         )
 
@@ -341,7 +341,7 @@ class EcrecoverFnMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(
         self,
@@ -393,7 +393,7 @@ class EcrecoverFnMethod(ContractMethod):
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method(_hash, v, r, s).call(
+        returned = self._underlying_method(_hash, v, r, s).call(
             tx_params.as_dict()
         )
         return str(returned)
@@ -409,7 +409,7 @@ class EcrecoverFnMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(_hash, v, r, s).estimateGas(
+        return self._underlying_method(_hash, v, r, s).estimateGas(
             tx_params.as_dict()
         )
 
@@ -425,7 +425,7 @@ class EmitSimpleEventMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -434,7 +434,7 @@ class EmitSimpleEventMethod(ContractMethod):
         :returns: the return value of the underlying method.
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def send_transaction(
         self, tx_params: Optional[TxParams] = None
@@ -444,17 +444,17 @@ class EmitSimpleEventMethod(ContractMethod):
         :param tx_params: transaction parameters
         """
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
+        return self._underlying_method().transact(tx_params.as_dict())
 
     def build_transaction(self, tx_params: Optional[TxParams] = None) -> dict:
         """Construct calldata to be used as input to the method."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().buildTransaction(tx_params.as_dict())
+        return self._underlying_method().buildTransaction(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class MethodReturningArrayOfStructsMethod(ContractMethod):
@@ -468,7 +468,7 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(
         self, tx_params: Optional[TxParams] = None
@@ -479,7 +479,7 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return [
             AbiGenDummyStruct(
                 someBytes=element[0],
@@ -493,7 +493,7 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class MethodReturningMultipleValuesMethod(ContractMethod):
@@ -507,7 +507,7 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple[int, str]:
         """Execute underlying contract method via eth_call.
@@ -516,7 +516,7 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return (
             returned[0],
             returned[1],
@@ -525,7 +525,7 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
@@ -541,7 +541,7 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(
         self, tx_params: Optional[TxParams] = None
@@ -552,7 +552,7 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return AbiGenDummyNestedStructWithInnerStructNotUsedElsewhere(
             innerStruct=returned[0],
         )
@@ -560,7 +560,7 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class MultiInputMultiOutputMethod(ContractMethod):
@@ -575,7 +575,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(
         self, index_0: int, index_1: Union[bytes, str], index_2: str
@@ -619,7 +619,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
             index_0, index_1, index_2
         )
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method(index_0, index_1, index_2).call(
+        returned = self._underlying_method(index_0, index_1, index_2).call(
             tx_params.as_dict()
         )
         return (
@@ -640,7 +640,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
             index_0, index_1, index_2
         )
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(index_0, index_1, index_2).estimateGas(
+        return self._underlying_method(index_0, index_1, index_2).estimateGas(
             tx_params.as_dict()
         )
 
@@ -657,7 +657,7 @@ class NestedStructInputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, n: AbiGenDummyNestedStruct):
         """Validate the inputs to the nestedStructInput method."""
@@ -678,7 +678,7 @@ class NestedStructInputMethod(ContractMethod):
         """
         (n) = self.validate_and_normalize_inputs(n)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(n).call(tx_params.as_dict())
+        self._underlying_method(n).call(tx_params.as_dict())
 
     def estimate_gas(
         self, n: AbiGenDummyNestedStruct, tx_params: Optional[TxParams] = None
@@ -686,7 +686,7 @@ class NestedStructInputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (n) = self.validate_and_normalize_inputs(n)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(n).estimateGas(tx_params.as_dict())
+        return self._underlying_method(n).estimateGas(tx_params.as_dict())
 
 
 class NestedStructOutputMethod(ContractMethod):
@@ -700,7 +700,7 @@ class NestedStructOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(
         self, tx_params: Optional[TxParams] = None
@@ -711,7 +711,7 @@ class NestedStructOutputMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return AbiGenDummyNestedStruct(
             innerStruct=returned[0], description=returned[1],
         )
@@ -719,7 +719,7 @@ class NestedStructOutputMethod(ContractMethod):
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class NoInputNoOutputMethod(ContractMethod):
@@ -733,7 +733,7 @@ class NoInputNoOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -744,12 +744,12 @@ class NoInputNoOutputMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class NoInputSimpleOutputMethod(ContractMethod):
@@ -763,7 +763,7 @@ class NoInputSimpleOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
@@ -774,13 +774,13 @@ class NoInputSimpleOutputMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return int(returned)
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class NonPureMethodMethod(ContractMethod):
@@ -794,7 +794,7 @@ class NonPureMethodMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
@@ -803,7 +803,7 @@ class NonPureMethodMethod(ContractMethod):
         :returns: the return value of the underlying method.
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return int(returned)
 
     def send_transaction(
@@ -814,17 +814,17 @@ class NonPureMethodMethod(ContractMethod):
         :param tx_params: transaction parameters
         """
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
+        return self._underlying_method().transact(tx_params.as_dict())
 
     def build_transaction(self, tx_params: Optional[TxParams] = None) -> dict:
         """Construct calldata to be used as input to the method."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().buildTransaction(tx_params.as_dict())
+        return self._underlying_method().buildTransaction(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class NonPureMethodThatReturnsNothingMethod(ContractMethod):
@@ -838,7 +838,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -847,7 +847,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         :returns: the return value of the underlying method.
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def send_transaction(
         self, tx_params: Optional[TxParams] = None
@@ -857,17 +857,17 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         :param tx_params: transaction parameters
         """
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
+        return self._underlying_method().transact(tx_params.as_dict())
 
     def build_transaction(self, tx_params: Optional[TxParams] = None) -> dict:
         """Construct calldata to be used as input to the method."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().buildTransaction(tx_params.as_dict())
+        return self._underlying_method().buildTransaction(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class OverloadedMethod2Method(ContractMethod):
@@ -882,7 +882,7 @@ class OverloadedMethod2Method(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: str):
         """Validate the inputs to the overloadedMethod method."""
@@ -901,7 +901,7 @@ class OverloadedMethod2Method(ContractMethod):
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(a).call(tx_params.as_dict())
+        self._underlying_method(a).call(tx_params.as_dict())
 
     def estimate_gas(
         self, a: str, tx_params: Optional[TxParams] = None
@@ -909,7 +909,7 @@ class OverloadedMethod2Method(ContractMethod):
         """Estimate gas consumption of method call."""
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+        return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
 class OverloadedMethod1Method(ContractMethod):
@@ -924,7 +924,7 @@ class OverloadedMethod1Method(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: int):
         """Validate the inputs to the overloadedMethod method."""
@@ -943,7 +943,7 @@ class OverloadedMethod1Method(ContractMethod):
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(a).call(tx_params.as_dict())
+        self._underlying_method(a).call(tx_params.as_dict())
 
     def estimate_gas(
         self, a: int, tx_params: Optional[TxParams] = None
@@ -951,7 +951,7 @@ class OverloadedMethod1Method(ContractMethod):
         """Estimate gas consumption of method call."""
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+        return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
 class PureFunctionWithConstantMethod(ContractMethod):
@@ -965,7 +965,7 @@ class PureFunctionWithConstantMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
@@ -974,13 +974,13 @@ class PureFunctionWithConstantMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return int(returned)
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class RequireWithConstantMethod(ContractMethod):
@@ -994,7 +994,7 @@ class RequireWithConstantMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -1003,12 +1003,12 @@ class RequireWithConstantMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class RevertWithConstantMethod(ContractMethod):
@@ -1022,7 +1022,7 @@ class RevertWithConstantMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -1031,12 +1031,12 @@ class RevertWithConstantMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class SimpleInputNoOutputMethod(ContractMethod):
@@ -1051,7 +1051,7 @@ class SimpleInputNoOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, index_0: int):
         """Validate the inputs to the simpleInputNoOutput method."""
@@ -1074,7 +1074,7 @@ class SimpleInputNoOutputMethod(ContractMethod):
         """
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(index_0).call(tx_params.as_dict())
+        self._underlying_method(index_0).call(tx_params.as_dict())
 
     def estimate_gas(
         self, index_0: int, tx_params: Optional[TxParams] = None
@@ -1082,7 +1082,9 @@ class SimpleInputNoOutputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(index_0).estimateGas(tx_params.as_dict())
+        return self._underlying_method(index_0).estimateGas(
+            tx_params.as_dict()
+        )
 
 
 class SimpleInputSimpleOutputMethod(ContractMethod):
@@ -1097,7 +1099,7 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, index_0: int):
         """Validate the inputs to the simpleInputSimpleOutput method."""
@@ -1120,7 +1122,7 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
         """
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method(index_0).call(tx_params.as_dict())
+        returned = self._underlying_method(index_0).call(tx_params.as_dict())
         return int(returned)
 
     def estimate_gas(
@@ -1129,7 +1131,9 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(index_0).estimateGas(tx_params.as_dict())
+        return self._underlying_method(index_0).estimateGas(
+            tx_params.as_dict()
+        )
 
 
 class SimplePureFunctionMethod(ContractMethod):
@@ -1143,7 +1147,7 @@ class SimplePureFunctionMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
@@ -1152,13 +1156,13 @@ class SimplePureFunctionMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return int(returned)
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class SimplePureFunctionWithInputMethod(ContractMethod):
@@ -1173,7 +1177,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the simplePureFunctionWithInput method."""
@@ -1194,7 +1198,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method(x).call(tx_params.as_dict())
+        returned = self._underlying_method(x).call(tx_params.as_dict())
         return int(returned)
 
     def estimate_gas(
@@ -1203,7 +1207,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+        return self._underlying_method(x).estimateGas(tx_params.as_dict())
 
 
 class SimpleRequireMethod(ContractMethod):
@@ -1217,7 +1221,7 @@ class SimpleRequireMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -1226,12 +1230,12 @@ class SimpleRequireMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class SimpleRevertMethod(ContractMethod):
@@ -1245,7 +1249,7 @@ class SimpleRevertMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying contract method via eth_call.
@@ -1254,12 +1258,12 @@ class SimpleRevertMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method().call(tx_params.as_dict())
+        self._underlying_method().call(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class StructInputMethod(ContractMethod):
@@ -1274,7 +1278,7 @@ class StructInputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, s: AbiGenDummyStruct):
         """Validate the inputs to the structInput method."""
@@ -1293,7 +1297,7 @@ class StructInputMethod(ContractMethod):
         """
         (s) = self.validate_and_normalize_inputs(s)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(s).call(tx_params.as_dict())
+        self._underlying_method(s).call(tx_params.as_dict())
 
     def estimate_gas(
         self, s: AbiGenDummyStruct, tx_params: Optional[TxParams] = None
@@ -1301,7 +1305,7 @@ class StructInputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (s) = self.validate_and_normalize_inputs(s)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(s).estimateGas(tx_params.as_dict())
+        return self._underlying_method(s).estimateGas(tx_params.as_dict())
 
 
 class StructOutputMethod(ContractMethod):
@@ -1315,7 +1319,7 @@ class StructOutputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> AbiGenDummyStruct:
         """Execute underlying contract method via eth_call.
@@ -1326,7 +1330,7 @@ class StructOutputMethod(ContractMethod):
         :returns: a Struct struct
         """
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method().call(tx_params.as_dict())
+        returned = self._underlying_method().call(tx_params.as_dict())
         return AbiGenDummyStruct(
             someBytes=returned[0],
             anInteger=returned[1],
@@ -1337,7 +1341,7 @@ class StructOutputMethod(ContractMethod):
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
+        return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
 class WithAddressInputMethod(ContractMethod):
@@ -1352,7 +1356,7 @@ class WithAddressInputMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(
         self, x: str, a: int, b: int, y: str, c: int
@@ -1409,7 +1413,7 @@ class WithAddressInputMethod(ContractMethod):
         """
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
         tx_params = super().normalize_tx_params(tx_params)
-        returned = self.underlying_method(x, a, b, y, c).call(
+        returned = self._underlying_method(x, a, b, y, c).call(
             tx_params.as_dict()
         )
         return str(returned)
@@ -1426,7 +1430,7 @@ class WithAddressInputMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x, a, b, y, c).estimateGas(
+        return self._underlying_method(x, a, b, y, c).estimateGas(
             tx_params.as_dict()
         )
 
@@ -1443,7 +1447,7 @@ class WithdrawMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, wad: int):
         """Validate the inputs to the withdraw method."""
@@ -1462,7 +1466,7 @@ class WithdrawMethod(ContractMethod):
         """
         (wad) = self.validate_and_normalize_inputs(wad)
         tx_params = super().normalize_tx_params(tx_params)
-        self.underlying_method(wad).call(tx_params.as_dict())
+        self._underlying_method(wad).call(tx_params.as_dict())
 
     def send_transaction(
         self, wad: int, tx_params: Optional[TxParams] = None
@@ -1473,7 +1477,7 @@ class WithdrawMethod(ContractMethod):
         """
         (wad) = self.validate_and_normalize_inputs(wad)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(wad).transact(tx_params.as_dict())
+        return self._underlying_method(wad).transact(tx_params.as_dict())
 
     def build_transaction(
         self, wad: int, tx_params: Optional[TxParams] = None
@@ -1481,7 +1485,7 @@ class WithdrawMethod(ContractMethod):
         """Construct calldata to be used as input to the method."""
         (wad) = self.validate_and_normalize_inputs(wad)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(wad).buildTransaction(
+        return self._underlying_method(wad).buildTransaction(
             tx_params.as_dict()
         )
 
@@ -1491,7 +1495,7 @@ class WithdrawMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (wad) = self.validate_and_normalize_inputs(wad)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(wad).estimateGas(tx_params.as_dict())
+        return self._underlying_method(wad).estimateGas(tx_params.as_dict())
 
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
