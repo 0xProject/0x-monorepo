@@ -129,7 +129,7 @@ export const utils = {
             }
             const TUPLE_TYPE_REGEX = '^tuple$';
             if (solType.match(TUPLE_TYPE_REGEX)) {
-                return utils.makePythonTupleName(components as DataItem[]);
+                return utils.makePythonTupleName(dataItem);
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
@@ -191,7 +191,8 @@ export const utils = {
      * simply concatenate all of the names of the components, and convert that
      * concatenation into PascalCase to conform to Python convention.
      */
-    makePythonTupleName(tupleComponents: DataItem[]): string {
+    makePythonTupleName(tuple: DataItem): string {
+        const tupleComponents = tuple.components;
         const lengthOfHashSuffix = 8;
         return `Tuple0x${createHash('MD5')
             .update(_.map(tupleComponents, component => component.name).join('_'))
@@ -362,12 +363,12 @@ export const utils = {
             //     Argument of type 'DataItem[] | undefined' is not assignable to parameter of type 'DataItem[]'.
             //     Type 'undefined' is not assignable to type 'DataItem[]'
             // when the code below tries to access tupleDataItem.components.
-            const pythonTupleName = utils.makePythonTupleName(tupleDataItem.components);
+            const pythonTupleName = utils.makePythonTupleName(tupleDataItem);
             tupleBodies[pythonTupleName] = utils.makePythonTupleClassBody(tupleDataItem.components);
             for (const component of tupleDataItem.components) {
                 if (component.type === 'tuple' || component.type === 'tuple[]') {
                     tupleDependencies.push([
-                        utils.makePythonTupleName((component as TupleDataItem).components), // tslint:disable-line:no-unnecessary-type-assertion
+                        utils.makePythonTupleName(component as TupleDataItem), // tslint:disable-line:no-unnecessary-type-assertion
                         pythonTupleName,
                     ]);
                     utils.extractTuples(component, tupleBodies, tupleDependencies);
