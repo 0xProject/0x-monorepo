@@ -46,7 +46,7 @@ except ImportError:
     pass
 
 
-class Tuple0xf95128ef(TypedDict):
+class AbiGenDummyComplexInput(TypedDict):
     """Python representation of a tuple or struct.
 
     Solidity compiler output does not include the names of structs that appear
@@ -69,7 +69,7 @@ class Tuple0xf95128ef(TypedDict):
     car: str
 
 
-class Tuple0xa057bf41(TypedDict):
+class AbiGenDummyComplexOutput(TypedDict):
     """Python representation of a tuple or struct.
 
     Solidity compiler output does not include the names of structs that appear
@@ -85,7 +85,7 @@ class Tuple0xa057bf41(TypedDict):
     accomplished via `str.encode("utf_8")`:code:
     """
 
-    input: Tuple0xf95128ef
+    input: AbiGenDummyComplexInput
 
     lorem: Union[bytes, str]
 
@@ -94,7 +94,7 @@ class Tuple0xa057bf41(TypedDict):
     dolor: str
 
 
-class Tuple0x246f9407(TypedDict):
+class AbiGenDummyStructNotDirectlyUsedAnywhere(TypedDict):
     """Python representation of a tuple or struct.
 
     Solidity compiler output does not include the names of structs that appear
@@ -113,7 +113,7 @@ class Tuple0x246f9407(TypedDict):
     aField: int
 
 
-class Tuple0x1b9da225(TypedDict):
+class AbiGenDummyNestedStructWithInnerStructNotUsedElsewhere(TypedDict):
     """Python representation of a tuple or struct.
 
     Solidity compiler output does not include the names of structs that appear
@@ -129,10 +129,10 @@ class Tuple0x1b9da225(TypedDict):
     accomplished via `str.encode("utf_8")`:code:
     """
 
-    innerStruct: Tuple0x246f9407
+    innerStruct: AbiGenDummyStructNotDirectlyUsedAnywhere
 
 
-class Tuple0xcf8ad995(TypedDict):
+class AbiGenDummyStruct(TypedDict):
     """Python representation of a tuple or struct.
 
     Solidity compiler output does not include the names of structs that appear
@@ -157,7 +157,7 @@ class Tuple0xcf8ad995(TypedDict):
     aString: str
 
 
-class Tuple0xc9bdd2d5(TypedDict):
+class AbiGenDummyNestedStruct(TypedDict):
     """Python representation of a tuple or struct.
 
     Solidity compiler output does not include the names of structs that appear
@@ -173,7 +173,7 @@ class Tuple0xc9bdd2d5(TypedDict):
     accomplished via `str.encode("utf_8")`:code:
     """
 
-    innerStruct: Tuple0xcf8ad995
+    innerStruct: AbiGenDummyStruct
 
     description: str
 
@@ -281,7 +281,9 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def validate_and_normalize_inputs(self, complex_input: Tuple0xf95128ef):
+    def validate_and_normalize_inputs(
+        self, complex_input: AbiGenDummyComplexInput
+    ):
         """Validate the inputs to the complexInputComplexOutput method."""
         self.validator.assert_valid(
             method_name="complexInputComplexOutput",
@@ -292,9 +294,9 @@ class ComplexInputComplexOutputMethod(ContractMethod):
 
     def call(
         self,
-        complex_input: Tuple0xf95128ef,
+        complex_input: AbiGenDummyComplexInput,
         tx_params: Optional[TxParams] = None,
-    ) -> Tuple0xa057bf41:
+    ) -> AbiGenDummyComplexOutput:
         """Execute underlying contract method via eth_call.
 
         Tests decoding when the input and output are complex.
@@ -307,7 +309,7 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         returned = self.underlying_method(complex_input).call(
             tx_params.as_dict()
         )
-        return Tuple0xa057bf41(
+        return AbiGenDummyComplexOutput(
             input=returned[0],
             lorem=returned[1],
             ipsum=returned[2],
@@ -316,7 +318,7 @@ class ComplexInputComplexOutputMethod(ContractMethod):
 
     def estimate_gas(
         self,
-        complex_input: Tuple0xf95128ef,
+        complex_input: AbiGenDummyComplexInput,
         tx_params: Optional[TxParams] = None,
     ) -> int:
         """Estimate gas consumption of method call."""
@@ -470,7 +472,7 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
 
     def call(
         self, tx_params: Optional[TxParams] = None
-    ) -> List[Tuple0xcf8ad995]:
+    ) -> List[AbiGenDummyStruct]:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -479,7 +481,7 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         returned = self.underlying_method().call(tx_params.as_dict())
         return [
-            Tuple0xcf8ad995(
+            AbiGenDummyStruct(
                 someBytes=element[0],
                 anInteger=element[1],
                 aDynamicArrayOfBytes=element[2],
@@ -541,7 +543,9 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
         super().__init__(web3_or_provider, contract_address)
         self.underlying_method = contract_function
 
-    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0x1b9da225:
+    def call(
+        self, tx_params: Optional[TxParams] = None
+    ) -> AbiGenDummyNestedStructWithInnerStructNotUsedElsewhere:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -549,7 +553,9 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
         """
         tx_params = super().normalize_tx_params(tx_params)
         returned = self.underlying_method().call(tx_params.as_dict())
-        return Tuple0x1b9da225(innerStruct=returned[0],)
+        return AbiGenDummyNestedStructWithInnerStructNotUsedElsewhere(
+            innerStruct=returned[0],
+        )
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -653,7 +659,7 @@ class NestedStructInputMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def validate_and_normalize_inputs(self, n: Tuple0xc9bdd2d5):
+    def validate_and_normalize_inputs(self, n: AbiGenDummyNestedStruct):
         """Validate the inputs to the nestedStructInput method."""
         self.validator.assert_valid(
             method_name="nestedStructInput",
@@ -663,7 +669,7 @@ class NestedStructInputMethod(ContractMethod):
         return n
 
     def call(
-        self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None
+        self, n: AbiGenDummyNestedStruct, tx_params: Optional[TxParams] = None
     ) -> None:
         """Execute underlying contract method via eth_call.
 
@@ -675,7 +681,7 @@ class NestedStructInputMethod(ContractMethod):
         self.underlying_method(n).call(tx_params.as_dict())
 
     def estimate_gas(
-        self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None
+        self, n: AbiGenDummyNestedStruct, tx_params: Optional[TxParams] = None
     ) -> int:
         """Estimate gas consumption of method call."""
         (n) = self.validate_and_normalize_inputs(n)
@@ -696,7 +702,9 @@ class NestedStructOutputMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address)
         self.underlying_method = contract_function
 
-    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
+    def call(
+        self, tx_params: Optional[TxParams] = None
+    ) -> AbiGenDummyNestedStruct:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -704,7 +712,7 @@ class NestedStructOutputMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         returned = self.underlying_method().call(tx_params.as_dict())
-        return Tuple0xc9bdd2d5(
+        return AbiGenDummyNestedStruct(
             innerStruct=returned[0], description=returned[1],
         )
 
@@ -1268,7 +1276,7 @@ class StructInputMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
+    def validate_and_normalize_inputs(self, s: AbiGenDummyStruct):
         """Validate the inputs to the structInput method."""
         self.validator.assert_valid(
             method_name="structInput", parameter_name="s", argument_value=s,
@@ -1276,7 +1284,7 @@ class StructInputMethod(ContractMethod):
         return s
 
     def call(
-        self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None
+        self, s: AbiGenDummyStruct, tx_params: Optional[TxParams] = None
     ) -> None:
         """Execute underlying contract method via eth_call.
 
@@ -1288,7 +1296,7 @@ class StructInputMethod(ContractMethod):
         self.underlying_method(s).call(tx_params.as_dict())
 
     def estimate_gas(
-        self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None
+        self, s: AbiGenDummyStruct, tx_params: Optional[TxParams] = None
     ) -> int:
         """Estimate gas consumption of method call."""
         (s) = self.validate_and_normalize_inputs(s)
@@ -1309,7 +1317,7 @@ class StructOutputMethod(ContractMethod):
         super().__init__(web3_or_provider, contract_address)
         self.underlying_method = contract_function
 
-    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
+    def call(self, tx_params: Optional[TxParams] = None) -> AbiGenDummyStruct:
         """Execute underlying contract method via eth_call.
 
         a method that returns a struct
@@ -1319,7 +1327,7 @@ class StructOutputMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         returned = self.underlying_method().call(tx_params.as_dict())
-        return Tuple0xcf8ad995(
+        return AbiGenDummyStruct(
             someBytes=returned[0],
             anInteger=returned[1],
             aDynamicArrayOfBytes=returned[2],

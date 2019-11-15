@@ -192,13 +192,20 @@ export const utils = {
      * concatenation into PascalCase to conform to Python convention.
      */
     makePythonTupleName(tuple: DataItem): string {
-        const tupleComponents = tuple.components;
-        const lengthOfHashSuffix = 8;
-        return `Tuple0x${createHash('MD5')
-            .update(_.map(tupleComponents, component => component.name).join('_'))
-            .digest()
-            .toString('hex')
-            .substring(0, lengthOfHashSuffix)}`;
+        if (tuple.internalType !== undefined) {
+            return tuple.internalType
+                .replace('struct ', '')
+                .replace('.', '')
+                .replace('[]', '');
+        } else {
+            const tupleComponents = tuple.components;
+            const lengthOfHashSuffix = 8;
+            return `Tuple0x${createHash('MD5')
+                .update(_.map(tupleComponents, component => component.name).join('_'))
+                .digest()
+                .toString('hex')
+                .substring(0, lengthOfHashSuffix)}`;
+        }
     },
     /**
      * @returns a string that is a Python code snippet that's intended to be
