@@ -37,7 +37,6 @@ export {
     SwapQuoteConsumerOpts,
     CalldataInfo,
     ExtensionContractType,
-    SwapQuoteConsumingOpts,
     LiquidityForTakerMakerAssetDataPair,
     SwapQuoteGetOutputOpts,
     PrunedSignedOrder,

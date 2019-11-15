@@ -8,6 +8,7 @@ import {
     SwapQuoteGetOutputOpts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
+    ExtensionContractType,
 } from './types';
 
 const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
@@ -35,13 +36,17 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     ...DEFAULT_ORDER_PRUNER_OPTS,
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts = {
+const DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS: ForwarderExtensionContractOpts = {
     feePercentage: 0,
     feeRecipient: NULL_ADDRESS,
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts &
-    ForwarderExtensionContractOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
+const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
+    useExtensionContract: ExtensionContractType.Forwarder,
+    extensionContractOpts: DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS,
+};
+
+const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     slippagePercentage: 0.2, // 20% slippage protection,

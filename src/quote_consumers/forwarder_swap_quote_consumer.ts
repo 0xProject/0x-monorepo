@@ -54,7 +54,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts> = {},
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
@@ -86,21 +86,19 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts> = {},
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { ethAmount: providedEthAmount, feeRecipient, feePercentage } = _.merge(
+        const { extensionContractOpts } = _.merge(
             {},
             constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
             opts,
         );
 
-        assert.isValidPercentage('feePercentage', feePercentage);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
-        if (providedEthAmount !== undefined) {
-            assert.isBigNumber('ethAmount', providedEthAmount);
-        }
+        assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
+
+        const { feeRecipient, feePercentage } = extensionContractOpts;
 
         const { orders, worstCaseQuoteInfo } = quote;
 
@@ -146,7 +144,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         return {
             params,
             toAddress: this._forwarder.address,
-            ethAmount: providedEthAmount || ethAmountWithFees,
+            ethAmount: ethAmountWithFees,
             methodAbi,
         };
     }
@@ -158,18 +156,20 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOpts & ForwarderExtensionContractOpts>,
+        opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { ethAmount: providedEthAmount, takerAddress, gasLimit, gasPrice, feeRecipient, feePercentage } = _.merge(
+        const { ethAmount: providedEthAmount, takerAddress, gasLimit, gasPrice, extensionContractOpts } = _.merge(
             {},
             constants.DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
             opts,
         );
 
-        assert.isValidPercentage('feePercentage', feePercentage);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
+        assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
+
+        const { feeRecipient, feePercentage } = extensionContractOpts;
+
         if (providedEthAmount !== undefined) {
             assert.isBigNumber('ethAmount', providedEthAmount);
         }
