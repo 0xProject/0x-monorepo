@@ -5,6 +5,10 @@
             {
                 "note": "Removed exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors",
                 "pr": 2321
+            },
+            {
+                "note": "Decode `Parity` revert errors",
+                "pr": 2341
             }
         ]
     },

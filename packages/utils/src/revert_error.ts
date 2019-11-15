@@ -314,6 +314,7 @@ export abstract class RevertError extends Error {
     }
 }
 
+const PARITY_TRANSACTION_REVERT_ERROR_MESSAGE = /^VM execution error/;
 const GANACHE_TRANSACTION_REVERT_ERROR_MESSAGE = /^VM Exception while processing transaction: revert/;
 const GETH_TRANSACTION_REVERT_ERROR_MESSAGE = /always failing transaction$/;
 
@@ -329,10 +330,18 @@ interface GanacheTransactionRevertError extends Error {
     hashes: string[];
 }
 
+interface ParityTransactionRevertError extends Error {
+    code: number;
+    data: string;
+    message: string;
+}
+
 /**
  * Try to extract the ecnoded revert error bytes from a thrown `Error`.
  */
-export function getThrownErrorRevertErrorBytes(error: Error | GanacheTransactionRevertError): string {
+export function getThrownErrorRevertErrorBytes(
+    error: Error | GanacheTransactionRevertError | ParityTransactionRevertError,
+): string {
     // Handle ganache transaction reverts.
     if (isGanacheTransactionRevertError(error)) {
         // Grab the first result attached.
@@ -344,6 +353,13 @@ export function getThrownErrorRevertErrorBytes(error: Error | GanacheTransaction
         if (result.return !== undefined && result.return !== '0x') {
             return result.return;
         }
+    } else if (isParityTransactionRevertError(error)) {
+        // Parity returns { data: 'Reverted 0xa6bcde47...', ... }
+        const { data } = error;
+        const hexDataIndex = data.indexOf('0x');
+        if (hexDataIndex !== -1) {
+            return data.slice(hexDataIndex);
+        }
     } else {
         // Handle geth transaction reverts.
         if (isGethTransactionRevertError(error)) {
@@ -352,6 +368,15 @@ export function getThrownErrorRevertErrorBytes(error: Error | GanacheTransaction
         }
     }
     throw new Error(`Cannot decode thrown Error "${error.message}" as a RevertError`);
+}
+
+function isParityTransactionRevertError(
+    error: Error | ParityTransactionRevertError,
+): error is ParityTransactionRevertError {
+    if (PARITY_TRANSACTION_REVERT_ERROR_MESSAGE.test(error.message) && 'code' in error && 'data' in error) {
+        return true;
+    }
+    return false;
 }
 
 function isGanacheTransactionRevertError(

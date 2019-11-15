@@ -1,7 +1,13 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { AnyRevertError, RawRevertError, RevertError, StringRevertError } from '../src/revert_error';
+import {
+    AnyRevertError,
+    getThrownErrorRevertErrorBytes,
+    RawRevertError,
+    RevertError,
+    StringRevertError,
+} from '../src/revert_error';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -152,6 +158,14 @@ describe('RevertError', () => {
             const _encoded = encoded.substr(0, encoded.length - 1);
             const decode = () => RevertError.decode(_encoded);
             expect(decode).to.throw();
+        });
+    });
+    describe('getThrownErrorRevertErrorBytes', () => {
+        it('should decode Parity revert errors', () => {
+            const revertAbi = '0x1234';
+            const parityError = { code: 1234, message: 'VM execution error.', data: `Reverted ${revertAbi}`, name: '' };
+            const revertError = getThrownErrorRevertErrorBytes(parityError);
+            expect(revertError).to.be.eq(revertAbi);
         });
     });
     describe('encoding', () => {
