@@ -1,4 +1,9 @@
-"""Utilities to convert between JSON and Python-native objects."""
+"""Utilities to convert between JSON and Python-native objects.
+
+Converting between the JSON wire format and the types accepted by Web3.py (eg
+`bytes` vs `str`) can be onerous.  This module provides conveniences for
+converting Exchange structs between JSON and Python objects.
+"""
 
 from copy import copy
 from typing import cast, Dict, Union

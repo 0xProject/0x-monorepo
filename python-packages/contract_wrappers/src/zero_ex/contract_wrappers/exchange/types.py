@@ -5,10 +5,6 @@ encountered in the Exchange contract's ABI.  However, they have weird names,
 containing hashes of the tuple's field names, because the name of a Solidity
 `struct`:code: isn't conveyed through the ABI.  This module provides type
 aliases with human-friendly names.
-
-Converting between the JSON wire format and the types accepted by Web3.py (eg
-`bytes` vs `str`) can be onerous.  This module provides conveniences for
-converting Exchange structs between JSON and Python objects.
 """
 
 from enum import auto, Enum
