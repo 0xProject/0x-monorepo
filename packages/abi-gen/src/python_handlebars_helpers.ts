@@ -182,7 +182,7 @@ export function registerPythonHelpers(): void {
 }
 
 function solValueToPyValue(pythonVariable: string, abiItem: DataItem): string {
-    const pythonTypeName = utils.solTypeToPyType(abiItem.type, abiItem.components);
+    const pythonTypeName = utils.solTypeToPyType(abiItem);
     if (pythonTypeName.match(/List\[.*\]/) !== null) {
         return `[${solValueToPyValue('element', {
             ...abiItem,

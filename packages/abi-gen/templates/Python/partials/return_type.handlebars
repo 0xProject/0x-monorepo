@@ -4,10 +4,10 @@ Union[
 {{~/if~}}
 {{#if outputs.length}}
 {{#singleReturnValue}}
-{{#returnType outputs.0.type outputs.0.components}}{{~/returnType~}}
+{{#returnType outputs.[0]}}{{~/returnType~}}
 {{/singleReturnValue}}
 {{^singleReturnValue}}
-Tuple[{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
+Tuple[{{#each outputs}}{{#returnType this}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
 {{~/singleReturnValue}}
 {{else}}None
 {{/if}}{{^if this.constant}}, Union[HexBytes, bytes]]{{/if~}}

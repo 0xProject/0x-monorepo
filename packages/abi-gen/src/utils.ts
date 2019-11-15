@@ -102,11 +102,15 @@ export const utils = {
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
     },
-    solTypeToPyType(solType: string, components?: DataItem[]): string {
+    solTypeToPyType(dataItem: DataItem): string {
+        const solType = dataItem.type;
+        const components = dataItem.components;
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {
-            const arrayItemSolType = solType.replace(trailingArrayRegex, '');
-            const arrayItemPyType = utils.solTypeToPyType(arrayItemSolType, components);
+            const arrayItemPyType = utils.solTypeToPyType({
+                ...dataItem,
+                type: dataItem.type.replace(trailingArrayRegex, ''),
+            });
             const arrayPyType = `List[${arrayItemPyType}]`;
             return arrayPyType;
         } else {
@@ -203,10 +207,7 @@ export const utils = {
     makePythonTupleClassBody(tupleComponents: DataItem[]): string {
         let toReturn: string = '';
         for (const tupleComponent of tupleComponents) {
-            toReturn = `${toReturn}\n\n    ${tupleComponent.name}: ${utils.solTypeToPyType(
-                tupleComponent.type,
-                tupleComponent.components,
-            )}`;
+            toReturn = `${toReturn}\n\n    ${tupleComponent.name}: ${utils.solTypeToPyType(tupleComponent)}`;
         }
         toReturn = `${toReturn}`;
         return toReturn;
