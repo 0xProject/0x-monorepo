@@ -5,13 +5,14 @@
     "files": [
         "generated-artifacts/ERC20BridgeSampler.json",
         "generated-artifacts/IERC20BridgeSampler.json",
+        "test/generated-artifacts/DeploymentConstants.json",
         "test/generated-artifacts/ERC20BridgeSampler.json",
         "test/generated-artifacts/IERC20BridgeSampler.json",
         "test/generated-artifacts/IEth2Dai.json",
-        "test/generated-artifacts/IExchange.json",
         "test/generated-artifacts/IKyberNetwork.json",
         "test/generated-artifacts/IUniswapExchangeQuotes.json",
-        "test/generated-artifacts/LibERC20Token.json"
+        "test/generated-artifacts/LibERC20Token.json",
+        "test/generated-artifacts/TestERC20BridgeSampler.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

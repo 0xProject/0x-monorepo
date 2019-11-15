@@ -67,11 +67,4 @@ interface IUniswapExchange {
     )
         external
         returns (uint256 tokensBought);
-
-    /// @dev Retrieves the token that is associated with this exchange.
-    /// @return tokenAddress The token address.
-    function toTokenAddress()
-        external
-        view
-        returns (address tokenAddress);
 }
