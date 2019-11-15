@@ -30,6 +30,7 @@ export * from '../test/generated-wrappers/mixin_wrapper_functions';
 export * from '../test/generated-wrappers/reentrancy_tester';
 export * from '../test/generated-wrappers/test_asset_proxy_dispatcher';
 export * from '../test/generated-wrappers/test_exchange_internals';
+export * from '../test/generated-wrappers/test_fill_rounding';
 export * from '../test/generated-wrappers/test_lib_exchange_rich_error_decoder';
 export * from '../test/generated-wrappers/test_protocol_fee_collector';
 export * from '../test/generated-wrappers/test_protocol_fees';

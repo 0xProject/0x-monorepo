@@ -32,6 +32,7 @@ import * as MixinWrapperFunctions from '../test/generated-artifacts/MixinWrapper
 import * as ReentrancyTester from '../test/generated-artifacts/ReentrancyTester.json';
 import * as TestAssetProxyDispatcher from '../test/generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../test/generated-artifacts/TestExchangeInternals.json';
+import * as TestFillRounding from '../test/generated-artifacts/TestFillRounding.json';
 import * as TestLibExchangeRichErrorDecoder from '../test/generated-artifacts/TestLibExchangeRichErrorDecoder.json';
 import * as TestProtocolFeeCollector from '../test/generated-artifacts/TestProtocolFeeCollector.json';
 import * as TestProtocolFees from '../test/generated-artifacts/TestProtocolFees.json';
@@ -68,6 +69,7 @@ export const artifacts = {
     ReentrancyTester: ReentrancyTester as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
+    TestFillRounding: TestFillRounding as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
     TestProtocolFeeCollector: TestProtocolFeeCollector as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,

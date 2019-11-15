@@ -32,6 +32,7 @@
         "test/generated-artifacts/ReentrancyTester.json",
         "test/generated-artifacts/TestAssetProxyDispatcher.json",
         "test/generated-artifacts/TestExchangeInternals.json",
+        "test/generated-artifacts/TestFillRounding.json",
         "test/generated-artifacts/TestLibExchangeRichErrorDecoder.json",
         "test/generated-artifacts/TestProtocolFeeCollector.json",
         "test/generated-artifacts/TestProtocolFees.json",

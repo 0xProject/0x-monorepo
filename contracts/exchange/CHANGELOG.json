@@ -9,6 +9,10 @@
             {
                 "note": "Introduced new export ExchangeRevertErrors",
                 "pr": 2321
+            },
+            {
+                "note": "Round up in `marketBuyOrdersNoThrow()` so `marketBuyOrdersFillOrKill()` doesn't throw up.",
+                "pr": 2338
             }
         ]
     },
