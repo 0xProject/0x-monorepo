@@ -44,6 +44,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method({{> params}}).call(tx_params.as_dict())
 
+{{^if this.constant}}
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
@@ -56,6 +57,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method({{> params}}).transact(tx_params.as_dict())
 
+{{/if}}
     def estimate_gas(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         {{#if inputs}}

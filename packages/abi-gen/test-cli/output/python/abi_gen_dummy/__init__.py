@@ -216,20 +216,6 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, a: List[Union[bytes, str]], tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        a method that accepts an array of bytes
-
-        :param a: the array of bytes being accepted
-        :param tx_params: transaction parameters
-        """
-        (a) = self.validate_and_normalize_inputs(a)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, a: List[Union[bytes, str]], tx_params: Optional[TxParams] = None
     ) -> int:
@@ -271,17 +257,6 @@ class AcceptsBytesMethod(ContractMethod):
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).call(tx_params.as_dict())
-
-    def send_transaction(
-        self, a: Union[bytes, str], tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (a) = self.validate_and_normalize_inputs(a)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).transact(tx_params.as_dict())
 
     def estimate_gas(
         self, a: Union[bytes, str], tx_params: Optional[TxParams] = None
@@ -330,23 +305,6 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         (complex_input) = self.validate_and_normalize_inputs(complex_input)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(complex_input).call(tx_params.as_dict())
-
-    def send_transaction(
-        self,
-        complex_input: Tuple0xf95128ef,
-        tx_params: Optional[TxParams] = None,
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        Tests decoding when the input and output are complex.
-
-        :param tx_params: transaction parameters
-        """
-        (complex_input) = self.validate_and_normalize_inputs(complex_input)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(complex_input).transact(
-            tx_params.as_dict()
-        )
 
     def estimate_gas(
         self,
@@ -426,33 +384,6 @@ class EcrecoverFnMethod(ContractMethod):
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(_hash, v, r, s).call(tx_params.as_dict())
-
-    def send_transaction(
-        self,
-        _hash: Union[bytes, str],
-        v: int,
-        r: Union[bytes, str],
-        s: Union[bytes, str],
-        tx_params: Optional[TxParams] = None,
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        test that devdocs will be generated and that multiline devdocs will
-        look okay
-
-        :param hash: description of some hash. Let's make this line super long
-            to demonstrate hanging indents for method params. It has to be more
-            than one hundred twenty columns.
-        :param r: ECDSA r output
-        :param s: ECDSA s output
-        :param v: some v, recovery id
-        :param tx_params: transaction parameters
-        """
-        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(_hash, v, r, s).transact(
-            tx_params.as_dict()
-        )
 
     def estimate_gas(
         self,
@@ -536,16 +467,6 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
 
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -574,16 +495,6 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -615,16 +526,6 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -692,28 +593,6 @@ class MultiInputMultiOutputMethod(ContractMethod):
             tx_params.as_dict()
         )
 
-    def send_transaction(
-        self,
-        index_0: int,
-        index_1: Union[bytes, str],
-        index_2: str,
-        tx_params: Optional[TxParams] = None,
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        Tests decoding when the input and output are complex and have more than
-        one argument.
-
-        :param tx_params: transaction parameters
-        """
-        (index_0, index_1, index_2) = self.validate_and_normalize_inputs(
-            index_0, index_1, index_2
-        )
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(index_0, index_1, index_2).transact(
-            tx_params.as_dict()
-        )
-
     def estimate_gas(
         self,
         index_0: int,
@@ -766,17 +645,6 @@ class NestedStructInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(n).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (n) = self.validate_and_normalize_inputs(n)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(n).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -809,16 +677,6 @@ class NestedStructOutputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
 
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -850,18 +708,6 @@ class NoInputNoOutputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
 
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        Tests decoding when both input and output are empty.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -892,18 +738,6 @@ class NoInputSimpleOutputMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        Tests decoding when input is empty and output is non-empty.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -1026,17 +860,6 @@ class OverloadedMethod2Method(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, a: str, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (a) = self.validate_and_normalize_inputs(a)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, a: str, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -1079,17 +902,6 @@ class OverloadedMethod1Method(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, a: int, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (a) = self.validate_and_normalize_inputs(a)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(a).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, a: int, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -1122,16 +934,6 @@ class PureFunctionWithConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
 
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -1161,16 +963,6 @@ class RequireWithConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
 
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -1199,16 +991,6 @@ class RevertWithConstantMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -1252,19 +1034,6 @@ class SimpleInputNoOutputMethod(ContractMethod):
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(index_0).call(tx_params.as_dict())
-
-    def send_transaction(
-        self, index_0: int, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        Tests decoding when input is not empty but output is empty.
-
-        :param tx_params: transaction parameters
-        """
-        (index_0) = self.validate_and_normalize_inputs(index_0)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(index_0).transact(tx_params.as_dict())
 
     def estimate_gas(
         self, index_0: int, tx_params: Optional[TxParams] = None
@@ -1312,19 +1081,6 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(index_0).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, index_0: int, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        Tests decoding when both input and output are non-empty.
-
-        :param tx_params: transaction parameters
-        """
-        (index_0) = self.validate_and_normalize_inputs(index_0)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(index_0).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, index_0: int, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -1356,16 +1112,6 @@ class SimplePureFunctionMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -1408,17 +1154,6 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, x: int, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (x) = self.validate_and_normalize_inputs(x)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -1451,16 +1186,6 @@ class SimpleRequireMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
 
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -1489,16 +1214,6 @@ class SimpleRevertMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -1539,17 +1254,6 @@ class StructInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(s).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (s) = self.validate_and_normalize_inputs(s)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(s).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -1583,18 +1287,6 @@ class StructOutputMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(
-        self, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        a method that returns a struct
-
-        :param tx_params: transaction parameters
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -1672,25 +1364,6 @@ class WithAddressInputMethod(ContractMethod):
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x, a, b, y, c).call(tx_params.as_dict())
-
-    def send_transaction(
-        self,
-        x: str,
-        a: int,
-        b: int,
-        y: str,
-        c: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x, a, b, y, c).transact(
-            tx_params.as_dict()
-        )
 
     def estimate_gas(
         self,

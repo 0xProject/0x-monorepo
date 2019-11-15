@@ -81,17 +81,6 @@ class PublicAddConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).call(tx_params.as_dict())
 
-    def send_transaction(
-        self, x: int, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (x) = self.validate_and_normalize_inputs(x)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).transact(tx_params.as_dict())
-
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
     ) -> int:
@@ -133,17 +122,6 @@ class PublicAddOneMethod(ContractMethod):
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).call(tx_params.as_dict())
-
-    def send_transaction(
-        self, x: int, tx_params: Optional[TxParams] = None
-    ) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-        """
-        (x) = self.validate_and_normalize_inputs(x)
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).transact(tx_params.as_dict())
 
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
