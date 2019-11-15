@@ -225,7 +225,6 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
 
         :param a: the array of bytes being accepted
         :param tx_params: transaction parameters
-
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
@@ -279,7 +278,6 @@ class AcceptsBytesMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
@@ -343,7 +341,6 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         Tests decoding when the input and output are complex.
 
         :param tx_params: transaction parameters
-
         """
         (complex_input) = self.validate_and_normalize_inputs(complex_input)
         tx_params = super().normalize_tx_params(tx_params)
@@ -450,9 +447,6 @@ class EcrecoverFnMethod(ContractMethod):
         :param s: ECDSA s output
         :param v: some v, recovery id
         :param tx_params: transaction parameters
-        :returns: the signerAddress that created this signature. this line too
-            is super long in order to demonstrate the proper hanging
-            indentation in generated code.
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)
@@ -548,7 +542,6 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -588,7 +581,6 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -630,7 +622,6 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -714,7 +705,6 @@ class MultiInputMultiOutputMethod(ContractMethod):
         one argument.
 
         :param tx_params: transaction parameters
-
         """
         (index_0, index_1, index_2) = self.validate_and_normalize_inputs(
             index_0, index_1, index_2
@@ -782,7 +772,6 @@ class NestedStructInputMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (n) = self.validate_and_normalize_inputs(n)
         tx_params = super().normalize_tx_params(tx_params)
@@ -826,7 +815,6 @@ class NestedStructOutputMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -870,7 +858,6 @@ class NoInputNoOutputMethod(ContractMethod):
         Tests decoding when both input and output are empty.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -914,7 +901,6 @@ class NoInputSimpleOutputMethod(ContractMethod):
         Tests decoding when input is empty and output is non-empty.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1046,7 +1032,6 @@ class OverloadedMethod2Method(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
@@ -1100,7 +1085,6 @@ class OverloadedMethod1Method(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
@@ -1144,7 +1128,6 @@ class PureFunctionWithConstantMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1184,7 +1167,6 @@ class RequireWithConstantMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1224,7 +1206,6 @@ class RevertWithConstantMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1280,7 +1261,6 @@ class SimpleInputNoOutputMethod(ContractMethod):
         Tests decoding when input is not empty but output is empty.
 
         :param tx_params: transaction parameters
-
         """
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
@@ -1340,7 +1320,6 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
         Tests decoding when both input and output are non-empty.
 
         :param tx_params: transaction parameters
-
         """
         (index_0) = self.validate_and_normalize_inputs(index_0)
         tx_params = super().normalize_tx_params(tx_params)
@@ -1384,7 +1363,6 @@ class SimplePureFunctionMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1436,7 +1414,6 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
@@ -1480,7 +1457,6 @@ class SimpleRequireMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1520,7 +1496,6 @@ class SimpleRevertMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1570,7 +1545,6 @@ class StructInputMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (s) = self.validate_and_normalize_inputs(s)
         tx_params = super().normalize_tx_params(tx_params)
@@ -1618,7 +1592,6 @@ class StructOutputMethod(ContractMethod):
         a method that returns a struct
 
         :param tx_params: transaction parameters
-        :returns: a Struct struct
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
@@ -1712,7 +1685,6 @@ class WithAddressInputMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
         tx_params = super().normalize_tx_params(tx_params)

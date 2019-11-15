@@ -87,7 +87,6 @@ class PublicAddConstantMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
@@ -141,7 +140,6 @@ class PublicAddOneMethod(ContractMethod):
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
-
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)

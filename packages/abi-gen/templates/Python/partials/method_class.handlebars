@@ -49,10 +49,6 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
 {{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
         :param tx_params: transaction parameters
-        {{#if this.constant~}}
-        {{#if this.devdoc.return}}
-{{makeReturnDocstringRole this.devdoc.return 8}}{{/if}}
-        {{/if}}
         """
         {{#if inputs}}
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
