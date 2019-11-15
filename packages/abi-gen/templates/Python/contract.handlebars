@@ -115,7 +115,7 @@ class {{contractName}}:
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi={{contractName}}.abi()).functions
 
         {{#each methods}}
-        self.{{toPythonIdentifier this.languageSpecificName}} = {{toPythonClassname this.languageSpecificName}}Method(web3_or_provider, contract_address, functions.{{this.name}}, validator)
+        self.{{toPythonIdentifier this.languageSpecificName}} = {{toPythonClassname this.languageSpecificName}}Method(web3_or_provider, contract_address, functions.{{this.name}}{{#if this.inputs}}, validator{{/if}})
 
         {{/each}}
         {{/if}}
