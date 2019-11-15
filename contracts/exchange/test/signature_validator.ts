@@ -1,4 +1,6 @@
+import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
     constants,
@@ -22,33 +24,46 @@ import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {
+    ExchangeContract,
+    ExchangeSignatureValidatorApprovalEventArgs,
     IEIP1271DataContract,
-    TestSignatureValidatorContract,
-    TestSignatureValidatorSignatureValidatorApprovalEventArgs,
     TestValidatorWalletContract,
 } from './wrappers';
 
-import { ValidatorWalletAction } from './utils/constants';
+enum ValidatorWalletAction {
+    Reject = 0,
+    Accept = 1,
+    Revert = 2,
+    UpdateState = 3,
+    MatchSignatureHash = 4,
+    ReturnTrue = 5,
+    ReturnNothing = 6,
+    NTypes = 7,
+}
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('MixinSignatureValidator', env => {
     let chainId: number;
-    let signatureValidator: TestSignatureValidatorContract;
+    let exchange: ExchangeContract;
     let validatorWallet: TestValidatorWalletContract;
     let validatorWalletRevertReason: string;
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
+    let accounts: string[];
+    let owner: string;
+    let makerAddress: string;
+    let takerAddress: string;
+    let feeRecipientAddress: string;
 
     const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     const eip1271Data = new IEIP1271DataContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     before(async () => {
         chainId = await env.getChainIdAsync();
-        const accounts = await env.getAccountAddressesAsync();
-        signerAddress = accounts[0];
-        notSignerAddress = accounts[1];
-        signatureValidator = await TestSignatureValidatorContract.deployFrom0xArtifactAsync(
-            artifacts.TestSignatureValidator,
+        accounts = await env.getAccountAddressesAsync();
+        [owner, signerAddress, notSignerAddress, makerAddress, takerAddress, feeRecipientAddress] = accounts;
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.Exchange,
             env.provider,
             env.txDefaults,
             {},
@@ -59,14 +74,14 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             env.provider,
             env.txDefaults,
             {},
-            signatureValidator.address,
+            exchange.address,
         );
         validatorWalletRevertReason = await validatorWallet.REVERT_REASON().callAsync();
 
         // Approve the validator for both signers.
         await Promise.all(
             [signerAddress, notSignerAddress].map(async (addr: string) => {
-                return signatureValidator
+                return exchange
                     .setSignatureValidatorApproval(validatorWallet.address, true)
                     .awaitTransactionSuccessAsync({ from: addr });
             }),
@@ -300,7 +315,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
         it('should return true when SignatureType=Presigned and signer has presigned hash', async () => {
             const hashHex = getCurrentHashHex();
             // Presign the hash
-            await signatureValidator.preSign(hashHex).awaitTransactionSuccessAsync({ from: signerAddress });
+            await exchange.preSign(hashHex).awaitTransactionSuccessAsync({ from: signerAddress });
             // Validate presigned signature
             const signatureHex = hexConcat(SignatureType.PreSigned);
             const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
@@ -338,7 +353,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                     .prepare(_hashHex, validatorAction, expectedSignatureHashHex)
                     .awaitTransactionSuccessAsync();
             }
-            return signatureValidator.isValidHashSignature(_hashHex, _signerAddress, signatureHex).callAsync();
+            return exchange.isValidHashSignature(_hashHex, _signerAddress, signatureHex).callAsync();
         };
 
         it('should revert when signerAddress == 0', async () => {
@@ -387,9 +402,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             const trezorSignatureType = ethUtil.toBuffer(`0x${SignatureType.EthSign}`);
             const signature = Buffer.concat([v, r, s, trezorSignatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await signatureValidator
-                .isValidHashSignature(messageHash, signer, signatureHex)
-                .callAsync();
+            const isValidSignature = await exchange.isValidHashSignature(messageHash, signer, signatureHex).callAsync();
             expect(isValidSignature).to.be.true();
         });
 
@@ -403,9 +416,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             const trezorSignatureType = ethUtil.toBuffer(`0x${SignatureType.EthSign}`);
             const signature = Buffer.concat([v, r, s, trezorSignatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await signatureValidator
-                .isValidHashSignature(messageHash, signer, signatureHex)
-                .callAsync();
+            const isValidSignature = await exchange.isValidHashSignature(messageHash, signer, signatureHex).callAsync();
             expect(isValidSignature).to.be.true();
         });
 
@@ -417,10 +428,9 @@ blockchainTests.resets('MixinSignatureValidator', env => {
         let signedOrder: SignedOrder;
 
         before(async () => {
-            const makerAddress = signerAddress;
             const defaultOrderParams = {
                 ...constants.STATIC_ORDER_PARAMS,
-                makerAddress,
+                makerAddress: signerAddress,
                 feeRecipientAddress: randomAddress(),
                 makerAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
                 takerAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
@@ -428,7 +438,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 takerFeeAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
-                exchangeAddress: signatureValidator.address,
+                exchangeAddress: exchange.address,
                 chainId,
             };
             orderFactory = new OrderFactory(signerPrivateKey, defaultOrderParams);
@@ -454,7 +464,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                     .prepare(orderHashHex, validatorAction, expectedSignatureHashHex)
                     .awaitTransactionSuccessAsync();
             }
-            return signatureValidator.isValidOrderSignature(order, signatureHex).callAsync();
+            return exchange.isValidOrderSignature(order, signatureHex).callAsync();
         };
 
         it('should revert when signerAddress == 0', async () => {
@@ -470,7 +480,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 constants.NULL_ADDRESS,
                 signatureHex,
             );
-            const tx = signatureValidator.isValidOrderSignature(nullMakerOrder, signatureHex).callAsync();
+            const tx = exchange.isValidOrderSignature(nullMakerOrder, signatureHex).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -566,7 +576,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
 
         it('should revert when SignatureType=Validator and signature is shorter than 21 bytes', async () => {
             // Set approval of signature validator to false
-            await signatureValidator
+            await exchange
                 .setSignatureValidatorApproval(validatorWallet.address, false)
                 .awaitTransactionSuccessAsync({ from: signedOrder.makerAddress });
             // Doesn't have to contain a real signature since our wallet contract
@@ -585,7 +595,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
 
         it('should revert when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await signatureValidator
+            await exchange
                 .setSignatureValidatorApproval(validatorWallet.address, false)
                 .awaitTransactionSuccessAsync({ from: signedOrder.makerAddress });
             // Doesn't have to contain a real signature since our wallet contract
@@ -706,7 +716,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = signatureValidator.isValidOrderSignature(signedOrder, signatureHex).callAsync();
+            const tx = exchange.isValidOrderSignature(signedOrder, signatureHex).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -721,16 +731,16 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 constants.NULL_BYTES,
             );
             // Register an EOA as a validator.
-            await signatureValidator
+            await exchange
                 .setSignatureValidatorApproval(notSignerAddress, true)
                 .awaitTransactionSuccessAsync({ from: signerAddress });
-            const tx = signatureValidator.isValidOrderSignature(signedOrder, signatureHex).callAsync();
+            const tx = exchange.isValidOrderSignature(signedOrder, signatureHex).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
         // Run hash-only signature type tests as well.
         const validateOrderHashAsync = async (
-            hashHex: string,
+            _hashHex: string,
             _signerAddress: string,
             signatureHex: string,
             validatorAction?: ValidatorWalletAction,
@@ -751,7 +761,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
         const TRANSACTION_DATA_LENGTH = 100;
 
         before(async () => {
-            transactionFactory = new TransactionFactory(signerPrivateKey, signatureValidator.address, chainId);
+            transactionFactory = new TransactionFactory(signerPrivateKey, exchange.address, chainId);
         });
 
         beforeEach(async () => {
@@ -778,7 +788,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                     .prepare(transactionHashHex, validatorAction, expectedSignatureHashHex)
                     .awaitTransactionSuccessAsync();
             }
-            return signatureValidator.isValidTransactionSignature(transaction, signatureHex).callAsync();
+            return exchange.isValidTransactionSignature(transaction, signatureHex).callAsync();
         };
 
         it('should revert when signerAddress == 0', async () => {
@@ -794,7 +804,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 constants.NULL_ADDRESS,
                 signatureHex,
             );
-            const tx = signatureValidator.isValidTransactionSignature(nullSignerTransaction, signatureHex).callAsync();
+            const tx = exchange.isValidTransactionSignature(nullSignerTransaction, signatureHex).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -841,7 +851,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
 
         it('should revert when SignatureType=Validator and signature is shorter than 21 bytes', async () => {
             // Set approval of signature validator to false
-            await signatureValidator
+            await exchange
                 .setSignatureValidatorApproval(validatorWallet.address, false)
                 .awaitTransactionSuccessAsync({ from: signedTransaction.signerAddress });
             // Doesn't have to contain a real signature since our wallet contract
@@ -920,7 +930,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
 
         it('should revert when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await signatureValidator
+            await exchange
                 .setSignatureValidatorApproval(validatorWallet.address, false)
                 .awaitTransactionSuccessAsync({ from: signedTransaction.signerAddress });
             // Doesn't have to contain a real signature since our wallet contract
@@ -1055,7 +1065,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = signatureValidator.isValidTransactionSignature(signedTransaction, signatureHex).callAsync();
+            const tx = exchange.isValidTransactionSignature(signedTransaction, signatureHex).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1072,16 +1082,16 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 constants.NULL_BYTES,
             );
             // Register an EOA as a validator.
-            await signatureValidator
+            await exchange
                 .setSignatureValidatorApproval(notSignerAddress, true)
                 .awaitTransactionSuccessAsync({ from: signerAddress });
-            const tx = signatureValidator.isValidTransactionSignature(signedTransaction, signatureHex).callAsync();
+            const tx = exchange.isValidTransactionSignature(signedTransaction, signatureHex).callAsync();
             return expect(tx).to.revertWith(expectedError);
         });
 
         // Run hash-only signature type tests as well.
         const validateOrderHashAsync = async (
-            hashHex: string,
+            _hashHex: string,
             _signerAddress: string,
             signatureHex: string,
             validatorAction?: ValidatorWalletAction,
@@ -1105,14 +1115,14 @@ blockchainTests.resets('MixinSignatureValidator', env => {
 
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is approved', async () => {
             const approval = true;
-            const res = await signatureValidator
+            const res = await exchange
                 .setSignatureValidatorApproval(validatorWallet.address, approval)
                 .awaitTransactionSuccessAsync({
                     from: signerAddress,
                 });
             expect(res.logs.length).to.equal(1);
             const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
-                TestSignatureValidatorSignatureValidatorApprovalEventArgs
+                ExchangeSignatureValidatorApprovalEventArgs
             >;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
@@ -1121,19 +1131,166 @@ blockchainTests.resets('MixinSignatureValidator', env => {
         });
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is disapproved', async () => {
             const approval = false;
-            const res = await signatureValidator
+            const res = await exchange
                 .setSignatureValidatorApproval(validatorWallet.address, approval)
                 .awaitTransactionSuccessAsync({
                     from: signerAddress,
                 });
             expect(res.logs.length).to.equal(1);
             const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
-                TestSignatureValidatorSignatureValidatorApprovalEventArgs
+                ExchangeSignatureValidatorApprovalEventArgs
             >;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
             expect(logArgs.isApproved).to.equal(approval);
+        });
+    });
+
+    describe('fillOrder integration tests', () => {
+        let erc20Wrapper: ERC20Wrapper;
+        let erc20Proxy: ERC20ProxyContract;
+        let erc20TokenA: DummyERC20TokenContract;
+        let erc20TokenB: DummyERC20TokenContract;
+        let feeToken: DummyERC20TokenContract;
+        let orderFactory: OrderFactory;
+        let signedOrder: SignedOrder;
+
+        before(async () => {
+            // Deploy ERC20 proxy and tokens
+            erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
+            erc20Proxy = await erc20Wrapper.deployProxyAsync();
+            const numDummyErc20ToDeploy = 3;
+            [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
+                numDummyErc20ToDeploy,
+                constants.DUMMY_TOKEN_DECIMALS,
+            );
+            await erc20Wrapper.setBalancesAndAllowancesAsync();
+
+            // Configure ERC20 proxy and exchange
+            await erc20Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
+            await exchange.registerAssetProxy(erc20Proxy.address).awaitTransactionSuccessAsync({ from: owner });
+
+            // Configure order defaults
+            const defaultMakerAssetAddress = erc20TokenA.address;
+            const defaultTakerAssetAddress = erc20TokenB.address;
+            const defaultFeeAssetAddress = feeToken.address;
+            const defaultOrderParams = {
+                ...constants.STATIC_ORDER_PARAMS,
+                makerAddress,
+                feeRecipientAddress,
+                makerAssetData: await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(),
+                takerAssetData: await devUtils.encodeERC20AssetData(defaultTakerAssetAddress).callAsync(),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData(defaultFeeAssetAddress).callAsync(),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData(defaultFeeAssetAddress).callAsync(),
+                exchangeAddress: exchange.address,
+                chainId,
+            };
+            const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
+            orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+
+            // Approve the ERC20 proxy with the test validator wallet.
+            await validatorWallet
+                .approveERC20(erc20TokenA.address, erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE)
+                .awaitTransactionSuccessAsync();
+            // Mint some ERC20 tokens to the test validator wallet.
+            await erc20TokenA
+                .setBalance(validatorWallet.address, constants.INITIAL_ERC20_BALANCE)
+                .awaitTransactionSuccessAsync();
+            // Approve the validator.
+            await exchange.setSignatureValidatorApproval(validatorWallet.address, true).awaitTransactionSuccessAsync({
+                from: makerAddress,
+            });
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+        });
+
+        it('should revert if `Validator` signature type rejects during a second fill', async () => {
+            const signatureHex = hexConcat(validatorWallet.address, SignatureType.Validator);
+            signedOrder.signature = signatureHex;
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            // Allow the signature check for the first fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const fillAmount = signedOrder.takerAssetAmount.div(10);
+            await exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            // Reject the signature check for the second fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const tx = exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
+                orderHashHex,
+                signedOrder.makerAddress,
+                signedOrder.signature,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert if `Wallet` signature type rejects during a second fill', async () => {
+            const signatureHex = hexConcat(SignatureType.Wallet);
+            signedOrder.makerAddress = validatorWallet.address;
+            signedOrder.signature = signatureHex;
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            // Allow the signature check for the first fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const fillAmount = signedOrder.takerAssetAmount.div(10);
+            await exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            // Reject the signature check for the second fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const tx = exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
+                orderHashHex,
+                signedOrder.makerAddress,
+                signedOrder.signature,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert if `EIP1271Wallet` signature type rejects during a second fill', async () => {
+            const signatureHex = hexConcat(SignatureType.EIP1271Wallet);
+            signedOrder.makerAddress = validatorWallet.address;
+            signedOrder.signature = signatureHex;
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            // Allow the signature check for the first fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const fillAmount = signedOrder.takerAssetAmount.div(10);
+            await exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            // Reject the signature check for the second fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const tx = exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
+                orderHashHex,
+                signedOrder.makerAddress,
+                signedOrder.signature,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 });

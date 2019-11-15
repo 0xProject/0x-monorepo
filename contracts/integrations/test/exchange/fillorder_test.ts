@@ -1,11 +1,6 @@
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
-import {
-    BlockchainBalanceStore,
-    ExchangeEvents,
-    ExchangeFillEventArgs,
-    LocalBalanceStore,
-} from '@0x/contracts-exchange';
+import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     constants as stakingConstants,
@@ -28,8 +23,14 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { actorAddressesByName, FeeRecipient, Maker, OperatorStakerMaker, StakerKeeper, Taker } from '../actors';
-import { DeploymentManager } from '../deployment_manager';
+import { FeeRecipient } from '../framework/actors/fee_recipient';
+import { OperatorStakerMaker, StakerKeeper } from '../framework/actors/hybrids';
+import { Maker } from '../framework/actors/maker';
+import { Taker } from '../framework/actors/taker';
+import { actorAddressesByName } from '../framework/actors/utils';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 blockchainTests.resets('fillOrder integration tests', env => {

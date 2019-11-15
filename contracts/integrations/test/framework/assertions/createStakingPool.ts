@@ -3,8 +3,9 @@ import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
-import { FunctionAssertion, FunctionResult } from '../../src/function_assertions';
 import { DeploymentManager } from '../deployment_manager';
+
+import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 // tslint:disable:no-unnecessary-type-assertion
 

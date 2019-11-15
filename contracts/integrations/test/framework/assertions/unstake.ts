@@ -1,11 +1,13 @@
-import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
 import { GlobalStakeByStatus, OwnerStakeByStatus, StakeStatus, StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
-import { FunctionAssertion, FunctionResult } from '../../src/function_assertions';
+import { BlockchainBalanceStore } from '../balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../balances/local_balance_store';
 import { DeploymentManager } from '../deployment_manager';
+
+import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 function expectedUndelegatedStake(
     initStake: OwnerStakeByStatus | GlobalStakeByStatus,

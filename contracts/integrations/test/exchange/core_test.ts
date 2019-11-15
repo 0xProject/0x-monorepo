@@ -18,6 +18,7 @@ import {
     DummyNoReturnERC20TokenContract,
 } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { artifacts, ExchangeCancelEventArgs, ExchangeContract, ExchangeRevertErrors } from '@0x/contracts-exchange';
 import { LibMathRevertErrors } from '@0x/contracts-exchange-libs';
 import {
     blockchainTests,
@@ -26,7 +27,6 @@ import {
     ERC20BalancesByOwner,
     expect,
     getLatestBlockTimestampAsync,
-    hexConcat,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
     orderHashUtils,
@@ -35,20 +35,13 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import ExchangeRevertErrors = require('../src/revert_errors');
-
-import { ValidatorWalletAction } from './utils/constants';
-import { ExchangeWrapper } from './utils/exchange_wrapper';
-
-import { artifacts } from './artifacts';
-import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
-import { ExchangeCancelEventArgs, ExchangeContract, TestValidatorWalletContract } from './wrappers';
+import { FillOrderWrapper } from './fill_order_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Exchange core', () => {
@@ -69,14 +62,12 @@ blockchainTests.resets('Exchange core', () => {
     let erc721Proxy: ERC721ProxyContract;
     let erc1155Proxy: ERC1155ProxyContract;
     let multiAssetProxy: MultiAssetProxyContract;
-    let validatorWallet: TestValidatorWalletContract;
     let erc1155Contract: ERC1155MintableContract;
     let staticCallProxy: StaticCallProxyContract;
     let staticCallTarget: TestStaticCallTargetContract;
 
     let signedOrder: SignedOrder;
     let erc20Balances: ERC20BalancesByOwner;
-    let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
     let erc721Wrapper: ERC721Wrapper;
     let erc1155Wrapper: Erc1155Wrapper;
@@ -147,13 +138,6 @@ blockchainTests.resets('Exchange core', () => {
             {},
             new BigNumber(chainId),
         );
-        validatorWallet = await TestValidatorWalletContract.deployFrom0xArtifactAsync(
-            artifacts.TestValidatorWallet,
-            provider,
-            txDefaults,
-            {},
-            exchange.address,
-        );
         // Configure ERC20Proxy
         await erc20Proxy.addAuthorizedAddress(exchange.address).awaitTransactionSuccessAsync({ from: owner });
         await erc20Proxy.addAuthorizedAddress(multiAssetProxy.address).awaitTransactionSuccessAsync({ from: owner });
@@ -173,12 +157,9 @@ blockchainTests.resets('Exchange core', () => {
         await multiAssetProxy.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync({ from: owner });
 
         // Configure Exchange
-        exchangeWrapper = new ExchangeWrapper(exchange);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(multiAssetProxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(staticCallProxy.address, owner);
+        for (const proxy of [erc20Proxy, erc721Proxy, erc1155Proxy, multiAssetProxy, staticCallProxy]) {
+            await exchange.registerAssetProxy(proxy.address).awaitTransactionSuccessAsync({ from: owner });
+        }
 
         // Configure ERC20 tokens
         await erc20Wrapper.setBalancesAndAllowancesAsync();
@@ -252,115 +233,16 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
-        describe('callback signature types', () => {
-            beforeEach(async () => {
-                // Approve the ERC20 proxy with the test validator wallet.
-                await validatorWallet
-                    .approveERC20(erc20TokenA.address, erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE)
-                    .awaitTransactionSuccessAsync();
-                // Mint some ERC20 tokens to the test validator wallet.
-                await erc20TokenA
-                    .setBalance(validatorWallet.address, constants.INITIAL_ERC20_BALANCE)
-                    .awaitTransactionSuccessAsync();
-                // Approve the validator.
-                await exchange
-                    .setSignatureValidatorApproval(validatorWallet.address, true)
-                    .awaitTransactionSuccessAsync({
-                        from: makerAddress,
-                    });
-                signedOrder = await orderFactory.newSignedOrderAsync({
-                    makerFee: constants.ZERO_AMOUNT,
-                    takerFee: constants.ZERO_AMOUNT,
-                });
-            });
-
-            it('should revert if `Validator` signature type rejects during a second fill', async () => {
-                const signatureHex = hexConcat(validatorWallet.address, SignatureType.Validator);
-                signedOrder.signature = signatureHex;
-                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-                // Allow the signature check for the first fill.
-                await validatorWallet
-                    .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
-                    .awaitTransactionSuccessAsync();
-                const fillAmount = signedOrder.takerAssetAmount.div(10);
-                await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
-                // Reject the signature check for the second fill.
-                await validatorWallet
-                    .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
-                    .awaitTransactionSuccessAsync();
-                const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                    takerAssetFillAmount: fillAmount,
-                });
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    signedOrder.signature,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
-            it('should revert if `Wallet` signature type rejects during a second fill', async () => {
-                const signatureHex = hexConcat(SignatureType.Wallet);
-                signedOrder.makerAddress = validatorWallet.address;
-                signedOrder.signature = signatureHex;
-                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-                // Allow the signature check for the first fill.
-                await validatorWallet
-                    .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
-                    .awaitTransactionSuccessAsync();
-                const fillAmount = signedOrder.takerAssetAmount.div(10);
-                await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
-                // Reject the signature check for the second fill.
-                await validatorWallet
-                    .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
-                    .awaitTransactionSuccessAsync();
-                const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                    takerAssetFillAmount: fillAmount,
-                });
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    signedOrder.signature,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
-            it('should revert if `EIP1271Wallet` signature type rejects during a second fill', async () => {
-                const signatureHex = hexConcat(SignatureType.EIP1271Wallet);
-                signedOrder.makerAddress = validatorWallet.address;
-                signedOrder.signature = signatureHex;
-                const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-                // Allow the signature check for the first fill.
-                await validatorWallet
-                    .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
-                    .awaitTransactionSuccessAsync();
-                const fillAmount = signedOrder.takerAssetAmount.div(10);
-                await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
-                // Reject the signature check for the second fill.
-                await validatorWallet
-                    .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
-                    .awaitTransactionSuccessAsync();
-                const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                    takerAssetFillAmount: fillAmount,
-                });
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
-                    orderHashHex,
-                    signedOrder.makerAddress,
-                    signedOrder.signature,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
         it('should revert if fully filled', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            await exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHex, OrderStatus.FullyFilled);
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const tx = exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -375,7 +257,9 @@ blockchainTests.resets('Exchange core', () => {
             });
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Expired);
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const tx = exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -386,9 +270,9 @@ blockchainTests.resets('Exchange core', () => {
             });
 
             const fillTakerAssetAmount1 = new BigNumber(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: fillTakerAssetAmount1,
-            });
+            await exchange
+                .fillOrder(signedOrder, fillTakerAssetAmount1, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
 
             const fillTakerAssetAmount2 = new BigNumber(1);
             const expectedError = new LibMathRevertErrors.RoundingError(
@@ -396,9 +280,9 @@ blockchainTests.resets('Exchange core', () => {
                 new BigNumber(3),
                 new BigNumber(1001),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: fillTakerAssetAmount2,
-            });
+            const tx = exchange
+                .fillOrder(signedOrder, fillTakerAssetAmount2, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -500,7 +384,7 @@ blockchainTests.resets('Exchange core', () => {
                 orderHash,
                 takerAddress,
             );
-            const tx = exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress);
+            const tx = exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -508,7 +392,7 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(0),
             });
-            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            const tx = await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
             expect(tx.logs.length).to.equal(0);
         });
 
@@ -516,22 +400,22 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(0),
             });
-            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            const tx = await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
             expect(tx.logs.length).to.equal(0);
         });
 
         it('should be able to cancel an order', async () => {
-            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
-            });
+            const tx = exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount.div(2), signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should log 1 event with correct arguments if cancelled successfully', async () => {
-            const res = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            const res = await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
             expect(res.logs).to.have.length(1);
 
             const log = res.logs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>;
@@ -546,8 +430,8 @@ blockchainTests.resets('Exchange core', () => {
         });
 
         it('should noop if already cancelled', async () => {
-            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
+            const tx = await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
             expect(tx.logs.length).to.equal(0);
         });
 
@@ -556,7 +440,7 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
-            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            const tx = await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
             expect(tx.logs.length).to.equal(0);
         });
     });
@@ -564,33 +448,33 @@ blockchainTests.resets('Exchange core', () => {
     describe('cancelOrdersUpTo', () => {
         it('should fail to set orderEpoch less than current orderEpoch', async () => {
             const orderEpoch = new BigNumber(1);
-            await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
+            await exchange.cancelOrdersUpTo(orderEpoch).awaitTransactionSuccessAsync({ from: makerAddress });
             const lesserOrderEpoch = new BigNumber(0);
             const expectedError = new ExchangeRevertErrors.OrderEpochError(
                 makerAddress,
                 constants.NULL_ADDRESS,
                 orderEpoch.plus(1),
             );
-            const tx = exchangeWrapper.cancelOrdersUpToAsync(lesserOrderEpoch, makerAddress);
+            const tx = exchange.cancelOrdersUpTo(lesserOrderEpoch).awaitTransactionSuccessAsync({ from: makerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should fail to set orderEpoch equal to existing orderEpoch', async () => {
             const orderEpoch = new BigNumber(1);
-            await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
+            await exchange.cancelOrdersUpTo(orderEpoch).awaitTransactionSuccessAsync({ from: makerAddress });
             const expectedError = new ExchangeRevertErrors.OrderEpochError(
                 makerAddress,
                 constants.NULL_ADDRESS,
                 orderEpoch.plus(1),
             );
-            const tx = exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
+            const tx = exchange.cancelOrdersUpTo(orderEpoch).awaitTransactionSuccessAsync({ from: makerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should cancel only orders with a orderEpoch less than existing orderEpoch', async () => {
             // Cancel all transactions with a orderEpoch less than 2
             const orderEpoch = new BigNumber(1);
-            await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
+            await exchange.cancelOrdersUpTo(orderEpoch).awaitTransactionSuccessAsync({ from: makerAddress });
 
             // Create 4 orders with orderEpoch values: 0,1,2,3
             // Since we cancelled with orderEpoch=1, orders with orderEpoch<=1 will not be processed
@@ -617,8 +501,13 @@ blockchainTests.resets('Exchange core', () => {
                     salt: new BigNumber(3),
                 }),
             ];
-            await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress);
-
+            await exchange
+                .batchFillOrdersNoThrow(
+                    signedOrders,
+                    signedOrders.map(order => order.takerAssetAmount),
+                    signedOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const fillMakerAssetAmount = signedOrders[2].makerAssetAmount.plus(signedOrders[3].makerAssetAmount);
             const fillTakerAssetAmount = signedOrders[2].takerAssetAmount.plus(signedOrders[3].takerAssetAmount);
@@ -672,7 +561,9 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.makerAssetData,
                 new StringRevertError(RevertReason.TransferFailed).encode(),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const tx = exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -699,7 +590,9 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.takerAssetData,
                 new StringRevertError(RevertReason.TransferFailed).encode(),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const tx = exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -726,7 +619,9 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.makerAssetData,
                 new StringRevertError(RevertReason.InvalidAmount).encode(),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const tx = exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -753,7 +648,9 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.takerAssetData,
                 new StringRevertError(RevertReason.InvalidAmount).encode(),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const tx = exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -773,7 +670,9 @@ blockchainTests.resets('Exchange core', () => {
                 signedOrder.takerAssetAmount,
                 signedOrder.makerAssetAmount,
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            const tx = exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -1102,7 +1001,9 @@ blockchainTests.resets('Exchange core', () => {
                 assetData,
                 new StringRevertError(RevertReason.TargetNotEven).encode(),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const tx = exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
         it('should fill the order if the staticcall is successful', async () => {
@@ -1133,7 +1034,9 @@ blockchainTests.resets('Exchange core', () => {
                 assetData,
                 new StringRevertError(RevertReason.TargetNotEven).encode(),
             );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const tx = exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             return expect(tx).to.revertWith(expectedError);
         });
         it('should fill the order is the staticcall is successful using the MultiAssetProxy', async () => {
@@ -1159,7 +1062,7 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
         it('should return the correct orderInfo for an unfilled valid order', async () => {
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = new BigNumber(0);
             const expectedOrderStatus = OrderStatus.Fillable;
@@ -1175,8 +1078,8 @@ blockchainTests.resets('Exchange core', () => {
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, { takerAssetFillAmount });
         });
         it('should return the correct orderInfo for a cancelled and unfilled order', async () => {
-            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = new BigNumber(0);
             const expectedOrderStatus = OrderStatus.Cancelled;
@@ -1186,9 +1089,11 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should return the correct orderInfo for a cancelled and partially filled order', async () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
-            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            await exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
+            await exchange.cancelOrder(signedOrder).awaitTransactionSuccessAsync({ from: makerAddress });
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = takerAssetFillAmount;
             const expectedOrderStatus = OrderStatus.Cancelled;
@@ -1200,7 +1105,7 @@ blockchainTests.resets('Exchange core', () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const timeUntilExpiration = signedOrder.expirationTimeSeconds.minus(currentTimestamp).toNumber();
             await increaseTimeAndMineBlockAsync(timeUntilExpiration);
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = new BigNumber(0);
             const expectedOrderStatus = OrderStatus.Expired;
@@ -1210,11 +1115,13 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should return the correct orderInfo for an expired and partially filled order', async () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
+            await exchange
+                .fillOrder(signedOrder, takerAssetFillAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const timeUntilExpiration = signedOrder.expirationTimeSeconds.minus(currentTimestamp).toNumber();
             await increaseTimeAndMineBlockAsync(timeUntilExpiration);
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = takerAssetFillAmount;
             const expectedOrderStatus = OrderStatus.Expired;
@@ -1223,11 +1130,13 @@ blockchainTests.resets('Exchange core', () => {
             expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
         });
         it('should return the correct orderInfo for an expired and fully filled order', async () => {
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            await exchange
+                .fillOrder(signedOrder, signedOrder.takerAssetAmount, signedOrder.signature)
+                .awaitTransactionSuccessAsync({ from: takerAddress });
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const timeUntilExpiration = signedOrder.expirationTimeSeconds.minus(currentTimestamp).toNumber();
             await increaseTimeAndMineBlockAsync(timeUntilExpiration);
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
             // FULLY_FILLED takes precedence over EXPIRED
@@ -1238,7 +1147,7 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should return the correct orderInfo for an order with a makerAssetAmount of 0', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetAmount: new BigNumber(0) });
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = new BigNumber(0);
             const expectedOrderStatus = OrderStatus.InvalidMakerAssetAmount;
@@ -1248,7 +1157,7 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should return the correct orderInfo for an order with a takerAssetAmount of 0', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({ takerAssetAmount: new BigNumber(0) });
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
+            const orderInfo = await exchange.getOrderInfo(signedOrder).callAsync();
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = new BigNumber(0);
             const expectedOrderStatus = OrderStatus.InvalidTakerAssetAmount;

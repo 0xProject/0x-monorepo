@@ -4,8 +4,10 @@ import { BigNumber } from '@0x/utils';
 import '@azure/core-asynciterator-polyfill';
 import * as _ from 'lodash';
 
-import { AssertionResult } from '../../src/function_assertions';
-import { validMoveStakeAssertion, validStakeAssertion, validUnstakeAssertion } from '../function-assertions';
+import { AssertionResult } from '../assertions/function_assertion';
+import { validMoveStakeAssertion } from '../assertions/moveStake';
+import { validStakeAssertion } from '../assertions/stake';
+import { validUnstakeAssertion } from '../assertions/unstake';
 
 import { Actor, Constructor } from './base';
 

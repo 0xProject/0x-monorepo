@@ -35,7 +35,6 @@ export * from '../test/generated-wrappers/test_lib_exchange_rich_error_decoder';
 export * from '../test/generated-wrappers/test_protocol_fee_collector';
 export * from '../test/generated-wrappers/test_protocol_fees';
 export * from '../test/generated-wrappers/test_protocol_fees_receiver';
-export * from '../test/generated-wrappers/test_signature_validator';
 export * from '../test/generated-wrappers/test_transactions';
 export * from '../test/generated-wrappers/test_validator_wallet';
 export * from '../test/generated-wrappers/test_wrapper_functions';

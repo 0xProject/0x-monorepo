@@ -2,8 +2,9 @@ import { StakingPoolById } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { logUtils } from '@0x/utils';
 
-import { FunctionAssertion, FunctionResult } from '../../src/function_assertions';
 import { DeploymentManager } from '../deployment_manager';
+
+import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 /**
  * Returns a FunctionAssertion for `decreaseStakingPoolOperatorShare` which assumes valid input is
