@@ -11,7 +11,6 @@ import {
     RawLogEntry,
 } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
-import * as _ from 'lodash';
 
 import { EventCallback, IndexedFilterValues } from '@0x/types';
 
@@ -48,10 +47,8 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         this._onLogRemovedSubscriptionToken = undefined;
     }
     public unsubscribeAll(): void {
-        const filterTokens = _.keys(this._filterCallbacks);
-        _.each(filterTokens, filterToken => {
-            this.unsubscribe(filterToken);
-        });
+        const filterTokens = Object.keys(this._filterCallbacks);
+        filterTokens.forEach(filterToken => this.unsubscribe(filterToken));
     }
     public unsubscribe(filterToken: string, err?: Error): void {
         if (this._filters[filterToken] === undefined) {
@@ -63,7 +60,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         }
         delete this._filters[filterToken];
         delete this._filterCallbacks[filterToken];
-        if (_.isEmpty(this._filters)) {
+        if (Object.keys(this._filters).length === 0) {
             this._stopBlockAndLogStream();
         }
     }
@@ -94,7 +91,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, blockRange);
         const logs = await this._web3Wrapper.getLogsAsync(filter);
-        const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoop.bind(this));
+        const logsWithDecodedArguments = logs.map(this._tryToDecodeLogOrNoop.bind(this)) as any[];
         return logsWithDecodedArguments;
     }
     protected _tryToDecodeLogOrNoop<ArgsType extends ContractEventArgs>(
@@ -111,7 +108,8 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
     ): void {
         const logs: LogEntry[] = rawLogs.map(rawLog => marshaller.unmarshalLog(rawLog));
         logs.forEach(log => {
-            _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
+            Object.keys(this._filters).forEach((filterToken: string) => {
+                const filter = this._filters[filterToken];
                 if (filterUtils.matchesFilter(log, filter)) {
                     const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                     const logEvent = {

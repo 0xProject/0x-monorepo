@@ -304,13 +304,15 @@ export class {{contractName}}Contract extends BaseContract {
         this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
             {{contractName}}Contract.ABI(),
             this._web3Wrapper,
-        );{{/if~}}
+        );
+        {{/if~}}
+
         {{contractName}}Contract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;
             }
-        })
+        });
     }
 }
 

@@ -29,7 +29,6 @@ import Account from 'ethereumjs-account';
 import * as util from 'ethereumjs-util';
 import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
-import * as _ from 'lodash';
 
 export { methodAbiToFunctionSignature } from './utils';
 
@@ -100,7 +99,7 @@ export class BaseContract {
         values: any[],
         formatter: (type: string, value: any) => any,
     ): any {
-        return _.map(values, (value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
+        return values.map((value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
     }
     protected static _lowercaseAddress(type: string, value: string): string {
         return type === 'address' ? value.toLowerCase() : value;
@@ -109,8 +108,7 @@ export class BaseContract {
         return BigNumber.isBigNumber(value) ? value.toString() : value;
     }
     protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
-        const constructorAbiIfExists = _.find(
-            abi,
+        const constructorAbiIfExists = abi.find(
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Constructor,
             // tslint:disable-next-line:no-unnecessary-type-assertion
         ) as ConstructorAbi | undefined;
@@ -180,15 +178,14 @@ export class BaseContract {
         txData: T,
         estimateGasAsync?: (txData: T) => Promise<number>,
     ): Promise<TxData> {
-        const removeUndefinedProperties = _.pickBy.bind(_);
-        const txDataWithDefaults = removeUndefinedProperties(txData);
+        const txDataWithDefaults = BaseContract._removeUndefinedProperties<T>(txData);
         if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
             txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         if (txDataWithDefaults.from !== undefined) {
             txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
         }
-        return txDataWithDefaults;
+        return txDataWithDefaults as TxData;
     }
     protected static _assertCallParams(callData: Partial<CallData>, defaultBlock?: BlockParam): void {
         assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -199,6 +196,11 @@ export class BaseContract {
         if (defaultBlock !== undefined) {
             assert.isBlockParam('defaultBlock', defaultBlock);
         }
+    }
+    private static _removeUndefinedProperties<T>(props: any): T {
+        const clonedProps = { ...props };
+        Object.keys(clonedProps).forEach(key => clonedProps[key] === undefined && delete clonedProps[key]);
+        return clonedProps;
     }
     protected _promiseWithTransactionHash(
         txHashPromise: Promise<string>,
@@ -224,19 +226,19 @@ export class BaseContract {
         // 1. Optional param passed in to public method call
         // 2. Global config passed in at library instantiation
         // 3. Gas estimate calculation + safety margin
-        const removeUndefinedProperties = _.pickBy.bind(_);
+        // tslint:disable-next-line:no-object-literal-type-assertion
         const txDataWithDefaults = {
             to: this.address,
-            ...removeUndefinedProperties(this._web3Wrapper.getContractDefaults()),
-            ...removeUndefinedProperties(txData),
-        };
+            ...this._web3Wrapper.getContractDefaults(),
+            ...BaseContract._removeUndefinedProperties(txData),
+        } as T;
         if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
             txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         if (txDataWithDefaults.from !== undefined) {
             txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
         }
-        return txDataWithDefaults;
+        return txDataWithDefaults as TxData;
     }
     protected async _evmExecAsync(encodedData: string): Promise<string> {
         const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
@@ -300,7 +302,7 @@ export class BaseContract {
         return abiEncoder;
     }
     protected _lookupAbi(functionSignature: string): MethodAbi {
-        const methodAbi = _.find(this.abi, (abiDefinition: AbiDefinition) => {
+        const methodAbi = this.abi.find((abiDefinition: AbiDefinition) => {
             if (abiDefinition.type !== AbiType.Function) {
                 return false;
             }
@@ -362,14 +364,16 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
         ) as MethodAbi[];
         this._abiEncoderByFunctionSignature = {};
-        _.each(methodAbis, methodAbi => {
+        methodAbis.forEach(methodAbi => {
             const abiEncoder = new AbiEncoder.Method(methodAbi);
             const functionSignature = abiEncoder.getSignature();
             this._abiEncoderByFunctionSignature[functionSignature] = abiEncoder;
             this._web3Wrapper.abiDecoder.addABI(abi, contractName);
         });
-        _.each(logDecodeDependencies, (dependencyAbi, dependencyName) => {
-            this._web3Wrapper.abiDecoder.addABI(dependencyAbi, dependencyName);
-        });
+        if (logDecodeDependencies) {
+            Object.entries(logDecodeDependencies).forEach(([dependencyName, dependencyAbi]) =>
+                this._web3Wrapper.abiDecoder.addABI(dependencyAbi, dependencyName),
+            );
+        }
     }
 }
