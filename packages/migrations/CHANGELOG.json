@@ -5,6 +5,10 @@
             {
                 "note": "Migrations script no longer deploys DutchAuction since it is not yet upgraded for V3 of the protocol",
                 "pr": 2324
+            },
+            {
+                "note": "Added `Staking` and `ERC20BridgeProxy` contracts",
+                "pr": 2323
             }
         ]
     },

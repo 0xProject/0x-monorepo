@@ -23,6 +23,8 @@ import * as StakingProxy from '../artifacts/StakingProxy.json';
 import * as StaticCallProxy from '../artifacts/StaticCallProxy.json';
 import * as WETH9 from '../artifacts/WETH9.json';
 import * as ZRXToken from '../artifacts/ZRXToken.json';
+import * as ERC20BridgeProxy from '../artifacts/ERC20BridgeProxy.json';
+import * as ZrxVault from '../artifacts/ZrxVault.json';
 
 export {
     AssetProxyOwner,
@@ -32,6 +34,7 @@ export {
     DummyERC721Token,
     ERC1155Mintable,
     ERC1155Proxy,
+    ERC20BridgeProxy,
     ERC20Proxy,
     ERC20Token,
     ERC721Proxy,
@@ -50,4 +53,5 @@ export {
     CoordinatorRegistry,
     Staking,
     StakingProxy,
+    ZrxVault,
 };
