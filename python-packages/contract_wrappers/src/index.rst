@@ -201,23 +201,23 @@ zero_ex.contract_wrappers.exchange.types
 zero_ex.contract_wrappers.exchange: Generated Tuples
 ====================================================
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x6ca34a6f
+.. autoclass:: zero_ex.contract_wrappers.exchange.LibOrderOrder
 
     This is the generated class representing `the Order struct <https://0x.org/docs/contracts#structs-Order>`_.
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x735c43e3
+.. autoclass:: zero_ex.contract_wrappers.exchange.LibFillResultsFillResults
 
     This is the generated class representing `the FillResults struct <https://0x.org/docs/contracts#structs-FillResults>`_.
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0x4c5ca29b
+.. autoclass:: zero_ex.contract_wrappers.exchange.LibFillResultsMatchedFillResults
 
     This is the generated class representing `the MatchedFillResults struct <https://0x.org/docs/contracts#structs-MatchedFillResults>`_.
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0xb1e4a1ae
+.. autoclass:: zero_ex.contract_wrappers.exchange.LibOrderOrderInfo
 
     This is the generated class representing `the OrderInfo struct <https://0x.org/docs/contracts#structs-OrderInfo>`_.
 
-.. autoclass:: zero_ex.contract_wrappers.exchange.Tuple0xdabc15fe
+.. autoclass:: zero_ex.contract_wrappers.exchange.LibZeroExTransactionZeroExTransaction
 
     This is the generated class representing `the ZeroExTransaction struct <https://0x.org/docs/contracts#structs-ZeroExTransaction>`_.
 

@@ -102,11 +102,14 @@ export const utils = {
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
     },
-    solTypeToPyType(solType: string, components?: DataItem[]): string {
+    solTypeToPyType(dataItem: DataItem): string {
+        const solType = dataItem.type;
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {
-            const arrayItemSolType = solType.replace(trailingArrayRegex, '');
-            const arrayItemPyType = utils.solTypeToPyType(arrayItemSolType, components);
+            const arrayItemPyType = utils.solTypeToPyType({
+                ...dataItem,
+                type: dataItem.type.replace(trailingArrayRegex, ''),
+            });
             const arrayPyType = `List[${arrayItemPyType}]`;
             return arrayPyType;
         } else {
@@ -125,7 +128,7 @@ export const utils = {
             }
             const TUPLE_TYPE_REGEX = '^tuple$';
             if (solType.match(TUPLE_TYPE_REGEX)) {
-                return utils.makePythonTupleName(components as DataItem[]);
+                return utils.makePythonTupleName(dataItem);
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
@@ -187,13 +190,21 @@ export const utils = {
      * simply concatenate all of the names of the components, and convert that
      * concatenation into PascalCase to conform to Python convention.
      */
-    makePythonTupleName(tupleComponents: DataItem[]): string {
-        const lengthOfHashSuffix = 8;
-        return `Tuple0x${createHash('MD5')
-            .update(_.map(tupleComponents, component => component.name).join('_'))
-            .digest()
-            .toString('hex')
-            .substring(0, lengthOfHashSuffix)}`;
+    makePythonTupleName(tuple: DataItem): string {
+        if (tuple.internalType !== undefined) {
+            return tuple.internalType
+                .replace('struct ', '')
+                .replace('.', '')
+                .replace('[]', '');
+        } else {
+            const tupleComponents = tuple.components;
+            const lengthOfHashSuffix = 8;
+            return `Tuple0x${createHash('MD5')
+                .update(_.map(tupleComponents, component => component.name).join('_'))
+                .digest()
+                .toString('hex')
+                .substring(0, lengthOfHashSuffix)}`;
+        }
     },
     /**
      * @returns a string that is a Python code snippet that's intended to be
@@ -203,10 +214,7 @@ export const utils = {
     makePythonTupleClassBody(tupleComponents: DataItem[]): string {
         let toReturn: string = '';
         for (const tupleComponent of tupleComponents) {
-            toReturn = `${toReturn}\n\n    ${tupleComponent.name}: ${utils.solTypeToPyType(
-                tupleComponent.type,
-                tupleComponent.components,
-            )}`;
+            toReturn = `${toReturn}\n\n    ${tupleComponent.name}: ${utils.solTypeToPyType(tupleComponent)}`;
         }
         toReturn = `${toReturn}`;
         return toReturn;
@@ -361,12 +369,12 @@ export const utils = {
             //     Argument of type 'DataItem[] | undefined' is not assignable to parameter of type 'DataItem[]'.
             //     Type 'undefined' is not assignable to type 'DataItem[]'
             // when the code below tries to access tupleDataItem.components.
-            const pythonTupleName = utils.makePythonTupleName(tupleDataItem.components);
+            const pythonTupleName = utils.makePythonTupleName(tupleDataItem);
             tupleBodies[pythonTupleName] = utils.makePythonTupleClassBody(tupleDataItem.components);
             for (const component of tupleDataItem.components) {
                 if (component.type === 'tuple' || component.type === 'tuple[]') {
                     tupleDependencies.push([
-                        utils.makePythonTupleName((component as TupleDataItem).components), // tslint:disable-line:no-unnecessary-type-assertion
+                        utils.makePythonTupleName(component as TupleDataItem), // tslint:disable-line:no-unnecessary-type-assertion
                         pythonTupleName,
                     ]);
                     utils.extractTuples(component, tupleBodies, tupleDependencies);

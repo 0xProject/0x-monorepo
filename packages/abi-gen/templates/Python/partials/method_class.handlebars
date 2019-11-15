@@ -2,10 +2,10 @@
 class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
     """Various interfaces to the {{this.name}} method."""
 
-    def __init__(self, web3_or_provider: Union[Web3, BaseProvider], contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+    def __init__(self, web3_or_provider: Union[Web3, BaseProvider], contract_address: str, contract_function: ContractFunction{{#if inputs}}, validator: Validator=None{{/if}}):
         """Persist instance data."""
-        super().__init__(web3_or_provider, contract_address, validator)
-        self.underlying_method = contract_function
+        super().__init__(web3_or_provider, contract_address{{#if inputs}}, validator{{/if}})
+        self._underlying_method = contract_function
 
     {{#if inputs}}
     def validate_and_normalize_inputs(self, {{> typed_params inputs=inputs}}):
@@ -26,7 +26,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         return ({{> params }})
 
     {{/if}}
-    def call(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> {{> return_type outputs=outputs type='call'~}}:
+    def call(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> {{> call_return_type outputs=outputs type='call'~}}:
         """Execute underlying contract method via eth_call.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
 {{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
@@ -42,28 +42,37 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).call(tx_params.as_dict())
+        {{#hasReturnValue}}returned = {{/hasReturnValue}}self._underlying_method({{> params}}).call(tx_params.as_dict())
+        {{#hasReturnValue}}
+        return {{makeOutputsValue 'returned' outputs}}
+        {{/hasReturnValue}}
 
+{{^if this.constant}}
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
 {{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
         :param tx_params: transaction parameters
-        {{#if this.constant~}}
-        {{#if this.devdoc.return}}
-{{makeReturnDocstringRole this.devdoc.return 8}}{{/if}}
-        {{/if}}
         """
         {{#if inputs}}
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).transact(tx_params.as_dict())
+        return self._underlying_method({{> params}}).transact(tx_params.as_dict())
 
+    def build_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> dict:
+        """Construct calldata to be used as input to the method."""
+        {{#if inputs}}
+        ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
+        {{/if}}
+        tx_params = super().normalize_tx_params(tx_params)
+        return self._underlying_method({{> params}}).buildTransaction(tx_params.as_dict())
+
+{{/if}}
     def estimate_gas(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         {{#if inputs}}
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).estimateGas(tx_params.as_dict())
+        return self._underlying_method({{> params}}).estimateGas(tx_params.as_dict())

@@ -171,7 +171,7 @@ Now we'll have our Taker fill the order.
 But before filling an order, one may wish to check that it's actually fillable:
 
 >>> from zero_ex.contract_wrappers.exchange.types import OrderStatus
->>> OrderStatus(exchange.get_order_info.call(order)[0])
+>>> OrderStatus(exchange.get_order_info.call(order)["orderStatus"])
 <OrderStatus.FILLABLE: 3>
 
 The `takerAssetAmount`:code: parameter specifies the amount of tokens (in this
@@ -181,13 +181,18 @@ completely, but partial fills are possible too.
 One may wish to first call the method in a read-only way, to ensure that it
 will not revert, and to validate that the return data is as expected:
 
->>> exchange.fill_order.call(
+>>> from pprint import pprint
+>>> pprint(exchange.fill_order.call(
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
 ...     tx_params=TxParams(from_=taker_address)
-... )
-(100000000000000000, 100000000000000000, 0, 0, 0)
+... ))
+{'makerAssetFilledAmount': 100000000000000000,
+ 'makerFeePaid': 0,
+ 'protocolFeePaid': 0,
+ 'takerAssetFilledAmount': 100000000000000000,
+ 'takerFeePaid': 0}
 
 Finally, submit the transaction:
 
@@ -203,7 +208,6 @@ the exchange wrapper:
 
 >>> exchange.get_fill_event(tx_hash)
 (AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Fill', ...}),)
->>> from pprint import pprint
 >>> pprint(exchange.get_fill_event(tx_hash)[0].args.__dict__)
 {'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',

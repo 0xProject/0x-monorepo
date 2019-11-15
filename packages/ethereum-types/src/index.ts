@@ -134,6 +134,7 @@ export interface EventAbi {
 export interface DataItem {
     name: string;
     type: string;
+    internalType?: string;
     components?: DataItem[];
 }
 

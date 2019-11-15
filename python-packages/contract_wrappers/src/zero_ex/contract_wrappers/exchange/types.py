@@ -5,20 +5,16 @@ encountered in the Exchange contract's ABI.  However, they have weird names,
 containing hashes of the tuple's field names, because the name of a Solidity
 `struct`:code: isn't conveyed through the ABI.  This module provides type
 aliases with human-friendly names.
-
-Converting between the JSON wire format and the types accepted by Web3.py (eg
-`bytes` vs `str`) can be onerous.  This module provides conveniences for
-converting Exchange structs between JSON and Python objects.
 """
 
 from enum import auto, Enum
 
 from . import (
-    Tuple0x735c43e3,
-    Tuple0x6ca34a6f,
-    Tuple0x4c5ca29b,
-    Tuple0xdabc15fe,
-    Tuple0xb1e4a1ae,
+    LibFillResultsFillResults,
+    LibOrderOrder,
+    LibFillResultsMatchedFillResults,
+    LibZeroExTransactionZeroExTransaction,
+    LibOrderOrderInfo,
 )
 
 
@@ -29,43 +25,43 @@ from . import (
 # of each of these classes.
 
 
-class FillResults(Tuple0x735c43e3):
+class FillResults(LibFillResultsFillResults):
     """The `FillResults`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0x735c43e3`:py:class:.
+    `zero_ex.contract_wrappers.exchange.LibFillResultsFillResults`:py:class:.
     """
 
 
-class Order(Tuple0x6ca34a6f):
+class Order(LibOrderOrder):
     """The `Order`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0x6ca34a6f`:py:class:.
+    `zero_ex.contract_wrappers.exchange.LibOrderOrder`:py:class:.
     """
 
 
-class MatchedFillResults(Tuple0x4c5ca29b):
+class MatchedFillResults(LibFillResultsMatchedFillResults):
     """The `MatchedFillResults`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0x4c5ca29b`:py:class:.
+    `zero_ex.contract_wrappers.exchange.LibFillResultsMatchedFillResults`:py:class:.
     """
 
 
-class ZeroExTransaction(Tuple0xdabc15fe):
+class ZeroExTransaction(LibZeroExTransactionZeroExTransaction):
     """The `ZeroExTransaction`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0xdabc15fe`:py:class:.
+    `zero_ex.contract_wrappers.exchange.LibZeroExTransactionZeroExTransaction`:py:class:.
     """
 
 
-class OrderInfo(Tuple0xb1e4a1ae):
+class OrderInfo(LibOrderOrderInfo):
     """The `OrderInfo`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0xb1e4a1ae`:py:class:.
+    `zero_ex.contract_wrappers.exchange.LibOrderOrderInfo`:py:class:.
     """
 
 

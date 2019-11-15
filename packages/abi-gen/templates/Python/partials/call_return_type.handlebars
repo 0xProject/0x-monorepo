@@ -1,7 +1,4 @@
 {{~#if outputs~}}
-{{^if this.constant}}
-Union[
-{{~/if~}}
 {{#if outputs.length}}
 {{#singleReturnValue}}
 {{#returnType outputs.[0]}}{{~/returnType~}}
@@ -10,5 +7,5 @@ Union[
 Tuple[{{#each outputs}}{{#returnType this}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
 {{~/singleReturnValue}}
 {{else}}None
-{{/if}}{{^if this.constant}}, Union[HexBytes, bytes]]{{/if~}}
-{{else}}{{#if this.constant}}None{{else}}Union[None, Union[HexBytes, bytes]]{{/if}}{{/if~}}
+{{/if}}
+{{else}}None{{/if~}}
