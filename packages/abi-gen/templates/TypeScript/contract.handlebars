@@ -121,9 +121,11 @@ export class {{contractName}}Contract extends BaseContract {
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
+        const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
+            {
+                data: txData,
+                ...txDefaults,
+            },
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -209,7 +211,8 @@ export class {{contractName}}Contract extends BaseContract {
         {{#each inputs}}
             {{#assertionType name type}}{{/assertionType}}
         {{/each}}
-        
+        const functionSignature = '{{this.functionSignature}}';
+
         return {
             {{^this.constant}}
             {{> method_tx}}
@@ -309,7 +312,7 @@ export class {{contractName}}Contract extends BaseContract {
             }
         })
     }
-} 
+}
 
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align

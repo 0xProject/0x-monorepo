@@ -2,61 +2,23 @@ async sendTransactionAsync(
     txData?: Partial<TxData> | undefined,
     opts: SendTransactionOpts = { shouldValidate: true },
 ): Promise<string> {
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
-    const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-        {
-            to: self.address,
-            ...txData,
-            data: encodedData,
-        },
-        self._web3Wrapper.getContractDefaults(),
-    );
-    if (txDataWithDefaults.from !== undefined) {
-        txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-    }
-
+    const encodedData = self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
+    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({...txData, data: encodedData});
     if (opts.shouldValidate !== false) {
-        await this.callAsync(
-            txDataWithDefaults,
-        );
+        await this.callAsync(txDataWithDefaults);
     }
-
-    const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-    return txHash;
+    return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
 },
 awaitTransactionSuccessAsync(
     txData?: Partial<TxData>,
     opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
 ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-    const txHashPromise = this.sendTransactionAsync(txData, opts);
-    return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-        txHashPromise,
-        (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-            // When the transaction hash resolves, wait for it to be mined.
-            return self._web3Wrapper.awaitTransactionSuccessAsync(
-                await txHashPromise,
-                opts.pollingIntervalMs,
-                opts.timeoutMs,
-            );
-        })(),
-    );
+    return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
 },
 async estimateGasAsync(
     txData?: Partial<TxData> | undefined,
 ): Promise<number> {
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
-    const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-        {
-            to: self.address,
-            ...txData,
-            data: encodedData,
-        },
-        self._web3Wrapper.getContractDefaults(),
-    );
-    if (txDataWithDefaults.from !== undefined) {
-        txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-    }
-
-    const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-    return gas;
+    const encodedData = self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
+    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData, });
+    return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
 },

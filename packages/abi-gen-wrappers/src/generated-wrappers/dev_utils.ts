@@ -100,9 +100,11 @@ export class DevUtilsContract extends BaseContract {
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [_exchange]);
         const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            { data: txData },
-            txDefaults,
+        const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
+            {
+                data: txData,
+                ...txDefaults,
+            },
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -1516,43 +1518,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeAssetProxyDispatchError(encoded: string): ContractFunctionObj<[number, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeAssetProxyDispatchError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[number, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeAssetProxyDispatchError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyDispatchError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[number, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[number, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyDispatchError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -1564,40 +1544,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeAssetProxyExistsError(encoded: string): ContractFunctionObj<[string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeAssetProxyExistsError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeAssetProxyExistsError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyExistsError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyExistsError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -1610,38 +1568,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeAssetProxyId(assetData: string): ContractFunctionObj<string> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'decodeAssetProxyId(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeAssetProxyId(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyId(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyId(bytes)', [assetData]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }
@@ -1653,43 +1591,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeAssetProxyTransferError(encoded: string): ContractFunctionObj<[string, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeAssetProxyTransferError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeAssetProxyTransferError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyTransferError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyTransferError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -1701,43 +1617,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeEIP1271SignatureError(encoded: string): ContractFunctionObj<[string, string, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeEIP1271SignatureError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeEIP1271SignatureError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeEIP1271SignatureError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeEIP1271SignatureError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -1752,45 +1646,23 @@ export class DevUtilsContract extends BaseContract {
     ): ContractFunctionObj<[string, string, BigNumber[], BigNumber[], string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'decodeERC1155AssetData(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, BigNumber[], BigNumber[], string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeERC1155AssetData(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeERC1155AssetData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber[], BigNumber[], string]>(
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, BigNumber[], BigNumber[], string]>(
                     rawCallResult,
                 );
-                // tslint:enable boolean-naming
-                return result;
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeERC1155AssetData(bytes)', [
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }
@@ -1802,40 +1674,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeERC20AssetData(assetData: string): ContractFunctionObj<[string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'decodeERC20AssetData(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeERC20AssetData(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeERC20AssetData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeERC20AssetData(bytes)', [
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }
@@ -1848,43 +1698,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeERC721AssetData(assetData: string): ContractFunctionObj<[string, string, BigNumber]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'decodeERC721AssetData(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, BigNumber]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeERC721AssetData(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeERC721AssetData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeERC721AssetData(bytes)', [
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }
@@ -1896,44 +1724,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeExchangeInvalidContextError(encoded: string): ContractFunctionObj<[number, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeExchangeInvalidContextError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[number, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeExchangeInvalidContextError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeExchangeInvalidContextError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[number, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[number, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'decodeExchangeInvalidContextError(bytes)',
-                    [encoded],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -1945,38 +1750,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeFillError(encoded: string): ContractFunctionObj<[number, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeFillError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[number, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeFillError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeFillError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[number, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[number, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeFillError(bytes)', [encoded]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -1988,43 +1773,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeIncompleteFillError(encoded: string): ContractFunctionObj<[number, BigNumber, BigNumber]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeIncompleteFillError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[number, BigNumber, BigNumber]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeIncompleteFillError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeIncompleteFillError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[number, BigNumber, BigNumber]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[number, BigNumber, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeIncompleteFillError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2036,43 +1799,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeMultiAssetData(assetData: string): ContractFunctionObj<[string, BigNumber[], string[]]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'decodeMultiAssetData(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, BigNumber[], string[]]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeMultiAssetData(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeMultiAssetData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, BigNumber[], string[]]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, BigNumber[], string[]]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeMultiAssetData(bytes)', [
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }
@@ -2084,40 +1825,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeNegativeSpreadError(encoded: string): ContractFunctionObj<[string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeNegativeSpreadError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeNegativeSpreadError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeNegativeSpreadError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeNegativeSpreadError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2129,43 +1848,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeOrderEpochError(encoded: string): ContractFunctionObj<[string, string, BigNumber]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeOrderEpochError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, BigNumber]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeOrderEpochError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeOrderEpochError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeOrderEpochError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2177,40 +1874,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeOrderStatusError(encoded: string): ContractFunctionObj<[string, number]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeOrderStatusError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[string, number]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeOrderStatusError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeOrderStatusError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, number]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, number]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeOrderStatusError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2222,41 +1897,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeSignatureError(encoded: string): ContractFunctionObj<[number, string, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeSignatureError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[number, string, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeSignatureError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeSignatureError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[number, string, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[number, string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeSignatureError(bytes)', [encoded]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2268,43 +1923,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeSignatureValidatorNotApprovedError(encoded: string): ContractFunctionObj<[string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeSignatureValidatorNotApprovedError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeSignatureValidatorNotApprovedError(bytes)', [
-                    encoded,
-                ]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeSignatureValidatorNotApprovedError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'decodeSignatureValidatorNotApprovedError(bytes)',
-                    [encoded],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2316,43 +1946,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeSignatureWalletError(encoded: string): ContractFunctionObj<[string, string, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeSignatureWalletError(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeSignatureWalletError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeSignatureWalletError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeSignatureWalletError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2365,43 +1973,21 @@ export class DevUtilsContract extends BaseContract {
     public decodeStaticCallAssetData(assetData: string): ContractFunctionObj<[string, string, string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'decodeStaticCallAssetData(bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeStaticCallAssetData(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeStaticCallAssetData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeStaticCallAssetData(bytes)', [
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }
@@ -2413,40 +1999,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeTransactionError(encoded: string): ContractFunctionObj<[number, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeTransactionError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[number, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeTransactionError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeTransactionError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[number, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[number, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeTransactionError(bytes)', [
-                    encoded,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2458,41 +2022,18 @@ export class DevUtilsContract extends BaseContract {
     public decodeTransactionExecutionError(encoded: string): ContractFunctionObj<[string, string]> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('encoded', encoded);
+        const functionSignature = 'decodeTransactionExecutionError(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[string, string]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeTransactionExecutionError(bytes)', [encoded]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeTransactionExecutionError(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [encoded]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'decodeTransactionExecutionError(bytes)',
-                    [encoded],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [encoded]);
             },
         };
     }
@@ -2529,6 +2070,7 @@ export class DevUtilsContract extends BaseContract {
     > {
         const self = (this as any) as DevUtilsContract;
         assert.isString('transactionData', transactionData);
+        const functionSignature = 'decodeZeroExTransactionData(bytes)';
 
         return {
             async callAsync(
@@ -2557,31 +2099,11 @@ export class DevUtilsContract extends BaseContract {
                     string[]
                 ]
             > {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decodeZeroExTransactionData(bytes)', [
-                    transactionData,
-                ]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decodeZeroExTransactionData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [transactionData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
                     [
                         string,
                         Array<{
@@ -2604,14 +2126,9 @@ export class DevUtilsContract extends BaseContract {
                         string[]
                     ]
                 >(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decodeZeroExTransactionData(bytes)', [
-                    transactionData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [transactionData]);
             },
         };
     }
@@ -2636,44 +2153,28 @@ export class DevUtilsContract extends BaseContract {
         assert.isArray('tokenIds', tokenIds);
         assert.isArray('tokenValues', tokenValues);
         assert.isString('callbackData', callbackData);
+        const functionSignature = 'encodeERC1155AssetData(address,uint256[],uint256[],bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    tokenAddress.toLowerCase(),
+                    tokenIds,
+                    tokenValues,
+                    callbackData,
                 ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments(
-                    'encodeERC1155AssetData(address,uint256[],uint256[],bytes)',
-                    [tokenAddress.toLowerCase(), tokenIds, tokenValues, callbackData],
-                );
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('encodeERC1155AssetData(address,uint256[],uint256[],bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'encodeERC1155AssetData(address,uint256[],uint256[],bytes)',
-                    [tokenAddress.toLowerCase(), tokenIds, tokenValues, callbackData],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [
+                    tokenAddress.toLowerCase(),
+                    tokenIds,
+                    tokenValues,
+                    callbackData,
+                ]);
             },
         };
     }
@@ -2686,42 +2187,18 @@ export class DevUtilsContract extends BaseContract {
     public encodeERC20AssetData(tokenAddress: string): ContractFunctionObj<string> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('tokenAddress', tokenAddress);
+        const functionSignature = 'encodeERC20AssetData(address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('encodeERC20AssetData(address)', [
-                    tokenAddress.toLowerCase(),
-                ]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('encodeERC20AssetData(address)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [tokenAddress.toLowerCase()]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('encodeERC20AssetData(address)', [
-                    tokenAddress.toLowerCase(),
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [tokenAddress.toLowerCase()]);
             },
         };
     }
@@ -2736,44 +2213,21 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('tokenAddress', tokenAddress);
         assert.isBigNumber('tokenId', tokenId);
+        const functionSignature = 'encodeERC721AssetData(address,uint256)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('encodeERC721AssetData(address,uint256)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     tokenAddress.toLowerCase(),
                     tokenId,
                 ]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('encodeERC721AssetData(address,uint256)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'encodeERC721AssetData(address,uint256)',
-                    [tokenAddress.toLowerCase(), tokenId],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [tokenAddress.toLowerCase(), tokenId]);
             },
         };
     }
@@ -2788,44 +2242,18 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isArray('amounts', amounts);
         assert.isArray('nestedAssetData', nestedAssetData);
+        const functionSignature = 'encodeMultiAssetData(uint256[],bytes[])';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('encodeMultiAssetData(uint256[],bytes[])', [
-                    amounts,
-                    nestedAssetData,
-                ]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('encodeMultiAssetData(uint256[],bytes[])');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [amounts, nestedAssetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'encodeMultiAssetData(uint256[],bytes[])',
-                    [amounts, nestedAssetData],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [amounts, nestedAssetData]);
             },
         };
     }
@@ -2847,45 +2275,26 @@ export class DevUtilsContract extends BaseContract {
         assert.isString('staticCallTargetAddress', staticCallTargetAddress);
         assert.isString('staticCallData', staticCallData);
         assert.isString('expectedReturnDataHash', expectedReturnDataHash);
+        const functionSignature = 'encodeStaticCallAssetData(address,bytes,bytes32)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('encodeStaticCallAssetData(address,bytes,bytes32)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     staticCallTargetAddress.toLowerCase(),
                     staticCallData,
                     expectedReturnDataHash,
                 ]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('encodeStaticCallAssetData(address,bytes,bytes32)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'encodeStaticCallAssetData(address,bytes,bytes32)',
-                    [staticCallTargetAddress.toLowerCase(), staticCallData, expectedReturnDataHash],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [
+                    staticCallTargetAddress.toLowerCase(),
+                    staticCallData,
+                    expectedReturnDataHash,
+                ]);
             },
         };
     }
@@ -2900,54 +2309,21 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isString('assetData', assetData);
+        const functionSignature = 'getAssetProxyAllowance(address,bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getAssetProxyAllowance(address,bytes)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     ownerAddress.toLowerCase(),
                     assetData,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getAssetProxyAllowance(address,bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('getAssetProxyAllowance(address,bytes)', [
-                    ownerAddress.toLowerCase(),
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
@@ -2962,54 +2338,21 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isString('assetData', assetData);
+        const functionSignature = 'getBalance(address,bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getBalance(address,bytes)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     ownerAddress.toLowerCase(),
                     assetData,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getBalance(address,bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('getBalance(address,bytes)', [
-                    ownerAddress.toLowerCase(),
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
@@ -3027,57 +2370,24 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isString('assetData', assetData);
+        const functionSignature = 'getBalanceAndAssetProxyAllowance(address,bytes)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[BigNumber, BigNumber]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getBalanceAndAssetProxyAllowance(address,bytes)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     ownerAddress.toLowerCase(),
                     assetData,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getBalanceAndAssetProxyAllowance(address,bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getBalanceAndAssetProxyAllowance(address,bytes)',
-                    [ownerAddress.toLowerCase(), assetData],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
@@ -3092,54 +2402,21 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isArray('assetData', assetData);
+        const functionSignature = 'getBatchAssetProxyAllowances(address,bytes[])';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getBatchAssetProxyAllowances(address,bytes[])', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     ownerAddress.toLowerCase(),
                     assetData,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getBatchAssetProxyAllowances(address,bytes[])');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getBatchAssetProxyAllowances(address,bytes[])',
-                    [ownerAddress.toLowerCase(), assetData],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
@@ -3154,54 +2431,21 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isArray('assetData', assetData);
+        const functionSignature = 'getBatchBalances(address,bytes[])';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getBatchBalances(address,bytes[])', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     ownerAddress.toLowerCase(),
                     assetData,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getBatchBalances(address,bytes[])');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('getBatchBalances(address,bytes[])', [
-                    ownerAddress.toLowerCase(),
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
@@ -3219,57 +2463,24 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isArray('assetData', assetData);
+        const functionSignature = 'getBatchBalancesAndAssetProxyAllowances(address,bytes[])';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
             ): Promise<[BigNumber[], BigNumber[]]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    ownerAddress.toLowerCase(),
+                    assetData,
                 ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments(
-                    'getBatchBalancesAndAssetProxyAllowances(address,bytes[])',
-                    [ownerAddress.toLowerCase(), assetData],
-                );
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getBatchBalancesAndAssetProxyAllowances(address,bytes[])');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getBatchBalancesAndAssetProxyAllowances(address,bytes[])',
-                    [ownerAddress.toLowerCase(), assetData],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
@@ -3281,48 +2492,18 @@ export class DevUtilsContract extends BaseContract {
     public getEthBalances(addresses: string[]): ContractFunctionObj<BigNumber[]> {
         const self = (this as any) as DevUtilsContract;
         assert.isArray('addresses', addresses);
+        const functionSignature = 'getEthBalances(address[])';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [addresses]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [addresses]);
             },
         };
     }
@@ -3358,6 +2539,8 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
 
         assert.isString('signature', signature);
+        const functionSignature =
+            'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)';
 
         return {
             async callAsync(
@@ -3366,59 +2549,20 @@ export class DevUtilsContract extends BaseContract {
             ): Promise<
                 [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
             > {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments(
-                    'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
-                    [order, signature],
-                );
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder(
-                    'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
-                );
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [order, signature]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
                     [
                         { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
                         BigNumber,
                         boolean
                     ]
                 >(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
-                    [order, signature],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [order, signature]);
             },
         };
     }
@@ -3458,6 +2602,8 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isArray('orders', orders);
         assert.isArray('signatures', signatures);
+        const functionSignature =
+            'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
 
         return {
             async callAsync(
@@ -3470,59 +2616,20 @@ export class DevUtilsContract extends BaseContract {
                     boolean[]
                 ]
             > {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments(
-                    'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
-                    [orders, signatures],
-                );
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder(
-                    'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
-                );
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [orders, signatures]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
                     [
                         Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
                         BigNumber[],
                         boolean[]
                     ]
                 >(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
-                    [orders, signatures],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [orders, signatures]);
             },
         };
     }
@@ -3558,120 +2665,57 @@ export class DevUtilsContract extends BaseContract {
 
         assert.isString('takerAddress', takerAddress);
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        const functionSignature =
+            'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(
-                    'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
-                    [order, takerAddress.toLowerCase(), takerAssetFillAmount],
-                );
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    order,
+                    takerAddress.toLowerCase(),
+                    takerAssetFillAmount,
+                ]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(
-                    'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
-                    [order, takerAddress.toLowerCase(), takerAssetFillAmount],
-                );
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    order,
+                    takerAddress.toLowerCase(),
+                    takerAssetFillAmount,
+                ]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    order,
+                    takerAddress.toLowerCase(),
+                    takerAssetFillAmount,
                 ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments(
-                    'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
-                    [order, takerAddress.toLowerCase(), takerAssetFillAmount],
-                );
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder(
-                    'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
-                );
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
-                    [order, takerAddress.toLowerCase(), takerAssetFillAmount],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [
+                    order,
+                    takerAddress.toLowerCase(),
+                    takerAssetFillAmount,
+                ]);
             },
         };
     }
@@ -3708,120 +2752,53 @@ export class DevUtilsContract extends BaseContract {
         assert.isArray('orders', orders);
         assert.isArray('takerAddresses', takerAddresses);
         assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        const functionSignature =
+            'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(
-                    'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
-                    [orders, takerAddresses, takerAssetFillAmounts],
-                );
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    takerAddresses,
+                    takerAssetFillAmounts,
+                ]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(
-                    'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
-                    [orders, takerAddresses, takerAssetFillAmounts],
-                );
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    takerAddresses,
+                    takerAssetFillAmounts,
+                ]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number[]> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    takerAddresses,
+                    takerAssetFillAmounts,
                 ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments(
-                    'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
-                    [orders, takerAddresses, takerAssetFillAmounts],
-                );
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder(
-                    'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
-                );
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<number[]>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<number[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
-                    [orders, takerAddresses, takerAssetFillAmounts],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [orders, takerAddresses, takerAssetFillAmounts]);
             },
         };
     }
@@ -3836,94 +2813,39 @@ export class DevUtilsContract extends BaseContract {
         const self = (this as any) as DevUtilsContract;
         assert.isString('ownerAddress', ownerAddress);
         assert.isString('assetData', assetData);
+        const functionSignature = 'getTransferableAssetAmount(address,bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getTransferableAssetAmount(address,bytes)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     ownerAddress.toLowerCase(),
                     assetData,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getTransferableAssetAmount(address,bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(
-                    'getTransferableAssetAmount(address,bytes)',
-                    [ownerAddress.toLowerCase(), assetData],
-                );
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [ownerAddress.toLowerCase(), assetData]);
             },
         };
     }
     public revertIfInvalidAssetData(assetData: string): ContractFunctionObj<void> {
         const self = (this as any) as DevUtilsContract;
         assert.isString('assetData', assetData);
+        const functionSignature = 'revertIfInvalidAssetData(bytes)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('revertIfInvalidAssetData(bytes)', [assetData]);
-                let rawCallResult;
-
-                const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-                try {
-                    rawCallResult = await self._evmExecAsync(encodedDataBytes);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('revertIfInvalidAssetData(bytes)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [assetData]);
+                const rawCallResult = await self._evmExecAsync(encodedData);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('revertIfInvalidAssetData(bytes)', [
-                    assetData,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [assetData]);
             },
         };
     }

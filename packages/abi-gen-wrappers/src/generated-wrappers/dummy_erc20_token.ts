@@ -130,9 +130,11 @@ export class DummyERC20TokenContract extends BaseContract {
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [_name, _symbol, _decimals, _totalSupply]);
         const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            { data: txData },
-            txDefaults,
+        const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
+            {
+                data: txData,
+                ...txDefaults,
+            },
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -502,48 +504,18 @@ export class DummyERC20TokenContract extends BaseContract {
 
     public MAX_MINT_AMOUNT(): ContractFunctionObj<BigNumber> {
         const self = (this as any) as DummyERC20TokenContract;
+        const functionSignature = 'MAX_MINT_AMOUNT()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('MAX_MINT_AMOUNT()', []);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('MAX_MINT_AMOUNT()');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('MAX_MINT_AMOUNT()', []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -551,54 +523,21 @@ export class DummyERC20TokenContract extends BaseContract {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isString('_owner', _owner);
         assert.isString('_spender', _spender);
+        const functionSignature = 'allowance(address,address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('allowance(address,address)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     _owner.toLowerCase(),
                     _spender.toLowerCase(),
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [
-                    _owner.toLowerCase(),
-                    _spender.toLowerCase(),
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_owner.toLowerCase(), _spender.toLowerCase()]);
             },
         };
     }
@@ -612,118 +551,40 @@ export class DummyERC20TokenContract extends BaseContract {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isString('_spender', _spender);
         assert.isBigNumber('_value', _value);
+        const functionSignature = 'approve(address,uint256)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
-                    _spender.toLowerCase(),
-                    _value,
-                ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [_spender.toLowerCase(), _value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
-                    _spender.toLowerCase(),
-                    _value,
-                ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [_spender.toLowerCase(), _value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
-                    _spender.toLowerCase(),
-                    _value,
-                ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [_spender.toLowerCase(), _value]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [
-                    _spender.toLowerCase(),
-                    _value,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_spender.toLowerCase(), _value]);
             },
         };
     }
@@ -735,97 +596,35 @@ export class DummyERC20TokenContract extends BaseContract {
     public balanceOf(_owner: string): ContractFunctionObj<BigNumber> {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isString('_owner', _owner);
+        const functionSignature = 'balanceOf(address)';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [_owner.toLowerCase()]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [
-                    _owner.toLowerCase(),
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_owner.toLowerCase()]);
             },
         };
     }
     public decimals(): ContractFunctionObj<BigNumber> {
         const self = (this as any) as DummyERC20TokenContract;
+        const functionSignature = 'decimals()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('decimals()', []);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('decimals()');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -836,200 +635,74 @@ export class DummyERC20TokenContract extends BaseContract {
     public mint(_value: BigNumber): ContractTxFunctionObj<void> {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isBigNumber('_value', _value);
+        const functionSignature = 'mint(uint256)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments('mint(uint256)', [_value]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [_value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('mint(uint256)', [_value]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [_value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('mint(uint256)', [_value]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('mint(uint256)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [_value]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_value]);
             },
         };
     }
     public name(): ContractFunctionObj<string> {
         const self = (this as any) as DummyERC20TokenContract;
+        const functionSignature = 'name()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('name()', []);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('name()');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
     public owner(): ContractFunctionObj<string> {
         const self = (this as any) as DummyERC20TokenContract;
+        const functionSignature = 'owner()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('owner()', []);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('owner()');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1042,165 +715,57 @@ export class DummyERC20TokenContract extends BaseContract {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isString('_target', _target);
         assert.isBigNumber('_value', _value);
+        const functionSignature = 'setBalance(address,uint256)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [
-                    _target.toLowerCase(),
-                    _value,
-                ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [_target.toLowerCase(), _value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [
-                    _target.toLowerCase(),
-                    _value,
-                ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [_target.toLowerCase(), _value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [
-                    _target.toLowerCase(),
-                    _value,
-                ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('setBalance(address,uint256)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [_target.toLowerCase(), _value]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('setBalance(address,uint256)', [
-                    _target.toLowerCase(),
-                    _value,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_target.toLowerCase(), _value]);
             },
         };
     }
     public symbol(): ContractFunctionObj<string> {
         const self = (this as any) as DummyERC20TokenContract;
+        const functionSignature = 'symbol()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('symbol()', []);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('symbol()');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1210,48 +775,18 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public totalSupply(): ContractFunctionObj<BigNumber> {
         const self = (this as any) as DummyERC20TokenContract;
+        const functionSignature = 'totalSupply()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('totalSupply()', []);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('totalSupply()');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1265,118 +800,40 @@ export class DummyERC20TokenContract extends BaseContract {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isString('_to', _to);
         assert.isBigNumber('_value', _value);
+        const functionSignature = 'transfer(address,uint256)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [
-                    _to.toLowerCase(),
-                    _value,
-                ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [_to.toLowerCase(), _value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [
-                    _to.toLowerCase(),
-                    _value,
-                ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [_to.toLowerCase(), _value]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [
-                    _to.toLowerCase(),
-                    _value,
-                ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [_to.toLowerCase(), _value]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [
-                    _to.toLowerCase(),
-                    _value,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_to.toLowerCase(), _value]);
             },
         };
     }
@@ -1392,230 +849,92 @@ export class DummyERC20TokenContract extends BaseContract {
         assert.isString('_from', _from);
         assert.isString('_to', _to);
         assert.isBigNumber('_value', _value);
+        const functionSignature = 'transferFrom(address,address,uint256)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     _from.toLowerCase(),
                     _to.toLowerCase(),
                     _value,
                 ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     _from.toLowerCase(),
                     _to.toLowerCase(),
                     _value,
                 ]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [
                     _from.toLowerCase(),
                     _to.toLowerCase(),
                     _value,
                 ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                    _from.toLowerCase(),
-                    _to.toLowerCase(),
-                    _value,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [_from.toLowerCase(), _to.toLowerCase(), _value]);
             },
         };
     }
     public transferOwnership(newOwner: string): ContractTxFunctionObj<void> {
         const self = (this as any) as DummyERC20TokenContract;
         assert.isString('newOwner', newOwner);
+        const functionSignature = 'transferOwnership(address)';
 
         return {
             async sendTransactionAsync(
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
+                const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                    txHashPromise,
-                    (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                        // When the transaction hash resolves, wait for it to be mined.
-                        return self._web3Wrapper.awaitTransactionSuccessAsync(
-                            await txHashPromise,
-                            opts.pollingIntervalMs,
-                            opts.timeoutMs,
-                        );
-                    })(),
-                );
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...txData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                if (txDataWithDefaults.from !== undefined) {
-                    txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-                }
-
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
+                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
-                    newOwner.toLowerCase(),
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
             },
         };
     }
