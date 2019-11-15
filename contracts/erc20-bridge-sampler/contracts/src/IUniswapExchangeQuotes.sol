@@ -1,6 +1,8 @@
-pragma solidity ^0.5;
+pragma solidity ^0.5.9;
 
-interface IUniswapExchange {
+
+interface IUniswapExchangeQuotes {
+
     function getEthToTokenInputPrice(
         uint256 ethSold
     )

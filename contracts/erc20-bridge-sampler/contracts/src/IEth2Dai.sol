@@ -1,6 +1,8 @@
-pragma solidity ^0.5;
+pragma solidity ^0.5.9;
+
 
 contract IEth2Dai {
+
     function getBuyAmount(
         address buyToken,
         address payToken,

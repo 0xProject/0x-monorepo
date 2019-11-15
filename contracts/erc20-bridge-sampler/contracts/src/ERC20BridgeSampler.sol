@@ -1,4 +1,4 @@
-pragma solidity ^0.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFactory.sol";
@@ -7,7 +7,7 @@ import "./IERC20BridgeSampler.sol";
 import "./IExchange.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
-import "./IUniswapExchange.sol";
+import "./IUniswapExchangeQuotes.sol";
 
 
 contract ERC20BridgeSampler is
@@ -21,6 +21,14 @@ contract ERC20BridgeSampler is
     address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address constant public KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
+    /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
+    /// @param orders Native orders to query.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return orderInfos `OrderInfo`s for each order in `orders`.
+    /// @return makerTokenAmountsBySource Maker amounts bought for each source at
+    ///         each taker token amount. First indexed by source index, then sample
+    ///         index.
     function queryOrdersAndSampleSells(
         IExchange.Order[] memory orders,
         address[] memory sources,
@@ -43,6 +51,14 @@ contract ERC20BridgeSampler is
         );
     }
 
+    /// @dev Query native orders and sample buy quotes on multiple DEXes at once.
+    /// @param orders Native orders to query.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return orderInfos `OrderInfo`s for each order in `orders`.
+    /// @return takerTokenAmountsBySource Taker amounts sold for each source at
+    ///         each maker token amount. First indexed by source index, then sample
+    ///         index.
     function queryOrdersAndSampleBuys(
         IExchange.Order[] memory orders,
         address[] memory sources,
@@ -64,6 +80,9 @@ contract ERC20BridgeSampler is
         );
     }
 
+    /// @dev Queries the status of several native orders.
+    /// @param orders Native orders to query.
+    /// @return orderInfos Order info for each respective order.
     function queryOrders(IExchange.Order[] memory orders)
         public
         view
@@ -76,6 +95,14 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample sell quotes on multiple DEXes at once.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmountsBySource Maker amounts bought for each source at
+    ///         each taker token amount. First indexed by source index, then sample
+    ///         index.
     function sampleSells(
         address[] memory sources,
         address takerToken,
@@ -98,6 +125,14 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Query native orders and sample buy quotes on multiple DEXes at once.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmountsBySource Taker amounts sold for each source at
+    ///         each maker token amount. First indexed by source index, then sample
+    ///         index.
     function sampleBuys(
         address[] memory sources,
         address takerToken,
@@ -120,6 +155,12 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample sell quotes from Kyber.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
     function sampleSellFromKyberNetwork(
         address takerToken,
         address makerToken,
@@ -131,8 +172,8 @@ contract ERC20BridgeSampler is
     {
         address _takerToken = takerToken == WETH_ADDRESS ? KYBER_ETH_ADDRESS : takerToken;
         address _makerToken = makerToken == WETH_ADDRESS ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = LibERC20Token(takerToken).decimals();
-        uint256 makerTokenDecimals = LibERC20Token(makerToken).decimals();
+        uint256 takerTokenDecimals = LibERC20Token.decimals(takerToken);
+        uint256 makerTokenDecimals = LibERC20Token.decimals(makerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
@@ -149,6 +190,12 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample sell quotes from Eth2Dai/Oasis.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
     function sampleSellFromEth2Dai(
         address takerToken,
         address makerToken,
@@ -169,6 +216,12 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample buy quotes from Eth2Dai/Oasis.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Maker token sell amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
     function sampleBuyFromEth2Dai(
         address takerToken,
         address makerToken,
@@ -189,6 +242,12 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample sell quotes from Uniswap.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
     function sampleSellFromUniswap(
         address takerToken,
         address makerToken,
@@ -200,12 +259,10 @@ contract ERC20BridgeSampler is
     {
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
-        IUniswapExchange takerTokenExchange = takerToken == WETH_ADDRESS ?
-            IUniswapExchange(0) :
-            IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS).getExchange(takerToken);
-        IUniswapExchange makerTokenExchange = makerToken == WETH_ADDRESS ?
-            IUniswapExchange(0) :
-            IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS).getExchange(makerToken);
+        IUniswapExchangeQuotes takerTokenExchange = takerToken == WETH_ADDRESS ?
+            IUniswapExchangeQuotes(0) : _getUniswapExchange(takerToken);
+        IUniswapExchangeQuotes makerTokenExchange = makerToken == WETH_ADDRESS ?
+            IUniswapExchangeQuotes(0) : _getUniswapExchange(makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
             if (makerToken == WETH_ADDRESS) {
                 makerTokenAmounts[i] = takerTokenExchange.getTokenToEthInputPrice(
@@ -226,6 +283,12 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample buy quotes from Uniswap.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token sell amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
     function sampleBuyFromUniswap(
         address takerToken,
         address makerToken,
@@ -237,12 +300,10 @@ contract ERC20BridgeSampler is
     {
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
-        IUniswapExchange takerTokenExchange = takerToken == WETH_ADDRESS ?
-            IUniswapExchange(0) :
-            IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS).getExchange(takerToken);
-        IUniswapExchange makerTokenExchange = makerToken == WETH_ADDRESS ?
-            IUniswapExchange(0) :
-            IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS).getExchange(makerToken);
+        IUniswapExchangeQuotes takerTokenExchange = takerToken == WETH_ADDRESS ?
+            IUniswapExchangeQuotes(0) : _getUniswapExchange(takerToken);
+        IUniswapExchangeQuotes makerTokenExchange = makerToken == WETH_ADDRESS ?
+            IUniswapExchangeQuotes(0) : _getUniswapExchange(makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
             if (makerToken == WETH_ADDRESS) {
                 takerTokenAmounts[i] = takerTokenExchange.getTokenToEthOutputPrice(
@@ -263,6 +324,12 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Samples a supported sell source, defined by its address.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
     function _sampleSellSource(
         address source,
         address takerToken,
@@ -285,6 +352,12 @@ contract ERC20BridgeSampler is
         revert("UNSUPPORTED_SOURCE");
     }
 
+    /// @dev Samples a supported buy source, defined by its address.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token sell amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
     function _sampleBuySource(
         address source,
         address takerToken,
@@ -304,6 +377,27 @@ contract ERC20BridgeSampler is
         revert("UNSUPPORTED_SOURCE");
     }
 
+    /// @dev Retrive an existing Uniswap exchange contract.
+    ///      Throws if the exchange does not exist.
+    /// @param tokenAddress Address of the token contract.
+    /// @return exchange `IUniswapExchangeQuotes` for the token.
+    function _getUniswapExchange(address tokenAddress)
+        private
+        view
+        returns (IUniswapExchangeQuotes exchange)
+    {
+        exchange = IUniswapExchangeQuotes(
+            address(
+                IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS)
+                    .getExchange(tokenAddress)
+            )
+        );
+        require(address(exchange) != address(0), "UNSUPPORTED_UNISWAP_EXCHANGE");
+    }
+
+    /// @dev Extract the token address from ERC20 proxy asset data.
+    /// @param assetData ERC20 asset data.
+    /// @return tokenAddress The decoded token address.
     function _assetDataToTokenAddress(bytes memory assetData)
         private
         pure

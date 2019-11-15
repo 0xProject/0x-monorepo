@@ -5,6 +5,6 @@
         "max-file-line-count": false
     },
     "linterOptions": {
-        "exclude": ["src/artifacts.ts"]
+        "exclude": ["src/artifacts.ts", "test/artifacts.ts"]
     }
 }

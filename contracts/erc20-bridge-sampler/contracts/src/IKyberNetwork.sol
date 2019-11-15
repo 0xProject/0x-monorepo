@@ -1,6 +1,8 @@
-pragma solidity ^0.5;
+pragma solidity ^0.5.9;
+
 
 contract IKyberNetwork {
+
     function getExpectedRate(
         address fromToken,
         address toToken,

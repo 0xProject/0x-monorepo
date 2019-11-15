@@ -1,4 +1,4 @@
-pragma solidity ^0.5;
+pragma solidity ^0.5.9;
 
 
 library LibERC20Token {
