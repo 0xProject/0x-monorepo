@@ -104,7 +104,6 @@ export const utils = {
     },
     solTypeToPyType(dataItem: DataItem): string {
         const solType = dataItem.type;
-        const components = dataItem.components;
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {
             const arrayItemPyType = utils.solTypeToPyType({
