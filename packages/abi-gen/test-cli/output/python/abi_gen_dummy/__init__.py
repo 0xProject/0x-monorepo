@@ -436,6 +436,11 @@ class EmitSimpleEventMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
 
+    def build_transaction(self, tx_params: Optional[TxParams] = None) -> dict:
+        """Construct calldata to be used as input to the method."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().buildTransaction(tx_params.as_dict())
+
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -780,6 +785,11 @@ class NonPureMethodMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
 
+    def build_transaction(self, tx_params: Optional[TxParams] = None) -> dict:
+        """Construct calldata to be used as input to the method."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().buildTransaction(tx_params.as_dict())
+
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
         tx_params = super().normalize_tx_params(tx_params)
@@ -820,6 +830,11 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def build_transaction(self, tx_params: Optional[TxParams] = None) -> dict:
+        """Construct calldata to be used as input to the method."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().buildTransaction(tx_params.as_dict())
 
     def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -1427,6 +1442,16 @@ class WithdrawMethod(ContractMethod):
         (wad) = self.validate_and_normalize_inputs(wad)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(wad).transact(tx_params.as_dict())
+
+    def build_transaction(
+        self, wad: int, tx_params: Optional[TxParams] = None
+    ) -> dict:
+        """Construct calldata to be used as input to the method."""
+        (wad) = self.validate_and_normalize_inputs(wad)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(wad).buildTransaction(
+            tx_params.as_dict()
+        )
 
     def estimate_gas(
         self, wad: int, tx_params: Optional[TxParams] = None
