@@ -573,7 +573,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [_approved.toLowerCase(), _tokenId]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -644,7 +647,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [_owner.toLowerCase(), _tokenId]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -736,7 +742,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [_to.toLowerCase(), _tokenId]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -847,7 +856,10 @@ export class DummyERC721TokenContract extends BaseContract {
                     _to.toLowerCase(),
                     _tokenId,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -925,7 +937,10 @@ export class DummyERC721TokenContract extends BaseContract {
                     _tokenId,
                     _data,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -990,7 +1005,10 @@ export class DummyERC721TokenContract extends BaseContract {
                     _operator.toLowerCase(),
                     _approved,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -1068,7 +1086,10 @@ export class DummyERC721TokenContract extends BaseContract {
                     _to.toLowerCase(),
                     _tokenId,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -1120,7 +1141,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }

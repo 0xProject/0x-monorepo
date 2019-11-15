@@ -567,7 +567,10 @@ export class CoordinatorContract extends BaseContract {
                     approvalExpirationTimeSeconds,
                     approvalSignatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }

@@ -196,8 +196,7 @@ export class TestLibDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [x]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [x]);
             },
         };
     }
@@ -215,8 +214,7 @@ export class TestLibDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [x]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [x]);
             },
         };
     }

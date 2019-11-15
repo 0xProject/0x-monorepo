@@ -3194,7 +3194,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [orders]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3251,7 +3254,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [transactions, signatures]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3333,7 +3339,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmounts,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3442,7 +3451,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmounts,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3551,7 +3563,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmounts,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3691,7 +3706,10 @@ export class ExchangeContract extends BaseContract {
                     leftSignatures,
                     rightSignatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3857,7 +3875,10 @@ export class ExchangeContract extends BaseContract {
                     leftSignatures,
                     rightSignatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -3969,7 +3990,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [order]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4015,7 +4039,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [targetOrderEpoch]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4106,7 +4133,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [transaction, signature]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4184,7 +4214,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmount,
                     signature,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4286,7 +4319,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmount,
                     signature,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4585,7 +4621,10 @@ export class ExchangeContract extends BaseContract {
                     makerAssetFillAmount,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4689,7 +4728,10 @@ export class ExchangeContract extends BaseContract {
                     makerAssetFillAmount,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4792,7 +4834,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmount,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -4896,7 +4941,10 @@ export class ExchangeContract extends BaseContract {
                     takerAssetFillAmount,
                     signatures,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5030,7 +5078,10 @@ export class ExchangeContract extends BaseContract {
                     leftSignature,
                     rightSignature,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5193,7 +5244,10 @@ export class ExchangeContract extends BaseContract {
                     leftSignature,
                     rightSignature,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5329,7 +5383,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [hash]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5427,7 +5484,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [assetProxy.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5474,7 +5534,10 @@ export class ExchangeContract extends BaseContract {
                 const encodedData = self._strictEncodeArguments(functionSignature, [
                     updatedProtocolFeeCollector.toLowerCase(),
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5522,7 +5585,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [updatedProtocolFeeMultiplier]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5572,7 +5638,10 @@ export class ExchangeContract extends BaseContract {
                     validatorAddress.toLowerCase(),
                     approval,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5643,7 +5712,10 @@ export class ExchangeContract extends BaseContract {
                     toAddresses,
                     amounts,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -5711,7 +5783,10 @@ export class ExchangeContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }

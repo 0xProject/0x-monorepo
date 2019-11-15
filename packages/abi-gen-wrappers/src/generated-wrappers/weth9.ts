@@ -493,7 +493,10 @@ export class WETH9Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [guy.toLowerCase(), wad]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -556,7 +559,10 @@ export class WETH9Contract extends BaseContract {
                     dst.toLowerCase(),
                     wad,
                 ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -604,7 +610,10 @@ export class WETH9Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [wad]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -697,7 +706,10 @@ export class WETH9Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [dst.toLowerCase(), wad]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
@@ -736,7 +748,10 @@ export class WETH9Contract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }

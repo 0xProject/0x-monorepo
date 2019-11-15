@@ -849,8 +849,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [a]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [a]);
             },
         };
     }
@@ -868,8 +867,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [a]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [a]);
             },
         };
     }
@@ -912,8 +910,7 @@ export class AbiGenDummyContract extends BaseContract {
                 }>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [complexInput]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [complexInput]);
             },
         };
     }
@@ -945,8 +942,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [hash, v, r, s]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [hash, v, r, s]);
             },
         };
     }
@@ -960,25 +956,25 @@ export class AbiGenDummyContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return self._promiseWithTransactionHash(txHashPromise, opts);
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
@@ -988,8 +984,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1015,8 +1010,7 @@ export class AbiGenDummyContract extends BaseContract {
                 >(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1033,8 +1027,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1056,8 +1049,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<{ innerStruct: { aField: BigNumber } }>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1087,12 +1079,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<[string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [
-                    index_0,
-                    index_1,
-                    index_2,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [index_0, index_1, index_2]);
             },
         };
     }
@@ -1118,8 +1105,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [n]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [n]);
             },
         };
     }
@@ -1153,8 +1139,7 @@ export class AbiGenDummyContract extends BaseContract {
                 }>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1174,8 +1159,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1195,8 +1179,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1210,25 +1193,25 @@ export class AbiGenDummyContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return self._promiseWithTransactionHash(txHashPromise, opts);
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('nonPureMethod()', []);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
@@ -1238,8 +1221,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1253,25 +1235,25 @@ export class AbiGenDummyContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return self._promiseWithTransactionHash(txHashPromise, opts);
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
+                const encodedData = self._strictEncodeArguments(functionSignature, []);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
@@ -1281,8 +1263,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1300,8 +1281,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [a]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [a]);
             },
         };
     }
@@ -1319,8 +1299,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [a]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [a]);
             },
         };
     }
@@ -1337,8 +1316,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1355,8 +1333,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1373,8 +1350,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1395,8 +1371,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [index_0]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [index_0]);
             },
         };
     }
@@ -1417,8 +1392,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [index_0]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [index_0]);
             },
         };
     }
@@ -1435,8 +1409,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1454,8 +1427,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [x]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [x]);
             },
         };
     }
@@ -1472,8 +1444,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1490,8 +1461,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1514,8 +1484,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [s]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [s]);
             },
         };
     }
@@ -1549,8 +1518,7 @@ export class AbiGenDummyContract extends BaseContract {
                 }>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, []);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -1584,14 +1552,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [
-                    x.toLowerCase(),
-                    a,
-                    b,
-                    y.toLowerCase(),
-                    c,
-                ]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [x.toLowerCase(), a, b, y.toLowerCase(), c]);
             },
         };
     }
@@ -1606,25 +1567,25 @@ export class AbiGenDummyContract extends BaseContract {
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
                 const encodedData = self._strictEncodeArguments(functionSignature, [wad]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: encodedData },
+                    this.estimateGasAsync.bind(this),
+                );
                 if (opts.shouldValidate !== false) {
                     await this.callAsync(txDataWithDefaults);
                 }
-                const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-                return txHash;
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             },
             awaitTransactionSuccessAsync(
                 txData?: Partial<TxData>,
                 opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                const txHashPromise = this.sendTransactionAsync(txData, opts);
-                return self._promiseWithTransactionHash(txHashPromise, opts);
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+                const encodedData = self._strictEncodeArguments(functionSignature, [wad]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
-                const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-                return gas;
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
@@ -1634,8 +1595,7 @@ export class AbiGenDummyContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments(functionSignature, [wad]);
-                return abiEncodedTransactionData;
+                return self._strictEncodeArguments(functionSignature, [wad]);
             },
         };
     }

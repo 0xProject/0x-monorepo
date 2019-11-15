@@ -3,7 +3,10 @@ async sendTransactionAsync(
     opts: SendTransactionOpts = { shouldValidate: true },
 ): Promise<string> {
     const encodedData = self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
-    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({...txData, data: encodedData});
+    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+        { ...txData, data: encodedData },
+        this.estimateGasAsync.bind(this),
+    );
     if (opts.shouldValidate !== false) {
         await this.callAsync(txDataWithDefaults);
     }
