@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0-beta.2",
+        "changes": [
+            {
+                "note": "Update BigNumber version to ~9.0.0",
+                "pr": 2342
+            }
+        ]
+    },
+    {
         "version": "2.1.0-beta.1",
         "changes": [
             {

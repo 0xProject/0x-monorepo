@@ -9,6 +9,10 @@
             {
                 "note": "Decode `Parity` revert errors",
                 "pr": 2341
+            },
+            {
+                "note": "Update BigNumber version to ~9.0.0",
+                "pr": 2342
             }
         ]
     },
