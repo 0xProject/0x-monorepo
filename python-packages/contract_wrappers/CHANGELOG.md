@@ -9,6 +9,11 @@
 -   Moved methods `jsdict_to_order()` and `order_to_jsdict()` from `zero_ex.contract_wrappers.exchange.types` to `zero_ex.contract_wrappers.order_conversions`.
 -   Changed field name `zero_ex.contract_wrappers.tx_params.TxParams.gasPrice` to `.gas_price`.
 -   Migrated to new version of 0x-contract-addresses.
+-   Made the `underlying_method` field on ContractMethod private by prefixing its name with an underscore.
+-   Corrected return types and values for call() interface to generated method wrappers. (Fixes #2298.)
+-   Removed `send_transaction()` method from ContractMethod instances for underlying Solidity methods that are const (view/pure).
+-   Added a `build_transaction()` method to instances of ContractMethod for non-const Solidity methods.
+-   Removed `validator` argument from ContractMethod instances for underlying Solidity methods that lack inputs.
 
 ## 1.1.0 - 2019-08-14
 

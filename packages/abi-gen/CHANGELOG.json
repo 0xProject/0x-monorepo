@@ -5,6 +5,26 @@
             {
                 "note": "Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details.",
                 "pr": 2284
+            },
+            {
+                "note": "Python: Corrected return types and values for call() interface to generated method wrappers.  (Fixes #2298)",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Stopped generating send_transaction() interface for constant (view/pure) methods",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Added a build_transaction() interface to contract method classes",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Removed `validator` argument to contract method classes for methods that don't have any inputs",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names.",
+                "pr": 2345
             }
         ]
     },
