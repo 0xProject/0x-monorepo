@@ -17,7 +17,7 @@ export interface BuyOrderStateButtonProps {
     accountAddress?: string;
     accountEthBalanceInWei?: BigNumber;
     swapQuote?: MarketBuySwapQuote;
-    buyOrderProcessingState: OrderProcessState;
+    swapOrderProcessingState: OrderProcessState;
     swapQuoter: SwapQuoter;
     swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
@@ -34,7 +34,7 @@ export interface BuyOrderStateButtonProps {
 }
 
 export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
-    if (props.buyOrderProcessingState === OrderProcessState.Failure) {
+    if (props.swapOrderProcessingState === OrderProcessState.Failure) {
         return (
             <Flex justify="space-between">
                 <Button width="48%" onClick={props.onRetry} fontColor={ColorOption.white}>
@@ -46,11 +46,11 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
             </Flex>
         );
     } else if (
-        props.buyOrderProcessingState === OrderProcessState.Success ||
-        props.buyOrderProcessingState === OrderProcessState.Processing
+        props.swapOrderProcessingState === OrderProcessState.Success ||
+        props.swapOrderProcessingState === OrderProcessState.Processing
     ) {
         return <SecondaryButton onClick={props.onViewTransaction}>View Transaction</SecondaryButton>;
-    } else if (props.buyOrderProcessingState === OrderProcessState.Validating) {
+    } else if (props.swapOrderProcessingState === OrderProcessState.Validating) {
         return <PlacingOrderButton />;
     }
 

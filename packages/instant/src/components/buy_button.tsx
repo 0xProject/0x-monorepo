@@ -64,7 +64,6 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
             return;
         }
         this.props.onValidationPending(swapQuote);
-        // TODO(dave4506)
         const ethNeededForBuy = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(swapQuote.worstCaseQuoteInfo, 0);
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = accountEthBalanceInWei === undefined || accountEthBalanceInWei.gte(ethNeededForBuy);
@@ -76,11 +75,15 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         let txHash: string | undefined;
         const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         const feeRecipient = oc(affiliateInfo).feeRecipient();
+        const feePercentage = oc(affiliateInfo).feeRecipient();
         try {
             analytics.trackBuyStarted(swapQuote);
-            // TODO(dave4506)
             txHash = await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(swapQuote, {
                 useExtensionContract: ExtensionContractType.Forwarder,
+                extensionContractOpts: {
+                    feeRecipient,
+                    feePercentage,
+                },
                 takerAddress: accountAddress,
                 gasPrice: gasInfo.gasPriceInWei,
             });

@@ -10,7 +10,7 @@ import { ERC20AssetAmountInput, ERC20AssetAmountInputProps } from '../components
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { AffiliateInfo, ERC20Asset, Omit, OrderProcessState, QuoteFetchOrigin } from '../types';
+import { ERC20Asset, Omit, OrderProcessState, QuoteFetchOrigin } from '../types';
 import { swapQuoteUpdater } from '../util/swap_quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
@@ -25,7 +25,6 @@ interface ConnectedState {
     asset?: ERC20Asset;
     isInputDisabled: boolean;
     numberOfAssetsAvailable?: number;
-    affiliateInfo?: AffiliateInfo;
     canSelectOtherAsset: boolean;
 }
 
@@ -34,7 +33,6 @@ interface ConnectedDispatch {
         swapQuoter: SwapQuoter,
         value?: BigNumber,
         asset?: ERC20Asset,
-        affiliateInfo?: AffiliateInfo,
     ) => void;
 }
 
@@ -63,7 +61,6 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
         asset: selectedAsset,
         isInputDisabled,
         numberOfAssetsAvailable,
-        affiliateInfo: state.affiliateInfo,
         canSelectOtherAsset,
     };
 };
@@ -76,7 +73,7 @@ const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     _ownProps: SelectedERC20AssetAmountInputProps,
 ): ConnectedDispatch => ({
-    updateSwapQuote: (swapQuoter, value, asset, affiliateInfo) => {
+    updateSwapQuote: (swapQuoter, value, asset) => {
         // Update the input
         dispatch(actions.updateSelectedAssetAmount(value));
         // invalidate the last swap quote.
@@ -91,7 +88,6 @@ const mapDispatchToProps = (
             debouncedUpdateSwapQuoteAsync(swapQuoter, dispatch, asset, value, QuoteFetchOrigin.Manual, {
                 setPending: true,
                 dispatchErrors: true,
-                affiliateInfo,
             });
         }
     },
@@ -107,7 +103,7 @@ const mergeProps = (
         asset: connectedState.asset,
         value: connectedState.value,
         onChange: (value, asset) => {
-            connectedDispatch.updateSwapQuote(connectedState.swapQuoter, value, asset, connectedState.affiliateInfo);
+            connectedDispatch.updateSwapQuote(connectedState.swapQuoter, value, asset);
         },
         isInputDisabled: connectedState.isInputDisabled,
         numberOfAssetsAvailable: connectedState.numberOfAssetsAvailable,

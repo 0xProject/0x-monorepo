@@ -1,4 +1,4 @@
-import { SwapQuote, SwapQuoter, MarketBuySwapQuote } from '@0x/asset-swapper';
+import { MarketBuySwapQuote, SwapQuote, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -8,7 +8,7 @@ import { oc } from 'ts-optchain';
 
 import { ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE, ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE } from '../constants';
 import { Action, actions } from '../redux/actions';
-import { AffiliateInfo, Asset, QuoteFetchOrigin } from '../types';
+import { Asset, QuoteFetchOrigin } from '../types';
 import { analytics } from './analytics';
 import { assetUtils } from './asset';
 import { errorFlasher } from './error_flasher';
@@ -24,7 +24,6 @@ export const swapQuoteUpdater = {
         options: {
             setPending: boolean;
             dispatchErrors: boolean;
-            affiliateInfo?: AffiliateInfo;
         },
     ): Promise<void> => {
         // get a new swap quote.
@@ -37,8 +36,7 @@ export const swapQuoteUpdater = {
             dispatch(actions.setQuoteRequestStatePending());
         }
         // TODO(dave4506) expose wethAssetData + feePercentage utils
-        const wethAssetData = '';
-        const feePercentage = oc(options.affiliateInfo).feePercentage();
+        const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
         let newSwapQuote: MarketBuySwapQuote | undefined;
         const slippagePercentage =
             asset.metaData.assetProxyId === AssetProxyId.ERC20

@@ -270,8 +270,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     takerAddress,
                     gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
-                    feePercentage: FEE_PERCENTAGE,
-                    feeRecipient,
+                    extensionContractOpts: {
+                        feePercentage: 0.05,
+                        feeRecipient,
+                    },
                 });
                 await expectMakerAndTakerBalancesAsync(
                     constants.ZERO_AMOUNT,
@@ -294,10 +296,11 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const feeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
                     takerAddress,
-                    feePercentage: FEE_PERCENTAGE,
-                    feeRecipient,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
+                    extensionContractOpts: {
+                        feePercentage: 0.05,
+                        feeRecipient,
+                    },
                 });
                 await expectMakerAndTakerBalancesAsync(
                     constants.ZERO_AMOUNT,
@@ -370,8 +373,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketSellSwapQuote,
                     {
-                        feePercentage: 0.05,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(forwarderContract.address);
@@ -391,8 +396,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketBuySwapQuote,
                     {
-                        feePercentage: 0.05,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(forwarderContract.address);
@@ -480,8 +487,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { calldataHexString, toAddress, ethAmount } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketSellSwapQuote,
                     {
-                        feePercentage: FEE_PERCENTAGE,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(contractAddresses.forwarder);
@@ -514,8 +523,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { calldataHexString, toAddress, ethAmount } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketBuySwapQuote,
                     {
-                        feePercentage: FEE_PERCENTAGE,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(contractAddresses.forwarder);

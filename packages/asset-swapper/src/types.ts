@@ -1,6 +1,7 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
+import { ForwarderSwapQuoteConsumer } from '@0x/asset-swapper/src/quote_consumers/forwarder_swap_quote_consumer';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -167,7 +168,10 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOpts {}
+export interface SwapQuoteGetOutputOpts {
+    useExtensionContract: ExtensionContractType;
+    extensionContractOpts?: ForwarderExtensionContractOpts | any;
+}
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
@@ -176,10 +180,10 @@ export interface SwapQuoteGetOutputOpts {}
  * ethAmount: The amount of eth sent with the execution of a swap
  */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
+    ethAmount?: BigNumber;
+    gasPrice?: BigNumber;
     takerAddress?: string;
     gasLimit?: number;
-    gasPrice?: BigNumber;
-    ethAmount?: BigNumber;
 }
 
 /**
@@ -188,16 +192,8 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  */
 export interface ForwarderExtensionContractOpts {
-    ethAmount?: BigNumber;
     feePercentage: number;
     feeRecipient: string;
-}
-
-/*
- * Options for how SwapQuoteConsumer will generate output
- */
-export interface SwapQuoteConsumingOpts {
-    useExtensionContract: ExtensionContractType;
 }
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;

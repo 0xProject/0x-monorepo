@@ -94,7 +94,7 @@ export const asyncData = {
         fetchOrigin: QuoteFetchOrigin,
         options: { updateSilently: boolean },
     ) => {
-        const { swapOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
+        const { swapOrderState, providerState, selectedAsset, selectedAssetUnitAmount } = state;
         const swapQuoter = providerState.swapQuoter;
         if (
             selectedAssetUnitAmount !== undefined &&
@@ -111,7 +111,6 @@ export const asyncData = {
                 {
                     setPending: !options.updateSilently,
                     dispatchErrors: !options.updateSilently,
-                    affiliateInfo,
                 },
             );
         }

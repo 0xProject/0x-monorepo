@@ -83,7 +83,7 @@ export const unrender = () => {
 const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
     const appendToIfExists = document.querySelector(selector);
     assert.assert(appendToIfExists !== null, `Could not find div with selector: ${selector}`);
-    parentElement = appendToIfExists;
+    parentElement = appendToIfExists as Element;
     injectedDiv = document.createElement('div');
     injectedDiv.setAttribute('id', INJECTED_DIV_ID);
     injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);

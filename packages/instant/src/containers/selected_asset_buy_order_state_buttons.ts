@@ -1,4 +1,4 @@
-import { SwapQuoter, SwapQuoterError, MarketBuySwapQuote, SwapQuoteConsumer, SwapQuote } from '@0x/asset-swapper';
+import { MarketBuySwapQuote, SwapQuoteConsumer, SwapQuoteConsumerError, SwapQuoter, SwapQuoterError } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -34,7 +34,7 @@ interface ConnectedDispatch {
     onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onRetry: () => void;
-    onValidationFail: (swapQuote: MarketBuySwapQuote, errorMessage: SwapQuoterError | ZeroExInstantError) => void;
+    onValidationFail: (swapQuote: MarketBuySwapQuote, errorMessage: SwapQuoteConsumerError | ZeroExInstantError) => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
