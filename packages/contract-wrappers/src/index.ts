@@ -125,14 +125,9 @@ export {
 
 export {
     SimpleContractArtifact,
-    ZeroExTransaction,
-    SignedOrder,
-    Order,
     SimpleStandardContractOutput,
-    SignedZeroExTransaction,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
-    EIP712DomainWithDefaultSchema,
     EventCallback,
     DecodedLogEvent,
     IndexedFilterValues,
