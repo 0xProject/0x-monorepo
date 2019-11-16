@@ -17,7 +17,7 @@
             },
             {
                 "note": "Add `decimals()` to `LibERC20Token`.",
-                "pr": "TODO"
+                "pr": 2344
             }
         ],
         "timestamp": 1574030254
