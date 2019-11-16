@@ -55,5 +55,5 @@ export const docGenConfigs: DocGenConfigs = {
     ],
     // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
     // "exported public interface". Thus we add them here and skip those checks.
-    TYPES_ONLY_LIBRARIES: ['ethereum-types', 'types'],
+    TYPES_ONLY_LIBRARIES: ['ethereum-types', '@0x/types'],
 };

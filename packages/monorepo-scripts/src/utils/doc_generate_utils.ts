@@ -13,6 +13,7 @@ import { utils } from './utils';
 
 export class DocGenerateUtils {
     private readonly _packageName: string;
+    private readonly _packageDir: string;
     private readonly _omitExports: string[];
     private readonly _packagePath: string;
     private readonly _exportPathToExportedItems: ExportPathToExportedItems;
@@ -160,7 +161,6 @@ export class DocGenerateUtils {
     }
     constructor(packageName: string) {
         this._packageName = packageName;
-        this._packagePath = `${constants.monorepoRootPath}/packages/${packageName}`;
 
         this._monoRepoPkgNameToPath = {};
         const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
@@ -169,6 +169,11 @@ export class DocGenerateUtils {
         const pkg = _.find(monorepoPackages, monorepoPackage => {
             return _.includes(monorepoPackage.packageJson.name, packageName);
         });
+        if (pkg === undefined) {
+            throw new Error(`No package found with name ${packageName}`);
+        }
+        this._packagePath = pkg.location;
+        this._packageDir = pkg.location.substring(pkg.location.lastIndexOf('/') + 1);
         if (pkg === undefined) {
             throw new Error(`Couldn't find a package.json for ${packageName}`);
         }
@@ -197,7 +202,7 @@ export class DocGenerateUtils {
         const mdFileDir = path.join(this._packagePath, 'docs');
         const mdReferencePath = `${mdFileDir}/reference.mdx`;
         const projectFiles = typeDocExtraFileIncludes.join(' ');
-        const cwd = path.join(constants.monorepoRootPath, 'packages', this._packageName);
+        const cwd = this._packagePath;
         // HACK: For some reason calling `typedoc` command directly from here, even with `cwd` set to the
         // packages root dir, does not work. It only works when called via a `package.json` script located
         // in the package's root.
@@ -356,7 +361,7 @@ export class DocGenerateUtils {
         _.each(typedocOutput.children, (child, i) => {
             if (!_.includes(child.name, '/src/')) {
                 const nameWithoutQuotes = child.name.replace(/"/g, '');
-                const standardizedName = `"${this._packageName}/src/${nameWithoutQuotes}"`;
+                const standardizedName = `"${this._packageDir}/src/${nameWithoutQuotes}"`;
                 modifiedTypedocOutput.children[i].name = standardizedName;
             }
         });
@@ -366,18 +371,28 @@ export class DocGenerateUtils {
      * Maps back each top-level TypeDoc JSON object name to the exportPath from which it was generated.
      */
     private _findExportPathGivenTypedocName(typedocName: string): string {
-        const typeDocNameWithoutQuotes = _.replace(typedocName, /"/g, '');
+        let typeDocNameWithoutQuotes = _.replace(typedocName, /"/g, '');
+        if (typeDocNameWithoutQuotes.startsWith('contracts/')) {
+            // tslint:disable-next-line:custom-no-magic-numbers
+            typeDocNameWithoutQuotes = typeDocNameWithoutQuotes.substring(10);
+        } else if (typeDocNameWithoutQuotes.startsWith('packages/')) {
+            // tslint:disable-next-line:custom-no-magic-numbers
+            typeDocNameWithoutQuotes = typeDocNameWithoutQuotes.substring(9);
+        }
         const sanitizedExportPathToExportPath: { [sanitizedName: string]: string } = {};
         const exportPaths = _.keys(this._exportPathToExportedItems);
         const sanitizedExportPaths = _.map(exportPaths, exportPath => {
             if (_.startsWith(exportPath, './')) {
-                const sanitizedExportPath = path.join(this._packageName, 'src', exportPath);
+                const sanitizedExportPath = path.join(this._packageDir, 'src', exportPath);
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
                 return sanitizedExportPath;
             }
             const monorepoPrefix = '@0x/';
             if (_.startsWith(exportPath, monorepoPrefix)) {
-                const sanitizedExportPath = exportPath.split(monorepoPrefix)[1];
+                let sanitizedExportPath = exportPath.split(monorepoPrefix)[1];
+                if (sanitizedExportPath.startsWith('contracts-')) {
+                    sanitizedExportPath = sanitizedExportPath.replace('contracts-', '');
+                }
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
                 return sanitizedExportPath;
             }
@@ -394,7 +409,9 @@ export class DocGenerateUtils {
             return _.startsWith(typeDocNameWithoutQuotes, p);
         });
         if (matchingSanitizedExportPathIfExists === undefined) {
-            throw new Error(`Didn't find an exportPath for ${typeDocNameWithoutQuotes}`);
+            throw new Error(
+                `Didn't find an exportPath for ${typeDocNameWithoutQuotes} ${sanitizedExportPathsSortedByLength}`,
+            );
         }
         const matchingExportPath = sanitizedExportPathToExportPath[matchingSanitizedExportPathIfExists];
         return matchingExportPath;
