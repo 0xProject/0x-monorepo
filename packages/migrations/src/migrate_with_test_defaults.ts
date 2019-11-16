@@ -1,8 +1,8 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { devConstants } from '@0x/dev-utils';
-import { runMigrationsOnceAsync } from '@0x/migrations';
+import { devConstants, web3Factory } from '@0x/dev-utils';
+import { Web3ProviderEngine } from '@0x/subproviders';
 
-import { provider } from './web3_wrapper';
+import { runMigrationsOnceAsync } from './index';
 
 /**
  * Configures and runs the migrations exactly once. Any subsequent times this is
@@ -14,5 +14,6 @@ export async function migrateOnceAsync(): Promise<ContractAddresses> {
         gas: devConstants.GAS_LIMIT,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
+    const provider: Web3ProviderEngine = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
     return runMigrationsOnceAsync(provider, txDefaults);
 }
