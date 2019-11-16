@@ -26,14 +26,14 @@ export const swapQuoteCalculator = {
         gasPrice: BigNumber,
         protocolFeeUtils: ProtocolFeeUtils,
     ): Promise<MarketSellSwapQuote> {
-        return await calculateSwapQuoteAsync(
+        return (await calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
             slippagePercentage,
             gasPrice,
             protocolFeeUtils,
             MarketOperation.Sell,
-        ) as MarketSellSwapQuote;
+        )) as MarketSellSwapQuote;
     },
     async calculateMarketBuySwapQuoteAsync(
         prunedOrders: PrunedSignedOrder[],
@@ -42,14 +42,14 @@ export const swapQuoteCalculator = {
         gasPrice: BigNumber,
         protocolFeeUtils: ProtocolFeeUtils,
     ): Promise<MarketBuySwapQuote> {
-        return await calculateSwapQuoteAsync(
+        return (await calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
             slippagePercentage,
             gasPrice,
             protocolFeeUtils,
             MarketOperation.Buy,
-        ) as MarketBuySwapQuote;
+        )) as MarketBuySwapQuote;
     },
 };
 
@@ -103,7 +103,13 @@ async function calculateSwapQuoteAsync(
     const takerAssetData = resultOrders[0].takerAssetData;
     const makerAssetData = resultOrders[0].makerAssetData;
 
-    const bestCaseQuoteInfo = await calculateQuoteInfoAsync(resultOrders, assetFillAmount, gasPrice, protocolFeeUtils, marketOperation);
+    const bestCaseQuoteInfo = await calculateQuoteInfoAsync(
+        resultOrders,
+        assetFillAmount,
+        gasPrice,
+        protocolFeeUtils,
+        marketOperation,
+    );
     // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
     const worstCaseQuoteInfo = await calculateQuoteInfoAsync(
         _.reverse(_.clone(resultOrders)),

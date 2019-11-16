@@ -9,9 +9,7 @@ import { SwapQuoterError } from '../types';
 export class ProtocolFeeUtils {
     private readonly _exchangeContract: ExchangeContract;
 
-    constructor(
-        exchangeContract: ExchangeContract,
-    ) {
+    constructor(exchangeContract: ExchangeContract) {
         this._exchangeContract = exchangeContract;
     }
 
@@ -41,7 +39,10 @@ export class ProtocolFeeUtils {
     /**
      * Calculates protocol fee with protofol fee multiplier for each fill.
      */
-    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(orders: T[], gasPrice: BigNumber): Promise<BigNumber> {
+    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(
+        orders: T[],
+        gasPrice: BigNumber,
+    ): Promise<BigNumber> {
         const protocolFeeMultiplier = await this.getProtocolFeeMultiplierAsync();
         const protocolFee = new BigNumber(orders.length).times(protocolFeeMultiplier).times(gasPrice);
         return protocolFee;
