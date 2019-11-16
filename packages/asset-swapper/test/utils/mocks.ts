@@ -68,7 +68,9 @@ class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
 }
 
 export const protocolFeeUtilsMock = (): TypeMoq.IMock<ProtocolFeeUtils> => {
-    return TypeMoq.Mock.ofType(ProtocolFeeUtilsClass, TypeMoq.MockBehavior.Strict);
+    const mockProtocolFeeUtils = TypeMoq.Mock.ofType(ProtocolFeeUtilsClass, TypeMoq.MockBehavior.Loose);
+    mockProtocolFeeUtils.callBase = true;
+    return mockProtocolFeeUtils;
 };
 
 const mockGetPrunedSignedOrdersAsync = (

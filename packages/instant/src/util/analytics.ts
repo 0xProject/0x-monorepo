@@ -96,7 +96,7 @@ const swapQuoteEventProperties = (swapQuote: MarketBuySwapQuote) => {
         assetEthAmount,
         feeEthAmount,
         totalEthAmount,
-        gasPrice: swapQuote.gasPrice,
+        gasPrice: swapQuote.gasPrice.toString(),
     };
 };
 

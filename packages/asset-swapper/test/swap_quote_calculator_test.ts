@@ -1,28 +1,24 @@
-import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 import { constants as devConstants } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
+import * as TypeMoq from 'typemoq';
 
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 import { swapQuoteCalculator } from '../src/utils/swap_quote_calculator';
 
 import { chaiSetup } from './utils/chai_setup';
-import { migrateOnceAsync } from './utils/migrate';
+import { protocolFeeUtilsMock } from './utils/mocks';
 import { testHelpers } from './utils/test_helpers';
 import { testOrders } from './utils/test_orders';
 import { baseUnitAmount } from './utils/utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
-const TESTRPC_CHAIN_ID = 1337;
 const MIXED_TEST_ORDERS = _.concat(
     testOrders.PRUNED_SIGNED_ORDERS_FEELESS,
     testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET,
@@ -32,119 +28,109 @@ const MIXED_TEST_ORDERS = _.concat(
 // tslint:disable:max-file-line-count
 // tslint:disable:custom-no-magic-numbers
 describe('swapQuoteCalculator', () => {
-    let contractWrappers: ContractWrappers;
-    let protocolFeeUtils: ProtocolFeeUtils;
-    let contractAddresses: ContractAddresses;
-    const chainId = TESTRPC_CHAIN_ID;
+    let mockProtocolFeeUtils: TypeMoq.IMock<ProtocolFeeUtils>;
 
     before(async () => {
-        const config = {
-            chainId,
-            contractAddresses,
-        };
-        contractAddresses = await migrateOnceAsync();
-        await blockchainLifecycle.startAsync();
-        contractWrappers = new ContractWrappers(provider, config);
-        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
+        mockProtocolFeeUtils = protocolFeeUtilsMock();
     });
 
     describe('#calculateMarketSellSwapQuote', () => {
         describe('InsufficientLiquidityError', () => {
-            it('should throw if not enough taker asset liquidity (multiple feeless orders)', () => {
+            it('should throw if not enough taker asset liquidity (multiple feeless orders)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEELESS,
                         baseUnitAmount(10),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(9));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(9));
             });
-            it('should throw if not enough taker asset liquidity (multiple feeless orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple feeless orders with 20% slippage)',async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEELESS,
                         baseUnitAmount(10),
                         0.2,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(7.5));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(7.5));
             });
-            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with no slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with no slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET,
                         baseUnitAmount(20),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(15));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(15));
             });
-            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET,
                         baseUnitAmount(20),
                         0.2,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(12.5));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(12.5));
             });
-            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with no slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with no slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET,
                         baseUnitAmount(10),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(9));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(9));
             });
-            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET,
                         baseUnitAmount(10),
                         0.2,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(7.5));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(7.5));
             });
-            it('should throw if not enough taker asset liquidity (multiple mixed feeType orders with no slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple mixed feeType orders with no slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         MIXED_TEST_ORDERS,
                         baseUnitAmount(40),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(33));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(33));
             });
-            it('should throw if not enough taker asset liquidity (multiple mixed feeTyoe orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple mixed feeTyoe orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         MIXED_TEST_ORDERS,
                         baseUnitAmount(40),
                         0.2,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(27.5));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(27.5));
             });
         });
         it('calculates a correct swapQuote with no slippage (feeless orders)', async () => {
@@ -155,7 +141,7 @@ describe('swapQuoteCalculator', () => {
                 assetSellAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([testOrders.PRUNED_SIGNED_ORDERS_FEELESS[0]]);
@@ -184,8 +170,9 @@ describe('swapQuoteCalculator', () => {
                 assetSellAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
+
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([
                 testOrders.PRUNED_SIGNED_ORDERS_FEELESS[0],
@@ -216,7 +203,7 @@ describe('swapQuoteCalculator', () => {
                 assetSellAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET[0]]);
@@ -245,7 +232,7 @@ describe('swapQuoteCalculator', () => {
                 assetSellAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([
@@ -277,7 +264,7 @@ describe('swapQuoteCalculator', () => {
                 assetSellAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET[0]]);
@@ -306,7 +293,7 @@ describe('swapQuoteCalculator', () => {
                 assetSellAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([
@@ -334,101 +321,101 @@ describe('swapQuoteCalculator', () => {
     });
     describe('#calculateMarketBuySwapQuoteAsync', () => {
         describe('InsufficientLiquidityError', () => {
-            it('should throw if not enough maker asset liquidity (multiple feeless orders)', () => {
+            it('should throw if not enough maker asset liquidity (multiple feeless orders)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEELESS,
                         baseUnitAmount(12),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(10));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(10));
             });
-            it('should throw if not enough taker asset liquidity (multiple feeless orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple feeless orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEELESS,
                         baseUnitAmount(10),
                         0.6,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(6.25));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(6.25));
             });
-            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with no slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with no slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET,
                         baseUnitAmount(12),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(10));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(10));
             });
-            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple takerAsset denominated fee orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET,
                         baseUnitAmount(12),
                         0.6,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(6.25));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(6.25));
             });
-            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with no slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with no slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET,
                         baseUnitAmount(6),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(5));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(5));
             });
-            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple makerAsset denominated fee orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET,
                         baseUnitAmount(6),
                         0.6,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(3.125));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(3.125));
             });
-            it('should throw if not enough taker asset liquidity (multiple mixed feeType orders with no slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple mixed feeType orders with no slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         MIXED_TEST_ORDERS,
                         baseUnitAmount(40),
                         0,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(25));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(25));
             });
-            it('should throw if not enough taker asset liquidity (multiple mixed feeTyoe orders with 20% slippage)', () => {
+            it('should throw if not enough taker asset liquidity (multiple mixed feeTyoe orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                         MIXED_TEST_ORDERS,
                         baseUnitAmount(40),
                         0.6,
                         GAS_PRICE,
-                        protocolFeeUtils,
+                        mockProtocolFeeUtils.object,
                     );
                 };
-                testHelpers.expectInsufficientLiquidityError(expect, errorFunction, baseUnitAmount(15.625));
+                await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(15.625));
             });
         });
         it('calculates a correct swapQuote with no slippage (feeless orders)', async () => {
@@ -439,7 +426,7 @@ describe('swapQuoteCalculator', () => {
                 assetBuyAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([testOrders.PRUNED_SIGNED_ORDERS_FEELESS[0]]);
@@ -468,7 +455,7 @@ describe('swapQuoteCalculator', () => {
                 assetBuyAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([
@@ -505,7 +492,7 @@ describe('swapQuoteCalculator', () => {
                 assetBuyAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET[0]]);
@@ -534,7 +521,7 @@ describe('swapQuoteCalculator', () => {
                 assetBuyAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             const fiveSixthEthInWei = new BigNumber(5)
                 .div(new BigNumber(6))
@@ -570,7 +557,7 @@ describe('swapQuoteCalculator', () => {
                 assetBuyAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([testOrders.PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET[0]]);
@@ -599,7 +586,7 @@ describe('swapQuoteCalculator', () => {
                 assetBuyAmount,
                 slippagePercentage,
                 GAS_PRICE,
-                protocolFeeUtils,
+                mockProtocolFeeUtils.object,
             );
             const totalTakerAssetAmount = new BigNumber(5)
                 .div(new BigNumber(6))
