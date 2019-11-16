@@ -23,9 +23,10 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { OrderPruner } from './utils/order_prune_utils';
-import { protocolFeeUtils } from './utils/protocol_fee_utils';
+import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { swapQuoteCalculator } from './utils/swap_quote_calculator';
+import { ExchangeContract } from '@0x/contracts-exchange';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
@@ -34,8 +35,10 @@ export class SwapQuoter {
     public readonly chainId: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
     private readonly _contractAddresses: ContractAddresses;
+    private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _orderPruner: OrderPruner;
     private readonly _devUtilsContract: DevUtilsContract;
+    private readonly _exchangeContract: ExchangeContract;
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
      * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
@@ -154,6 +157,8 @@ export class SwapQuoter {
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
         this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
+        this._exchangeContract = new ExchangeContract(this._contractAddresses.exchange, provider);
+        this._protocolFeeUtils = new ProtocolFeeUtils(this._exchangeContract);
         this._orderPruner = new OrderPruner(this._devUtilsContract, {
             expiryBufferMs: this.expiryBufferMs,
             permittedOrderFeeTypes: this.permittedOrderFeeTypes,
@@ -420,7 +425,7 @@ export class SwapQuoter {
             gasPrice = options.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
         } else {
-            gasPrice = await protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
+            gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
         const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
@@ -435,18 +440,20 @@ export class SwapQuoter {
         let swapQuote: SwapQuote;
 
         if (marketOperation === MarketOperation.Buy) {
-            swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
+            swapQuote = await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
                 gasPrice,
+                this._protocolFeeUtils,
             );
         } else {
-            swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
+            swapQuote = await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                 prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
                 gasPrice,
+                this._protocolFeeUtils,
             );
         }
 

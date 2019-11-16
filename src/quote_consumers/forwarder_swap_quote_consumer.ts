@@ -160,7 +160,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<string> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { ethAmount: providedEthAmount, takerAddress, gasLimit, gasPrice, extensionContractOpts } = _.merge(
+        const { ethAmount: providedEthAmount, takerAddress, gasLimit, extensionContractOpts } = _.merge(
             {},
             constants.DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
             opts,
@@ -179,11 +179,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         if (gasLimit !== undefined) {
             assert.isNumber('gasLimit', gasLimit);
         }
-        if (gasPrice !== undefined) {
-            assert.isBigNumber('gasPrice', gasPrice);
-        }
-
-        const { orders, worstCaseQuoteInfo } = quote; // tslint:disable-line:no-unused-variable
+        const { orders, worstCaseQuoteInfo, gasPrice } = quote; // tslint:disable-line:no-unused-variable
 
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);

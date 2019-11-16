@@ -1,7 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
-import { ForwarderSwapQuoteConsumer } from '@0x/asset-swapper/src/quote_consumers/forwarder_swap_quote_consumer';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -174,14 +173,12 @@ export interface SwapQuoteGetOutputOpts {
 }
 
 /**
+ * ethAmount: The amount of eth sent with the execution of a swap.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
- * gasPrice: Gas price in Wei to use for a transaction
- * ethAmount: The amount of eth sent with the execution of a swap
  */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
     ethAmount?: BigNumber;
-    gasPrice?: BigNumber;
     takerAddress?: string;
     gasLimit?: number;
 }
@@ -213,6 +210,7 @@ export interface GetExtensionContractTypeOpts {
 export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
+    gasPrice: BigNumber;
     orders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
