@@ -1,4 +1,3 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
@@ -15,7 +14,6 @@ import {
     constants,
     expect,
     orderHashUtils,
-    provider,
     toBaseUnitAmount,
     verifyEvents,
 } from '@0x/contracts-test-utils';
@@ -32,7 +30,6 @@ import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance
 import { LocalBalanceStore } from '../framework/balances/local_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 
-const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 blockchainTests.resets('fillOrder integration tests', env => {
     let deployment: DeploymentManager;
     let balanceStore: BlockchainBalanceStore;
@@ -60,10 +57,14 @@ blockchainTests.resets('fillOrder integration tests', env => {
         });
         const orderConfig = {
             feeRecipientAddress: feeRecipient.address,
-            makerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerToken.address),
-            takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(takerToken.address),
-            makerFeeAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerToken.address),
-            takerFeeAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(takerToken.address),
+            makerAssetData: deployment.assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData(),
+            takerAssetData: deployment.assetDataEncoder.ERC20Token(takerToken.address).getABIEncodedTransactionData(),
+            makerFeeAssetData: deployment.assetDataEncoder
+                .ERC20Token(makerToken.address)
+                .getABIEncodedTransactionData(),
+            takerFeeAssetData: deployment.assetDataEncoder
+                .ERC20Token(takerToken.address)
+                .getABIEncodedTransactionData(),
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
         };
@@ -112,7 +113,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         msgValue?: BigNumber,
     ): Promise<LocalBalanceStore> {
         let remainingValue = msgValue !== undefined ? msgValue : DeploymentManager.protocolFee;
-        const localBalanceStore = LocalBalanceStore.create(devUtils, balanceStore);
+        const localBalanceStore = LocalBalanceStore.create(deployment.devUtils, balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
 
@@ -144,7 +145,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,
-                deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.weth.address),
+                deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
             );
         }
 
@@ -260,7 +261,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
 
         // Fetch the current balances
         await balanceStore.updateBalancesAsync();
-        const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
+        const expectedBalances = LocalBalanceStore.create(deployment.devUtils, balanceStore);
 
         // End the epoch. This should wrap the staking proxy's ETH balance.
         const endEpochReceipt = await delegator.endEpochAsync();
@@ -308,7 +309,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
-            deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.weth.address),
+            deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
         );
         expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
         await balanceStore.updateBalancesAsync();
@@ -390,7 +391,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
-            deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.weth.address),
+            deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
         );
         expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
         await balanceStore.updateBalancesAsync();

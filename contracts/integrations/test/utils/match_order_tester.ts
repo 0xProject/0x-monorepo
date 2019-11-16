@@ -1,6 +1,5 @@
 import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
-import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import { constants, expect, orderHashUtils, OrderStatus } from '@0x/contracts-test-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -115,23 +114,39 @@ export class MatchOrderTester {
         let actualBatchMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
-            [actualBatchMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
-                this._deployment.exchange.batchMatchOrdersWithMaximalFill,
+            const tx = this._deployment.exchange.batchMatchOrdersWithMaximalFill(
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
                 orders.rightOrders.map(order => order.signature),
-                { from: takerAddress, gasPrice: DeploymentManager.gasPrice, value },
             );
+            actualBatchMatchResults = await tx.callAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
+            transactionReceipt = await tx.awaitTransactionSuccessAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
         } else {
-            [actualBatchMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
-                this._deployment.exchange.batchMatchOrders,
+            const tx = this._deployment.exchange.batchMatchOrders(
                 orders.leftOrders,
                 orders.rightOrders,
                 orders.leftOrders.map(order => order.signature),
                 orders.rightOrders.map(order => order.signature),
-                { from: takerAddress, gasPrice: DeploymentManager.gasPrice, value },
             );
+            actualBatchMatchResults = await tx.callAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
+            transactionReceipt = await tx.awaitTransactionSuccessAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
         }
 
         // Burn the gas used to execute the transaction in the local balance store.
@@ -184,23 +199,39 @@ export class MatchOrderTester {
         let actualMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
-            [actualMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
-                this._deployment.exchange.matchOrdersWithMaximalFill,
+            const tx = this._deployment.exchange.matchOrdersWithMaximalFill(
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
                 orders.rightOrder.signature,
-                { from: takerAddress, gasPrice: DeploymentManager.gasPrice, value },
             );
+            actualMatchResults = await tx.callAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
+            transactionReceipt = await tx.awaitTransactionSuccessAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
         } else {
-            [actualMatchResults, transactionReceipt] = await this._deployment.txHelper.getResultAndReceiptAsync(
-                this._deployment.exchange.matchOrders,
+            const tx = this._deployment.exchange.matchOrders(
                 orders.leftOrder,
                 orders.rightOrder,
                 orders.leftOrder.signature,
                 orders.rightOrder.signature,
-                { from: takerAddress, gasPrice: DeploymentManager.gasPrice, value },
             );
+            actualMatchResults = await tx.callAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
+            transactionReceipt = await tx.awaitTransactionSuccessAsync({
+                from: takerAddress,
+                gasPrice: DeploymentManager.gasPrice,
+                value,
+            });
         }
         localBalanceStore.burnGas(takerAddress, DeploymentManager.gasPrice.times(transactionReceipt.gasUsed));
 
@@ -320,9 +351,9 @@ export class MatchOrderTester {
         );
 
         // Protocol Fee
-        const wethAssetData = this._deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-            this._deployment.tokens.weth.address,
-        );
+        const wethAssetData = this._deployment.assetDataEncoder
+            .ERC20Token(this._deployment.tokens.weth.address)
+            .getABIEncodedTransactionData();
         localBalanceStore.sendEth(
             takerAddress,
             this._deployment.staking.stakingProxy.address,
@@ -616,7 +647,7 @@ export class MatchOrderTester {
         expectedFilledAmount: BigNumber,
         side: string,
     ): Promise<void> {
-        const orderInfo = await this._deployment.exchange.getOrderInfo.callAsync(order);
+        const orderInfo = await this._deployment.exchange.getOrderInfo(order).callAsync();
         // Check filled amount of order.
         const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
         expect(actualFilledAmount, `${side} order final filled amount`).to.be.bignumber.equal(expectedFilledAmount);

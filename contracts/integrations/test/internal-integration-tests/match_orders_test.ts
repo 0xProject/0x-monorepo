@@ -1,8 +1,7 @@
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { BlockchainBalanceStore, TokenIds } from '@0x/contracts-exchange';
+import { BlockchainBalanceStore, ExchangeRevertErrors, TokenIds } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { blockchainTests, constants, expect, orderHashUtils, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { Order, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -60,13 +59,13 @@ blockchainTests.resets('matchOrders integration tests', env => {
         });
 
         // Encode the asset data.
-        makerAssetDataLeft = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-            makerAssetLeft.address,
-        );
-        makerAssetDataRight = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-            makerAssetRight.address,
-        );
-        feeAssetData = deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(feeAsset.address);
+        makerAssetDataLeft = deployment.assetDataEncoder
+            .ERC20Token(makerAssetLeft.address)
+            .getABIEncodedTransactionData();
+        makerAssetDataRight = deployment.assetDataEncoder
+            .ERC20Token(makerAssetRight.address)
+            .getABIEncodedTransactionData();
+        feeAssetData = deployment.assetDataEncoder.ERC20Token(feeAsset.address).getABIEncodedTransactionData();
 
         // Create two market makers with compatible orders for matching.
         makerLeft = new Maker({
@@ -132,10 +131,10 @@ blockchainTests.resets('matchOrders integration tests', env => {
                     weth: deployment.tokens.weth,
                 },
                 erc721: {
-                    token: deployment.tokens.erc721[0],
+                    nft: deployment.tokens.erc721[0],
                 },
                 erc1155: {
-                    token: deployment.tokens.erc1155[0],
+                    fungible: deployment.tokens.erc1155[0],
                 },
             },
             tokenIds,
@@ -996,13 +995,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
             // Match orders
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexLeft, OrderStatus.Cancelled);
-            const tx = deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1023,13 +1018,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
             // Match orders
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexRight, OrderStatus.Cancelled);
-            const tx = deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1048,13 +1039,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
             // Match orders
             const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
-            const tx = deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1065,9 +1052,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await makerRight.signOrderAsync({
-                takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetRight.address,
-                ),
+                takerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerAssetRight.address)
+                    .getABIEncodedTransactionData(),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -1089,22 +1076,18 @@ blockchainTests.resets('matchOrders integration tests', env => {
             );
 
             // Match orders
-            const tx = deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetLeft.address,
-                ),
+                takerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerAssetLeft.address)
+                    .getABIEncodedTransactionData(),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
@@ -1124,13 +1107,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
                 signedOrderRight.signature,
             );
             // Match orders
-            const tx = deployment.exchange.matchOrders.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrders(signedOrderLeft, signedOrderRight, signedOrderLeft.signature, signedOrderRight.signature)
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -1907,13 +1886,14 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
             // Match orders
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexLeft, OrderStatus.Cancelled);
-            const tx = deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrdersWithMaximalFill(
+                    signedOrderLeft,
+                    signedOrderRight,
+                    signedOrderLeft.signature,
+                    signedOrderRight.signature,
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1933,13 +1913,14 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
             // Match orders
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHashHexRight, OrderStatus.Cancelled);
-            const tx = deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrdersWithMaximalFill(
+                    signedOrderLeft,
+                    signedOrderRight,
+                    signedOrderLeft.signature,
+                    signedOrderRight.signature,
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1957,13 +1938,14 @@ blockchainTests.resets('matchOrders integration tests', env => {
             const orderHashHexRight = orderHashUtils.getOrderHashHex(signedOrderRight);
             // Match orders
             const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
-            const tx = deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrdersWithMaximalFill(
+                    signedOrderLeft,
+                    signedOrderRight,
+                    signedOrderLeft.signature,
+                    signedOrderRight.signature,
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -1974,9 +1956,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await makerRight.signOrderAsync({
-                takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetRight.address,
-                ),
+                takerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerAssetRight.address)
+                    .getABIEncodedTransactionData(),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -1996,22 +1978,23 @@ blockchainTests.resets('matchOrders integration tests', env => {
                 signedOrderRight.signature,
             );
             // Match orders
-            const tx = deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrdersWithMaximalFill(
+                    signedOrderLeft,
+                    signedOrderRight,
+                    signedOrderLeft.signature,
+                    signedOrderRight.signature,
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerAssetLeft.address,
-                ),
+                takerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerAssetLeft.address)
+                    .getABIEncodedTransactionData(),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
@@ -2031,13 +2014,14 @@ blockchainTests.resets('matchOrders integration tests', env => {
                 signedOrderRight.signature,
             );
             // Match orders
-            const tx = deployment.exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                signedOrderLeft,
-                signedOrderRight,
-                signedOrderLeft.signature,
-                signedOrderRight.signature,
-                { from: matcher.address },
-            );
+            const tx = deployment.exchange
+                .matchOrdersWithMaximalFill(
+                    signedOrderLeft,
+                    signedOrderRight,
+                    signedOrderLeft.signature,
+                    signedOrderRight.signature,
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -2054,21 +2038,23 @@ blockchainTests.resets('matchOrders integration tests', env => {
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(
                 ExchangeRevertErrors.BatchMatchOrdersErrorCodes.ZeroLeftOrders,
             );
-            let tx = deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                leftOrders.map(order => order.signature),
-                rightOrders.map(order => order.signature),
-                { from: matcher.address },
-            );
+            let tx = deployment.exchange
+                .batchMatchOrders(
+                    leftOrders,
+                    rightOrders,
+                    leftOrders.map(order => order.signature),
+                    rightOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             await expect(tx).to.revertWith(expectedError);
-            tx = deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                leftOrders.map(order => order.signature),
-                rightOrders.map(order => order.signature),
-                { from: matcher.address },
-            );
+            tx = deployment.exchange
+                .batchMatchOrdersWithMaximalFill(
+                    leftOrders,
+                    rightOrders,
+                    leftOrders.map(order => order.signature),
+                    rightOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -2083,21 +2069,23 @@ blockchainTests.resets('matchOrders integration tests', env => {
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(
                 ExchangeRevertErrors.BatchMatchOrdersErrorCodes.ZeroRightOrders,
             );
-            let tx = deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                leftOrders.map(order => order.signature),
-                rightOrders.map(order => order.signature),
-                { from: matcher.address },
-            );
+            let tx = deployment.exchange
+                .batchMatchOrders(
+                    leftOrders,
+                    rightOrders,
+                    leftOrders.map(order => order.signature),
+                    rightOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             await expect(tx).to.revertWith(expectedError);
-            tx = deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                leftOrders.map(order => order.signature),
-                rightOrders.map(order => order.signature),
-                { from: matcher.address },
-            );
+            tx = deployment.exchange
+                .batchMatchOrdersWithMaximalFill(
+                    leftOrders,
+                    rightOrders,
+                    leftOrders.map(order => order.signature),
+                    rightOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -2125,21 +2113,23 @@ blockchainTests.resets('matchOrders integration tests', env => {
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(
                 ExchangeRevertErrors.BatchMatchOrdersErrorCodes.InvalidLengthLeftSignatures,
             );
-            let tx = deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                [leftOrders[0].signature],
-                rightOrders.map(order => order.signature),
-                { from: matcher.address },
-            );
+            let tx = deployment.exchange
+                .batchMatchOrders(
+                    leftOrders,
+                    rightOrders,
+                    [leftOrders[0].signature],
+                    rightOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             await expect(tx).to.revertWith(expectedError);
-            tx = deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                [leftOrders[0].signature],
-                rightOrders.map(order => order.signature),
-                { from: matcher.address },
-            );
+            tx = deployment.exchange
+                .batchMatchOrdersWithMaximalFill(
+                    leftOrders,
+                    rightOrders,
+                    [leftOrders[0].signature],
+                    rightOrders.map(order => order.signature),
+                )
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -2167,21 +2157,17 @@ blockchainTests.resets('matchOrders integration tests', env => {
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(
                 ExchangeRevertErrors.BatchMatchOrdersErrorCodes.InvalidLengthRightSignatures,
             );
-            let tx = deployment.exchange.batchMatchOrders.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                leftOrders.map(order => order.signature),
-                [rightOrders[0].signature],
-                { from: matcher.address },
-            );
+            let tx = deployment.exchange
+                .batchMatchOrders(leftOrders, rightOrders, leftOrders.map(order => order.signature), [
+                    rightOrders[0].signature,
+                ])
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             await expect(tx).to.revertWith(expectedError);
-            tx = deployment.exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
-                leftOrders,
-                rightOrders,
-                leftOrders.map(order => order.signature),
-                [rightOrders[0].signature],
-                { from: matcher.address },
-            );
+            tx = deployment.exchange
+                .batchMatchOrdersWithMaximalFill(leftOrders, rightOrders, leftOrders.map(order => order.signature), [
+                    rightOrders[0].signature,
+                ])
+                .awaitTransactionSuccessAsync({ from: matcher.address });
             return expect(tx).to.revertWith(expectedError);
         });
     });
@@ -2703,33 +2689,29 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
     describe('token sanity checks', () => {
         it('should be able to match ERC721 tokens with ERC1155 tokens', async () => {
-            const leftMakerAssetData = deployment.assetDataEncoder.ERC1155Assets.getABIEncodedTransactionData(
-                deployment.tokens.erc1155[0].address,
-                [leftId],
-                [new BigNumber(1)],
-                '0x',
-            );
-            const rightMakerAssetData = deployment.assetDataEncoder.ERC721Token.getABIEncodedTransactionData(
-                deployment.tokens.erc721[0].address,
-                rightId,
-            );
+            const leftMakerAssetData = deployment.assetDataEncoder
+                .ERC1155Assets(deployment.tokens.erc1155[0].address, [leftId], [new BigNumber(1)], '0x')
+                .getABIEncodedTransactionData();
+            const rightMakerAssetData = deployment.assetDataEncoder
+                .ERC721Token(deployment.tokens.erc721[0].address, rightId)
+                .getABIEncodedTransactionData();
 
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                makerAssetAmount: new BigNumber(100),
+                makerAssetAmount: new BigNumber(4),
                 takerAssetAmount: new BigNumber(1),
                 makerAssetData: leftMakerAssetData,
                 takerAssetData: rightMakerAssetData,
             });
             const signedOrderRight = await makerRight.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: new BigNumber(100),
+                takerAssetAmount: new BigNumber(4),
                 makerAssetData: rightMakerAssetData,
                 takerAssetData: leftMakerAssetData,
             });
 
             const expectedTransferAmounts = {
                 // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: new BigNumber(100),
+                leftMakerAssetSoldByLeftMakerAmount: new BigNumber(4),
                 leftMakerFeeAssetPaidByLeftMakerAmount: toBaseUnitAmount(100, 16), // 100%
                 // Right Maker
                 rightMakerAssetSoldByRightMakerAmount: new BigNumber(1),

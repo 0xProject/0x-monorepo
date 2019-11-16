@@ -106,23 +106,18 @@ export class Actor {
         amount?: BigNumber,
     ): Promise<BigNumber> {
         // Create a fungible token.
-        const id = await token.create.callAsync('', false, { from: this.address });
-        await token.create.awaitTransactionSuccessAsync('', false, { from: this.address });
+        const id = await token.create('', false).callAsync({ from: this.address });
+        await token.create('', false).awaitTransactionSuccessAsync({ from: this.address });
 
         // Mint the token
-        await token.mintFungible.awaitTransactionSuccessAsync(
-            id,
-            [this.address],
-            [amount || new BigNumber(constants.NUM_ERC1155_FUNGIBLE_TOKENS_MINT)],
-            { from: this.address },
-        );
+        await token
+            .mintFungible(id, [this.address], [amount || new BigNumber(constants.NUM_ERC1155_FUNGIBLE_TOKENS_MINT)])
+            .awaitTransactionSuccessAsync({ from: this.address });
 
         // Set approval for all token types for the spender.
-        await token.setApprovalForAll.awaitTransactionSuccessAsync(
-            spender || this.deployment.assetProxies.erc1155Proxy.address,
-            true,
-            { from: this.address },
-        );
+        await token
+            .setApprovalForAll(spender || this.deployment.assetProxies.erc1155Proxy.address, true)
+            .awaitTransactionSuccessAsync({ from: this.address });
 
         return id;
     }

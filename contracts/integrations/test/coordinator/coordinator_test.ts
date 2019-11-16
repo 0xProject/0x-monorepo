@@ -67,18 +67,18 @@ blockchainTests.resets('Coordinator integration tests', env => {
             orderConfig: {
                 senderAddress: coordinator.address,
                 feeRecipientAddress: feeRecipient.address,
-                makerAssetData: await devUtils.encodeERC20AssetData(makerToken.address).callAsync(),
-                takerAssetData: await devUtils.encodeERC20AssetData(takerToken.address).callAsync(),
-                makerFeeAssetData: await devUtils.encodeERC20AssetData(makerFeeToken.address).callAsync(),
-                takerFeeAssetData: await devUtils.encodeERC20AssetData(takerFeeToken.address).callAsync(),
-                makerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(makerToken.address),
-                takerAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(takerToken.address),
-                makerFeeAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    makerFeeToken.address,
-                ),
-                takerFeeAssetData: deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(
-                    takerFeeToken.address,
-                ),
+                makerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerToken.address)
+                    .getABIEncodedTransactionData(),
+                takerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(takerToken.address)
+                    .getABIEncodedTransactionData(),
+                makerFeeAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerFeeToken.address)
+                    .getABIEncodedTransactionData(),
+                takerFeeAssetData: deployment.assetDataEncoder
+                    .ERC20Token(takerFeeToken.address)
+                    .getABIEncodedTransactionData(),
             },
         });
 
@@ -152,7 +152,9 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     taker.address,
                     deployment.staking.stakingProxy.address,
                     DeploymentManager.protocolFee,
-                    deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.weth.address),
+                    deployment.assetDataEncoder
+                        .ERC20Token(deployment.tokens.weth.address)
+                        .getABIEncodedTransactionData(),
                 );
             }
         }

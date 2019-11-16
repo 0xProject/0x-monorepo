@@ -41,7 +41,7 @@ export function validStakeAssertion(
                 txData.from as string,
                 zrxVault.address,
                 amount,
-                deployment.assetDataEncoder.ERC20Token.getABIEncodedTransactionData(deployment.tokens.zrx.address),
+                deployment.assetDataEncoder.ERC20Token(deployment.tokens.zrx.address).getABIEncodedTransactionData(),
             );
             return expectedBalances;
         },
