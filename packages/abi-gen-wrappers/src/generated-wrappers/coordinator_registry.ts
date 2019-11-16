@@ -131,39 +131,6 @@ export class CoordinatorRegistryContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'coordinatorEndpoint',
-                        type: 'string',
-                    },
-                ],
-                name: 'setCoordinatorEndpoint',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: 'coordinatorOperator',
-                        type: 'address',
-                    },
-                ],
-                name: 'getCoordinatorEndpoint',
-                outputs: [
-                    {
-                        name: 'coordinatorEndpoint',
-                        type: 'string',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
                 inputs: [],
                 outputs: [],
                 payable: false,
@@ -187,6 +154,39 @@ export class CoordinatorRegistryContract extends BaseContract {
                 name: 'CoordinatorEndpointSet',
                 outputs: [],
                 type: 'event',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'coordinatorOperator',
+                        type: 'address',
+                    },
+                ],
+                name: 'getCoordinatorEndpoint',
+                outputs: [
+                    {
+                        name: 'coordinatorEndpoint',
+                        type: 'string',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'coordinatorEndpoint',
+                        type: 'string',
+                    },
+                ],
+                name: 'setCoordinatorEndpoint',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
             },
         ] as ContractAbi;
         return abi;
@@ -220,8 +220,65 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
 
     /**
+     * Gets the endpoint for a Coordinator.
+     * @param coordinatorOperator Operator of the Coordinator endpoint.
+     * @returns coordinatorEndpoint Endpoint of the Coordinator as a string.
+     */
+    public getCoordinatorEndpoint(coordinatorOperator: string): ContractFunctionObj<string> {
+        const self = (this as any) as CoordinatorRegistryContract;
+        assert.isString('coordinatorOperator', coordinatorOperator);
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
+                    coordinatorOperator.toLowerCase(),
+                ]);
+                let rawCallResult;
+
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                callDataWithDefaults.from = callDataWithDefaults.from
+                    ? callDataWithDefaults.from.toLowerCase()
+                    : callDataWithDefaults.from;
+                try {
+                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                } catch (err) {
+                    BaseContract._throwIfThrownErrorIsRevertError(err);
+                    throw err;
+                }
+
+                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+            getABIEncodedTransactionData(): string {
+                const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
+                    coordinatorOperator.toLowerCase(),
+                ]);
+                return abiEncodedTransactionData;
+            },
+        };
+    }
+    /**
      * Called by a Coordinator operator to set the endpoint of their Coordinator.
-     * @param coordinatorEndpoint endpoint of the Coordinator.
+     * @param coordinatorEndpoint Endpoint of the Coordinator as a string.
      */
     public setCoordinatorEndpoint(coordinatorEndpoint: string): ContractTxFunctionObj<void> {
         const self = (this as any) as CoordinatorRegistryContract;
@@ -332,62 +389,6 @@ export class CoordinatorRegistryContract extends BaseContract {
             getABIEncodedTransactionData(): string {
                 const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [
                     coordinatorEndpoint,
-                ]);
-                return abiEncodedTransactionData;
-            },
-        };
-    }
-    /**
-     * Gets the endpoint for a Coordinator.
-     * @param coordinatorOperator operator of the Coordinator endpoint.
-     */
-    public getCoordinatorEndpoint(coordinatorOperator: string): ContractFunctionObj<string> {
-        const self = (this as any) as CoordinatorRegistryContract;
-        assert.isString('coordinatorOperator', coordinatorOperator);
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                    schemas.addressSchema,
-                    schemas.numberSchema,
-                    schemas.jsNumber,
-                ]);
-                if (defaultBlock !== undefined) {
-                    assert.isBlockParam('defaultBlock', defaultBlock);
-                }
-                const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
-                    coordinatorOperator.toLowerCase(),
-                ]);
-                let rawCallResult;
-
-                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                    {
-                        to: self.address,
-                        ...callData,
-                        data: encodedData,
-                    },
-                    self._web3Wrapper.getContractDefaults(),
-                );
-                callDataWithDefaults.from = callDataWithDefaults.from
-                    ? callDataWithDefaults.from.toLowerCase()
-                    : callDataWithDefaults.from;
-                try {
-                    rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-                } catch (err) {
-                    BaseContract._throwIfThrownErrorIsRevertError(err);
-                    throw err;
-                }
-
-                BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-                const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
-                // tslint:disable boolean-naming
-                const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-                // tslint:enable boolean-naming
-                return result;
-            },
-            getABIEncodedTransactionData(): string {
-                const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
-                    coordinatorOperator.toLowerCase(),
                 ]);
                 return abiEncodedTransactionData;
             },

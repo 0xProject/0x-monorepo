@@ -4,51 +4,149 @@
     "compilerOutput": {
         "abi": [
             {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "coordinatorOperator",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "coordinatorEndpoint",
+                        "type": "string"
+                    }
+                ],
+                "name": "CoordinatorEndpointSet",
+                "type": "event"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "coordinatorOperator",
+                        "type": "address"
+                    }
+                ],
+                "name": "getCoordinatorEndpoint",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "coordinatorEndpoint",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
                 "constant": false,
-                "inputs": [{ "name": "coordinatorEndpoint", "type": "string" }],
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "coordinatorEndpoint",
+                        "type": "string"
+                    }
+                ],
                 "name": "setCoordinatorEndpoint",
                 "outputs": [],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [{ "name": "coordinatorOperator", "type": "address" }],
-                "name": "getCoordinatorEndpoint",
-                "outputs": [{ "name": "coordinatorEndpoint", "type": "string" }],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" },
-            {
-                "anonymous": false,
-                "inputs": [
-                    { "indexed": false, "name": "coordinatorOperator", "type": "address" },
-                    { "indexed": false, "name": "coordinatorEndpoint", "type": "string" }
-                ],
-                "name": "CoordinatorEndpointSet",
-                "type": "event"
             }
         ],
         "devdoc": {
             "methods": {
                 "getCoordinatorEndpoint(address)": {
                     "details": "Gets the endpoint for a Coordinator.",
-                    "params": { "coordinatorOperator": "operator of the Coordinator endpoint." }
+                    "params": {
+                        "coordinatorOperator": "Operator of the Coordinator endpoint."
+                    },
+                    "return": "coordinatorEndpoint Endpoint of the Coordinator as a string."
                 },
                 "setCoordinatorEndpoint(string)": {
                     "details": "Called by a Coordinator operator to set the endpoint of their Coordinator.",
-                    "params": { "coordinatorEndpoint": "endpoint of the Coordinator." }
+                    "params": {
+                        "coordinatorEndpoint": "Endpoint of the Coordinator as a string."
+                    }
                 }
             }
         },
         "evm": {
             "bytecode": {
-                "object": "0x608060405234801561001057600080fd5b506104b5806100206000396000f3fe608060405234801561001057600080fd5b5060043610610052577c010000000000000000000000000000000000000000000000000000000060003504635b2388be81146100575780636c90fedb1461006c575b600080fd5b61006a6100653660046102ff565b610095565b005b61007f61007a3660046102d9565b6100f0565b60405161008c91906103d8565b60405180910390f35b3360008181526020819052604090206100af9084846101c4565b507fd060052768902f3eecb84b8eae9d3a2608a1a9e60811a33968b46b8d552f266e8184846040516100e3939291906103ae565b60405180910390a1505050565b73ffffffffffffffffffffffffffffffffffffffff81166000908152602081815260409182902080548351601f60027fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6101006001861615020190931692909204918201849004840281018401909452808452606093928301828280156101b85780601f1061018d576101008083540402835291602001916101b8565b820191906000526020600020905b81548152906001019060200180831161019b57829003601f168201915b50505050509050919050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10610223578280017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00823516178555610250565b82800160010185558215610250579182015b82811115610250578235825591602001919060010190610235565b5061025c929150610260565b5090565b61027a91905b8082111561025c5760008155600101610266565b90565b600061028982356103ed565b9392505050565b600080601f830184136102a257600080fd5b50813567ffffffffffffffff8111156102ba57600080fd5b6020830191508360018202830111156102d257600080fd5b9250929050565b6000602082840312156102eb57600080fd5b60006102f7848461027d565b949350505050565b6000806020838503121561031257600080fd5b823567ffffffffffffffff81111561032957600080fd5b61033585828601610290565b92509250509250929050565b61034a816103ed565b82525050565b6000828452602084019350610366838584610417565b61036f83610453565b9093019392505050565b6000610384826103e9565b808452610398816020860160208601610423565b6103a181610453565b9093016020019392505050565b604081016103bc8286610341565b81810360208301526103cf818486610350565b95945050505050565b602080825281016102898184610379565b5190565b60006103f8826103fe565b92915050565b73ffffffffffffffffffffffffffffffffffffffff1690565b82818337506000910152565b60005b8381101561043e578181015183820152602001610426565b8381111561044d576000848401525b50505050565b601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0169056fea265627a7a72305820d8fc8bc6ec7167e671f9f87937212d93c49d5fbe171bbdfa06c846e5ac76151b6c6578706572696d656e74616cf50037"
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b506103e9806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80635b2388be1461003b5780636c90fedb146100ad575b600080fd5b6100ab6004803603602081101561005157600080fd5b81019060208101813564010000000081111561006c57600080fd5b82018360208201111561007e57600080fd5b803590602001918460018302840111640100000000831117156100a057600080fd5b509092509050610155565b005b6100e0600480360360208110156100c357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610227565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561011a578181015183820152602001610102565b50505050905090810190601f1680156101475780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b33600081815260208190526040902061016f9084846102fb565b507fd060052768902f3eecb84b8eae9d3a2608a1a9e60811a33968b46b8d552f266e818484604051808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001806020018281038252848482818152602001925080828437600083820152604051601f9091017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016909201829003965090945050505050a1505050565b73ffffffffffffffffffffffffffffffffffffffff81166000908152602081815260409182902080548351601f60027fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6101006001861615020190931692909204918201849004840281018401909452808452606093928301828280156102ef5780601f106102c4576101008083540402835291602001916102ef565b820191906000526020600020905b8154815290600101906020018083116102d257829003601f168201915b50505050509050919050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061035a578280017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00823516178555610387565b82800160010185558215610387579182015b8281111561038757823582559160200191906001019061036c565b50610393929150610397565b5090565b6103b191905b80821115610393576000815560010161039d565b9056fea265627a7a723158201e5700868fc146b88ffb53f2aacd9f9684387be927a7cb4fdb2da136413c17f964736f6c634300050d0032",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x3E9 DUP1 PUSH2 0x20 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x36 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x5B2388BE EQ PUSH2 0x3B JUMPI DUP1 PUSH4 0x6C90FEDB EQ PUSH2 0xAD JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0xAB PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x51 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 PUSH1 0x20 DUP2 ADD DUP2 CALLDATALOAD PUSH5 0x100000000 DUP2 GT ISZERO PUSH2 0x6C JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP3 ADD DUP4 PUSH1 0x20 DUP3 ADD GT ISZERO PUSH2 0x7E JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP1 CALLDATALOAD SWAP1 PUSH1 0x20 ADD SWAP2 DUP5 PUSH1 0x1 DUP4 MUL DUP5 ADD GT PUSH5 0x100000000 DUP4 GT OR ISZERO PUSH2 0xA0 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP SWAP1 SWAP3 POP SWAP1 POP PUSH2 0x155 JUMP JUMPDEST STOP JUMPDEST PUSH2 0xE0 PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH2 0xC3 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH2 0x227 JUMP JUMPDEST PUSH1 0x40 DUP1 MLOAD PUSH1 0x20 DUP1 DUP3 MSTORE DUP4 MLOAD DUP2 DUP4 ADD MSTORE DUP4 MLOAD SWAP2 SWAP3 DUP4 SWAP3 SWAP1 DUP4 ADD SWAP2 DUP6 ADD SWAP1 DUP1 DUP4 DUP4 PUSH1 0x0 JUMPDEST DUP4 DUP2 LT ISZERO PUSH2 0x11A JUMPI DUP2 DUP2 ADD MLOAD DUP4 DUP3 ADD MSTORE PUSH1 0x20 ADD PUSH2 0x102 JUMP JUMPDEST POP POP POP POP SWAP1 POP SWAP1 DUP2 ADD SWAP1 PUSH1 0x1F AND DUP1 ISZERO PUSH2 0x147 JUMPI DUP1 DUP3 SUB DUP1 MLOAD PUSH1 0x1 DUP4 PUSH1 0x20 SUB PUSH2 0x100 EXP SUB NOT AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP JUMPDEST POP SWAP3 POP POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST CALLER PUSH1 0x0 DUP2 DUP2 MSTORE PUSH1 0x20 DUP2 SWAP1 MSTORE PUSH1 0x40 SWAP1 KECCAK256 PUSH2 0x16F SWAP1 DUP5 DUP5 PUSH2 0x2FB JUMP JUMPDEST POP PUSH32 0xD060052768902F3EECB84B8EAE9D3A2608A1A9E60811A33968B46B8D552F266E DUP2 DUP5 DUP5 PUSH1 0x40 MLOAD DUP1 DUP5 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE DUP5 DUP5 DUP3 DUP2 DUP2 MSTORE PUSH1 0x20 ADD SWAP3 POP DUP1 DUP3 DUP5 CALLDATACOPY PUSH1 0x0 DUP4 DUP3 ADD MSTORE PUSH1 0x40 MLOAD PUSH1 0x1F SWAP1 SWAP2 ADD PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0 AND SWAP1 SWAP3 ADD DUP3 SWAP1 SUB SWAP7 POP SWAP1 SWAP5 POP POP POP POP POP LOG1 POP POP POP JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND PUSH1 0x0 SWAP1 DUP2 MSTORE PUSH1 0x20 DUP2 DUP2 MSTORE PUSH1 0x40 SWAP2 DUP3 SWAP1 KECCAK256 DUP1 SLOAD DUP4 MLOAD PUSH1 0x1F PUSH1 0x2 PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF PUSH2 0x100 PUSH1 0x1 DUP7 AND ISZERO MUL ADD SWAP1 SWAP4 AND SWAP3 SWAP1 SWAP3 DIV SWAP2 DUP3 ADD DUP5 SWAP1 DIV DUP5 MUL DUP2 ADD DUP5 ADD SWAP1 SWAP5 MSTORE DUP1 DUP5 MSTORE PUSH1 0x60 SWAP4 SWAP3 DUP4 ADD DUP3 DUP3 DUP1 ISZERO PUSH2 0x2EF JUMPI DUP1 PUSH1 0x1F LT PUSH2 0x2C4 JUMPI PUSH2 0x100 DUP1 DUP4 SLOAD DIV MUL DUP4 MSTORE SWAP2 PUSH1 0x20 ADD SWAP2 PUSH2 0x2EF JUMP JUMPDEST DUP3 ADD SWAP2 SWAP1 PUSH1 0x0 MSTORE PUSH1 0x20 PUSH1 0x0 KECCAK256 SWAP1 JUMPDEST DUP2 SLOAD DUP2 MSTORE SWAP1 PUSH1 0x1 ADD SWAP1 PUSH1 0x20 ADD DUP1 DUP4 GT PUSH2 0x2D2 JUMPI DUP3 SWAP1 SUB PUSH1 0x1F AND DUP3 ADD SWAP2 JUMPDEST POP POP POP POP POP SWAP1 POP SWAP2 SWAP1 POP JUMP JUMPDEST DUP3 DUP1 SLOAD PUSH1 0x1 DUP2 PUSH1 0x1 AND ISZERO PUSH2 0x100 MUL SUB AND PUSH1 0x2 SWAP1 DIV SWAP1 PUSH1 0x0 MSTORE PUSH1 0x20 PUSH1 0x0 KECCAK256 SWAP1 PUSH1 0x1F ADD PUSH1 0x20 SWAP1 DIV DUP2 ADD SWAP3 DUP3 PUSH1 0x1F LT PUSH2 0x35A JUMPI DUP3 DUP1 ADD PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00 DUP3 CALLDATALOAD AND OR DUP6 SSTORE PUSH2 0x387 JUMP JUMPDEST DUP3 DUP1 ADD PUSH1 0x1 ADD DUP6 SSTORE DUP3 ISZERO PUSH2 0x387 JUMPI SWAP2 DUP3 ADD JUMPDEST DUP3 DUP2 GT ISZERO PUSH2 0x387 JUMPI DUP3 CALLDATALOAD DUP3 SSTORE SWAP2 PUSH1 0x20 ADD SWAP2 SWAP1 PUSH1 0x1 ADD SWAP1 PUSH2 0x36C JUMP JUMPDEST POP PUSH2 0x393 SWAP3 SWAP2 POP PUSH2 0x397 JUMP JUMPDEST POP SWAP1 JUMP JUMPDEST PUSH2 0x3B1 SWAP2 SWAP1 JUMPDEST DUP1 DUP3 GT ISZERO PUSH2 0x393 JUMPI PUSH1 0x0 DUP2 SSTORE PUSH1 0x1 ADD PUSH2 0x39D JUMP JUMPDEST SWAP1 JUMP INVALID LOG2 PUSH6 0x627A7A723158 KECCAK256 0x1E JUMPI STOP DUP7 DUP16 0xC1 CHAINID 0xB8 DUP16 0xFB MSTORE8 CALLCODE 0xAA 0xCD SWAP16 SWAP7 DUP5 CODESIZE PUSH28 0xE927A7CB4FDB2DA136413C17F964736F6C634300050D003200000000 ",
+                "sourceMap": "687:148:11:-;;;758:75;8:9:-1;5:2;;;30:1;27;20:12;5:2;758:75:11;687:148;;;;;;"
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80635b2388be1461003b5780636c90fedb146100ad575b600080fd5b6100ab6004803603602081101561005157600080fd5b81019060208101813564010000000081111561006c57600080fd5b82018360208201111561007e57600080fd5b803590602001918460018302840111640100000000831117156100a057600080fd5b509092509050610155565b005b6100e0600480360360208110156100c357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610227565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561011a578181015183820152602001610102565b50505050905090810190601f1680156101475780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b33600081815260208190526040902061016f9084846102fb565b507fd060052768902f3eecb84b8eae9d3a2608a1a9e60811a33968b46b8d552f266e818484604051808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001806020018281038252848482818152602001925080828437600083820152604051601f9091017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe016909201829003965090945050505050a1505050565b73ffffffffffffffffffffffffffffffffffffffff81166000908152602081815260409182902080548351601f60027fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6101006001861615020190931692909204918201849004840281018401909452808452606093928301828280156102ef5780601f106102c4576101008083540402835291602001916102ef565b820191906000526020600020905b8154815290600101906020018083116102d257829003601f168201915b50505050509050919050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061035a578280017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00823516178555610387565b82800160010185558215610387579182015b8281111561038757823582559160200191906001019061036c565b50610393929150610397565b5090565b6103b191905b80821115610393576000815560010161039d565b9056fea265627a7a723158201e5700868fc146b88ffb53f2aacd9f9684387be927a7cb4fdb2da136413c17f964736f6c634300050d0032",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x36 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x5B2388BE EQ PUSH2 0x3B JUMPI DUP1 PUSH4 0x6C90FEDB EQ PUSH2 0xAD JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0xAB PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH2 0x51 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP2 ADD SWAP1 PUSH1 0x20 DUP2 ADD DUP2 CALLDATALOAD PUSH5 0x100000000 DUP2 GT ISZERO PUSH2 0x6C JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP3 ADD DUP4 PUSH1 0x20 DUP3 ADD GT ISZERO PUSH2 0x7E JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST DUP1 CALLDATALOAD SWAP1 PUSH1 0x20 ADD SWAP2 DUP5 PUSH1 0x1 DUP4 MUL DUP5 ADD GT PUSH5 0x100000000 DUP4 GT OR ISZERO PUSH2 0xA0 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP SWAP1 SWAP3 POP SWAP1 POP PUSH2 0x155 JUMP JUMPDEST STOP JUMPDEST PUSH2 0xE0 PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH2 0xC3 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP CALLDATALOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH2 0x227 JUMP JUMPDEST PUSH1 0x40 DUP1 MLOAD PUSH1 0x20 DUP1 DUP3 MSTORE DUP4 MLOAD DUP2 DUP4 ADD MSTORE DUP4 MLOAD SWAP2 SWAP3 DUP4 SWAP3 SWAP1 DUP4 ADD SWAP2 DUP6 ADD SWAP1 DUP1 DUP4 DUP4 PUSH1 0x0 JUMPDEST DUP4 DUP2 LT ISZERO PUSH2 0x11A JUMPI DUP2 DUP2 ADD MLOAD DUP4 DUP3 ADD MSTORE PUSH1 0x20 ADD PUSH2 0x102 JUMP JUMPDEST POP POP POP POP SWAP1 POP SWAP1 DUP2 ADD SWAP1 PUSH1 0x1F AND DUP1 ISZERO PUSH2 0x147 JUMPI DUP1 DUP3 SUB DUP1 MLOAD PUSH1 0x1 DUP4 PUSH1 0x20 SUB PUSH2 0x100 EXP SUB NOT AND DUP2 MSTORE PUSH1 0x20 ADD SWAP2 POP JUMPDEST POP SWAP3 POP POP POP PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST CALLER PUSH1 0x0 DUP2 DUP2 MSTORE PUSH1 0x20 DUP2 SWAP1 MSTORE PUSH1 0x40 SWAP1 KECCAK256 PUSH2 0x16F SWAP1 DUP5 DUP5 PUSH2 0x2FB JUMP JUMPDEST POP PUSH32 0xD060052768902F3EECB84B8EAE9D3A2608A1A9E60811A33968B46B8D552F266E DUP2 DUP5 DUP5 PUSH1 0x40 MLOAD DUP1 DUP5 PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND DUP2 MSTORE PUSH1 0x20 ADD DUP1 PUSH1 0x20 ADD DUP3 DUP2 SUB DUP3 MSTORE DUP5 DUP5 DUP3 DUP2 DUP2 MSTORE PUSH1 0x20 ADD SWAP3 POP DUP1 DUP3 DUP5 CALLDATACOPY PUSH1 0x0 DUP4 DUP3 ADD MSTORE PUSH1 0x40 MLOAD PUSH1 0x1F SWAP1 SWAP2 ADD PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0 AND SWAP1 SWAP3 ADD DUP3 SWAP1 SUB SWAP7 POP SWAP1 SWAP5 POP POP POP POP POP LOG1 POP POP POP JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND PUSH1 0x0 SWAP1 DUP2 MSTORE PUSH1 0x20 DUP2 DUP2 MSTORE PUSH1 0x40 SWAP2 DUP3 SWAP1 KECCAK256 DUP1 SLOAD DUP4 MLOAD PUSH1 0x1F PUSH1 0x2 PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF PUSH2 0x100 PUSH1 0x1 DUP7 AND ISZERO MUL ADD SWAP1 SWAP4 AND SWAP3 SWAP1 SWAP3 DIV SWAP2 DUP3 ADD DUP5 SWAP1 DIV DUP5 MUL DUP2 ADD DUP5 ADD SWAP1 SWAP5 MSTORE DUP1 DUP5 MSTORE PUSH1 0x60 SWAP4 SWAP3 DUP4 ADD DUP3 DUP3 DUP1 ISZERO PUSH2 0x2EF JUMPI DUP1 PUSH1 0x1F LT PUSH2 0x2C4 JUMPI PUSH2 0x100 DUP1 DUP4 SLOAD DIV MUL DUP4 MSTORE SWAP2 PUSH1 0x20 ADD SWAP2 PUSH2 0x2EF JUMP JUMPDEST DUP3 ADD SWAP2 SWAP1 PUSH1 0x0 MSTORE PUSH1 0x20 PUSH1 0x0 KECCAK256 SWAP1 JUMPDEST DUP2 SLOAD DUP2 MSTORE SWAP1 PUSH1 0x1 ADD SWAP1 PUSH1 0x20 ADD DUP1 DUP4 GT PUSH2 0x2D2 JUMPI DUP3 SWAP1 SUB PUSH1 0x1F AND DUP3 ADD SWAP2 JUMPDEST POP POP POP POP POP SWAP1 POP SWAP2 SWAP1 POP JUMP JUMPDEST DUP3 DUP1 SLOAD PUSH1 0x1 DUP2 PUSH1 0x1 AND ISZERO PUSH2 0x100 MUL SUB AND PUSH1 0x2 SWAP1 DIV SWAP1 PUSH1 0x0 MSTORE PUSH1 0x20 PUSH1 0x0 KECCAK256 SWAP1 PUSH1 0x1F ADD PUSH1 0x20 SWAP1 DIV DUP2 ADD SWAP3 DUP3 PUSH1 0x1F LT PUSH2 0x35A JUMPI DUP3 DUP1 ADD PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00 DUP3 CALLDATALOAD AND OR DUP6 SSTORE PUSH2 0x387 JUMP JUMPDEST DUP3 DUP1 ADD PUSH1 0x1 ADD DUP6 SSTORE DUP3 ISZERO PUSH2 0x387 JUMPI SWAP2 DUP3 ADD JUMPDEST DUP3 DUP2 GT ISZERO PUSH2 0x387 JUMPI DUP3 CALLDATALOAD DUP3 SSTORE SWAP2 PUSH1 0x20 ADD SWAP2 SWAP1 PUSH1 0x1 ADD SWAP1 PUSH2 0x36C JUMP JUMPDEST POP PUSH2 0x393 SWAP3 SWAP2 POP PUSH2 0x397 JUMP JUMPDEST POP SWAP1 JUMP JUMPDEST PUSH2 0x3B1 SWAP2 SWAP1 JUMPDEST DUP1 DUP3 GT ISZERO PUSH2 0x393 JUMPI PUSH1 0x0 DUP2 SSTORE PUSH1 0x1 ADD PUSH2 0x39D JUMP JUMPDEST SWAP1 JUMP INVALID LOG2 PUSH6 0x627A7A723158 KECCAK256 0x1E JUMPI STOP DUP7 DUP16 0xC1 CHAINID 0xB8 DUP16 0xFB MSTORE8 CALLCODE 0xAA 0xCD SWAP16 SWAP7 DUP5 CODESIZE PUSH28 0xE927A7CB4FDB2DA136413C17F964736F6C634300050D003200000000 ",
+                "sourceMap": "687:148:11:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;687:148:11;;;;;;;;;;;;;;;;;;;;;;;;1065:287:12;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1065:287:12;;;;;;;;21:11:-1;5:28;;2:2;;;46:1;43;36:12;2:2;1065:287:12;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;1065:287:12;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;-1:-1;1065:287:12;;-1:-1:-1;1065:287:12;-1:-1:-1;1065:287:12;:::i;:::-;;1558:212;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1558:212:12;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;1558:212:12;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1065:287;1183:10;1153:27;1203:41;;;;;;;;;;:63;;1247:19;;1203:63;:::i;:::-;;1281:64;1304:19;1325;;1281:64;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;;74:27;1281:64:12;;137:4:-1;117:14;;;133:9;113:30;157:16;;;1281:64:12;;;;-1:-1:-1;1281:64:12;;-1:-1:-1;;;;;1281:64:12;1065:287;;;:::o;1558:212::-;1722:41;;;:20;:41;;;;;;;;;;;;1715:48;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1666:33;;1715:48;;;1722:41;1715:48;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1558:212;;;:::o;687:148:11:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;687:148:11;;;-1:-1:-1;687:148:11;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;:::o"
             }
         }
     },
-    "networks": {}
+    "sources": {
+        "src/registry/CoordinatorRegistry.sol": {
+            "id": 11
+        },
+        "src/registry/MixinCoordinatorRegistryCore.sol": {
+            "id": 12
+        },
+        "src/registry/interfaces/ICoordinatorRegistryCore.sol": {
+            "id": 13
+        }
+    },
+    "sourceCodes": {
+        "src/registry/CoordinatorRegistry.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\nimport \"./MixinCoordinatorRegistryCore.sol\";\n\n\n// solhint-disable no-empty-blocks\ncontract CoordinatorRegistry is\n    MixinCoordinatorRegistryCore\n{\n    constructor ()\n        public\n        MixinCoordinatorRegistryCore()\n    {}\n}\n",
+        "src/registry/MixinCoordinatorRegistryCore.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\nimport \"./interfaces/ICoordinatorRegistryCore.sol\";\n\n\n// solhint-disable no-empty-blocks\ncontract MixinCoordinatorRegistryCore is\n    ICoordinatorRegistryCore\n{\n    // mapping from `coordinatorOperator` -> `coordinatorEndpoint`\n    mapping (address => string) internal coordinatorEndpoints;\n\n    /// @dev Called by a Coordinator operator to set the endpoint of their Coordinator.\n    /// @param coordinatorEndpoint Endpoint of the Coordinator as a string.\n    function setCoordinatorEndpoint(string calldata coordinatorEndpoint) external {\n        address coordinatorOperator = msg.sender;\n        coordinatorEndpoints[coordinatorOperator] = coordinatorEndpoint;\n        emit CoordinatorEndpointSet(coordinatorOperator, coordinatorEndpoint);\n    }\n\n    /// @dev Gets the endpoint for a Coordinator.\n    /// @param coordinatorOperator Operator of the Coordinator endpoint.\n    /// @return coordinatorEndpoint Endpoint of the Coordinator as a string.\n    function getCoordinatorEndpoint(address coordinatorOperator)\n        external\n        view\n        returns (string memory coordinatorEndpoint)\n    {\n        return coordinatorEndpoints[coordinatorOperator];\n    }\n}\n",
+        "src/registry/interfaces/ICoordinatorRegistryCore.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\n// solhint-disable no-empty-blocks\ncontract ICoordinatorRegistryCore\n{\n    /// @dev Emitted when a Coordinator endpoint is set.\n    event CoordinatorEndpointSet(\n        address coordinatorOperator,\n        string coordinatorEndpoint\n    );\n\n    /// @dev Called by a Coordinator operator to set the endpoint of their Coordinator.\n    /// @param coordinatorEndpoint Endpoint of the Coordinator as a string.\n    function setCoordinatorEndpoint(string calldata coordinatorEndpoint) external;\n\n    /// @dev Gets the endpoint for a Coordinator.\n    /// @param coordinatorOperator Operator of the Coordinator endpoint.\n    /// @return coordinatorEndpoint Endpoint of the Coordinator as a string.\n    function getCoordinatorEndpoint(address coordinatorOperator)\n        external\n        view\n        returns (string memory coordinatorEndpoint);\n}\n"
+    },
+    "sourceTreeHashHex": "0x31d1622077ced4805ce464a83eacf6122d76ed48733481fcf767476a7f0d7a72",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.13+commit.5b0b510c.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "constantinople",
+            "remappings": [
+                "@0x/contracts-exchange-libs=/Users/greg/dev/0x/monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-utils=/Users/greg/dev/0x/monorepo/contracts/coordinator/node_modules/@0x/contracts-utils",
+                "@0x/contracts-exchange=/Users/greg/dev/0x/monorepo/contracts/coordinator/node_modules/@0x/contracts-exchange"
+            ]
+        }
+    },
+    "chains": {}
 }

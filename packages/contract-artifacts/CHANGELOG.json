@@ -9,6 +9,10 @@
             {
                 "note": "Added `ZrxVault` and `ERC20BridgeProxy` artifacts",
                 "pr": 2323
+            },
+            {
+                "note": "Updated Coordinator + Coordinator Registry artifacts",
+                "pr": 2346
             }
         ]
     },
