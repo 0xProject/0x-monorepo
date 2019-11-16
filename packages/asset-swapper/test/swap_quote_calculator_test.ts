@@ -48,7 +48,7 @@ describe('swapQuoteCalculator', () => {
                 };
                 await testHelpers.expectInsufficientLiquidityErrorAsync(expect, errorFunction, baseUnitAmount(9));
             });
-            it('should throw if not enough taker asset liquidity (multiple feeless orders with 20% slippage)',async () => {
+            it('should throw if not enough taker asset liquidity (multiple feeless orders with 20% slippage)', async () => {
                 const errorFunction = async () => {
                     await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                         testOrders.PRUNED_SIGNED_ORDERS_FEELESS,

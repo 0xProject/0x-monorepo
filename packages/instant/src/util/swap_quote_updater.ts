@@ -1,14 +1,14 @@
-import { MarketBuySwapQuote, SwapQuote, SwapQuoter } from '@0x/asset-swapper';
+import { MarketBuySwapQuote, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
-import { oc } from 'ts-optchain';
 
 import { ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE, ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { Asset, QuoteFetchOrigin } from '../types';
+
 import { analytics } from './analytics';
 import { assetUtils } from './asset';
 import { errorFlasher } from './error_flasher';

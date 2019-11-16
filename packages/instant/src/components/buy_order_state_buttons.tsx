@@ -1,10 +1,4 @@
-import {
-    MarketBuySwapQuote,
-    SwapQuoteConsumer,
-    SwapQuoter,
-    SwapQuoterError,
-    SwapQuoteConsumerError,
-} from '@0x/asset-swapper';
+import { MarketBuySwapQuote, SwapQuoteConsumer, SwapQuoteConsumerError, SwapQuoter } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as React from 'react';

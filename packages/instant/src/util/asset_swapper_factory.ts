@@ -1,4 +1,4 @@
-import { SwapQuoteConsumer, SwapQuoter, SwapQuoteConsumerOpts, SwapQuoterOpts } from '@0x/asset-swapper';
+import { SwapQuoteConsumer, SwapQuoter, SwapQuoterOpts } from '@0x/asset-swapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
