@@ -19,9 +19,10 @@ import {
     MarketOperation,
     PrunedSignedOrder,
 } from '../src/types';
+import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -33,7 +34,7 @@ const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 
 const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
-
+const FEE_PERCENTAGE = 0.05;
 const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
     {
         takerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
@@ -67,7 +68,9 @@ const expectMakerAndTakerBalancesAsyncFactory = (
 };
 
 describe('ForwarderSwapQuoteConsumer', () => {
-    const FEE_PERCENTAGE = 0.05;
+    let contractWrappers: ContractWrappers;
+    let protocolFeeUtils: ProtocolFeeUtils;
+    let erc20Token: ERC20TokenContract;
     let userAddresses: string[];
     let coinbaseAddress: string;
     let makerAddress: string;
@@ -133,6 +136,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
         expectMakerAndTakerBalancesAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TokenContract,
             makerAddress,
@@ -179,28 +183,31 @@ describe('ForwarderSwapQuoteConsumer', () => {
             invalidOrders.push(prunedOrder as PrunedSignedOrder);
         }
 
-        marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             wethAssetData,
             orders,
             MarketOperation.Sell,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
-        marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             wethAssetData,
             orders,
             MarketOperation.Buy,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
-        invalidMarketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        invalidMarketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             takerAssetData,
             invalidOrders,
             MarketOperation.Buy,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
         swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, contractAddresses, {
@@ -234,7 +241,6 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, {
                     takerAddress,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
                     ethAmount: new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 });

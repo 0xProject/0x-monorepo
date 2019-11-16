@@ -9,7 +9,6 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    ForwarderExtensionContractOpts,
     ForwarderSmartContractParams,
     MarketOperation,
     SmartContractParamsInfo,

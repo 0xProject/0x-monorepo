@@ -1,10 +1,17 @@
+import { constants as devConstants } from '@0x/contracts-test-utils';
 import { AcceptedRejectedOrders, Orderbook } from '@0x/orderbook';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { APIOrder, AssetPairsItem, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../../src/swap_quoter';
 import { PrunedSignedOrder } from '../../src/types';
+import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
+
+const PROTOCOL_FEE_MULTIPLIER = 150000;
+
+// tslint:disable: max-classes-per-file
 
 class OrderbookClass extends Orderbook {
     // tslint:disable-next-line:prefer-function-over-method
@@ -47,6 +54,21 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
     const mockedSwapQuoter = TypeMoq.Mock.ofInstance(rawSwapQuoter, TypeMoq.MockBehavior.Loose, false);
     mockedSwapQuoter.callBase = true;
     return mockedSwapQuoter;
+};
+
+class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
+    // tslint:disable-next-line:prefer-function-over-method
+    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
+        return Promise.resolve(new BigNumber(PROTOCOL_FEE_MULTIPLIER));
+    }
+    // tslint:disable-next-line:prefer-function-over-method
+    public async getGasPriceEstimationOrThrowAsync(): Promise<BigNumber> {
+        return Promise.resolve(new BigNumber(devConstants.DEFAULT_GAS_PRICE));
+    }
+}
+
+export const protocolFeeUtilsMock = (): TypeMoq.IMock<ProtocolFeeUtils> => {
+    return TypeMoq.Mock.ofType(ProtocolFeeUtilsClass, TypeMoq.MockBehavior.Strict);
 };
 
 const mockGetPrunedSignedOrdersAsync = (
