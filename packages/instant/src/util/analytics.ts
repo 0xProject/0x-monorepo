@@ -1,4 +1,4 @@
-import { MarketBuySwapQuote, SwapQuote } from '@0x/asset-swapper';
+import { MarketBuySwapQuote } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -83,13 +83,12 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
 }
 
 const swapQuoteEventProperties = (swapQuote: MarketBuySwapQuote) => {
-    const assetBuyAmount = swapQuote.makerAssetFillAmount.toString();
+    const makerAssetFillAmount = swapQuote.makerAssetFillAmount.toString();
     const assetEthAmount = swapQuote.worstCaseQuoteInfo.takerAssetAmount.toString();
     const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount.plus(swapQuote.worstCaseQuoteInfo.feeTakerAssetAmount).toString();
     const totalEthAmount = swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount.toString();
-    // const feePercentage = swapQuote.feePercentage !== undefined ? buyQuote.feePercentage.toString() : 0;
     return {
-        assetBuyAmount,
+        makerAssetFillAmount,
         assetEthAmount,
         feeEthAmount,
         totalEthAmount,
@@ -234,10 +233,10 @@ export const analytics = {
             ...swapQuoteEventProperties(swapQuote),
             fetchOrigin,
         }),
-    trackQuoteError: (errorMessage: string, assetBuyAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
+    trackQuoteError: (errorMessage: string, makerAssetFillAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
         trackingEventFnWithPayload(EventNames.QuoteError)({
             errorMessage,
-            assetBuyAmount: assetBuyAmount.toString(),
+            makerAssetFillAmount: makerAssetFillAmount.toString(),
             fetchOrigin,
         });
     },
