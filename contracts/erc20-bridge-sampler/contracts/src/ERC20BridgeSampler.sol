@@ -34,7 +34,7 @@ contract ERC20BridgeSampler is
     IERC20BridgeSampler,
     DeploymentConstants
 {
-    bytes4 constant internal ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant internal ERC20_PROXY_ID = 0xf47261b0; // bytes4(keccak256("ERC20Token(address)"));
 
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
@@ -86,6 +86,7 @@ contract ERC20BridgeSampler is
             uint256[][] memory makerTokenAmountsBySource
         )
     {
+        require(orders.length != 0, "EMPTY_ORDERS");
         orderInfos = queryOrders(orders);
         makerTokenAmountsBySource = sampleBuys(
             sources,
@@ -176,7 +177,7 @@ contract ERC20BridgeSampler is
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
-    function sampleSellFromKyberNetwork(
+    function sampleSellsFromKyberNetwork(
         address takerToken,
         address makerToken,
         uint256[] memory takerTokenAmounts
@@ -187,8 +188,8 @@ contract ERC20BridgeSampler is
     {
         address _takerToken = takerToken == _getWETHAddress() ? KYBER_ETH_ADDRESS : takerToken;
         address _makerToken = makerToken == _getWETHAddress() ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = LibERC20Token.decimals(takerToken);
-        uint256 makerTokenDecimals = LibERC20Token.decimals(makerToken);
+        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
+        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
@@ -212,7 +213,7 @@ contract ERC20BridgeSampler is
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
-    function sampleSellFromEth2Dai(
+    function sampleSellsFromEth2Dai(
         address takerToken,
         address makerToken,
         uint256[] memory takerTokenAmounts
@@ -238,7 +239,7 @@ contract ERC20BridgeSampler is
     /// @param takerTokenAmounts Maker token sell amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
-    function sampleBuyFromEth2Dai(
+    function sampleBuysFromEth2Dai(
         address takerToken,
         address makerToken,
         uint256[] memory makerTokenAmounts
@@ -264,7 +265,7 @@ contract ERC20BridgeSampler is
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
-    function sampleSellFromUniswap(
+    function sampleSellsFromUniswap(
         address takerToken,
         address makerToken,
         uint256[] memory takerTokenAmounts
@@ -305,7 +306,7 @@ contract ERC20BridgeSampler is
     /// @param makerTokenAmounts Maker token sell amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
-    function sampleBuyFromUniswap(
+    function sampleBuysFromUniswap(
         address takerToken,
         address makerToken,
         uint256[] memory makerTokenAmounts
@@ -340,6 +341,17 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Overridable way to get token decimals.
+    /// @param tokenAddress Address of the token.
+    /// @return decimals The decimal places for the token.
+    function _getTokenDecimals(address tokenAddress)
+        internal
+        view
+        returns (uint8 decimals)
+    {
+        return LibERC20Token.decimals(tokenAddress);
+    }
+
     /// @dev Samples a supported sell source, defined by its address.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
@@ -357,13 +369,13 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory makerTokenAmounts)
     {
         if (source == address(_getEth2DaiContract())) {
-            return sampleSellFromEth2Dai(takerToken, makerToken, takerTokenAmounts);
+            return sampleSellsFromEth2Dai(takerToken, makerToken, takerTokenAmounts);
         }
         if (source == address(_getUniswapExchangeFactoryContract())) {
-            return sampleSellFromUniswap(takerToken, makerToken, takerTokenAmounts);
+            return sampleSellsFromUniswap(takerToken, makerToken, takerTokenAmounts);
         }
         if (source == address(_getKyberNetworkContract())) {
-            return sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts);
+            return sampleSellsFromKyberNetwork(takerToken, makerToken, takerTokenAmounts);
         }
         revert("UNSUPPORTED_SOURCE");
     }
@@ -385,10 +397,10 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory takerTokenAmounts)
     {
         if (source == address(_getEth2DaiContract())) {
-            return sampleBuyFromEth2Dai(takerToken, makerToken, makerTokenAmounts);
+            return sampleBuysFromEth2Dai(takerToken, makerToken, makerTokenAmounts);
         }
         if (source == address(_getUniswapExchangeFactoryContract())) {
-            return sampleBuyFromUniswap(takerToken, makerToken, makerTokenAmounts);
+            return sampleBuysFromUniswap(takerToken, makerToken, makerTokenAmounts);
         }
         revert("UNSUPPORTED_SOURCE");
     }

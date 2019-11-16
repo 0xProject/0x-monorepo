@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 
 
-contract IEth2Dai {
+interface IEth2Dai {
 
     function getBuyAmount(
         address buyToken,

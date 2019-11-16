@@ -27,11 +27,17 @@ import "./IKyberNetwork.sol";
 
 contract DeploymentConstants {
 
+    /// @dev Address of the 0x Exchange contract.
     address constant public EXCHANGE_ADDRESS = 0x080bf510FCbF18b91105470639e9561022937712;
+    /// @dev Address of the Eth2Dai MatchingMarket contract.
     address constant public ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
+    /// @dev Address of the UniswapExchangeFactory contract.
     address constant public UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
+    /// @dev Address of the KyberNeworkProxy contract.
     address constant public KYBER_NETWORK_PROXY_ADDRESS = 0x818E6FECD516Ecc3849DAf6845e3EC868087B755;
+    /// @dev Address of the WETH contract.
     address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    /// @dev Kyber ETH pseudo-address.
     address constant public KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /// @dev An overridable way to retrieve the 0x Exchange contract.

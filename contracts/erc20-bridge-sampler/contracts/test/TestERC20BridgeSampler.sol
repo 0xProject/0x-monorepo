@@ -28,8 +28,12 @@ import "../src/IKyberNetwork.sol";
 
 library LibDeterministicQuotes {
 
-    uint256 private constant MAX_RATE = 10 ** 20;
-    uint256 private constant MIN_RATE = 10 ** 16;
+    address private constant WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    uint256 private constant RATE_DENOMINATOR = 1 ether;
+    uint256 private constant MIN_RATE = RATE_DENOMINATOR / 100;
+    uint256 private constant MAX_RATE = 100 * RATE_DENOMINATOR;
+    uint8 private constant MIN_DECIMALS = 4;
+    uint8 private constant MAX_DECIMALS = 20;
 
     function getDeterministicSellQuote(
         bytes32 salt,
@@ -41,10 +45,10 @@ library LibDeterministicQuotes {
         pure
         returns (uint256 buyAmount)
     {
-        uint256 sellBase = 10 ** getDeterministicTokenDecimals(sellToken);
-        uint256 buyBase = 10 ** getDeterministicTokenDecimals(buyToken);
-        uint256 rate = _getDeterministicRate(salt, sellToken, buyToken);
-        return sellAmount * rate * buyBase / sellBase / 10 ** 18;
+        uint256 sellBase = uint256(10) ** getDeterministicTokenDecimals(sellToken);
+        uint256 buyBase = uint256(10) ** getDeterministicTokenDecimals(buyToken);
+        uint256 rate = getDeterministicRate(salt, sellToken, buyToken);
+        return sellAmount * rate * buyBase / sellBase / RATE_DENOMINATOR;
     }
 
     function getDeterministicBuyQuote(
@@ -57,10 +61,10 @@ library LibDeterministicQuotes {
         pure
         returns (uint256 sellAmount)
     {
-        uint256 sellBase = 10 ** getDeterministicTokenDecimals(sellToken);
-        uint256 buyBase = 10 ** getDeterministicTokenDecimals(buyToken);
-        uint256 rate = _getDeterministicRate(salt, sellToken, buyToken);
-        return buyAmount * 10 ** 18 * sellBase / rate / buyBase;
+        uint256 sellBase = uint256(10) ** getDeterministicTokenDecimals(sellToken);
+        uint256 buyBase = uint256(10) ** getDeterministicTokenDecimals(buyToken);
+        uint256 rate = getDeterministicRate(salt, sellToken, buyToken);
+        return buyAmount * RATE_DENOMINATOR * sellBase / rate / buyBase;
     }
 
     function getDeterministicTokenDecimals(address token)
@@ -68,32 +72,34 @@ library LibDeterministicQuotes {
         pure
         returns (uint8 decimals)
     {
+        if (token == WETH_ADDRESS) {
+            return 18;
+        }
         bytes32 seed = keccak256(abi.encodePacked(token));
-        return uint8(uint256(seed) % 18) + 6;
+        return uint8(uint256(seed) % (MAX_DECIMALS - MIN_DECIMALS)) + MIN_DECIMALS;
     }
 
-    function _getDeterministicRate(bytes32 salt, address sellToken, address buyToken)
-        private
+    function getDeterministicRate(bytes32 salt, address sellToken, address buyToken)
+        internal
         pure
         returns (uint256 rate)
     {
         bytes32 seed = keccak256(abi.encodePacked(salt, sellToken, buyToken));
-        return MIN_RATE + uint256(seed) % MAX_RATE;
+        return uint256(seed) % (MAX_RATE - MIN_RATE) + MIN_RATE;
     }
 }
 
 
 contract TestERC20BridgeSamplerUniswapExchange is
-    IUniswapExchangeQuotes
+    IUniswapExchangeQuotes,
+    DeploymentConstants
 {
     bytes32 constant private BASE_SALT = 0x1d6a6a0506b0b4a554b907a4c29d9f4674e461989d9c1921feb17b26716385ab;
 
     address public tokenAddress;
     bytes32 public salt;
-    address private _wethAddress;
 
     constructor(address _tokenAddress) public {
-        _wethAddress = msg.sender;
         tokenAddress = _tokenAddress;
         salt = keccak256(abi.encodePacked(BASE_SALT, _tokenAddress));
     }
@@ -108,8 +114,8 @@ contract TestERC20BridgeSamplerUniswapExchange is
     {
         return LibDeterministicQuotes.getDeterministicSellQuote(
             salt,
-            _wethAddress,
             tokenAddress,
+            WETH_ADDRESS,
             ethSold
         );
     }
@@ -124,7 +130,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
     {
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             salt,
-            _wethAddress,
+            WETH_ADDRESS,
             tokenAddress,
             tokensBought
         );
@@ -141,7 +147,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         return LibDeterministicQuotes.getDeterministicSellQuote(
             salt,
             tokenAddress,
-            _wethAddress,
+            WETH_ADDRESS,
             tokensSold
         );
     }
@@ -156,63 +162,46 @@ contract TestERC20BridgeSamplerUniswapExchange is
     {
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             salt,
+            WETH_ADDRESS,
             tokenAddress,
-            _wethAddress,
             ethBought
         );
     }
 }
 
 
-contract TestERC20BridgeSampler is
-    ERC20BridgeSampler
+contract TestERC20BridgeSamplerKyberNetwork is
+    IKyberNetwork,
+    DeploymentConstants
 {
-    bytes32 constant private KYBER_SALT = 0x0ff3ca9d46195c39f9a12afb74207b4970349fb3cfb1e459bbf170298d326bc7;
-    bytes32 constant private ETH2DAI_SALT = 0xb713b61bb9bb2958a0f5d1534b21e94fc68c4c0c034b0902ed844f2f6cd1b4f7;
-
-    mapping (address => IUniswapExchangeQuotes) private _uniswapExchangesByToken;
-
-    // Creates Uniswap exchange contracts for tokens.
-    function createTokenExchanges(address[] calldata tokenAddresses)
-        external
-    {
-        for (uint256 i = 0; i < tokenAddresses.length; i++) {
-            address tokenAddress = tokenAddresses[i];
-            _uniswapExchangesByToken[tokenAddress] =
-                new TestERC20BridgeSamplerUniswapExchange(tokenAddress);
-        }
-    }
-
-    // `IERC20.decimals()` (for WETH).
-    function decimals()
-        external
-        view
-        returns (uint8 decimalPlaces)
-    {
-        return 18;
-    }
+    bytes32 constant private SALT = 0x0ff3ca9d46195c39f9a12afb74207b4970349fb3cfb1e459bbf170298d326bc7;
+    address constant public ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     // Deterministic `IKyberNetwork.getExpectedRate()`.
     function getExpectedRate(
         address fromToken,
         address toToken,
-        uint256 fromAmount
+        uint256
     )
         external
         view
-        returns (uint256 expectedRate, uint256 slippageRate)
+        returns (uint256 expectedRate, uint256)
     {
-        uint256 quote = LibDeterministicQuotes.getDeterministicSellQuote(
-            KYBER_SALT,
+        fromToken = fromToken == ETH_ADDRESS ? WETH_ADDRESS : fromToken;
+        toToken = toToken == ETH_ADDRESS ? WETH_ADDRESS : toToken;
+        expectedRate = LibDeterministicQuotes.getDeterministicRate(
+            SALT,
             fromToken,
-            toToken,
-            fromAmount
+            toToken
         );
-        expectedRate =
-            10 ** 18 *
-            (quote / LibDeterministicQuotes.getDeterministicTokenDecimals(toToken)) /
-            (fromAmount * LibDeterministicQuotes.getDeterministicTokenDecimals(fromToken));
     }
+}
+
+
+contract TestERC20BridgeSamplerEth2Dai is
+    IEth2Dai
+{
+    bytes32 constant private SALT = 0xb713b61bb9bb2958a0f5d1534b21e94fc68c4c0c034b0902ed844f2f6cd1b4f7;
 
     // Deterministic `IEth2Dai.getBuyAmount()`.
     function getBuyAmount(
@@ -225,7 +214,7 @@ contract TestERC20BridgeSampler is
         returns (uint256 buyAmount)
     {
         return LibDeterministicQuotes.getDeterministicSellQuote(
-            ETH2DAI_SALT,
+            SALT,
             payToken,
             buyToken,
             payAmount
@@ -243,11 +232,29 @@ contract TestERC20BridgeSampler is
         returns (uint256 payAmount)
     {
         return LibDeterministicQuotes.getDeterministicBuyQuote(
-            ETH2DAI_SALT,
+            SALT,
             payToken,
             buyToken,
             buyAmount
         );
+    }
+}
+
+
+contract TestERC20BridgeSamplerUniswapExchangeFactory is
+    IUniswapExchangeFactory
+{
+    mapping (address => IUniswapExchangeQuotes) private _exchangesByToken;
+
+    // Creates Uniswap exchange contracts for tokens.
+    function createTokenExchanges(address[] calldata tokenAddresses)
+        external
+    {
+        for (uint256 i = 0; i < tokenAddresses.length; i++) {
+            address tokenAddress = tokenAddresses[i];
+            _exchangesByToken[tokenAddress] =
+                new TestERC20BridgeSamplerUniswapExchange(tokenAddress);
+        }
     }
 
     // `IUniswapExchangeFactory.getExchange()`.
@@ -256,13 +263,35 @@ contract TestERC20BridgeSampler is
         view
         returns (address)
     {
-        return address(_uniswapExchangesByToken[tokenAddress]);
+        return address(_exchangesByToken[tokenAddress]);
+    }
+}
+
+
+contract TestERC20BridgeSampler is
+    ERC20BridgeSampler
+{
+    TestERC20BridgeSamplerUniswapExchangeFactory public uniswap;
+    TestERC20BridgeSamplerEth2Dai public eth2Dai;
+    TestERC20BridgeSamplerKyberNetwork public kyber;
+
+    constructor() public {
+        uniswap = new TestERC20BridgeSamplerUniswapExchangeFactory();
+        eth2Dai = new TestERC20BridgeSamplerEth2Dai();
+        kyber = new TestERC20BridgeSamplerKyberNetwork();
+    }
+
+    // Creates Uniswap exchange contracts for tokens.
+    function createTokenExchanges(address[] calldata tokenAddresses)
+        external
+    {
+        uniswap.createTokenExchanges(tokenAddresses);
     }
 
     // `IExchange.getOrderInfo()`, overridden to return deterministic order infos.
     function getOrderInfo(LibOrder.Order memory order)
         public
-        view
+        pure
         returns (LibOrder.OrderInfo memory orderInfo)
     {
         // The order hash is just the hash of the salt.
@@ -273,7 +302,16 @@ contract TestERC20BridgeSampler is
         orderInfo.orderTakerAssetFilledAmount = uint256(orderHash) % order.takerAssetAmount;
     }
 
-    // Overriden to point to this contract.
+    // Overriden to return deterministic decimals.
+    function _getTokenDecimals(address tokenAddress)
+        internal
+        view
+        returns (uint8 decimals)
+    {
+        return LibDeterministicQuotes.getDeterministicTokenDecimals(tokenAddress);
+    }
+
+    // Overriden to point to a this contract.
     function _getExchangeContract()
         internal
         view
@@ -282,39 +320,30 @@ contract TestERC20BridgeSampler is
         return IExchange(address(this));
     }
 
-    // Overriden to point to this contract.
+    // Overriden to point to a custom contract.
     function _getEth2DaiContract()
         internal
         view
-        returns (IEth2Dai eth2dai)
+        returns (IEth2Dai eth2dai_)
     {
-        return IEth2Dai(address(this));
+        return eth2Dai;
     }
 
-    // Overriden to point to this contract.
+    // Overriden to point to a custom contract.
     function _getUniswapExchangeFactoryContract()
         internal
         view
-        returns (IUniswapExchangeFactory uniswap)
+        returns (IUniswapExchangeFactory uniswap_)
     {
-        return IUniswapExchangeFactory(address(this));
+        return uniswap;
     }
 
-    // Overriden to point to this contract.
+    // Overriden to point to a custom contract.
     function _getKyberNetworkContract()
         internal
         view
-        returns (IKyberNetwork kyber)
+        returns (IKyberNetwork kyber_)
     {
-        return IKyberNetwork(address(this));
-    }
-
-    // Overriden to point to this contract.
-    function _getWETHAddress()
-        internal
-        view
-        returns (address weth)
-    {
-        return address(this);
+        return kyber;
     }
 }

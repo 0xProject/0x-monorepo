@@ -19,14 +19,14 @@
 pragma solidity ^0.5.9;
 
 
-contract IKyberNetwork {
+interface IKyberNetwork {
 
     function getExpectedRate(
         address fromToken,
         address toToken,
         uint256 fromAmount
     )
-        public
+        external
         view
         returns (uint256 expectedRate, uint256 slippageRate);
 }
