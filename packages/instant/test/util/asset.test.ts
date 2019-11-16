@@ -1,4 +1,4 @@
-import { AssetBuyerError, BigNumber, InsufficientAssetLiquidityError } from '@0x/asset-buyer';
+import { BigNumber, InsufficientAssetLiquidityError, SwapQuoterError } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
@@ -59,8 +59,8 @@ describe('assetDataUtil', () => {
     });
     describe('assetBuyerErrorMessage', () => {
         it('should return message for generic InsufficientAssetLiquidity error', () => {
-            const insufficientAssetError = new Error(AssetBuyerError.InsufficientAssetLiquidity);
-            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, insufficientAssetError)).toEqual(
+            const insufficientAssetError = new Error(SwapQuoterError.InsufficientAssetLiquidity);
+            expect(assetUtils.swapQuoterErrorMessage(ZRX_ASSET, insufficientAssetError)).toEqual(
                 'Not enough ZRX available',
             );
         });
@@ -68,45 +68,39 @@ describe('assetDataUtil', () => {
             it('should return custom message for token w/ 18 decimals', () => {
                 const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(20.059), 18);
                 expect(
-                    assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                    assetUtils.swapQuoterErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
                 ).toEqual('There are only 20.05 ZRX available to buy');
             });
             it('should return custom message for token w/ 18 decimals and small amount available', () => {
                 const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), 18);
                 expect(
-                    assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                    assetUtils.swapQuoterErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
                 ).toEqual('There are only 0.01 ZRX available to buy');
             });
             it('should return custom message for token w/ 8 decimals', () => {
                 const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 8);
                 expect(
-                    assetUtils.assetBuyerErrorMessage(WAX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                    assetUtils.swapQuoterErrorMessage(WAX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
                 ).toEqual('There are only 3 WAX available to buy');
             });
             it('should return generic message when amount available rounds to zero', () => {
                 const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.002), 18);
                 expect(
-                    assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                    assetUtils.swapQuoterErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
                 ).toEqual('Not enough ZRX available');
             });
         });
-        it('should return message for InsufficientZrxLiquidity', () => {
-            const insufficientZrxError = new Error(AssetBuyerError.InsufficientZrxLiquidity);
-            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, insufficientZrxError)).toEqual(
-                'Not enough ZRX available',
-            );
-        });
         it('should message for StandardRelayerApiError', () => {
-            const standardRelayerError = new Error(AssetBuyerError.StandardRelayerApiError);
-            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, standardRelayerError)).toEqual(
+            const standardRelayerError = new Error(SwapQuoterError.StandardRelayerApiError);
+            expect(assetUtils.swapQuoterErrorMessage(ZRX_ASSET, standardRelayerError)).toEqual(
                 'ZRX is currently unavailable',
             );
         });
         it('should return error for AssetUnavailable error', () => {
             const assetUnavailableError = new Error(
-                `${AssetBuyerError.AssetUnavailable}: For assetData ${ZRX_ASSET_DATA}`,
+                `${SwapQuoterError.AssetUnavailable}: For assetData ${ZRX_ASSET_DATA}`,
             );
-            expect(assetUtils.assetBuyerErrorMessage(ZRX_ASSET, assetUnavailableError)).toEqual(
+            expect(assetUtils.swapQuoterErrorMessage(ZRX_ASSET, assetUnavailableError)).toEqual(
                 'ZRX is currently unavailable',
             );
         });
