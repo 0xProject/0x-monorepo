@@ -36,6 +36,10 @@ lib
 /contracts/erc20/test/generated-wrappers
 /contracts/erc20/generated-artifacts
 /contracts/erc20/test/generated-artifacts
+/contracts/erc20-bridge-sampler/generated-wrappers
+/contracts/erc20-bridge-sampler/test/generated-wrappers
+/contracts/erc20-bridge-sampler/generated-artifacts
+/contracts/erc20-bridge-sampler/test/generated-artifacts
 /contracts/erc721/generated-wrappers
 /contracts/erc721/test/generated-wrappers
 /contracts/erc721/generated-artifacts
