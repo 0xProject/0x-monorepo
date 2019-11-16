@@ -6,7 +6,7 @@ import { BigNumber } from '@0x/utils';
 // alias for clarity
 type address = string;
 
-interface TokenData<TERC20, TERC721, TERC1155> {
+export interface TokenData<TERC20, TERC721, TERC1155> {
     erc20: TERC20;
     erc721: TERC721;
     erc1155: TERC1155;
@@ -20,7 +20,7 @@ export type TokenContracts = TokenData<
     ERC1155MintableContract[]
 >;
 
-interface Named<T> {
+export interface Named<T> {
     [readableName: string]: T;
 }
 
@@ -34,11 +34,11 @@ export type TokenContractsByName = TokenData<
     Named<ERC1155MintableContract>
 >;
 
-interface ERC721TokenIds {
+export interface ERC721TokenIds {
     [tokenAddress: string]: BigNumber[];
 }
 
-interface ERC1155TokenIds {
+export interface ERC1155TokenIds {
     [tokenAddress: string]: {
         fungible: BigNumber[];
         nonFungible: BigNumber[];

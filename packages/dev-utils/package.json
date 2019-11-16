@@ -18,7 +18,9 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project .",
-        "fix": "tslint --format stylish --fix --project ."
+        "fix": "tslint --format stylish --fix --project .",
+        "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -31,6 +33,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
         "@0x/tslint-config": "^3.1.0-beta.2",
+        "@0x/ts-doc-gen": "^0.0.22",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "make-promises-safe": "^1.1.0",
@@ -39,7 +42,8 @@
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "3.0.1"
+        "typescript": "3.0.1",
+        "typedoc": "^0.15.0"
     },
     "dependencies": {
         "@0x/subproviders": "^5.1.0-beta.2",
@@ -47,6 +51,7 @@
         "@0x/typescript-typings": "^4.4.0-beta.2",
         "@0x/utils": "^4.6.0-beta.2",
         "@0x/web3-wrapper": "^6.1.0-beta.2",
+        "web3-provider-engine": "14.0.6",
         "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
