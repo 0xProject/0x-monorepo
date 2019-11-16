@@ -407,9 +407,9 @@ contract TestUniswapBridge is
     function getExchange(address tokenAddress)
         external
         view
-        returns (IUniswapExchange)
+        returns (address)
     {
-        return IUniswapExchange(_testExchanges[tokenAddress]);
+        return address(_testExchanges[tokenAddress]);
     }
 
     // @dev Use `wethToken`.

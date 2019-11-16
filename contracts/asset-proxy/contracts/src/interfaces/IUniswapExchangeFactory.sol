@@ -28,5 +28,5 @@ interface IUniswapExchangeFactory {
     function getExchange(address tokenAddress)
         external
         view
-        returns (IUniswapExchange);
+        returns (address);
 }

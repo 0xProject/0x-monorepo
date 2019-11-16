@@ -210,7 +210,9 @@ contract UniswapBridge is
         if (fromTokenAddress == address(getWethContract())) {
             exchangeTokenAddress = toTokenAddress;
         }
-        exchange = getUniswapExchangeFactoryContract().getExchange(exchangeTokenAddress);
+        exchange = IUniswapExchange(
+            getUniswapExchangeFactoryContract().getExchange(exchangeTokenAddress)
+        );
         require(address(exchange) != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
         return exchange;
     }
