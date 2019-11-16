@@ -181,8 +181,10 @@ export class IWalletContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [hash, signature]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },

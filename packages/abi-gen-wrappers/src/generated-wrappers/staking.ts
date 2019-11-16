@@ -1655,9 +1655,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase()]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -1672,14 +1671,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -1702,9 +1705,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [addr.toLowerCase()]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -1719,14 +1721,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [addr.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [addr.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -1748,8 +1754,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]>(
                     rawCallResult,
@@ -1768,8 +1776,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -1786,8 +1796,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
@@ -1803,8 +1815,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
@@ -1820,8 +1834,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
@@ -1845,8 +1861,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId, member.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -1868,8 +1886,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -1899,9 +1919,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [operatorShare, addOperatorAsMaker]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -1916,14 +1935,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [operatorShare, addOperatorAsMaker]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [operatorShare, addOperatorAsMaker]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -1939,8 +1962,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -1956,8 +1981,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -1986,9 +2013,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId, newOperatorShare]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2003,14 +2029,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId, newOperatorShare]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId, newOperatorShare]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2034,9 +2064,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2051,14 +2080,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -2074,8 +2107,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -2102,9 +2137,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2119,14 +2153,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2146,8 +2184,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
             },
@@ -2169,8 +2209,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -2197,8 +2239,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ currentEpoch: BigNumber; currentEpochBalance: BigNumber; nextEpochBalance: BigNumber }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [stakeStatus]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<{
                     currentEpoch: BigNumber;
@@ -2232,8 +2276,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ currentEpoch: BigNumber; currentEpochBalance: BigNumber; nextEpochBalance: BigNumber }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [staker.toLowerCase(), stakeStatus]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<{
                     currentEpoch: BigNumber;
@@ -2260,8 +2306,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<[BigNumber, number, BigNumber, number, number]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, number, BigNumber, number, number]>(
                     rawCallResult,
@@ -2293,8 +2341,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ currentEpoch: BigNumber; currentEpochBalance: BigNumber; nextEpochBalance: BigNumber }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [staker.toLowerCase(), poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<{
                     currentEpoch: BigNumber;
@@ -2322,8 +2372,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ operator: string; operatorShare: number }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<{ operator: string; operatorShare: number }>(rawCallResult);
             },
@@ -2350,8 +2402,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ feesCollected: BigNumber; weightedStake: BigNumber; membersStake: BigNumber }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<{
                     feesCollected: BigNumber;
@@ -2377,8 +2431,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [staker.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -2406,8 +2462,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ currentEpoch: BigNumber; currentEpochBalance: BigNumber; nextEpochBalance: BigNumber }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<{
                     currentEpoch: BigNumber;
@@ -2431,8 +2489,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -2452,8 +2512,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -2476,9 +2538,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2493,14 +2554,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2523,9 +2588,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2540,14 +2604,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2563,8 +2631,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -2580,8 +2650,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -2613,9 +2685,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [from, to, amount]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2630,14 +2701,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [from, to, amount]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [from, to, amount]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2653,8 +2728,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -2688,13 +2765,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    makerAddress.toLowerCase(),
-                    payerAddress.toLowerCase(),
-                    protocolFee,
-                ]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2709,22 +2781,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    makerAddress.toLowerCase(),
-                    payerAddress.toLowerCase(),
-                    protocolFee,
-                ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    makerAddress.toLowerCase(),
-                    payerAddress.toLowerCase(),
-                    protocolFee,
-                ]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2745,8 +2813,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -2770,8 +2840,10 @@ export class StakingContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<[BigNumber, BigNumber, BigNumber]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0, index_1]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber, BigNumber]>(rawCallResult);
             },
@@ -2794,9 +2866,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase()]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2811,14 +2882,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2843,9 +2918,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase(), index]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2860,14 +2934,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase(), index]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [target.toLowerCase(), index]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2890,9 +2968,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [addr.toLowerCase()]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -2907,14 +2984,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [addr.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [addr.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -2930,8 +3011,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
@@ -2948,8 +3031,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -2989,15 +3074,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    _epochDurationInSeconds,
-                    _rewardDelegatedStakeWeight,
-                    _minimumPoolStake,
-                    _cobbDouglasAlphaNumerator,
-                    _cobbDouglasAlphaDenominator,
-                ]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -3012,26 +3090,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    _epochDurationInSeconds,
-                    _rewardDelegatedStakeWeight,
-                    _minimumPoolStake,
-                    _cobbDouglasAlphaNumerator,
-                    _cobbDouglasAlphaDenominator,
-                ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    _epochDurationInSeconds,
-                    _rewardDelegatedStakeWeight,
-                    _minimumPoolStake,
-                    _cobbDouglasAlphaNumerator,
-                    _cobbDouglasAlphaDenominator,
-                ]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -3061,9 +3131,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [amount]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -3078,14 +3147,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [amount]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [amount]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -3101,8 +3174,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -3121,9 +3196,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -3138,14 +3212,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [newOwner.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -3170,9 +3248,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [amount]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -3187,14 +3264,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [amount]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [amount]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -3211,8 +3292,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [index_0.toLowerCase()]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
@@ -3228,8 +3311,10 @@ export class StakingContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
@@ -3253,9 +3338,8 @@ export class StakingContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -3270,14 +3354,18 @@ export class StakingContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [poolId]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },

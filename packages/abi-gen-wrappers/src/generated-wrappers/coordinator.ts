@@ -491,8 +491,7 @@ export class CoordinatorContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [hash, signature]);
-                const rawCallResult = await self._evmExecAsync(encodedData);
+                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -518,8 +517,10 @@ export class CoordinatorContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [transaction]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -536,8 +537,10 @@ export class CoordinatorContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [approval]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -560,15 +563,8 @@ export class CoordinatorContract extends BaseContract {
                 txData?: Partial<TxData> | undefined,
                 opts: SendTransactionOpts = { shouldValidate: true },
             ): Promise<string> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ]);
                 const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: encodedData },
+                    { ...txData, data: this.getABIEncodedTransactionData() },
                     this.estimateGasAsync.bind(this),
                 );
                 if (opts.shouldValidate !== false) {
@@ -583,26 +579,18 @@ export class CoordinatorContract extends BaseContract {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
             async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ]);
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData });
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -624,8 +612,10 @@ export class CoordinatorContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
@@ -669,14 +659,10 @@ export class CoordinatorContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ]);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
@@ -743,8 +729,7 @@ export class CoordinatorContract extends BaseContract {
                 }>
             > {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, [data]);
-                const rawCallResult = await self._evmExecAsync(encodedData);
+                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<
                     Array<{
@@ -934,8 +919,10 @@ export class CoordinatorContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const encodedData = self._strictEncodeArguments(functionSignature, []);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },

@@ -3,11 +3,10 @@ async callAsync(
     defaultBlock?: BlockParam,
 ): Promise<{{> return_type outputs=outputs}}> {
     BaseContract._assertCallParams(callData, defaultBlock);
-    const encodedData = self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
     {{#ifEquals this.stateMutability "pure"}}
-    const rawCallResult = await self._evmExecAsync(encodedData);
+    const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
     {{else}}
-    const rawCallResult = await self._performCallAsync({ ...callData, data: encodedData }, defaultBlock);
+    const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
     {{/ifEquals}}
     const abiEncoder = self._lookupAbiEncoder(functionSignature);
     return abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);

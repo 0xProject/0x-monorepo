@@ -2,9 +2,8 @@ async sendTransactionAsync(
     txData?: Partial<TxData> | undefined,
     opts: SendTransactionOpts = { shouldValidate: true },
 ): Promise<string> {
-    const encodedData = self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
     const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-        { ...txData, data: encodedData },
+        { ...txData, data: this.getABIEncodedTransactionData() },
         this.estimateGasAsync.bind(this),
     );
     if (opts.shouldValidate !== false) {
@@ -21,7 +20,8 @@ awaitTransactionSuccessAsync(
 async estimateGasAsync(
     txData?: Partial<TxData> | undefined,
 ): Promise<number> {
-    const encodedData = self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
-    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({ ...txData, data: encodedData, });
+    const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+        { ...txData, data: this.getABIEncodedTransactionData() }
+    );
     return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
 },

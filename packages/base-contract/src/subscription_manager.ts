@@ -108,8 +108,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
     ): void {
         const logs: LogEntry[] = rawLogs.map(rawLog => marshaller.unmarshalLog(rawLog));
         logs.forEach(log => {
-            Object.keys(this._filters).forEach((filterToken: string) => {
-                const filter = this._filters[filterToken];
+            Object.entries(this._filters).forEach(([filterToken, filter]) => {
                 if (filterUtils.matchesFilter(log, filter)) {
                     const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
                     const logEvent = {
