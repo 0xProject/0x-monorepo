@@ -1,7 +1,6 @@
 export { ContractAddresses } from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
-export { CoordinatorWrapper } from './coordinator_wrapper';
 
 export {
     ExchangeEventArgs,
