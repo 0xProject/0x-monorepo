@@ -18,6 +18,6 @@ export const assetSwapperFactory = {
         const swapQuoteConsumerOptions: Partial<SwapQuoterOpts> = {
             chainId: network,
         };
-        return new SwapQuoteConsumer(supportedProvider, swapQuoteConsumerOptions );
+        return new SwapQuoteConsumer(supportedProvider, swapQuoteConsumerOptions);
     },
 };

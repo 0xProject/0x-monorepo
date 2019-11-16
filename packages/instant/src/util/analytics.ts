@@ -85,13 +85,18 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
 const swapQuoteEventProperties = (swapQuote: MarketBuySwapQuote) => {
     const makerAssetFillAmount = swapQuote.makerAssetFillAmount.toString();
     const assetEthAmount = swapQuote.worstCaseQuoteInfo.takerAssetAmount.toString();
-    const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount.plus(swapQuote.worstCaseQuoteInfo.feeTakerAssetAmount).toString();
-    const totalEthAmount = swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount.toString();
+    const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount
+        .plus(swapQuote.worstCaseQuoteInfo.feeTakerAssetAmount)
+        .toString();
+    const totalEthAmount = swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount
+        .plus(swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount)
+        .toString();
     return {
         makerAssetFillAmount,
         assetEthAmount,
         feeEthAmount,
         totalEthAmount,
+        gasPrice: swapQuote.gasPrice,
     };
 };
 
@@ -191,20 +196,35 @@ export const analytics = {
             ...swapQuoteEventProperties(swapQuote),
             errorMessage,
         }),
-    trackBuyTxSubmitted: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+    trackBuyTxSubmitted: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) =>
         trackingEventFnWithPayload(EventNames.BuyTxSubmitted)({
             ...swapQuoteEventProperties(swapQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
         }),
-    trackBuyTxSucceeded: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+    trackBuyTxSucceeded: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) =>
         trackingEventFnWithPayload(EventNames.BuyTxSucceeded)({
             ...swapQuoteEventProperties(swapQuote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
-    trackBuyTxFailed: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+    trackBuyTxFailed: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) =>
         trackingEventFnWithPayload(EventNames.BuyTxFailed)({
             ...swapQuoteEventProperties(swapQuote),
             txHash,

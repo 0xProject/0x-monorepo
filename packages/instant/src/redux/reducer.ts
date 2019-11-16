@@ -118,7 +118,7 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.UpdateLatestSwapQuote:
                 const newSwapQuoteIfExists = action.data;
                 const shouldUpdate =
-                newSwapQuoteIfExists === undefined || doesSwapQuoteMatchState(newSwapQuoteIfExists, state);
+                    newSwapQuoteIfExists === undefined || doesSwapQuoteMatchState(newSwapQuoteIfExists, state);
                 if (shouldUpdate) {
                     return {
                         ...state,
@@ -271,7 +271,7 @@ const reduceStateWithAccount = (state: State, account: Account) => {
     };
 };
 
-const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote , state: State): boolean => {
+const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): boolean => {
     const selectedAssetIfExists = state.selectedAsset;
     const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false

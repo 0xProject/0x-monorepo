@@ -1,4 +1,10 @@
-import { MarketBuySwapQuote, SwapQuoteConsumer, SwapQuoter, SwapQuoterError, SwapQuoteConsumerError } from '@0x/asset-swapper';
+import {
+    MarketBuySwapQuote,
+    SwapQuoteConsumer,
+    SwapQuoter,
+    SwapQuoterError,
+    SwapQuoteConsumerError,
+} from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as React from 'react';
@@ -25,9 +31,17 @@ export interface BuyOrderStateButtonProps {
     selectedAsset?: Asset;
     onViewTransaction: () => void;
     onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
-    onValidationFail: (swapQuote: MarketBuySwapQuote, errorMessage: SwapQuoteConsumerError | ZeroExInstantError) => void;
+    onValidationFail: (
+        swapQuote: MarketBuySwapQuote,
+        errorMessage: SwapQuoteConsumerError | ZeroExInstantError,
+    ) => void;
     onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
-    onBuyProcessing: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuyProcessing: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) => void;
     onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onRetry: () => void;

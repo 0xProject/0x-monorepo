@@ -89,11 +89,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { extensionContractOpts } = _.merge(
-            {},
-            constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
-            opts,
-        );
+        const { extensionContractOpts } = _.merge({}, constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS, opts);
 
         assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
 

@@ -37,7 +37,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
         );
     }
 
-    // TODO(dave4506) adjust fees for the new system (add affiliate fees)
+    // TODO(dave4506) currently instant has affiliate fees disabled, until we resolve that, this displays only takerFees + protocolFees
     private _renderRows(): React.ReactNode {
         const { swapQuoteInfo } = this.props;
         return (
@@ -48,12 +48,16 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
                 />
                 <OrderDetailsRow
                     labelText="Fee"
-                    primaryValue={this._displayAmountOrPlaceholder(swapQuoteInfo && swapQuoteInfo.feeTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInEthAmount))}
+                    primaryValue={this._displayAmountOrPlaceholder(
+                        swapQuoteInfo && swapQuoteInfo.feeTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInEthAmount),
+                    )}
                 />
                 <OrderDetailsRow
                     labelText="Total Cost"
                     isLabelBold={true}
-                    primaryValue={this._displayAmountOrPlaceholder(swapQuoteInfo && swapQuoteInfo.totalTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInEthAmount))}
+                    primaryValue={this._displayAmountOrPlaceholder(
+                        swapQuoteInfo && swapQuoteInfo.totalTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInEthAmount),
+                    )}
                     isPrimaryValueBold={true}
                     secondaryValue={this._totalCostSecondaryValue()}
                 />
@@ -89,7 +93,10 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
             (secondaryCurrency === BaseCurrency.USD && this.props.ethUsdPrice && !this._hadErrorFetchingUsdPrice());
 
         if (this.props.swapQuoteInfo && canDisplayCurrency) {
-            return this._displayAmount(secondaryCurrency, this.props.swapQuoteInfo.totalTakerAssetAmount.plus(this.props.swapQuoteInfo.protocolFeeInEthAmount));
+            return this._displayAmount(
+                secondaryCurrency,
+                this.props.swapQuoteInfo.totalTakerAssetAmount.plus(this.props.swapQuoteInfo.protocolFeeInEthAmount),
+            );
         } else {
             return undefined;
         }

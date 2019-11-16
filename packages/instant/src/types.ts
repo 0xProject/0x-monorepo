@@ -200,7 +200,6 @@ export interface ZeroExInstantOptionalBaseConfig {
     defaultSelectedAssetData: string;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
-    affiliateInfo: AffiliateInfo;
     shouldDisableAnalyticsTracking: boolean;
     onSuccess?: (txHash: string) => void;
 }

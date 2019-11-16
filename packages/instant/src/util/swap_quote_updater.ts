@@ -35,7 +35,6 @@ export const swapQuoteUpdater = {
             // mark quote as pending
             dispatch(actions.setQuoteRequestStatePending());
         }
-        // TODO(dave4506) expose wethAssetData + feePercentage utils
         const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
         let newSwapQuote: MarketBuySwapQuote | undefined;
         const slippagePercentage =
@@ -43,9 +42,14 @@ export const swapQuoteUpdater = {
                 ? ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE
                 : ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE;
         try {
-            newSwapQuote = await swapQuoter.getMarketBuySwapQuoteAsync(wethAssetData, asset.assetData, assetUnitAmount, {
-                slippagePercentage,
-            });
+            newSwapQuote = await swapQuoter.getMarketBuySwapQuoteAsync(
+                wethAssetData,
+                asset.assetData,
+                assetUnitAmount,
+                {
+                    slippagePercentage,
+                },
+            );
         } catch (error) {
             const errorMessage = assetUtils.swapQuoterErrorMessage(asset, error);
 

@@ -29,11 +29,7 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    updateSwapQuote: (
-        swapQuoter: SwapQuoter,
-        value?: BigNumber,
-        asset?: ERC20Asset,
-    ) => void;
+    updateSwapQuote: (swapQuoter: SwapQuoter, value?: BigNumber, asset?: ERC20Asset) => void;
 }
 
 type ConnectedProps = Omit<ERC20AssetAmountInputProps, keyof SelectedERC20AssetAmountInputProps>;

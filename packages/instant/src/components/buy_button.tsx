@@ -1,4 +1,11 @@
-import { affiliateFeeUtils, ExtensionContractType, MarketBuySwapQuote, SwapQuoteConsumer, SwapQuoteConsumerError, SwapQuoter } from '@0x/asset-swapper';
+import {
+    affiliateFeeUtils,
+    ExtensionContractType,
+    MarketBuySwapQuote,
+    SwapQuoteConsumer,
+    SwapQuoteConsumerError,
+    SwapQuoter,
+} from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -26,9 +33,17 @@ export interface BuyButtonProps {
     affiliateInfo?: AffiliateInfo;
     selectedAsset?: Asset;
     onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
-    onValidationFail: (swapQuote: MarketBuySwapQuote, errorMessage: SwapQuoteConsumerError | ZeroExInstantError) => void;
+    onValidationFail: (
+        swapQuote: MarketBuySwapQuote,
+        errorMessage: SwapQuoteConsumerError | ZeroExInstantError,
+    ) => void;
     onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
-    onBuyProcessing: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuyProcessing: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) => void;
     onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
 }
@@ -59,7 +74,14 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        const { swapQuote, swapQuoteConsumer, affiliateInfo, accountAddress, accountEthBalanceInWei, web3Wrapper } = this.props;
+        const {
+            swapQuote,
+            swapQuoteConsumer,
+            affiliateInfo,
+            accountAddress,
+            accountEthBalanceInWei,
+            web3Wrapper,
+        } = this.props;
         if (swapQuote === undefined || accountAddress === undefined) {
             return;
         }

@@ -59,7 +59,8 @@ export const actions = {
         createAction(ActionTypes.SetSwapOrderStateProcessing, { txHash, startTimeUnix, expectedEndTimeUnix }),
     setSwapOrderStateFailure: (txHash: string) => createAction(ActionTypes.SetSwapOrderStateFailure, txHash),
     setSwapOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SetSwapOrderStateSuccess, txHash),
-    updateLatestSwapQuote: (swapQuote?: MarketBuySwapQuote) => createAction(ActionTypes.UpdateLatestSwapQuote, swapQuote),
+    updateLatestSwapQuote: (swapQuote?: MarketBuySwapQuote) =>
+        createAction(ActionTypes.UpdateLatestSwapQuote, swapQuote),
     updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UpdateSelectedAsset, asset),
     setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SetAvailableAssets, availableAssets),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SetQuoteRequestStatePending),

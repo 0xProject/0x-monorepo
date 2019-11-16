@@ -1,4 +1,10 @@
-import { MarketBuySwapQuote, SwapQuoteConsumer, SwapQuoteConsumerError, SwapQuoter, SwapQuoterError } from '@0x/asset-swapper';
+import {
+    MarketBuySwapQuote,
+    SwapQuoteConsumer,
+    SwapQuoteConsumerError,
+    SwapQuoter,
+    SwapQuoterError,
+} from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -30,11 +36,19 @@ interface ConnectedState {
 interface ConnectedDispatch {
     onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
     onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
-    onBuyProcessing: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuyProcessing: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) => void;
     onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
     onRetry: () => void;
-    onValidationFail: (swapQuote: MarketBuySwapQuote, errorMessage: SwapQuoteConsumerError | ZeroExInstantError) => void;
+    onValidationFail: (
+        swapQuote: MarketBuySwapQuote,
+        errorMessage: SwapQuoteConsumerError | ZeroExInstantError,
+    ) => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
@@ -63,10 +77,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
                 state.swapOrderState.processState === OrderProcessState.Success ||
                 state.swapOrderState.processState === OrderProcessState.Failure
             ) {
-                const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
-                    state.swapOrderState.txHash,
-                    chainId,
-                );
+                const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(state.swapOrderState.txHash, chainId);
                 if (etherscanUrl) {
                     analytics.trackTransactionViewed(state.swapOrderState.processState);
 
@@ -85,7 +96,12 @@ const mapDispatchToProps = (
     onValidationPending: (swapQuote: MarketBuySwapQuote) => {
         dispatch(actions.setSwapOrderStateValidating());
     },
-    onBuyProcessing: (swapQuote: MarketBuySwapQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => {
+    onBuyProcessing: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) => {
         dispatch(actions.setSwapOrderStateProcessing(txHash, startTimeUnix, expectedEndTimeUnix));
     },
     onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => dispatch(actions.setSwapOrderStateSuccess(txHash)),
