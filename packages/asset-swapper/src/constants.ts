@@ -1,6 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 import {
+    ExtensionContractType,
     ForwarderExtensionContractOpts,
     OrderPrunerOpts,
     OrderPrunerPermittedFeeTypes,
@@ -8,7 +9,6 @@ import {
     SwapQuoteGetOutputOpts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
-    ExtensionContractType,
 } from './types';
 
 const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
@@ -18,7 +18,6 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_CHAIN_ID = 1;
 const ONE_SECOND_MS = 1000;
 const DEFAULT_PER_PAGE = 1000;
-const PROTOCOL_FEE_MULTIPLIER = 150000;
 
 const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
     expiryBufferMs: 120000, // 2 minutes
@@ -68,6 +67,5 @@ export const constants = {
     DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     DEFAULT_PER_PAGE,
-    PROTOCOL_FEE_MULTIPLIER,
     NULL_ERC20_ASSET_DATA,
 };

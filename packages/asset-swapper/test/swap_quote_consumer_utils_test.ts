@@ -11,9 +11,11 @@ import 'mocha';
 import { SwapQuote, SwapQuoteConsumer } from '../src';
 import { constants } from '../src/constants';
 import { ExtensionContractType, MarketOperation, PrunedSignedOrder } from '../src/types';
+import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
+
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -68,6 +70,8 @@ const PARTIAL_LARGE_PRUNED_SIGNED_ORDERS: Array<Partial<PrunedSignedOrder>> = [
 
 describe('swapQuoteConsumerUtils', () => {
     let wethContract: WETH9Contract;
+    let contractWrappers: ContractWrappers;
+    let protocolFeeUtils: ProtocolFeeUtils;
     let userAddresses: string[];
     let makerAddress: string;
     let takerAddress: string;
@@ -118,6 +122,7 @@ describe('swapQuoteConsumerUtils', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
         forwarderOrderFactory = new OrderFactory(privateKey, defaultForwarderOrderParams);
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {
@@ -173,28 +178,31 @@ describe('swapQuoteConsumerUtils', () => {
                 largeForwarderOrders.push(prunedOrder as PrunedSignedOrder);
             }
 
-            forwarderSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+            forwarderSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
                 makerAssetData,
                 wethAssetData,
                 forwarderOrders,
                 MarketOperation.Sell,
                 GAS_PRICE,
+                protocolFeeUtils,
             );
 
-            largeForwarderSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+            largeForwarderSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
                 makerAssetData,
                 wethAssetData,
                 largeForwarderOrders,
                 MarketOperation.Sell,
                 GAS_PRICE,
+                protocolFeeUtils,
             );
 
-            exchangeSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+            exchangeSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
                 makerAssetData,
                 takerAssetData,
                 exchangeOrders,
                 MarketOperation.Sell,
                 GAS_PRICE,
+                protocolFeeUtils,
             );
         });
 

@@ -20,9 +20,10 @@ import {
     MarketSellSwapQuote,
     PrunedSignedOrder,
 } from '../src/types';
+import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -67,6 +68,8 @@ const expectMakerAndTakerBalancesAsyncFactory = (
 };
 
 describe('ExchangeSwapQuoteConsumer', () => {
+    let contractWrappers: ContractWrappers;
+    let protocolFeeUtils: ProtocolFeeUtils;
     let userAddresses: string[];
     let erc20MakerTokenContract: ERC20TokenContract;
     let erc20TakerTokenContract: ERC20TokenContract;
@@ -130,6 +133,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
         expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TakerTokenContract,
             makerAddress,
@@ -156,20 +160,22 @@ describe('ExchangeSwapQuoteConsumer', () => {
             orders.push(prunedOrder as PrunedSignedOrder);
         }
 
-        marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             takerAssetData,
             orders,
             MarketOperation.Sell,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
-        marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             takerAssetData,
             orders,
             MarketOperation.Buy,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
         swapQuoteConsumer = new ExchangeSwapQuoteConsumer(provider, contractAddresses, {
@@ -212,7 +218,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
             );
             await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
                 takerAddress,
-                gasPrice: GAS_PRICE,
                 gasLimit: 4000000,
             });
             await expectMakerAndTakerBalancesForMakerAssetAsync(
@@ -235,7 +240,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
             );
             await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, {
                 takerAddress,
-                gasPrice: GAS_PRICE,
                 gasLimit: 4000000,
             });
             await expectMakerAndTakerBalancesForMakerAssetAsync(
