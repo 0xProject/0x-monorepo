@@ -1,4 +1,5 @@
 import {
+    CoordinatorContract,
     DevUtilsContract,
     ExchangeContract,
     ForwarderContract,
@@ -22,7 +23,6 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { CoordinatorWrapper } from './coordinator_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
@@ -59,9 +59,9 @@ export class ContractWrappers {
      */
     public devUtils: DevUtilsContract;
     /**
-     * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
+     * An instance of the CoordinatorContract class containing methods for interacting with the Coordinator extension contract.
      */
-    public coordinator: CoordinatorWrapper;
+    public coordinator: CoordinatorContract;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
@@ -100,13 +100,7 @@ export class ContractWrappers {
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
         this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
-        this.coordinator = new CoordinatorWrapper(
-            this.getProvider(),
-            config.chainId,
-            contractAddresses.coordinator,
-            contractAddresses.exchange,
-            contractAddresses.coordinatorRegistry,
-        );
+        this.coordinator = new CoordinatorContract(contractAddresses.coordinator, this.getProvider());
         this.contractAddresses = contractAddresses;
     }
     /**

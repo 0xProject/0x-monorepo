@@ -1,7 +1,6 @@
 export { ContractAddresses } from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
-export { CoordinatorWrapper } from './coordinator_wrapper';
 
 export {
     ExchangeEventArgs,
@@ -126,14 +125,9 @@ export {
 
 export {
     SimpleContractArtifact,
-    ZeroExTransaction,
-    SignedOrder,
-    Order,
     SimpleStandardContractOutput,
-    SignedZeroExTransaction,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
-    EIP712DomainWithDefaultSchema,
     EventCallback,
     DecodedLogEvent,
     IndexedFilterValues,

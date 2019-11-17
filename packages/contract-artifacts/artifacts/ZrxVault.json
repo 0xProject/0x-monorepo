@@ -264,17 +264,13 @@
             "methods": {
                 "addAuthorizedAddress(address)": {
                     "details": "Authorizes an address.",
-                    "params": {
-                        "target": "Address to authorize."
-                    }
+                    "params": { "target": "Address to authorize." }
                 },
                 "balanceOf(address)": {
                     "details": "Returns the balance in Zrx Tokens of the `staker`",
                     "return": "Balance in Zrx."
                 },
-                "balanceOfZrxVault()": {
-                    "details": "Returns the entire balance of Zrx tokens in the vault."
-                },
+                "balanceOfZrxVault()": { "details": "Returns the entire balance of Zrx tokens in the vault." },
                 "constructor": {
                     "details": "Constructor.",
                     "params": {
@@ -284,10 +280,7 @@
                 },
                 "depositFrom(address,uint256)": {
                     "details": "Deposit an `amount` of Zrx Tokens from `staker` into the vault. Note that only the Staking contract can call this. Note that this can only be called when *not* in Catastrophic Failure mode.",
-                    "params": {
-                        "amount": "of Zrx Tokens to deposit.",
-                        "staker": "of Zrx Tokens."
-                    }
+                    "params": { "amount": "of Zrx Tokens to deposit.", "staker": "of Zrx Tokens." }
                 },
                 "enterCatastrophicFailure()": {
                     "details": "Vault enters into Catastrophic Failure Mode. *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! *** Note that only the contract owner can call this function."
@@ -298,9 +291,7 @@
                 },
                 "removeAuthorizedAddress(address)": {
                     "details": "Removes authorizion of an address.",
-                    "params": {
-                        "target": "Address to remove authorization from."
-                    }
+                    "params": { "target": "Address to remove authorization from." }
                 },
                 "removeAuthorizedAddressAtIndex(address,uint256)": {
                     "details": "Removes authorizion of an address.",
@@ -311,28 +302,19 @@
                 },
                 "setStakingProxy(address)": {
                     "details": "Sets the address of the StakingProxy contract. Note that only the contract owner can call this function.",
-                    "params": {
-                        "_stakingProxyAddress": "Address of Staking proxy contract."
-                    }
+                    "params": { "_stakingProxyAddress": "Address of Staking proxy contract." }
                 },
                 "setZrxProxy(address)": {
                     "details": "Sets the Zrx proxy. Note that only an authorized address can call this function. Note that this can only be called when *not* in Catastrophic Failure mode.",
-                    "params": {
-                        "_zrxProxyAddress": "Address of the 0x Zrx Proxy."
-                    }
+                    "params": { "_zrxProxyAddress": "Address of the 0x Zrx Proxy." }
                 },
                 "withdrawAllFrom(address)": {
                     "details": "Withdraw ALL Zrx Tokens to `staker` from the vault. Note that this can only be called when *in* Catastrophic Failure mode.",
-                    "params": {
-                        "staker": "of Zrx Tokens."
-                    }
+                    "params": { "staker": "of Zrx Tokens." }
                 },
                 "withdrawFrom(address,uint256)": {
                     "details": "Withdraw an `amount` of Zrx Tokens to `staker` from the vault. Note that only the Staking contract can call this. Note that this can only be called when *not* in Catastrophic Failure mode.",
-                    "params": {
-                        "amount": "of Zrx Tokens to withdraw.",
-                        "staker": "of Zrx Tokens."
-                    }
+                    "params": { "amount": "of Zrx Tokens to withdraw.", "staker": "of Zrx Tokens." }
                 }
             }
         },

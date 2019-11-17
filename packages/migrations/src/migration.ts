@@ -1,4 +1,3 @@
-import { CoordinatorContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import {
@@ -9,7 +8,7 @@ import {
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
-import { CoordinatorRegistryContract } from '@0x/contracts-coordinator';
+import { CoordinatorContract, CoordinatorRegistryContract } from '@0x/contracts-coordinator';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
@@ -209,6 +208,7 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
+        chainId,
     );
 
     // Dev Utils
