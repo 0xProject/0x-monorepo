@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-resolver",
-    "version": "2.1.0-beta.1",
+    "version": "2.1.0-beta.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -24,15 +24,15 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/resolver/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^3.1.0-beta.1",
+        "@0x/tslint-config": "^3.1.0-beta.2",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/types": "^2.5.0-beta.1",
-        "@0x/typescript-typings": "^4.4.0-beta.1",
+        "@0x/types": "^2.5.0-beta.2",
+        "@0x/typescript-typings": "^4.4.0-beta.2",
         "lodash": "^4.17.11"
     },
     "publishConfig": {

@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "6.2.0-beta.1",
+    "version": "6.2.0-beta.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,22 +36,22 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.1",
-        "@0x/connect": "^5.1.0-beta.1",
-        "@0x/contract-wrappers": "^12.2.0-beta.1",
-        "@0x/json-schemas": "^4.1.0-beta.1",
-        "@0x/order-utils": "^8.5.0-beta.1",
-        "@0x/subproviders": "^5.1.0-beta.1",
-        "@0x/types": "^2.5.0-beta.1",
-        "@0x/typescript-typings": "^4.4.0-beta.1",
-        "@0x/utils": "^4.6.0-beta.1",
-        "@0x/web3-wrapper": "^6.1.0-beta.1",
-        "ethereum-types": "^2.2.0-beta.1",
+        "@0x/assert": "^2.2.0-beta.2",
+        "@0x/connect": "^5.1.0-beta.2",
+        "@0x/contract-wrappers": "^12.2.0-beta.2",
+        "@0x/json-schemas": "^4.1.0-beta.2",
+        "@0x/order-utils": "^8.5.0-beta.2",
+        "@0x/subproviders": "^5.1.0-beta.2",
+        "@0x/types": "^2.5.0-beta.2",
+        "@0x/typescript-typings": "^4.4.0-beta.2",
+        "@0x/utils": "^4.6.0-beta.2",
+        "@0x/web3-wrapper": "^6.1.0-beta.2",
+        "ethereum-types": "^2.2.0-beta.2",
         "lodash": "^4.17.11"
     },
     "devDependencies": {
         "@0x/ts-doc-gen": "^0.0.22",
-        "@0x/tslint-config": "^3.1.0-beta.1",
+        "@0x/tslint-config": "^3.1.0-beta.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",

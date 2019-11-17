@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-gen",
-    "version": "1.1.0-beta.1",
+    "version": "1.1.0-beta.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -27,25 +27,25 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts-gen/README.md",
     "dependencies": {
-        "@0x/sol-compiler": "^3.2.0-beta.1",
-        "@0x/sol-resolver": "^2.1.0-beta.1",
-        "@0x/types": "^2.5.0-beta.1",
-        "@0x/typescript-typings": "^4.4.0-beta.1",
-        "@0x/utils": "^4.6.0-beta.1",
-        "ethereum-types": "^2.2.0-beta.1",
+        "@0x/sol-compiler": "^3.2.0-beta.2",
+        "@0x/sol-resolver": "^2.1.0-beta.2",
+        "@0x/types": "^2.5.0-beta.2",
+        "@0x/typescript-typings": "^4.4.0-beta.2",
+        "@0x/utils": "^4.6.0-beta.2",
+        "ethereum-types": "^2.2.0-beta.2",
         "lodash": "^4.17.11",
+        "mkdirp": "^0.5.1",
         "prettier": "^1.16.3",
-        "to-snake-case": "^1.0.0",
-        "mkdirp": "^0.5.1"
+        "to-snake-case": "^1.0.0"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^3.1.0-beta.1",
+        "@0x/tslint-config": "^3.1.0-beta.2",
+        "@types/mkdirp": "^0.5.2",
         "@types/node": "*",
         "@types/prettier": "^1.15.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "3.0.1",
-        "@types/mkdirp": "^0.5.2"
+        "typescript": "3.0.1"
     },
     "publishConfig": {
         "access": "public"
