@@ -55,17 +55,7 @@ export {
     ExchangeTransactionExecutionEventArgs,
 } from '@0x/abi-gen-wrappers';
 
-export {
-    OrderStatus,
-    ContractError,
-    ForwarderError,
-    CoordinatorServerCancellationResponse,
-    CoordinatorServerError,
-    ContractWrappersConfig,
-    OrderTransactionOpts,
-    TransactionOpts,
-    OrderInfo,
-} from './types';
+export { OrderStatus, ContractError, ForwarderError, ContractWrappersConfig, OrderInfo } from './types';
 
 export {
     BlockRange,

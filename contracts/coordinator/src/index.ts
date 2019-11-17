@@ -39,3 +39,4 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+export { CoordinatorClient, CoordinatorServerErrorMsg } from './client/index';
