@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.1.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add new method getOrderHash() to DevUtils contract (#2321)
+    * Add new method getTransactionHash() to DevUtils contract (#2321)
+
 ## v0.1.0-beta.1 - _November 7, 2019_
 
     * Add `encodeStaticCallAssetData` and `decodeStaticCallAssetData` in LibAssetData (#2034)

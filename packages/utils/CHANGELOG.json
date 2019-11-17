@@ -14,7 +14,8 @@
                 "note": "Update BigNumber version to ~9.0.0",
                 "pr": 2342
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "4.6.0-beta.1",

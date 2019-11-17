@@ -10,7 +10,8 @@
                 "note": "Update Mesh RPC logic to v6.0.1-beta",
                 "pr": 2325
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "0.1.0-beta.1",

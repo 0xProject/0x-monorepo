@@ -5,10 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.5.0-beta.2 - _November 17, 2019_
+
+    * Dependencies updated
+
 ## v5.5.0-beta.1 - _November 7, 2019_
 
     * Make `evmExecAsync` protected and rename to `_evmExecAsync` (#2243)
     * Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback` (#2243)
+    * Added ContractFunctionObj type and supporting types (#2325)
+    * Added AwaitTransactionSuccessOpts and SendTransactionOpts (#2325)
 
 ## v5.5.0-beta.0 - _October 3, 2019_
 

@@ -6,7 +6,8 @@
                 "note": "Adds DebugSubprovider",
                 "pr": 2329
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "5.1.0-beta.1",

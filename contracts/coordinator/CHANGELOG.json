@@ -14,7 +14,8 @@
                 "note": "Added dependency on @0x/contracts-utils",
                 "pr": 2321
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "2.1.0-beta.1",

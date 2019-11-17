@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduced new export ExchangeRevertErrors (#2321)
+    * Round up in `marketBuyOrdersNoThrow()` so `marketBuyOrdersFillOrKill()` doesn't throw up. (#2338)
+
 ## v2.2.0-beta.1 - _November 7, 2019_
 
     * LocalBalanceStore.create and constructor now require an instance of DevUtilsContract (#2304)

@@ -14,7 +14,8 @@
                 "note": "Remove TransactionHelper and MutatorContractFunction",
                 "pr": 2325
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "3.2.0-beta.1",

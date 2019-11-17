@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduced new export ForwarderRevertErrors (#2321)
+
 ## v3.1.0-beta.1 - _November 7, 2019_
 
     * Use `LibERC20Token` in `MixinAssets` (#2309)

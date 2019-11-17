@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0-beta.2 - _November 17, 2019_
+
+    * Add `shouldSaveStandardInput` config (#2322)
+
 ## v3.2.0-beta.1 - _November 7, 2019_
 
     * Output artifacts now include a 'chains' attribute rather than 'networks' (#2313)

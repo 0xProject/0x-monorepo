@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.6.0-beta.2 - _November 17, 2019_
+
+    * Removed exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors (#2321)
+    * Decode `Parity` revert errors (#2341)
+    * Update BigNumber version to ~9.0.0 (#2342)
+
 ## v4.6.0-beta.1 - _November 7, 2019_
 
     * Consolidated FixedMathRevertErrors (#2255)

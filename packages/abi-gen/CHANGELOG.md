@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.2 - _November 17, 2019_
+
+    * Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details. (#2284)
+    * Python: Corrected return types and values for call() interface to generated method wrappers.  (Fixes #2298) (#2345)
+    * Python: Stopped generating send_transaction() interface for constant (view/pure) methods (#2345)
+    * Python: Added a build_transaction() interface to contract method classes (#2345)
+    * Python: Removed `validator` argument to contract method classes for methods that don't have any inputs (#2345)
+    * Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names. (#2345)
+
 ## v4.4.0-beta.1 - _November 7, 2019_
 
     * In Python wrappers, accept string arguments to bytes parameters (#2284)

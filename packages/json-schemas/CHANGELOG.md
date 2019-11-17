@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0-beta.2 - _November 17, 2019_
+
+    * Dependencies updated
+
 ## v4.1.0-beta.1 - _November 7, 2019_
 
     * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)

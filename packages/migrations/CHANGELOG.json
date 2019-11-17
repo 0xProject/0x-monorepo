@@ -10,7 +10,8 @@
                 "note": "Added `Staking` and `ERC20BridgeProxy` contracts",
                 "pr": 2323
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "4.4.0-beta.1",

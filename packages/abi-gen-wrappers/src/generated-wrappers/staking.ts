@@ -262,11 +262,11 @@ export class StakingContract extends BaseContract {
             {
                 inputs: [
                     {
-                        name: 'wethAddress_',
+                        name: 'wethAddress',
                         type: 'address',
                     },
                     {
-                        name: 'zrxVaultAddress_',
+                        name: 'zrxVaultAddress',
                         type: 'address',
                     },
                 ],

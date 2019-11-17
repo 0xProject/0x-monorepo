@@ -26,7 +26,8 @@
                 "note": "Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names.",
                 "pr": 2345
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "4.4.0-beta.1",

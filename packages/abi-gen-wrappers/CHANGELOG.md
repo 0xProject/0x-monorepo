@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.0-beta.2 - _November 17, 2019_
+
+    * [Breaking] Remove `erc20Proxy`, `multiAssetProxy`, `erc1155Proxy`, `staticCallProxy`, `erc721Proxy`, `assetProxyOwner`, `ZRXToken` and `dutchAuction` wrappers (#2324)
+    * [Breaking] Big refactor of contract wrapper interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details (#2325)
+    * Updated Coordinator + Coordinator Registry wrappers (#2346)
+
 ## v5.4.0-beta.1 - _November 7, 2019_
 
     * Remove debug functions `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2243)

@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.2 - _November 17, 2019_
+
+    * Migrations script no longer deploys DutchAuction since it is not yet upgraded for V3 of the protocol (#2324)
+    * Added `Staking` and `ERC20BridgeProxy` contracts (#2323)
+
 ## v4.4.0-beta.1 - _November 7, 2019_
 
     * Update all contract deployments to pass the actual chain ID (rather than the network ID) via the newly modified @0x/utils/provider_utils (#2270)

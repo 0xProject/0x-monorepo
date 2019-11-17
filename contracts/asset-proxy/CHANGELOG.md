@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+
 ## v2.3.0-beta.1 - _November 7, 2019_
 
     * ERC20Wrapper and ERC1155ProxyWrapper constructors now require an instance of DevUtilsContract (#2034)

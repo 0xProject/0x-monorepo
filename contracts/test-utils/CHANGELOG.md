@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add new exports orderHashUtils and transactionHashUtils (#2321)
+    * Remove TransactionHelper and MutatorContractFunction (#2325)
+
 ## v3.2.0-beta.1 - _November 7, 2019_
 
     * OrderFactory default order expiration time increased from ten minutes to fifteen minutes  (#2304)

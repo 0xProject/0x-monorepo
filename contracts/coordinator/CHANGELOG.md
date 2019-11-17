@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduced new export CoordinatorRevertErrors (#2321)
+    * Added dependency on @0x/contracts-utils (#2321)
+
 ## v2.1.0-beta.1 - _November 7, 2019_
 
     * Dependencies updated

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.5.0-beta.2 - _November 17, 2019_
+
+    * Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts (#2325)
+
 ## v2.5.0-beta.1 - _November 7, 2019_
 
     * Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers (#2243)

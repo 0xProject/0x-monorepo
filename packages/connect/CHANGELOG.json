@@ -6,7 +6,8 @@
                 "note": "Removed dependency on @0x/order-utils",
                 "pr": 2321
             }
-        ]
+        ],
+        "timestamp": 1574030254
     },
     {
         "version": "5.1.0-beta.1",

@@ -5,8 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0-beta.2 - _November 17, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduce new exports FixedMathRevertErrors and StakingRevertErrors (#2321)
+
 ## v1.1.0-beta.1 - _November 7, 2019_
 
+    * Removed handshake when adding maker to pool. (#2250)
+    * Removed upper limit on number of makers in a pool. (#2250)
+    * Removed operator permissions from makers. (#2250)
+    * Pool Id starts at 1 and increases by 1. (#2250)
     * Add more overflow safeguards to `LibFixedMath` (#2255)
     * Refactored finalization state. (#2276)
     * Removed protocol fee != 0 assertion. (#2278)
@@ -35,10 +44,3 @@ CHANGELOG
     * Introduce multi-block finalization. (#2155)
     * Removed reference counting for cumulative rewards. (#2188)
     * Removed explicit dependency on epoch+1 when delegating. (#2188)
-
-## v1.1.0-beta.1 - _Invalid date_
-
-    * Removed handshake when adding maker to pool. (#2250)
-    * Removed upper limit on number of makers in a pool. (#2250)
-    * Removed operator permissions from makers. (#2250)
-    * Pool Id starts at 1 and increases by 1. (#2250)
