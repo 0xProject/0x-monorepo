@@ -91,7 +91,7 @@ export async function getTimelockRegistrationsAsync(provider: SupportedProvider)
         // Exchange timelocks
 
         {
-            destination: exchange.address,
+            destination: deployedAddresses.exchange,
             functionSelector: exchange.getSelector('detachProtocolFeeCollector'),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
@@ -192,13 +192,13 @@ export async function getTimelockRegistrationsAsync(provider: SupportedProvider)
         },
         // Exchange timelocks
         {
-            destination: exchange.address,
+            destination: deployedAddresses.exchange,
             functionSelector: exchange.getSelector('setProtocolFeeMultiplier'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TEN_DAYS_IN_SEC : constants.ZERO_AMOUNT,
         },
         {
-            destination: exchange.address,
+            destination: deployedAddresses.exchange,
             functionSelector: exchange.getSelector('setProtocolFeeCollectorAddress'),
             secondsTimeLocked:
                 chainId === constants.MAINNET_CHAIN_ID ? constants.TWENTY_DAYS_IN_SEC : constants.ZERO_AMOUNT,
