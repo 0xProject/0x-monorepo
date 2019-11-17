@@ -93,8 +93,8 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
-                command: yarn test:publish:circleci
-                no_output_timeout: 1800
+                  command: yarn test:publish:circleci
+                  no_output_timeout: 1800
     test-doc-generation:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -104,8 +104,8 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
-                command: yarn test:generate_docs:circleci
-                no_output_timeout: 1200
+                  command: yarn test:generate_docs:circleci
+                  no_output_timeout: 1200
     test-rest:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -125,7 +125,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
             - run: yarn wsrun test:circleci @0x/order-utils
-            # - run: yarn wsrun test:circleci @0x/orderbook
+            - run: yarn wsrun test:circleci @0x/orderbook
             - run: yarn wsrun test:circleci @0x/sol-compiler
             - run: yarn wsrun test:circleci @0x/sol-tracing-utils
             - run: yarn wsrun test:circleci @0x/sol-doc
@@ -142,9 +142,9 @@ jobs:
                   paths:
                       - ~/repo/packages/assert/coverage/lcov.info
             - save_cache:
-                  key: coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                  key: coverage-asset-swapper-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/asset-buyer/coverage/lcov.info
+                      - ~/repo/packages/asset-swapper/coverage/lcov.info
             - save_cache:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -362,7 +362,7 @@ jobs:
                       - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
-                      - coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                      - coverage-asset-swapper-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}

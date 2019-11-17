@@ -39,7 +39,7 @@
         { "path": "./packages/abi-gen-wrappers" },
         { "path": "./packages/abi-gen" },
         { "path": "./packages/assert" },
-        { "path": "./packages/asset-buyer" },
+        { "path": "./packages/asset-swapper" },
         { "path": "./packages/base-contract" },
         { "path": "./packages/connect" },
         { "path": "./packages/contract-addresses" },
