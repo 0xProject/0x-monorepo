@@ -822,15 +822,13 @@
     jsonschema "^1.2.0"
     lodash.values "^4.3.0"
 
-"@0x/mesh-rpc-client@^7.0.3-beta-0xv3":
-  version "7.0.3-beta-0xv3"
-  resolved "https://registry.yarnpkg.com/@0x/mesh-rpc-client/-/mesh-rpc-client-7.0.3-beta-0xv3.tgz#dfe5e9479c7b8ff17a028d2a91d730d33acd1bc7"
-  integrity sha512-48/Kex0GETDu7s7dOL0+eU9RbPvi9RVDi3PwE+kTzR6pnydYLdc4evwJcjxtaU5ph1oT2Dw0CTLNvvUCEDLwdQ==
+"@0x/mesh-rpc-client@^7.0.4-beta-0xv3":
+  version "7.0.4-beta-0xv3"
+  resolved "https://registry.yarnpkg.com/@0x/mesh-rpc-client/-/mesh-rpc-client-7.0.4-beta-0xv3.tgz#5e933a0b9cf20ca900f309fc4adee03b081eb335"
   dependencies:
-    "@0x/assert" "2.2.0-beta.1"
-    "@0x/order-utils" "8.5.0-beta.1"
-    "@0x/types" "2.5.0-beta.1"
-    "@0x/typescript-typings" "4.4.0-beta.1"
+    "@0x/assert" "2.2.0-beta.2"
+    "@0x/types" "2.5.0-beta.2"
+    "@0x/typescript-typings" "4.4.0-beta.2"
     "@0x/web3-providers-fork" "0.0.7"
     bignumber.js "~9.0.0"
     detect-node "2.0.3"
@@ -3886,7 +3884,6 @@ bignumber.js@~8.0.2:
 bignumber.js@~9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.0.tgz#805880f84a329b5eac6e7cb6f8274b6d82bdf075"
-  integrity sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==
 
 binary-extensions@^1.0.0:
   version "1.11.0"
