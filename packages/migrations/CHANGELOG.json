@@ -1,5 +1,22 @@
 [
     {
+        "version": "4.4.0-beta.3",
+        "changes": [
+            {
+                "note": "Update Exchange, DevUtils, Coordinator, and Forwarder addresses on all networks",
+                "pr": 2349
+            },
+            {
+                "note": "Update StakingProxy, Staking, and ZrxVault addresses on mainnet",
+                "pr": 2349
+            },
+            {
+                "note": "Add UniswapBridge and Eth2DaiBridge addresses to schema, add mainnet addresses",
+                "pr": 2349
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.2",
         "changes": [
             {
