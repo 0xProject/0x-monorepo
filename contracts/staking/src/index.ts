@@ -51,6 +51,7 @@ export {
     StakingPoolById,
     OwnerStakeByStatus,
     GlobalStakeByStatus,
+    StakingPool,
 } from './types';
 export {
     ContractArtifact,
