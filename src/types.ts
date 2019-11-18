@@ -1,6 +1,26 @@
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
+
+/**
+ * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
+ * permittedOrderFeeTypes: A set of all the takerFee types that OrderPruner will filter for
+ */
+export interface OrderPrunerOpts {
+    expiryBufferMs: number;
+    permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
+}
+
+/**
+ * Represents the on-chain metadata of a signed order
+ */
+export interface OrderPrunerOnChainMetadata {
+    orderStatus: number;
+    orderHash: string;
+    orderTakerAssetFilledAmount: BigNumber;
+    fillableTakerAssetAmount: BigNumber;
+    isValidSignature: boolean;
+}
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
@@ -12,18 +32,14 @@ export interface OrderProviderRequest {
 }
 
 /**
- * orders: An array of orders with optional remaining fillable makerAsset amounts. See type for more info.
+ * fillableMakerAssetAmount: Amount of makerAsset that is fillable
+ * fillableTakerAssetAmount: Amount of takerAsset that is fillable
+ * fillableTakerFeeAmount: Amount of takerFee paid to fill fillableTakerAssetAmount
  */
-export interface OrderProviderResponse {
-    orders: SignedOrderWithRemainingFillableMakerAssetAmount[];
-}
-
-/**
- * A normal SignedOrder with one extra optional property `remainingFillableMakerAssetAmount`
- * remainingFillableMakerAssetAmount: The amount of the makerAsset that is available to be filled
- */
-export interface SignedOrderWithRemainingFillableMakerAssetAmount extends SignedOrder {
-    remainingFillableMakerAssetAmount?: BigNumber;
+export interface PrunedSignedOrder extends SignedOrder {
+    fillableMakerAssetAmount: BigNumber;
+    fillableTakerAssetAmount: BigNumber;
+    fillableTakerFeeAmount: BigNumber;
 }
 
 /**
@@ -31,13 +47,13 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
  * calldataHexString: The hexstring of the calldata.
  * methodAbi: The ABI of the smart contract method to call.
  * toAddress: The contract address to call.
- * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
+ * ethAmount: The eth amount in wei to send with the smart contract call.
  */
 export interface CalldataInfo {
     calldataHexString: string;
     methodAbi: MethodAbi;
     toAddress: string;
-    ethAmount?: BigNumber;
+    ethAmount: BigNumber;
 }
 
 /**
@@ -50,7 +66,7 @@ export interface CalldataInfo {
 export interface SmartContractParamsInfo<T> {
     params: T;
     toAddress: string;
-    ethAmount?: BigNumber;
+    ethAmount: BigNumber;
     methodAbi: MethodAbi;
 }
 
@@ -95,14 +111,10 @@ export enum ExtensionContractType {
 export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
 
 /**
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
- * feeSignatures: An array of signatures that attest that the maker of the orders in fact made the orders.
  * feePercentage: Optional affiliate fee percentage used to calculate the eth amount paid to fee recipient.
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
 export interface ForwarderSmartContractParamsBase {
-    feeOrders: SignedOrder[];
-    feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
 }
@@ -137,12 +149,12 @@ export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartCo
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
 export interface SwapQuoteConsumerBase<T> {
-    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOptsBase>): Promise<CalldataInfo>;
+    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOptsBase>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SmartContractParamsInfo<T>>;
-    executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOptsBase>): Promise<string>;
+    executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
 /**
@@ -155,28 +167,37 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOptsBase {}
+export interface SwapQuoteGetOutputOpts {}
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
+ * ethAmount: The amount of eth sent with the execution of a swap
  */
-export interface SwapQuoteExecutionOptsBase extends SwapQuoteGetOutputOptsBase {
+export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
     takerAddress?: string;
     gasLimit?: number;
     gasPrice?: BigNumber;
+    ethAmount?: BigNumber;
 }
 
 /**
+ * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
  * feeRecipient: address of the receiver of the feePercentage of taker asset
- * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
-export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOptsBase {
+export interface ForwarderExtensionContractOpts {
+    ethAmount?: BigNumber;
     feePercentage: number;
     feeRecipient: string;
-    ethAmount?: BigNumber;
+}
+
+/*
+ * Options for how SwapQuoteConsumer will generate output
+ */
+export interface SwapQuoteConsumingOpts {
+    useExtensionContract: ExtensionContractType;
 }
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
@@ -187,25 +208,9 @@ export interface GetExtensionContractTypeOpts {
 }
 
 /**
- * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
- * useConsumerType: If provided, defaults the SwapQuoteConsumer to create output consumed by ConsumerType.
- */
-export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
-    useExtensionContract: ExtensionContractType;
-}
-
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
-
-/**
- * Represents the options for executing a swap quote with SwapQuoteConsumer
- */
-export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
-
-/**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * bestCaseQuoteInfo: Info about the best case price for the asset.
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
@@ -213,7 +218,6 @@ export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
     orders: SignedOrder[];
-    feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
 }
@@ -236,36 +240,28 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
     type: MarketOperation.Buy;
 }
 
-export interface SwapQuoteWithAffiliateFeeBase {
-    feePercentage: number;
-}
-
-export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketSellSwapQuote {}
-
-export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote {}
-
-export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
-
 /**
- * feeTakerTokenAmount: The amount of takerToken required any fee concerned with completing the swap.
- * takerTokenAmount: The amount of takerToken required to conduct the swap.
- * totalTakerTokenAmount: The total amount of takerToken required to complete the swap (filling orders, feeOrders, and paying affiliate fee)
- * makerTokenAmount: The amount of makerToken that will be acquired through the swap.
+ * feeTakerAssetAmount: The amount of takerAsset reserved for paying takerFees when swapping for desired assets.
+ * takerAssetAmount: The amount of takerAsset swapped for desired makerAsset.
+ * totalTakerAssetAmount: The total amount of takerAsset required to complete the swap (filling orders, and paying takerFees).
+ * makerAssetAmount: The amount of makerAsset that will be acquired through the swap.
+ * protocolFeeInEthAmount: The amount of eth to pay as protocol fee to perform the swap for desired asset.
  */
 export interface SwapQuoteInfo {
-    feeTakerTokenAmount: BigNumber;
-    totalTakerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerTokenAmount: BigNumber;
+    feeTakerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
+    totalTakerAssetAmount: BigNumber;
+    makerAssetAmount: BigNumber;
+    protocolFeeInEthAmount: BigNumber;
 }
 
 /**
- * shouldDisableRequestingFeeOrders: If set to true, requesting a swapQuote will not perform any computation or requests for fees.
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
+ * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
 export interface SwapQuoteRequestOpts {
-    shouldDisableRequestingFeeOrders: boolean;
     slippagePercentage: number;
+    gasPrice?: BigNumber;
 }
 
 /**
@@ -273,7 +269,7 @@ export interface SwapQuoteRequestOpts {
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
-export interface SwapQuoterOpts {
+export interface SwapQuoterOpts extends OrderPrunerOpts {
     chainId: number;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
@@ -295,28 +291,33 @@ export enum SwapQuoteConsumerError {
  */
 export enum SwapQuoterError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
-    NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
     StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
-    InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
-    InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
-    FeeAssetUnavailable = 'FEE_ASSET_UNAVAILABLE',
+    NoGasPriceProvidedOrEstimated = 'NO_GAS_PRICE_PROVIDED_OR_ESTIMATED',
 }
 
 /**
- * orders: An array of signed orders
- * remainingFillableMakerAssetAmounts: A list of fillable amounts for the signed orders. The index of an item in the array associates the amount with the corresponding order.
+ * Represents available liquidity for a given assetData.
  */
-export interface OrdersAndFillableAmounts {
-    orders: SignedOrder[];
-    remainingFillableMakerAssetAmounts: BigNumber[];
+export interface LiquidityForTakerMakerAssetDataPair {
+    makerAssetAvailableInBaseUnits: BigNumber;
+    takerAssetAvailableInBaseUnits: BigNumber;
 }
 
 /**
- * Represents available liquidity for a given assetData
+ * Represents two main market operations supported by asset-swapper.
  */
-export interface LiquidityForAssetData {
-    makerTokensAvailableInBaseUnits: BigNumber;
-    takerTokensAvailableInBaseUnits: BigNumber;
+export enum MarketOperation {
+    Sell = 'Sell',
+    Buy = 'Buy',
+}
+
+/**
+ * Represents varying order takerFee types that can be pruned for by OrderPruner.
+ */
+export enum OrderPrunerPermittedFeeTypes {
+    NoFees = 'NO_FEES',
+    MakerDenominatedTakerFee = 'MAKER_DENOMINATED_TAKER_FEE',
+    TakerDenominatedTakerFee = 'TAKER_DENOMINATED_TAKER_FEE',
 }

@@ -1,40 +1,27 @@
-import { orderCalculationUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { LiquidityForAssetData, OrdersAndFillableAmounts } from '../types';
+import { LiquidityForTakerMakerAssetDataPair, PrunedSignedOrder } from '../types';
 
-export const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAmounts): LiquidityForAssetData => {
-    const { orders, remainingFillableMakerAssetAmounts } = ordersAndFillableAmounts;
-    const liquidityInBigNumbers = orders.reduce(
-        (acc, order, curIndex) => {
-            const availableMakerAssetAmount = remainingFillableMakerAssetAmounts[curIndex];
-            if (availableMakerAssetAmount === undefined) {
-                throw new Error(`No corresponding fillableMakerAssetAmounts at index ${curIndex}`);
-            }
+import { utils } from './utils';
 
-            const makerTokensAvailableForCurrentOrder = availableMakerAssetAmount;
-            const takerTokensAvailableForCurrentOrder = orderCalculationUtils.getTakerFillAmount(
-                order,
-                makerTokensAvailableForCurrentOrder,
-            );
+export const calculateLiquidity = (prunedOrders: PrunedSignedOrder[]): LiquidityForTakerMakerAssetDataPair => {
+    const liquidityInBigNumbers = prunedOrders.reduce(
+        (acc, order) => {
+            const fillableMakerAssetAmount = utils.isOrderTakerFeePayableWithMakerAsset(order)
+                ? order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount)
+                : order.fillableMakerAssetAmount;
+            const fillableTakerAssetAmount = utils.isOrderTakerFeePayableWithTakerAsset(order)
+                ? order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount)
+                : order.fillableTakerAssetAmount;
             return {
-                makerTokensAvailableInBaseUnits: acc.makerTokensAvailableInBaseUnits.plus(
-                    makerTokensAvailableForCurrentOrder,
-                ),
-                takerTokensAvailableInBaseUnits: acc.takerTokensAvailableInBaseUnits.plus(
-                    takerTokensAvailableForCurrentOrder,
-                ),
+                makerAssetAvailableInBaseUnits: acc.makerAssetAvailableInBaseUnits.plus(fillableMakerAssetAmount),
+                takerAssetAvailableInBaseUnits: acc.takerAssetAvailableInBaseUnits.plus(fillableTakerAssetAmount),
             };
         },
         {
-            makerTokensAvailableInBaseUnits: new BigNumber(0),
-            takerTokensAvailableInBaseUnits: new BigNumber(0),
+            makerAssetAvailableInBaseUnits: new BigNumber(0),
+            takerAssetAvailableInBaseUnits: new BigNumber(0),
         },
     );
-
-    // Turn into regular numbers
-    return {
-        makerTokensAvailableInBaseUnits: liquidityInBigNumbers.makerTokensAvailableInBaseUnits,
-        takerTokensAvailableInBaseUnits: liquidityInBigNumbers.takerTokensAvailableInBaseUnits,
-    };
+    return liquidityInBigNumbers;
 };

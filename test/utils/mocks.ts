@@ -4,7 +4,7 @@ import { APIOrder, AssetPairsItem, SignedOrder } from '@0x/types';
 import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../../src/swap_quoter';
-import { OrdersAndFillableAmounts } from '../../src/types';
+import { PrunedSignedOrder } from '../../src/types';
 
 class OrderbookClass extends Orderbook {
     // tslint:disable-next-line:prefer-function-over-method
@@ -49,26 +49,26 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
     return mockedSwapQuoter;
 };
 
-const mockGetOrdersAndAvailableAmounts = (
+const mockGetPrunedSignedOrdersAsync = (
     mockedSwapQuoter: TypeMoq.IMock<SwapQuoter>,
     makerAssetData: string,
     takerAssetData: string,
-    ordersAndFillableAmounts: OrdersAndFillableAmounts,
+    prunedOrders: PrunedSignedOrder[],
 ): void => {
     mockedSwapQuoter
-        .setup(async a => a.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData))
-        .returns(async () => Promise.resolve(ordersAndFillableAmounts))
+        .setup(async a => a.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData))
+        .returns(async () => Promise.resolve(prunedOrders))
         .verifiable(TypeMoq.Times.once());
 };
 
-export const mockedSwapQuoterWithOrdersAndFillableAmounts = (
+export const mockedSwapQuoterWithPrunedSignedOrders = (
     provider: Web3ProviderEngine,
     orderbook: Orderbook,
     makerAssetData: string,
     takerAssetData: string,
-    ordersAndFillableAmounts: OrdersAndFillableAmounts,
+    prunedOrders: PrunedSignedOrder[],
 ): TypeMoq.IMock<SwapQuoter> => {
     const mockedAssetQuoter = partiallyMockedSwapQuoter(provider, orderbook);
-    mockGetOrdersAndAvailableAmounts(mockedAssetQuoter, makerAssetData, takerAssetData, ordersAndFillableAmounts);
+    mockGetPrunedSignedOrdersAsync(mockedAssetQuoter, makerAssetData, takerAssetData, prunedOrders);
     return mockedAssetQuoter;
 };
