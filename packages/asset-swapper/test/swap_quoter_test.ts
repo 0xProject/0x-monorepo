@@ -1,19 +1,19 @@
-import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { Orderbook } from '@0x/orderbook';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { AssetPairsItem, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../src';
 import { constants } from '../src/constants';
-import { LiquidityForAssetData, OrdersAndFillableAmounts } from '../src/types';
+import { LiquidityForTakerMakerAssetDataPair, PrunedSignedOrder } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { mockAvailableAssetDatas, mockedSwapQuoterWithOrdersAndFillableAmounts, orderbookMock } from './utils/mocks';
+import { mockAvailableAssetDatas, mockedSwapQuoterWithPrunedSignedOrders, orderbookMock } from './utils/mocks';
+import { testOrderFactory } from './utils/test_order_factory';
+import { baseUnitAmount } from './utils/utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -26,10 +26,6 @@ const DAI_ASSET_DATA = '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625
 const WETH_ASSET_DATA = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const WETH_DECIMALS = constants.ETHER_TOKEN_DECIMALS;
 const ZERO = new BigNumber(0);
-
-const baseUnitAmount = (unitAmount: number, decimals = TOKEN_DECIMALS): BigNumber => {
-    return Web3Wrapper.toBaseUnitAmount(new BigNumber(unitAmount), decimals);
-};
 
 const assetsToAssetPairItems = (makerAssetData: string, takerAssetData: string): AssetPairsItem[] => {
     const defaultAssetPairItem = {
@@ -64,15 +60,15 @@ const assetsToAssetPairItems = (makerAssetData: string, takerAssetData: string):
 const expectLiquidityResult = async (
     web3Provider: Web3ProviderEngine,
     orderbook: Orderbook,
-    ordersAndFillableAmounts: OrdersAndFillableAmounts,
-    expectedLiquidityResult: LiquidityForAssetData,
+    prunedOrders: PrunedSignedOrder[],
+    expectedLiquidityResult: LiquidityForTakerMakerAssetDataPair,
 ) => {
-    const mockedSwapQuoter = mockedSwapQuoterWithOrdersAndFillableAmounts(
+    const mockedSwapQuoter = mockedSwapQuoterWithPrunedSignedOrders(
         web3Provider,
         orderbook,
         FAKE_MAKER_ASSET_DATA,
         WETH_ASSET_DATA,
-        ordersAndFillableAmounts,
+        prunedOrders,
     );
     const liquidityResult = await mockedSwapQuoter.object.getLiquidityForMakerTakerAssetDataPairAsync(
         FAKE_MAKER_ASSET_DATA,
@@ -130,8 +126,8 @@ describe('SwapQuoter', () => {
                     FAKE_TAKER_ASSET_DATA,
                 );
                 expect(liquidityResult).to.deep.equal({
-                    makerTokensAvailableInBaseUnits: new BigNumber(0),
-                    takerTokensAvailableInBaseUnits: new BigNumber(0),
+                    makerAssetAvailableInBaseUnits: new BigNumber(0),
+                    takerAssetAvailableInBaseUnits: new BigNumber(0),
                 });
             });
 
@@ -144,20 +140,15 @@ describe('SwapQuoter', () => {
                     FAKE_TAKER_ASSET_DATA,
                 );
                 expect(liquidityResult).to.deep.equal({
-                    makerTokensAvailableInBaseUnits: new BigNumber(0),
-                    takerTokensAvailableInBaseUnits: new BigNumber(0),
+                    makerAssetAvailableInBaseUnits: new BigNumber(0),
+                    takerAssetAvailableInBaseUnits: new BigNumber(0),
                 });
             });
         });
 
         describe('assetData is supported', () => {
             // orders
-            const sellTwoTokensFor1Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
-                makerAssetAmount: baseUnitAmount(2),
-                takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
-                chainId: 42,
-            });
-            const sellTenTokensFor10Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
+            const sellTenTokensFor10Weth: SignedOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetAmount: baseUnitAmount(10),
                 takerAssetAmount: baseUnitAmount(10, WETH_DECIMALS),
                 chainId: 42,
@@ -168,98 +159,145 @@ describe('SwapQuoter', () => {
             });
 
             it('should return 0s when no orders available', async () => {
-                const ordersAndFillableAmounts: OrdersAndFillableAmounts = {
-                    orders: [],
-                    remainingFillableMakerAssetAmounts: [],
-                };
+                const prunedOrders: PrunedSignedOrder[] = [];
                 const expectedResult = {
-                    makerTokensAvailableInBaseUnits: new BigNumber(0),
-                    takerTokensAvailableInBaseUnits: new BigNumber(0),
+                    makerAssetAvailableInBaseUnits: new BigNumber(0),
+                    takerAssetAvailableInBaseUnits: new BigNumber(0),
                 };
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
                     mockOrderbook.object,
-                    ordersAndFillableAmounts,
+                    prunedOrders,
                     expectedResult,
                 );
             });
 
             it('should return correct computed value when orders provided with full fillableAmounts', async () => {
-                const orders: SignedOrder[] = [sellTwoTokensFor1Weth, sellTenTokensFor10Weth];
-                const ordersAndFillableAmounts = {
-                    orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
-                    remainingFillableMakerAssetAmounts: orders.map(o => o.makerAssetAmount),
-                };
-
-                const expectedMakerTokensAvailable = orders[0].makerAssetAmount.plus(orders[1].makerAssetAmount);
-                const expectedTakerTokensAvailable = orders[0].takerAssetAmount.plus(orders[1].takerAssetAmount);
+                const prunedOrders: PrunedSignedOrder[] = [
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: sellTenTokensFor10Weth.makerAssetAmount,
+                            fillableTakerAssetAmount: sellTenTokensFor10Weth.takerAssetAmount,
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: sellTenTokensFor10Weth.makerAssetAmount,
+                            fillableTakerAssetAmount: sellTenTokensFor10Weth.takerAssetAmount,
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                ];
+                const expectedMakerAssetAvailable = prunedOrders[0].makerAssetAmount.plus(
+                    prunedOrders[1].makerAssetAmount,
+                );
+                const expectedTakerAssetAvailable = prunedOrders[0].takerAssetAmount.plus(
+                    prunedOrders[1].takerAssetAmount,
+                );
 
                 const expectedResult = {
-                    makerTokensAvailableInBaseUnits: expectedMakerTokensAvailable,
-                    takerTokensAvailableInBaseUnits: expectedTakerTokensAvailable,
+                    makerAssetAvailableInBaseUnits: expectedMakerAssetAvailable,
+                    takerAssetAvailableInBaseUnits: expectedTakerAssetAvailable,
                 };
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
                     mockOrderbook.object,
-                    ordersAndFillableAmounts,
+                    prunedOrders,
                     expectedResult,
                 );
             });
 
             it('should return correct computed value with one partial fillableAmounts', async () => {
-                const ordersAndFillableAmounts = {
-                    orders: [sellTwoTokensFor1Weth],
-                    remainingFillableMakerAssetAmounts: [baseUnitAmount(1)],
-                };
+                const prunedOrders: PrunedSignedOrder[] = [
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: baseUnitAmount(1),
+                            fillableTakerAssetAmount: baseUnitAmount(0.5, WETH_DECIMALS),
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                ];
 
                 const expectedResult = {
-                    makerTokensAvailableInBaseUnits: baseUnitAmount(1),
-                    takerTokensAvailableInBaseUnits: baseUnitAmount(0.5, WETH_DECIMALS),
+                    makerAssetAvailableInBaseUnits: baseUnitAmount(1),
+                    takerAssetAvailableInBaseUnits: baseUnitAmount(0.5, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
                     mockOrderbook.object,
-                    ordersAndFillableAmounts,
+                    prunedOrders,
                     expectedResult,
                 );
             });
 
             it('should return correct computed value with multiple orders and fillable amounts', async () => {
-                const ordersAndFillableAmounts = {
-                    orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
-                    remainingFillableMakerAssetAmounts: [baseUnitAmount(1), baseUnitAmount(3)],
-                };
+                const prunedOrders: PrunedSignedOrder[] = [
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: baseUnitAmount(1),
+                            fillableTakerAssetAmount: baseUnitAmount(0.5, WETH_DECIMALS),
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: baseUnitAmount(3),
+                            fillableTakerAssetAmount: baseUnitAmount(3, WETH_DECIMALS),
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                ];
 
                 const expectedResult = {
-                    makerTokensAvailableInBaseUnits: baseUnitAmount(4),
-                    takerTokensAvailableInBaseUnits: baseUnitAmount(3.5, WETH_DECIMALS),
+                    makerAssetAvailableInBaseUnits: baseUnitAmount(4),
+                    takerAssetAvailableInBaseUnits: baseUnitAmount(3.5, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
                     mockOrderbook.object,
-                    ordersAndFillableAmounts,
+                    prunedOrders,
                     expectedResult,
                 );
             });
 
             it('should return 0s when no amounts fillable', async () => {
-                const ordersAndFillableAmounts = {
-                    orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
-                    remainingFillableMakerAssetAmounts: [baseUnitAmount(0), baseUnitAmount(0)],
-                };
+                const prunedOrders: PrunedSignedOrder[] = [
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: constants.ZERO_AMOUNT,
+                            fillableTakerAssetAmount: constants.ZERO_AMOUNT,
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                    {
+                        ...sellTenTokensFor10Weth,
+                        ...{
+                            fillableMakerAssetAmount: constants.ZERO_AMOUNT,
+                            fillableTakerAssetAmount: constants.ZERO_AMOUNT,
+                            fillableTakerFeeAmount: constants.ZERO_AMOUNT,
+                        },
+                    },
+                ];
 
                 const expectedResult = {
-                    makerTokensAvailableInBaseUnits: baseUnitAmount(0),
-                    takerTokensAvailableInBaseUnits: baseUnitAmount(0, WETH_DECIMALS),
+                    makerAssetAvailableInBaseUnits: constants.ZERO_AMOUNT,
+                    takerAssetAvailableInBaseUnits: constants.ZERO_AMOUNT,
                 };
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
                     mockOrderbook.object,
-                    ordersAndFillableAmounts,
+                    prunedOrders,
                     expectedResult,
                 );
             });

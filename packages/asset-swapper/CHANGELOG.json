@@ -1,5 +1,18 @@
 [
     {
+        "version": "2.1.0-beta.3",
+        "changes": [
+            {
+                "note": "Refactor of logic for marketBuy/marketSell order pruning and selecting, introduced protocol fees, and refactored types used by the package",
+                "pr": 2272
+            },
+            {
+                "note": "Incorporate paying protocol fees.",
+                "pr": 2350
+            }
+        ]
+    },
+    {
         "version": "2.1.0-beta.2",
         "changes": [
             {
@@ -7,7 +20,7 @@
                 "pr": 2342
             }
         ],
-        "timestamp": 1574030254
+        "timestamp": 1573159180
     },
     {
         "version": "2.1.0-beta.1",

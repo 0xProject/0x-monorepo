@@ -1,5 +1,7 @@
-import { ContractWrappers } from '@0x/contract-wrappers';
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { WETH9Contract } from '@0x/contracts-erc20';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -47,19 +49,17 @@ export const swapQuoteConsumerUtils = {
     },
     async getEthAndWethBalanceAsync(
         provider: SupportedProvider,
-        contractWrappers: ContractWrappers,
+        contractAddresses: ContractAddresses,
         takerAddress: string,
     ): Promise<[BigNumber, BigNumber]> {
+        const weth = new WETH9Contract(contractAddresses.etherToken, provider);
         const web3Wrapper = new Web3Wrapper(provider);
         const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-        const wethBalance = await contractWrappers.weth9.balanceOf(takerAddress).callAsync();
+        const wethBalance = await weth.balanceOf(takerAddress).callAsync();
         return [ethBalance, wethBalance];
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
-        return (
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData) &&
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.feeOrders, wethAssetData)
-        );
+        return swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData);
     },
     isValidForwarderSignedOrders(orders: SignedOrder[], wethAssetData: string): boolean {
         return _.every(orders, order => swapQuoteConsumerUtils.isValidForwarderSignedOrder(order, wethAssetData));
@@ -67,35 +67,25 @@ export const swapQuoteConsumerUtils = {
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
     },
-    optimizeOrdersForMarketExchangeOperation(orders: SignedOrder[], operation: MarketOperation): SignedOrder[] {
-        return _.map(orders, (order: SignedOrder, index: number) => {
-            const optimizedOrder = _.clone(order);
-            if (operation === MarketOperation.Sell && index !== 0) {
-                optimizedOrder.takerAssetData = constants.NULL_BYTES;
-            } else if (index !== 0) {
-                optimizedOrder.makerAssetData = constants.NULL_BYTES;
-            }
-            return optimizedOrder;
-        });
-    },
     async getExtensionContractTypeForSwapQuoteAsync(
         quote: SwapQuote,
-        contractWrappers: ContractWrappers,
+        contractAddresses: ContractAddresses,
         provider: Provider,
         opts: Partial<GetExtensionContractTypeOpts>,
     ): Promise<ExtensionContractType> {
-        const wethAssetData = await contractWrappers.devUtils
-            .encodeERC20AssetData(contractWrappers.contractAddresses.etherToken)
-            .callAsync();
+        const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
+        const wethAssetData = await devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync();
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);
             }
-            const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.totalTakerTokenAmount;
+            const ethAmount =
+                opts.ethAmount ||
+                quote.worstCaseQuoteInfo.takerAssetAmount.plus(quote.worstCaseQuoteInfo.protocolFeeInEthAmount);
             const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
             const takerEthAndWethBalance =
                 takerAddress !== undefined
-                    ? await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(provider, contractWrappers, takerAddress)
+                    ? await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(provider, contractAddresses, takerAddress)
                     : [constants.ZERO_AMOUNT, constants.ZERO_AMOUNT];
             // TODO(david): when considering if there is enough Eth balance, should account for gas costs.
             const isEnoughEthAndWethBalance = _.map(takerEthAndWethBalance, (balance: BigNumber) =>

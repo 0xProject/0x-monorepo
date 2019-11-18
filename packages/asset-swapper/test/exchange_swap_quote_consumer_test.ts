@@ -1,7 +1,9 @@
-import { ContractAddresses, ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { ERC20TokenContract } from '@0x/contracts-erc20';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
-import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
@@ -13,7 +15,9 @@ import {
     ExchangeMarketBuySmartContractParams,
     ExchangeMarketSellSmartContractParams,
     MarketBuySwapQuote,
+    MarketOperation,
     MarketSellSwapQuote,
+    PrunedSignedOrder,
 } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -25,16 +29,47 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
-const TESTRPC_CHAIN_ID = 1337;
-const FILLABLE_AMOUNTS = [new BigNumber(3), new BigNumber(2), new BigNumber(5)].map(value =>
-    value.multipliedBy(ONE_ETH_IN_WEI),
-);
+const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
+const UNLIMITED_ALLOWANCE = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
+
+const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
+    {
+        takerAssetAmount: new BigNumber(5).multipliedBy(ONE_ETH_IN_WEI),
+        makerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
+        fillableTakerAssetAmount: new BigNumber(5).multipliedBy(ONE_ETH_IN_WEI),
+        fillableMakerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
+    },
+    {
+        takerAssetAmount: new BigNumber(3).multipliedBy(ONE_ETH_IN_WEI),
+        makerAssetAmount: new BigNumber(3).multipliedBy(ONE_ETH_IN_WEI),
+        fillableTakerAssetAmount: new BigNumber(3).multipliedBy(ONE_ETH_IN_WEI),
+        fillableMakerAssetAmount: new BigNumber(3).multipliedBy(ONE_ETH_IN_WEI),
+    },
+    {
+        takerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
+        makerAssetAmount: new BigNumber(5).multipliedBy(ONE_ETH_IN_WEI),
+        fillableTakerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
+        fillableMakerAssetAmount: new BigNumber(5).multipliedBy(ONE_ETH_IN_WEI),
+    },
+];
+
+const expectMakerAndTakerBalancesAsyncFactory = (
+    erc20TokenContract: ERC20TokenContract,
+    makerAddress: string,
+    takerAddress: string,
+) => async (expectedMakerBalance: BigNumber, expectedTakerBalance: BigNumber) => {
+    const makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
+    const takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
+    expect(makerBalance).to.bignumber.equal(expectedMakerBalance);
+    expect(takerBalance).to.bignumber.equal(expectedTakerBalance);
+};
 
 describe('ExchangeSwapQuoteConsumer', () => {
-    let contractWrappers: ContractWrappers;
     let userAddresses: string[];
-    let erc20TokenContract: ERC20TokenContract;
+    let erc20MakerTokenContract: ERC20TokenContract;
+    let erc20TakerTokenContract: ERC20TokenContract;
     let coinbaseAddress: string;
     let makerAddress: string;
     let takerAddress: string;
@@ -46,32 +81,38 @@ describe('ExchangeSwapQuoteConsumer', () => {
     let takerAssetData: string;
     let wethAssetData: string;
     let contractAddresses: ContractAddresses;
+    let exchangeContract: ExchangeContract;
 
     const chainId = TESTRPC_CHAIN_ID;
 
-    let orders: SignedOrder[];
+    let orders: PrunedSignedOrder[];
     let marketSellSwapQuote: SwapQuote;
     let marketBuySwapQuote: SwapQuote;
     let swapQuoteConsumer: ExchangeSwapQuoteConsumer;
+    let expectMakerAndTakerBalancesForMakerAssetAsync: (
+        expectedMakerBalance: BigNumber,
+        expectedTakerBalance: BigNumber,
+    ) => Promise<void>;
+    let expectMakerAndTakerBalancesForTakerAssetAsync: (
+        expectedMakerBalance: BigNumber,
+        expectedTakerBalance: BigNumber,
+    ) => Promise<void>;
 
     before(async () => {
         contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        const config = {
-            chainId,
-            contractAddresses,
-        };
-        contractWrappers = new ContractWrappers(provider, config);
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
-        [makerAssetData, takerAssetData, wethAssetData] = [
-            await contractWrappers.devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            await contractWrappers.devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            await contractWrappers.devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
-        ];
-        erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
-
+        const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
+        [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
+            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
+            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
+            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+        ]);
+        erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
+        erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
+        exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
         // Configure order defaults
         const defaultOrderParams = {
             ...devConstants.STATIC_ORDER_PARAMS,
@@ -79,17 +120,26 @@ describe('ExchangeSwapQuoteConsumer', () => {
             takerAddress,
             makerAssetData,
             takerAssetData,
-            makerFeeAssetData: await contractWrappers.devUtils
-                .encodeERC20AssetData(contractAddresses.zrxToken)
-                .callAsync(),
-            takerFeeAssetData: await contractWrappers.devUtils
-                .encodeERC20AssetData(contractAddresses.zrxToken)
-                .callAsync(),
+            makerFeeAssetData: constants.NULL_ERC20_ASSET_DATA,
+            takerFeeAssetData: constants.NULL_ERC20_ASSET_DATA,
+            makerFee: constants.ZERO_AMOUNT,
+            takerFee: constants.ZERO_AMOUNT,
+            feeRecipientAddress: feeRecipient,
             exchangeAddress: contractAddresses.exchange,
             chainId,
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
+            erc20TakerTokenContract,
+            makerAddress,
+            takerAddress,
+        );
+        expectMakerAndTakerBalancesForMakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
+            erc20MakerTokenContract,
+            makerAddress,
+            takerAddress,
+        );
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -97,12 +147,13 @@ describe('ExchangeSwapQuoteConsumer', () => {
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
         orders = [];
-        for (const fillableAmount of FILLABLE_AMOUNTS) {
-            const order = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: fillableAmount,
-                takerAssetAmount: fillableAmount,
-            });
-            orders.push(order);
+        for (const partialOrder of PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS) {
+            const order = await orderFactory.newSignedOrderAsync(partialOrder);
+            const prunedOrder = {
+                ...order,
+                ...partialOrder,
+            };
+            orders.push(prunedOrder as PrunedSignedOrder);
         }
 
         marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
@@ -110,6 +161,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
             takerAssetData,
             orders,
             MarketOperation.Sell,
+            GAS_PRICE,
         );
 
         marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
@@ -117,45 +169,87 @@ describe('ExchangeSwapQuoteConsumer', () => {
             takerAssetData,
             orders,
             MarketOperation.Buy,
+            GAS_PRICE,
         );
 
-        swapQuoteConsumer = new ExchangeSwapQuoteConsumer(provider, {
+        swapQuoteConsumer = new ExchangeSwapQuoteConsumer(provider, contractAddresses, {
             chainId,
         });
+
+        await erc20MakerTokenContract
+            .transfer(makerAddress, marketBuySwapQuote.worstCaseQuoteInfo.makerAssetAmount)
+            .sendTransactionAsync({
+                from: coinbaseAddress,
+            });
+        await erc20TakerTokenContract
+            .transfer(takerAddress, marketBuySwapQuote.worstCaseQuoteInfo.totalTakerAssetAmount)
+            .sendTransactionAsync({
+                from: coinbaseAddress,
+            });
+        await erc20MakerTokenContract
+            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
+            .sendTransactionAsync({ from: makerAddress });
+        await erc20TakerTokenContract
+            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
+            .sendTransactionAsync({ from: takerAddress });
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('executeSwapQuoteOrThrowAsync', () => {
+    describe('#executeSwapQuoteOrThrowAsync', () => {
         /*
          * Testing that SwapQuoteConsumer logic correctly performs a execution (doesn't throw or revert)
          * Does not test the validity of the state change performed by the forwarder smart contract
          */
         it('should perform a marketSell execution when provided a MarketSell type swapQuote', async () => {
-            let makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-            let takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-            expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-            expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-            await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, { takerAddress });
-            makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-            takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-            expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-            expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
+            await expectMakerAndTakerBalancesForMakerAssetAsync(
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                constants.ZERO_AMOUNT,
+            );
+            await expectMakerAndTakerBalancesForTakerAssetAsync(
+                constants.ZERO_AMOUNT,
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+            );
+            await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
+                takerAddress,
+                gasPrice: GAS_PRICE,
+                gasLimit: 4000000,
+            });
+            await expectMakerAndTakerBalancesForMakerAssetAsync(
+                constants.ZERO_AMOUNT,
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+            );
+            await expectMakerAndTakerBalancesForTakerAssetAsync(
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                constants.ZERO_AMOUNT,
+            );
         });
         it('should perform a marketBuy execution when provided a MarketBuy type swapQuote', async () => {
-            let makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-            let takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-            expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-            expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-            await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, { takerAddress });
-            makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-            takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-            expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-            expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
+            await expectMakerAndTakerBalancesForMakerAssetAsync(
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                constants.ZERO_AMOUNT,
+            );
+            await expectMakerAndTakerBalancesForTakerAssetAsync(
+                constants.ZERO_AMOUNT,
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+            );
+            await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, {
+                takerAddress,
+                gasPrice: GAS_PRICE,
+                gasLimit: 4000000,
+            });
+            await expectMakerAndTakerBalancesForMakerAssetAsync(
+                constants.ZERO_AMOUNT,
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+            );
+            await expectMakerAndTakerBalancesForTakerAssetAsync(
+                new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                constants.ZERO_AMOUNT,
+            );
         });
     });
 
-    describe('getSmartContractParamsOrThrow', () => {
+    describe('#getSmartContractParamsOrThrow', () => {
         describe('valid swap quote', async () => {
             // TODO(david) Check for valid MethodAbi
             it('provide correct and optimized smart contract params for a marketSell SwapQuote', async () => {
@@ -163,7 +257,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
                     marketSellSwapQuote,
                     {},
                 );
-                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(exchangeContract.address);
                 const { takerAssetFillAmount, signatures, type } = params as ExchangeMarketSellSmartContractParams;
                 expect(type).to.deep.equal(MarketOperation.Sell);
                 expect(takerAssetFillAmount).to.bignumber.equal(
@@ -172,12 +266,12 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 const orderSignatures = marketSellSwapQuote.orders.map(order => order.signature);
                 expect(signatures).to.deep.equal(orderSignatures);
             });
-            it('provide correct and optimized smart contract params for a marketBuy SwapQuote', async () => {
+            it('provide correct smart contract params for a marketBuy SwapQuote', async () => {
                 const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketBuySwapQuote,
                     {},
                 );
-                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(exchangeContract.address);
                 const { makerAssetFillAmount, signatures, type } = params as ExchangeMarketBuySmartContractParams;
                 expect(type).to.deep.equal(MarketOperation.Buy);
                 expect(makerAssetFillAmount).to.bignumber.equal(
@@ -189,49 +283,53 @@ describe('ExchangeSwapQuoteConsumer', () => {
         });
     });
 
-    describe('getCalldataOrThrow', () => {
+    describe('#getCalldataOrThrow', () => {
         describe('valid swap quote', async () => {
             it('provide correct and optimized calldata options with default options for a marketSell SwapQuote (no affiliate fees)', async () => {
-                let makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-                let takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-                expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-                expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-                const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
+                await expectMakerAndTakerBalancesForMakerAssetAsync(
+                    new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                    constants.ZERO_AMOUNT,
+                );
+                const { calldataHexString, toAddress, ethAmount } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketSellSwapQuote,
                     {},
                 );
-                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(exchangeContract.address);
                 await web3Wrapper.sendTransactionAsync({
                     from: takerAddress,
                     to: toAddress,
                     data: calldataHexString,
                     gas: 4000000,
+                    gasPrice: GAS_PRICE,
+                    value: ethAmount,
                 });
-                makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-                takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-                expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-                expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
+                await expectMakerAndTakerBalancesForMakerAssetAsync(
+                    constants.ZERO_AMOUNT,
+                    new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                );
             });
             it('provide correct and optimized calldata options with default options for a marketBuy SwapQuote (no affiliate fees)', async () => {
-                let makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-                let takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-                expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-                expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-                const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
+                await expectMakerAndTakerBalancesForMakerAssetAsync(
+                    new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                    constants.ZERO_AMOUNT,
+                );
+                const { calldataHexString, toAddress, ethAmount } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketBuySwapQuote,
                     {},
                 );
-                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(exchangeContract.address);
                 await web3Wrapper.sendTransactionAsync({
                     from: takerAddress,
                     to: toAddress,
                     data: calldataHexString,
                     gas: 4000000,
+                    gasPrice: GAS_PRICE,
+                    value: ethAmount,
                 });
-                makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-                takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
-                expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
-                expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
+                await expectMakerAndTakerBalancesForMakerAssetAsync(
+                    constants.ZERO_AMOUNT,
+                    new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
+                );
             });
         });
     });

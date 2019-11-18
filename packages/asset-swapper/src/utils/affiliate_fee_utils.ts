@@ -1,29 +1,24 @@
 import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
 
-import { SwapQuote, SwapQuoteInfo, SwapQuoteWithAffiliateFee } from '../types';
+import { constants } from '../constants';
+import { SwapQuoteInfo } from '../types';
+
+import { assert } from './assert';
 
 export const affiliateFeeUtils = {
-    getSwapQuoteWithAffiliateFee(quote: SwapQuote, feePercentage: number): SwapQuoteWithAffiliateFee {
-        const newQuote = _.clone(quote);
-        newQuote.bestCaseQuoteInfo = getSwapQuoteInfoWithAffiliateFee(newQuote.bestCaseQuoteInfo, feePercentage);
-        newQuote.worstCaseQuoteInfo = getSwapQuoteInfoWithAffiliateFee(newQuote.worstCaseQuoteInfo, feePercentage);
-        return { ...newQuote, ...{ feePercentage } };
+    /**
+     * Get the amount of eth to send for a forwarder contract call (includes takerAssetAmount, protocol fees, and specified affiliate fee amount)
+     * @param swapQuoteInfo SwapQuoteInfo to generate total eth amount from
+     * @param feePercentage Percentage of additive fees to apply to totalTakerAssetAmount + protocol fee. (max 5%)
+     */
+    getTotalEthAmountWithAffiliateFee(swapQuoteInfo: SwapQuoteInfo, feePercentage: number): BigNumber {
+        assert.assert(
+            feePercentage >= 0 && feePercentage <= constants.MAX_AFFILIATE_FEE_PERCENTAGE,
+            'feePercentage must be between range 0-0.05 (inclusive)',
+        );
+        const ethAmount = swapQuoteInfo.protocolFeeInEthAmount.plus(swapQuoteInfo.totalTakerAssetAmount);
+        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage);
+        const ethAmountWithFees = ethAmount.plus(affiliateFeeAmount);
+        return ethAmountWithFees;
     },
-};
-
-/**
- * Adds a fee based on feePercentage of the takerTokenAmount and adds it to the feeTakerTokenAmount and totalTakerTokenAmount
- * @param quoteInfo quote information to add fee to
- * @param feePercentage the percentage of takerTokenAmount charged additionally as a fee
- */
-const getSwapQuoteInfoWithAffiliateFee = (quoteInfo: SwapQuoteInfo, feePercentage: number): SwapQuoteInfo => {
-    const newQuoteInfo = _.clone(quoteInfo);
-    const affiliateFeeAmount = quoteInfo.takerTokenAmount
-        .multipliedBy(feePercentage)
-        .integerValue(BigNumber.ROUND_CEIL);
-    const newFeeAmount = quoteInfo.feeTakerTokenAmount.plus(affiliateFeeAmount);
-    newQuoteInfo.feeTakerTokenAmount = newFeeAmount;
-    newQuoteInfo.totalTakerTokenAmount = newFeeAmount.plus(quoteInfo.takerTokenAmount);
-    return newQuoteInfo;
 };
