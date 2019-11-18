@@ -1,4 +1,4 @@
-export * from './artifacts';
+export { artifacts } from './artifacts';
 export * from './wrappers';
 
 import * as ReferenceFunctionsToExport from './reference_functions';
