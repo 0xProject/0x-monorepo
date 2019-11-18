@@ -176,16 +176,6 @@ export async function runMigrationsAsync(
     await exchange.registerAssetProxy(multiAssetProxy.address).awaitTransactionSuccessAsync(txDefaults);
     await exchange.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync(txDefaults);
 
-    // Forwarder
-    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
-        artifacts.Forwarder,
-        provider,
-        txDefaults,
-        artifacts,
-        exchange.address,
-        encodeERC20AssetData(etherToken.address),
-    );
-
     // Fake the above transactions so our nonce increases and we result with the same addresses
     // while AssetProxyOwner is disabled (TODO: @dekz remove)
     const dummyTransactionCount = 8;
@@ -280,6 +270,16 @@ export async function runMigrationsAsync(
     await zrxVault.setStakingProxy(stakingProxy.address).awaitTransactionSuccessAsync(txDefaults);
     await stakingLogic.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync(txDefaults);
     await stakingLogic.addExchangeAddress(exchange.address).awaitTransactionSuccessAsync(txDefaults);
+
+    // Forwarder
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+        artifacts.Forwarder,
+        provider,
+        txDefaults,
+        artifacts,
+        exchange.address,
+        encodeERC20AssetData(etherToken.address),
+    );
 
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
