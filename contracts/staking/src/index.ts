@@ -44,7 +44,14 @@ export { artifacts } from './artifacts';
 export import FixedMathRevertErrors = require('./fixed_math_revert_errors');
 export import StakingRevertErrors = require('./staking_revert_errors');
 export { constants } from './constants';
-export { StakeInfo, StakeStatus, StoredBalance } from './types';
+export {
+    StakeInfo,
+    StakeStatus,
+    StoredBalance,
+    StakingPoolById,
+    OwnerStakeByStatus,
+    GlobalStakeByStatus,
+} from './types';
 export {
     ContractArtifact,
     ContractChains,
