@@ -1,5 +1,5 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { constants, Numberish } from '@0x/contracts-test-utils';
+import { IAssetDataContract } from '@0x/contracts-asset-proxy';
+import { constants, hexSlice, Numberish, provider } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -8,12 +8,14 @@ import { BalanceStore } from './balance_store';
 import { TokenContractsByName, TokenOwnersByName } from './types';
 
 export class LocalBalanceStore extends BalanceStore {
+    private _assetDataDecoder: IAssetDataContract;
+
     /**
      * Creates a new balance store based on an existing one.
      * @param sourceBalanceStore Existing balance store whose values should be copied.
      */
-    public static create(devUtils: DevUtilsContract, sourceBalanceStore?: BalanceStore): LocalBalanceStore {
-        const localBalanceStore = new LocalBalanceStore(devUtils);
+    public static create(sourceBalanceStore?: BalanceStore): LocalBalanceStore {
+        const localBalanceStore = new LocalBalanceStore();
         if (sourceBalanceStore !== undefined) {
             localBalanceStore.cloneFrom(sourceBalanceStore);
         }
@@ -26,11 +28,11 @@ export class LocalBalanceStore extends BalanceStore {
      * be initialized via `create`.
      */
     protected constructor(
-        private readonly _devUtils: DevUtilsContract,
         tokenOwnersByName: TokenOwnersByName = {},
         tokenContractsByName: Partial<TokenContractsByName> = {},
     ) {
         super(tokenOwnersByName, tokenContractsByName);
+        this._assetDataDecoder = new IAssetDataContract(constants.NULL_ADDRESS, provider);
     }
 
     /**
@@ -78,25 +80,41 @@ export class LocalBalanceStore extends BalanceStore {
         amount: BigNumber,
         assetData: string,
     ): Promise<void> {
-        if (fromAddress === toAddress) {
+        if (fromAddress === toAddress || amount.isZero()) {
             return;
         }
-        const assetProxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const assetProxyId = hexSlice(assetData, 0, 4);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
-                // tslint:disable-next-line:no-unused-variable
-                const [_proxyId, tokenAddress] = await this._devUtils.decodeERC20AssetData(assetData).callAsync();
+                const tokenAddress = this._assetDataDecoder.getABIDecodedTransactionData<string>(
+                    'ERC20Token',
+                    assetData,
+                );
                 _.update(this.balances.erc20, [fromAddress, tokenAddress], balance => balance.minus(amount));
                 _.update(this.balances.erc20, [toAddress, tokenAddress], balance =>
                     (balance || constants.ZERO_AMOUNT).plus(amount),
                 );
                 break;
             }
+            case AssetProxyId.ERC20Bridge: {
+                const [tokenAddress] = this._assetDataDecoder.getABIDecodedTransactionData<[string]>(
+                    'ERC20Bridge',
+                    assetData,
+                );
+                // The test bridge contract (TestEth2DaiBridge or TestUniswapBridge) will be the
+                // fromAddress in this case, and it simply mints the amount of token it needs to transfer.
+                _.update(this.balances.erc20, [fromAddress, tokenAddress], balance =>
+                    (balance || constants.ZERO_AMOUNT).minus(amount),
+                );
+                _.update(this.balances.erc20, [toAddress, tokenAddress], balance =>
+                    (balance || constants.ZERO_AMOUNT).plus(amount),
+                );
+                break;
+            }
             case AssetProxyId.ERC721: {
-                // tslint:disable-next-line:no-unused-variable
-                const [_proxyId, tokenAddress, tokenId] = await this._devUtils
-                    .decodeERC721AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress, tokenId] = this._assetDataDecoder.getABIDecodedTransactionData<
+                    [string, BigNumber]
+                >('ERC721Token', assetData);
                 const fromTokens = _.get(this.balances.erc721, [fromAddress, tokenAddress], []);
                 const toTokens = _.get(this.balances.erc721, [toAddress, tokenAddress], []);
                 if (amount.gte(1)) {
@@ -112,12 +130,9 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             }
             case AssetProxyId.ERC1155: {
-                const [
-                    _proxyId, // tslint:disable-line:no-unused-variable
-                    tokenAddress,
-                    tokenIds,
-                    tokenValues,
-                ] = await this._devUtils.decodeERC1155AssetData(assetData).callAsync();
+                const [tokenAddress, tokenIds, tokenValues] = this._assetDataDecoder.getABIDecodedTransactionData<
+                    [string, BigNumber[], BigNumber[]]
+                >('ERC1155Assets', assetData);
                 const fromBalances = {
                     // tslint:disable-next-line:no-inferred-empty-object-type
                     fungible: _.get(this.balances.erc1155, [fromAddress, tokenAddress, 'fungible'], {}),
@@ -154,10 +169,9 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             }
             case AssetProxyId.MultiAsset: {
-                // tslint:disable-next-line:no-unused-variable
-                const [_proxyId, amounts, nestedAssetData] = await this._devUtils
-                    .decodeMultiAssetData(assetData)
-                    .callAsync();
+                const [amounts, nestedAssetData] = this._assetDataDecoder.getABIDecodedTransactionData<
+                    [BigNumber[], string[]]
+                >('MultiAsset', assetData);
                 for (const [i, amt] of amounts.entries()) {
                     const nestedAmount = amount.times(amt);
                     await this.transferAssetAsync(fromAddress, toAddress, nestedAmount, nestedAssetData[i]);

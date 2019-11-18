@@ -72,7 +72,7 @@ export class FillOrderWrapper {
         initBalanceStore: BalanceStore,
         opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<[FillResults, FillEventArgs, BalanceStore]> {
-        const balanceStore = LocalBalanceStore.create(this._devUtils, initBalanceStore);
+        const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
             opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
         // TODO(jalextowle): Change this if the integration tests take protocol fees into account.

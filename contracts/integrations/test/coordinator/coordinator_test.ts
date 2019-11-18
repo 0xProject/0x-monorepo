@@ -109,7 +109,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
         msgValue?: BigNumber,
     ): Promise<LocalBalanceStore> {
         let remainingValue = msgValue || constants.ZERO_AMOUNT;
-        const localBalanceStore = LocalBalanceStore.create(devUtils, balanceStore);
+        const localBalanceStore = LocalBalanceStore.create(balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
 

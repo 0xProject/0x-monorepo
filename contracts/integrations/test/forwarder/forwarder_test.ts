@@ -110,11 +110,8 @@ blockchainTests('Forwarder integration tests', env => {
             forwarder,
             deployment,
             balanceStore,
-            maker,
             taker,
-            orderFeeRecipient,
             forwarderFeeRecipient,
-            devUtils,
         );
     });
 
@@ -138,7 +135,7 @@ blockchainTests('Forwarder integration tests', env => {
                 env.txDefaults,
                 {},
                 exchange.address,
-                wethAssetData,
+                deployment.tokens.weth.address,
             );
             await expect(deployForwarder).to.revertWith(new ForwarderRevertErrors.UnregisteredAssetProxyError());
         });
@@ -202,7 +199,7 @@ blockchainTests('Forwarder integration tests', env => {
                     from: taker.address,
                 });
 
-            const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
+            const expectedBalances = LocalBalanceStore.create(balanceStore);
             expectedBalances.burnGas(tx.from, DeploymentManager.gasPrice.times(tx.gasUsed));
 
             // Verify balances
@@ -521,7 +518,7 @@ blockchainTests('Forwarder integration tests', env => {
                 });
 
             // Compute expected balances
-            const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
+            const expectedBalances = LocalBalanceStore.create(balanceStore);
             await expectedBalances.transferAssetAsync(
                 maker.address,
                 taker.address,
@@ -578,7 +575,7 @@ blockchainTests('Forwarder integration tests', env => {
                 });
 
             // Compute expected balances
-            const expectedBalances = LocalBalanceStore.create(devUtils, balanceStore);
+            const expectedBalances = LocalBalanceStore.create(balanceStore);
             await expectedBalances.transferAssetAsync(
                 maker.address,
                 taker.address,

@@ -36,7 +36,7 @@ export function validUnstakeAssertion(
     return new FunctionAssertion(stakingWrapper.unstake, {
         before: async (amount: BigNumber, txData: Partial<TxData>) => {
             // Simulates the transfer of ZRX from vault to staker
-            const expectedBalances = LocalBalanceStore.create(deployment.devUtils, balanceStore);
+            const expectedBalances = LocalBalanceStore.create(balanceStore);
             await expectedBalances.transferAssetAsync(
                 zrxVault.address,
                 txData.from as string,
