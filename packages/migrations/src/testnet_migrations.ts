@@ -27,7 +27,7 @@ import { LogWithDecodedArgs, SupportedProvider, TxData } from 'ethereum-types';
 import { getConfigsByChainId } from './utils/configs_by_chain';
 import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
-import { getTimelockRegistrationsAsync } from './utils/timelocks';
+import { getTimelockRegistrationsByChainId } from './utils/timelocks';
 
 async function submitAndExecuteTransactionAsync(
     governor: ZeroExGovernorContract,
@@ -106,7 +106,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider, txDefaults);
     const ownableInterface = new IOwnableContract(constants.NULL_ADDRESS, provider, txDefaults);
 
-    const customTimeLocks = await getTimelockRegistrationsAsync(provider);
+    const customTimeLocks = getTimelockRegistrationsByChainId(chainId.toNumber());
 
     const governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
         multisigArtifacts.ZeroExGovernor,

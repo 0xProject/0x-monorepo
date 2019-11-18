@@ -16,7 +16,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 
 import { getConfigsByChainId } from './utils/configs_by_chain';
-import { getTimelockRegistrationsAsync } from './utils/timelocks';
+import { getTimelockRegistrationsByChainId } from './utils/timelocks';
 
 // NOTE: add your own Infura Project ID to RPC urls before running
 const INFURA_PROJECT_ID = '';
@@ -324,7 +324,7 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
     }
 
     async function verifyZeroExGovernorConfigsAsync(): Promise<void> {
-        const timelockRegistrations = await getTimelockRegistrationsAsync(provider);
+        const timelockRegistrations = getTimelockRegistrationsByChainId(chainId);
         for (const timelockRegistration of timelockRegistrations) {
             const actualRegistration = await governor
                 .functionCallTimeLocks(timelockRegistration.functionSelector, timelockRegistration.destination)

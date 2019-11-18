@@ -2,9 +2,8 @@ import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { StakingContract, StakingProxyContract, ZrxVaultContract } from '@0x/contracts-staking';
 import { IAuthorizableContract, IOwnableContract } from '@0x/contracts-utils';
+import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import { SupportedProvider } from 'ethereum-types';
 
 import { constants } from './constants';
 
@@ -18,11 +17,10 @@ export interface TimelockRegistration {
  * Gets the custom timelock configs that correspond the the network of the given provider.
  * @param provider Web3 provider instance.
  */
-export async function getTimelockRegistrationsAsync(provider: SupportedProvider): Promise<TimelockRegistration[]> {
-    const web3Wrapper = new Web3Wrapper(provider);
-    const chainId = await web3Wrapper.getChainIdAsync();
+export function getTimelockRegistrationsByChainId(chainId: number): TimelockRegistration[] {
     const deployedAddresses = getContractAddressesForChainOrThrow(chainId);
 
+    const provider = new Web3ProviderEngine();
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider);
     const ownableInterface = new IOwnableContract(constants.NULL_ADDRESS, provider);
     const zrxVault = new ZrxVaultContract(constants.NULL_ADDRESS, provider);
