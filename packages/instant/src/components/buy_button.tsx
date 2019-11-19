@@ -107,7 +107,6 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
                     feePercentage,
                 },
                 takerAddress: accountAddress,
-                gasPrice: gasInfo.gasPriceInWei,
             });
         } catch (e) {
             if (e instanceof Error) {
