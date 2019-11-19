@@ -27,6 +27,7 @@ interface ConnectedState {
     onSuccess?: (txHash: string) => void;
 }
 
+// TODO(dave4506) expand errors and failures to be richer + other errors introducted in v3 of the protocol
 interface ConnectedDispatch {
     onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
     onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
