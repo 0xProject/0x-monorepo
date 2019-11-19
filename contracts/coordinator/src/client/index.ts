@@ -26,13 +26,17 @@ import {
 
 import { decorators } from './utils/decorators';
 
-export { CoordinatorServerErrorMsg };
+export { CoordinatorServerErrorMsg, CoordinatorServerCancellationResponse };
 
 const DEFAULT_TX_DATA = {
     gas: devConstants.GAS_LIMIT,
     gasPrice: new BigNumber(1),
     value: new BigNumber(150000), // DEFAULT_PROTOCOL_FEE_MULTIPLIER
 };
+
+// tx expiration time will be set to (now + default_approval - time_buffer)
+const DEFAULT_APPROVAL_EXPIRATION_TIME_SECONDS = 90;
+const DEFAULT_EXPIRATION_TIME_BUFFER_SECONDS = 30;
 
 /**
  * This class includes all the functionality related to filling or cancelling orders through
@@ -45,15 +49,6 @@ export class CoordinatorClient {
     public exchangeAddress: string;
     public registryAddress: string;
 
-    /**
-     * Validates that the 0x transaction has been approved by all of the feeRecipients that correspond to each order in the transaction's Exchange calldata.
-     * Throws an error if the transaction approvals are not valid. Will not detect failures that would occur when the transaction is executed on the Exchange contract.
-     * @param transaction 0x transaction containing salt, signerAddress, and data.
-     * @param txOrigin Required signer of Ethereum transaction calling this function.
-     * @param transactionSignature Proof that the transaction has been signed by the signer.
-     * @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each corresponding approval signature expires.
-     * @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
-     */
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _contractInstance: CoordinatorContract;
     private readonly _registryInstance: CoordinatorRegistryContract;
@@ -61,6 +56,31 @@ export class CoordinatorClient {
     private readonly _feeRecipientToEndpoint: { [feeRecipient: string]: string } = {};
     private readonly _txDefaults: CallData = DEFAULT_TX_DATA;
 
+    /**
+     * Validates that the 0x transaction has been approved by all of the feeRecipients that correspond to each order in the transaction's Exchange calldata.
+     * Throws an error if the transaction approvals are not valid. Will not detect failures that would occur when the transaction is executed on the Exchange contract.
+     * @param transaction 0x transaction containing salt, signerAddress, and data.
+     * @param txOrigin Required signer of Ethereum transaction calling this function.
+     * @param transactionSignature Proof that the transaction has been signed by the signer.
+     * @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+     */
+    @decorators.asyncZeroExErrorHandler
+    public async assertValidCoordinatorApprovalsOrThrowAsync(
+        transaction: ZeroExTransaction,
+        txOrigin: string,
+        transactionSignature: string,
+        approvalSignatures: string[],
+    ): Promise<void> {
+        assert.doesConformToSchema('transaction', transaction, schemas.zeroExTransactionSchema);
+        assert.isETHAddressHex('txOrigin', txOrigin);
+        assert.isHexString('transactionSignature', transactionSignature);
+        for (const approvalSignature of approvalSignatures) {
+            assert.isHexString('approvalSignature', approvalSignature);
+        }
+        return this._contractInstance
+            .assertValidCoordinatorApprovals(transaction, txOrigin, transactionSignature, approvalSignatures)
+            .callAsync();
+    }
     /**
      * Instantiate CoordinatorClient
      * @param web3Wrapper Web3Wrapper instance to use.
@@ -107,17 +127,18 @@ export class CoordinatorClient {
     /**
      * Fills a signed order with an amount denominated in baseUnits of the taker asset. Under-the-hood, this
      * method uses the `feeRecipientAddress` of the order to look up the coordinator server endpoint registered in the
-     * coordinator registry contract. It requests a signature from that coordinator server before
-     * submitting the order and signature as a 0x transaction to the coordinator extension contract. The coordinator extension
-     * contract validates signatures and then fills the order via the Exchange contract.
-     * @param   signedOrder           An object that conforms to the SignedOrder interface.
-     * @param   takerAssetFillAmount  The amount of the order (in taker asset baseUnits) that you wish to fill.
-     * @param   takerAddress          The user Ethereum address who would like to fill this order. Must be available via the supplied
-     *                                Provider provided at instantiation.
-     * @param   sendTxOpts  Optional arguments for sending the transaction
+     * coordinator registry contract. It requests an approval from that coordinator server before
+     * submitting the order and approval as a 0x transaction to the coordinator extension contract. The coordinator extension
+     * contract validates approvals and then fills the order via the Exchange contract.
+     * @param   order                   An object that conforms to the Order interface.
+     * @param   takerAssetFillAmount    The amount of the order (in taker asset baseUnits) that you wish to fill.
+     * @param   signature               Signature corresponding to the order.
+     * @param   txData                  Transaction data. The `from` field should be the user Ethereum address who would like
+     *                                  to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts              Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
-
+    @decorators.asyncZeroExErrorHandler
     public async fillOrderAsync(
         order: Order,
         takerAssetFillAmount: BigNumber,
@@ -141,11 +162,12 @@ export class CoordinatorClient {
     /**
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
-     * @param   signedOrder          An object that conforms to the SignedOrder interface.
-     * @param   takerAssetFillAmount The amount of the order (in taker asset baseUnits) that you wish to fill.
-     * @param   takerAddress         The user Ethereum address who would like to fill this order. Must be available via the supplied
-     *                               Provider provided at instantiation.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
+     * @param   order                   An object that conforms to the Order interface.
+     * @param   takerAssetFillAmount    The amount of the order (in taker asset baseUnits) that you wish to fill.
+     * @param   signature               Signature corresponding to the order.
+     * @param   txData                  Transaction data. The `from` field should be the user Ethereum address who would like
+     *                                  to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts              Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -171,16 +193,13 @@ export class CoordinatorClient {
 
     /**
      * Batch version of fillOrderAsync. Executes multiple fills atomically in a single transaction.
-     * Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
-     * registered in the coordinator registry contract. It requests a signature from each coordinator server before
-     * submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
-     * signatures and then fills the order through the Exchange contract.
-     * If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
-     * @param   signedOrders          An array of signed orders to fill.
-     * @param   takerAssetFillAmounts The amounts of the orders (in taker asset baseUnits) that you wish to fill.
-     * @param   takerAddress          The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                                Provider provided at instantiation.
-     * @param   sendTxOpts  Optional arguments for sending the transaction
+     * If any `feeRecipientAddress` in the batch is not registered to a coordinator server through the CoordinatorRegistryContract, the whole batch fails.
+     * @param   orders                  An array of orders to fill.
+     * @param   takerAssetFillAmounts   The amounts of the orders (in taker asset baseUnits) that you wish to fill.
+     * @param   signatures              Signatures corresponding to the orders.
+     * @param   txData                  Transaction data. The `from` field should be the user Ethereum address who would like
+     *                                  to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts              Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -202,14 +221,15 @@ export class CoordinatorClient {
     }
     /**
      * No throw version of batchFillOrdersAsync
-     * @param   signedOrders          An array of signed orders to fill.
-     * @param   takerAssetFillAmounts The amounts of the orders (in taker asset baseUnits) that you wish to fill.
-     * @param   takerAddress          The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                                Provider provided at instantiation.
-     * @param   sendTxOpts  Optional arguments for sending the transaction
+     * @param   orders                  An array of orders to fill.
+     * @param   takerAssetFillAmounts   The amounts of the orders (in taker asset baseUnits) that you wish to fill.
+     * @param   signatures              Signatures corresponding to the orders.
+     * @param   txData                  Transaction data. The `from` field should be the user Ethereum address who would like
+     *                                  to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts              Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
-    @decorators.asyncZeroExErrorHandler
+
     public async batchFillOrdersNoThrowAsync(
         orders: Order[],
         takerAssetFillAmounts: BigNumber[],
@@ -228,11 +248,12 @@ export class CoordinatorClient {
     }
     /**
      * Batch version of fillOrKillOrderAsync. Executes multiple fills atomically in a single transaction.
-     * @param   signedOrders          An array of signed orders to fill.
-     * @param   takerAssetFillAmounts The amounts of the orders (in taker asset baseUnits) that you wish to fill.
-     * @param   takerAddress          The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                                Provider provided at instantiation.
-     * @param   sendTxOpts  Optional arguments for sending the transaction
+     * @param   orders                  An array of orders to fill.
+     * @param   takerAssetFillAmounts   The amounts of the orders (in taker asset baseUnits) that you wish to fill.
+     * @param   signatures              Signatures corresponding to the orders.
+     * @param   txData                  Transaction data. The `from` field should be the user Ethereum address who would like
+     *                                  to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts              Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -253,9 +274,22 @@ export class CoordinatorClient {
         );
     }
 
+    /**
+     * Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+     * If any fill reverts, the error is caught and ignored. Finally, reverts if < makerAssetFillAmount has been bought.
+     * NOTE: This function does not enforce that the makerAsset is the same for each order.
+     * @param orders                Array of order specifications.
+     * @param makerAssetFillAmount  Desired amount of makerAsset to buy.
+     * @param signatures            Proofs that orders have been signed by makers.
+     * @param txData                Transaction data. The `from` field should be the user Ethereum address who would like
+     *                              to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param sendTxOpts            Optional arguments for sending the transaction.
+     * @return  Transaction hash.
+     */
+    @decorators.asyncZeroExErrorHandler
     public async marketBuyOrdersFillOrKillAsync(
         orders: Order[],
-        takerAssetFillAmount: BigNumber,
+        makerAssetFillAmount: BigNumber,
         signatures: string[],
         txData: TxData,
         sendTxOpts: SendTransactionOpts = { shouldValidate: true },
@@ -263,7 +297,7 @@ export class CoordinatorClient {
         return this._marketBuySellOrdersAsync(
             ExchangeFunctionName.MarketBuyOrdersFillOrKill,
             orders,
-            takerAssetFillAmount,
+            makerAssetFillAmount,
             signatures,
             txData,
             sendTxOpts,
@@ -272,17 +306,18 @@ export class CoordinatorClient {
 
     /**
      * No throw version of marketBuyOrdersFillOrKillAsync
-     * @param   signedOrders         An array of signed orders to fill.
+     * @param   orders               An array of orders to fill.
      * @param   makerAssetFillAmount Maker asset fill amount.
-     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                               Provider provided at instantiation.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
+     * @param   signatures           Signatures corresponding to the orders.
+     * @param   txData               Transaction data. The `from` field should be the user Ethereum address who would like
+     *                               to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts           Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
-
+    @decorators.asyncZeroExErrorHandler
     public async marketBuyOrdersNoThrowAsync(
         orders: Order[],
-        takerAssetFillAmount: BigNumber,
+        makerAssetFillAmount: BigNumber,
         signatures: string[],
         txData: TxData,
         sendTxOpts: SendTransactionOpts = { shouldValidate: true },
@@ -290,13 +325,25 @@ export class CoordinatorClient {
         return this._marketBuySellOrdersAsync(
             ExchangeFunctionName.MarketBuyOrdersNoThrow,
             orders,
-            takerAssetFillAmount,
+            makerAssetFillAmount,
             signatures,
             txData,
             sendTxOpts,
         );
     }
-
+    /**
+     * Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+     * If any fill reverts, the error is caught and ignored. Finally, reverts if < takerAssetFillAmount has been sold.
+     * NOTE: This function does not enforce that the takerAsset is the same for each order.
+     * @param orders                 Array of order specifications.
+     * @param takerAssetFillAmount   Desired amount of takerAsset to sell.
+     * @param signatures             Proofs that orders have been signed by makers.
+     * @param txData                 Transaction data. The `from` field should be the user Ethereum address who would like
+     *                               to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param sendTxOpts             Optional arguments for sending the transaction.
+     * @return  Transaction hash.
+     */
+    @decorators.asyncZeroExErrorHandler
     public async marketSellOrdersFillOrKillAsync(
         orders: Order[],
         takerAssetFillAmount: BigNumber,
@@ -316,13 +363,15 @@ export class CoordinatorClient {
 
     /**
      * No throw version of marketSellOrdersAsync
-     * @param   signedOrders         An array of signed orders to fill.
+     * @param   orders               An array of orders to fill.
      * @param   takerAssetFillAmount Taker asset fill amount.
-     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                               Provider provided at instantiation.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
+     * @param   signatures           Signatures corresponding to the orders.
+     * @param   txData               Transaction data. The `from` field should be the user Ethereum address who would like
+     *                               to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts           Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
+    @decorators.asyncZeroExErrorHandler
     public async marketSellOrdersNoThrowAsync(
         orders: Order[],
         takerAssetFillAmount: BigNumber,
@@ -340,6 +389,21 @@ export class CoordinatorClient {
         );
     }
 
+    /**
+     * Match two complementary orders that have a profitable spread.
+     * Each order is filled at their respective price point. However, the calculations are
+     * carried out as though the orders are both being filled at the right order's price point.
+     * The profit made by the left order goes to the taker (who matched the two orders).
+     * @param leftOrder              First order to match.
+     * @param rightOrder             Second order to match.
+     * @param leftSignature          Proof that order was created by the left maker.
+     * @param rightSignature         Proof that order was created by the right maker.
+     * @param   txData               Transaction data. The `from` field should be the user Ethereum address who would like
+     *                               to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param   sendTxOpts           Optional arguments for sending the transaction.
+     * @return  Transaction hash.
+     */
+    @decorators.asyncZeroExErrorHandler
     public async matchOrdersAsync(
         leftOrder: Order,
         rightOrder: Order,
@@ -361,6 +425,21 @@ export class CoordinatorClient {
             rightSignature,
         );
     }
+    /**
+     * Match complementary orders that have a profitable spread.
+     * Each order is maximally filled at their respective price point, and
+     * the matcher receives a profit denominated in either the left maker asset,
+     * right maker asset, or a combination of both.
+     * @param leftOrders        Set of orders with the same maker / taker asset.
+     * @param rightOrders       Set of orders to match against `leftOrders`
+     * @param leftSignatures    Proof that left orders were created by the left makers.
+     * @param rightSignatures   Proof that right orders were created by the right makers.
+     * @param txData            Transaction data. The `from` field should be the user Ethereum address who would like
+     *                          to fill these orders. Must be available via the Provider supplied at instantiation.
+     * @param sendTxOpts        Optional arguments for sending the transaction.
+     * @return  Transaction hash.
+     */
+    @decorators.asyncZeroExErrorHandler
     public async matchOrdersWithMaximalFillAsync(
         leftOrder: Order,
         rightOrder: Order,
@@ -382,55 +461,16 @@ export class CoordinatorClient {
             rightSignature,
         );
     }
-    public async batchMatchOrdersAsync(
-        leftOrders: Order[],
-        rightOrders: Order[],
-        leftSignatures: string[],
-        rightSignatures: string[],
-        txData: TxData,
-        sendTxOpts: SendTransactionOpts = { shouldValidate: true },
-    ): Promise<string> {
-        assert.doesConformToSchema('leftOrders', leftOrders, schemas.ordersSchema);
-        assert.doesConformToSchema('rightOrders', rightOrders, schemas.ordersSchema);
-        return this._executeTxThroughCoordinatorAsync(
-            ExchangeFunctionName.MatchOrders,
-            txData,
-            sendTxOpts,
-            leftOrders.concat(rightOrders),
-            leftOrders,
-            rightOrders,
-            leftSignatures,
-            rightSignatures,
-        );
-    }
-    public async batchMatchOrdersWithMaximalFillAsync(
-        leftOrders: Order[],
-        rightOrders: Order[],
-        leftSignatures: string[],
-        rightSignatures: string[],
-        txData: TxData,
-        sendTxOpts: SendTransactionOpts = { shouldValidate: true },
-    ): Promise<string> {
-        assert.doesConformToSchema('leftOrders', leftOrders, schemas.ordersSchema);
-        assert.doesConformToSchema('rightOrders', rightOrders, schemas.ordersSchema);
-        return this._executeTxThroughCoordinatorAsync(
-            ExchangeFunctionName.MatchOrdersWithMaximalFill,
-            txData,
-            sendTxOpts,
-            leftOrders.concat(rightOrders),
-            leftOrders,
-            rightOrders,
-            leftSignatures,
-            rightSignatures,
-        );
-    }
 
     /**
      * Cancels an order on-chain by submitting an Ethereum transaction.
-     * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
+     * @param   order       An object that conforms to the Order interface. The order you would like to cancel.
+     * @param   txData      Transaction data. The `from` field should be the maker's Ethereum address. Must be available
+     *                      via the Provider supplied at instantiation.
+     * @param   sendTxOpts  Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
+    @decorators.asyncZeroExErrorHandler
     public async hardCancelOrderAsync(
         order: Order,
         txData: TxData,
@@ -449,10 +489,13 @@ export class CoordinatorClient {
     /**
      * Batch version of hardCancelOrderAsync. Cancels orders on-chain by submitting an Ethereum transaction.
      * Executes multiple cancels atomically in a single transaction.
-     * @param   orders                An array of orders to cancel.
-     * @param   sendTxOpts  Optional arguments for sending the transaction
+     * @param   orders      An array of orders to cancel.
+     * @param   txData      Transaction data. The `from` field should be the maker's Ethereum address. Must be available
+     *                      via the Provider supplied at instantiation.
+     * @param   sendTxOpts  Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
+    @decorators.asyncZeroExErrorHandler
     public async batchHardCancelOrdersAsync(
         orders: Order[],
         txData: TxData,
@@ -472,11 +515,13 @@ export class CoordinatorClient {
      * Cancels orders on-chain by submitting an Ethereum transaction.
      * Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
      * and senderAddress equal to coordinator extension contract address.
-     * @param   targetOrderEpoch             Target order epoch.
-     * @param   senderAddress                Address that should send the transaction.
-     * @param   orderTransactionOpts         Optional arguments this method accepts.
+     * @param   targetOrderEpoch    Target order epoch.
+     * @param   txData              Transaction data. The `from` field should be the maker's Ethereum address. Must be available
+     *                              via the Provider supplied at instantiation.
+     * @param   sendTxOpts          Optional arguments for sending the transaction.
      * @return  Transaction hash.
      */
+    @decorators.asyncZeroExErrorHandler
     public async hardCancelOrdersUpToAsync(
         targetOrderEpoch: BigNumber,
         txData: TxData,
@@ -498,6 +543,7 @@ export class CoordinatorClient {
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
      * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
      */
+    @decorators.asyncZeroExErrorHandler
     public async softCancelAsync(order: Order): Promise<CoordinatorServerCancellationResponse> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
         assert.isETHAddressHex('feeRecipientAddress', order.feeRecipientAddress);
@@ -532,6 +578,7 @@ export class CoordinatorClient {
      * @param   orders                An array of orders to cancel.
      * @return  CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
      */
+    @decorators.asyncZeroExErrorHandler
     public async batchSoftCancelAsync(orders: SignedOrder[]): Promise<CoordinatorServerCancellationResponse[]> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         const makerAddress = getMakerAddressOrThrow(orders);
@@ -584,6 +631,7 @@ export class CoordinatorClient {
      * @param signature Proof that the hash has been signed by signer.
      * @returns Signer address.
      */
+    @decorators.asyncZeroExErrorHandler
     public async getSignerAddressAsync(hash: string, signature: string): Promise<string> {
         assert.isHexString('hash', hash);
         assert.isHexString('signature', signature);
@@ -665,12 +713,10 @@ export class CoordinatorClient {
         return txHash;
     }
 
-    // todo (xianny): allow to pass in expiration time
     private async _generateSignedZeroExTransactionAsync(
         data: string,
         signerAddress: string,
     ): Promise<SignedZeroExTransaction> {
-        const oneMinute = 1 * 60;
         const transaction: ZeroExTransaction = {
             salt: generatePseudoRandomSalt(),
             signerAddress,
@@ -679,7 +725,11 @@ export class CoordinatorClient {
                 verifyingContract: this.exchangeAddress,
                 chainId: await this._web3Wrapper.getChainIdAsync(),
             },
-            expirationTimeSeconds: new BigNumber(Math.floor(Date.now() / 1000) + oneMinute),
+            expirationTimeSeconds: new BigNumber(
+                Math.floor(Date.now() / 1000) +
+                    DEFAULT_APPROVAL_EXPIRATION_TIME_SECONDS -
+                    DEFAULT_EXPIRATION_TIME_BUFFER_SECONDS,
+            ),
             gasPrice: new BigNumber(1),
         };
         const signedZrxTx = await signatureUtils.ecSignTransactionAsync(
