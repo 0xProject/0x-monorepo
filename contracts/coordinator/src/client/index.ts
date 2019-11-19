@@ -2,12 +2,13 @@ import { SendTransactionOpts } from '@0x/base-contract';
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { ExchangeFunctionName } from '@0x/contracts-test-utils';
+import { devConstants } from '@0x/dev-utils';
 import { schemas } from '@0x/json-schemas';
 import { generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
 import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { ContractAbi, SupportedProvider, TxData } from 'ethereum-types';
+import { CallData, ContractAbi, SupportedProvider, TxData } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
 import { flatten } from 'lodash';
 
@@ -22,14 +23,16 @@ import {
     CoordinatorServerErrorMsg,
     CoordinatorServerResponse,
 } from './utils/coordinator_server_types';
-export {
-    CoordinatorServerApprovalResponse,
-    CoordinatorServerCancellationResponse,
-    CoordinatorServerError,
-    CoordinatorServerErrorMsg,
-    CoordinatorServerResponse,
-};
+
 import { decorators } from './utils/decorators';
+
+export { CoordinatorServerErrorMsg };
+
+const DEFAULT_TX_DATA = {
+    gas: devConstants.GAS_LIMIT,
+    gasPrice: new BigNumber(1),
+    value: new BigNumber(150000), // DEFAULT_PROTOCOL_FEE_MULTIPLIER
+};
 
 /**
  * This class includes all the functionality related to filling or cancelling orders through
@@ -56,6 +59,7 @@ export class CoordinatorClient {
     private readonly _registryInstance: CoordinatorRegistryContract;
     private readonly _exchangeInstance: ExchangeContract;
     private readonly _feeRecipientToEndpoint: { [feeRecipient: string]: string } = {};
+    private readonly _txDefaults: CallData = DEFAULT_TX_DATA;
 
     /**
      * Instantiate CoordinatorClient
@@ -69,9 +73,10 @@ export class CoordinatorClient {
      * default to the known address corresponding to the chainId.
      */
     constructor(
+        address: string,
         provider: SupportedProvider,
         chainId: number,
-        address?: string,
+        txDefaults?: Partial<TxData>,
         exchangeAddress?: string,
         registryAddress?: string,
     ) {
@@ -81,7 +86,7 @@ export class CoordinatorClient {
         this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
         this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
         this._web3Wrapper = new Web3Wrapper(provider);
-
+        this._txDefaults = { ...txDefaults, ...DEFAULT_TX_DATA };
         this._contractInstance = new CoordinatorContract(
             this.address,
             this._web3Wrapper.getProvider(),
@@ -650,12 +655,17 @@ export class CoordinatorClient {
         const approvalSignatures = await this._getApprovalsAsync(signedZrxTx, ordersNeedingApprovals, txData.from);
 
         // execute the transaction through the Coordinator Contract
+        const txDataWithDefaults = {
+            ...this._txDefaults,
+            ...txData, // override defaults
+        };
         const txHash = this._contractInstance
             .executeTransaction(signedZrxTx, txData.from, signedZrxTx.signature, approvalSignatures)
-            .sendTransactionAsync(txData, sendTxOpts);
+            .sendTransactionAsync(txDataWithDefaults, sendTxOpts);
         return txHash;
     }
 
+    // todo (xianny): allow to pass in expiration time
     private async _generateSignedZeroExTransactionAsync(
         data: string,
         signerAddress: string,

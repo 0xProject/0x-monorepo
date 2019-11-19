@@ -7,26 +7,25 @@ import { devConstants, tokenUtils } from '@0x/dev-utils';
 import { runMigrationsOnceAsync } from '@0x/migrations';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, fetchAsync, logUtils } from '@0x/utils';
-import * as http from 'http';
 import * as nock from 'nock';
 
 import { CoordinatorClient, CoordinatorRegistryContract, CoordinatorServerErrorMsg } from '@0x/contracts-coordinator';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 
 const coordinatorPort = '3000';
 const anotherCoordinatorPort = '4000';
 const coordinatorEndpoint = 'http://localhost:';
 
+const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
+
 // tslint:disable:custom-no-magic-numbers
-// TODO (xianny): coordinator server must be updated to take new SignedOrder format. it returns all errors at the moment
 blockchainTests('Coordinator Client', env => {
-    const takerTokenFillAmount = new BigNumber(5);
+    const takerTokenFillAmount = new BigNumber(0);
     const chainId = 1337;
     const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
 
     let contractAddresses: ContractAddresses;
     let coordinatorRegistry: CoordinatorRegistryContract;
-    let coordinatorServerApp: http.Server;
-    let anotherCoordinatorServerApp: http.Server;
     let coordinatorClient: CoordinatorClient;
     let orderFactory: OrderFactory;
     let userAddresses: string[];
@@ -36,13 +35,12 @@ blockchainTests('Coordinator Client', env => {
     let feeRecipientAddressTwo: string;
     let feeRecipientAddressThree: string;
     let feeRecipientAddressFour: string;
-
-    let makerTokenAddress: string;
-    let takerTokenAddress: string;
-    let feeTokenAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
     let feeAssetData: string;
+
+    let makerToken: DummyERC20TokenContract;
+    let takerToken: DummyERC20TokenContract;
     let txHash: string;
     let signedOrder: SignedOrder;
     let anotherSignedOrder: SignedOrder;
@@ -59,9 +57,10 @@ blockchainTests('Coordinator Client', env => {
         });
 
         coordinatorClient = new CoordinatorClient(
+            contractAddresses.coordinator,
             env.provider,
             chainId,
-            contractAddresses.coordinator,
+            {}, // txDefaults
             contractAddresses.exchange,
             contractAddresses.coordinatorRegistry,
         );
@@ -77,13 +76,18 @@ blockchainTests('Coordinator Client', env => {
             feeRecipientAddressFour,
         ] = userAddresses.slice(0, 7);
 
-        [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
-        feeTokenAddress = contractAddresses.zrxToken;
+        // declare encoded asset data
+        const [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
+        const feeTokenAddress = contractAddresses.zrxToken;
         [makerAssetData, takerAssetData, feeAssetData] = [
             assetDataEncoder.ERC20Token(makerTokenAddress).getABIEncodedTransactionData(),
             assetDataEncoder.ERC20Token(takerTokenAddress).getABIEncodedTransactionData(),
             assetDataEncoder.ERC20Token(feeTokenAddress).getABIEncodedTransactionData(),
         ];
+
+        // set initial balances
+        makerToken = new DummyERC20TokenContract(makerTokenAddress, env.provider);
+        takerToken = new DummyERC20TokenContract(takerTokenAddress, env.provider);
 
         // Configure order defaults
         const defaultOrderParams = {
@@ -136,7 +140,7 @@ blockchainTests('Coordinator Client', env => {
             ['coord_server_1', coordinatorPort],
             ['coord_server_2', anotherCoordinatorPort],
         ];
-        [coordinatorServerApp, anotherCoordinatorServerApp] = await Promise.all(
+        await Promise.all(
             serverScenarios.map(async ([name, port]) => {
                 const app = await getAppAsync(
                     {
@@ -183,6 +187,8 @@ blockchainTests('Coordinator Client', env => {
         signedOrderWithDifferentCoordinatorOperator = await orderFactory.newSignedOrderAsync({
             feeRecipientAddress: feeRecipientAddressThree,
         });
+        makerToken.setBalance(makerAddress, constants.INITIAL_ERC20_BALANCE);
+        takerToken.setBalance(takerAddress, constants.INITIAL_ERC20_BALANCE);
     });
     describe('test setup', () => {
         it('should have coordinator registry which returns an endpoint', async () => {
@@ -206,7 +212,7 @@ blockchainTests('Coordinator Client', env => {
         });
     });
     // fill handling is the same for all fill methods so we can test them all through the fillOrder and batchFillOrders interfaces
-    describe.skip('#fillOrderAsync', () => {
+    describe('#fillOrderAsync', () => {
         it('should fill a valid order', async () => {
             txHash = await coordinatorClient.fillOrderAsync(
                 signedOrder,
@@ -215,11 +221,10 @@ blockchainTests('Coordinator Client', env => {
                 { from: takerAddress },
                 { shouldValidate: true },
             );
-
             await env.web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         });
     });
-    describe.skip('#batchFillOrdersAsync', () => {
+    describe('#batchFillOrdersAsync', () => {
         it('should fill a batch of valid orders', async () => {
             const signedOrders = [signedOrder, anotherSignedOrder];
             const takerAssetFillAmounts = Array(2).fill(takerTokenFillAmount);
@@ -227,7 +232,7 @@ blockchainTests('Coordinator Client', env => {
                 signedOrders,
                 takerAssetFillAmounts,
                 signedOrders.map(o => o.signature),
-                { from: takerAddress },
+                { from: takerAddress, value: DEFAULT_PROTOCOL_FEE_MULTIPLIER.times(signedOrders.length) },
             );
 
             await env.web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
@@ -239,7 +244,7 @@ blockchainTests('Coordinator Client', env => {
                 signedOrders,
                 takerAssetFillAmounts,
                 signedOrders.map(o => o.signature),
-                { from: takerAddress },
+                { from: takerAddress, value: DEFAULT_PROTOCOL_FEE_MULTIPLIER.times(signedOrders.length) },
             );
 
             await env.web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
@@ -275,7 +280,7 @@ blockchainTests('Coordinator Client', env => {
                 signedOrders,
                 takerAssetFillAmounts,
                 signedOrders.map(o => o.signature),
-                { from: takerAddress },
+                { from: takerAddress, value: DEFAULT_PROTOCOL_FEE_MULTIPLIER.multipliedBy(signedOrders.length) },
             );
             await env.web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         });
@@ -315,7 +320,7 @@ blockchainTests('Coordinator Client', env => {
             expect(response[1].cancellationSignatures).to.have.lengthOf(3); // both coordinator servers support the same feeRecipients
         });
     });
-    describe.skip('#hardCancelOrderAsync, #batchHardCancelOrdersAsync, #cancelOrdersUpToAsync', () => {
+    describe('#hardCancelOrderAsync, #batchHardCancelOrdersAsync, #cancelOrdersUpToAsync', () => {
         it('should hard cancel a valid order', async () => {
             txHash = await coordinatorClient.hardCancelOrderAsync(signedOrder, { from: makerAddress });
             await env.web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
@@ -338,54 +343,59 @@ blockchainTests('Coordinator Client', env => {
         });
     });
     describe('coordinator edge cases', () => {
-        it('should throw error when feeRecipientAddress is not in registry', async () => {
-            const badOrder = await orderFactory.newSignedOrderAsync({
+        let badOrder: SignedOrder;
+        beforeEach('setup order with non-registered feeRecipient', async () => {
+            badOrder = await orderFactory.newSignedOrderAsync({
                 feeRecipientAddress: feeRecipientAddressFour,
             });
-
-            expect(
+        });
+        it('should throw error when feeRecipientAddress is not in registry', async () => {
+            await expect(
                 coordinatorClient.fillOrderAsync(badOrder, takerTokenFillAmount, badOrder.signature, {
                     from: takerAddress,
                 }),
-            ).to.be.rejected();
+            ).to.eventually.be.rejected();
         });
-        it('should throw error when coordinator endpoint is malformed', async () => {
+        it('should throw informative error when coordinator endpoint does not work', async () => {
             await env.web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorRegistry.setCoordinatorEndpoint('localhost').sendTransactionAsync({
+                await coordinatorRegistry.setCoordinatorEndpoint('http://badUri.com').sendTransactionAsync({
                     from: feeRecipientAddressFour,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            expect(
-                coordinatorClient.fillOrderAsync(signedOrder, takerTokenFillAmount, signedOrder.signature, {
+            await expect(
+                coordinatorClient.fillOrderAsync(badOrder, takerTokenFillAmount, badOrder.signature, {
                     from: takerAddress,
                 }),
-            ).to.be.rejected();
+            ).to.eventually.be.rejectedWith(CoordinatorServerErrorMsg.FillFailed);
         });
     });
-    describe.skip('coordinator server errors', () => {
+    describe('coordinator server errors', () => {
         serverValidationError = {
-            code: 100,
-            reason: 'Validation Failed',
+            code: 1004,
+            reason: '',
             validationErrors: [
                 {
                     field: 'signedTransaction',
-                    code: 1011,
+                    code: 1004,
                     reason:
                         'A transaction can only be approved once. To request approval to perform the same actions, generate and sign an identical transaction with a different salt value.',
                 },
             ],
         };
-        before('setup', () => {
+        beforeEach(async () => {
             nock(`${coordinatorEndpoint}${coordinatorPort}`)
-                .post('/v2/request_transaction', body => true)
+                .post('/v2/request_transaction', () => true)
                 .query({
                     chainId: 1337,
                 })
                 .reply(400, serverValidationError);
         });
-        it('should throw error when softCancel fails', done => {
-            coordinatorClient
+        afterEach(async () => {
+            nock.cleanAll();
+        });
+        it('should throw error when softCancel fails', async () => {
+            await coordinatorClient
                 .softCancelAsync(signedOrder)
                 .then(res => {
                     expect(res).to.be.undefined();
@@ -401,13 +411,12 @@ blockchainTests('Coordinator Client', env => {
                     expect(errorBody.error).to.deep.equal(serverValidationError);
                     expect(errorBody.orders).to.deep.equal([signedOrder]);
                     expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                    done();
                 });
         });
 
-        it('should throw error when batch soft cancel fails with single coordinator operator', done => {
+        it('should throw error when batch soft cancel totally fails with single coordinator operator', async () => {
             const orders = [signedOrder, signedOrderWithDifferentFeeRecipient];
-            coordinatorClient
+            await coordinatorClient
                 .batchSoftCancelAsync(orders)
                 .then(res => {
                     expect(res).to.be.undefined();
@@ -423,10 +432,9 @@ blockchainTests('Coordinator Client', env => {
                     expect(errorBody.error).to.deep.equal(serverValidationError);
                     expect(errorBody.orders).to.deep.equal(orders);
                     expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                    done();
                 });
         });
-        it('should throw consolidated error when batch soft cancel partially fails with different coordinator operators', done => {
+        it('should throw consolidated error when batch soft cancel partially fails with different coordinator operators', async () => {
             const serverCancellationSuccess = {
                 outstandingFillSignatures: [
                     {
@@ -443,14 +451,14 @@ blockchainTests('Coordinator Client', env => {
                 ],
             };
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
-                .post('/v1/request_transaction', () => true)
+                .post('/v2/request_transaction', () => true)
                 .query({
                     chainId: 1337,
                 })
                 .reply(200, serverCancellationSuccess);
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
-            coordinatorClient
+            await coordinatorClient
                 .batchSoftCancelAsync(signedOrders)
                 .then(res => {
                     expect(res).to.be.undefined();
@@ -466,19 +474,18 @@ blockchainTests('Coordinator Client', env => {
                     expect(errorBody.error).to.deep.equal(serverValidationError);
                     expect(errorBody.orders).to.deep.equal([signedOrder]);
                     expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                    done();
                 });
         });
-        it('should throw consolidated error when batch soft cancel totally fails with different coordinator operators', done => {
+        it('should throw consolidated error when batch soft cancel totally fails with different coordinator operators', async () => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
-                .post('/v1/request_transaction', () => true)
+                .post('/v2/request_transaction', () => true)
                 .query({
                     chainId: 1337,
                 })
                 .reply(400, serverValidationError);
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
-            coordinatorClient
+            await coordinatorClient
                 .batchSoftCancelAsync(signedOrders)
                 .then(res => {
                     expect(res).to.be.undefined();
@@ -503,11 +510,10 @@ blockchainTests('Coordinator Client', env => {
                     expect(anotherErrorBody.coordinatorOperator).to.equal(
                         `${coordinatorEndpoint}${anotherCoordinatorPort}`,
                     );
-                    done();
                 });
         });
-        it('should throw error when a fill fails', done => {
-            coordinatorClient
+        it('should throw error when a fill fails', async () => {
+            await coordinatorClient
                 .fillOrderAsync(signedOrder, takerTokenFillAmount, signedOrder.signature, { from: takerAddress })
                 .then(res => {
                     expect(res).to.be.undefined();
@@ -523,13 +529,12 @@ blockchainTests('Coordinator Client', env => {
                     expect(errorBody.error).to.deep.equal(serverValidationError);
                     expect(errorBody.orders).to.deep.equal([signedOrder]);
                     expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                    done();
                 });
         });
-        it('should throw error when batch fill fails with single coordinator operator', done => {
+        it('should throw error when batch fill fails with single coordinator operator', async () => {
             const signedOrders = [signedOrder, signedOrderWithDifferentFeeRecipient];
             const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
-            coordinatorClient
+            await coordinatorClient
                 .batchFillOrdersAsync(signedOrders, takerAssetFillAmounts, signedOrders.map(o => o.signature), {
                     from: takerAddress,
                 })
@@ -547,10 +552,9 @@ blockchainTests('Coordinator Client', env => {
                     expect(errorBody.error).to.deep.equal(serverValidationError);
                     expect(errorBody.orders).to.deep.equal(signedOrders);
                     expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                    done();
                 });
         });
-        it('should throw consolidated error when batch fill partially fails with different coordinator operators', done => {
+        it('should throw consolidated error when batch fill partially fails with different coordinator operators', async () => {
             const serverApprovalSuccess = {
                 signatures: [
                     '0x1cc07d7ae39679690a91418d46491520f058e4fb14debdf2e98f2376b3970de8512ace44af0be6d1c65617f7aae8c2364ff63f241515ee1559c3eeecb0f671d9e903',
@@ -558,7 +562,7 @@ blockchainTests('Coordinator Client', env => {
                 expirationTimeSeconds: 1552390014,
             };
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
-                .post('/v1/request_transaction', () => true)
+                .post('/v2/request_transaction', () => true)
                 .query({
                     chainId: 1337,
                 })
@@ -566,7 +570,7 @@ blockchainTests('Coordinator Client', env => {
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
             const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
-            coordinatorClient
+            await coordinatorClient
                 .batchFillOrdersAsync(signedOrders, takerAssetFillAmounts, signedOrders.map(o => o.signature), {
                     from: takerAddress,
                 })
@@ -584,12 +588,11 @@ blockchainTests('Coordinator Client', env => {
                     expect(errorBody.error).to.deep.equal(serverValidationError);
                     expect(errorBody.orders).to.deep.equal([signedOrder]);
                     expect(errorBody.coordinatorOperator).to.equal(`${coordinatorEndpoint}${coordinatorPort}`);
-                    done();
                 });
         });
-        it('should throw consolidated error when batch fill totally fails with different coordinator operators', done => {
+        it('should throw consolidated error when batch fill totally fails with different coordinator operators', async () => {
             nock(`${coordinatorEndpoint}${anotherCoordinatorPort}`)
-                .post('/v1/request_transaction', () => true)
+                .post('/v2/request_transaction', () => true)
                 .query({
                     chainId: 1337,
                 })
@@ -597,7 +600,7 @@ blockchainTests('Coordinator Client', env => {
 
             const signedOrders = [signedOrder, signedOrderWithDifferentCoordinatorOperator];
             const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount, takerTokenFillAmount];
-            coordinatorClient
+            await coordinatorClient
                 .batchFillOrdersAsync(signedOrders, takerAssetFillAmounts, signedOrders.map(o => o.signature), {
                     from: takerAddress,
                 })
@@ -624,7 +627,6 @@ blockchainTests('Coordinator Client', env => {
                     expect(anotherErrorBody.coordinatorOperator).to.equal(
                         `${coordinatorEndpoint}${anotherCoordinatorPort}`,
                     );
-                    done();
                 });
         });
     });
