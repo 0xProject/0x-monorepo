@@ -81,7 +81,7 @@ export const swapQuoteConsumerUtils = {
             }
             const ethAmount =
                 opts.ethAmount ||
-                quote.worstCaseQuoteInfo.takerAssetAmount.plus(quote.worstCaseQuoteInfo.protocolFeeInEthAmount);
+                quote.worstCaseQuoteInfo.takerAssetAmount.plus(quote.worstCaseQuoteInfo.protocolFeeInWeiAmount);
             const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
             const takerEthAndWethBalance =
                 takerAddress !== undefined

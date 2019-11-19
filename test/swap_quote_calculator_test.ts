@@ -152,14 +152,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount,
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(3),
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(0),
                 takerAssetAmount: assetSellAmount,
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(3),
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
         });
         it('calculates a correct swapQuote with slippage (feeless orders)', async () => {
@@ -185,14 +185,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount,
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(6),
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(0),
                 takerAssetAmount: assetSellAmount,
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(0.4),
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
         it('calculates a correct swapQuote with no slippage (takerAsset denominated fee orders)', async () => {
@@ -214,14 +214,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(3)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(6),
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(3),
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(3)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(6),
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
         });
         it('calculates a correct swapQuote with slippage (takerAsset denominated fee orders)', async () => {
@@ -246,14 +246,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2.25)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(4.5),
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(0.5),
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(0.5)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(1),
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
         it('calculates a correct swapQuote with no slippage (makerAsset denominated fee orders)', async () => {
@@ -275,14 +275,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(0.8),
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(2),
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(0.8),
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
         });
         it('calculates a correct swapQuote with slippage (makerAsset denominated fee orders)', async () => {
@@ -308,14 +308,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(0.8),
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(2),
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(3.6),
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
     });
@@ -437,14 +437,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: baseUnitAmount(0.5),
                 totalTakerAssetAmount: baseUnitAmount(0.5),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(0),
                 takerAssetAmount: baseUnitAmount(0.5),
                 totalTakerAssetAmount: baseUnitAmount(0.5),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
         });
         it('calculates a correct swapQuote with slippage (feeless orders)', async () => {
@@ -474,14 +474,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount,
                 totalTakerAssetAmount: takerAssetAmount,
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(0),
                 takerAssetAmount: baseUnitAmount(5.5),
                 totalTakerAssetAmount: baseUnitAmount(5.5),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
         it('calculates a correct swapQuote with no slippage (takerAsset denominated fee orders)', async () => {
@@ -503,14 +503,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: baseUnitAmount(0.5),
                 totalTakerAssetAmount: baseUnitAmount(2),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(1.5),
                 takerAssetAmount: baseUnitAmount(0.5),
                 totalTakerAssetAmount: baseUnitAmount(2),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
         });
         it('calculates a correct swapQuote with slippage (takerAsset denominated fee orders)', async () => {
@@ -539,14 +539,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: fiveSixthEthInWei,
                 totalTakerAssetAmount: baseUnitAmount(2.5).plus(fiveSixthEthInWei),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(2.5),
                 takerAssetAmount: baseUnitAmount(5.5),
                 totalTakerAssetAmount: baseUnitAmount(8),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
         it('calculates a correct swapQuote with no slippage (makerAsset denominated fee orders)', async () => {
@@ -568,14 +568,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: baseUnitAmount(2.5),
                 totalTakerAssetAmount: baseUnitAmount(5),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(2.5),
                 takerAssetAmount: baseUnitAmount(2.5),
                 totalTakerAssetAmount: baseUnitAmount(5),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
             });
         });
         it('calculates a correct swapQuote with slippage (makerAsset denominated fee orders)', async () => {
@@ -605,14 +605,14 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: baseUnitAmount(2.75),
                 totalTakerAssetAmount: baseUnitAmount(5.5),
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
             expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: totalTakerAssetAmount.div(2),
                 takerAssetAmount: totalTakerAssetAmount.div(2),
                 totalTakerAssetAmount,
                 makerAssetAmount: assetBuyAmount,
-                protocolFeeInEthAmount: baseUnitAmount(30, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
     });

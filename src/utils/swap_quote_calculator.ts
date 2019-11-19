@@ -205,13 +205,13 @@ async function calculateMarketSellQuoteInfoAsync(
             remainingTakerAssetFillAmount: takerAssetSellAmount,
         },
     );
-    const protocolFeeInEthAmount = await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
+    const protocolFeeInWeiAmount = await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
     return {
         feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
         takerAssetAmount: result.totalTakerAssetAmount,
         totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
         makerAssetAmount: result.totalMakerAssetAmount,
-        protocolFeeInEthAmount,
+        protocolFeeInWeiAmount,
     };
 }
 
@@ -260,13 +260,13 @@ async function calculateMarketBuyQuoteInfoAsync(
             remainingMakerAssetFillAmount: makerAssetBuyAmount,
         },
     );
-    const protocolFeeInEthAmount = await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
+    const protocolFeeInWeiAmount = await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
     return {
         feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
         takerAssetAmount: result.totalTakerAssetAmount,
         totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
         makerAssetAmount: result.totalMakerAssetAmount,
-        protocolFeeInEthAmount,
+        protocolFeeInWeiAmount,
     };
 }
 

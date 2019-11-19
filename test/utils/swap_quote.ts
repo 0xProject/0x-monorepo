@@ -29,7 +29,7 @@ export const getFullyFillableSwapQuoteWithNoFeesAsync = async (
         feeTakerAssetAmount: constants.ZERO_AMOUNT,
         takerAssetAmount: totalTakerAssetAmount,
         totalTakerAssetAmount,
-        protocolFeeInEthAmount: await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(orders, gasPrice),
+        protocolFeeInWeiAmount: await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(orders, gasPrice),
     };
 
     const quoteBase = {

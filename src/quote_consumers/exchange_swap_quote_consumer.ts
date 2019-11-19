@@ -111,7 +111,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             params,
             toAddress: this._exchangeContract.address,
             methodAbi,
-            ethAmount: quote.worstCaseQuoteInfo.protocolFeeInEthAmount,
+            ethAmount: quote.worstCaseQuoteInfo.protocolFeeInWeiAmount,
         };
     }
 

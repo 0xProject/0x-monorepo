@@ -240,14 +240,14 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
  * takerAssetAmount: The amount of takerAsset swapped for desired makerAsset.
  * totalTakerAssetAmount: The total amount of takerAsset required to complete the swap (filling orders, and paying takerFees).
  * makerAssetAmount: The amount of makerAsset that will be acquired through the swap.
- * protocolFeeInEthAmount: The amount of eth to pay as protocol fee to perform the swap for desired asset.
+ * protocolFeeInWeiAmount: The amount of ETH to pay (in WEI) as protocol fee to perform the swap for desired asset.
  */
 export interface SwapQuoteInfo {
     feeTakerAssetAmount: BigNumber;
     takerAssetAmount: BigNumber;
     totalTakerAssetAmount: BigNumber;
     makerAssetAmount: BigNumber;
-    protocolFeeInEthAmount: BigNumber;
+    protocolFeeInWeiAmount: BigNumber;
 }
 
 /**
