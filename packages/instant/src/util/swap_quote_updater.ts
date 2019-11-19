@@ -2,7 +2,6 @@ import { MarketBuySwapQuote, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
 import { ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE, ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE } from '../constants';
@@ -13,6 +12,7 @@ import { analytics } from './analytics';
 import { assetUtils } from './asset';
 import { errorFlasher } from './error_flasher';
 import { errorReporter } from './error_reporter';
+import { gasPriceEstimator } from './gas_price_estimator';
 
 export const swapQuoteUpdater = {
     updateSwapQuoteAsync: async (
@@ -42,12 +42,14 @@ export const swapQuoteUpdater = {
                 ? ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE
                 : ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE;
         try {
-            newSwapQuote = await swapQuoter.getMarketBuySwapQuoteAsync(
-                wethAssetData,
+            const gasInfo = await gasPriceEstimator.getGasInfoAsync();
+            newSwapQuote = await swapQuoter.getMarketBuySwapQuoteForAssetDataAsync(
                 asset.assetData,
-                assetUnitAmount,
+                wethAssetData,
+                baseUnitValue,
                 {
                     slippagePercentage,
+                    gasPrice: gasInfo.gasPriceInWei,
                 },
             );
         } catch (error) {
