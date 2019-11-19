@@ -139,9 +139,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         }
         const methodAbi = utils.getMethodAbiFromContractAbi(this._forwarder.abi, methodName) as MethodAbi;
 
-        const ethAmountWithFees = affiliateFeeUtils
-            .getTotalEthAmountWithAffiliateFee(worstCaseQuoteInfo, feePercentage)
-            .plus(worstCaseQuoteInfo.protocolFeeInEthAmount);
+        const ethAmountWithFees = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(
+            worstCaseQuoteInfo,
+            feePercentage,
+        );
         return {
             params,
             toAddress: this._forwarder.address,
@@ -187,9 +188,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
         // if no ethAmount is provided, default to the worst totalTakerAssetAmount
-        const ethAmountWithFees = affiliateFeeUtils
-            .getTotalEthAmountWithAffiliateFee(worstCaseQuoteInfo, feePercentage)
-            .plus(worstCaseQuoteInfo.protocolFeeInEthAmount);
+        const ethAmountWithFees = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(
+            worstCaseQuoteInfo,
+            feePercentage,
+        );
         // format fee percentage
         const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         let txHash: string;
