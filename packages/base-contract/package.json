@@ -55,7 +55,6 @@
         "ethereumjs-vm": "^4.0.0",
         "ethers": "~4.0.4",
         "js-sha3": "^0.7.0",
-        "lodash": "^4.17.11",
         "uuid": "^3.3.2"
     },
     "publishConfig": {

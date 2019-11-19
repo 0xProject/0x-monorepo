@@ -2,47 +2,15 @@ async callAsync(
     callData: Partial<CallData> = {},
     defaultBlock?: BlockParam,
 ): Promise<{{> return_type outputs=outputs}}> {
-    assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-        schemas.addressSchema,
-        schemas.numberSchema,
-        schemas.jsNumber,
-    ]);
-    if (defaultBlock !== undefined) {
-        assert.isBlockParam('defaultBlock', defaultBlock);
-    }
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
-    let rawCallResult;
-
+    BaseContract._assertCallParams(callData, defaultBlock);
     {{#ifEquals this.stateMutability "pure"}}
-    const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
-    try {
-        rawCallResult = await self._evmExecAsync(encodedDataBytes);
+    const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
     {{else}}
-    const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-        {
-            to: self.address,
-            ...callData,
-            data: encodedData,
-        },
-        self._web3Wrapper.getContractDefaults(),
-    );
-    callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
-    try {
-        rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+    const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
     {{/ifEquals}}
-    } catch (err) {
-        BaseContract._throwIfThrownErrorIsRevertError(err);
-        throw err;
-    }
-
-    BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
-    // tslint:disable boolean-naming
-    const result = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
-    // tslint:enable boolean-naming
-    return result;
+    const abiEncoder = self._lookupAbiEncoder(functionSignature);
+    return abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
 },
 getABIEncodedTransactionData(): string {
-    const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
-    return abiEncodedTransactionData;
+    return self._strictEncodeArguments(functionSignature, [{{> normalized_params inputs=inputs}}]);
 },

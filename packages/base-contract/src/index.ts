@@ -14,12 +14,14 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
     AbiType,
+    BlockParam,
     CallData,
     ConstructorAbi,
     ContractAbi,
     DataItem,
     MethodAbi,
     SupportedProvider,
+    TransactionReceiptWithDecodedLogs,
     TxData,
     TxDataPayable,
 } from 'ethereum-types';
@@ -27,10 +29,10 @@ import Account from 'ethereumjs-account';
 import * as util from 'ethereumjs-util';
 import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
-import * as _ from 'lodash';
 
 export { methodAbiToFunctionSignature } from './utils';
 
+import { AwaitTransactionSuccessOpts } from './types';
 import { formatABIDataItem } from './utils';
 
 export { SubscriptionManager } from './subscription_manager';
@@ -97,7 +99,7 @@ export class BaseContract {
         values: any[],
         formatter: (type: string, value: any) => any,
     ): any {
-        return _.map(values, (value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
+        return values.map((value: any, i: number) => formatABIDataItem(abis[i], value, formatter));
     }
     protected static _lowercaseAddress(type: string, value: string): string {
         return type === 'address' ? value.toLowerCase() : value;
@@ -106,8 +108,7 @@ export class BaseContract {
         return BigNumber.isBigNumber(value) ? value.toString() : value;
     }
     protected static _lookupConstructorAbi(abi: ContractAbi): ConstructorAbi {
-        const constructorAbiIfExists = _.find(
-            abi,
+        const constructorAbiIfExists = abi.find(
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Constructor,
             // tslint:disable-next-line:no-unnecessary-type-assertion
         ) as ConstructorAbi | undefined;
@@ -124,26 +125,6 @@ export class BaseContract {
             };
             return defaultConstructorAbi;
         }
-    }
-    protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
-        txData: T,
-        txDefaults: Partial<TxData> | undefined,
-        estimateGasAsync?: (txData: T) => Promise<number>,
-    ): Promise<TxData> {
-        // Gas amount sourced with the following priorities:
-        // 1. Optional param passed in to public method call
-        // 2. Global config passed in at library instantiation
-        // 3. Gas estimate calculation + safety margin
-        const removeUndefinedProperties = _.pickBy.bind(_);
-        const finalTxDefaults: Partial<TxData> = txDefaults || {};
-        const txDataWithDefaults = {
-            ...removeUndefinedProperties(finalTxDefaults),
-            ...removeUndefinedProperties(txData),
-        };
-        if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
-            txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
-        }
-        return txDataWithDefaults;
     }
     protected static _throwIfCallResultIsRevertError(rawCallResult: string): void {
         // Try to decode the call result as a revert error.
@@ -193,7 +174,74 @@ export class BaseContract {
         }
         return rawEncoded;
     }
-    protected async _evmExecAsync(input: Buffer): Promise<string> {
+    protected static async _applyDefaultsToContractTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
+        txData: T,
+        estimateGasAsync?: (txData: T) => Promise<number>,
+    ): Promise<TxData> {
+        const txDataWithDefaults = BaseContract._removeUndefinedProperties<T>(txData);
+        if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
+            txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
+        }
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        return txDataWithDefaults as TxData;
+    }
+    protected static _assertCallParams(callData: Partial<CallData>, defaultBlock?: BlockParam): void {
+        assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
+        if (defaultBlock !== undefined) {
+            assert.isBlockParam('defaultBlock', defaultBlock);
+        }
+    }
+    private static _removeUndefinedProperties<T>(props: any): T {
+        const clonedProps = { ...props };
+        Object.keys(clonedProps).forEach(key => clonedProps[key] === undefined && delete clonedProps[key]);
+        return clonedProps;
+    }
+    protected _promiseWithTransactionHash(
+        txHashPromise: Promise<string>,
+        opts: AwaitTransactionSuccessOpts,
+    ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return this._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    opts.pollingIntervalMs,
+                    opts.timeoutMs,
+                );
+            })(),
+        );
+    }
+    protected async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
+        txData: T,
+        estimateGasAsync?: (txData: T) => Promise<number>,
+    ): Promise<TxData> {
+        // Gas amount sourced with the following priorities:
+        // 1. Optional param passed in to public method call
+        // 2. Global config passed in at library instantiation
+        // 3. Gas estimate calculation + safety margin
+        // tslint:disable-next-line:no-object-literal-type-assertion
+        const txDataWithDefaults = {
+            to: this.address,
+            ...this._web3Wrapper.getContractDefaults(),
+            ...BaseContract._removeUndefinedProperties(txData),
+        } as T;
+        if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
+            txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
+        }
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        return txDataWithDefaults as TxData;
+    }
+    protected async _evmExecAsync(encodedData: string): Promise<string> {
+        const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
         const addressBuf = Buffer.from(this.address.substr(2), 'hex');
         // should only run once, the first time it is called
         if (this._evmIfExists === undefined) {
@@ -217,15 +265,34 @@ export class BaseContract {
             this._evmIfExists = vm;
             this._evmAccountIfExists = accountAddress;
         }
-        const result = await this._evmIfExists.runCall({
-            to: addressBuf,
-            caller: this._evmAccountIfExists,
-            origin: this._evmAccountIfExists,
-            data: input,
-        });
+        let rawCallResult;
+        try {
+            const result = await this._evmIfExists.runCall({
+                to: addressBuf,
+                caller: this._evmAccountIfExists,
+                origin: this._evmAccountIfExists,
+                data: encodedDataBytes,
+            });
+            rawCallResult = `0x${result.execResult.returnValue.toString('hex')}`;
+        } catch (err) {
+            BaseContract._throwIfThrownErrorIsRevertError(err);
+            throw err;
+        }
 
-        const hexReturnValue = `0x${result.execResult.returnValue.toString('hex')}`;
-        return hexReturnValue;
+        BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+        return rawCallResult;
+    }
+    protected async _performCallAsync(callData: Partial<CallData>, defaultBlock?: BlockParam): Promise<string> {
+        const callDataWithDefaults = await this._applyDefaultsToTxDataAsync(callData);
+        let rawCallResult: string;
+        try {
+            rawCallResult = await this._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+        } catch (err) {
+            BaseContract._throwIfThrownErrorIsRevertError(err);
+            throw err;
+        }
+        BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+        return rawCallResult;
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
@@ -235,7 +302,7 @@ export class BaseContract {
         return abiEncoder;
     }
     protected _lookupAbi(functionSignature: string): MethodAbi {
-        const methodAbi = _.find(this.abi, (abiDefinition: AbiDefinition) => {
+        const methodAbi = this.abi.find((abiDefinition: AbiDefinition) => {
             if (abiDefinition.type !== AbiType.Function) {
                 return false;
             }
@@ -297,14 +364,16 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
         ) as MethodAbi[];
         this._abiEncoderByFunctionSignature = {};
-        _.each(methodAbis, methodAbi => {
+        methodAbis.forEach(methodAbi => {
             const abiEncoder = new AbiEncoder.Method(methodAbi);
             const functionSignature = abiEncoder.getSignature();
             this._abiEncoderByFunctionSignature[functionSignature] = abiEncoder;
             this._web3Wrapper.abiDecoder.addABI(abi, contractName);
         });
-        _.each(logDecodeDependencies, (dependencyAbi, dependencyName) => {
-            this._web3Wrapper.abiDecoder.addABI(dependencyAbi, dependencyName);
-        });
+        if (logDecodeDependencies) {
+            Object.entries(logDecodeDependencies).forEach(([dependencyName, dependencyAbi]) =>
+                this._web3Wrapper.abiDecoder.addABI(dependencyAbi, dependencyName),
+            );
+        }
     }
 }

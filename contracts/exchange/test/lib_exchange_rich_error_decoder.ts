@@ -40,7 +40,8 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
         // Solidity counterparts.
         const endpointName = `decode${revert.name}`;
         const callAsync = (_encoded: string) => {
-            return (decoder as any)[endpointName](_encoded).callAsync.call((decoder as any)[endpointName]);
+            const wrapperFunctions = (decoder as any)[endpointName](_encoded);
+            return wrapperFunctions.callAsync.bind(wrapperFunctions).call((decoder as any)[endpointName]);
         };
         describe(`${endpointName}()`, async () => {
             it('decodes encoded parameters', async () => {

@@ -25,6 +25,14 @@
             {
                 "note": "Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names.",
                 "pr": 2345
+            },
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            },
+            {
+                "note": "Re-enable gas estimation when `gas` is not provided.",
+                "pr": 2343
             }
         ],
         "timestamp": 1574030254

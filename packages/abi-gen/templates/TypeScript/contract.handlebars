@@ -65,7 +65,7 @@ export class {{contractName}}Contract extends BaseContract {
     {{else~}}
     public static deployedBytecode = '{{this.deployedBytecode}}';
     {{/ifEquals~}}
-    private readonly _methodABIIndex: { [name:string]: number } = {};
+    private readonly _methodABIIndex: { [name: string]: number } = {};
     {{#if events~}}
     private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
     {{/if~}}
@@ -121,9 +121,11 @@ export class {{contractName}}Contract extends BaseContract {
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
+        const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
+            {
+                data: txData,
+                ...txDefaults,
+            },
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -209,7 +211,8 @@ export class {{contractName}}Contract extends BaseContract {
         {{#each inputs}}
             {{#assertionType name type}}{{/assertionType}}
         {{/each}}
-        
+        const functionSignature = '{{this.functionSignature}}';
+
         return {
             {{^this.constant}}
             {{> method_tx}}
@@ -301,15 +304,17 @@ export class {{contractName}}Contract extends BaseContract {
         this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
             {{contractName}}Contract.ABI(),
             this._web3Wrapper,
-        );{{/if~}}
+        );
+        {{/if~}}
+
         {{contractName}}Contract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;
             }
-        })
+        });
     }
-} 
+}
 
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align

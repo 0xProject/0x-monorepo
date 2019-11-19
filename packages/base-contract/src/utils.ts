@@ -1,12 +1,11 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
-import * as _ from 'lodash';
 
 // tslint:disable-next-line:completed-docs
 export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: string, value: any) => any): any {
     const trailingArrayRegex = /\[\d*\]$/;
     if (abi.type.match(trailingArrayRegex)) {
         const arrayItemType = abi.type.replace(trailingArrayRegex, '');
-        return _.map(value, val => {
+        return value.map((val: any) => {
             const arrayItemAbi = {
                 ...abi,
                 type: arrayItemType,
@@ -15,9 +14,15 @@ export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: s
         });
     } else if (abi.type === 'tuple') {
         const formattedTuple: { [componentName: string]: DataItem } = {};
-        _.forEach(abi.components, componentABI => {
-            formattedTuple[componentABI.name] = formatABIDataItem(componentABI, value[componentABI.name], formatter);
-        });
+        if (abi.components) {
+            abi.components.forEach(componentABI => {
+                formattedTuple[componentABI.name] = formatABIDataItem(
+                    componentABI,
+                    value[componentABI.name],
+                    formatter,
+                );
+            });
+        }
         return formattedTuple;
     } else {
         return formatter(abi.type, value);

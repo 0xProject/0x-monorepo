@@ -3,7 +3,6 @@ import { BigNumber } from '@0x/utils';
 import { BlockRange, ContractAbi, EventAbi, FilterObject, LogEntry } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
-import * as _ from 'lodash';
 import * as uuid from 'uuid/v4';
 
 const TOPIC_LENGTH = 32;
@@ -19,7 +18,8 @@ export const filterUtils = {
         abi: ContractAbi,
         blockRange?: BlockRange,
     ): FilterObject {
-        const eventAbi = _.find(abi, { name: eventName }) as EventAbi;
+        // tslint:disable:next-line no-unnecessary-type-assertion
+        const eventAbi = abi.find(abiDefinition => (abiDefinition as EventAbi).name === eventName) as EventAbi;
         const eventSignature = filterUtils.getEventSignatureFromAbiByName(eventAbi);
         const topicForEventSignature = ethUtil.addHexPrefix(jsSHA3.keccak256(eventSignature));
         const topicsForIndexedArgs = filterUtils.getTopicsForIndexedArgs(eventAbi, indexFilterValues);
@@ -37,7 +37,7 @@ export const filterUtils = {
         return filter;
     },
     getEventSignatureFromAbiByName(eventAbi: EventAbi): string {
-        const types = _.map(eventAbi.inputs, 'type');
+        const types = eventAbi.inputs.map(i => i.type);
         const signature = `${eventAbi.name}(${types.join(',')})`;
         return signature;
     },
@@ -76,15 +76,15 @@ export const filterUtils = {
         return true;
     },
     doesMatchTopics(logTopics: string[], filterTopics: Array<string[] | string | null>): boolean {
-        const matchesTopic = _.zipWith(logTopics, filterTopics, filterUtils.matchesTopic.bind(filterUtils));
-        const doesMatchTopics = _.every(matchesTopic);
+        const matchesTopic = logTopics.map((logTopic, i) => filterUtils.matchesTopic(logTopic, filterTopics[i]));
+        const doesMatchTopics = matchesTopic.every(m => m);
         return doesMatchTopics;
     },
     matchesTopic(logTopic: string, filterTopic: string[] | string | null): boolean {
-        if (_.isArray(filterTopic)) {
-            return _.includes(filterTopic, logTopic);
+        if (Array.isArray(filterTopic)) {
+            return filterTopic.includes(logTopic);
         }
-        if (_.isString(filterTopic)) {
+        if (typeof filterTopic === 'string') {
             return filterTopic === logTopic;
         }
         // null topic is a wildcard
