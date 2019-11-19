@@ -5,6 +5,10 @@
             {
                 "note": "Upgrade the bignumber.js to v8.0.2",
                 "pr": 1517
+            },
+            {
+                "note": "Add `Set` to `EXTERNAL_TYPE_MAP`.",
+                "pr": 2350
             }
         ]
     },
