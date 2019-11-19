@@ -10,6 +10,7 @@ export * from '../generated-wrappers/erc721_proxy';
 export * from '../generated-wrappers/eth2_dai_bridge';
 export * from '../generated-wrappers/i_asset_data';
 export * from '../generated-wrappers/i_asset_proxy';
+export * from '../generated-wrappers/kyber_bridge';
 export * from '../generated-wrappers/multi_asset_proxy';
 export * from '../generated-wrappers/static_call_proxy';
 export * from '../generated-wrappers/test_static_call_target';

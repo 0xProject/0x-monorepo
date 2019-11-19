@@ -61,8 +61,8 @@ contract Eth2DaiBridge is
         LibERC20Token.approve(fromTokenAddress, address(exchange), uint256(-1));
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
-        uint256 boughtAmount = _getEth2DaiContract().sellAllAmount(
-            address(fromTokenAddress),
+        uint256 boughtAmount = exchange.sellAllAmount(
+            fromTokenAddress,
             IERC20Token(fromTokenAddress).balanceOf(address(this)),
             toTokenAddress,
             amount
