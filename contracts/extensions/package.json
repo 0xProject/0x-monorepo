@@ -33,7 +33,9 @@
         "contracts:gen": "contracts-gen generate",
         "contracts:copy": "contracts-gen copy",
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
-        "compile:truffle": "truffle compile"
+        "compile:truffle": "truffle compile",
+        "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "publicInterfaceContracts": "DutchAuction,OrderMatcher,BalanceThresholdFilter",
@@ -67,6 +69,8 @@
         "@0x/types": "^2.5.0-beta.2",
         "@0x/utils": "^4.6.0-beta.2",
         "@0x/web3-wrapper": "^6.1.0-beta.2",
+        "@0x/ts-doc-gen": "^0.0.22",
+        "typedoc": "^0.15.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",

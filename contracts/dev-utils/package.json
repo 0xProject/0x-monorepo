@@ -22,7 +22,9 @@
         "contracts:copy": "contracts-gen copy",
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
         "quantify_bytecode": "echo EVM bytecode object lengths:;for i in ./test/generated-artifacts/*.json; do node -e \"console.log('$i\t' + (require('$i').compilerOutput.evm.bytecode.object.length - 2) / 2)\"; done",
-        "compile:truffle": "truffle compile"
+        "compile:truffle": "truffle compile",
+        "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "publicInterfaceContracts": "DevUtils,LibAssetData,LibTransactionDecoder",
@@ -44,6 +46,8 @@
         "@0x/contracts-gen": "^1.1.0-beta.2",
         "@0x/sol-compiler": "^3.2.0-beta.2",
         "@0x/tslint-config": "^3.1.0-beta.2",
+        "@0x/ts-doc-gen": "^0.0.22",
+        "typedoc": "^0.15.0",
         "@types/node": "*",
         "ethers": "~4.0.4",
         "npm-run-all": "^4.1.2",

@@ -24,13 +24,17 @@
         "watch": "tsc -w -p tsconfig.json",
         "prettier": "prettier --write 'src/**/*.ts' --config .prettierrc",
         "test:circleci": "yarn test:coverage",
-        "lint": "tslint --project . --format stylish"
+        "lint": "tslint --project . --format stylish",
+        "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "author": "Jacob Evans",
     "license": "Apache-2.0",
     "devDependencies": {
         "@0x/tslint-config": "^3.1.0-beta.2",
         "@0x/types": "^2.5.0-beta.2",
+        "@0x/ts-doc-gen": "^0.0.22",
+        "typedoc": "^0.15.0",
         "@types/jest": "^24.0.17",
         "@types/sinon": "^2.2.2",
         "@types/websocket": "^0.0.39",

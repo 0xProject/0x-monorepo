@@ -1,3 +1,45 @@
-export * from './wrappers';
-export * from './artifacts';
+export {
+    DummyERC1155ReceiverContract,
+    ERC1155Contract,
+    ERC1155MintableContract,
+    IERC1155ReceiverContract,
+    DummyERC1155ReceiverBatchTokenReceivedEventArgs,
+    ERC1155TransferSingleEventArgs,
+} from './wrappers';
+export { artifacts } from './artifacts';
 export { Erc1155Wrapper } from './erc1155_wrapper';
+export {
+    Provider,
+    TransactionReceiptWithDecodedLogs,
+    JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
+    JSONRPCResponseError,
+    JSONRPCErrorCallback,
+    TransactionReceiptStatus,
+    ContractArtifact,
+    ContractChains,
+    CompilerOpts,
+    StandardContractOutput,
+    CompilerSettings,
+    ContractChainData,
+    ContractAbi,
+    DevdocOutput,
+    EvmOutput,
+    CompilerSettingsMetadata,
+    OptimizerSettings,
+    OutputField,
+    ParamDescription,
+    EvmBytecodeOutput,
+    AbiDefinition,
+    FunctionAbi,
+    EventAbi,
+    RevertErrorAbi,
+    EventParameter,
+    DataItem,
+    MethodAbi,
+    ConstructorAbi,
+    FallbackAbi,
+    ConstructorStateMutability,
+    TupleDataItem,
+    StateMutability,
+} from 'ethereum-types';
