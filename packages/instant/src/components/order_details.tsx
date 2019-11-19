@@ -49,14 +49,14 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
                 <OrderDetailsRow
                     labelText="Fee"
                     primaryValue={this._displayAmountOrPlaceholder(
-                        swapQuoteInfo && swapQuoteInfo.feeTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInEthAmount),
+                        swapQuoteInfo && swapQuoteInfo.feeTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInWeiAmount),
                     )}
                 />
                 <OrderDetailsRow
                     labelText="Total Cost"
                     isLabelBold={true}
                     primaryValue={this._displayAmountOrPlaceholder(
-                        swapQuoteInfo && swapQuoteInfo.totalTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInEthAmount),
+                        swapQuoteInfo && swapQuoteInfo.totalTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInWeiAmount),
                     )}
                     isPrimaryValueBold={true}
                     secondaryValue={this._totalCostSecondaryValue()}
@@ -95,7 +95,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
         if (this.props.swapQuoteInfo && canDisplayCurrency) {
             return this._displayAmount(
                 secondaryCurrency,
-                this.props.swapQuoteInfo.totalTakerAssetAmount.plus(this.props.swapQuoteInfo.protocolFeeInEthAmount),
+                this.props.swapQuoteInfo.totalTakerAssetAmount.plus(this.props.swapQuoteInfo.protocolFeeInWeiAmount),
             );
         } else {
             return undefined;

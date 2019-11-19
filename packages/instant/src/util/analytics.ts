@@ -85,11 +85,11 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
 const swapQuoteEventProperties = (swapQuote: MarketBuySwapQuote) => {
     const makerAssetFillAmount = swapQuote.makerAssetFillAmount.toString();
     const assetEthAmount = swapQuote.worstCaseQuoteInfo.takerAssetAmount.toString();
-    const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount
+    const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInWeiAmount
         .plus(swapQuote.worstCaseQuoteInfo.feeTakerAssetAmount)
         .toString();
     const totalEthAmount = swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount
-        .plus(swapQuote.worstCaseQuoteInfo.protocolFeeInEthAmount)
+        .plus(swapQuote.worstCaseQuoteInfo.protocolFeeInWeiAmount)
         .toString();
     return {
         makerAssetFillAmount,
