@@ -123,6 +123,10 @@ blockchainTests.resets('Exchange wrappers', env => {
         localBalances = LocalBalanceStore.create(deployment.devUtils, initialLocalBalances);
     });
 
+    after(async () => {
+        Actor.count = 0;
+    });
+
     interface SignedOrderWithValidity {
         signedOrder: SignedOrder;
         isValid: boolean;

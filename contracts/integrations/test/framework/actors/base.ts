@@ -1,7 +1,7 @@
-import { ERC1155MintableContract } from '@0x/contracts-erc1155';
+import { ERC1155MintableContract, ERC1155TransferSingleEventArgs } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { constants, getRandomInteger, TransactionFactory } from '@0x/contracts-test-utils';
+import { constants, filterLogsToArguments, getRandomInteger, TransactionFactory } from '@0x/contracts-test-utils';
 import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -33,6 +33,12 @@ export class Actor {
 
     constructor(config: ActorConfig) {
         Actor.count++;
+
+        // Emit an error if the actor count is too high.
+        if (Actor.count >= config.deployment.accounts.length) {
+            throw new Error('Actor count too large');
+        }
+
         this.address = config.deployment.accounts[Actor.count];
         this.name = config.name || this.address;
         this.deployment = config.deployment;
@@ -106,8 +112,15 @@ export class Actor {
         amount?: BigNumber,
     ): Promise<BigNumber> {
         // Create a fungible token.
-        const id = await token.create('', false).callAsync({ from: this.address });
-        await token.create('', false).awaitTransactionSuccessAsync({ from: this.address });
+        const receipt = await token.create('', false).awaitTransactionSuccessAsync({ from: this.address });
+        const logs = filterLogsToArguments<ERC1155TransferSingleEventArgs>(receipt.logs, 'TransferSingle');
+
+        // Throw if the wrong number of logs were received.
+        if (logs.length !== 1) {
+            throw new Error('Invalid number of `TransferSingle` logs');
+        }
+
+        const { id } = logs[0];
 
         // Mint the token
         await token

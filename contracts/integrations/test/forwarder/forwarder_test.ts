@@ -14,6 +14,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
+import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';
 import { Maker } from '../framework/actors/maker';
 import { Taker } from '../framework/actors/taker';
@@ -115,6 +116,10 @@ blockchainTests('Forwarder integration tests', env => {
             forwarderFeeRecipient,
             devUtils,
         );
+    });
+
+    after(async () => {
+        Actor.count = 0;
     });
 
     blockchainTests.resets('constructor', () => {

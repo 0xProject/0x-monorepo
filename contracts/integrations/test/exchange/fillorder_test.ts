@@ -21,6 +21,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
+import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';
 import { OperatorStakerMaker, StakerKeeper } from '../framework/actors/hybrids';
 import { Maker } from '../framework/actors/maker';
@@ -105,6 +106,10 @@ blockchainTests.resets('fillOrder integration tests', env => {
         };
         balanceStore = new BlockchainBalanceStore(tokenOwners, tokenContracts);
         await balanceStore.updateBalancesAsync();
+    });
+
+    after(async () => {
+        Actor.count = 0;
     });
 
     async function simulateFillAsync(

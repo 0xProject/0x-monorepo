@@ -99,6 +99,10 @@ blockchainTests.resets('Coordinator integration tests', env => {
         );
     });
 
+    after(async () => {
+        Actor.count = 0;
+    });
+
     async function simulateFillsAsync(
         orders: SignedOrder[],
         txReceipt: TransactionReceiptWithDecodedLogs,

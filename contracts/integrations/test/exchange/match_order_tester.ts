@@ -1,11 +1,13 @@
-import { BlockchainBalanceStore, LocalBalanceStore } from '@0x/contracts-exchange';
-import { constants, expect, orderHashUtils, OrderStatus } from '@0x/contracts-test-utils';
-import { BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
+import { BlockchainTestsEnvironment, constants, expect, orderHashUtils, OrderStatus } from '@0x/contracts-test-utils';
+import { BatchMatchedFillResults, FillResults, MatchedFillResults, Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DeploymentManager } from '../deployment_manager';
+import { Maker } from '../framework/actors/maker';
+import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
+import { LocalBalanceStore } from '../framework/balances/local_balance_store';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 export interface FillEventArgs {
     orderHash: string;
@@ -64,6 +66,64 @@ export interface MatchedOrders {
     rightOrder: SignedOrder;
     leftOrderTakerAssetFilledAmount?: BigNumber;
     rightOrderTakerAssetFilledAmount?: BigNumber;
+}
+
+export interface TestMatchOrdersArgs {
+    env: BlockchainTestsEnvironment;
+    matchOrderTester: MatchOrderTester;
+    leftOrder: Partial<Order>;
+    rightOrder: Partial<Order>;
+    makerLeft: Maker;
+    makerRight: Maker;
+    expectedTransferAmounts: Partial<MatchTransferAmounts>;
+    withMaximalFill: boolean;
+    matcherAddress: string;
+}
+
+/**
+ * Tests an order matching scenario with both eth and weth protocol fees.
+ */
+export async function testMatchOrdersAsync(args: TestMatchOrdersArgs): Promise<void> {
+    // Create orders to match.
+    const signedOrderLeft = await args.makerLeft.signOrderAsync(args.leftOrder);
+    const signedOrderRight = await args.makerRight.signOrderAsync(args.rightOrder);
+
+    await args.matchOrderTester.matchOrdersAndAssertEffectsAsync(
+        {
+            leftOrder: signedOrderLeft,
+            rightOrder: signedOrderRight,
+        },
+        {
+            ...args.expectedTransferAmounts,
+            leftProtocolFeePaidByTakerInEthAmount: DeploymentManager.protocolFee,
+            rightProtocolFeePaidByTakerInEthAmount: DeploymentManager.protocolFee,
+            leftProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
+            rightProtocolFeePaidByTakerInWethAmount: constants.ZERO_AMOUNT,
+        },
+        args.matcherAddress,
+        DeploymentManager.protocolFee.times(2),
+        args.withMaximalFill,
+    );
+
+    await args.env.blockchainLifecycle.revertAsync();
+    await args.env.blockchainLifecycle.startAsync();
+
+    await args.matchOrderTester.matchOrdersAndAssertEffectsAsync(
+        {
+            leftOrder: signedOrderLeft,
+            rightOrder: signedOrderRight,
+        },
+        {
+            ...args.expectedTransferAmounts,
+            leftProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
+            rightProtocolFeePaidByTakerInEthAmount: constants.ZERO_AMOUNT,
+            leftProtocolFeePaidByTakerInWethAmount: DeploymentManager.protocolFee,
+            rightProtocolFeePaidByTakerInWethAmount: DeploymentManager.protocolFee,
+        },
+        args.matcherAddress,
+        constants.ZERO_AMOUNT,
+        args.withMaximalFill,
+    );
 }
 
 export class MatchOrderTester {
