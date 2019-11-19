@@ -303,6 +303,8 @@ export async function runMigrationsAsync(
         zrxVault: zrxVault.address,
         staking: stakingLogic.address,
         stakingProxy: stakingProxy.address,
+        uniswapBridge: constants.NULL_ADDRESS,
+        eth2DaiBridge: constants.NULL_ADDRESS,
     };
 
     return contractAddresses;

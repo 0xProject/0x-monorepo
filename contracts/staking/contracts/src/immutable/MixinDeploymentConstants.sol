@@ -39,7 +39,7 @@ contract MixinDeploymentConstants {
     // @TODO SET THESE VALUES FOR DEPLOYMENT
 
     // Mainnet ZrxVault address
-    address constant private ZRX_VAULT_ADDRESS = address(0xcE2a4B118813cBfa27Ee11cf8E67B101867fa85E);
+    address constant private ZRX_VAULT_ADDRESS = address(0xBa7f8b5fB1b19c1211c5d49550fcD149177A5Eaf);
 
     // Kovan ZrxVault address
     // address constant private ZRX_VAULT_ADDRESS = address(0xf36eabdFE986B35b62c8FD5a98A7f2aEBB79B291);

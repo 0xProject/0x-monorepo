@@ -24,6 +24,8 @@ export interface ContractAddresses {
     staking: string;
     stakingProxy: string;
     erc20BridgeProxy: string;
+    uniswapBridge: string;
+    eth2DaiBridge: string;
 }
 
 export enum ChainId {
