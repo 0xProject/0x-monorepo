@@ -192,6 +192,11 @@ export interface ZeroExInstantRequiredBaseConfig {
     orderSource: OrderSource;
 }
 
+export interface AffiliateInfo {
+    feeRecipient: string;
+    feePercentage: number;
+}
+
 export interface ZeroExInstantOptionalBaseConfig {
     provider: SupportedProvider;
     walletDisplayName: string;
@@ -200,6 +205,7 @@ export interface ZeroExInstantOptionalBaseConfig {
     defaultSelectedAssetData: string;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
+    affiliateInfo: AffiliateInfo;
     shouldDisableAnalyticsTracking: boolean;
     onSuccess?: (txHash: string) => void;
 }

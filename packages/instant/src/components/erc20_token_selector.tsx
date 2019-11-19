@@ -163,8 +163,9 @@ class TokenSelectorRowIcon extends React.PureComponent<TokenSelectorRowIconProps
         const displaySymbol = assetUtils.bestNameForAsset(token);
         if (iconUrlIfExists !== undefined) {
             return <img src={iconUrlIfExists} />;
-        } else if (TokenIcon !== undefined) {
-            return <TokenIcon />;
+            // HACK(dekz): Disale Token icon as it is throwing an error in React renderer
+            // } else if (TokenIcon !== undefined) {
+            //     return <TokenIcon />;
         } else {
             return (
                 <Text fontColor={ColorOption.white} fontSize="8px">

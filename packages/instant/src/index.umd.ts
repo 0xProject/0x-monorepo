@@ -48,10 +48,9 @@ const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: stri
     if (config.zIndex !== undefined) {
         assert.isNumber('zIndex', config.zIndex);
     }
-    // TODO(dave4506) reenable affiliate fees once we figure out how to work with it
-    // if (config.affiliateInfo !== undefined) {
-    //     assert.isValidAffiliateInfo('affiliateInfo', config.affiliateInfo);
-    // }
+    if (config.affiliateInfo !== undefined) {
+        assert.isValidAffiliateInfo('affiliateInfo', config.affiliateInfo);
+    }
     if (config.provider !== undefined) {
         providerUtils.standardizeOrThrow(config.provider);
     }

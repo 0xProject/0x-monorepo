@@ -97,7 +97,7 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         let txHash: string | undefined;
         const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         const feeRecipient = oc(affiliateInfo).feeRecipient();
-        const feePercentage = oc(affiliateInfo).feeRecipient();
+        const feePercentage = oc(affiliateInfo).feePercentage();
         try {
             analytics.trackBuyStarted(swapQuote);
             txHash = await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(swapQuote, {
@@ -124,6 +124,13 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
                     this.props.onValidationFail(swapQuote, ZeroExInstantError.CouldNotSubmitTransaction);
                     return;
                 }
+            }
+            // HACK(dekz): Wrappers no longer include decorators which map errors
+            // like transaction deny
+            if (e.message && e.message.includes('User denied transaction signature')) {
+                analytics.trackBuySignatureDenied(swapQuote);
+                this.props.onSignatureDenied(swapQuote);
+                return;
             }
             throw e;
         }

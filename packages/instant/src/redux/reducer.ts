@@ -291,6 +291,7 @@ const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): b
             selectedAssetMetaData.decimals,
         );
         const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(swapQuote.makerAssetFillAmount);
+
         return doesAssetAmountMatch;
     } else {
         return true;
