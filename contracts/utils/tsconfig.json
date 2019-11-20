@@ -24,6 +24,7 @@
         "generated-artifacts/ReentrancyGuard.json",
         "generated-artifacts/Refundable.json",
         "test/generated-artifacts/Authorizable.json",
+        "test/generated-artifacts/DeploymentConstants.json",
         "test/generated-artifacts/IAuthorizable.json",
         "test/generated-artifacts/IOwnable.json",
         "test/generated-artifacts/LibAddress.json",

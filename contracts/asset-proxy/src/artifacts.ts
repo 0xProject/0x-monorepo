@@ -12,6 +12,7 @@ import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
 import * as Eth2DaiBridge from '../generated-artifacts/Eth2DaiBridge.json';
 import * as IAssetData from '../generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
+import * as KyberBridge from '../generated-artifacts/KyberBridge.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 import * as StaticCallProxy from '../generated-artifacts/StaticCallProxy.json';
 import * as TestStaticCallTarget from '../generated-artifacts/TestStaticCallTarget.json';
@@ -27,5 +28,6 @@ export const artifacts = {
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
+    KyberBridge: KyberBridge as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
 };
