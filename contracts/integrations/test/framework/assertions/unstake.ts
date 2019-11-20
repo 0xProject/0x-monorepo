@@ -41,7 +41,7 @@ export function validUnstakeAssertion(
                 zrxVault.address,
                 txData.from as string,
                 amount,
-                await deployment.devUtils.encodeERC20AssetData(deployment.tokens.zrx.address).callAsync(),
+                deployment.assetDataEncoder.ERC20Token(deployment.tokens.zrx.address).getABIEncodedTransactionData(),
             );
             return expectedBalances;
         },

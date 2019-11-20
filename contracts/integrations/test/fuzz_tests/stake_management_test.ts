@@ -1,6 +1,7 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
+import { Actor } from '../framework/actors/base';
 import { Staker } from '../framework/actors/staker';
 import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
@@ -32,6 +33,10 @@ export class StakeManagementSimulation extends Simulation {
 }
 
 blockchainTests.skip('Stake management fuzz test', env => {
+    after(async () => {
+        Actor.count = 0;
+    });
+
     it('fuzz', async () => {
         const deployment = await DeploymentManager.deployAsync(env, {
             numErc20TokensToDeploy: 0,

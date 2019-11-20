@@ -67,10 +67,18 @@ blockchainTests.resets('Coordinator integration tests', env => {
             orderConfig: {
                 senderAddress: coordinator.address,
                 feeRecipientAddress: feeRecipient.address,
-                makerAssetData: await devUtils.encodeERC20AssetData(makerToken.address).callAsync(),
-                takerAssetData: await devUtils.encodeERC20AssetData(takerToken.address).callAsync(),
-                makerFeeAssetData: await devUtils.encodeERC20AssetData(makerFeeToken.address).callAsync(),
-                takerFeeAssetData: await devUtils.encodeERC20AssetData(takerFeeToken.address).callAsync(),
+                makerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerToken.address)
+                    .getABIEncodedTransactionData(),
+                takerAssetData: deployment.assetDataEncoder
+                    .ERC20Token(takerToken.address)
+                    .getABIEncodedTransactionData(),
+                makerFeeAssetData: deployment.assetDataEncoder
+                    .ERC20Token(makerFeeToken.address)
+                    .getABIEncodedTransactionData(),
+                takerFeeAssetData: deployment.assetDataEncoder
+                    .ERC20Token(takerFeeToken.address)
+                    .getABIEncodedTransactionData(),
             },
         });
 
@@ -89,6 +97,10 @@ blockchainTests.resets('Coordinator integration tests', env => {
             { erc20: { makerToken, takerToken, makerFeeToken, takerFeeToken, wETH: deployment.tokens.weth } },
             {},
         );
+    });
+
+    after(async () => {
+        Actor.count = 0;
     });
 
     async function simulateFillsAsync(
@@ -144,7 +156,9 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     taker.address,
                     deployment.staking.stakingProxy.address,
                     DeploymentManager.protocolFee,
-                    await devUtils.encodeERC20AssetData(deployment.tokens.weth.address).callAsync(),
+                    deployment.assetDataEncoder
+                        .ERC20Token(deployment.tokens.weth.address)
+                        .getABIEncodedTransactionData(),
                 );
             }
         }
