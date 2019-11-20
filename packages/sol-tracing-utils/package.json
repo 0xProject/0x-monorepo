@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-tracing-utils",
-    "version": "6.1.0-beta.2",
+    "version": "6.1.0-beta.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -38,8 +38,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-tracing-utils/README.md",
     "dependencies": {
-        "@0x/dev-utils": "^2.4.0-beta.2",
-        "@0x/sol-compiler": "^3.2.0-beta.2",
+        "@0x/dev-utils": "^2.4.0-beta.3",
+        "@0x/sol-compiler": "^3.2.0-beta.3",
         "@0x/sol-resolver": "^2.1.0-beta.2",
         "@0x/subproviders": "^5.1.0-beta.2",
         "@0x/typescript-typings": "^4.4.0-beta.2",
