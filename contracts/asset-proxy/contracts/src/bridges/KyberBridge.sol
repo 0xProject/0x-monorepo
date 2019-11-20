@@ -23,6 +23,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IKyberNetworkProxy.sol";
 
@@ -30,7 +31,8 @@ import "../interfaces/IKyberNetworkProxy.sol";
 // solhint-disable space-after-comma
 contract KyberBridge is
     IERC20Bridge,
-    IWallet
+    IWallet,
+    DeploymentConstants
 {
     // @dev Structure used internally to get around stack limits.
     struct TradeState {
@@ -39,15 +41,21 @@ contract KyberBridge is
         address fromTokenAddress;
         uint256 fromTokenBalance;
         uint256 payableAmount;
-        uint256 minConversionRate;
     }
 
-    /// @dev Address of the WETH contract.
-    address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    /// @dev Address of the KyberNeworkProxy contract.
-    address constant public KYBER_NETWORK_PROXY_ADDRESS = 0x818E6FECD516Ecc3849DAf6845e3EC868087B755;
     /// @dev Kyber ETH pseudo-address.
     address constant public KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    /// @dev `bridgeTransferFrom()` failure result.
+    bytes4 constant private BRIDGE_FAILED = 0x0;
+    /// @dev Precision of Kyber rates.
+    uint256 constant private KYBER_RATE_BASE = 10 ** 18;
+
+    // solhint-disable no-empty-blocks
+    /// @dev Payable fallback to receive ETH from Kyber.
+    function ()
+        external
+        payable
+    {}
 
     /// @dev Callback for `IKyberBridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the opposing asset
@@ -75,10 +83,9 @@ contract KyberBridge is
         (state.fromTokenAddress) = abi.decode(bridgeData, (address));
         state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
         if (state.fromTokenBalance == 0) {
-            // Do nothing if no input tokens.
-            return BRIDGE_SUCCESS;
+            // Return failure if no input tokens.
+            return BRIDGE_FAILED;
         }
-        state.minConversionRate = (10 ** 18) * amount / state.fromTokenBalance;
         if (state.fromTokenAddress == toTokenAddress) {
             // Just transfer the tokens if they're the same.
             LibERC20Token.transfer(state.fromTokenAddress, to, state.fromTokenBalance);
@@ -93,31 +100,30 @@ contract KyberBridge is
             state.payableAmount = state.fromTokenBalance;
             state.weth.withdraw(state.fromTokenBalance);
         }
+        bool isToTokenWeth = toTokenAddress == address(state.weth);
 
-        // Try to sell all of this contract's input token balance.
+        // Try to sell all of this contract's input token balance through
+        // `KyberNetworkProxy.trade()`.
         uint256 boughtAmount = state.kyber.trade.value(state.payableAmount)(
             // Input token.
             state.fromTokenAddress,
             // Sell amount.
             state.fromTokenBalance,
             // Output token.
-            toTokenAddress == address(state.weth) ?
-                KYBER_ETH_ADDRESS :
-                toTokenAddress,
+            isToTokenWeth ? KYBER_ETH_ADDRESS : toTokenAddress,
             // Transfer to this contract if converting to ETH, otherwise
             // transfer directly to the recipient.
-            toTokenAddress == address(state.weth) ?
-                address(uint160(address(this))) :
-                address(uint160(to)),
+            isToTokenWeth ? address(uint160(address(this))) : address(uint160(to)),
             // Buy as much as possible.
             uint256(-1),
-            // Minimum conversion rate.
-            state.minConversionRate,
+            // Compute the minimum conversion rate, which is expressed in units with
+            // 18 decimal places.
+            (KYBER_RATE_BASE * amount) / state.fromTokenBalance,
             // No affiliate address.
             address(0)
         );
         // Wrap ETH output and transfer to recipient.
-        if (toTokenAddress == address(state.weth)) {
+        if (isToTokenWeth) {
             state.weth.deposit.value(boughtAmount)();
             state.weth.transfer(to, boughtAmount);
         }
@@ -145,7 +151,7 @@ contract KyberBridge is
         view
         returns (IKyberNetworkProxy kyber)
     {
-        return IKyberNetworkProxy(KYBER_NETWORK_PROXY_ADDRESS);
+        return IKyberNetworkProxy(_getKyberNetworkProxyAddress());
     }
 
     /// @dev Overridable way to get the WETH contract.
@@ -155,6 +161,6 @@ contract KyberBridge is
         view
         returns (IEtherToken weth)
     {
-        return IEtherToken(WETH_ADDRESS);
+        return IEtherToken(_getWETHAddress());
     }
 }

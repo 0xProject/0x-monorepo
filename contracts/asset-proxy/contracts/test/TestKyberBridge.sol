@@ -118,8 +118,7 @@ contract TestToken {
 }
 
 
-/// @dev Eth2DaiBridge overridden to mock tokens and
-///      implement IEth2Dai.
+/// @dev KyberBridge overridden to mock tokens and implement IKyberBridge.
 contract TestKyberBridge is
     KyberBridge,
     ITestContract,
@@ -237,9 +236,7 @@ contract TestKyberBridge is
     {
         require(msg.sender == address(weth), "ONLY_WETH");
         _tokenBalances[address(weth)][ownerAddress] -= amount;
-        if (ownerAddress != address(this)) {
-            ownerAddress.transfer(amount);
-        }
+        ownerAddress.transfer(amount);
         emit KyberBridgeWethWithdraw(
             ownerAddress,
             amount

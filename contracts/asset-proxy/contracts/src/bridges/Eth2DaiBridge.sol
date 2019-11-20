@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IEth2Dai.sol";
 
@@ -29,11 +30,9 @@ import "../interfaces/IEth2Dai.sol";
 // solhint-disable space-after-comma
 contract Eth2DaiBridge is
     IERC20Bridge,
-    IWallet
+    IWallet,
+    DeploymentConstants
 {
-    /* Mainnet addresses */
-    address constant public ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
-
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the opposing asset
     ///      (DAI or WETH) to the Eth2Dai contract, then transfers the bought
@@ -93,6 +92,6 @@ contract Eth2DaiBridge is
         view
         returns (IEth2Dai exchange)
     {
-        return IEth2Dai(ETH2DAI_ADDRESS);
+        return IEth2Dai(_getEth2DaiAddress());
     }
 }

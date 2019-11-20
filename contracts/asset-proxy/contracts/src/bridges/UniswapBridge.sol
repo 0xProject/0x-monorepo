@@ -23,6 +23,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IUniswapExchangeFactory.sol";
 import "../interfaces/IUniswapExchange.sol";
 import "../interfaces/IERC20Bridge.sol";
@@ -32,12 +33,9 @@ import "../interfaces/IERC20Bridge.sol";
 // solhint-disable not-rely-on-time
 contract UniswapBridge is
     IERC20Bridge,
-    IWallet
+    IWallet,
+    DeploymentConstants
 {
-    /* Mainnet addresses */
-    address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
-    address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-
     // Struct to hold `bridgeTransferFrom()` local variables in memory and to avoid
     // stack overflows.
     struct WithdrawToState {
@@ -170,7 +168,7 @@ contract UniswapBridge is
         view
         returns (IEtherToken token)
     {
-        return IEtherToken(WETH_ADDRESS);
+        return IEtherToken(_getWETHAddress());
     }
 
     /// @dev Overridable way to get the uniswap exchange factory contract.
@@ -180,7 +178,7 @@ contract UniswapBridge is
         view
         returns (IUniswapExchangeFactory factory)
     {
-        return IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS);
+        return IUniswapExchangeFactory(_getUniswapExchangeFactoryAddress());
     }
 
     /// @dev Grants an unlimited allowance to the exchange for its token
