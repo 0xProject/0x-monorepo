@@ -8,7 +8,7 @@ import { BalanceStore } from './balance_store';
 import { TokenContractsByName, TokenOwnersByName } from './types';
 
 export class LocalBalanceStore extends BalanceStore {
-    private _assetDataDecoder: IAssetDataContract;
+    private readonly _assetDataDecoder: IAssetDataContract;
 
     /**
      * Creates a new balance store based on an existing one.

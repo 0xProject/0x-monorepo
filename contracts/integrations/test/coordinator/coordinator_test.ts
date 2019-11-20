@@ -1,5 +1,4 @@
 import { CoordinatorContract, CoordinatorRevertErrors, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -15,7 +14,6 @@ import {
     hexConcat,
     hexSlice,
     orderHashUtils,
-    provider,
     transactionHashUtils,
     verifyEvents,
 } from '@0x/contracts-test-utils';
@@ -38,7 +36,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
     let deployment: DeploymentManager;
     let coordinator: CoordinatorContract;
     let balanceStore: BlockchainBalanceStore;
-    let devUtils: DevUtilsContract;
 
     let maker: Maker;
     let taker: Actor;
@@ -51,7 +48,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             numErc1155TokensToDeploy: 0,
         });
         coordinator = await deployCoordinatorAsync(deployment, env);
-        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 
         const [makerToken, takerToken, makerFeeToken, takerFeeToken] = deployment.tokens.erc20;
 

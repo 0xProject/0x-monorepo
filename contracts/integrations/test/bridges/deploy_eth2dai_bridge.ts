@@ -5,6 +5,9 @@ import { artifacts } from '../artifacts';
 import { DeploymentManager } from '../framework/deployment_manager';
 import { TestEth2DaiBridgeContract, TestEth2DaiContract } from '../wrappers';
 
+/**
+ * Deploys test Eth2Dai exchange and bridge contracts configured to work alongside the provided `deployment`.
+ */
 export async function deployEth2DaiBridgeAsync(
     deployment: DeploymentManager,
     environment: BlockchainTestsEnvironment,

@@ -1,4 +1,3 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
@@ -9,7 +8,6 @@ import {
     expect,
     getLatestBlockTimestampAsync,
     getPercentageOfValue,
-    provider,
     toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
@@ -25,8 +23,6 @@ import { DeploymentManager } from '../framework/deployment_manager';
 
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
-
-const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 
 blockchainTests('Forwarder integration tests', env => {
     let deployment: DeploymentManager;
@@ -106,13 +102,7 @@ blockchainTests('Forwarder integration tests', env => {
         const tokenIds = { erc721: { [erc721Token.address]: [nftId] } };
         balanceStore = new BlockchainBalanceStore(tokenOwners, tokenContracts, tokenIds);
 
-        testFactory = new ForwarderTestFactory(
-            forwarder,
-            deployment,
-            balanceStore,
-            taker,
-            forwarderFeeRecipient,
-        );
+        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker, forwarderFeeRecipient);
     });
 
     after(async () => {

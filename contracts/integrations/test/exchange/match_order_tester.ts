@@ -168,7 +168,7 @@ export class MatchOrderTester {
         // Update the blockchain balance store and create a new local balance store
         // with the same initial balances.
         await this._blockchainBalanceStore.updateBalancesAsync();
-        const localBalanceStore = LocalBalanceStore.create(this._deployment.devUtils, this._blockchainBalanceStore);
+        const localBalanceStore = LocalBalanceStore.create(this._blockchainBalanceStore);
 
         // Execute `batchMatchOrders()`
         let actualBatchMatchResults;
@@ -253,7 +253,7 @@ export class MatchOrderTester {
         // Update the blockchain balance store and create a new local balance store
         // with the same initial balances.
         await this._blockchainBalanceStore.updateBalancesAsync();
-        const localBalanceStore = LocalBalanceStore.create(this._deployment.devUtils, this._blockchainBalanceStore);
+        const localBalanceStore = LocalBalanceStore.create(this._blockchainBalanceStore);
 
         // Execute `matchOrders()`
         let actualMatchResults;

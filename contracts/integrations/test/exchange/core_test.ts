@@ -221,7 +221,6 @@ blockchainTests.resets('Exchange core', () => {
         };
         fillOrderWrapper = new FillOrderWrapper(
             exchange,
-            devUtils,
             { makerAddress, takerAddress, feeRecipientAddress },
             tokenContracts,
             tokenIds,

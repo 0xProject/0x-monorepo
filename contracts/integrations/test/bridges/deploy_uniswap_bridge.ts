@@ -9,6 +9,10 @@ import {
     TestUniswapExchangeFactoryContract,
 } from '../wrappers';
 
+/**
+ * Deploys test Uniswap exchanges for the given tokens, a test UniswapExchangeFactory, and a test
+ * bridge contract configured to work alongside the provided `deployment`.
+ */
 export async function deployUniswapBridgeAsync(
     deployment: DeploymentManager,
     environment: BlockchainTestsEnvironment,
