@@ -40,6 +40,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     const INVALID_ASSET_DATA_ERROR = 'INVALID_ASSET_DATA';
     const UNSUPPORTED_UNISWAP_EXCHANGE_ERROR = 'UNSUPPORTED_UNISWAP_EXCHANGE';
     const UNSUPPORTED_SOURCE_ERROR = 'UNSUPPORTED_SOURCE';
+    const INVALID_TOKEN_PAIR_ERROR = 'INVALID_TOKEN_PAIR';
 
     before(async () => {
         testContract = await TestERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
@@ -115,11 +116,15 @@ blockchainTests('erc20-bridge-sampler', env => {
             .dividedToIntegerBy(buyBase);
     }
 
+    function areAddressesEqual(a: string, b: string): boolean {
+        return a.toLowerCase() === b.toLowerCase();
+    }
+
     function getDeterministicUniswapSellQuote(sellToken: string, buyToken: string, sellAmount: BigNumber): BigNumber {
-        if (buyToken.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
+        if (areAddressesEqual(buyToken, WETH_ADDRESS)) {
             return getDeterministicSellQuote(getUniswapExchangeSalt(sellToken), sellToken, WETH_ADDRESS, sellAmount);
         }
-        if (sellToken.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
+        if (areAddressesEqual(sellToken, WETH_ADDRESS)) {
             return getDeterministicSellQuote(getUniswapExchangeSalt(buyToken), buyToken, WETH_ADDRESS, sellAmount);
         }
         const ethBought = getDeterministicSellQuote(
@@ -132,10 +137,10 @@ blockchainTests('erc20-bridge-sampler', env => {
     }
 
     function getDeterministicUniswapBuyQuote(sellToken: string, buyToken: string, buyAmount: BigNumber): BigNumber {
-        if (buyToken.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
+        if (areAddressesEqual(buyToken, WETH_ADDRESS)) {
             return getDeterministicBuyQuote(getUniswapExchangeSalt(sellToken), WETH_ADDRESS, sellToken, buyAmount);
         }
-        if (sellToken.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
+        if (areAddressesEqual(sellToken, WETH_ADDRESS)) {
             return getDeterministicBuyQuote(getUniswapExchangeSalt(buyToken), WETH_ADDRESS, buyToken, buyAmount);
         }
         const ethSold = getDeterministicBuyQuote(getUniswapExchangeSalt(buyToken), WETH_ADDRESS, buyToken, buyAmount);
@@ -310,7 +315,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         makerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
-                    [...SELL_SOURCES.map(n => allSources[n]), randomAddress()],
+                    SELL_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -324,7 +329,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         takerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
-                    [...SELL_SOURCES.map(n => allSources[n]), randomAddress()],
+                    SELL_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -338,7 +343,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         makerAssetData: INVALID_ASSET_DATA,
                     })),
-                    [...SELL_SOURCES.map(n => allSources[n]), randomAddress()],
+                    SELL_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -352,7 +357,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         takerAssetData: INVALID_ASSET_DATA,
                     })),
-                    [...SELL_SOURCES.map(n => allSources[n]), randomAddress()],
+                    SELL_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -428,7 +433,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         makerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
-                    [...BUY_SOURCES.map(n => allSources[n]), randomAddress()],
+                    BUY_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -442,7 +447,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         takerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
-                    [...BUY_SOURCES.map(n => allSources[n]), randomAddress()],
+                    BUY_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -456,7 +461,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         makerAssetData: INVALID_ASSET_DATA,
                     })),
-                    [...BUY_SOURCES.map(n => allSources[n]), randomAddress()],
+                    BUY_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -470,7 +475,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         ...o,
                         takerAssetData: INVALID_ASSET_DATA,
                     })),
-                    [...BUY_SOURCES.map(n => allSources[n]), randomAddress()],
+                    BUY_SOURCES.map(n => allSources[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -590,6 +595,11 @@ blockchainTests('erc20-bridge-sampler', env => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
         });
 
+        it('throws if tokens are the same', async () => {
+            const tx = testContract.sampleSellsFromKyberNetwork(MAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            return expect(tx).to.revertWith(INVALID_TOKEN_PAIR_ERROR);
+        });
+
         it('can return no quotes', async () => {
             const quotes = await testContract.sampleSellsFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, []).callAsync();
             expect(quotes).to.deep.eq([]);
@@ -629,6 +639,11 @@ blockchainTests('erc20-bridge-sampler', env => {
 
         before(async () => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
+        });
+
+        it('throws if tokens are the same', async () => {
+            const tx = testContract.sampleSellsFromEth2Dai(MAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            return expect(tx).to.revertWith(INVALID_TOKEN_PAIR_ERROR);
         });
 
         it('can return no quotes', async () => {
@@ -672,6 +687,11 @@ blockchainTests('erc20-bridge-sampler', env => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
         });
 
+        it('throws if tokens are the same', async () => {
+            const tx = testContract.sampleBuysFromEth2Dai(MAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            return expect(tx).to.revertWith(INVALID_TOKEN_PAIR_ERROR);
+        });
+
         it('can return no quotes', async () => {
             const quotes = await testContract.sampleBuysFromEth2Dai(TAKER_TOKEN, MAKER_TOKEN, []).callAsync();
             expect(quotes).to.deep.eq([]);
@@ -713,6 +733,11 @@ blockchainTests('erc20-bridge-sampler', env => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
         });
 
+        it('throws if tokens are the same', async () => {
+            const tx = testContract.sampleSellsFromUniswap(MAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            return expect(tx).to.revertWith(INVALID_TOKEN_PAIR_ERROR);
+        });
+
         it('can return no quotes', async () => {
             const quotes = await testContract.sampleSellsFromUniswap(TAKER_TOKEN, MAKER_TOKEN, []).callAsync();
             expect(quotes).to.deep.eq([]);
@@ -750,7 +775,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const tx = testContract
                 .sampleSellsFromUniswap(TAKER_TOKEN, nonExistantToken, getSampleAmounts(TAKER_TOKEN))
                 .callAsync();
-            expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
+            return expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
         });
 
         it('throws if no exchange exists for the taker token', async () => {
@@ -758,7 +783,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const tx = testContract
                 .sampleSellsFromUniswap(nonExistantToken, MAKER_TOKEN, getSampleAmounts(nonExistantToken))
                 .callAsync();
-            expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
+            return expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
         });
     });
 
@@ -768,6 +793,11 @@ blockchainTests('erc20-bridge-sampler', env => {
 
         before(async () => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
+        });
+
+        it('throws if tokens are the same', async () => {
+            const tx = testContract.sampleBuysFromUniswap(MAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            return expect(tx).to.revertWith(INVALID_TOKEN_PAIR_ERROR);
         });
 
         it('can return no quotes', async () => {
@@ -807,7 +837,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const tx = testContract
                 .sampleBuysFromUniswap(TAKER_TOKEN, nonExistantToken, getSampleAmounts(TAKER_TOKEN))
                 .callAsync();
-            expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
+            return expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
         });
 
         it('throws if no exchange exists for the taker token', async () => {
@@ -815,7 +845,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const tx = testContract
                 .sampleBuysFromUniswap(nonExistantToken, MAKER_TOKEN, getSampleAmounts(nonExistantToken))
                 .callAsync();
-            expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
+            return expect(tx).to.revertWith(UNSUPPORTED_UNISWAP_EXCHANGE_ERROR);
         });
     });
 });

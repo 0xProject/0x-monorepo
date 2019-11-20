@@ -186,6 +186,7 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
+        _assertValidPair(makerToken, takerToken);
         address _takerToken = takerToken == _getWETHAddress() ? KYBER_ETH_ADDRESS : takerToken;
         address _makerToken = makerToken == _getWETHAddress() ? KYBER_ETH_ADDRESS : makerToken;
         uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
@@ -222,6 +223,7 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
+        _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
@@ -248,6 +250,7 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
+        _assertValidPair(makerToken, takerToken);
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
@@ -274,6 +277,7 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
+        _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         IUniswapExchangeQuotes takerTokenExchange = takerToken == _getWETHAddress() ?
@@ -315,6 +319,7 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
+        _assertValidPair(makerToken, takerToken);
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
         IUniswapExchangeQuotes takerTokenExchange = takerToken == _getWETHAddress() ?
@@ -435,5 +440,12 @@ contract ERC20BridgeSampler is
             tokenAddress := mload(add(assetData, 0x24))
         }
         require(selector == ERC20_PROXY_ID, "UNSUPPORTED_ASSET_PROXY");
+    }
+
+    function _assertValidPair(address makerToken, address takerToken)
+        private
+        pure
+    {
+        require(makerToken != takerToken, "INVALID_TOKEN_PAIR");
     }
 }
