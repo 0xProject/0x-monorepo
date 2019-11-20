@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.3 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v4.4.0-beta.2 - _November 17, 2019_
 
     * Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details. (#2284)
@@ -13,6 +17,8 @@ CHANGELOG
     * Python: Added a build_transaction() interface to contract method classes (#2345)
     * Python: Removed `validator` argument to contract method classes for methods that don't have any inputs (#2345)
     * Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names. (#2345)
+    * Moved shared logic into `BaseContract` helpers to reduce size. (#2343)
+    * Re-enable gas estimation when `gas` is not provided. (#2343)
 
 ## v4.4.0-beta.1 - _November 7, 2019_
 

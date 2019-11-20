@@ -13,8 +13,13 @@
             {
                 "note": "Add UniswapBridge and Eth2DaiBridge addresses to schema, add mainnet addresses",
                 "pr": 2349
+            },
+            {
+                "note": "Deploy Forwarder AFTER staking is hooked up",
+                "pr": 2350
             }
-        ]
+        ],
+        "timestamp": 1574238768
     },
     {
         "version": "4.4.0-beta.2",

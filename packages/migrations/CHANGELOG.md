@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.3 - _November 20, 2019_
+
+    * Update Exchange, DevUtils, Coordinator, and Forwarder addresses on all networks (#2349)
+    * Update StakingProxy, Staking, and ZrxVault addresses on mainnet (#2349)
+    * Add UniswapBridge and Eth2DaiBridge addresses to schema, add mainnet addresses (#2349)
+    * Deploy Forwarder AFTER staking is hooked up (#2350)
+
 ## v4.4.0-beta.2 - _November 17, 2019_
 
     * Migrations script no longer deploys DutchAuction since it is not yet upgraded for V3 of the protocol (#2324)

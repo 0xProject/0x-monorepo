@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.5.0-beta.3 - _November 20, 2019_
+
+    * Moved shared logic into `BaseContract` helpers to reduce size. (#2343)
+
 ## v5.5.0-beta.2 - _November 17, 2019_
 
     * Dependencies updated

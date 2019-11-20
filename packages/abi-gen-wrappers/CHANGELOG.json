@@ -6,7 +6,8 @@
                 "note": "Re-enable gas estimation when `gas` is not provided.",
                 "pr": 2343
             }
-        ]
+        ],
+        "timestamp": 1574238768
     },
     {
         "version": "5.4.0-beta.2",

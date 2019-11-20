@@ -1,10 +1,12 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
 import { Orderbook } from '@0x/orderbook';
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { Order, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
-import { OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
+import { MarketOperation, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
+
+import { utils } from './utils';
 
 export const assert = {
     ...sharedAssert,
@@ -12,8 +14,7 @@ export const assert = {
         sharedAssert.isHexString(`${variableName}.takerAssetData`, swapQuote.takerAssetData);
         sharedAssert.isHexString(`${variableName}.makerAssetData`, swapQuote.makerAssetData);
         sharedAssert.doesConformToSchema(`${variableName}.orders`, swapQuote.orders, schemas.signedOrdersSchema);
-        sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
-        assert.isValidOrdersForSwapQuote(
+        assert.isValidSwapQuoteOrders(
             `${variableName}.orders`,
             swapQuote.orders,
             swapQuote.makerAssetData,
@@ -27,7 +28,7 @@ export const assert = {
             sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
         }
     },
-    isValidOrdersForSwapQuote(
+    isValidSwapQuoteOrders(
         variableName: string,
         orders: SignedOrder[],
         makerAssetData: string,
@@ -48,10 +49,21 @@ export const assert = {
             );
         });
     },
+    isValidOrdersForSwapQuoter<T extends Order>(variableName: string, orders: T[]): void {
+        _.every(orders, (order: T, index: number) => {
+            assert.assert(
+                order.takerFee.isZero() ||
+                    utils.isOrderTakerFeePayableWithTakerAsset(order) ||
+                    utils.isOrderTakerFeePayableWithMakerAsset(order),
+                `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} or ${
+                    order.takerAssetData
+                } but found ${order.takerFeeAssetData}`,
+            );
+        });
+    },
     isValidForwarderSwapQuote(variableName: string, swapQuote: SwapQuote, wethAssetData: string): void {
         assert.isValidSwapQuote(variableName, swapQuote);
         assert.isValidForwarderSignedOrders(`${variableName}.orders`, swapQuote.orders, wethAssetData);
-        assert.isValidForwarderSignedOrders(`${variableName}.feeOrders`, swapQuote.feeOrders, wethAssetData);
     },
     isValidForwarderSignedOrders(variableName: string, orders: SignedOrder[], wethAssetData: string): void {
         _.forEach(orders, (o: SignedOrder, i: number) => {
@@ -65,10 +77,10 @@ export const assert = {
         );
     },
     isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
-        sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, swapQuoteInfo.feeTakerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, swapQuoteInfo.totalTakerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.makerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.feeTakerAssetAmount`, swapQuoteInfo.feeTakerAssetAmount);
+        sharedAssert.isBigNumber(`${variableName}.totalTakerAssetAmount`, swapQuoteInfo.totalTakerAssetAmount);
+        sharedAssert.isBigNumber(`${variableName}.takerAssetAmount`, swapQuoteInfo.takerAssetAmount);
+        sharedAssert.isBigNumber(`${variableName}.makerAssetAmount`, swapQuoteInfo.makerAssetAmount);
     },
     isValidOrderbook(variableName: string, orderFetcher: Orderbook): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);

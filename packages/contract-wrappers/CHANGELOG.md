@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v12.2.0-beta.3 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v12.2.0-beta.2 - _November 17, 2019_
 
     * [Breaking] Remove `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers (#2324)

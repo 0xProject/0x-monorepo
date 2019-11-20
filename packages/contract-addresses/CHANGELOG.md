@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0-beta.4 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v3.3.0-beta.3 - _November 17, 2019_
 
     * Update all v3 mainnet addresses (#2322)

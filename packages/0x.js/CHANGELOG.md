@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.0.0-beta.2 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v8.0.0-beta.1 - _November 17, 2019_
 
     * Remove ZRXToken contract wrapper (#2324)

@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-utils",
-    "version": "2.4.0-beta.2",
+    "version": "2.4.0-beta.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -32,8 +32,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
-        "@0x/tslint-config": "^3.1.0-beta.2",
         "@0x/ts-doc-gen": "^0.0.22",
+        "@0x/tslint-config": "^3.1.0-beta.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "make-promises-safe": "^1.1.0",
@@ -42,8 +42,8 @@
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "3.0.1",
-        "typedoc": "^0.15.0"
+        "typedoc": "^0.15.0",
+        "typescript": "3.0.1"
     },
     "dependencies": {
         "@0x/subproviders": "^5.1.0-beta.2",
@@ -51,14 +51,14 @@
         "@0x/typescript-typings": "^4.4.0-beta.2",
         "@0x/utils": "^4.6.0-beta.2",
         "@0x/web3-wrapper": "^6.1.0-beta.2",
-        "web3-provider-engine": "14.0.6",
         "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
         "ethereum-types": "^2.2.0-beta.2",
-        "lodash": "^4.17.11"
+        "lodash": "^4.17.11",
+        "web3-provider-engine": "14.0.6"
     },
     "publishConfig": {
         "access": "public"
