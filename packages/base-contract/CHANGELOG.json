@@ -6,7 +6,8 @@
                 "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
                 "pr": 2343
             }
-        ]
+        ],
+        "timestamp": 1574238768
     },
     {
         "version": "5.5.0-beta.2",

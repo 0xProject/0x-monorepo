@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v0.1.0-beta.3 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v0.1.0-beta.2 - _November 17, 2019_
 
     * Added dependency on @0x/contracts-dev-utils (#2321)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.5.0-beta.3 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v8.5.0-beta.2 - _November 17, 2019_
 
     * [Breaking] Removed `OrderStateUtils`, `OrderValidationUtils`, `ExchangeTransferSimulator` and all abstract and store classes. For order validation, please use the `DevUtils` contract wrapper method `getOrderRelevantState`|`getOrderRelevantStates` (#2324)

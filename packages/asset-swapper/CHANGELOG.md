@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0-beta.3 - _November 20, 2019_
+
+    * Refactor of logic for marketBuy/marketSell order pruning and selecting, introduced protocol fees, and refactored types used by the package (#2272)
+    * Incorporate paying protocol fees. (#2350)
+
+## v2.1.0-beta.2 - _November 7, 2019_
+
+    * Update BigNumber version to ~9.0.0 (#2342)
+
 ## v2.1.0-beta.1 - _November 7, 2019_
 
     * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)

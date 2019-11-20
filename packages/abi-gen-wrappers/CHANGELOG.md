@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.0-beta.3 - _November 20, 2019_
+
+    * Re-enable gas estimation when `gas` is not provided. (#2343)
+
 ## v5.4.0-beta.2 - _November 17, 2019_
 
     * [Breaking] Remove `erc20Proxy`, `multiAssetProxy`, `erc1155Proxy`, `staticCallProxy`, `erc721Proxy`, `assetProxyOwner`, `ZRXToken` and `dutchAuction` wrappers (#2324)

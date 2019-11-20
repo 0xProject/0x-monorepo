@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0-beta.3 - _November 20, 2019_
+
+    * Dependencies updated
+
 ## v4.1.0-beta.2 - _November 17, 2019_
 
     * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
