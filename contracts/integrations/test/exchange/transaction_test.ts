@@ -36,7 +36,7 @@ import { Taker } from '../framework/actors/taker';
 import { DeploymentManager } from '../framework/deployment_manager';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Transaction integration tests', env => {
+blockchainTests.resets('Transaction integration tests', env => {
     let deployment: DeploymentManager;
 
     let maker: Maker;
@@ -79,37 +79,42 @@ blockchainTests.resets.only('Transaction integration tests', env => {
         await maker.configureERC20TokenAsync(makerToken);
         await maker.configureERC20TokenAsync(makerFeeToken);
     });
+
+    after(async () => {
+        Actor.count = 0;
+    });
+
+    function defaultFillEvent(order: SignedOrder): ExchangeFillEventArgs {
+        return {
+            makerAddress: maker.address,
+            feeRecipientAddress: feeRecipient.address,
+            makerAssetData: order.makerAssetData,
+            takerAssetData: order.takerAssetData,
+            makerFeeAssetData: order.makerFeeAssetData,
+            takerFeeAssetData: order.takerFeeAssetData,
+            orderHash: orderHashUtils.getOrderHashHex(order),
+            takerAddress: takers[0].address,
+            senderAddress: sender.address,
+            makerAssetFilledAmount: order.makerAssetAmount,
+            takerAssetFilledAmount: order.takerAssetAmount,
+            makerFeePaid: order.makerFee,
+            takerFeePaid: order.takerFee,
+            protocolFeePaid: DeploymentManager.protocolFee,
+        };
+    }
+
+    function defaultCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
+        return {
+            makerAddress: maker.address,
+            feeRecipientAddress: feeRecipient.address,
+            makerAssetData: order.makerAssetData,
+            takerAssetData: order.takerAssetData,
+            senderAddress: sender.address,
+            orderHash: orderHashUtils.getOrderHashHex(order),
+        };
+    }
+
     describe('executeTransaction', () => {
-        function defaultFillEvent(order: SignedOrder): ExchangeFillEventArgs {
-            return {
-                makerAddress: maker.address,
-                feeRecipientAddress: feeRecipient.address,
-                makerAssetData: order.makerAssetData,
-                takerAssetData: order.takerAssetData,
-                makerFeeAssetData: order.makerFeeAssetData,
-                takerFeeAssetData: order.takerFeeAssetData,
-                orderHash: orderHashUtils.getOrderHashHex(order),
-                takerAddress: takers[0].address,
-                senderAddress: sender.address,
-                makerAssetFilledAmount: order.makerAssetAmount,
-                takerAssetFilledAmount: order.takerAssetAmount,
-                makerFeePaid: order.makerFee,
-                takerFeePaid: order.takerFee,
-                protocolFeePaid: DeploymentManager.protocolFee,
-            };
-        }
-
-        function defaultCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
-            return {
-                makerAddress: maker.address,
-                feeRecipientAddress: feeRecipient.address,
-                makerAssetData: order.makerAssetData,
-                takerAssetData: order.takerAssetData,
-                senderAddress: sender.address,
-                orderHash: orderHashUtils.getOrderHashHex(order),
-            };
-        }
-
         describe('general functionality', () => {
             it('should log the correct transactionHash if successfully executed', async () => {
                 const order = await maker.signOrderAsync();
@@ -487,334 +492,334 @@ blockchainTests.resets.only('Transaction integration tests', env => {
                     ExchangeEvents.CancelUpTo,
                 );
             });
-            describe('preSign', () => {
-                it('should preSign a hash for the signer', async () => {
-                    const order = await maker.signOrderAsync();
-                    const orderHash = orderHashUtils.getOrderHashHex(order);
-                    const data = deployment.exchange.preSign(orderHash).getABIEncodedTransactionData();
-                    const transaction = await takers[0].signTransactionAsync({ data });
-                    let isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
-                    expect(isPreSigned).to.be.eq(false);
-                    await deployment.exchange
-                        .executeTransaction(transaction, transaction.signature)
-                        .awaitTransactionSuccessAsync({ from: sender.address });
-                    isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
-                    expect(isPreSigned).to.be.eq(true);
-                });
-                it('should preSign a hash for the caller if called without a signature', async () => {
-                    const order = await maker.signOrderAsync();
-                    const orderHash = orderHashUtils.getOrderHashHex(order);
-                    const data = deployment.exchange.preSign(orderHash).getABIEncodedTransactionData();
-                    const transaction = await takers[0].signTransactionAsync({ data });
-                    let isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
-                    expect(isPreSigned).to.be.eq(false);
-                    await deployment.exchange
-                        .executeTransaction(transaction, constants.NULL_BYTES)
-                        .awaitTransactionSuccessAsync({ from: takers[0].address });
-                    isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
-                    expect(isPreSigned).to.be.eq(true);
-                });
+        });
+        describe('preSign', () => {
+            it('should preSign a hash for the signer', async () => {
+                const order = await maker.signOrderAsync();
+                const orderHash = orderHashUtils.getOrderHashHex(order);
+                const data = deployment.exchange.preSign(orderHash).getABIEncodedTransactionData();
+                const transaction = await takers[0].signTransactionAsync({ data });
+                let isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
+                expect(isPreSigned).to.be.eq(false);
+                await deployment.exchange
+                    .executeTransaction(transaction, transaction.signature)
+                    .awaitTransactionSuccessAsync({ from: sender.address });
+                isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
+                expect(isPreSigned).to.be.eq(true);
             });
-            describe('setSignatureValidatorApproval', () => {
-                it('should approve a validator for the signer', async () => {
-                    const validatorAddress = randomAddress();
-                    const shouldApprove = true;
-                    const data = deployment.exchange
-                        .setSignatureValidatorApproval(validatorAddress, shouldApprove)
-                        .getABIEncodedTransactionData();
-                    const transaction = await takers[0].signTransactionAsync({ data });
-                    const transactionReceipt = await deployment.exchange
-                        .executeTransaction(transaction, transaction.signature)
-                        .awaitTransactionSuccessAsync({ from: sender.address });
-                    verifyEventsFromLogs<ExchangeSignatureValidatorApprovalEventArgs>(
-                        transactionReceipt.logs,
-                        [
-                            {
-                                signerAddress: takers[0].address,
-                                validatorAddress,
-                                isApproved: shouldApprove,
-                            },
-                        ],
-                        ExchangeEvents.SignatureValidatorApproval,
-                    );
-                });
-                it('should approve a validator for the caller if called with no signature', async () => {
-                    const validatorAddress = randomAddress();
-                    const shouldApprove = true;
-                    const data = deployment.exchange
-                        .setSignatureValidatorApproval(validatorAddress, shouldApprove)
-                        .getABIEncodedTransactionData();
-                    const transaction = await takers[0].signTransactionAsync({ data });
-                    const transactionReceipt = await deployment.exchange
-                        .executeTransaction(transaction, constants.NULL_BYTES)
-                        .awaitTransactionSuccessAsync({ from: takers[0].address });
-                    verifyEventsFromLogs<ExchangeSignatureValidatorApprovalEventArgs>(
-                        transactionReceipt.logs,
-                        [
-                            {
-                                signerAddress: takers[0].address,
-                                validatorAddress,
-                                isApproved: shouldApprove,
-                            },
-                        ],
-                        ExchangeEvents.SignatureValidatorApproval,
-                    );
-                });
+            it('should preSign a hash for the caller if called without a signature', async () => {
+                const order = await maker.signOrderAsync();
+                const orderHash = orderHashUtils.getOrderHashHex(order);
+                const data = deployment.exchange.preSign(orderHash).getABIEncodedTransactionData();
+                const transaction = await takers[0].signTransactionAsync({ data });
+                let isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
+                expect(isPreSigned).to.be.eq(false);
+                await deployment.exchange
+                    .executeTransaction(transaction, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync({ from: takers[0].address });
+                isPreSigned = await deployment.exchange.preSigned(orderHash, takers[0].address).callAsync();
+                expect(isPreSigned).to.be.eq(true);
             });
         });
-        describe('batchExecuteTransactions', () => {
-            it('should successfully call fillOrder via 2 transactions with different taker signatures', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
+        describe('setSignatureValidatorApproval', () => {
+            it('should approve a validator for the signer', async () => {
+                const validatorAddress = randomAddress();
+                const shouldApprove = true;
+                const data = deployment.exchange
+                    .setSignatureValidatorApproval(validatorAddress, shouldApprove)
+                    .getABIEncodedTransactionData();
+                const transaction = await takers[0].signTransactionAsync({ data });
                 const transactionReceipt = await deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
+                    .executeTransaction(transaction, transaction.signature)
                     .awaitTransactionSuccessAsync({ from: sender.address });
-                verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
+                verifyEventsFromLogs<ExchangeSignatureValidatorApprovalEventArgs>(
                     transactionReceipt.logs,
                     [
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
-                    ],
-                    ExchangeEvents.TransactionExecution,
-                );
-                verifyEventsFromLogs<ExchangeFillEventArgs>(
-                    transactionReceipt.logs,
-                    [defaultFillEvent(order1), { ...defaultFillEvent(order2), takerAddress: takers[1].address }],
-                    ExchangeEvents.Fill,
-                );
-            });
-            it('should successfully call fillOrder via 2 transactions when called by taker with no signatures', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await takers[0].signTransactionAsync({ data: data2 });
-                transaction1.signature = constants.NULL_BYTES;
-                transaction2.signature = constants.NULL_BYTES;
-                const transactionReceipt = await deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
-                    .awaitTransactionSuccessAsync({ from: takers[0].address });
-
-                verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
-                    transactionReceipt.logs,
-                    [
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
-                    ],
-                    ExchangeEvents.TransactionExecution,
-                );
-                verifyEventsFromLogs<ExchangeFillEventArgs>(
-                    transactionReceipt.logs,
-                    [
-                        { ...defaultFillEvent(order1), senderAddress: takers[0].address },
-                        { ...defaultFillEvent(order2), senderAddress: takers[0].address },
-                    ],
-                    ExchangeEvents.Fill,
-                );
-            });
-            it('should successfully call fillOrder via 2 transactions when one is signed by taker1 and executeTransaction is called by taker2', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
-                const transactionReceipt = await deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, constants.NULL_BYTES],
-                    )
-                    .awaitTransactionSuccessAsync({ from: takers[1].address });
-
-                verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
-                    transactionReceipt.logs,
-                    [
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
-                    ],
-                    ExchangeEvents.TransactionExecution,
-                );
-                verifyEventsFromLogs<ExchangeFillEventArgs>(
-                    transactionReceipt.logs,
-                    [
-                        { ...defaultFillEvent(order1), senderAddress: takers[1].address },
                         {
-                            ...defaultFillEvent(order2),
-                            takerAddress: takers[1].address,
-                            senderAddress: takers[1].address,
+                            signerAddress: takers[0].address,
+                            validatorAddress,
+                            isApproved: shouldApprove,
                         },
                     ],
-                    ExchangeEvents.Fill,
+                    ExchangeEvents.SignatureValidatorApproval,
                 );
             });
-            it('should return the correct data for 2 different fillOrder calls', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
-                const returnData = await deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
-                    .callAsync({ from: sender.address });
-                const fillResults1: FillResults = deployment.exchange.getABIDecodedReturnData(
-                    'fillOrder',
-                    returnData[0],
-                );
-                const fillResults2: FillResults = deployment.exchange.getABIDecodedReturnData(
-                    'fillOrder',
-                    returnData[1],
-                );
-                expect(fillResults1).to.deep.equal(
-                    ReferenceFunctions.calculateFillResults(
-                        order1,
-                        order1.takerAssetAmount,
-                        DeploymentManager.protocolFeeMultiplier,
-                        DeploymentManager.gasPrice,
-                    ),
-                );
-                expect(fillResults2).to.deep.equal(
-                    ReferenceFunctions.calculateFillResults(
-                        order2,
-                        order2.takerAssetAmount,
-                        DeploymentManager.protocolFeeMultiplier,
-                        DeploymentManager.gasPrice,
-                    ),
-                );
-            });
-            it('should successfully call fillOrder and cancelOrder via 2 transactions', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
-                    order2,
-                ]);
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await maker.signTransactionAsync({ data: data2 });
+            it('should approve a validator for the caller if called with no signature', async () => {
+                const validatorAddress = randomAddress();
+                const shouldApprove = true;
+                const data = deployment.exchange
+                    .setSignatureValidatorApproval(validatorAddress, shouldApprove)
+                    .getABIEncodedTransactionData();
+                const transaction = await takers[0].signTransactionAsync({ data });
                 const transactionReceipt = await deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
-                    .awaitTransactionSuccessAsync({ from: sender.address });
-
-                verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
+                    .executeTransaction(transaction, constants.NULL_BYTES)
+                    .awaitTransactionSuccessAsync({ from: takers[0].address });
+                verifyEventsFromLogs<ExchangeSignatureValidatorApprovalEventArgs>(
                     transactionReceipt.logs,
                     [
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
-                        { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
+                        {
+                            signerAddress: takers[0].address,
+                            validatorAddress,
+                            isApproved: shouldApprove,
+                        },
                     ],
-                    ExchangeEvents.TransactionExecution,
-                );
-
-                const fillLogIndex = transactionReceipt.logs.findIndex(
-                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
-                );
-                const cancelLogIndex = transactionReceipt.logs.findIndex(
-                    log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
-                );
-                expect(cancelLogIndex).to.greaterThan(fillLogIndex);
-
-                verifyEventsFromLogs<ExchangeFillEventArgs>(
-                    transactionReceipt.logs,
-                    [defaultFillEvent(order1)],
-                    ExchangeEvents.Fill,
-                );
-                verifyEventsFromLogs<ExchangeCancelEventArgs>(
-                    transactionReceipt.logs,
-                    [defaultCancelEvent(order2)],
-                    ExchangeEvents.Cancel,
+                    ExchangeEvents.SignatureValidatorApproval,
                 );
             });
-            it('should return the correct data for a fillOrder and cancelOrder call', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+        });
+    });
+    describe('batchExecuteTransactions', () => {
+        it('should successfully call fillOrder via 2 transactions with different taker signatures', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
+            const transactionReceipt = await deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .awaitTransactionSuccessAsync({ from: sender.address });
+            verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
+                transactionReceipt.logs,
+                [
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
+                ],
+                ExchangeEvents.TransactionExecution,
+            );
+            verifyEventsFromLogs<ExchangeFillEventArgs>(
+                transactionReceipt.logs,
+                [defaultFillEvent(order1), { ...defaultFillEvent(order2), takerAddress: takers[1].address }],
+                ExchangeEvents.Fill,
+            );
+        });
+        it('should successfully call fillOrder via 2 transactions when called by taker with no signatures', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await takers[0].signTransactionAsync({ data: data2 });
+            transaction1.signature = constants.NULL_BYTES;
+            transaction2.signature = constants.NULL_BYTES;
+            const transactionReceipt = await deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .awaitTransactionSuccessAsync({ from: takers[0].address });
+
+            verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
+                transactionReceipt.logs,
+                [
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
+                ],
+                ExchangeEvents.TransactionExecution,
+            );
+            verifyEventsFromLogs<ExchangeFillEventArgs>(
+                transactionReceipt.logs,
+                [
+                    { ...defaultFillEvent(order1), senderAddress: takers[0].address },
+                    { ...defaultFillEvent(order2), senderAddress: takers[0].address },
+                ],
+                ExchangeEvents.Fill,
+            );
+        });
+        it('should successfully call fillOrder via 2 transactions when one is signed by taker1 and executeTransaction is called by taker2', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
+            const transactionReceipt = await deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, constants.NULL_BYTES],
+                )
+                .awaitTransactionSuccessAsync({ from: takers[1].address });
+
+            verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
+                transactionReceipt.logs,
+                [
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
+                ],
+                ExchangeEvents.TransactionExecution,
+            );
+            verifyEventsFromLogs<ExchangeFillEventArgs>(
+                transactionReceipt.logs,
+                [
+                    { ...defaultFillEvent(order1), senderAddress: takers[1].address },
+                    {
+                        ...defaultFillEvent(order2),
+                        takerAddress: takers[1].address,
+                        senderAddress: takers[1].address,
+                    },
+                ],
+                ExchangeEvents.Fill,
+            );
+        });
+        it('should return the correct data for 2 different fillOrder calls', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
+            const returnData = await deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .callAsync({ from: sender.address });
+            const fillResults1: FillResults = deployment.exchange.getABIDecodedReturnData(
+                'fillOrder',
+                returnData[0],
+            );
+            const fillResults2: FillResults = deployment.exchange.getABIDecodedReturnData(
+                'fillOrder',
+                returnData[1],
+            );
+            expect(fillResults1).to.deep.equal(
+                ReferenceFunctions.calculateFillResults(
+                    order1,
+                    order1.takerAssetAmount,
+                    DeploymentManager.protocolFeeMultiplier,
+                    DeploymentManager.gasPrice,
+                ),
+            );
+            expect(fillResults2).to.deep.equal(
+                ReferenceFunctions.calculateFillResults(
                     order2,
-                ]);
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await maker.signTransactionAsync({ data: data2 });
-                const returnData = await deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
-                    .callAsync({ from: sender.address });
-                const fillResults: FillResults = deployment.exchange.getABIDecodedReturnData(
-                    'fillOrder',
-                    returnData[0],
-                );
-                expect(fillResults).to.deep.equal(
-                    ReferenceFunctions.calculateFillResults(
-                        order1,
-                        order1.takerAssetAmount,
-                        DeploymentManager.protocolFeeMultiplier,
-                        DeploymentManager.gasPrice,
-                    ),
-                );
-                expect(returnData[1]).to.eq(constants.NULL_BYTES);
+                    order2.takerAssetAmount,
+                    DeploymentManager.protocolFeeMultiplier,
+                    DeploymentManager.gasPrice,
+                ),
+            );
+        });
+        it('should successfully call fillOrder and cancelOrder via 2 transactions', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+                order2,
+            ]);
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await maker.signTransactionAsync({ data: data2 });
+            const transactionReceipt = await deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .awaitTransactionSuccessAsync({ from: sender.address });
+
+            verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
+                transactionReceipt.logs,
+                [
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction1) },
+                    { transactionHash: transactionHashUtils.getTransactionHashHex(transaction2) },
+                ],
+                ExchangeEvents.TransactionExecution,
+            );
+
+            const fillLogIndex = transactionReceipt.logs.findIndex(
+                log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+            );
+            const cancelLogIndex = transactionReceipt.logs.findIndex(
+                log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
+            );
+            expect(cancelLogIndex).to.greaterThan(fillLogIndex);
+
+            verifyEventsFromLogs<ExchangeFillEventArgs>(
+                transactionReceipt.logs,
+                [defaultFillEvent(order1)],
+                ExchangeEvents.Fill,
+            );
+            verifyEventsFromLogs<ExchangeCancelEventArgs>(
+                transactionReceipt.logs,
+                [defaultCancelEvent(order2)],
+                ExchangeEvents.Cancel,
+            );
+        });
+        it('should return the correct data for a fillOrder and cancelOrder call', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+                order2,
+            ]);
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await maker.signTransactionAsync({ data: data2 });
+            const returnData = await deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .callAsync({ from: sender.address });
+            const fillResults: FillResults = deployment.exchange.getABIDecodedReturnData(
+                'fillOrder',
+                returnData[0],
+            );
+            expect(fillResults).to.deep.equal(
+                ReferenceFunctions.calculateFillResults(
+                    order1,
+                    order1.takerAssetAmount,
+                    DeploymentManager.protocolFeeMultiplier,
+                    DeploymentManager.gasPrice,
+                ),
+            );
+            expect(returnData[1]).to.eq(constants.NULL_BYTES);
+        });
+        it('should revert if a single transaction reverts', async () => {
+            const order = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
+            const transaction1 = await maker.signTransactionAsync({ data: data1 });
+            const transaction2 = await takers[0].signTransactionAsync({ data: data2 });
+            const tx = deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .awaitTransactionSuccessAsync({ from: sender.address });
+            const nestedError = new ExchangeRevertErrors.OrderStatusError(
+                orderHashUtils.getOrderHashHex(order),
+                OrderStatus.Cancelled,
+            ).encode();
+            const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                transactionHashUtils.getTransactionHashHex(transaction2),
+                nestedError,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('should revert if a single transaction is expired', async () => {
+            const order1 = await maker.signOrderAsync();
+            const order2 = await maker.signOrderAsync();
+            const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
+            const transaction2 = await takers[1].signTransactionAsync({
+                data: data2,
+                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
-            it('should revert if a single transaction reverts', async () => {
-                const order = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
-                const transaction1 = await maker.signTransactionAsync({ data: data1 });
-                const transaction2 = await takers[0].signTransactionAsync({ data: data2 });
-                const tx = deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
-                    .awaitTransactionSuccessAsync({ from: sender.address });
-                const nestedError = new ExchangeRevertErrors.OrderStatusError(
-                    orderHashUtils.getOrderHashHex(order),
-                    OrderStatus.Cancelled,
-                ).encode();
-                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
-                    transactionHashUtils.getTransactionHashHex(transaction2),
-                    nestedError,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-            it('should revert if a single transaction is expired', async () => {
-                const order1 = await maker.signOrderAsync();
-                const order2 = await maker.signOrderAsync();
-                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
-                const transaction2 = await takers[1].signTransactionAsync({
-                    data: data2,
-                    expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
-                });
-                const tx = deployment.exchange
-                    .batchExecuteTransactions(
-                        [transaction1, transaction2],
-                        [transaction1.signature, transaction2.signature],
-                    )
-                    .awaitTransactionSuccessAsync({ from: sender.address });
-                const expiredTransactionHash = transactionHashUtils.getTransactionHashHex(transaction2);
-                const expectedError = new ExchangeRevertErrors.TransactionError(
-                    ExchangeRevertErrors.TransactionErrorCode.Expired,
-                    expiredTransactionHash,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
+            const tx = deployment.exchange
+                .batchExecuteTransactions(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                )
+                .awaitTransactionSuccessAsync({ from: sender.address });
+            const expiredTransactionHash = transactionHashUtils.getTransactionHashHex(transaction2);
+            const expectedError = new ExchangeRevertErrors.TransactionError(
+                ExchangeRevertErrors.TransactionErrorCode.Expired,
+                expiredTransactionHash,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 });
