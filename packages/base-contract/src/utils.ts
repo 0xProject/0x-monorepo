@@ -30,9 +30,12 @@ export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: s
 }
 
 function dataItemsToABIString(dataItems: DataItem[]): string {
+    const trailingArrayRegex = /\[\d*\]$/;
     const types = dataItems.map(item => {
         if (item.components) {
-            return `(${dataItemsToABIString(item.components)})`;
+            const componentsABIString = `(${dataItemsToABIString(item.components)})`;
+            const trailingArray = item.type.match(trailingArrayRegex);
+            return trailingArray !== null ? componentsABIString.concat(trailingArray[0]) : componentsABIString;
         } else {
             return item.type;
         }
