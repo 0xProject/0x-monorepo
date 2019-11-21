@@ -12,7 +12,7 @@ import { runMigrationsAsync } from './migration';
     let providerConfigs;
     let provider: Web3ProviderEngine;
     let txDefaults;
-    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJsonPath = path.join(__dirname, '../..', 'package.json');
     const packageJsonString = fs.readFileSync(packageJsonPath, 'utf8');
     const packageJson = JSON.parse(packageJsonString);
     if (packageJson.config === undefined || packageJson.config.snapshot_name === undefined) {
