@@ -182,6 +182,7 @@ setup(
         "deprecated",
         "web3",
         "eth-abi",
+        "eth_typing",
         "eth_utils",
         "mypy_extensions",
     ],
