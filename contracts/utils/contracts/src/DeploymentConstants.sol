@@ -42,6 +42,8 @@ contract DeploymentConstants {
     address constant private DEV_UTILS_ADDRESS = 0xcCc2431a7335F21d9268bA62F0B32B0f2EFC463f;
     /// @dev Kyber ETH pseudo-address.
     address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    /// @dev Mainnet address of the DyDx contract.
+    address constant private DYDX_ADDRESS = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
@@ -121,5 +123,15 @@ contract DeploymentConstants {
         returns (address devUtils)
     {
         return DEV_UTILS_ADDRESS;
+    }
+
+    /// @dev Overridable way to get the DyDx contract.
+    /// @return exchange The DyDx exchange contract.
+    function _getDyDxAddress()
+        internal
+        view
+        returns (address dydxAddress)
+    {
+        return DYDX_ADDRESS;
     }
 }
