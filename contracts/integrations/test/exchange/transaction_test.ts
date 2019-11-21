@@ -637,10 +637,7 @@ blockchainTests.resets('Transaction integration tests', env => {
             const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
             const transaction2 = await takers[1].signTransactionAsync({ data: data2 });
             const transactionReceipt = await deployment.exchange
-                .batchExecuteTransactions(
-                    [transaction1, transaction2],
-                    [transaction1.signature, constants.NULL_BYTES],
-                )
+                .batchExecuteTransactions([transaction1, transaction2], [transaction1.signature, constants.NULL_BYTES])
                 .awaitTransactionSuccessAsync({ from: takers[1].address });
 
             verifyEventsFromLogs<ExchangeTransactionExecutionEventArgs>(
@@ -677,14 +674,8 @@ blockchainTests.resets('Transaction integration tests', env => {
                     [transaction1.signature, transaction2.signature],
                 )
                 .callAsync({ from: sender.address });
-            const fillResults1: FillResults = deployment.exchange.getABIDecodedReturnData(
-                'fillOrder',
-                returnData[0],
-            );
-            const fillResults2: FillResults = deployment.exchange.getABIDecodedReturnData(
-                'fillOrder',
-                returnData[1],
-            );
+            const fillResults1: FillResults = deployment.exchange.getABIDecodedReturnData('fillOrder', returnData[0]);
+            const fillResults2: FillResults = deployment.exchange.getABIDecodedReturnData('fillOrder', returnData[1]);
             expect(fillResults1).to.deep.equal(
                 ReferenceFunctions.calculateFillResults(
                     order1,
@@ -706,9 +697,7 @@ blockchainTests.resets('Transaction integration tests', env => {
             const order1 = await maker.signOrderAsync();
             const order2 = await maker.signOrderAsync();
             const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
-                order2,
-            ]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order2]);
             const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
             const transaction2 = await maker.signTransactionAsync({ data: data2 });
             const transactionReceipt = await deployment.exchange
@@ -750,9 +739,7 @@ blockchainTests.resets('Transaction integration tests', env => {
             const order1 = await maker.signOrderAsync();
             const order2 = await maker.signOrderAsync();
             const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
-            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
-                order2,
-            ]);
+            const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order2]);
             const transaction1 = await takers[0].signTransactionAsync({ data: data1 });
             const transaction2 = await maker.signTransactionAsync({ data: data2 });
             const returnData = await deployment.exchange
@@ -761,10 +748,7 @@ blockchainTests.resets('Transaction integration tests', env => {
                     [transaction1.signature, transaction2.signature],
                 )
                 .callAsync({ from: sender.address });
-            const fillResults: FillResults = deployment.exchange.getABIDecodedReturnData(
-                'fillOrder',
-                returnData[0],
-            );
+            const fillResults: FillResults = deployment.exchange.getABIDecodedReturnData('fillOrder', returnData[0]);
             expect(fillResults).to.deep.equal(
                 ReferenceFunctions.calculateFillResults(
                     order1,

@@ -1,8 +1,12 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
+import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { constants, hexSlice, Numberish, provider } from '@0x/contracts-test-utils';
-import { AssetProxyId } from '@0x/types';
+import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import { DeploymentManager } from '../deployment_manager';
 
 import { BalanceStore } from './balance_store';
 import { TokenContractsByName, TokenOwnersByName } from './types';
@@ -74,12 +78,7 @@ export class LocalBalanceStore extends BalanceStore {
      * @param amount Amount of asset(s) to transfer
      * @param assetData Asset data of assets being transferred.
      */
-    public async transferAssetAsync(
-        fromAddress: string,
-        toAddress: string,
-        amount: BigNumber,
-        assetData: string,
-    ): Promise<void> {
+    public transferAsset(fromAddress: string, toAddress: string, amount: BigNumber, assetData: string): void {
         if (fromAddress === toAddress || amount.isZero()) {
             return;
         }
@@ -174,7 +173,7 @@ export class LocalBalanceStore extends BalanceStore {
                 >('MultiAsset', assetData);
                 for (const [i, amt] of amounts.entries()) {
                     const nestedAmount = amount.times(amt);
-                    await this.transferAssetAsync(fromAddress, toAddress, nestedAmount, nestedAssetData[i]);
+                    this.transferAsset(fromAddress, toAddress, nestedAmount, nestedAssetData[i]);
                 }
                 break;
             }
@@ -183,6 +182,73 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             default:
                 throw new Error(`Unhandled asset proxy ID: ${assetProxyId}`);
+        }
+    }
+
+    public simulateFills(
+        orders: SignedOrder[],
+        takerAddresses: string[] | string,
+        txReceipt: TransactionReceiptWithDecodedLogs,
+        deployment: DeploymentManager,
+        msgValue: BigNumber = constants.ZERO_AMOUNT,
+        takerAssetFillAmounts?: BigNumber[],
+    ): void {
+        let remainingValue = msgValue;
+        // Transaction gas cost
+        this.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
+
+        for (const [index, order] of orders.entries()) {
+            const takerAddress = Array.isArray(takerAddresses) ? takerAddresses[index] : takerAddresses;
+            const fillResults = ReferenceFunctions.calculateFillResults(
+                order,
+                takerAssetFillAmounts ? takerAssetFillAmounts[index] : order.takerAssetAmount,
+                DeploymentManager.protocolFeeMultiplier,
+                DeploymentManager.gasPrice,
+            );
+
+            // Taker -> Maker
+            this.transferAsset(
+                takerAddress,
+                order.makerAddress,
+                fillResults.takerAssetFilledAmount,
+                order.takerAssetData,
+            );
+            // Maker -> Taker
+            this.transferAsset(
+                order.makerAddress,
+                takerAddress,
+                fillResults.makerAssetFilledAmount,
+                order.makerAssetData,
+            );
+            // Taker -> Fee Recipient
+            this.transferAsset(
+                takerAddress,
+                order.feeRecipientAddress,
+                fillResults.takerFeePaid,
+                order.takerFeeAssetData,
+            );
+            // Maker -> Fee Recipient
+            this.transferAsset(
+                order.makerAddress,
+                order.feeRecipientAddress,
+                fillResults.makerFeePaid,
+                order.makerFeeAssetData,
+            );
+
+            // Protocol fee
+            if (remainingValue.isGreaterThanOrEqualTo(fillResults.protocolFeePaid)) {
+                this.sendEth(txReceipt.from, deployment.staking.stakingProxy.address, fillResults.protocolFeePaid);
+                remainingValue = remainingValue.minus(fillResults.protocolFeePaid);
+            } else {
+                this.transferAsset(
+                    takerAddress,
+                    deployment.staking.stakingProxy.address,
+                    fillResults.protocolFeePaid,
+                    deployment.assetDataEncoder
+                        .ERC20Token(deployment.tokens.weth.address)
+                        .getABIEncodedTransactionData(),
+                );
+            }
         }
     }
 }

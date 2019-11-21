@@ -296,7 +296,7 @@ export class MatchOrderTester {
         localBalanceStore.burnGas(takerAddress, DeploymentManager.gasPrice.times(transactionReceipt.gasUsed));
 
         // Simulate the fill.
-        const expectedMatchResults = await this._simulateMatchOrdersAsync(
+        const expectedMatchResults = this._simulateMatchOrders(
             orders,
             takerAddress,
             toFullMatchTransferAmounts(expectedTransferAmounts),
@@ -319,12 +319,12 @@ export class MatchOrderTester {
      * @param localBalanceStore The balance store to use for the simulation.
      * @return The new account balances and fill events that occurred during the match.
      */
-    protected async _simulateMatchOrdersAsync(
+    protected _simulateMatchOrders(
         orders: MatchedOrders,
         takerAddress: string,
         transferAmounts: MatchTransferAmounts,
         localBalanceStore: LocalBalanceStore,
-    ): Promise<MatchResults> {
+    ): MatchResults {
         // prettier-ignore
         const matchResults = {
         orders: {
@@ -343,7 +343,7 @@ export class MatchOrderTester {
     };
 
         // Right maker asset -> left maker
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             orders.rightOrder.makerAddress,
             orders.leftOrder.makerAddress,
             transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
@@ -352,7 +352,7 @@ export class MatchOrderTester {
 
         if (orders.leftOrder.makerAddress !== orders.leftOrder.feeRecipientAddress) {
             // Left maker fees
-            await localBalanceStore.transferAssetAsync(
+            localBalanceStore.transferAsset(
                 orders.leftOrder.makerAddress,
                 orders.leftOrder.feeRecipientAddress,
                 transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
@@ -361,7 +361,7 @@ export class MatchOrderTester {
         }
 
         // Left maker asset -> right maker
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             orders.leftOrder.makerAddress,
             orders.rightOrder.makerAddress,
             transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
@@ -370,7 +370,7 @@ export class MatchOrderTester {
 
         if (orders.rightOrder.makerAddress !== orders.rightOrder.feeRecipientAddress) {
             // Right maker fees
-            await localBalanceStore.transferAssetAsync(
+            localBalanceStore.transferAsset(
                 orders.rightOrder.makerAddress,
                 orders.rightOrder.feeRecipientAddress,
                 transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
@@ -379,7 +379,7 @@ export class MatchOrderTester {
         }
 
         // Left taker profit
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             orders.leftOrder.makerAddress,
             takerAddress,
             transferAmounts.leftMakerAssetReceivedByTakerAmount,
@@ -387,7 +387,7 @@ export class MatchOrderTester {
         );
 
         // Right taker profit
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             orders.rightOrder.makerAddress,
             takerAddress,
             transferAmounts.rightMakerAssetReceivedByTakerAmount,
@@ -395,7 +395,7 @@ export class MatchOrderTester {
         );
 
         // Left taker fees
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             takerAddress,
             orders.leftOrder.feeRecipientAddress,
             transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
@@ -403,7 +403,7 @@ export class MatchOrderTester {
         );
 
         // Right taker fees
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             takerAddress,
             orders.rightOrder.feeRecipientAddress,
             transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
@@ -424,13 +424,13 @@ export class MatchOrderTester {
             this._deployment.staking.stakingProxy.address,
             transferAmounts.rightProtocolFeePaidByTakerInEthAmount,
         );
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             takerAddress,
             this._deployment.staking.stakingProxy.address,
             transferAmounts.leftProtocolFeePaidByTakerInWethAmount,
             wethAssetData,
         );
-        await localBalanceStore.transferAssetAsync(
+        localBalanceStore.transferAsset(
             takerAddress,
             this._deployment.staking.stakingProxy.address,
             transferAmounts.rightProtocolFeePaidByTakerInWethAmount,
@@ -513,7 +513,7 @@ export class MatchOrderTester {
 
             // Add the latest match to the batch match results
             batchMatchResults.matches.push(
-                await this._simulateMatchOrdersAsync(
+                this._simulateMatchOrders(
                     matchedOrders,
                     takerAddress,
                     toFullMatchTransferAmounts(transferAmounts[i]),

@@ -132,13 +132,9 @@ blockchainTests.resets('Exchange wrappers', env => {
         isValid: boolean;
     }
 
-    async function simulateFillAsync(
-        signedOrder: SignedOrder,
-        expectedFillResults: FillResults,
-        shouldUseWeth: boolean,
-    ): Promise<void> {
+    function simulateFill(signedOrder: SignedOrder, expectedFillResults: FillResults, shouldUseWeth: boolean): void {
         // taker -> maker
-        await localBalances.transferAssetAsync(
+        localBalances.transferAsset(
             taker.address,
             maker.address,
             expectedFillResults.takerAssetFilledAmount,
@@ -146,7 +142,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // maker -> taker
-        await localBalances.transferAssetAsync(
+        localBalances.transferAsset(
             maker.address,
             taker.address,
             expectedFillResults.makerAssetFilledAmount,
@@ -154,7 +150,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // maker -> feeRecipient
-        await localBalances.transferAssetAsync(
+        localBalances.transferAsset(
             maker.address,
             feeRecipient,
             expectedFillResults.makerFeePaid,
@@ -162,7 +158,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // taker -> feeRecipient
-        await localBalances.transferAssetAsync(
+        localBalances.transferAsset(
             taker.address,
             feeRecipient,
             expectedFillResults.takerFeePaid,
@@ -171,7 +167,7 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         // taker -> protocol fees
         if (shouldUseWeth) {
-            await localBalances.transferAssetAsync(
+            localBalances.transferAsset(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 expectedFillResults.protocolFeePaid,
@@ -343,7 +339,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             const shouldPayWethFees = DeploymentManager.protocolFee.gt(value);
 
             // Simulate filling the order
-            await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
+            simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
 
             // Ensure that the correct logs were emitted and that the balances are accurate.
             await assertResultsAsync(receipt, [{ signedOrder, expectedFillResults, shouldPayWethFees }]);
@@ -444,7 +440,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
 
                     fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
-                    await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
+                    simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
                 }
 
                 const contractFn = deployment.exchange.batchFillOrders(
@@ -506,7 +502,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                     }
 
                     fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
-                    await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
+                    simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
                 }
 
                 const contractFn = deployment.exchange.batchFillOrKillOrders(
@@ -600,7 +596,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         }
 
                         fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
-                        await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
+                        simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
                     } else {
                         totalFillResults.push(nullFillResults);
                     }
@@ -714,7 +710,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                                 takerFillAmount,
                             );
 
-                            await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
+                            simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
                             fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
 
                             totalFillResults = addFillResults(totalFillResults, expectedFillResults);
@@ -912,7 +908,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                                 makerAssetBought,
                             );
 
-                            await simulateFillAsync(signedOrder, expectedFillResults, shouldPayWethFees);
+                            simulateFill(signedOrder, expectedFillResults, shouldPayWethFees);
                             fillTestInfo.push({ signedOrder, expectedFillResults, shouldPayWethFees });
 
                             totalFillResults = addFillResults(totalFillResults, expectedFillResults);
