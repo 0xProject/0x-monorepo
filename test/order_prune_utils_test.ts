@@ -25,7 +25,8 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
-const PROTOCOL_FEE_PER_FILL = GAS_PRICE.times(constants.PROTOCOL_FEE_MULTIPLIER);
+const PROTOCOL_FEE_MULTIPLIER = 150000;
+const PROTOCOL_FEE_PER_FILL = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
 // tslint:disable: no-unused-expression
@@ -122,20 +123,32 @@ describe('OrderPruner', () => {
 
         // give double fillableAmount to maker and taker as buffer
         await erc20MakerTokenContract
-            .transfer(makerAddress, fillableAmount.multipliedBy(4))
-            .sendTransactionAsync({ from: coinbaseAddress });
+            .transfer
+            .sendTransactionAsync(
+                makerAddress,
+                fillableAmount.multipliedBy(4),
+                { from: coinbaseAddress });
         await erc20TakerTokenContract
-            .transfer(takerAddress, fillableAmount.multipliedBy(4))
-            .sendTransactionAsync({ from: coinbaseAddress });
+            .transfer
+            .sendTransactionAsync(
+                takerAddress,
+                fillableAmount.multipliedBy(4),
+                { from: coinbaseAddress });
         await erc20MakerTokenContract
-            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-            .sendTransactionAsync({ from: makerAddress });
+            .approve
+            .sendTransactionAsync(
+                contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                { from: makerAddress });
         await erc20MakerTokenContract
-            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-            .sendTransactionAsync({ from: takerAddress });
+            .approve
+            .sendTransactionAsync(
+                contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                { from: takerAddress });
         await erc20TakerTokenContract
-            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
-            .sendTransactionAsync({ from: takerAddress });
+            .approve
+            .sendTransactionAsync(
+                contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                { from: takerAddress });
 
         partiallyFilledOpenSignedOrderFeeless = await orderFactory.newSignedOrderAsync({
             takerAssetAmount: fillableAmount,
@@ -143,12 +156,12 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder(
+            .fillOrKillOrder
+            .sendTransactionAsync(
                 partiallyFilledOpenSignedOrderFeeless,
                 partialFillAmount,
                 partiallyFilledOpenSignedOrderFeeless.signature,
-            )
-            .sendTransactionAsync({
+                {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
                 gas: 4000000,
@@ -163,12 +176,12 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder(
+            .fillOrKillOrder
+            .sendTransactionAsync(
                 partiallyFilledOpenSignedOrderFeeInTakerAsset,
                 partialFillAmount,
                 partiallyFilledOpenSignedOrderFeeInTakerAsset.signature,
-            )
-            .sendTransactionAsync({
+                {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
                 gas: 4000000,
@@ -183,12 +196,12 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder(
+            .fillOrKillOrder
+            .sendTransactionAsync(
                 partiallyFilledOpenSignedOrderFeeInMakerAsset,
                 partialFillAmount,
                 partiallyFilledOpenSignedOrderFeeInMakerAsset.signature,
-            )
-            .sendTransactionAsync({
+                {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
                 gas: 4000000,
@@ -201,8 +214,10 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder(filledOpenSignedOrder, fillableAmount, filledOpenSignedOrder.signature)
-            .sendTransactionAsync({
+            .fillOrKillOrder
+            .sendTransactionAsync(
+                filledOpenSignedOrder, fillableAmount, filledOpenSignedOrder.signature,
+                {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
                 gas: 4000000,

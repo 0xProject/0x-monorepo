@@ -1,5 +1,6 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -26,7 +27,6 @@ import { OrderPruner } from './utils/order_prune_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { swapQuoteCalculator } from './utils/swap_quote_calculator';
-import { ExchangeContract } from '@0x/contracts-exchange';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
@@ -235,8 +235,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData(makerTokenAddress).callAsync();
-        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData(takerTokenAddress).callAsync();
+        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(makerTokenAddress);
+        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(takerTokenAddress);
         const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -265,8 +265,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
-        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData(makerTokenAddress).callAsync();
-        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData(takerTokenAddress).callAsync();
+        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(makerTokenAddress);
+        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(takerTokenAddress);
         const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -290,8 +290,8 @@ export class SwapQuoter {
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
-        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
         const assetPairs = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         if (!assetPairs.includes(makerAssetData)) {
             return {
@@ -311,7 +311,7 @@ export class SwapQuoter {
      */
     public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
         assert.isString('makerAssetData', makerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
         const allAssetPairs = await this.orderbook.getAvailableAssetDatasAsync();
         const assetPairs = allAssetPairs
             .filter(pair => pair.assetDataA.assetData === makerAssetData)
@@ -326,7 +326,7 @@ export class SwapQuoter {
      */
     public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
         const allAssetPairs = await this.orderbook.getAvailableAssetDatasAsync();
         const assetPairs = allAssetPairs
             .filter(pair => pair.assetDataB.assetData === takerAssetData)
@@ -347,8 +347,8 @@ export class SwapQuoter {
     ): Promise<boolean> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
-        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
         const availableMakerAssetDatas = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         return _.includes(availableMakerAssetDatas, makerAssetData);
     }
@@ -364,8 +364,8 @@ export class SwapQuoter {
     ): Promise<PrunedSignedOrder[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
-        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
         // get orders
         const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const orders = _.map(apiOrders, o => o.order);
@@ -384,8 +384,8 @@ export class SwapQuoter {
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
         const balanceAndAllowance = await this._devUtilsContract
-            .getBalanceAndAssetProxyAllowance(takerAddress, swapQuote.takerAssetData)
-            .callAsync();
+            .getBalanceAndAssetProxyAllowance
+            .callAsync(takerAddress, swapQuote.takerAssetData);
         return [
             balanceAndAllowance[1].isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerAssetAmount),
             balanceAndAllowance[1].isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount),
@@ -403,7 +403,7 @@ export class SwapQuoter {
      * Utility function to get assetData for Ether token.
      */
     public async getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._devUtilsContract.encodeERC20AssetData(this._contractAddresses.etherToken).callAsync();
+        return this._devUtilsContract.encodeERC20AssetData.callAsync(this._contractAddresses.etherToken);
     }
 
     /**

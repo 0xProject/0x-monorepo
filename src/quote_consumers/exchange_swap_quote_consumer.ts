@@ -135,13 +135,17 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         const { orders, gasPrice } = quote;
 
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
-        const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInEthAmount;
+        const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
         let txHash: string;
         if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;
             txHash = await this._exchangeContract
-                .marketBuyOrdersFillOrKill(orders, makerAssetFillAmount, orders.map(o => o.signature))
-                .sendTransactionAsync({
+                .marketBuyOrdersFillOrKill
+                .sendTransactionAsync(
+                    orders,
+                    makerAssetFillAmount,
+                    orders.map(o => o.signature),
+                    {
                     from: finalTakerAddress,
                     gas: gasLimit,
                     gasPrice,
@@ -150,8 +154,12 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         } else {
             const { takerAssetFillAmount } = quote;
             txHash = await this._exchangeContract
-                .marketSellOrdersFillOrKill(orders, takerAssetFillAmount, orders.map(o => o.signature))
-                .sendTransactionAsync({
+                .marketSellOrdersFillOrKill
+                .sendTransactionAsync(
+                    orders,
+                    takerAssetFillAmount,
+                    orders.map(o => o.signature),
+                    {
                     from: finalTakerAddress,
                     gas: gasLimit,
                     gasPrice,
