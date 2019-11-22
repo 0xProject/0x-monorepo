@@ -16,10 +16,10 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
 export function validCreateStakingPoolAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
-): FunctionAssertion<string, string> {
+): FunctionAssertion<[number, boolean], string, string> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion(stakingWrapper.createStakingPool, {
+    return new FunctionAssertion<[number, boolean], string, string>(stakingWrapper.createStakingPool, {
         // Returns the expected ID of th created pool
         before: async () => {
             const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
@@ -32,23 +32,31 @@ export function validCreateStakingPoolAssertion(
         after: async (
             expectedPoolId: string,
             result: FunctionResult,
-            operatorShare: number,
-            addOperatorAsMaker: boolean,
-            txData: Partial<TxData>,
+            args: {
+                args: [number, boolean];
+                txData: Partial<TxData>;
+            },
         ) => {
-            logUtils.log(`createStakingPool(${operatorShare}, ${addOperatorAsMaker}) => ${expectedPoolId}`);
+            console.log(100);
+            logUtils.log(`createStakingPool(${args.args[0]}, ${args.args[1]}) => ${expectedPoolId}`);
+            console.log(101);
 
             // Checks the logs for the new poolId, verifies that it is as expected
+            console.log(result.receipt);
             const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
+            console.log(102);
             const actualPoolId = (log as any).args.poolId;
+            console.log(103);
             expect(actualPoolId).to.equal(expectedPoolId);
+            console.log(104);
 
             // Adds the new pool to local state
             pools[actualPoolId] = {
-                operator: txData.from as string,
-                operatorShare,
+                operator: args.txData.from as string,
+                operatorShare: args.args[0],
                 delegatedStake: new StoredBalance(),
             };
+            console.log(105);
         },
     });
 }

@@ -13,11 +13,14 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
 export function validDecreaseStakingPoolOperatorShareAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
-): FunctionAssertion<{}, void> {
+): FunctionAssertion<[string, number], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<{}, void>(stakingWrapper.decreaseStakingPoolOperatorShare, {
-        after: async (_beforeInfo, _result: FunctionResult, poolId: string, expectedOperatorShare: number) => {
+    return new FunctionAssertion<[string, number], {}, void>(stakingWrapper.decreaseStakingPoolOperatorShare, {
+        after: async (_beforeInfo, _result: FunctionResult, args: { args: [string, number] }) => {
+            const poolId = args.args[0];
+            const expectedOperatorShare = args.args[1];
+
             logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
 
             // Checks that the on-chain pool's operator share has been updated.

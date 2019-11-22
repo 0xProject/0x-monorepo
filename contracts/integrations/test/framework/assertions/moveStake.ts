@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 
 import { DeploymentManager } from '../deployment_manager';
 
-import { FunctionAssertion } from './function_assertion';
+import { FunctionArguments, FunctionAssertion, FunctionResult } from './function_assertion';
 
 function incrementNextEpochBalance(stakeBalance: StoredBalance, amount: BigNumber): void {
     _.update(stakeBalance, ['nextEpochBalance'], balance => (balance || constants.ZERO_AMOUNT).plus(amount));
@@ -82,25 +82,24 @@ export function validMoveStakeAssertion(
     globalStake: GlobalStakeByStatus,
     ownerStake: OwnerStakeByStatus,
     pools: StakingPoolById,
-): FunctionAssertion<{}, void> {
+): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<{}, void>(stakingWrapper.moveStake, {
+    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void>(stakingWrapper.moveStake, {
         after: async (
-            _beforeInfo,
-            _result,
-            from: StakeInfo,
-            to: StakeInfo,
-            amount: BigNumber,
-            txData: Partial<TxData>,
+            _beforeInfo: {},
+            _result: FunctionResult,
+            args: FunctionArguments<[StakeInfo, StakeInfo, BigNumber]>,
         ) => {
+            const [from, to, amount] = args.args;
+
             logUtils.log(
                 `moveStake({status: ${StakeStatus[from.status]}, poolId: ${from.poolId} }, { status: ${
                     StakeStatus[to.status]
                 }, poolId: ${to.poolId} }, ${amount})`,
             );
 
-            const owner = txData.from as string;
+            const owner = args.txData.from as string;
 
             // Update local balances to match the expected result of this `moveStake` operation
             const updatedPools = updateNextEpochBalances(globalStake, ownerStake, pools, from, to, amount);
