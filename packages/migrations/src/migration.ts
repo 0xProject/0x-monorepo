@@ -176,10 +176,19 @@ export async function runMigrationsAsync(
     await exchange.registerAssetProxy(multiAssetProxy.address).awaitTransactionSuccessAsync(txDefaults);
     await exchange.registerAssetProxy(staticCallProxy.address).awaitTransactionSuccessAsync(txDefaults);
 
+    // Forwarder
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+        artifacts.Forwarder,
+        provider,
+        txDefaults,
+        artifacts,
+        exchange.address,
+        encodeERC20AssetData(etherToken.address),
+    );
     // Fake the above transactions so our nonce increases and we result with the same addresses
     // while AssetProxyOwner is disabled (TODO: @dekz remove)
-    const dummyTransactionCount = 8;
-    for (let index = 0; index < dummyTransactionCount; index++) {
+    const dummyTransactionCount = 7;
+    for (let index = 0; index <= dummyTransactionCount; index++) {
         await web3Wrapper.sendTransactionAsync({ to: txDefaults.from, from: txDefaults.from, value: new BigNumber(0) });
     }
 
@@ -238,7 +247,6 @@ export async function runMigrationsAsync(
         zrxProxy,
         zrxToken.address,
     );
-    await erc20Proxy.addAuthorizedAddress(zrxVault.address).awaitTransactionSuccessAsync(txDefaults);
 
     // Note we use TestStakingContract as the deployed bytecode of a StakingContract
     // has the tokens hardcoded
@@ -259,6 +267,8 @@ export async function runMigrationsAsync(
         stakingLogic.address,
     );
 
+    await erc20Proxy.addAuthorizedAddress(zrxVault.address).awaitTransactionSuccessAsync(txDefaults);
+
     // Reference the Proxy as the StakingContract for setup
     const stakingDel = await new TestStakingContract(stakingProxy.address, provider, txDefaults);
     await stakingProxy.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync(txDefaults);
@@ -270,16 +280,6 @@ export async function runMigrationsAsync(
     await zrxVault.setStakingProxy(stakingProxy.address).awaitTransactionSuccessAsync(txDefaults);
     await stakingLogic.addAuthorizedAddress(txDefaults.from).awaitTransactionSuccessAsync(txDefaults);
     await stakingLogic.addExchangeAddress(exchange.address).awaitTransactionSuccessAsync(txDefaults);
-
-    // Forwarder
-    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
-        artifacts.Forwarder,
-        provider,
-        txDefaults,
-        artifacts,
-        exchange.address,
-        encodeERC20AssetData(etherToken.address),
-    );
 
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
@@ -299,14 +299,13 @@ export async function runMigrationsAsync(
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
         devUtils: devUtils.address,
-        exchangeV2: constants.NULL_ADDRESS,
+        exchangeV2: exchange.address,
         zrxVault: zrxVault.address,
         staking: stakingLogic.address,
         stakingProxy: stakingProxy.address,
         uniswapBridge: constants.NULL_ADDRESS,
         eth2DaiBridge: constants.NULL_ADDRESS,
     };
-
     return contractAddresses;
 }
 
