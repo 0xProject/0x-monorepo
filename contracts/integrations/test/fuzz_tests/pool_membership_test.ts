@@ -1,6 +1,7 @@
-import { blockchainTests } from '@0x/contracts-test-utils';
+import { blockchainTests, constants } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
+import { Maker } from '../framework/actors/maker';
 import { PoolMember } from '../framework/actors/pool_member';
 import { PoolOperator } from '../framework/actors/pool_operator';
 import { AssertionResult } from '../framework/assertions/function_assertion';
@@ -27,6 +28,7 @@ class PoolMembershipSimulation extends Simulation {
         const actions = [
             operator.simulationActions.validCreateStakingPool,
             member.simulationActions.validJoinStakingPool,
+            member.simulationActions.validFillOrderCompleteFill,
         ];
 
         while (true) {
@@ -36,17 +38,45 @@ class PoolMembershipSimulation extends Simulation {
     }
 }
 
-blockchainTests('pool membership fuzz test', env => {
-    it('fuzz', async () => {
-        const deployment = await DeploymentManager.deployAsync(env, {
-            numErc20TokensToDeploy: 0,
+blockchainTests.skip('pool membership fuzz test', env => {
+    let deployment: DeploymentManager;
+    let maker: Maker;
+
+    before(async () => {
+        deployment = await DeploymentManager.deployAsync(env, {
+            numErc20TokensToDeploy: 2,
             numErc721TokensToDeploy: 0,
             numErc1155TokensToDeploy: 0,
         });
 
+        const makerToken = deployment.tokens.erc20[0];
+        const takerToken = deployment.tokens.erc20[1];
+
+        const orderConfig = {
+            feeRecipientAddress: constants.NULL_ADDRESS,
+            makerAssetData: deployment.assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData(),
+            takerAssetData: deployment.assetDataEncoder.ERC20Token(takerToken.address).getABIEncodedTransactionData(),
+            makerFeeAssetData: deployment.assetDataEncoder
+                .ERC20Token(makerToken.address)
+                .getABIEncodedTransactionData(),
+            takerFeeAssetData: deployment.assetDataEncoder
+                .ERC20Token(takerToken.address)
+                .getABIEncodedTransactionData(),
+            makerFee: constants.ZERO_AMOUNT,
+            takerFee: constants.ZERO_AMOUNT,
+        };
+
+        maker = new Maker({
+            name: 'maker',
+            deployment,
+            orderConfig,
+        });
+    });
+
+    it('fuzz', async () => {
         const balanceStore = new BlockchainBalanceStore({}, {});
 
-        const simulationEnv = new SimulationEnvironment(deployment, balanceStore);
+        const simulationEnv = new SimulationEnvironment(deployment, balanceStore, [maker]);
         const simulation = new PoolMembershipSimulation(simulationEnv);
         return simulation.fuzzAsync();
     });

@@ -3,7 +3,6 @@ import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
-
 export type GenericContractFunction<T> = (...args: any[]) => ContractFunctionObj<T>;
 
 export interface FunctionArguments<TArgs extends any[]> {
@@ -58,12 +57,12 @@ export class FunctionAssertion<TArgs extends any[], TBefore, ReturnDataType> imp
 
     // The wrapper function that will be wrapped in assertions.
     public wrapperFunction: (
-        ...args: any[] // tslint:disable-line:trailing-comma
+        ...args: TArgs // tslint:disable-line:trailing-comma
     ) => ContractTxFunctionObj<ReturnDataType> | ContractFunctionObj<ReturnDataType>;
 
     constructor(
         wrapperFunction: (
-            ...args: any[] // tslint:disable-line:trailing-comma
+            ...args: TArgs // tslint:disable-line:trailing-comma
         ) => ContractTxFunctionObj<ReturnDataType> | ContractFunctionObj<ReturnDataType>,
         condition: Partial<Condition<TArgs, TBefore>> = {},
     ) {
@@ -95,18 +94,12 @@ export class FunctionAssertion<TArgs extends any[], TBefore, ReturnDataType> imp
         try {
             const functionWithArgs = this.wrapperFunction(...args.args) as ContractTxFunctionObj<ReturnDataType>;
             callResult.data = await functionWithArgs.callAsync(args.txData);
-
-            console.log(functionWithArgs);
-
             callResult.receipt =
                 functionWithArgs.awaitTransactionSuccessAsync !== undefined
                     ? await functionWithArgs.awaitTransactionSuccessAsync(args.txData) // tslint:disable-line:await-promise
                     : undefined;
             // tslint:enable:await-promise
         } catch (error) {
-            console.log('got here');
-            console.log(error);
-
             callResult.data = error;
             callResult.success = false;
             callResult.receipt = undefined;

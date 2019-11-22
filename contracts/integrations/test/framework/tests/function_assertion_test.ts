@@ -8,7 +8,7 @@ import { FunctionArguments, FunctionAssertion, FunctionResult } from '../asserti
 
 const { ZERO_AMOUNT, MAX_UINT256 } = constants;
 
-blockchainTests.resets.only('FunctionAssertion Unit Tests', env => {
+blockchainTests.resets('FunctionAssertion Unit Tests', env => {
     let exampleContract: TestFrameworkContract;
 
     before(async () => {

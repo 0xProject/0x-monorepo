@@ -19,44 +19,40 @@ export function validCreateStakingPoolAssertion(
 ): FunctionAssertion<[number, boolean], string, string> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<[number, boolean], string, string>(stakingWrapper.createStakingPool, {
-        // Returns the expected ID of th created pool
-        before: async () => {
-            const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
-            // Effectively the last poolId + 1, but as a bytestring
-            return `0x${new BigNumber(lastPoolId)
-                .plus(1)
-                .toString(16)
-                .padStart(64, '0')}`;
-        },
-        after: async (
-            expectedPoolId: string,
-            result: FunctionResult,
-            args: {
-                args: [number, boolean];
-                txData: Partial<TxData>;
+    return new FunctionAssertion<[number, boolean], string, string>(
+        stakingWrapper.createStakingPool.bind(stakingWrapper),
+        {
+            // Returns the expected ID of th created pool
+            before: async () => {
+                const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
+                // Effectively the last poolId + 1, but as a bytestring
+                return `0x${new BigNumber(lastPoolId)
+                    .plus(1)
+                    .toString(16)
+                    .padStart(64, '0')}`;
             },
-        ) => {
-            console.log(100);
-            logUtils.log(`createStakingPool(${args.args[0]}, ${args.args[1]}) => ${expectedPoolId}`);
-            console.log(101);
+            after: async (
+                expectedPoolId: string,
+                result: FunctionResult,
+                args: {
+                    args: [number, boolean];
+                    txData: Partial<TxData>;
+                },
+            ) => {
+                logUtils.log(`createStakingPool(${args.args[0]}, ${args.args[1]}) => ${expectedPoolId}`);
 
-            // Checks the logs for the new poolId, verifies that it is as expected
-            console.log(result.receipt);
-            const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
-            console.log(102);
-            const actualPoolId = (log as any).args.poolId;
-            console.log(103);
-            expect(actualPoolId).to.equal(expectedPoolId);
-            console.log(104);
+                // Checks the logs for the new poolId, verifies that it is as expected
+                const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
+                const actualPoolId = (log as any).args.poolId;
+                expect(actualPoolId).to.equal(expectedPoolId);
 
-            // Adds the new pool to local state
-            pools[actualPoolId] = {
-                operator: args.txData.from as string,
-                operatorShare: args.args[0],
-                delegatedStake: new StoredBalance(),
-            };
-            console.log(105);
+                // Adds the new pool to local state
+                pools[actualPoolId] = {
+                    operator: args.txData.from as string,
+                    operatorShare: args.args[0],
+                    delegatedStake: new StoredBalance(),
+                };
+            },
         },
-    });
+    );
 }

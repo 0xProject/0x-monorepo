@@ -33,7 +33,7 @@ export function validUnstakeAssertion(
 ): FunctionAssertion<[BigNumber], LocalBalanceStore, void> {
     const { stakingWrapper, zrxVault } = deployment.staking;
 
-    return new FunctionAssertion(stakingWrapper.unstake, {
+    return new FunctionAssertion(stakingWrapper.unstake.bind(stakingWrapper), {
         before: async (args: FunctionArguments<[BigNumber]>) => {
             const [amount] = args.args;
 

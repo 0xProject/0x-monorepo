@@ -7,7 +7,9 @@ import { DeploymentManager } from '../deployment_manager';
 import { FunctionArguments, FunctionAssertion, FunctionResult } from './function_assertion';
 
 export function validJoinStakingPoolAssertion(deployment: DeploymentManager): FunctionAssertion<[string], {}, void> {
-    return new FunctionAssertion<[string], {}, void>(deployment.staking.stakingWrapper.joinStakingPoolAsMaker, {
+    const { stakingWrapper } = deployment.staking;
+
+    return new FunctionAssertion<[string], {}, void>(stakingWrapper.joinStakingPoolAsMaker.bind(stakingWrapper), {
         after: async (_beforeInfo, _result: FunctionResult, args: FunctionArguments<[string]>) => {
             const poolId = args.args[0];
 
@@ -32,11 +34,11 @@ export function validJoinStakingPoolAssertion(deployment: DeploymentManager): Fu
             );
             expect(logArgs).to.be.deep.eq([
                 {
-                    maker: args.txData.from,
+                    makerAddress: args.txData.from,
                     poolId,
                 },
             ]);
-            const joinedPoolId = deployment.staking.stakingWrapper.poolIdByMaker(args.txData.from);
+            const joinedPoolId = await deployment.staking.stakingWrapper.poolIdByMaker(args.txData.from).callAsync();
             expect(joinedPoolId).to.be.eq(poolId);
 
             console.log(`Pool ${poolId} joined by ${args.txData.from}`); /* tslint:disable-line:no-console */
