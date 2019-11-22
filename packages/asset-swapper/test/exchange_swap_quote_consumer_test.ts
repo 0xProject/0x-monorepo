@@ -61,14 +61,13 @@ const expectMakerAndTakerBalancesAsyncFactory = (
     makerAddress: string,
     takerAddress: string,
 ) => async (expectedMakerBalance: BigNumber, expectedTakerBalance: BigNumber) => {
-    const makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-    const takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
+    const makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+    const takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
     expect(makerBalance).to.bignumber.equal(expectedMakerBalance);
     expect(takerBalance).to.bignumber.equal(expectedTakerBalance);
 };
 
 describe('ExchangeSwapQuoteConsumer', () => {
-    let contractWrappers: ContractWrappers;
     let protocolFeeUtils: ProtocolFeeUtils;
     let userAddresses: string[];
     let erc20MakerTokenContract: ERC20TokenContract;
@@ -109,9 +108,9 @@ describe('ExchangeSwapQuoteConsumer', () => {
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
-            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+            devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
+            devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
+            devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
         ]);
         erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
@@ -133,7 +132,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
+        protocolFeeUtils = new ProtocolFeeUtils(exchangeContract);
         expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TakerTokenContract,
             makerAddress,
@@ -183,21 +182,31 @@ describe('ExchangeSwapQuoteConsumer', () => {
         });
 
         await erc20MakerTokenContract
-            .transfer(makerAddress, marketBuySwapQuote.worstCaseQuoteInfo.makerAssetAmount)
-            .sendTransactionAsync({
+            .transfer
+            .sendTransactionAsync(
+                makerAddress, marketBuySwapQuote.worstCaseQuoteInfo.makerAssetAmount,
+                {
                 from: coinbaseAddress,
             });
         await erc20TakerTokenContract
-            .transfer(takerAddress, marketBuySwapQuote.worstCaseQuoteInfo.totalTakerAssetAmount)
-            .sendTransactionAsync({
+            .transfer
+            .sendTransactionAsync(
+                takerAddress, marketBuySwapQuote.worstCaseQuoteInfo.totalTakerAssetAmount,
+                {
                 from: coinbaseAddress,
             });
         await erc20MakerTokenContract
-            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
-            .sendTransactionAsync({ from: makerAddress });
+            .approve
+            .sendTransactionAsync(
+                contractAddresses.erc20Proxy,
+                UNLIMITED_ALLOWANCE,
+                { from: makerAddress });
         await erc20TakerTokenContract
-            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
-            .sendTransactionAsync({ from: takerAddress });
+            .approve
+            .sendTransactionAsync(
+                contractAddresses.erc20Proxy,
+                UNLIMITED_ALLOWANCE,
+                { from: takerAddress });
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();

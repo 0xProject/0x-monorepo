@@ -1,6 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { WETH9Contract } from '@0x/contracts-erc20';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
@@ -15,7 +16,6 @@ import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
-
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -70,8 +70,8 @@ const PARTIAL_LARGE_PRUNED_SIGNED_ORDERS: Array<Partial<PrunedSignedOrder>> = [
 
 describe('swapQuoteConsumerUtils', () => {
     let wethContract: WETH9Contract;
-    let contractWrappers: ContractWrappers;
     let protocolFeeUtils: ProtocolFeeUtils;
+    let exchangeContract: ExchangeContract;
     let userAddresses: string[];
     let makerAddress: string;
     let takerAddress: string;
@@ -92,12 +92,13 @@ describe('swapQuoteConsumerUtils', () => {
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         wethContract = new WETH9Contract(contractAddresses.etherToken, provider);
+        exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
         [takerAddress, makerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
-            await devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            await devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            await devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+            await devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
+            await devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
+            await devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
         ];
 
         const defaultOrderParams = {
@@ -122,7 +123,7 @@ describe('swapQuoteConsumerUtils', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
+        protocolFeeUtils = new ProtocolFeeUtils(exchangeContract);
         forwarderOrderFactory = new OrderFactory(privateKey, defaultForwarderOrderParams);
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {
@@ -222,7 +223,7 @@ describe('swapQuoteConsumerUtils', () => {
         });
         it('should return exchange consumer if takerAsset is wEth and taker has enough weth', async () => {
             const etherInWei = new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI);
-            await wethContract.deposit().sendTransactionAsync({ value: etherInWei, from: takerAddress });
+            await wethContract.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
             const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 forwarderSwapQuote,
                 { takerAddress },
@@ -231,7 +232,7 @@ describe('swapQuoteConsumerUtils', () => {
         });
         it('should return forwarder consumer if takerAsset is wEth and takerAddress has no available balance in either weth or eth (defaulting behavior)', async () => {
             const etherInWei = new BigNumber(50).multipliedBy(ONE_ETH_IN_WEI);
-            await wethContract.deposit().sendTransactionAsync({ value: etherInWei, from: takerAddress });
+            await wethContract.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
             const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 largeForwarderSwapQuote,
                 { takerAddress },

@@ -55,7 +55,7 @@ export const swapQuoteConsumerUtils = {
         const weth = new WETH9Contract(contractAddresses.etherToken, provider);
         const web3Wrapper = new Web3Wrapper(provider);
         const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-        const wethBalance = await weth.balanceOf(takerAddress).callAsync();
+        const wethBalance = await weth.balanceOf.callAsync(takerAddress);
         return [ethBalance, wethBalance];
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
@@ -74,7 +74,7 @@ export const swapQuoteConsumerUtils = {
         opts: Partial<GetExtensionContractTypeOpts>,
     ): Promise<ExtensionContractType> {
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
-        const wethAssetData = await devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync();
+        const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);

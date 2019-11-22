@@ -1,6 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC20TokenContract } from '@0x/contracts-erc20';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
@@ -61,16 +62,14 @@ const expectMakerAndTakerBalancesAsyncFactory = (
     makerAddress: string,
     takerAddress: string,
 ) => async (expectedMakerBalance: BigNumber, expectedTakerBalance: BigNumber) => {
-    const makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
-    const takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
+    const makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+    const takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
     expect(makerBalance).to.bignumber.equal(expectedMakerBalance);
     expect(takerBalance).to.bignumber.equal(expectedTakerBalance);
 };
 
 describe('ForwarderSwapQuoteConsumer', () => {
-    let contractWrappers: ContractWrappers;
     let protocolFeeUtils: ProtocolFeeUtils;
-    let erc20Token: ERC20TokenContract;
     let userAddresses: string[];
     let coinbaseAddress: string;
     let makerAddress: string;
@@ -86,6 +85,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
     let contractAddresses: ContractAddresses;
     let erc20TokenContract: ERC20TokenContract;
     let forwarderContract: ForwarderContract;
+    let exchangeContract: ExchangeContract;
 
     let orders: PrunedSignedOrder[];
     let invalidOrders: PrunedSignedOrder[];
@@ -107,11 +107,12 @@ describe('ForwarderSwapQuoteConsumer', () => {
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         forwarderContract = new ForwarderContract(contractAddresses.forwarder, provider);
+        exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
-            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+            devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
+            devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
+            devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
         ]);
         // Configure order defaults
         const defaultOrderParams = {
@@ -136,7 +137,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils(contractWrappers.exchange);
+        protocolFeeUtils = new ProtocolFeeUtils(exchangeContract);
         expectMakerAndTakerBalancesAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TokenContract,
             makerAddress,
@@ -153,15 +154,18 @@ describe('ForwarderSwapQuoteConsumer', () => {
 
         const totalFillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
 
-        await erc20TokenContract.transfer(makerAddress, totalFillableAmount).sendTransactionAsync({
+        await erc20TokenContract.transfer.sendTransactionAsync(
+            makerAddress,
+            totalFillableAmount,
+            {
             from: coinbaseAddress,
         });
 
         await erc20TokenContract
-            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
-            .sendTransactionAsync({ from: makerAddress });
+            .approve
+            .sendTransactionAsync(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE, { from: makerAddress });
 
-        await forwarderContract.approveMakerAssetProxy(makerAssetData).sendTransactionAsync({ from: makerAddress });
+        await forwarderContract.approveMakerAssetProxy.sendTransactionAsync(makerAssetData, { from: makerAddress });
 
         orders = [];
         for (const partialOrder of PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS) {
@@ -257,7 +261,6 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
                     takerAddress,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
                 });
                 await expectMakerAndTakerBalancesAsync(
@@ -274,7 +277,6 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const feeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, {
                     takerAddress,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
                     extensionContractOpts: {
                         feePercentage: 0.05,
@@ -287,7 +289,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
                     new BigNumber(FEE_PERCENTAGE).times(totalEthSpent),
@@ -314,7 +316,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
                     new BigNumber(FEE_PERCENTAGE).times(totalEthSpent),
@@ -513,7 +515,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 );
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
@@ -549,7 +551,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 );
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
