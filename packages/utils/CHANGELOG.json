@@ -3,7 +3,8 @@
         "version": "4.6.0-beta.3",
         "changes": [
             {
-                "note": "Re-export all `RevertErrors`"
+                "note": "Re-export all `RevertErrors`",
+                "pr": 2362
             }
         ]
     },

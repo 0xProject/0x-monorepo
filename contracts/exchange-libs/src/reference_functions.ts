@@ -1,8 +1,6 @@
 import { ReferenceFunctions } from '@0x/contracts-utils';
 import { FillResults, Order } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-
-import LibMathRevertErrors = require('./lib_math_revert_errors');
+import { BigNumber, LibMathRevertErrors } from '@0x/utils';
 
 const { safeAdd, safeSub, safeMul, safeDiv } = ReferenceFunctions;
 

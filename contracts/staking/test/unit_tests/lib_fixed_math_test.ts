@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 
-import FixedMathRevertErrors = require('../../src/fixed_math_revert_errors');
+import { FixedMathRevertErrors } from '../../src';
 import { assertRoughlyEquals, fromFixed, toDecimal, toFixed } from '../utils/number_utils';
 
 import { artifacts } from '../artifacts';

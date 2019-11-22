@@ -11,12 +11,10 @@ import {
 } from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilReferenceFunctions, SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, Order } from '@0x/types';
-import { AnyRevertError, BigNumber, StringRevertError } from '@0x/utils';
+import { AnyRevertError, BigNumber, ExchangeRevertErrors, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
-
-import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts } from './artifacts';
 import {

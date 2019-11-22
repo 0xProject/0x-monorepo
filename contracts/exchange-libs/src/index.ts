@@ -8,7 +8,7 @@ export {
     LibOrderContract,
     LibZeroExTransactionContract,
 } from './wrappers';
-export import LibMathRevertErrors = require('./lib_math_revert_errors');
+export { LibMathRevertErrors } from '@0x/utils';
 
 import * as ReferenceFunctionsToExport from './reference_functions';
 export import ReferenceFunctions = ReferenceFunctionsToExport;

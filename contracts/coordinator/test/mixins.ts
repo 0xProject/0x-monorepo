@@ -12,9 +12,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-
-import CoordinatorRevertErrors = require('../src/revert_errors');
+import { BigNumber, CoordinatorRevertErrors } from '@0x/utils';
 
 import { ApprovalFactory } from '../src/approval_factory';
 

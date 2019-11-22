@@ -11,8 +11,8 @@ import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { StakingRevertErrors } from '../../src';
 import { constants as stakingConstants } from '../../src/constants';
-import StakingRevertErrors = require('../../src/staking_revert_errors');
 
 import { artifacts } from '../artifacts';
 import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';

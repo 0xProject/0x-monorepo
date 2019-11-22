@@ -7,7 +7,7 @@ export {
     LibCoordinatorRichErrorsContract,
     LibEIP712CoordinatorDomainContract,
 } from './wrappers';
-export import CoordinatorRevertErrors = require('./revert_errors');
+export { CoordinatorRevertErrors } from '@0x/utils';
 export { CoordinatorServerCancellationResponse } from './client/index';
 export { ApprovalFactory } from './approval_factory';
 export { SignedCoordinatorApproval } from './types';

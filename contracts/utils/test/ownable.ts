@@ -1,6 +1,5 @@
 import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-
-import OwnableRevertErrors = require('../src/ownable_revert_errors');
+import { OwnableRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { IOwnableEvents, IOwnableOwnershipTransferredEventArgs, TestOwnableContract } from './wrappers';

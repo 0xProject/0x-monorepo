@@ -1,9 +1,8 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, describe } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, StakingRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import StakingRevertErrors = require('../src/staking_revert_errors');
 import { StakeInfo, StakeStatus } from '../src/types';
 
 import { StakerActor } from './actors/staker_actor';

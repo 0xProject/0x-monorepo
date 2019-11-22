@@ -15,7 +15,7 @@ export {
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,
 } from './wrappers';
-export import ExchangeRevertErrors = require('./revert_errors');
+export { ExchangeRevertErrors } from '@0x/utils';
 export { exchangeDataEncoder } from './exchange_data_encoder';
 export { SignedOrder } from '@0x/types';
 export { ExchangeFunctionName } from '@0x/contracts-test-utils';

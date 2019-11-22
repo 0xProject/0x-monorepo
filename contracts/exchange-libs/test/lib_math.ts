@@ -7,9 +7,8 @@ import {
     uint256Values,
 } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, LibMathRevertErrors } from '@0x/utils';
 
-import LibMathRevertErrors = require('../src/lib_math_revert_errors');
 import {
     getPartialAmountCeil,
     getPartialAmountFloor,

@@ -1,10 +1,8 @@
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
 import BN = require('bn.js');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
-
-import LibBytesRevertErrors = require('../src/lib_bytes_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestLibBytesContract } from './wrappers';
