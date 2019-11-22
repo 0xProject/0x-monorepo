@@ -713,7 +713,7 @@
     uuid "^3.3.2"
     websocket "^1.0.26"
 
-"@0x/contract-addresses@^3.0.1", "@0x/contract-addresses@^3.0.2", "@0x/contract-addresses@^3.2.0":
+"@0x/contract-addresses@^3.0.2", "@0x/contract-addresses@^3.2.0":
   version "3.2.0"
   resolved "https://registry.npmjs.org/@0x/contract-addresses/-/contract-addresses-3.2.0.tgz#606307696d9622764220a34e9d4638b899093eec"
   dependencies:
@@ -723,7 +723,7 @@
   version "2.2.2"
   resolved "https://registry.npmjs.org/@0x/contract-artifacts/-/contract-artifacts-2.2.2.tgz#e6d771afb58d0b59c19c5364af5a42a3dfd17219"
 
-"@0x/contract-wrappers@^9.1.6", "@0x/contract-wrappers@^9.1.7":
+"@0x/contract-wrappers@^9.1.7":
   version "9.1.8"
   resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-9.1.8.tgz#5923d35af3e4b442a57d02f74e02620b2d5b1356"
   dependencies:
@@ -747,49 +747,21 @@
     lodash "^4.17.11"
     uuid "^3.3.2"
 
-"@0x/contracts-erc20@^2.2.7":
-  version "2.2.14"
-  resolved "https://registry.npmjs.org/@0x/contracts-erc20/-/contracts-erc20-2.2.14.tgz#bac2528a590c0f9668811cfd23948a941ae0ad30"
+"@0x/coordinator-server@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-1.0.3.tgz#736640edc5960bd65674436f96050fd7b4da7ac3"
   dependencies:
-    "@0x/base-contract" "^5.4.0"
-    "@0x/contracts-utils" "^3.2.4"
-    "@0x/types" "^2.4.3"
-    "@0x/typescript-typings" "^4.3.0"
-    "@0x/utils" "^4.5.2"
-    "@0x/web3-wrapper" "^6.0.13"
-    ethereum-types "^2.1.6"
-    lodash "^4.17.11"
-
-"@0x/contracts-utils@^3.2.4":
-  version "3.2.4"
-  resolved "https://registry.npmjs.org/@0x/contracts-utils/-/contracts-utils-3.2.4.tgz#b5ae80684ac0542eb59925f52113ce2c8b1bdb2b"
-  dependencies:
-    "@0x/base-contract" "^5.4.0"
-    "@0x/order-utils" "^8.4.0"
-    "@0x/types" "^2.4.3"
-    "@0x/typescript-typings" "^4.3.0"
-    "@0x/utils" "^4.5.2"
-    "@0x/web3-wrapper" "^6.0.13"
-    bn.js "^4.11.8"
-    ethereum-types "^2.1.6"
-    ethereumjs-util "^5.1.1"
-    lodash "^4.17.11"
-
-"@0x/coordinator-server@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-0.1.3.tgz#5fbb7c11bb641aa5386797769cab9a68a7d15b79"
-  dependencies:
-    "@0x/assert" "^2.1.0"
-    "@0x/contract-addresses" "^3.0.1"
-    "@0x/contract-wrappers" "^9.1.6"
-    "@0x/contracts-erc20" "^2.2.7"
-    "@0x/json-schemas" "^3.0.11"
-    "@0x/order-utils" "^8.2.1"
-    "@0x/subproviders" "^4.1.1"
-    "@0x/types" "^2.4.0"
-    "@0x/typescript-typings" "^4.2.3"
-    "@0x/utils" "^4.4.0"
-    "@0x/web3-wrapper" "^6.0.7"
+    "@0x/assert" "2.2.0-beta.2"
+    "@0x/contract-addresses" "3.3.0-beta.3"
+    "@0x/contract-wrappers" "12.2.0-beta.2"
+    "@0x/contracts-erc20" "2.3.0-beta.2"
+    "@0x/json-schemas" "4.1.0-beta.2"
+    "@0x/order-utils" "8.5.0-beta.2"
+    "@0x/subproviders" "5.1.0-beta.2"
+    "@0x/types" "2.5.0-beta.2"
+    "@0x/typescript-typings" "4.4.0-beta.2"
+    "@0x/utils" "4.6.0-beta.2"
+    "@0x/web3-wrapper" "6.1.0-beta.2"
     "@babel/polyfill" "^7.0.0"
     body-parser "^1.18.3"
     cors "^2.8.5"
@@ -835,7 +807,7 @@
     uuid "^3.3.2"
     websocket "^1.0.29"
 
-"@0x/order-utils@^8.2.1", "@0x/order-utils@^8.2.2", "@0x/order-utils@^8.2.3", "@0x/order-utils@^8.4.0":
+"@0x/order-utils@^8.2.2", "@0x/order-utils@^8.2.3", "@0x/order-utils@^8.4.0":
   version "8.4.0"
   resolved "https://registry.npmjs.org/@0x/order-utils/-/order-utils-8.4.0.tgz#f7fe9c73f9fd82ab05ec3c04951049e904aab46a"
   dependencies:

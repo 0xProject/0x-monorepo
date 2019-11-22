@@ -4,6 +4,7 @@ import { ERC20TokenContract } from '@0x/contracts-erc20';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
+import { migrateOnceAsync } from '@0x/migrations';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
@@ -21,7 +22,6 @@ import {
 } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { migrateOnceAsync } from './utils/migrate';
 import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 

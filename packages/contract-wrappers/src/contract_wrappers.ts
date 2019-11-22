@@ -6,6 +6,7 @@ import {
     OrderValidatorContract,
     WETH9Contract,
 } from '@0x/abi-gen-wrappers';
+import { assert } from '@0x/assert';
 import { ContractAddresses } from '@0x/contract-addresses';
 import {
     Coordinator,
@@ -23,9 +24,8 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
+import { ContractWrappersConfigSchema } from './contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
-import { assert } from './utils/assert';
 import { _getDefaultContractAddresses } from './utils/contract_addresses';
 
 /**
