@@ -93,6 +93,9 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
     def run(self):
         """Run `docker-compose up`."""
         subprocess.call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml pull").split()
+        )
+        subprocess.call(  # nosec
             ("docker-compose -f test/relayer/docker-compose.yml up -d").split()
         )
         launch_kit_ready = False

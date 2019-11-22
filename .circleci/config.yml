@@ -202,9 +202,9 @@ jobs:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/ganache-cli:4.4.0-beta.1
               environment:
-                  VERSION: 4.4.0-beta.1
+                  VERSION: latest
                   SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta
-            - image: 0xorg/mesh:6.0.0-beta-0xv3
+            - image: 0xorg/mesh:0xV3
               environment:
                   ETHEREUM_RPC_URL: 'http://localhost:8545'
                   ETHEREUM_NETWORK_ID: '50'

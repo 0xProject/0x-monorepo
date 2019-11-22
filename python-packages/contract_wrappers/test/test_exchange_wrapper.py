@@ -4,6 +4,8 @@ import random
 
 import pytest
 from eth_utils import remove_0x_prefix
+from web3 import Web3
+from web3.gas_strategies.rpc import rpc_gas_price_strategy
 
 from zero_ex.contract_addresses import chain_to_addresses, ChainId
 from zero_ex.contract_wrappers import TxParams
@@ -85,23 +87,39 @@ def test_exchange_wrapper__fill_order(
     )
     order_signature = sign_hash(ganache_provider, maker, order_hash)
 
+    web3 = Web3(ganache_provider)
+    web3.eth.setGasPriceStrategy(  # pylint: disable=no-member
+        rpc_gas_price_strategy
+    )
+
     fill_results = exchange_wrapper.fill_order.call(
         order=order,
         taker_asset_fill_amount=order["takerAssetAmount"],
         signature=order_signature,
-        tx_params=TxParams(from_=taker),
+        tx_params=TxParams(
+            from_=taker,
+            value=web3.eth.generateGasPrice()  # pylint: disable=no-member
+            * 150000,
+        ),
     )
     assert fill_results["makerAssetFilledAmount"] == 1
     assert fill_results["takerAssetFilledAmount"] == 1
     assert fill_results["makerFeePaid"] == 0
     assert fill_results["takerFeePaid"] == 0
-    assert fill_results["protocolFeePaid"] == 0
+    assert (
+        fill_results["protocolFeePaid"]
+        == web3.eth.generateGasPrice() * 150000  # pylint: disable=no-member
+    )
 
     tx_hash = exchange_wrapper.fill_order.send_transaction(
         order=order,
         taker_asset_fill_amount=order["takerAssetAmount"],
         signature=order_signature,
-        tx_params=TxParams(from_=taker),
+        tx_params=TxParams(
+            from_=taker,
+            value=web3.eth.generateGasPrice()  # pylint: disable=no-member
+            * 150000,
+        ),
     )
     assert_valid(tx_hash.hex(), "/hexSchema")
 
@@ -136,11 +154,22 @@ def test_exchange_wrapper__batch_fill_orders(
         for order_hash in order_hashes
     ]
     taker_amounts = [order["takerAssetAmount"] for order in orders]
+
+    web3 = Web3(ganache_provider)
+    web3.eth.setGasPriceStrategy(  # pylint: disable=no-member
+        rpc_gas_price_strategy
+    )
+
     tx_hash = exchange_wrapper.batch_fill_orders.send_transaction(
         orders=orders,
         taker_asset_fill_amounts=taker_amounts,
         signatures=order_signatures,
-        tx_params=TxParams(from_=taker),
+        tx_params=TxParams(
+            from_=taker,
+            value=2
+            * web3.eth.generateGasPrice()  # pylint: disable=no-member
+            * 150000,
+        ),
     )
     assert_valid(tx_hash.hex(), "/hexSchema")
 
