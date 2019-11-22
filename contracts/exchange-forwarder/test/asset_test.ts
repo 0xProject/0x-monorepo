@@ -84,33 +84,43 @@ blockchainTests('Supported asset type unit tests', env => {
             .getABIEncodedTransactionData();
     });
 
-    describe('_isPercentageFee', () => {
-        it('returns true if takerFeeAssetData == makerAssetData are ERC20', async () => {
-            const result = await forwarder.isPercentageFee(erc20AssetData, erc20AssetData).callAsync();
+    describe('_areUnderlyingAssetsEqual', () => {
+        it('returns true if assetData1 == assetData2 are ERC20', async () => {
+            const result = await forwarder.areUnderlyingAssetsEqual(erc20AssetData, erc20AssetData).callAsync();
             expect(result).to.be.true();
         });
-        it('returns true if makerAssetData is the ERC20Bridge equivalent of takerFeeAssetData', async () => {
-            const result = await forwarder.isPercentageFee(erc20AssetData, erc20BridgeAssetData).callAsync();
+        it('returns true if assetData1 == assetData2 are ERC20Bridge', async () => {
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(erc20BridgeAssetData, erc20BridgeAssetData)
+                .callAsync();
             expect(result).to.be.true();
         });
-        it('returns false if takerFeeAssetData != makerAssetData are ERC20', async () => {
+        it('returns true if assetData2 is the ERC20Bridge equivalent of assetData1', async () => {
+            const result = await forwarder.areUnderlyingAssetsEqual(erc20AssetData, erc20BridgeAssetData).callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns false if assetData1 != assetData2 are ERC20', async () => {
             const differentERC20AssetData = assetDataEncoder.ERC20Token(randomAddress()).getABIEncodedTransactionData();
-            const result = await forwarder.isPercentageFee(erc20AssetData, differentERC20AssetData).callAsync();
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(erc20AssetData, differentERC20AssetData)
+                .callAsync();
             expect(result).to.be.false();
         });
-        it('returns false if takerFeeAssetData is ERC20 and makerAssetData is ERC721', async () => {
-            const result = await forwarder.isPercentageFee(erc20AssetData, erc721AssetData).callAsync();
+        it('returns false if assetData1 is ERC20 and assetData2 is ERC721', async () => {
+            const result = await forwarder.areUnderlyingAssetsEqual(erc20AssetData, erc721AssetData).callAsync();
             expect(result).to.be.false();
         });
-        it('returns false if makerAssetData us ERC20Bridge, but for a different token than takerFeeAssetData', async () => {
+        it('returns false if assetData2 is ERC20Bridge, but for a different token than assetData1', async () => {
             const mismatchedErc20BridgeAssetData = assetDataEncoder
                 .ERC20Bridge(randomAddress(), bridgeAddress, bridgeData)
                 .getABIEncodedTransactionData();
-            const result = await forwarder.isPercentageFee(erc20AssetData, mismatchedErc20BridgeAssetData).callAsync();
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(erc20AssetData, mismatchedErc20BridgeAssetData)
+                .callAsync();
             expect(result).to.be.false();
         });
-        it('returns false if takerFeeAssetData is not ERC20', async () => {
-            const result = await forwarder.isPercentageFee(erc721AssetData, erc721AssetData).callAsync();
+        it('returns false if assetData1 == assetData2 are ERC721', async () => {
+            const result = await forwarder.areUnderlyingAssetsEqual(erc721AssetData, erc721AssetData).callAsync();
             expect(result).to.be.false();
         });
     });

@@ -21,16 +21,20 @@ import { Taker } from '../framework/actors/taker';
 import { actorAddressesByName } from '../framework/actors/utils';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
+import { TestEth2DaiContract, TestUniswapExchangeContract } from '../wrappers';
 
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
 
-blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
+blockchainTests.resets.only('Forwarder <> ERC20Bridge integration tests', env => {
     let deployment: DeploymentManager;
-    let forwarder: ForwarderContract;
-    let assetDataEncoder: IAssetDataContract;
     let balanceStore: BlockchainBalanceStore;
     let testFactory: ForwarderTestFactory;
+
+    let forwarder: ForwarderContract;
+    let assetDataEncoder: IAssetDataContract;
+    let eth2Dai: TestEth2DaiContract;
+    let uniswapExchange: TestUniswapExchangeContract;
 
     let erc721Token: DummyERC721TokenContract;
     let nftId: BigNumber;
@@ -58,10 +62,12 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         [erc721Token] = deployment.tokens.erc721;
 
         forwarder = await deployForwarderAsync(deployment, env);
-        const [eth2DaiBridge] = await deployEth2DaiBridgeAsync(deployment, env);
-        const [uniswapBridge, [uniswapMakerTokenExchange]] = await deployUniswapBridgeAsync(deployment, env, [
-            makerToken.address,
-        ]);
+        const eth2DaiContracts = await deployEth2DaiBridgeAsync(deployment, env);
+        const [eth2DaiBridge] = eth2DaiContracts;
+        [, eth2Dai] = eth2DaiContracts;
+        const uniswapContracts = await deployUniswapBridgeAsync(deployment, env, [makerToken.address]);
+        const [uniswapBridge] = uniswapContracts;
+        [, [uniswapExchange]] = uniswapContracts;
 
         makerTokenAssetData = assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData();
         makerFeeTokenAssetData = assetDataEncoder.ERC20Token(makerFeeToken.address).getABIEncodedTransactionData();
@@ -129,7 +135,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         [nftId] = await maker.configureERC721TokenAsync(erc721Token);
 
         // We need to top up the TestUniswapExchange with some ETH so that it can perform tokenToEthSwapInput
-        await uniswapMakerTokenExchange.topUpEth().awaitTransactionSuccessAsync({
+        await uniswapExchange.topUpEth().awaitTransactionSuccessAsync({
             from: forwarderFeeRecipient.address,
             value: constants.ONE_ETHER.times(10),
         });
@@ -159,6 +165,11 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         });
         it('should partially fill a single Eth2DaiBridge order without a taker fee', async () => {
             await testFactory.marketSellTestAsync([eth2DaiBridgeOrder], 0.34);
+        });
+        it('should correctly handle excess maker asset acquired from Eth2Dai', async () => {
+            const bridgeExcessBuyAmount = new BigNumber(1);
+            await eth2Dai.setExcessBuyAmount(bridgeExcessBuyAmount).awaitTransactionSuccessAsync();
+            await testFactory.marketSellTestAsync([eth2DaiBridgeOrder], 0.34, { bridgeExcessBuyAmount });
         });
         it('should fill a single Eth2DaiBridge order with a WETH taker fee', async () => {
             const order = {
@@ -195,6 +206,11 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         });
         it('should partially fill a single UniswapBridge order without a taker fee', async () => {
             await testFactory.marketSellTestAsync([uniswapBridgeOrder], 0.34);
+        });
+        it('should correctly handle excess maker asset acquired from Uniswap', async () => {
+            const bridgeExcessBuyAmount = new BigNumber(1);
+            await uniswapExchange.setExcessBuyAmount(bridgeExcessBuyAmount).awaitTransactionSuccessAsync();
+            await testFactory.marketSellTestAsync([uniswapBridgeOrder], 0.34, { bridgeExcessBuyAmount });
         });
         it('should fill a single UniswapBridge order with a WETH taker fee', async () => {
             const order = {
@@ -249,6 +265,11 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         it('should return excess ETH', async () => {
             await testFactory.marketBuyTestAsync([eth2DaiBridgeOrder], 1, { ethValueAdjustment: 1 });
         });
+        it('should correctly handle excess maker asset acquired from Eth2Dai', async () => {
+            const bridgeExcessBuyAmount = new BigNumber(1);
+            await eth2Dai.setExcessBuyAmount(bridgeExcessBuyAmount).awaitTransactionSuccessAsync();
+            await testFactory.marketBuyTestAsync([eth2DaiBridgeOrder], 0.34, { bridgeExcessBuyAmount });
+        });
         it('should fill a single Eth2DaiBridge order with a WETH taker fee', async () => {
             const order = {
                 ...eth2DaiBridgeOrder,
@@ -294,6 +315,11 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         });
         it('should partially fill a single UniswapBridge order without a taker fee', async () => {
             await testFactory.marketBuyTestAsync([uniswapBridgeOrder], 0.34);
+        });
+        it('should correctly handle excess maker asset acquired from Uniswap', async () => {
+            const bridgeExcessBuyAmount = new BigNumber(1);
+            await uniswapExchange.setExcessBuyAmount(bridgeExcessBuyAmount).awaitTransactionSuccessAsync();
+            await testFactory.marketBuyTestAsync([uniswapBridgeOrder], 0.34, { bridgeExcessBuyAmount });
         });
         it('should fill a single UniswapBridge order with a WETH taker fee', async () => {
             const order = {

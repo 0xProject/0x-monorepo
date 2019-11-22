@@ -29,28 +29,32 @@ interface ForwarderFillState {
 interface MarketSellOptions {
     forwarderFeePercentage: Numberish;
     revertError: RevertError;
+    bridgeExcessBuyAmount: BigNumber;
 }
 
 interface MarketBuyOptions extends MarketSellOptions {
     ethValueAdjustment: number; // Used to provided insufficient/excess ETH
 }
 
-function isPercentageFee(takerFeeAssetData: string, makerAssetData: string): boolean {
-    const makerAssetProxyId = hexSlice(makerAssetData, 0, 4);
-    const takerFeeAssetProxyId = hexSlice(takerFeeAssetData, 0, 4);
-    if (makerAssetProxyId === AssetProxyId.ERC20Bridge && takerFeeAssetProxyId === AssetProxyId.ERC20) {
+function areUnderlyingAssetsEqual(assetData1: string, assetData2: string): boolean {
+    const assetProxyId1 = hexSlice(assetData1, 0, 4);
+    const assetProxyId2 = hexSlice(assetData2, 0, 4);
+    if (
+        (assetProxyId1 === AssetProxyId.ERC20 || assetProxyId1 === AssetProxyId.ERC20Bridge) &&
+        (assetProxyId2 === AssetProxyId.ERC20 || assetProxyId2 === AssetProxyId.ERC20Bridge)
+    ) {
         const assetDataDecoder = new IAssetDataContract(constants.NULL_ADDRESS, provider);
-        const [makerTokenAddress] = assetDataDecoder.getABIDecodedTransactionData<string>(
-            'ERC20Bridge',
-            makerAssetData,
-        );
-        const takerFeeTokenAddress = assetDataDecoder.getABIDecodedTransactionData<string>(
-            'ERC20Token',
-            takerFeeAssetData,
-        );
-        return makerTokenAddress === takerFeeTokenAddress;
+        const tokenAddress1 =
+            assetProxyId1 === AssetProxyId.ERC20
+                ? assetDataDecoder.getABIDecodedTransactionData<string>('ERC20Token', assetData1)
+                : assetDataDecoder.getABIDecodedTransactionData<[string]>('ERC20Bridge', assetData1)[0];
+        const tokenAddress2 =
+            assetProxyId2 === AssetProxyId.ERC20
+                ? assetDataDecoder.getABIDecodedTransactionData<string>('ERC20Token', assetData2)
+                : assetDataDecoder.getABIDecodedTransactionData<[string]>('ERC20Bridge', assetData2)[0];
+        return tokenAddress2 === tokenAddress1;
     } else {
-        return makerAssetData === takerFeeAssetData;
+        return false;
     }
 }
 
@@ -92,7 +96,7 @@ export class ForwarderTestFactory {
         const tx = this._forwarder
             .marketBuyOrdersWithEth(
                 orders,
-                makerAssetAcquiredAmount,
+                makerAssetAcquiredAmount.minus(options.bridgeExcessBuyAmount || 0),
                 orders.map(signedOrder => signedOrder.signature),
                 feePercentage,
                 this._forwarderFeeRecipient.address,
@@ -208,6 +212,7 @@ export class ForwarderTestFactory {
                 order,
                 ordersInfoBefore[i].orderTakerAssetFilledAmount,
                 Math.min(remainingOrdersToFill, 1),
+                options.bridgeExcessBuyAmount || constants.ZERO_AMOUNT,
             );
             remainingOrdersToFill = Math.max(remainingOrdersToFill - 1, 0);
 
@@ -232,6 +237,7 @@ export class ForwarderTestFactory {
         order: SignedOrder,
         takerAssetFilled: BigNumber,
         fillFraction: number,
+        bridgeExcessBuyAmount: BigNumber,
     ): Promise<ForwarderFillState> {
         let { makerAssetAmount, takerAssetAmount, makerFee, takerFee } = order;
         makerAssetAmount = makerAssetAmount.times(fillFraction).integerValue(BigNumber.ROUND_CEIL);
@@ -251,9 +257,10 @@ export class ForwarderTestFactory {
         const takerFeeFilled = takerAssetFilled.times(order.takerFee).dividedToIntegerBy(order.takerAssetAmount);
         takerFee = BigNumber.max(takerFee.minus(takerFeeFilled), 0);
 
+        makerAssetAmount = makerAssetAmount.plus(bridgeExcessBuyAmount);
         let wethSpentAmount = takerAssetAmount.plus(DeploymentManager.protocolFee);
         let makerAssetAcquiredAmount = makerAssetAmount;
-        if (isPercentageFee(order.takerFeeAssetData, order.makerAssetData)) {
+        if (areUnderlyingAssetsEqual(order.takerFeeAssetData, order.makerAssetData)) {
             makerAssetAcquiredAmount = makerAssetAcquiredAmount.minus(takerFee);
         } else if (order.takerFeeAssetData === order.takerAssetData) {
             wethSpentAmount = wethSpentAmount.plus(takerFee);

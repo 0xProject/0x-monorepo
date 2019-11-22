@@ -27,10 +27,6 @@ contract LibConstants {
 
     using LibBytes for bytes;
 
-    bytes4 constant internal ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
-    bytes4 constant internal ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
-    bytes4 constant internal ERC20_BRIDGE_PROXY_ID = bytes4(keccak256("ERC20Bridge(address,address,bytes)"));
-
     uint256 constant internal MAX_UINT = 2**256 - 1;
     uint256 constant internal PERCENTAGE_DENOMINATOR = 10**18;
     uint256 constant internal MAX_FEE_PERCENTAGE = 5 * PERCENTAGE_DENOMINATOR / 100;         // 5%

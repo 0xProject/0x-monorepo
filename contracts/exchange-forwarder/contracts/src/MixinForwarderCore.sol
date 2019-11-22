@@ -24,6 +24,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IAssets.sol";
@@ -46,7 +47,7 @@ contract MixinForwarderCore is
     constructor ()
         public
     {
-        address proxyAddress = EXCHANGE.getAssetProxy(ERC20_PROXY_ID);
+        address proxyAddress = EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC20Token.selector);
         if (proxyAddress == address(0)) {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
         }

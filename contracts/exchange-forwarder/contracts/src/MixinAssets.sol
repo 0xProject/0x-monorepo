@@ -23,6 +23,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IAssets.sol";
@@ -59,9 +60,11 @@ contract MixinAssets is
         external
     {
         bytes4 proxyId = assetData.readBytes4(0);
+        bytes4 erc20ProxyId = IAssetData(address(0)).ERC20Token.selector;
+
         // For now we only care about ERC20, since percentage fees on ERC721 tokens are invalid.
-        if (proxyId == ERC20_PROXY_ID) {
-            address proxyAddress = EXCHANGE.getAssetProxy(ERC20_PROXY_ID);
+        if (proxyId == erc20ProxyId) {
+            address proxyAddress = EXCHANGE.getAssetProxy(erc20ProxyId);
             if (proxyAddress == address(0)) {
                 LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
             }
@@ -81,12 +84,13 @@ contract MixinAssets is
     {
         bytes4 proxyId = assetData.readBytes4(0);
 
-        if (proxyId == ERC20_PROXY_ID) {
+        if (
+            proxyId == IAssetData(address(0)).ERC20Token.selector ||
+            proxyId == IAssetData(address(0)).ERC20Bridge.selector
+        ) {
             _transferERC20Token(assetData, amount);
-        } else if (proxyId == ERC721_PROXY_ID) {
+        } else if (proxyId == IAssetData(address(0)).ERC721Token.selector) {
             _transferERC721Token(assetData, amount);
-        } else if (proxyId == ERC20_BRIDGE_PROXY_ID) {
-            _transferERC20BridgeAsset(assetData, amount);
         } else {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
                 proxyId
@@ -94,7 +98,7 @@ contract MixinAssets is
         }
     }
 
-    /// @dev Decodes ERC20 assetData and transfers given amount to sender.
+    /// @dev Decodes ERC20 or ERC20Bridge assetData and transfers given amount to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.
     function _transferERC20Token(
@@ -132,19 +136,5 @@ contract MixinAssets is
             msg.sender,
             tokenId
         );
-    }
-
-    /// @dev Decodes ERC20Bridge assetData and transfers given amount to sender.
-    /// @param assetData Byte array encoded for the respective asset proxy.
-    /// @param amount Amount of asset to transfer to sender.
-    function _transferERC20BridgeAsset(
-        bytes memory assetData,
-        uint256 amount
-    )
-        internal
-    {
-        address token = assetData.readAddress(16);
-        // Transfer tokens.
-        LibERC20Token.transfer(token, msg.sender, amount);
     }
 }

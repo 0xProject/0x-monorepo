@@ -36,16 +36,16 @@ contract TestForwarder is
         )
     {}
 
-    function isPercentageFee(
-        bytes memory takerFeeAssetData,
-        bytes memory makerAssetData
+    function areUnderlyingAssetsEqual(
+        bytes memory assetData1,
+        bytes memory assetData2
     )
         public
         returns (bool)
     {
-        return _isPercentageFee(
-            takerFeeAssetData,
-            makerAssetData
+        return _areUnderlyingAssetsEqual(
+            assetData1,
+            assetData2
         );
     }
 

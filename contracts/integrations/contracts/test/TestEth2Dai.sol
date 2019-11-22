@@ -26,6 +26,14 @@ import "@0x/contracts-erc20/contracts/test/DummyERC20Token.sol";
 contract TestEth2Dai is
     IEth2Dai
 {
+    uint256 private _excessBuyAmount;
+
+    function setExcessBuyAmount(uint256 amount)
+        external
+    {
+        _excessBuyAmount = amount;
+    }
+
     function sellAllAmount(
         address sellTokenAddress,
         uint256 sellTokenAmount,
@@ -41,11 +49,11 @@ contract TestEth2Dai is
             sellTokenAmount
         );
         DummyERC20Token buyToken = DummyERC20Token(buyTokenAddress);
-        buyToken.mint(minimumFillAmount);
+        buyToken.mint(minimumFillAmount + _excessBuyAmount);
         buyToken.transfer(
             msg.sender,
-            minimumFillAmount
+            minimumFillAmount + _excessBuyAmount
         );
-        return minimumFillAmount;
+        return minimumFillAmount + _excessBuyAmount;
     }
 }

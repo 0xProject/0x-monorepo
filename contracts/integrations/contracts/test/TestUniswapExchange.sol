@@ -27,6 +27,7 @@ contract TestUniswapExchange is
     IUniswapExchange
 {
     DummyERC20Token public token;
+    uint256 private _excessBuyAmount;
 
     constructor(address _tokenAddress) public {
         token = DummyERC20Token(_tokenAddress);
@@ -39,6 +40,12 @@ contract TestUniswapExchange is
         payable
     {}
 
+    function setExcessBuyAmount(uint256 amount)
+        external
+    {
+        _excessBuyAmount = amount;
+    }
+
     function ethToTokenTransferInput(
         uint256 minTokensBought,
         uint256, /* deadline */
@@ -48,9 +55,9 @@ contract TestUniswapExchange is
         payable
         returns (uint256 tokensBought)
     {
-        token.mint(minTokensBought);
-        token.transfer(recipient, minTokensBought);
-        return minTokensBought;
+        token.mint(minTokensBought + _excessBuyAmount);
+        token.transfer(recipient, minTokensBought + _excessBuyAmount);
+        return minTokensBought + _excessBuyAmount;
     }
 
     function tokenToEthSwapInput(
@@ -66,8 +73,8 @@ contract TestUniswapExchange is
             address(this),
             tokensSold
         );
-        msg.sender.transfer(minEthBought);
-        return minEthBought;
+        msg.sender.transfer(minEthBought + _excessBuyAmount);
+        return minEthBought + _excessBuyAmount;
     }
 
     function tokenToTokenTransferInput(
@@ -87,9 +94,9 @@ contract TestUniswapExchange is
             tokensSold
         );
         DummyERC20Token toToken = DummyERC20Token(toTokenAddress);
-        toToken.mint(minTokensBought);
-        toToken.transfer(recipient, minTokensBought);
-        return minTokensBought;
+        toToken.mint(minTokensBought + _excessBuyAmount);
+        toToken.transfer(recipient, minTokensBought + _excessBuyAmount);
+        return minTokensBought + _excessBuyAmount;
     }
 
     function toTokenAddress()
