@@ -1,4 +1,4 @@
-import { ExchangeContract } from '@0x/contract-wrappers';
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
