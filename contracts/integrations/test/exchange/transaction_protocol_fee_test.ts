@@ -135,7 +135,10 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
             });
             it('Alice executeTransaction => Alice batchFillOrders; mixed protocol fees', async () => {
                 const orders = [order, await maker.signOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchFillOrders, orders);
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(
+                    ExchangeFunctionName.BatchFillOrders,
+                    orders,
+                );
                 const batchFillTransaction = await alice.signTransactionAsync({ data });
                 const txReceipt = await deployment.exchange
                     .executeTransaction(batchFillTransaction, batchFillTransaction.signature)
@@ -144,7 +147,10 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
             });
             it('Alice executeTransaction => Bob batchFillOrders; mixed protocol fees', async () => {
                 const orders = [order, await maker.signOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchFillOrders, orders);
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(
+                    ExchangeFunctionName.BatchFillOrders,
+                    orders,
+                );
                 const batchFillTransaction = await bob.signTransactionAsync({ data });
                 const txReceipt = await deployment.exchange
                     .executeTransaction(batchFillTransaction, batchFillTransaction.signature)
