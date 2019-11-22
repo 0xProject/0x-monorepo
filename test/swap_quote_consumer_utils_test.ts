@@ -3,6 +3,7 @@ import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { WETH9Contract } from '@0x/contracts-erc20';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
+import { migrateOnceAsync } from '@0x/migrations';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
@@ -12,7 +13,6 @@ import { constants } from '../src/constants';
 import { ExtensionContractType, MarketOperation, PrunedSignedOrder } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { migrateOnceAsync } from './utils/migrate';
 import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
