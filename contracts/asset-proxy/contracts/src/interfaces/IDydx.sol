@@ -87,13 +87,17 @@ interface IDydx {
     )
         external;
 
-    /// @dev Get the ERC20 token address for a market.
-    /// @param  marketId  The market to query
-    /// @return           The token address
-    function getMarketTokenAddress(
-        uint256 marketId
+    ///
+    /// @dev Return true if a particular address is approved as an operator for an owner's accounts.
+    /// Approved operators can act on the accounts of the owner as if it were the operator's own.
+    /// @param  owner     The owner of the accounts
+    /// @param  operator  The possible operator
+    /// @return           True if operator is approved for owner's accounts
+    function getIsLocalOperator(
+        address owner,
+        address operator
     )
         external
         view
-        returns (address);
+        returns (bool);
 }

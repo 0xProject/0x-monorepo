@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Add `DEV_UTILS_ADDRESS` and `KYBER_ETH_ADDRESS` to `DeploymentConstants`.",
+                "pr": 2395
+            },
+            {
+                "note": "Add `DydxBridge` to `DeploymentConstants`.",
                 "pr": 2365
             }
         ]
