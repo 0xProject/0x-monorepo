@@ -9,15 +9,15 @@ import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance
 import { DeploymentManager } from '../framework/deployment_manager';
 import { Simulation, SimulationEnvironment } from '../framework/simulation';
 
+import { PoolManagementSimulation } from './pool_management_test';
+import { StakeManagementSimulation } from './stake_management_test';
+
 class PoolMembershipSimulation extends Simulation {
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
         const { deployment } = this.environment;
 
-        const operator = new PoolOperator({
-            name: 'operator',
-            deployment,
-            simulationEnvironment: this.environment,
-        });
+        const poolManagement = new PoolManagementSimulation(this.environment);
+        const stakeManagement = new StakeManagementSimulation(this.environment);
 
         const member = new PoolMember({
             name: 'member',
@@ -26,9 +26,10 @@ class PoolMembershipSimulation extends Simulation {
         });
 
         const actions = [
-            operator.simulationActions.validCreateStakingPool,
             member.simulationActions.validJoinStakingPool,
             member.simulationActions.validFillOrderCompleteFill,
+            poolManagement.generator,
+            stakeManagement.generator,
         ];
 
         while (true) {
@@ -38,7 +39,7 @@ class PoolMembershipSimulation extends Simulation {
     }
 }
 
-blockchainTests.skip('pool membership fuzz test', env => {
+blockchainTests.only('pool membership fuzz test', env => {
     let deployment: DeploymentManager;
     let maker: Maker;
 
@@ -74,7 +75,13 @@ blockchainTests.skip('pool membership fuzz test', env => {
     });
 
     it('fuzz', async () => {
-        const balanceStore = new BlockchainBalanceStore({}, {});
+        const balanceStore = new BlockchainBalanceStore(
+            {
+                StakingProxy: deployment.staking.stakingProxy.address,
+                ZRXVault: deployment.staking.zrxVault.address,
+            },
+            { erc20: { ZRX: deployment.tokens.zrx } },
+        );
 
         const simulationEnv = new SimulationEnvironment(deployment, balanceStore, [maker]);
         const simulation = new PoolMembershipSimulation(simulationEnv);

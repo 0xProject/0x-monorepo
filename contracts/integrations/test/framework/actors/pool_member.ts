@@ -8,7 +8,6 @@ import { AssertionResult } from '../assertions/function_assertion';
 import { validJoinStakingPoolAssertion } from '../assertions/joinStakingPool';
 
 import { Actor, Constructor } from './base';
-import { PoolOperatorMixin } from './pool_operator';
 
 interface PoolMemberInterface {
     joinStakingPoolAsync: (poolId: string) => Promise<TransactionReceiptWithDecodedLogs>;
@@ -97,4 +96,4 @@ export function PoolMemberMixin<TBase extends Constructor>(Base: TBase): TBase &
     };
 }
 
-export class PoolMember extends PoolOperatorMixin(PoolMemberMixin(Actor)) {}
+export class PoolMember extends PoolMemberMixin(Actor) {}
