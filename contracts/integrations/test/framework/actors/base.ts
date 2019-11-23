@@ -31,6 +31,10 @@ export class Actor {
     } = {};
     protected readonly _transactionFactory: TransactionFactory;
 
+    public static reset(): void {
+        Actor.count = 0;
+    }
+
     constructor(config: ActorConfig) {
         Actor.count++;
 

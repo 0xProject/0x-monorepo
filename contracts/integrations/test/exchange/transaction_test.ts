@@ -81,7 +81,7 @@ blockchainTests.resets('Transaction integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     function defaultFillEvent(order: SignedOrder): ExchangeFillEventArgs {

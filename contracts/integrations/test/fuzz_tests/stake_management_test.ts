@@ -34,7 +34,7 @@ export class StakeManagementSimulation extends Simulation {
 
 blockchainTests.skip('Stake management fuzz test', env => {
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     it('fuzz', async () => {

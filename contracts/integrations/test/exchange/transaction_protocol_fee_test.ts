@@ -1,7 +1,15 @@
 // tslint:disable: max-file-line-count
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
-import { exchangeDataEncoder } from '@0x/contracts-exchange';
-import { blockchainTests, constants, describe, ExchangeFunctionName } from '@0x/contracts-test-utils';
+import { exchangeDataEncoder, ExchangeRevertErrors } from '@0x/contracts-exchange';
+import {
+    blockchainTests,
+    constants,
+    describe,
+    ExchangeFunctionName,
+    expect,
+    orderHashUtils,
+    transactionHashUtils,
+} from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -24,6 +32,7 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
     let alice: Taker;
     let bob: Taker;
     let charlie: Taker;
+    let wethless: Taker; // Used to test revert scenarios
 
     let order: SignedOrder; // All orders will have the same fields, modulo salt and expiration time
     let transactionA: SignedZeroExTransaction; // fillOrder transaction signed by Alice
@@ -42,6 +51,7 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
         alice = new Taker({ name: 'Alice', deployment });
         bob = new Taker({ name: 'Bob', deployment });
         charlie = new Taker({ name: 'Charlie', deployment });
+        wethless = new Taker({ name: 'wethless', deployment });
         feeRecipient = new FeeRecipient({
             name: 'Fee recipient',
             deployment,
@@ -63,6 +73,13 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
             await taker.configureERC20TokenAsync(takerFeeToken);
             await taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
         }
+        await wethless.configureERC20TokenAsync(takerToken);
+        await wethless.configureERC20TokenAsync(takerFeeToken);
+        await wethless.configureERC20TokenAsync(
+            deployment.tokens.weth,
+            deployment.staking.stakingProxy.address,
+            constants.ZERO_AMOUNT, // wethless taker has approved the proxy, but has no weth
+        );
         await maker.configureERC20TokenAsync(makerToken);
         await maker.configureERC20TokenAsync(makerFeeToken);
 
@@ -90,10 +107,27 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     const REFUND_AMOUNT = new BigNumber(1);
+
+    function protocolFeeError(
+        failedOrder: SignedOrder,
+        failedTransaction: SignedZeroExTransaction,
+    ): ExchangeRevertErrors.TransactionExecutionError {
+        const nestedError = new ExchangeRevertErrors.PayProtocolFeeError(
+            orderHashUtils.getOrderHashHex(failedOrder),
+            DeploymentManager.protocolFee,
+            maker.address,
+            wethless.address,
+            '0x',
+        ).encode();
+        return new ExchangeRevertErrors.TransactionExecutionError(
+            transactionHashUtils.getTransactionHashHex(failedTransaction),
+            nestedError,
+        );
+    }
 
     describe('executeTransaction', () => {
         const ETH_FEE_WITH_REFUND = DeploymentManager.protocolFee.plus(REFUND_AMOUNT);
@@ -132,6 +166,14 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
                     .executeTransaction(transactionB, transactionB.signature)
                     .awaitTransactionSuccessAsync({ from: alice.address, value: REFUND_AMOUNT });
                 expectedBalances.simulateFills([order], bob.address, txReceipt, deployment, REFUND_AMOUNT);
+            });
+            it('Alice executeTransaction => wETH-less taker fillOrder; reverts because protocol fee cannot be paid', async () => {
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
+                const transaction = await wethless.signTransactionAsync({ data });
+                const tx = deployment.exchange
+                    .executeTransaction(transaction, transaction.signature)
+                    .awaitTransactionSuccessAsync({ from: alice.address, value: REFUND_AMOUNT });
+                return expect(tx).to.revertWith(protocolFeeError(order, transaction));
             });
             it('Alice executeTransaction => Alice batchFillOrders; mixed protocol fees', async () => {
                 const orders = [order, await maker.signOrderAsync()];
@@ -198,6 +240,22 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
                     .executeTransaction(recursiveTransaction, recursiveTransaction.signature)
                     .awaitTransactionSuccessAsync({ from: alice.address, value: REFUND_AMOUNT });
                 expectedBalances.simulateFills([order], bob.address, txReceipt, deployment, REFUND_AMOUNT);
+            });
+            it('Alice executeTransaction => Alice executeTransaction => wETH-less taker fillOrder; reverts because protocol fee cannot be paid', async () => {
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
+                const transaction = await wethless.signTransactionAsync({ data });
+                const recursiveData = deployment.exchange
+                    .executeTransaction(transaction, transaction.signature)
+                    .getABIEncodedTransactionData();
+                const recursiveTransaction = await alice.signTransactionAsync({ data: recursiveData });
+                const tx = deployment.exchange
+                    .executeTransaction(recursiveTransaction, recursiveTransaction.signature)
+                    .awaitTransactionSuccessAsync({ from: alice.address, value: REFUND_AMOUNT });
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashUtils.getTransactionHashHex(recursiveTransaction),
+                    protocolFeeError(order, transaction).encode(),
+                );
+                return expect(tx).to.revertWith(expectedError);
             });
         });
     });
@@ -344,9 +402,19 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
                     MIXED_FEES_WITH_REFUND,
                 );
             });
+            it('Alice batchExecuteTransactions => Alice fillOrder, Bob fillOrder, wETH-less taker fillOrder; reverts because protocol fee cannot be paid', async () => {
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
+                const failTransaction = await wethless.signTransactionAsync({ data });
+                const transactions = [transactionA, transactionB, failTransaction];
+                const signatures = transactions.map(transaction => transaction.signature);
+                const tx = deployment.exchange
+                    .batchExecuteTransactions(transactions, signatures)
+                    .awaitTransactionSuccessAsync({ from: alice.address, value: MIXED_FEES_WITH_REFUND });
+                expect(tx).to.revertWith(protocolFeeError(order, failTransaction));
+            });
         });
         describe('Nested', () => {
-            // First two orders' protocol fees paid in ETH by sender, the other three paid in WETH by their respective takers
+            // First two orders' protocol fees paid in ETH by sender, the others paid in WETH by their respective takers
             const MIXED_FEES_WITH_REFUND = DeploymentManager.protocolFee.times(2.5);
 
             // Alice batchExecuteTransactions => Alice fillOrder, Bob fillOrder, Charlie fillOrder
@@ -373,6 +441,18 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
                 nestedTransaction = await alice.signTransactionAsync({ data: recursiveData });
             });
 
+            it('Alice executeTransaction => nested batchExecuteTransactions; mixed protocol fees', async () => {
+                const txReceipt = await deployment.exchange
+                    .executeTransaction(nestedTransaction, nestedTransaction.signature)
+                    .awaitTransactionSuccessAsync({ from: alice.address, value: MIXED_FEES_WITH_REFUND });
+                expectedBalances.simulateFills(
+                    [order, order, order],
+                    [alice.address, bob.address, charlie.address],
+                    txReceipt,
+                    deployment,
+                    MIXED_FEES_WITH_REFUND,
+                );
+            });
             it('Alice batchExecuteTransactions => nested batchExecuteTransactions, Bob fillOrder, Charlie fillOrder; mixed protocol fees', async () => {
                 const transactions = [nestedTransaction, transactionB2, transactionC2];
                 const signatures = transactions.map(tx => tx.signature);

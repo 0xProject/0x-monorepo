@@ -95,7 +95,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     function expectedFillEvent(order: SignedOrder): ExchangeFillEventArgs {

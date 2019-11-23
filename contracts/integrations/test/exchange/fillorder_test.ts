@@ -109,7 +109,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     function verifyFillEvents(order: SignedOrder, receipt: TransactionReceiptWithDecodedLogs): void {

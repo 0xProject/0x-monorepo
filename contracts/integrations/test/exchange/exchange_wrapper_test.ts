@@ -124,7 +124,7 @@ blockchainTests.resets('Exchange wrappers', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     interface SignedOrderWithValidity {

@@ -106,7 +106,7 @@ blockchainTests('Forwarder integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     blockchainTests.resets('constructor', () => {
