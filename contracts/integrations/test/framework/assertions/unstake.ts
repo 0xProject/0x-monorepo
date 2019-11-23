@@ -1,7 +1,6 @@
 import { GlobalStakeByStatus, OwnerStakeByStatus, StakeStatus, StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
-import { TxData } from 'ethereum-types';
 
 import { BlockchainBalanceStore } from '../balances/blockchain_balance_store';
 import { LocalBalanceStore } from '../balances/local_balance_store';

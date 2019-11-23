@@ -8,7 +8,6 @@ import {
 } from '@0x/contracts-staking';
 import { constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
-import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DeploymentManager } from '../deployment_manager';

@@ -1,5 +1,4 @@
-import { constants, getRandomInteger, hexRandom } from '@0x/contracts-test-utils';
-import { Order } from '@0x/types';
+import { constants, getRandomInteger } from '@0x/contracts-test-utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 

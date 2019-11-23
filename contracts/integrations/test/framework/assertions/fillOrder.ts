@@ -6,7 +6,6 @@ import { BigNumber, logUtils } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Maker } from '../actors/maker';
 import { DeploymentManager } from '../deployment_manager';
 
 import { FunctionArguments, FunctionAssertion, FunctionResult } from './function_assertion';
@@ -65,6 +64,10 @@ function verifyFillEvents(
     );
 }
 
+/**
+ * A function assertion that verifies that a complete and valid fill succeeded and emitted the correct logs.
+ */
+/* tslint:disable:no-unnecessary-type-assertion */
 export function validFillOrderCompleteFillAssertion(
     deployment: DeploymentManager,
 ): FunctionAssertion<[Order, BigNumber, string], {}, FillResults> {
@@ -72,7 +75,7 @@ export function validFillOrderCompleteFillAssertion(
 
     return new FunctionAssertion<[Order, BigNumber, string], {}, FillResults>(exchange.fillOrder.bind(exchange), {
         after: async (_beforeInfo, result: FunctionResult, args: FunctionArguments<[Order, BigNumber, string]>) => {
-            const [order, takerAssetFilledAmount, signature] = args.args;
+            const [order] = args.args;
 
             // Ensure that the tx succeeded.
             expect(result.success).to.be.true();
@@ -84,3 +87,4 @@ export function validFillOrderCompleteFillAssertion(
         },
     });
 }
+/* tslint:enable:no-unnecessary-type-assertion */

@@ -3,7 +3,6 @@ import * as _ from 'lodash';
 
 import { Maker } from '../framework/actors/maker';
 import { PoolMember } from '../framework/actors/pool_member';
-import { PoolOperator } from '../framework/actors/pool_operator';
 import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
