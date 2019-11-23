@@ -64,6 +64,10 @@
             {
                 "note": "Implement `KyberBridge`.",
                 "pr": 2352
+            },
+            {
+                "note": "Implement `DydxBridge`.",
+                "pr": 2365
             }
         ],
         "timestamp": 1575290197
