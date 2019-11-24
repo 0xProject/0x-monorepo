@@ -15,11 +15,11 @@ export class ProtocolFeeUtils {
 
     // TODO(dave4506) Add a debounce, cache or some form of a throttle to this function, doesn't change often.
     public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        const protocolFeeCollector = await this._exchangeContract.protocolFeeCollector.callAsync();
+        const protocolFeeCollector = await this._exchangeContract.protocolFeeCollector().callAsync();
         if (protocolFeeCollector === constants.NULL_ADDRESS) {
             return constants.ZERO_AMOUNT;
         } else {
-            const protocolFeeMultiplier = await this._exchangeContract.protocolFeeMultiplier.callAsync();
+            const protocolFeeMultiplier = await this._exchangeContract.protocolFeeMultiplier().callAsync();
             return protocolFeeMultiplier;
         }
     }

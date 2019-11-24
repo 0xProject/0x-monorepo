@@ -235,8 +235,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(makerTokenAddress);
-        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(takerTokenAddress);
+        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData(makerTokenAddress).callAsync();
+        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData(takerTokenAddress).callAsync();
         const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -265,8 +265,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
-        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(makerTokenAddress);
-        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData.callAsync(takerTokenAddress);
+        const makerAssetData = await this._devUtilsContract.encodeERC20AssetData(makerTokenAddress).callAsync();
+        const takerAssetData = await this._devUtilsContract.encodeERC20AssetData(takerTokenAddress).callAsync();
         const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -290,8 +290,8 @@ export class SwapQuoter {
     ): Promise<LiquidityForTakerMakerAssetDataPair> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
         const assetPairs = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         if (!assetPairs.includes(makerAssetData)) {
             return {
@@ -311,7 +311,7 @@ export class SwapQuoter {
      */
     public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
         assert.isString('makerAssetData', makerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
         const allAssetPairs = await this.orderbook.getAvailableAssetDatasAsync();
         const assetPairs = allAssetPairs
             .filter(pair => pair.assetDataA.assetData === makerAssetData)
@@ -326,7 +326,7 @@ export class SwapQuoter {
      */
     public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
         const allAssetPairs = await this.orderbook.getAvailableAssetDatasAsync();
         const assetPairs = allAssetPairs
             .filter(pair => pair.assetDataB.assetData === takerAssetData)
@@ -347,8 +347,8 @@ export class SwapQuoter {
     ): Promise<boolean> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
         const availableMakerAssetDatas = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         return _.includes(availableMakerAssetDatas, makerAssetData);
     }
@@ -364,8 +364,8 @@ export class SwapQuoter {
     ): Promise<PrunedSignedOrder[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(takerAssetData);
-        await this._devUtilsContract.revertIfInvalidAssetData.callAsync(makerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
         // get orders
         const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const orders = _.map(apiOrders, o => o.order);
@@ -384,8 +384,8 @@ export class SwapQuoter {
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
         const balanceAndAllowance = await this._devUtilsContract
-            .getBalanceAndAssetProxyAllowance
-            .callAsync(takerAddress, swapQuote.takerAssetData);
+            .getBalanceAndAssetProxyAllowance(takerAddress, swapQuote.takerAssetData)
+            .callAsync();
         return [
             balanceAndAllowance[1].isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerAssetAmount),
             balanceAndAllowance[1].isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount),
@@ -403,7 +403,7 @@ export class SwapQuoter {
      * Utility function to get assetData for Ether token.
      */
     public async getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._devUtilsContract.encodeERC20AssetData.callAsync(this._contractAddresses.etherToken);
+        return this._devUtilsContract.encodeERC20AssetData(this._contractAddresses.etherToken).callAsync();
     }
 
     /**

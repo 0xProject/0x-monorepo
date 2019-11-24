@@ -123,31 +123,30 @@ describe('OrderPruner', () => {
 
         // give double fillableAmount to maker and taker as buffer
         await erc20MakerTokenContract
-            .transfer
-            .sendTransactionAsync(
+            .transfer(
                 makerAddress,
                 fillableAmount.multipliedBy(4),
+            )
+            .sendTransactionAsync(
                 { from: coinbaseAddress });
         await erc20TakerTokenContract
-            .transfer
-            .sendTransactionAsync(
+            .transfer(
                 takerAddress,
                 fillableAmount.multipliedBy(4),
+            )
+            .sendTransactionAsync(
                 { from: coinbaseAddress });
         await erc20MakerTokenContract
-            .approve
+            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
             .sendTransactionAsync(
-                contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 { from: makerAddress });
         await erc20MakerTokenContract
-            .approve
+            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
             .sendTransactionAsync(
-                contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 { from: takerAddress });
         await erc20TakerTokenContract
-            .approve
+            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS)
             .sendTransactionAsync(
-                contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
                 { from: takerAddress });
 
         partiallyFilledOpenSignedOrderFeeless = await orderFactory.newSignedOrderAsync({
@@ -156,11 +155,12 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder
-            .sendTransactionAsync(
+            .fillOrKillOrder(
                 partiallyFilledOpenSignedOrderFeeless,
                 partialFillAmount,
                 partiallyFilledOpenSignedOrderFeeless.signature,
+            )
+            .sendTransactionAsync(
                 {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
@@ -176,11 +176,12 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder
-            .sendTransactionAsync(
+            .fillOrKillOrder(
                 partiallyFilledOpenSignedOrderFeeInTakerAsset,
                 partialFillAmount,
                 partiallyFilledOpenSignedOrderFeeInTakerAsset.signature,
+            )
+            .sendTransactionAsync(
                 {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
@@ -196,11 +197,12 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder
-            .sendTransactionAsync(
+            .fillOrKillOrder(
                 partiallyFilledOpenSignedOrderFeeInMakerAsset,
                 partialFillAmount,
                 partiallyFilledOpenSignedOrderFeeInMakerAsset.signature,
+            )
+            .sendTransactionAsync(
                 {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,
@@ -214,9 +216,10 @@ describe('OrderPruner', () => {
         });
 
         await exchangeContract
-            .fillOrKillOrder
-            .sendTransactionAsync(
+            .fillOrKillOrder(
                 filledOpenSignedOrder, fillableAmount, filledOpenSignedOrder.signature,
+            )
+            .sendTransactionAsync(
                 {
                 from: takerAddress,
                 gasPrice: GAS_PRICE,

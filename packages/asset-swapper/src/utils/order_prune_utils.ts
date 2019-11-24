@@ -26,8 +26,8 @@ export class OrderPruner {
 
         const signatures = _.map(unsortedOrders, o => o.signature);
         const [ordersInfo, fillableTakerAssetAmounts, isValidSignatures] = await this._devUtils
-            .getOrderRelevantStates
-            .callAsync(unsortedOrders, signatures);
+            .getOrderRelevantStates(unsortedOrders, signatures)
+            .callAsync();
         const ordersOnChainMetadata: OrderPrunerOnChainMetadata[] = ordersInfo.map((orderInfo, index) => {
             return {
                 ...orderInfo,
