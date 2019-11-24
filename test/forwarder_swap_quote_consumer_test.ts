@@ -62,8 +62,8 @@ const expectMakerAndTakerBalancesAsyncFactory = (
     makerAddress: string,
     takerAddress: string,
 ) => async (expectedMakerBalance: BigNumber, expectedTakerBalance: BigNumber) => {
-    const makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
-    const takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
+    const makerBalance = await erc20TokenContract.balanceOf(makerAddress).callAsync();
+    const takerBalance = await erc20TokenContract.balanceOf(takerAddress).callAsync();
     expect(makerBalance).to.bignumber.equal(expectedMakerBalance);
     expect(takerBalance).to.bignumber.equal(expectedTakerBalance);
 };
@@ -110,9 +110,9 @@ describe('ForwarderSwapQuoteConsumer', () => {
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
-            devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
-            devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
-            devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
+            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
+            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
+            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
         ]);
         // Configure order defaults
         const defaultOrderParams = {
@@ -154,18 +154,19 @@ describe('ForwarderSwapQuoteConsumer', () => {
 
         const totalFillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
 
-        await erc20TokenContract.transfer.sendTransactionAsync(
+        await erc20TokenContract.transfer(
             makerAddress,
             totalFillableAmount,
+        ).sendTransactionAsync(
             {
             from: coinbaseAddress,
         });
 
         await erc20TokenContract
-            .approve
-            .sendTransactionAsync(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE, { from: makerAddress });
+            .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
+            .sendTransactionAsync({ from: makerAddress });
 
-        await forwarderContract.approveMakerAssetProxy.sendTransactionAsync(makerAssetData, { from: makerAddress });
+        await forwarderContract.approveMakerAssetProxy(makerAssetData).sendTransactionAsync({ from: makerAddress });
 
         orders = [];
         for (const partialOrder of PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS) {

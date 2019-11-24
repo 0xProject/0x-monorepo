@@ -96,9 +96,9 @@ describe('swapQuoteConsumerUtils', () => {
         [takerAddress, makerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
-            await devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
-            await devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
-            await devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
+            await devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
+            await devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
+            await devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
         ];
 
         const defaultOrderParams = {
@@ -223,7 +223,7 @@ describe('swapQuoteConsumerUtils', () => {
         });
         it('should return exchange consumer if takerAsset is wEth and taker has enough weth', async () => {
             const etherInWei = new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI);
-            await wethContract.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
+            await wethContract.deposit().sendTransactionAsync({ value: etherInWei, from: takerAddress });
             const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 forwarderSwapQuote,
                 { takerAddress },
@@ -232,7 +232,7 @@ describe('swapQuoteConsumerUtils', () => {
         });
         it('should return forwarder consumer if takerAsset is wEth and takerAddress has no available balance in either weth or eth (defaulting behavior)', async () => {
             const etherInWei = new BigNumber(50).multipliedBy(ONE_ETH_IN_WEI);
-            await wethContract.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
+            await wethContract.deposit().sendTransactionAsync({ value: etherInWei, from: takerAddress });
             const extensionContractType = await swapQuoteConsumer.getOptimalExtensionContractTypeAsync(
                 largeForwarderSwapQuote,
                 { takerAddress },
