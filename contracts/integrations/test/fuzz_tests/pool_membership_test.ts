@@ -1,24 +1,22 @@
 import { blockchainTests, constants } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
+import { MakerTaker } from '../framework/actors/hybrids';
 import { Maker } from '../framework/actors/maker';
-import { PoolMember } from '../framework/actors/pool_member';
 import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 import { Simulation, SimulationEnvironment } from '../framework/simulation';
 
 import { PoolManagementSimulation } from './pool_management_test';
-import { StakeManagementSimulation } from './stake_management_test';
 
 class PoolMembershipSimulation extends Simulation {
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
         const { deployment } = this.environment;
 
         const poolManagement = new PoolManagementSimulation(this.environment);
-        const stakeManagement = new StakeManagementSimulation(this.environment);
 
-        const member = new PoolMember({
+        const member = new MakerTaker({
             name: 'member',
             deployment,
             simulationEnvironment: this.environment,
@@ -28,7 +26,6 @@ class PoolMembershipSimulation extends Simulation {
             member.simulationActions.validJoinStakingPool,
             member.simulationActions.validFillOrderCompleteFill,
             poolManagement.generator,
-            stakeManagement.generator,
         ];
 
         while (true) {
@@ -38,7 +35,7 @@ class PoolMembershipSimulation extends Simulation {
     }
 }
 
-blockchainTests.only('pool membership fuzz test', env => {
+blockchainTests.skip('pool membership fuzz test', env => {
     let deployment: DeploymentManager;
     let maker: Maker;
 

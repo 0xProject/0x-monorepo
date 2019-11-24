@@ -3,12 +3,12 @@ import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { constants, expect, orderHashUtils, verifyEvents } from '@0x/contracts-test-utils';
 import { FillResults, Order } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DeploymentManager } from '../deployment_manager';
 
-import { FunctionArguments, FunctionAssertion, FunctionResult } from './function_assertion';
+import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 function verifyFillEvents(
     takerAddress: string,
@@ -68,23 +68,30 @@ function verifyFillEvents(
  * A function assertion that verifies that a complete and valid fill succeeded and emitted the correct logs.
  */
 /* tslint:disable:no-unnecessary-type-assertion */
+/* tslint:disable:no-non-null-assertion */
 export function validFillOrderCompleteFillAssertion(
     deployment: DeploymentManager,
 ): FunctionAssertion<[Order, BigNumber, string], {}, FillResults> {
     const exchange = deployment.exchange;
 
     return new FunctionAssertion<[Order, BigNumber, string], {}, FillResults>(exchange.fillOrder.bind(exchange), {
-        after: async (_beforeInfo, result: FunctionResult, args: FunctionArguments<[Order, BigNumber, string]>) => {
-            const [order] = args.args;
+        after: async (
+            _beforeInfo,
+            result: FunctionResult,
+            args: [Order, BigNumber, string],
+            txData: Partial<TxData>,
+        ) => {
+            const [order] = args;
 
             // Ensure that the tx succeeded.
             expect(result.success).to.be.true();
 
             // Ensure that the correct events were emitted.
-            verifyFillEvents(args.txData.from!, order, result.receipt!, deployment); // tslint:disable-line:no-non-null-assertion
+            verifyFillEvents(txData.from!, order, result.receipt!, deployment);
 
-            logUtils.log(`Order filled by ${args.txData.from}`);
+            logUtils.log(`Order filled by ${txData.from}`);
         },
     });
 }
+/* tslint:enable:no-non-null-assertion */
 /* tslint:enable:no-unnecessary-type-assertion */

@@ -8,11 +8,12 @@ import {
 } from '@0x/contracts-staking';
 import { constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
+import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DeploymentManager } from '../deployment_manager';
 
-import { FunctionArguments, FunctionAssertion, FunctionResult } from './function_assertion';
+import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 function incrementNextEpochBalance(stakeBalance: StoredBalance, amount: BigNumber): void {
     _.update(stakeBalance, ['nextEpochBalance'], balance => (balance || constants.ZERO_AMOUNT).plus(amount));
@@ -76,6 +77,7 @@ function updateNextEpochBalances(
  * Returns a FunctionAssertion for `moveStake` which assumes valid input is provided. The
  * FunctionAssertion checks that the staker's
  */
+/* tslint:disable:no-unnecessary-type-assertion */
 export function validMoveStakeAssertion(
     deployment: DeploymentManager,
     globalStake: GlobalStakeByStatus,
@@ -90,9 +92,10 @@ export function validMoveStakeAssertion(
             after: async (
                 _beforeInfo: {},
                 _result: FunctionResult,
-                args: FunctionArguments<[StakeInfo, StakeInfo, BigNumber]>,
+                args: [StakeInfo, StakeInfo, BigNumber],
+                txData: Partial<TxData>,
             ) => {
-                const [from, to, amount] = args.args;
+                const [from, to, amount] = args;
 
                 logUtils.log(
                     `moveStake({status: ${StakeStatus[from.status]}, poolId: ${from.poolId} }, { status: ${
@@ -100,7 +103,7 @@ export function validMoveStakeAssertion(
                     }, poolId: ${to.poolId} }, ${amount})`,
                 );
 
-                const owner = args.txData.from as string;
+                const owner = txData.from!; // tslint:disable-line:no-non-null-assertion
 
                 // Update local balances to match the expected result of this `moveStake` operation
                 const updatedPools = updateNextEpochBalances(globalStake, ownerStake, pools, from, to, amount);
@@ -140,3 +143,4 @@ export function validMoveStakeAssertion(
         },
     );
 }
+/* tslint:enable:no-unnecessary-type-assertion */

@@ -13,6 +13,7 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
  * Returns a FunctionAssertion for `createStakingPool` which assumes valid input is provided. The
  * FunctionAssertion checks that the new poolId is one more than the last poolId.
  */
+/* tslint:disable:no-non-null-assertion */
 export function validCreateStakingPoolAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
@@ -34,25 +35,26 @@ export function validCreateStakingPoolAssertion(
             after: async (
                 expectedPoolId: string,
                 result: FunctionResult,
-                args: {
-                    args: [number, boolean];
-                    txData: Partial<TxData>;
-                },
+                args: [number, boolean],
+                txData: Partial<TxData>,
             ) => {
-                logUtils.log(`createStakingPool(${args.args[0]}, ${args.args[1]}) => ${expectedPoolId}`);
+                const [operatorShare, shouldAddMakerAsOperator] = args;
+
+                logUtils.log(`createStakingPool(${operatorShare}, ${shouldAddMakerAsOperator}) => ${expectedPoolId}`);
 
                 // Checks the logs for the new poolId, verifies that it is as expected
-                const log = result.receipt!.logs[0]; // tslint:disable-line:no-non-null-assertion
+                const log = result.receipt!.logs[0];
                 const actualPoolId = (log as any).args.poolId;
                 expect(actualPoolId).to.equal(expectedPoolId);
 
                 // Adds the new pool to local state
                 pools[actualPoolId] = {
-                    operator: args.txData.from as string,
-                    operatorShare: args.args[0],
+                    operator: txData.from!,
+                    operatorShare,
                     delegatedStake: new StoredBalance(),
                 };
             },
         },
     );
 }
+/* tslint:enable:no-non-null-assertion*/
