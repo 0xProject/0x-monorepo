@@ -150,16 +150,7 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
                 },
                 {
                     test: /\.svg$/,
-                    use: [
-                        {
-                            loader: 'react-svg-loader',
-                            options: {
-                                svgo: {
-                                    plugins: [{ removeViewBox: false }],
-                                },
-                            },
-                        },
-                    ],
+                    loader: 'svg-react-loader',
                 },
                 {
                     test: /\.js$/,
