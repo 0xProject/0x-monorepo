@@ -196,8 +196,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     formattedFeePercentage,
                     feeRecipient,
                 )
-                .sendTransactionAsync(
-                    {
+                .sendTransactionAsync({
                     from: finalTakerAddress,
                     gas: gasLimit,
                     gasPrice,
@@ -206,8 +205,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         } else {
             txHash = await this._forwarder
                 .marketSellOrdersWithEth(orders, orders.map(o => o.signature), formattedFeePercentage, feeRecipient)
-                .sendTransactionAsync(
-                    {
+                .sendTransactionAsync({
                     from: finalTakerAddress,
                     gas: gasLimit,
                     gasPrice,

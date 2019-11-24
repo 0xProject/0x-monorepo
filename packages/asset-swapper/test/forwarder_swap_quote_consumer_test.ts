@@ -154,11 +154,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
 
         const totalFillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
 
-        await erc20TokenContract.transfer(
-            makerAddress,
-            totalFillableAmount,
-        ).sendTransactionAsync(
-            {
+        await erc20TokenContract.transfer(makerAddress, totalFillableAmount).sendTransactionAsync({
             from: coinbaseAddress,
         });
 
