@@ -147,7 +147,7 @@ interface TokenSelectorRowIconProps {
 
 const getTokenIcon = (symbol: string): React.StatelessComponent | undefined => {
     try {
-        return require(`../assets/icons/${symbol}.svg`) as React.StatelessComponent;
+        return require(`../assets/icons/${symbol}.svg`).default as React.StatelessComponent;
     } catch (e) {
         // Can't find icon
         return undefined;
@@ -163,9 +163,8 @@ class TokenSelectorRowIcon extends React.PureComponent<TokenSelectorRowIconProps
         const displaySymbol = assetUtils.bestNameForAsset(token);
         if (iconUrlIfExists !== undefined) {
             return <img src={iconUrlIfExists} />;
-            // HACK(dekz): Disale Token icon as it is throwing an error in React renderer
-            // } else if (TokenIcon !== undefined) {
-            //     return <TokenIcon />;
+        } else if (TokenIcon !== undefined) {
+            return <TokenIcon />;
         } else {
             return (
                 <Text fontColor={ColorOption.white} fontSize="8px">

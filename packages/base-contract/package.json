@@ -57,6 +57,9 @@
         "js-sha3": "^0.7.0",
         "uuid": "^3.3.2"
     },
+    "resolutions": {
+        "merkle-patricia-tree": "^2.3.2"
+    },
     "publishConfig": {
         "access": "public"
     }
