@@ -183,24 +183,20 @@ describe('ExchangeSwapQuoteConsumer', () => {
 
         await erc20MakerTokenContract
             .transfer(makerAddress, marketBuySwapQuote.worstCaseQuoteInfo.makerAssetAmount)
-            .sendTransactionAsync(
-                {
+            .sendTransactionAsync({
                 from: coinbaseAddress,
             });
         await erc20TakerTokenContract
             .transfer(takerAddress, marketBuySwapQuote.worstCaseQuoteInfo.totalTakerAssetAmount)
-            .sendTransactionAsync(
-                {
+            .sendTransactionAsync({
                 from: coinbaseAddress,
             });
         await erc20MakerTokenContract
             .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
-            .sendTransactionAsync(
-                { from: makerAddress });
+            .sendTransactionAsync({ from: makerAddress });
         await erc20TakerTokenContract
             .approve(contractAddresses.erc20Proxy, UNLIMITED_ALLOWANCE)
-            .sendTransactionAsync(
-                { from: takerAddress });
+            .sendTransactionAsync({ from: takerAddress });
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
@@ -211,12 +207,10 @@ describe('ExchangeSwapQuoteConsumer', () => {
          * Does not test the validity of the state change performed by the forwarder smart contract
          */
         it('should perform a marketSell execution when provided a MarketSell type swapQuote', async () => {
-            console.log('herello?');
             await expectMakerAndTakerBalancesForMakerAssetAsync(
                 new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 constants.ZERO_AMOUNT,
             );
-            console.log('he?');
             await expectMakerAndTakerBalancesForTakerAssetAsync(
                 constants.ZERO_AMOUNT,
                 new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
@@ -225,12 +219,10 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 takerAddress,
                 gasLimit: 4000000,
             });
-            console.log('herelloas?');
             await expectMakerAndTakerBalancesForMakerAssetAsync(
                 constants.ZERO_AMOUNT,
                 new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
             );
-            console.log('haserello?');
             await expectMakerAndTakerBalancesForTakerAssetAsync(
                 new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 constants.ZERO_AMOUNT,
