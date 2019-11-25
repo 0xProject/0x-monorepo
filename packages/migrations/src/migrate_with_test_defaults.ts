@@ -1,5 +1,5 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { devConstants, web3Factory } from '@0x/dev-utils';
+import { devConstants } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 
 import { runMigrationsOnceAsync } from './index';
