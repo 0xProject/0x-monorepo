@@ -22,11 +22,10 @@ import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
+import { BigNumber, providerUtils, StringRevertError, LibBytesRevertErrors } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, LibAssetDataContract } from '@0x/contracts-dev-utils';
-import { InvalidByteOperationError } from '@0x/contracts-utils/lib/src/lib_bytes_revert_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -359,7 +358,7 @@ describe('LibAssetData', () => {
             for (const data of assetData) {
                 const badData = data.substring(0, data.length - 2); // drop one byte but retain assetProxyId
                 await expect(libAssetData.revertIfInvalidAssetData(badData).callAsync()).to.eventually.be.rejectedWith(
-                    InvalidByteOperationError,
+                    LibBytesRevertErrors.InvalidByteOperationError,
                 );
             }
         });

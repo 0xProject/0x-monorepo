@@ -1,7 +1,7 @@
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
-import { artifacts, ForwarderContract, ForwarderRevertErrors } from '@0x/contracts-exchange-forwarder';
+import { artifacts, ExchangeForwarderRevertErrors, ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import {
     blockchainTests,
     constants,
@@ -127,7 +127,9 @@ blockchainTests('Forwarder integration tests', env => {
                 exchange.address,
                 deployment.tokens.weth.address,
             );
-            await expect(deployForwarder).to.revertWith(new ForwarderRevertErrors.UnregisteredAssetProxyError());
+            await expect(deployForwarder).to.revertWith(
+                new ExchangeForwarderRevertErrors.UnregisteredAssetProxyError(),
+            );
         });
     });
     blockchainTests.resets('marketSellOrdersWithEth without extra fees', () => {
@@ -258,7 +260,7 @@ blockchainTests('Forwarder integration tests', env => {
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
             });
-            const revertError = new ForwarderRevertErrors.UnsupportedFeeError(takerFeeAssetData);
+            const revertError = new ExchangeForwarderRevertErrors.UnsupportedFeeError(takerFeeAssetData);
             await testFactory.marketSellTestAsync([order], 0.5, {
                 revertError,
             });
@@ -316,7 +318,7 @@ blockchainTests('Forwarder integration tests', env => {
         it('should fail if the fee is set too high', async () => {
             const order = await maker.signOrderAsync();
             const forwarderFeePercentage = new BigNumber(6);
-            const revertError = new ForwarderRevertErrors.FeePercentageTooLargeError(
+            const revertError = new ExchangeForwarderRevertErrors.FeePercentageTooLargeError(
                 getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeePercentage),
             );
             await testFactory.marketSellTestAsync([order], 0.5, {
@@ -383,7 +385,7 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount', async () => {
             const order = await maker.signOrderAsync();
-            const revertError = new ForwarderRevertErrors.CompleteBuyFailedError(
+            const revertError = new ExchangeForwarderRevertErrors.CompleteBuyFailedError(
                 order.makerAssetAmount.times(0.5),
                 constants.ZERO_AMOUNT,
             );
@@ -421,7 +423,7 @@ blockchainTests('Forwarder integration tests', env => {
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
             });
-            const revertError = new ForwarderRevertErrors.UnsupportedFeeError(takerFeeAssetData);
+            const revertError = new ExchangeForwarderRevertErrors.UnsupportedFeeError(takerFeeAssetData);
             await testFactory.marketBuyTestAsync([order], 0.5, {
                 revertError,
             });
@@ -608,7 +610,7 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should fail if the fee is set too high', async () => {
             const order = await maker.signOrderAsync();
-            const revertError = new ForwarderRevertErrors.FeePercentageTooLargeError(
+            const revertError = new ExchangeForwarderRevertErrors.FeePercentageTooLargeError(
                 getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, new BigNumber(6)),
             );
             await testFactory.marketBuyTestAsync([order], 0.5, {
@@ -623,7 +625,7 @@ blockchainTests('Forwarder integration tests', env => {
                 order.takerAssetAmount.times(0.5).plus(DeploymentManager.protocolFee),
                 forwarderFeePercentage,
             );
-            const revertError = new ForwarderRevertErrors.InsufficientEthForFeeError(ethFee, ethFee.minus(1));
+            const revertError = new ExchangeForwarderRevertErrors.InsufficientEthForFeeError(ethFee, ethFee.minus(1));
             await testFactory.marketBuyTestAsync([order], 0.5, {
                 ethValueAdjustment: -1,
                 forwarderFeePercentage,
