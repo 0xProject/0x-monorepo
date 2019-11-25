@@ -5,7 +5,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
     def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     {{#if inputs}}
     def validate_and_normalize_inputs(self, {{> typed_params inputs=inputs}}):
@@ -49,7 +49,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).call(tx_params.as_dict())
+        return self._underlying_method({{> params}}).call(tx_params.as_dict())
 
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
@@ -65,7 +65,7 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).transact(tx_params.as_dict())
+        return self._underlying_method({{> params}}).transact(tx_params.as_dict())
 
     def estimate_gas(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> int:
         """Estimate gas consumption of method call."""
@@ -73,4 +73,4 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method({{> params}}).estimateGas(tx_params.as_dict())
+        return self._underlying_method({{> params}}).estimateGas(tx_params.as_dict())

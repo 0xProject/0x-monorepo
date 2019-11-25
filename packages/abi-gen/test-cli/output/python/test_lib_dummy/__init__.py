@@ -52,7 +52,7 @@ class PublicAddConstantMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddConstant method."""
@@ -73,7 +73,7 @@ class PublicAddConstantMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).call(tx_params.as_dict())
+        return self._underlying_method(x).call(tx_params.as_dict())
 
     def send_transaction(
         self, x: int, tx_params: Optional[TxParams] = None
@@ -85,7 +85,7 @@ class PublicAddConstantMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).transact(tx_params.as_dict())
+        return self._underlying_method(x).transact(tx_params.as_dict())
 
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
@@ -93,7 +93,7 @@ class PublicAddConstantMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+        return self._underlying_method(x).estimateGas(tx_params.as_dict())
 
 
 class PublicAddOneMethod(ContractMethod):
@@ -108,7 +108,7 @@ class PublicAddOneMethod(ContractMethod):
     ):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator)
-        self.underlying_method = contract_function
+        self._underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
@@ -127,7 +127,7 @@ class PublicAddOneMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).call(tx_params.as_dict())
+        return self._underlying_method(x).call(tx_params.as_dict())
 
     def send_transaction(
         self, x: int, tx_params: Optional[TxParams] = None
@@ -139,7 +139,7 @@ class PublicAddOneMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).transact(tx_params.as_dict())
+        return self._underlying_method(x).transact(tx_params.as_dict())
 
     def estimate_gas(
         self, x: int, tx_params: Optional[TxParams] = None
@@ -147,7 +147,7 @@ class PublicAddOneMethod(ContractMethod):
         """Estimate gas consumption of method call."""
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+        return self._underlying_method(x).estimateGas(tx_params.as_dict())
 
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
