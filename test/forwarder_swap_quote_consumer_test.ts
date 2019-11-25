@@ -147,7 +147,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         await blockchainLifecycle.startAsync();
         const UNLIMITED_ALLOWANCE = UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
 
-        const totalFillableAmount = (new BigNumber(10)).multipliedBy(ONE_ETH_IN_WEI);
+        const totalFillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
 
         await erc20TokenContract.transfer(makerAddress, totalFillableAmount).sendTransactionAsync({
             from: coinbaseAddress,
