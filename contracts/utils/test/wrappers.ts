@@ -24,6 +24,7 @@ export * from '../test/generated-wrappers/lib_safe_math_rich_errors';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/reentrancy_guard';
 export * from '../test/generated-wrappers/refundable';
+export * from '../test/generated-wrappers/test_authorizable';
 export * from '../test/generated-wrappers/test_lib_address';
 export * from '../test/generated-wrappers/test_lib_address_array';
 export * from '../test/generated-wrappers/test_lib_bytes';
