@@ -359,7 +359,7 @@ something wrong:
 
 >>> pprint(exchange.fill_order.call(
 ...     order=order,
-...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
+...     taker_asset_fill_amount=order['takerAssetAmount']/2, # note the half fill
 ...     signature=bytes.fromhex(order['signature'].replace('0x', '')),
 ...     tx_params=TxParams(
 ...         from_=taker_address, value=web3.eth.generateGasPrice()*150000,
@@ -375,7 +375,7 @@ Now we're finally ready to execute the fill:
 
 >>> exchange.fill_order.send_transaction(
 ...     order=order,
-...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
+...     taker_asset_fill_amount=order['takerAssetAmount']/2, # note the half fill
 ...     signature=bytes.fromhex(order['signature'].replace('0x', '')),
 ...     tx_params=TxParams(
 ...         from_=taker_address, value=web3.eth.generateGasPrice()*150000,
