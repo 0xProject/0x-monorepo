@@ -6,7 +6,7 @@ import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path, remove
 from pathlib import Path
-from sys import argv
+from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from distutils.command.clean import clean
 import distutils.command.build_py
@@ -62,7 +62,7 @@ class TestCommandExtension(TestCommand):
 
     def run_tests(self):
         """Invoke pytest."""
-        import pytest
+        import pytest  # pylint: disable=import-outside-toplevel
 
         exit(pytest.main(["--doctest-modules", "-rapP"]))
         #        show short test summary at end ^
@@ -102,7 +102,7 @@ class LintCommand(distutils.command.build_py.build_py):
         # HACK(gene): until eth_utils fixes
         # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
         # create an empty file `py.typed` in the eth_abi package directory.
-        import eth_utils
+        import eth_utils  # pylint: disable=import-outside-toplevel
 
         eth_utils_dir = path.dirname(path.realpath(eth_utils.__file__))
         Path(path.join(eth_utils_dir, "py.typed")).touch()

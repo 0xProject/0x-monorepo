@@ -7,6 +7,7 @@ import subprocess  # nosec
 import distutils.command.build_py
 from distutils.command.clean import clean
 from shutil import rmtree
+from sys import exit  # pylint: disable=redefined-builtin
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -48,7 +49,7 @@ class TestCommandExtension(TestCommand):
 
     def run_tests(self):
         """Invoke pytest."""
-        import pytest
+        import pytest  # pylint: disable=import-outside-toplevel
 
         exit(pytest.main(["--doctest-modules", "-rapP"]))
         #        show short test summary at end ^

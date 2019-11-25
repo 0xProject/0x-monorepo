@@ -121,7 +121,7 @@ class PublicAddOneMethod(ContractMethod):
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
         self.validator.assert_valid(
-            method_name="publicAddOne", parameter_name="x", argument_value=x
+            method_name="publicAddOne", parameter_name="x", argument_value=x,
         )
         # safeguard against fractional inputs
         x = int(x)

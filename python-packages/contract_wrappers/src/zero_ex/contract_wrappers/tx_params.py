@@ -23,7 +23,7 @@ class TxParams:
     gas: Optional[int] = attr.ib(
         default=None, converter=attr.converters.optional(int)
     )
-    gasPrice: Optional[int] = attr.ib(
+    gasPrice: Optional[int] = attr.ib(  # pylint: disable=invalid-name
         default=None, converter=attr.converters.optional(int)
     )
     nonce: Optional[int] = attr.ib(

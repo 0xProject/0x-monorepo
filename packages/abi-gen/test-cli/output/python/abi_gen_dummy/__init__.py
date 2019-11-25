@@ -377,7 +377,7 @@ class WithdrawMethod(ContractMethod):
     def validate_and_normalize_inputs(self, wad: int):
         """Validate the inputs to the withdraw method."""
         self.validator.assert_valid(
-            method_name="withdraw", parameter_name="wad", argument_value=wad
+            method_name="withdraw", parameter_name="wad", argument_value=wad,
         )
         # safeguard against fractional inputs
         wad = int(wad)
@@ -566,13 +566,13 @@ class EcrecoverFnMethod(ContractMethod):
             argument_value=_hash,
         )
         self.validator.assert_valid(
-            method_name="ecrecoverFn", parameter_name="v", argument_value=v
+            method_name="ecrecoverFn", parameter_name="v", argument_value=v,
         )
         self.validator.assert_valid(
-            method_name="ecrecoverFn", parameter_name="r", argument_value=r
+            method_name="ecrecoverFn", parameter_name="r", argument_value=r,
         )
         self.validator.assert_valid(
-            method_name="ecrecoverFn", parameter_name="s", argument_value=s
+            method_name="ecrecoverFn", parameter_name="s", argument_value=s,
         )
         return (_hash, v, r, s)
 
@@ -684,7 +684,7 @@ class AcceptsBytesMethod(ContractMethod):
     def validate_and_normalize_inputs(self, a: bytes):
         """Validate the inputs to the acceptsBytes method."""
         self.validator.assert_valid(
-            method_name="acceptsBytes", parameter_name="a", argument_value=a
+            method_name="acceptsBytes", parameter_name="a", argument_value=a,
         )
         a = bytes.fromhex(a.decode("utf-8"))
         return a
@@ -1145,7 +1145,7 @@ class StructInputMethod(ContractMethod):
     def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
         """Validate the inputs to the structInput method."""
         self.validator.assert_valid(
-            method_name="structInput", parameter_name="s", argument_value=s
+            method_name="structInput", parameter_name="s", argument_value=s,
         )
         return s
 
