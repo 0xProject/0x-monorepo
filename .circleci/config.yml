@@ -37,7 +37,7 @@ jobs:
             - store_artifacts:
                   path: ~/repo/packages/abi-gen/test-cli/output
             - store_artifacts:
-                  path: ~/repo/packages/abi-gen-wrappers/generated_docs
+                  path: ~/repo/packages/contract-wrappers/generated_docs
     test-contracts-ganache:
         resource_class: medium+
         docker:

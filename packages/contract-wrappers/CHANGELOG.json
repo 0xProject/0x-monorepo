@@ -1,5 +1,13 @@
 [
     {
+        "version": "12.2.0-beta.4",
+        "changes": [
+            {
+                "note": "Remove dependency on `abi-gen-wrappers`"
+            }
+        ]
+    },
+    {
         "version": "12.2.0-beta.3",
         "changes": [
             {

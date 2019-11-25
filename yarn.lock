@@ -713,6 +713,12 @@
     uuid "^3.3.2"
     websocket "^1.0.26"
 
+"@0x/contract-addresses@3.3.0-beta.3":
+  version "3.3.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.3.0-beta.3.tgz#0fa8ad47e22aecdb99f9a044ba3c705c4173b61e"
+  dependencies:
+    lodash "^4.17.11"
+
 "@0x/contract-addresses@^3.0.2", "@0x/contract-addresses@^3.2.0":
   version "3.2.0"
   resolved "https://registry.npmjs.org/@0x/contract-addresses/-/contract-addresses-3.2.0.tgz#606307696d9622764220a34e9d4638b899093eec"
@@ -722,6 +728,18 @@
 "@0x/contract-artifacts@^2.0.2", "@0x/contract-artifacts@^2.2.2":
   version "2.2.2"
   resolved "https://registry.npmjs.org/@0x/contract-artifacts/-/contract-artifacts-2.2.2.tgz#e6d771afb58d0b59c19c5364af5a42a3dfd17219"
+
+"@0x/contract-wrappers@12.2.0-beta.2":
+  version "12.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-12.2.0-beta.2.tgz#62b3c13e35282df14734d1f6b1a617ed51901a27"
+  dependencies:
+    "@0x/abi-gen-wrappers" "^5.4.0-beta.2"
+    "@0x/base-contract" "^5.5.0-beta.2"
+    "@0x/contract-addresses" "^3.3.0-beta.3"
+    "@0x/contract-artifacts" "^2.3.0-beta.3"
+    "@0x/order-utils" "^8.5.0-beta.2"
+    ethers "~4.0.4"
+    http-status-codes "^1.3.2"
 
 "@0x/contract-wrappers@^9.1.7":
   version "9.1.8"
@@ -746,6 +764,15 @@
     js-sha3 "^0.7.0"
     lodash "^4.17.11"
     uuid "^3.3.2"
+
+"@0x/contracts-erc20@2.3.0-beta.2":
+  version "2.3.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@0x/contracts-erc20/-/contracts-erc20-2.3.0-beta.2.tgz#218239f5594fdbbf8c1ff757a6356ac6fb787421"
+  dependencies:
+    "@0x/base-contract" "^5.5.0-beta.2"
+    "@0x/types" "^2.5.0-beta.2"
+    "@0x/typescript-typings" "^4.4.0-beta.2"
+    ethereum-types "^2.2.0-beta.2"
 
 "@0x/coordinator-server@^1.0.3":
   version "1.0.3"
@@ -806,6 +833,28 @@
     detect-node "2.0.3"
     uuid "^3.3.2"
     websocket "^1.0.29"
+
+"@0x/order-utils@8.5.0-beta.2":
+  version "8.5.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-8.5.0-beta.2.tgz#ffd3da985e79aab4d0308ab33e399ec51c835ec1"
+  dependencies:
+    "@0x/abi-gen-wrappers" "^5.4.0-beta.2"
+    "@0x/assert" "^2.2.0-beta.2"
+    "@0x/contract-addresses" "^3.3.0-beta.3"
+    "@0x/contract-artifacts" "^2.3.0-beta.3"
+    "@0x/contracts-dev-utils" "^0.1.0-beta.2"
+    "@0x/json-schemas" "^4.1.0-beta.2"
+    "@0x/types" "^2.5.0-beta.2"
+    "@0x/typescript-typings" "^4.4.0-beta.2"
+    "@0x/utils" "^4.6.0-beta.2"
+    "@0x/web3-wrapper" "^6.1.0-beta.2"
+    "@types/node" "*"
+    bn.js "^4.11.8"
+    ethereum-types "^2.2.0-beta.2"
+    ethereumjs-abi "0.6.5"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    lodash "^4.17.11"
 
 "@0x/order-utils@^8.2.2", "@0x/order-utils@^8.2.3", "@0x/order-utils@^8.4.0":
   version "8.4.0"

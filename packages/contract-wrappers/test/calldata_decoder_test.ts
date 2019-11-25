@@ -4,7 +4,6 @@ import { migrateOnceAsync } from '@0x/migrations';
 import { SignedOrder } from '@0x/types';
 import { addressUtils, BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'mocha';
 
 import { ContractAddresses, ContractWrappers } from '../src';

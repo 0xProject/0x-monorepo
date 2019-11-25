@@ -1,11 +1,3 @@
-import {
-    CoordinatorContract,
-    DevUtilsContract,
-    ExchangeContract,
-    ForwarderContract,
-    OrderValidatorContract,
-    WETH9Contract,
-} from '@0x/abi-gen-wrappers';
 import { assert } from '@0x/assert';
 import { ContractAddresses } from '@0x/contract-addresses';
 import {
@@ -22,9 +14,15 @@ import {
 import { AbiDecoder } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { ContractWrappersConfigSchema } from './contract_wrappers_config_schema';
+import { CoordinatorContract } from './generated-wrappers/coordinator';
+import { DevUtilsContract } from './generated-wrappers/dev_utils';
+import { ExchangeContract } from './generated-wrappers/exchange';
+import { ForwarderContract } from './generated-wrappers/forwarder';
+import { OrderValidatorContract } from './generated-wrappers/order_validator';
+import { WETH9Contract } from './generated-wrappers/weth9';
+
 import { ContractWrappersConfig } from './types';
 import { _getDefaultContractAddresses } from './utils/contract_addresses';
 
@@ -88,7 +86,7 @@ export class ContractWrappers {
             OrderValidator,
             WETH9,
         ];
-        _.forEach(artifactsArray, artifact => {
+        artifactsArray.forEach(artifact => {
             this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
         });
         const contractAddresses =
