@@ -81,9 +81,10 @@ blockchainTests('erc20-bridge-sampler', env => {
         if (token === WETH_ADDRESS) {
             return 18;
         }
-        return (
-            (new BigNumber(getPackedHash(token)).mod(MAX_DECIMALS - MIN_DECIMALS).toNumber() as number) + MIN_DECIMALS // linter is confused
-        );
+        // HACK(dorothy-zbornak): Linter will complain about the addition not being
+        // between two numbers, even though they are.
+        // tslint:disable-next-line restrict-plus-operands
+        return new BigNumber(getPackedHash(token)).mod(MAX_DECIMALS - MIN_DECIMALS).toNumber() + MIN_DECIMALS;
     }
 
     function getDeterministicSellQuote(
