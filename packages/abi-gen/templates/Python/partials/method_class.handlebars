@@ -74,3 +74,11 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
         return self._underlying_method({{> params}}).estimateGas(tx_params.as_dict())
+
+    def build_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> dict:
+        """Construct calldata to be used as input to the method."""
+        {{#if inputs}}
+        ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
+        {{/if}}
+        tx_params = super().normalize_tx_params(tx_params)
+        return self._underlying_method({{> params}}).buildTransaction(tx_params.as_dict())

@@ -95,6 +95,14 @@ class PublicAddConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self._underlying_method(x).estimateGas(tx_params.as_dict())
 
+    def build_transaction(
+        self, x: int, tx_params: Optional[TxParams] = None
+    ) -> dict:
+        """Construct calldata to be used as input to the method."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self._underlying_method(x).buildTransaction(tx_params.as_dict())
+
 
 class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
@@ -148,6 +156,14 @@ class PublicAddOneMethod(ContractMethod):
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
         return self._underlying_method(x).estimateGas(tx_params.as_dict())
+
+    def build_transaction(
+        self, x: int, tx_params: Optional[TxParams] = None
+    ) -> dict:
+        """Construct calldata to be used as input to the method."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self._underlying_method(x).buildTransaction(tx_params.as_dict())
 
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
