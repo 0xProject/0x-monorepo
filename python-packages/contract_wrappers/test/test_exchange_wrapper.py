@@ -127,6 +127,88 @@ def test_exchange_wrapper__fill_order(
     assert_fill_log(fill_event[0].args, maker, taker, order, order_hash)
 
 
+def test_exchange_wrapper__fill_order__build_then_send(
+    accounts,
+    exchange_wrapper,  # pylint: disable=redefined-outer-name
+    ganache_provider,
+    weth_asset_data,
+    zrx_asset_data,
+):
+    """Test filling an order."""
+    taker = accounts[0]
+    maker = accounts[1]
+    exchange_address = exchange_wrapper.contract_address
+    order = create_test_order(maker, 1, weth_asset_data, 1, zrx_asset_data)
+    order_hash = generate_order_hash_hex(
+        order=order, exchange_address=exchange_address, chain_id=1337
+    )
+    order_signature = sign_hash(ganache_provider, maker, order_hash)
+
+    web3 = Web3(ganache_provider)
+    web3.eth.setGasPriceStrategy(  # pylint: disable=no-member
+        rpc_gas_price_strategy
+    )
+
+    tx_hash = Web3(ganache_provider).eth.sendTransaction(
+        exchange_wrapper.fill_order.build_transaction(
+            order=order,
+            taker_asset_fill_amount=order["takerAssetAmount"],
+            signature=order_signature,
+            tx_params=TxParams(
+                from_=taker,
+                value=web3.eth.generateGasPrice()  # pylint: disable=no-member
+                * 150000,
+            ),
+        )
+    )
+
+    assert_valid(tx_hash.hex(), "/hexSchema")
+
+    fill_event = exchange_wrapper.get_fill_event(tx_hash)
+    assert_fill_log(fill_event[0].args, maker, taker, order, order_hash)
+
+
+def test_exchange_wrapper__fill_order__without_from_tx_param(
+    accounts,
+    exchange_wrapper,  # pylint: disable=redefined-outer-name
+    ganache_provider,
+    weth_asset_data,
+    zrx_asset_data,
+):
+    """Test filling an order."""
+    maker = accounts[1]
+    exchange_address = exchange_wrapper.contract_address
+    order = create_test_order(maker, 1, weth_asset_data, 1, zrx_asset_data)
+    order_hash = generate_order_hash_hex(
+        order=order, exchange_address=exchange_address, chain_id=1337
+    )
+    order_signature = sign_hash(ganache_provider, maker, order_hash)
+
+    web3 = Web3(ganache_provider)
+    web3.eth.setGasPriceStrategy(  # pylint: disable=no-member
+        rpc_gas_price_strategy
+    )
+
+    exchange_wrapper._web3_eth.defaultAccount = (  # pylint: disable=protected-access
+        None
+    )
+    exchange_wrapper._web3_eth.accounts.clear()  # pylint: disable=protected-access
+
+    built_tx = exchange_wrapper.fill_order.build_transaction(
+        order=order,
+        taker_asset_fill_amount=order["takerAssetAmount"],
+        signature=order_signature,
+        tx_params=TxParams(
+            value=web3.eth.generateGasPrice()  # pylint: disable=no-member
+            * 150000,
+        ),
+    )
+    assert (
+        built_tx["data"][:824]
+        == "0x9b44d5560000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000003a00000000000000000000000006ecbe1db9ef729cbe972c83fb886247691fb6beb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005af3107a40000000000000000000000000000000000000000000000000"
+    )
+
+
 # pylint: disable=too-many-locals
 def test_exchange_wrapper__batch_fill_orders(
     accounts,
