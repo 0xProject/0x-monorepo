@@ -99,7 +99,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
     ) => Promise<void>;
 
     before(async () => {
-        contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;

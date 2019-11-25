@@ -116,11 +116,9 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
-            # TODO (xianny): Needs to be updated for 3.0
-            # - run: yarn wsrun test:circleci @0x/asset-buyer
             # TODO: Needs to be updated for 3.0.  At that time, also remove
             # exclusion from monorepo package.json's test script.
-            # - run: yarn wsrun test:circleci @0x/asset-swapper
+            - run: yarn wsrun test:circleci @0x/asset-swapper
             - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
@@ -132,7 +130,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/order-utils
             # TODO: Needs to be updated for 3.0. At that time, also remove
             # exclusion from monorepo package.json's test script.
-            # - run: yarn wsrun test:circleci @0x/orderbook
+            - run: yarn wsrun test:circleci @0x/orderbook
             - run: yarn wsrun test:circleci @0x/sol-compiler
             - run: yarn wsrun test:circleci @0x/sol-tracing-utils
             - run: yarn wsrun test:circleci @0x/sol-doc

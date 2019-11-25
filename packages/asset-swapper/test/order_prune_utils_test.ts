@@ -64,7 +64,7 @@ describe('OrderPruner', () => {
     const takerFeeAmount = new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI);
 
     before(async () => {
-        contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;

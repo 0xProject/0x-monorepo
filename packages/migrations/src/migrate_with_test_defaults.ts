@@ -9,11 +9,10 @@ import { runMigrationsOnceAsync } from './index';
  * called, it returns the cached addresses.
  * @returns The addresses of contracts that were deployed during the migrations.
  */
-export async function migrateOnceAsync(): Promise<ContractAddresses> {
+export async function migrateOnceAsync(provider: Web3ProviderEngine): Promise<ContractAddresses> {
     const txDefaults = {
         gas: devConstants.GAS_LIMIT,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
-    const provider: Web3ProviderEngine = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
     return runMigrationsOnceAsync(provider, txDefaults);
 }
