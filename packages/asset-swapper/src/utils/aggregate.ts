@@ -1,24 +1,19 @@
-import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { Order, OrderInfo } from '@0x/types';
+import { OrderInfo, OrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
-import { ZeroExProvider } from 'ethereum-types';
+import { SupportedProvider } from 'ethereum-types';
 
 import { constants } from '../constants';
 
-const CHAIN_ID = constants.MAINNET_CHAIN_ID;
-const EXCHANGE_ADDRESS = getContractAddressesForChainOrThrow(CHAIN_ID).exchange;
 const { NULL_BYTES, NULL_ADDRESS } = constants;
 const ZERO = new BigNumber(0);
 const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
-const DEFAULT_RUN_LIMIT = 1024;
-const DEFAULT_BRIDGE_SLIPPAGE = 0.0005;
 // TODO(dorothy-zbornak): Point these addresses to the mainnet.
-const SAMPLER_ADDRESS = '0x425335175ecb488d7d656952da9819a48d3ffd6e';
-const KYBER_BRIDGE_ADDRESS = '0xa0cdca934847556eaf431d909fb3cf4aca01df66';
-const ETH2DAI_BRIDGE_ADDRESS = '0x27b8c4473c6b885d0b060d722cf614dbc3f9adfb';
-const UNISWAP_BRIDGE_ADDRESS = '0x9b81c8beee5d0ff8b128adc04db71f33022c5163';
+export const SAMPLER_ADDRESS = '0x425335175ecb488d7d656952da9819a48d3ffd6e';
+export const KYBER_BRIDGE_ADDRESS = '0xa0cdca934847556eaf431d909fb3cf4aca01df66';
+export const ETH2DAI_BRIDGE_ADDRESS = '0x27b8c4473c6b885d0b060d722cf614dbc3f9adfb';
+export const UNISWAP_BRIDGE_ADDRESS = '0x9b81c8beee5d0ff8b128adc04db71f33022c5163';
 
 /**
  * Common exception messages thrown by aggregation logic.
@@ -37,6 +32,7 @@ export enum ERC20BridgeSource {
     Uniswap,
     Eth2Dai,
     Kyber,
+    NumSources,
 }
 
 /**
@@ -51,19 +47,12 @@ export const SOURCE_TO_ADDRESS: { [key: string]: string } = {
 /**
  * Valid sources for market sell.
  */
-export const SELL_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.Eth2Dai,
-    ERC20BridgeSource.Kyber,
-];
+export const SELL_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber];
 
 /**
  * Valid sources for market buy.
  */
-export const BUY_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.Eth2Dai,
-];
+export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
 
 /**
  * Represents a node on a fill path.
@@ -84,30 +73,12 @@ interface FillData {
 
 // `FillData` for native fills.
 interface NativeFillData extends FillData {
-    order: Order;
+    order: OrderWithoutDomain;
     orderInfo: OrderInfo;
 }
 
-// Order fields that are common to all bridges.
-interface CommonOrderFields {
-    chainId: number;
-    exchangeAddress: string;
-    takerAddress: string;
-    senderAddress: string;
-    feeRecipientAddress: string;
-    makerFeeAssetData: string;
-    takerFeeAssetData: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    makerAssetAmount: BigNumber;
-    takerAssetAmount: BigNumber;
-    salt: BigNumber;
-    expirationTimeSeconds: BigNumber;
-}
-
 /**
- * Options for `ERC20BridgeAggregator` `improveMarketBuyAsync()`
- * and `improveMarketSellAsync()`.
+ * Options for `improveMarketBuyAsync()` and `improveMarketSellAsync()`.
  */
 export interface ImproveOrdersOpts {
     /**
@@ -115,12 +86,12 @@ export interface ImproveOrdersOpts {
      */
     excludedSources: ERC20BridgeSource[];
     /**
-     * Whether to disallow mixing Kyber orders with Uniswap and Eth2Dai orders.
+     * Whether to prevent mixing Kyber orders with Uniswap and Eth2Dai orders.
      */
-    shouldDisableKyberConflicts: boolean;
+    noConflicts: boolean;
     /**
      * Complexity limit on the search algorithm, i.e., maximum number of
-     * nodes to visit. Default is 65536.
+     * nodes to visit. Default is 1024.
      */
     runLimit: number;
     /**
@@ -137,17 +108,24 @@ export interface ImproveOrdersOpts {
      */
     numSamples: number;
     /**
+     * Dust amount, as a fraction of the fill amount.
+     * Default is 0.01 (100 basis points).
+     */
+    dustThreshold: number;
+    /**
      * A Web3 provider. Required.
      */
-    provider: ZeroExProvider;
+    provider: SupportedProvider;
 }
 
 const IMPROVE_ORDERS_OPTS_DEFAULTS = {
-    runLimit: undefined,
+    runLimit: 1024,
     excludedSources: [],
     provider: undefined,
-    bridgeSlippage: DEFAULT_BRIDGE_SLIPPAGE,
-    numSamples: 16,
+    bridgeSlippage: 0.0005,
+    dustThreshold: 0.01,
+    numSamples: 8,
+    noConflicts: false,
 };
 
 // Used internally by `FillsOptimizer`.
@@ -163,8 +141,6 @@ interface FillsOptimizerContext {
  */
 export interface DexSample {
     source: ERC20BridgeSource;
-    inputToken: string;
-    outputToken: string;
     input: BigNumber;
     output: BigNumber;
 }
@@ -188,10 +164,10 @@ export enum FillFlags {
  * @return Improved orders.
  */
 export async function improveMarketSellAsync(
-    nativeOrders: Order[],
+    nativeOrders: OrderWithoutDomain[],
     takerAmount: BigNumber,
     opts?: Partial<ImproveOrdersOpts>,
-): Promise<Order[]> {
+): Promise<OrderWithoutDomain[]> {
     if (nativeOrders.length === 0) {
         throw new Error(AggregationError.EmptyOrders);
     }
@@ -205,24 +181,29 @@ export async function improveMarketSellAsync(
         difference(SELL_SOURCES, _opts.excludedSources),
         _opts.provider,
     );
-    const nativePath = createSellPathFromNativeOrders(nativeOrders, orderInfos);
-    const dexPaths = createPathsFromDexQuotes(dexQuotes);
+    const nativePath = pruneDustFillsFromNativePath(
+        createSellPathFromNativeOrders(nativeOrders, orderInfos),
+        takerAmount,
+        _opts.dustThreshold,
+    );
+    const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
+    const allPaths = [...dexPaths];
+    const allFills = flattenDexPaths(dexPaths);
+    if (!(_opts.excludedSources as ERC20BridgeSource[]).includes(ERC20BridgeSource.Native)) {
+        allPaths.splice(0, 0, nativePath);
+        allFills.splice(0, 0, ...nativePath);
+    }
     const optimizer = new FillsOptimizer(_opts.runLimit);
     const optimalPath = optimizer.optimize(
-        sortFillsByPrice([...nativePath, ...flattenDexPaths(dexPaths)]),
+        sortFillsByPrice(allFills),
         takerAmount,
-        pickOptimalPath([nativePath, ...dexPaths], takerAmount),
+        pickOptimalPath(allPaths, takerAmount),
     );
     if (!optimalPath) {
         throw new Error(AggregationError.NoOptimalPath);
     }
     const [outputToken, inputToken] = getOrderTokens(nativeOrders[0]);
-    return createSellOrdersFromPath(
-        inputToken,
-        outputToken,
-        simplifyPath(optimalPath),
-        _opts.bridgeSlippage,
-    );
+    return createSellOrdersFromPath(inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
 }
 
 /**
@@ -234,10 +215,10 @@ export async function improveMarketSellAsync(
  * @return Improved orders.
  */
 export async function improveMarketBuyAsync(
-    nativeOrders: Order[],
+    nativeOrders: OrderWithoutDomain[],
     makerAmount: BigNumber,
     opts?: Partial<ImproveOrdersOpts>,
-): Promise<Order[]> {
+): Promise<OrderWithoutDomain[]> {
     if (nativeOrders.length === 0) {
         throw new Error(AggregationError.EmptyOrders);
     }
@@ -252,24 +233,29 @@ export async function improveMarketBuyAsync(
         _opts.provider,
         true,
     );
-    const nativePath = createBuyPathFromNativeOrders(nativeOrders, orderInfos);
-    const dexPaths = createPathsFromDexQuotes(dexQuotes);
+    const nativePath = pruneDustFillsFromNativePath(
+        createBuyPathFromNativeOrders(nativeOrders, orderInfos),
+        makerAmount,
+        _opts.dustThreshold,
+    );
+    const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
+    const allPaths = [...dexPaths];
+    const allFills = flattenDexPaths(dexPaths);
+    if (!(_opts.excludedSources as ERC20BridgeSource[]).includes(ERC20BridgeSource.Native)) {
+        allPaths.splice(0, 0, nativePath);
+        allFills.splice(0, 0, ...nativePath);
+    }
     const optimizer = new FillsOptimizer(_opts.runLimit, true);
     const optimalPath = optimizer.optimize(
-        sortFillsByPrice([...nativePath, ...flattenDexPaths(dexPaths)], true),
+        sortFillsByPrice(allFills),
         makerAmount,
-        pickOptimalPath([nativePath, ...dexPaths], makerAmount, true),
+        pickOptimalPath(allPaths, makerAmount, true),
     );
     if (!optimalPath) {
         throw new Error(AggregationError.NoOptimalPath);
     }
     const [inputToken, outputToken] = getOrderTokens(nativeOrders[0]);
-    return createBuyOrdersFromPath(
-        inputToken,
-        outputToken,
-        simplifyPath(optimalPath),
-        _opts.bridgeSlippage,
-    );
+    return createBuyOrdersFromPath(inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
 }
 
 /**
@@ -292,44 +278,35 @@ export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
     return currentOutput;
 }
 
-// Query the sampler contract to get native order statuses and DEX quotes.
+/**
+ * Query the sampler contract to get native order statuses and DEX quotes.
+ */
 export async function queryNetworkAsync(
-    nativeOrders: Order[],
+    nativeOrders: OrderWithoutDomain[],
     sampleAmounts: BigNumber[],
     sources: ERC20BridgeSource[],
-    provider?: ZeroExProvider,
+    provider?: SupportedProvider,
     isBuy?: boolean,
 ): Promise<[OrderInfo[], DexSample[][]]> {
     if (!provider) {
         throw new Error(AggregationError.MissingProvider);
     }
-    const sampler = new ERC20BridgeSamplerContract(
-        SAMPLER_ADDRESS,
-        provider,
-    );
+    const sampler = new ERC20BridgeSamplerContract(SAMPLER_ADDRESS, provider);
     let orderInfos;
     let rawSamples;
     if (isBuy) {
-        [orderInfos, rawSamples] = await sampler.queryOrdersAndSampleBuys(
-            nativeOrders,
-            sources.map(s => SOURCE_TO_ADDRESS[s]),
-            sampleAmounts,
-        ).callAsync();
+        [orderInfos, rawSamples] = await sampler
+            .queryOrdersAndSampleBuys(nativeOrders, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
+            .callAsync();
     } else {
-        [orderInfos, rawSamples] = await sampler.queryOrdersAndSampleSells(
-            nativeOrders,
-            sources.map(s => SOURCE_TO_ADDRESS[s]),
-            sampleAmounts,
-        ).callAsync();
+        [orderInfos, rawSamples] = await sampler
+            .queryOrdersAndSampleSells(nativeOrders, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
+            .callAsync();
     }
-    const inputToken = getTokenFromAssetData(nativeOrders[0].takerAssetData);
-    const outputToken = getTokenFromAssetData(nativeOrders[0].makerAssetData);
     const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
         const source = sources[sourceIdx];
         return rawDexSamples.map((sample, sampleIdx) => ({
             source,
-            inputToken,
-            outputToken,
             input: sampleAmounts[sampleIdx],
             output: sample,
         }));
@@ -337,20 +314,20 @@ export async function queryNetworkAsync(
     return [orderInfos, quotes];
 }
 
-// Generate sample amounts up to `maxFillAmount`.
-function getSampleAmounts(maxFillAmount: BigNumber, numSamples: number): BigNumber[] {
-    const dx = maxFillAmount.dividedBy(numSamples);
+/**
+ * Generate sample amounts up to `maxFillAmount`.
+ */
+export function getSampleAmounts(maxFillAmount: BigNumber, numSamples: number): BigNumber[] {
     const amounts = [];
     for (let i = 0; i < numSamples; i++) {
-        amounts[i] = dx.times((i + 1));
+        amounts.push(
+            maxFillAmount
+                .times(i + 1)
+                .div(numSamples)
+                .integerValue(BigNumber.ROUND_UP),
+        );
     }
     return amounts;
-}
-
-// Extracts the token address from ERC20 asset data.
-function getTokenFromAssetData(assetData: string): string {
-    const PREFIX_LENGTH = 10;
-    return `0x${assetData.slice(PREFIX_LENGTH)}`;
 }
 
 // Gets the difference between two sets.
@@ -358,7 +335,7 @@ function difference<T>(a: T[], b: T[]): T[] {
     return a.filter(x => b.indexOf(x) === -1);
 }
 
-function createSellPathFromNativeOrders(orders: Order[], orderInfos: OrderInfo[]): Fill[] {
+function createSellPathFromNativeOrders(orders: OrderWithoutDomain[], orderInfos: OrderInfo[]): Fill[] {
     const path: Fill[] = [];
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < orders.length; i++) {
@@ -381,7 +358,7 @@ function createSellPathFromNativeOrders(orders: Order[], orderInfos: OrderInfo[]
     return path;
 }
 
-function createBuyPathFromNativeOrders(orders: Order[], orderInfos: OrderInfo[]): Fill[] {
+function createBuyPathFromNativeOrders(orders: OrderWithoutDomain[], orderInfos: OrderInfo[]): Fill[] {
     // Equivalent to `createSellPathFromNativeOrders` with sizes and rewards flipped.
     return createSellPathFromNativeOrders(orders, orderInfos).map(f => ({
         ...f,
@@ -390,19 +367,23 @@ function createBuyPathFromNativeOrders(orders: Order[], orderInfos: OrderInfo[])
     }));
 }
 
-function createPathsFromDexQuotes(dexQuotes: DexSample[][]): Fill[][] {
+function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean): Fill[][] {
     const paths: Fill[][] = [];
     for (const quote of dexQuotes) {
         // Native orders can be filled in any order, so they're all root nodes.
         const path: Fill[] = [];
         paths.push(path);
-        for (const sample of quote) {
+        // tslint:disable-next-line: prefer-for-of
+        for (let i = 0; i < quote.length; i++) {
+            const sample = quote[i];
+            const prev = i !== 0 ? quote[i - 1] : undefined;
+            const parent = i !== 0 ? path[path.length - 1] : undefined;
             path.push({
+                parent,
                 flags: sourceToFillFlags(sample.source),
-                exclusionMask: sourceToExclusionMask(sample.source),
-                input: sample.input,
-                output: sample.output,
-                parent: path.length !== 0 ? path[path.length - 1] : undefined,
+                exclusionMask: noConflicts ? sourceToExclusionMask(sample.source) : 0,
+                input: sample.input.minus(prev ? prev.input : 0),
+                output: sample.output.minus(prev ? prev.output : 0),
                 data: { source: sample.source },
             });
         }
@@ -425,24 +406,30 @@ function sourceToFillFlags(source: ERC20BridgeSource): number {
 
 function sourceToExclusionMask(source: ERC20BridgeSource): number {
     if (source === ERC20BridgeSource.Kyber) {
-        return FillFlags.SourceKyber;
+        // tslint:disable-next-line: no-bitwise
+        return FillFlags.SourceEth2Dai | FillFlags.SourceUniswap;
     }
     if (source === ERC20BridgeSource.Eth2Dai) {
-        return FillFlags.SourceEth2Dai;
+        return FillFlags.SourceKyber;
     }
     if (source === ERC20BridgeSource.Uniswap) {
-        return FillFlags.SourceUniswap;
+        return FillFlags.SourceKyber;
     }
-    return FillFlags.SourceNative;
+    return 0;
 }
 
-function getOrderFillableAmounts(order: Order, orderInfo: OrderInfo): [BigNumber, BigNumber] {
+function getOrderFillableAmounts(order: OrderWithoutDomain, orderInfo: OrderInfo): [BigNumber, BigNumber] {
     const takerAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
     const makerAmount = takerAmount
         .times(order.makerAssetAmount)
         .div(order.takerAssetAmount)
         .integerValue(BigNumber.ROUND_DOWN);
     return [makerAmount, takerAmount];
+}
+
+function pruneDustFillsFromNativePath(path: Fill[], fillAmount: BigNumber, dustThreshold: number): Fill[] {
+    const dustAmount = fillAmount.times(dustThreshold);
+    return path.filter(f => f.input.gt(dustAmount));
 }
 
 // Convert a list of DEX paths to a flattened list of `Fills`.
@@ -457,20 +444,15 @@ function flattenDexPaths(dexFills: Fill[][]): Fill[] {
 }
 
 // Picks the path with the highest (or lowest if `shouldMinimize` is true) output.
-function pickOptimalPath(
-    paths: Fill[][],
-    maxInput: BigNumber,
-    shouldMinimize?: boolean,
-): Fill[] | undefined {
+function pickOptimalPath(paths: Fill[][], maxInput: BigNumber, shouldMinimize?: boolean): Fill[] | undefined {
     let optimalPath: Fill[] | undefined;
     let optimalPathOutput: BigNumber = ZERO;
     for (const path of paths) {
         if (getPathInput(path).gte(maxInput)) {
             const output = getPathOutput(path, maxInput);
-            if (!optimalPath ||
-                compareOutputs(output, optimalPathOutput, !!shouldMinimize) === 1) {
+            if (!optimalPath || compareOutputs(output, optimalPathOutput, !!shouldMinimize) === 1) {
                 optimalPath = path;
-                optimalPathOutput = optimalPathOutput;
+                optimalPathOutput = output;
             }
         }
     }
@@ -493,15 +475,13 @@ function simplifyPath(path: Fill[]): Fill[] {
     const simplified: Fill[] = [];
     for (const fill of path) {
         const source = (fill.data as FillData).source;
-        if (path.length !== 0 && source !== ERC20BridgeSource.Native) {
-            const prevFill = path[path.length - 1];
+        if (simplified.length !== 0 && source !== ERC20BridgeSource.Native) {
+            const prevFill = simplified[simplified.length - 1];
             const prevSource = (prevFill.data as FillData).source;
+            // If the last fill is from the same source, merge them.
             if (prevSource === source) {
-                path[path.length - 1] = {
-                    ...prevFill,
-                    input: prevFill.input.plus(fill.input),
-                    output: prevFill.output.plus(fill.output),
-                };
+                prevFill.input = prevFill.input.plus(fill.input);
+                prevFill.output = prevFill.output.plus(fill.output);
                 continue;
             }
         }
@@ -510,12 +490,10 @@ function simplifyPath(path: Fill[]): Fill[] {
     return simplified;
 }
 
-function sortFillsByPrice(fills: Fill[], reversed?: boolean): Fill[] {
+// Sort fills by descending price.
+function sortFillsByPrice(fills: Fill[]): Fill[] {
     return fills.sort((a, b) => {
-        let d = (a.output.div(a.input)).minus(b.output.div(b.input));
-        if (reversed) {
-            d = d.negated();
-        }
+        const d = b.output.div(b.input).minus(a.output.div(a.input));
         if (d.gt(0)) {
             return 1;
         } else if (d.lt(0)) {
@@ -525,14 +503,9 @@ function sortFillsByPrice(fills: Fill[], reversed?: boolean): Fill[] {
     });
 }
 
-function getOrderTokens(order: Order): [string, string] {
-    const encoder = AbiEncoder.createMethod(
-        'ERC20Token',
-        [{ name: 'tokenAddress', type: 'address' }],
-    );
-    const { tokenAddress: makerToken } = encoder.strictDecode(order.makerAssetData);
-    const { tokenAddress: takerToken } = encoder.strictDecode(order.takerAssetData);
-    return [makerToken, takerToken];
+function getOrderTokens(order: OrderWithoutDomain): [string, string] {
+    const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
+    return [encoder.strictDecode(order.makerAssetData), encoder.strictDecode(order.takerAssetData)];
 }
 
 // Convert sell fills into orders.
@@ -541,36 +514,18 @@ function createSellOrdersFromPath(
     outputToken: string,
     path: Fill[],
     bridgeSlippage: number,
-): Order[] {
-    const orders: Order[] = [];
+): OrderWithoutDomain[] {
+    const orders: OrderWithoutDomain[] = [];
     for (const fill of path) {
         const source = (fill.data as FillData).source;
         if (source === ERC20BridgeSource.Native) {
             orders.push((fill.data as NativeFillData).order);
         } else if (source === ERC20BridgeSource.Kyber) {
-            orders.push(createKyberOrder(
-                inputToken,
-                outputToken,
-                fill.output,
-                fill.input,
-                bridgeSlippage,
-            ));
+            orders.push(createKyberOrder(outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
         } else if (source === ERC20BridgeSource.Eth2Dai) {
-            orders.push(createEth2DaiOrder(
-                inputToken,
-                outputToken,
-                fill.output,
-                fill.input,
-                bridgeSlippage,
-            ));
+            orders.push(createEth2DaiOrder(outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
         } else if (source === ERC20BridgeSource.Uniswap) {
-            orders.push(createUniswapOrder(
-                inputToken,
-                outputToken,
-                fill.output,
-                fill.input,
-                bridgeSlippage,
-            ));
+            orders.push(createUniswapOrder(outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
         } else {
             throw new Error(`invalid sell fill source: ${source}`);
         }
@@ -584,30 +539,16 @@ function createBuyOrdersFromPath(
     outputToken: string,
     path: Fill[],
     bridgeSlippage: number,
-): Order[] {
-    const orders: Order[] = [];
+): OrderWithoutDomain[] {
+    const orders: OrderWithoutDomain[] = [];
     for (const fill of path) {
         const source = (fill.data as FillData).source;
         if (source === ERC20BridgeSource.Native) {
             orders.push((fill.data as NativeFillData).order);
         } else if (source === ERC20BridgeSource.Eth2Dai) {
-            orders.push(createEth2DaiOrder(
-                inputToken,
-                outputToken,
-                fill.input,
-                fill.output,
-                bridgeSlippage,
-                true,
-            ));
+            orders.push(createEth2DaiOrder(inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
         } else if (source === ERC20BridgeSource.Uniswap) {
-            orders.push(createUniswapOrder(
-                inputToken,
-                outputToken,
-                fill.input,
-                fill.output,
-                bridgeSlippage,
-                true,
-            ));
+            orders.push(createUniswapOrder(inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
         } else {
             throw new Error(`invalid buy fill source: ${source}`);
         }
@@ -622,7 +563,7 @@ function createKyberOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): Order {
+): OrderWithoutDomain {
     return createBridgeOrder(
         KYBER_BRIDGE_ADDRESS,
         makerToken,
@@ -641,7 +582,7 @@ function createEth2DaiOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): Order {
+): OrderWithoutDomain {
     return createBridgeOrder(
         ETH2DAI_BRIDGE_ADDRESS,
         makerToken,
@@ -660,7 +601,7 @@ function createUniswapOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): Order {
+): OrderWithoutDomain {
     return createBridgeOrder(
         UNISWAP_BRIDGE_ADDRESS,
         makerToken,
@@ -680,49 +621,44 @@ function createBridgeOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): Order {
+): OrderWithoutDomain {
     return {
         makerAddress: bridgeAddress,
-        makerAssetData: createBridgeAssetData(
-            takerToken,
-            bridgeAddress,
-            createBridgeData(makerToken),
-        ),
+        makerAssetData: createBridgeAssetData(makerToken, bridgeAddress, createBridgeData(takerToken)),
         takerAssetData: createERC20AssetData(takerToken),
         ...createCommonOrderFields(makerAssetAmount, takerAssetAmount, slippage, isBuy),
     };
 }
 
-function createBridgeAssetData(
-    tokenAddress: string,
-    bridgeAddress: string,
-    bridgeData: string,
-): string {
-    const encoder = AbiEncoder.createMethod(
-        'ERC20Bridge',
-        [
-            { name: 'tokenAddress', type: 'address' },
-            { name: 'bridgeAddress', type: 'address' },
-            { name: 'bridgeData', type: 'bytes' },
-        ],
-    );
+/**
+ * Create ERC20Bridge asset data.
+ */
+export function createBridgeAssetData(tokenAddress: string, bridgeAddress: string, bridgeData: string): string {
+    const encoder = AbiEncoder.createMethod('ERC20Bridge', [
+        { name: 'tokenAddress', type: 'address' },
+        { name: 'bridgeAddress', type: 'address' },
+        { name: 'bridgeData', type: 'bytes' },
+    ]);
     return encoder.encode({ tokenAddress, bridgeAddress, bridgeData });
 }
 
-function createERC20AssetData(tokenAddress: string): string {
-    const encoder = AbiEncoder.createMethod(
-        'ERC20Token',
-        [{ name: 'tokenAddress', type: 'address' }],
-    );
+/**
+ * Create ERC20Proxy asset data.
+ */
+export function createERC20AssetData(tokenAddress: string): string {
+    const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
     return encoder.encode({ tokenAddress });
 }
 
 function createBridgeData(tokenAddress: string): string {
-    const encoder = AbiEncoder.create(
-        [{ name: 'tokenAddress', type: 'address' }],
-    );
+    const encoder = AbiEncoder.create([{ name: 'tokenAddress', type: 'address' }]);
     return encoder.encode({ tokenAddress });
 }
+
+type CommonOrderFields = Pick<
+    OrderWithoutDomain,
+    Exclude<keyof OrderWithoutDomain, 'makerAddress' | 'makerAssetData' | 'takerAssetData'>
+>;
 
 function createCommonOrderFields(
     makerAssetAmount: BigNumber,
@@ -730,10 +666,7 @@ function createCommonOrderFields(
     slippage: number,
     isBuy: boolean = false,
 ): CommonOrderFields {
-    const rate = makerAssetAmount.times(1 - Math.min(1, slippage)).div(takerAssetAmount);
     return {
-        chainId: CHAIN_ID,
-        exchangeAddress: EXCHANGE_ADDRESS,
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
         feeRecipientAddress: NULL_ADDRESS,
@@ -743,18 +676,20 @@ function createCommonOrderFields(
         takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
-        makerAssetAmount: isBuy ?
-            makerAssetAmount :
-            makerAssetAmount.times(rate).integerValue(),
-        takerAssetAmount: isBuy ?
-            takerAssetAmount.div(rate).integerValue() :
-            takerAssetAmount,
+        makerAssetAmount: isBuy
+            ? makerAssetAmount
+            : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_UP),
+        takerAssetAmount: isBuy
+            ? takerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
+            : takerAssetAmount,
     };
 }
 
 // Get the partial output earned by a fill at input `partialInput`.
 function getPartialFillOutput(fill: Fill, partialInput: BigNumber): BigNumber {
-    return BigNumber.min(fill.output, fill.output.div(fill.input).times(partialInput));
+    return BigNumber.min(fill.output, fill.output.div(fill.input).times(partialInput)).integerValue(
+        BigNumber.ROUND_DOWN,
+    );
 }
 
 /**
@@ -767,8 +702,8 @@ export class FillsOptimizer {
     private _optimalPath?: Fill[] = undefined;
     private _optimalPathOutput: BigNumber = ZERO;
 
-    constructor(runLimit?: number, shouldMinimize?: boolean) {
-        this._runLimit = runLimit === undefined ? DEFAULT_RUN_LIMIT : runLimit;
+    constructor(runLimit: number, shouldMinimize?: boolean) {
+        this._runLimit = runLimit;
         this._shouldMinimize = !!shouldMinimize;
     }
 
@@ -782,52 +717,50 @@ export class FillsOptimizer {
             currentPathOutput: ZERO,
             currentPathFlags: 0,
         };
+        // Visit all valid combintations of fills to find the optimal path.
         this._walk(fills, input, ctx);
         return this._optimalPath;
     }
 
     private _walk(fills: Fill[], input: BigNumber, ctx: FillsOptimizerContext): void {
-        const {
-            currentPath,
-            currentPathInput,
-            currentPathOutput,
-            currentPathFlags,
-        } = ctx;
+        const { currentPath, currentPathInput, currentPathOutput, currentPathFlags } = ctx;
 
         // Stop if the current path is already complete.
         if (currentPathInput.gte(input)) {
             this._updateOptimalPath(currentPath, currentPathOutput);
+            return;
         }
 
-        const lastNode = currentPath.length !== 0 ?
-            currentPath[currentPath.length - 1] : undefined;
+        const lastNode = currentPath.length !== 0 ? currentPath[currentPath.length - 1] : undefined;
         // Visit next fill candidates.
         for (const nextFill of fills) {
             // Subsequent fills must be a root node or be preceded by its parent,
             // enforcing contiguous fills.
             if (nextFill.parent && nextFill.parent !== lastNode) {
-                break;
+                continue;
             }
             // Stop if we've hit our run limit.
-            if (this._currentRunCount-- >= this._runLimit) {
+            if (this._currentRunCount++ >= this._runLimit) {
                 break;
             }
             const nextPath = [...currentPath, nextFill];
             const nextPathInput = BigNumber.min(input, currentPathInput.plus(nextFill.input));
             const nextPathOutput = currentPathOutput.plus(
-                getPartialFillOutput(nextFill, currentPathInput.minus(nextPathInput)),
+                getPartialFillOutput(nextFill, nextPathInput.minus(currentPathInput)),
             );
+            // tslint:disable-next-line: no-bitwise
+            const nextPathFlags = currentPathFlags | nextFill.flags;
             this._walk(
                 // Filter out incompatible fills.
                 // tslint:disable-next-line no-bitwise
-                fills.filter(f => (f.flags & nextFill.exclusionMask) === 0),
+                fills.filter(f => f !== nextFill && (nextPathFlags & f.exclusionMask) === 0),
                 input,
                 {
                     currentPath: nextPath,
                     currentPathInput: nextPathInput,
                     currentPathOutput: nextPathOutput,
-                    // tslint:disable-next-line no-bitwise
-                    currentPathFlags: currentPathFlags | nextFill.flags,
+                    // tslint:disable-next-line: no-bitwise
+                    currentPathFlags: nextPathFlags,
                 },
             );
         }
