@@ -17,4 +17,5 @@ export {
 } from 'ethereum-types';
 export { ContractAddresses } from '@0x/contract-addresses';
 export { runMigrationsAsync, runMigrationsOnceAsync } from './migration';
+export { migrateOnceAsync } from './migrate_with_test_defaults';
 export import Web3ProviderEngine = require('web3-provider-engine');

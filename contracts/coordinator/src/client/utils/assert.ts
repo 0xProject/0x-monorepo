@@ -4,7 +4,6 @@ import { Schema } from '@0x/json-schemas'; // tslint:disable-line:no-unused-vari
 import { Order } from '@0x/types'; // tslint:disable-line:no-unused-variable
 import { BigNumber } from '@0x/utils'; // tslint:disable-line:no-unused-variable
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as _ from 'lodash';
 
 export const assert = {
     ...sharedAssert,

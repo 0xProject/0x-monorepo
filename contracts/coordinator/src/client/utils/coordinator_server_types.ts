@@ -3,10 +3,6 @@ import { BigNumber } from '@0x/utils';
 
 export interface CoordinatorServerApprovalResponse {
     signatures: string[];
-    expirationTimeSeconds: BigNumber[];
-}
-export interface CoordinatorServerApprovalRawResponse {
-    signatures: string[];
     expirationTimeSeconds: BigNumber;
 }
 
@@ -24,7 +20,7 @@ export interface CoordinatorOutstandingFillSignatures {
 export interface CoordinatorServerResponse {
     isError: boolean;
     status: number;
-    body?: CoordinatorServerCancellationResponse | CoordinatorServerApprovalRawResponse;
+    body?: CoordinatorServerCancellationResponse | CoordinatorServerApprovalResponse;
     error?: any;
     request: CoordinatorServerRequest;
     coordinatorOperator: string;
@@ -38,12 +34,12 @@ export interface CoordinatorServerRequest {
 
 export class CoordinatorServerError extends Error {
     public message: CoordinatorServerErrorMsg;
-    public approvedOrders?: SignedOrder[] = [];
+    public approvedOrders?: Order[] = [];
     public cancellations?: CoordinatorServerCancellationResponse[] = [];
     public errors: CoordinatorServerResponse[];
     constructor(
         message: CoordinatorServerErrorMsg,
-        approvedOrders: SignedOrder[],
+        approvedOrders: Order[],
         cancellations: CoordinatorServerCancellationResponse[],
         errors: CoordinatorServerResponse[],
     ) {

@@ -264,7 +264,7 @@ export class DocGenerateUtils {
         if (!_.isEmpty(missingReferences)) {
             throw new Error(
                 `${this._packageName} package needs to export: \n${missingReferences.join(
-                    '\n',
+                    ',\n',
                 )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_MAP.`,
             );
         }

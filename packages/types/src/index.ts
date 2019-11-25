@@ -670,18 +670,6 @@ export interface Type {
     tupleElements?: Type[];
 }
 
-/**
- * * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
- * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
- * * pollingIntervalMs: Used with `awaitTransactionSuccessAsync` to determine polling interval in milliseconds
- * * timeoutMs: Used with `awaitTransactionSuccessAsync` to determine timeout in milliseconds
- */
-export interface SendTransactionOpts {
-    shouldValidate?: boolean;
-    pollingIntervalMs?: number;
-    timeoutMs?: number;
-}
-
 export interface ElementType {
     name: string;
     typeDocType: TypeDocTypes;

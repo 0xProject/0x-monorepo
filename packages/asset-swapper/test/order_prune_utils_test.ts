@@ -4,6 +4,7 @@ import { ERC20TokenContract } from '@0x/contracts-erc20';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { constants as devConstants, getLatestBlockTimestampAsync, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
+import { migrateOnceAsync } from '@0x/migrations';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -15,7 +16,6 @@ import { OrderPrunerPermittedFeeTypes } from '../src/types';
 import { OrderPruner } from '../src/utils/order_prune_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();

@@ -1,13 +1,6 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { BigNumber } from '@0x/utils';
 
-export interface TxOpts {
-    from: string;
-    gas?: number;
-    value?: BigNumber;
-    gasPrice?: BigNumber;
-}
-
 export enum ForwarderError {
     CompleteFillFailed = 'COMPLETE_FILL_FAILED',
 }
@@ -40,27 +33,6 @@ export interface ContractWrappersConfig {
     blockPollingIntervalMs?: number;
 }
 
-// TODO(xianny): remove after refactoring coordinator wrapper
-/**
- * gasPrice: Gas price in Wei to use for a transaction
- * gasLimit: The amount of gas to send with a transaction (in Gwei)
- * nonce: The nonce to use for a transaction. If not specified, it defaults to the next incremented nonce.
- */
-export interface TransactionOpts {
-    gasPrice?: BigNumber;
-    gasLimit?: number;
-    nonce?: number;
-}
-
-// TODO(xianny): remove after refactoring coordinator wrapper
-/**
- * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
- * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
- */
-export interface OrderTransactionOpts extends TransactionOpts {
-    shouldValidate?: boolean;
-}
-
 export interface OrderInfo {
     orderStatus: OrderStatus;
     orderHash: string;
@@ -91,12 +63,4 @@ export interface TraderInfo {
 export interface OrderAndTraderInfo {
     orderInfo: OrderInfo;
     traderInfo: TraderInfo;
-}
-
-export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';
-
-export interface CoordinatorTransaction {
-    salt: BigNumber;
-    signerAddress: string;
-    data: string;
 }

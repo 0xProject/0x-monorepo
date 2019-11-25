@@ -1,5 +1,6 @@
 import { constants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { migrateOnceAsync } from '@0x/migrations';
 import { SignedOrder } from '@0x/types';
 import { addressUtils, BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -9,7 +10,6 @@ import 'mocha';
 import { ContractAddresses, ContractWrappers } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
-import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
