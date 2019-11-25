@@ -14,6 +14,11 @@
             {
                 "note": "Add `ERC20BridgeAssetData`",
                 "pr": 2373
+            },
+            {
+                "note": "Add `OrderWithoutDomain` type",
+                "pr": 2353
+
             }
         ],
         "timestamp": 1575931811

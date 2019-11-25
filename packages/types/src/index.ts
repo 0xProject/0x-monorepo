@@ -29,6 +29,8 @@ export interface Order {
     takerFeeAssetData: string;
 }
 
+export type OrderWithoutDomain = Pick<Order, Exclude<keyof Order, 'chainId' | 'exchangeAddress'>>;
+
 export interface SignedOrder extends Order {
     signature: string;
 }
