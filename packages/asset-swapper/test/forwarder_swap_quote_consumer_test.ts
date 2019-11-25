@@ -31,9 +31,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
-const FILLABLE_AMOUNTS = [new BigNumber(2), new BigNumber(3), new BigNumber(5)].map(value =>
-    value.multipliedBy(ONE_ETH_IN_WEI),
-);
+
 const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
 const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
@@ -99,7 +97,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
     const chainId = TESTRPC_CHAIN_ID;
 
     before(async () => {
-        contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
@@ -149,10 +147,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         await blockchainLifecycle.startAsync();
         const UNLIMITED_ALLOWANCE = UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
 
-        const totalFillableAmount = FILLABLE_AMOUNTS.reduce(
-            (a: BigNumber, c: BigNumber) => a.plus(c),
-            new BigNumber(0),
-        );
+        const totalFillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
 
         await erc20TokenContract.transfer(makerAddress, totalFillableAmount).sendTransactionAsync({
             from: coinbaseAddress,
@@ -241,6 +236,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     takerAddress,
                     gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
+                    ethAmount: new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 });
                 await expectMakerAndTakerBalancesAsync(
                     constants.ZERO_AMOUNT,

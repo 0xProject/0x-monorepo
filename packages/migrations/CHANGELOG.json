@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.4.0-beta.4",
+        "changes": [
+            {
+                "note": "Deploy Forwarder after Exchange is configured as Staking Proxy is queried",
+                "pr": 2368
+            },
+            {
+                "note": "Subsequent contract addresses after the Forwarder are now modified",
+                "pr": 2368
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.3",
         "changes": [
             {

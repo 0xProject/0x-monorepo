@@ -42,7 +42,7 @@ describe('ABI Decoding Calldata', () => {
             chainId,
         };
 
-        contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         const config = {
             chainId: constants.TESTRPC_CHAIN_ID,

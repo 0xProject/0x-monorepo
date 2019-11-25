@@ -83,7 +83,7 @@ describe('swapQuoteConsumerUtils', () => {
 
     const chainId = TESTRPC_CHAIN_ID;
     before(async () => {
-        contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);

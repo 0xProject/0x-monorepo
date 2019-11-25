@@ -25,27 +25,30 @@ describe('MeshOrderProvider', () => {
             subscription: subscriptionId,
             result: [
                 {
-                    orderHash: '0x96e6eb6174dbf0458686bdae44c9a330d9a9eb563962512a7be545c4ecc13fd4',
+                    orderHash: '0xa452cc6e2c7756376f0f2379e7dd81aa9285b26515774d0ad8801a4c243a30a3',
                     signedOrder: {
-                        makerAddress: '0x50f84bbee6fb250d6f49e854fa280445369d64d9',
+                        chainId: 1337,
+                        exchangeAddress: '0x4eacd0af335451709e1e7b570b8ea68edec8bc97',
+                        makerAddress: '0x8c5c2671b71bad73d8b6fb7e8ef6fe5ec95ff661',
                         makerAssetData,
-                        makerAssetAmount: '4424020538752105500000',
+                        makerFeeAssetData: '0x',
+                        makerAssetAmount: '19501674723',
                         makerFee: '0',
                         takerAddress: '0x0000000000000000000000000000000000000000',
                         takerAssetData,
-                        takerAssetAmount: '1000000000000000061',
+                        takerFeeAssetData: '0x',
+                        takerAssetAmount: '132880707765170593819',
                         takerFee: '0',
                         senderAddress: '0x0000000000000000000000000000000000000000',
-                        exchangeAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
-                        feeRecipientAddress: '0xa258b39954cef5cb142fd567a46cddb31a670124',
-                        expirationTimeSeconds: '1559422407',
-                        salt: '1559422141994',
+                        feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                        expirationTimeSeconds: '1574687060',
+                        salt: '1574686820004',
                         signature:
-                            '0x1cf16c2f3a210965b5e17f51b57b869ba4ddda33df92b0017b4d8da9dacd3152b122a73844eaf50ccde29a42950239ba36a525ed7f1698a8a5e1896cf7d651aed203',
+                            '0x1b64e67271f10832485356d9ef203b7e2c855067c1253b4e66ee06e85cd46427b157fc4c60f86bd637291f971d1443f65f631b76b887b7f82ebb36499f2f9cf10d03',
                     },
-                    kind: 'ADDED',
-                    fillableTakerAssetAmount: 1000000000000000061,
-                    txHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+                    endState: 'ADDED',
+                    fillableTakerAssetAmount: '132880707765170593819',
+                    contractEvents: [],
                 },
             ],
         },
@@ -55,7 +58,7 @@ describe('MeshOrderProvider', () => {
         ...{
             params: {
                 ...addedResponse.params,
-                result: [{ ...addedResponse.params.result[0], kind: 'CANCELLED', fillableTakerAssetAmount: 0 }],
+                result: [{ ...addedResponse.params.result[0], endState: 'CANCELLED', fillableTakerAssetAmount: '0' }],
             },
         },
     };
@@ -152,7 +155,7 @@ describe('MeshOrderProvider', () => {
             const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
-        test('stores removed orders on a subscription update', async () => {
+        test('removes orders on a subscription update', async () => {
             const added = JSON.stringify(addedResponse);
             const removed = JSON.stringify(removedResponse);
             stubs.push(sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([])));
