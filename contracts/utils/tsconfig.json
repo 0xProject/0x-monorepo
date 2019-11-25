@@ -44,6 +44,7 @@
         "test/generated-artifacts/Ownable.json",
         "test/generated-artifacts/ReentrancyGuard.json",
         "test/generated-artifacts/Refundable.json",
+        "test/generated-artifacts/TestAuthorizable.json",
         "test/generated-artifacts/TestLibAddress.json",
         "test/generated-artifacts/TestLibAddressArray.json",
         "test/generated-artifacts/TestLibBytes.json",
