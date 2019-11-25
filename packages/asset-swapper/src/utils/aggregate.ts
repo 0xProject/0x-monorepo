@@ -21,6 +21,15 @@ const ETH2DAI_BRIDGE_ADDRESS = '0x27b8c4473c6b885d0b060d722cf614dbc3f9adfb';
 const UNISWAP_BRIDGE_ADDRESS = '0x9b81c8beee5d0ff8b128adc04db71f33022c5163';
 
 /**
+ * Common exception messages thrown by aggregation logic.
+ */
+export enum AggregationError {
+    NoOptimalPath = 'no optimal path',
+    EmptyOrders = 'empty orders',
+    MissingProvider = 'missing provider',
+}
+
+/**
  * DEX sources to aggregate.
  */
 export enum ERC20BridgeSource {
@@ -30,20 +39,32 @@ export enum ERC20BridgeSource {
     Kyber,
 }
 
-// Valid soruces for market sell.
-const SELL_SOURCES = [
+/**
+ * Convert a source to a canonical address used by the sampler contract.
+ */
+export const SOURCE_TO_ADDRESS: { [key: string]: string } = {
+    [ERC20BridgeSource.Eth2Dai]: '0x39755357759cE0d7f32dC8dC45414CCa409AE24e',
+    [ERC20BridgeSource.Uniswap]: '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95',
+    [ERC20BridgeSource.Kyber]: '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
+};
+
+/**
+ * Valid sources for market sell.
+ */
+export const SELL_SOURCES = [
     ERC20BridgeSource.Uniswap,
     ERC20BridgeSource.Eth2Dai,
     ERC20BridgeSource.Kyber,
 ];
 
-// Valid sources for market buy.
-const BUY_SOURCES = [
+/**
+ * Valid sources for market buy.
+ */
+export const BUY_SOURCES = [
     ERC20BridgeSource.Uniswap,
     ERC20BridgeSource.Eth2Dai,
 ];
 
-// tslint:disable no-bitwise
 /**
  * Represents a node on a fill path.
  */
@@ -112,10 +133,22 @@ export interface ImproveOrdersOpts {
      */
     bridgeSlippage: number;
     /**
+     * Number of samples to take for each DEX quote.
+     */
+    numSamples: number;
+    /**
      * A Web3 provider. Required.
      */
     provider: ZeroExProvider;
 }
+
+const IMPROVE_ORDERS_OPTS_DEFAULTS = {
+    runLimit: undefined,
+    excludedSources: [],
+    provider: undefined,
+    bridgeSlippage: DEFAULT_BRIDGE_SLIPPAGE,
+    numSamples: 16,
+};
 
 // Used internally by `FillsOptimizer`.
 interface FillsOptimizerContext {
@@ -125,8 +158,10 @@ interface FillsOptimizerContext {
     currentPathFlags: number;
 }
 
-// Represents an individual DEX sample from the sampler contract.
-interface DexSample {
+/**
+ * Represents an individual DEX sample from the sampler contract.
+ */
+export interface DexSample {
     source: ERC20BridgeSource;
     inputToken: string;
     outputToken: string;
@@ -158,18 +193,15 @@ export async function improveMarketSellAsync(
     opts?: Partial<ImproveOrdersOpts>,
 ): Promise<Order[]> {
     if (nativeOrders.length === 0) {
-        throw new Error('empty orders');
+        throw new Error(AggregationError.EmptyOrders);
     }
     const _opts = {
-        runLimit: undefined,
-        excludedSources: [],
-        provider: undefined,
-        bridgeSlippage: DEFAULT_BRIDGE_SLIPPAGE,
+        ...IMPROVE_ORDERS_OPTS_DEFAULTS,
         ...opts,
     };
     const [orderInfos, dexQuotes] = await queryNetworkAsync(
         nativeOrders,
-        takerAmount,
+        getSampleAmounts(takerAmount, _opts.numSamples),
         difference(SELL_SOURCES, _opts.excludedSources),
         _opts.provider,
     );
@@ -182,7 +214,7 @@ export async function improveMarketSellAsync(
         pickOptimalPath([nativePath, ...dexPaths], takerAmount),
     );
     if (!optimalPath) {
-        throw new Error('no optimal path');
+        throw new Error(AggregationError.NoOptimalPath);
     }
     const [outputToken, inputToken] = getOrderTokens(nativeOrders[0]);
     return createSellOrdersFromPath(
@@ -207,18 +239,15 @@ export async function improveMarketBuyAsync(
     opts?: Partial<ImproveOrdersOpts>,
 ): Promise<Order[]> {
     if (nativeOrders.length === 0) {
-        throw new Error('empty orders');
+        throw new Error(AggregationError.EmptyOrders);
     }
     const _opts = {
-        runLimit: undefined,
-        excludedSources: [],
-        provider: undefined,
-        bridgeSlippage: DEFAULT_BRIDGE_SLIPPAGE,
+        ...IMPROVE_ORDERS_OPTS_DEFAULTS,
         ...opts,
     };
     const [orderInfos, dexQuotes] = await queryNetworkAsync(
         nativeOrders,
-        makerAmount,
+        getSampleAmounts(makerAmount, _opts.numSamples),
         difference(BUY_SOURCES, _opts.excludedSources),
         _opts.provider,
         true,
@@ -232,7 +261,7 @@ export async function improveMarketBuyAsync(
         pickOptimalPath([nativePath, ...dexPaths], makerAmount, true),
     );
     if (!optimalPath) {
-        throw new Error('no optimal path');
+        throw new Error(AggregationError.NoOptimalPath);
     }
     const [inputToken, outputToken] = getOrderTokens(nativeOrders[0]);
     return createBuyOrdersFromPath(
@@ -264,21 +293,64 @@ export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
 }
 
 // Query the sampler contract to get native order statuses and DEX quotes.
-async function queryNetworkAsync(
+export async function queryNetworkAsync(
     nativeOrders: Order[],
-    fillAmount: BigNumber,
-    excludedSources: ERC20BridgeSource[],
+    sampleAmounts: BigNumber[],
+    sources: ERC20BridgeSource[],
     provider?: ZeroExProvider,
     isBuy?: boolean,
 ): Promise<[OrderInfo[], DexSample[][]]> {
     if (!provider) {
-        throw new Error('missing provider');
+        throw new Error(AggregationError.MissingProvider);
     }
     const sampler = new ERC20BridgeSamplerContract(
         SAMPLER_ADDRESS,
         provider,
     );
-    // TODO
+    let orderInfos;
+    let rawSamples;
+    if (isBuy) {
+        [orderInfos, rawSamples] = await sampler.queryOrdersAndSampleBuys(
+            nativeOrders,
+            sources.map(s => SOURCE_TO_ADDRESS[s]),
+            sampleAmounts,
+        ).callAsync();
+    } else {
+        [orderInfos, rawSamples] = await sampler.queryOrdersAndSampleSells(
+            nativeOrders,
+            sources.map(s => SOURCE_TO_ADDRESS[s]),
+            sampleAmounts,
+        ).callAsync();
+    }
+    const inputToken = getTokenFromAssetData(nativeOrders[0].takerAssetData);
+    const outputToken = getTokenFromAssetData(nativeOrders[0].makerAssetData);
+    const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
+        const source = sources[sourceIdx];
+        return rawDexSamples.map((sample, sampleIdx) => ({
+            source,
+            inputToken,
+            outputToken,
+            input: sampleAmounts[sampleIdx],
+            output: sample,
+        }));
+    });
+    return [orderInfos, quotes];
+}
+
+// Generate sample amounts up to `maxFillAmount`.
+function getSampleAmounts(maxFillAmount: BigNumber, numSamples: number): BigNumber[] {
+    const dx = maxFillAmount.dividedBy(numSamples);
+    const amounts = [];
+    for (let i = 0; i < numSamples; i++) {
+        amounts[i] = dx.times((i + 1));
+    }
+    return amounts;
+}
+
+// Extracts the token address from ERC20 asset data.
+function getTokenFromAssetData(assetData: string): string {
+    const PREFIX_LENGTH = 10;
+    return `0x${assetData.slice(PREFIX_LENGTH)}`;
 }
 
 // Gets the difference between two sets.
@@ -549,7 +621,7 @@ function createKyberOrder(
     makerAssetAmount: BigNumber,
     takerAssetAmount: BigNumber,
     slippage: number,
-    buy: boolean = false,
+    isBuy: boolean = false,
 ): Order {
     return createBridgeOrder(
         KYBER_BRIDGE_ADDRESS,
@@ -558,7 +630,7 @@ function createKyberOrder(
         makerAssetAmount,
         takerAssetAmount,
         slippage,
-        buy,
+        isBuy,
     );
 }
 
@@ -568,7 +640,7 @@ function createEth2DaiOrder(
     makerAssetAmount: BigNumber,
     takerAssetAmount: BigNumber,
     slippage: number,
-    buy: boolean = false,
+    isBuy: boolean = false,
 ): Order {
     return createBridgeOrder(
         ETH2DAI_BRIDGE_ADDRESS,
@@ -577,7 +649,7 @@ function createEth2DaiOrder(
         makerAssetAmount,
         takerAssetAmount,
         slippage,
-        buy,
+        isBuy,
     );
 }
 
@@ -587,7 +659,7 @@ function createUniswapOrder(
     makerAssetAmount: BigNumber,
     takerAssetAmount: BigNumber,
     slippage: number,
-    buy: boolean = false,
+    isBuy: boolean = false,
 ): Order {
     return createBridgeOrder(
         UNISWAP_BRIDGE_ADDRESS,
@@ -596,7 +668,7 @@ function createUniswapOrder(
         makerAssetAmount,
         takerAssetAmount,
         slippage,
-        buy,
+        isBuy,
     );
 }
 
@@ -607,7 +679,7 @@ function createBridgeOrder(
     makerAssetAmount: BigNumber,
     takerAssetAmount: BigNumber,
     slippage: number,
-    buy: boolean = false,
+    isBuy: boolean = false,
 ): Order {
     return {
         makerAddress: bridgeAddress,
@@ -617,7 +689,7 @@ function createBridgeOrder(
             createBridgeData(makerToken),
         ),
         takerAssetData: createERC20AssetData(takerToken),
-        ...createCommonOrderFields(makerAssetAmount, takerAssetAmount, slippage, buy),
+        ...createCommonOrderFields(makerAssetAmount, takerAssetAmount, slippage, isBuy),
     };
 }
 
@@ -656,7 +728,7 @@ function createCommonOrderFields(
     makerAssetAmount: BigNumber,
     takerAssetAmount: BigNumber,
     slippage: number,
-    buy: boolean = false,
+    isBuy: boolean = false,
 ): CommonOrderFields {
     const rate = makerAssetAmount.times(1 - Math.min(1, slippage)).div(takerAssetAmount);
     return {
@@ -671,10 +743,10 @@ function createCommonOrderFields(
         takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO,
         takerFee: ZERO,
-        makerAssetAmount: buy ?
+        makerAssetAmount: isBuy ?
             makerAssetAmount :
             makerAssetAmount.times(rate).integerValue(),
-        takerAssetAmount: buy ?
+        takerAssetAmount: isBuy ?
             takerAssetAmount.div(rate).integerValue() :
             takerAssetAmount,
     };
@@ -747,12 +819,14 @@ export class FillsOptimizer {
             );
             this._walk(
                 // Filter out incompatible fills.
+                // tslint:disable-next-line no-bitwise
                 fills.filter(f => (f.flags & nextFill.exclusionMask) === 0),
                 input,
                 {
                     currentPath: nextPath,
                     currentPathInput: nextPathInput,
                     currentPathOutput: nextPathOutput,
+                    // tslint:disable-next-line no-bitwise
                     currentPathFlags: currentPathFlags | nextFill.flags,
                 },
             );
