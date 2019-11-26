@@ -1,4 +1,3 @@
-import { ExchangeContract } from '@0x/contracts-exchange';
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -7,21 +6,9 @@ import { constants } from '../constants';
 import { SwapQuoterError } from '../types';
 
 export class ProtocolFeeUtils {
-    private readonly _exchangeContract: ExchangeContract;
-
-    constructor(exchangeContract: ExchangeContract) {
-        this._exchangeContract = exchangeContract;
-    }
-
-    // TODO(dave4506) Add a debounce, cache or some form of a throttle to this function, doesn't change often.
+    // tslint:disable-next-line:prefer-function-over-method
     public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        const protocolFeeCollector = await this._exchangeContract.protocolFeeCollector().callAsync();
-        if (protocolFeeCollector === constants.NULL_ADDRESS) {
-            return constants.ZERO_AMOUNT;
-        } else {
-            const protocolFeeMultiplier = await this._exchangeContract.protocolFeeMultiplier().callAsync();
-            return protocolFeeMultiplier;
-        }
+        return new BigNumber(150000);
     }
 
     // tslint:disable-next-line: prefer-function-over-method
