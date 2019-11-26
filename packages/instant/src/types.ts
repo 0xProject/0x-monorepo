@@ -1,4 +1,4 @@
-import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
+import { BigNumber, SwapQuoteConsumer, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -110,7 +110,8 @@ export interface ProviderState {
     name: string;
     displayName: string;
     provider: ZeroExProvider;
-    assetBuyer: AssetBuyer;
+    swapQuoter: SwapQuoter;
+    swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     account: Account;
 }
@@ -189,6 +190,11 @@ export enum ProviderType {
 
 export interface ZeroExInstantRequiredBaseConfig {
     orderSource: OrderSource;
+}
+
+export interface AffiliateInfo {
+    feeRecipient: string;
+    feePercentage: number;
 }
 
 export interface ZeroExInstantOptionalBaseConfig {

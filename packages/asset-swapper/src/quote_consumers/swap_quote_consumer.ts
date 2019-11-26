@@ -13,7 +13,6 @@ import {
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
-    SwapQuoteConsumingOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
 } from '../types';
@@ -57,7 +56,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
      */
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts & SwapQuoteConsumingOpts> = {},
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(opts);
@@ -71,7 +70,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts & SwapQuoteConsumingOpts> = {},
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<SmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(opts);
@@ -85,7 +84,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
      */
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOpts & SwapQuoteConsumingOpts> = {},
+        opts: Partial<SwapQuoteExecutionOpts> = {},
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(opts);
@@ -110,7 +109,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     }
 
     private async _getConsumerForSwapQuoteAsync(
-        opts: Partial<SwapQuoteConsumingOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
         if (opts.useExtensionContract === ExtensionContractType.Forwarder) {
             return this._forwarderConsumer;

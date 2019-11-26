@@ -147,7 +147,7 @@ interface TokenSelectorRowIconProps {
 
 const getTokenIcon = (symbol: string): React.StatelessComponent | undefined => {
     try {
-        return require(`../assets/icons/${symbol}.svg`) as React.StatelessComponent;
+        return require(`../assets/icons/${symbol}.svg`).default as React.StatelessComponent;
     } catch (e) {
         // Can't find icon
         return undefined;

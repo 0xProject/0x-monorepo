@@ -1,6 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 import {
+    ExtensionContractType,
     ForwarderExtensionContractOpts,
     OrderPrunerOpts,
     OrderPrunerPermittedFeeTypes,
@@ -17,7 +18,6 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_CHAIN_ID = 1;
 const ONE_SECOND_MS = 1000;
 const DEFAULT_PER_PAGE = 1000;
-const PROTOCOL_FEE_MULTIPLIER = 150000;
 
 const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
     expiryBufferMs: 120000, // 2 minutes
@@ -35,13 +35,17 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     ...DEFAULT_ORDER_PRUNER_OPTS,
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts = {
+const DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS: ForwarderExtensionContractOpts = {
     feePercentage: 0,
     feeRecipient: NULL_ADDRESS,
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts &
-    ForwarderExtensionContractOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
+const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
+    useExtensionContract: ExtensionContractType.Forwarder,
+    extensionContractOpts: DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS,
+};
+
+const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     slippagePercentage: 0.2, // 20% slippage protection,
@@ -63,6 +67,5 @@ export const constants = {
     DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     DEFAULT_PER_PAGE,
-    PROTOCOL_FEE_MULTIPLIER,
     NULL_ERC20_ASSET_DATA,
 };

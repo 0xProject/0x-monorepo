@@ -1,4 +1,4 @@
-import { AssetBuyerError, InsufficientAssetLiquidityError } from '@0x/asset-buyer';
+import { InsufficientAssetLiquidityError, SwapQuoterError } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -109,8 +109,8 @@ export const assetUtils = {
         );
         return _.compact(erc20sOrUndefined);
     },
-    assetBuyerErrorMessage: (asset: Asset, error: Error): string | undefined => {
-        if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
+    swapQuoterErrorMessage: (asset: Asset, error: Error): string | undefined => {
+        if (error.message === SwapQuoterError.InsufficientAssetLiquidity) {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
             if (
                 error instanceof InsufficientAssetLiquidityError &&
@@ -131,11 +131,9 @@ export const assetUtils = {
             }
 
             return `Not enough ${assetName} available`;
-        } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
-            return 'Not enough ZRX available';
         } else if (
-            error.message === AssetBuyerError.StandardRelayerApiError ||
-            error.message.startsWith(AssetBuyerError.AssetUnavailable)
+            error.message === SwapQuoterError.StandardRelayerApiError ||
+            error.message.startsWith(SwapQuoterError.AssetUnavailable)
         ) {
             const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
             return `${assetName} is currently unavailable`;

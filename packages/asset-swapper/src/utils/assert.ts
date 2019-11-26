@@ -96,4 +96,8 @@ export const assert = {
             `Expected ${variableName} to be between 0 and 1, but is ${percentage}`,
         );
     },
+    isValidForwarderExtensionContractOpts(variableName: string, opts: any): void {
+        assert.isValidPercentage(`${variableName}.feePercentage`, opts.feePercentage);
+        assert.isETHAddressHex(`${variableName}.feeRecipient`, opts.feeRecipient);
+    },
 };

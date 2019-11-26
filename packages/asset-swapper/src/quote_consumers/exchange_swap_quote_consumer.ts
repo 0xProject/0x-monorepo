@@ -1,5 +1,5 @@
+import { ExchangeContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { ExchangeContract } from '@0x/contracts-exchange';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -111,7 +111,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             params,
             toAddress: this._exchangeContract.address,
             methodAbi,
-            ethAmount: quote.worstCaseQuoteInfo.protocolFeeInEthAmount,
+            ethAmount: quote.worstCaseQuoteInfo.protocolFeeInWeiAmount,
         };
     }
 
@@ -121,7 +121,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { takerAddress, gasLimit, gasPrice, ethAmount } = opts;
+        const { takerAddress, gasLimit, ethAmount } = opts;
 
         if (takerAddress !== undefined) {
             assert.isETHAddressHex('takerAddress', takerAddress);
@@ -129,16 +129,13 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         if (gasLimit !== undefined) {
             assert.isNumber('gasLimit', gasLimit);
         }
-        if (gasPrice !== undefined) {
-            assert.isBigNumber('gasPrice', gasPrice);
-        }
         if (ethAmount !== undefined) {
             assert.isBigNumber('ethAmount', ethAmount);
         }
-        const { orders } = quote;
+        const { orders, gasPrice } = quote;
 
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
-        const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInEthAmount;
+        const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
         let txHash: string;
         if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;

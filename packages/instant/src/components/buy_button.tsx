@@ -1,4 +1,11 @@
-import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import {
+    affiliateFeeUtils,
+    ExtensionContractType,
+    MarketBuySwapQuote,
+    SwapQuoteConsumer,
+    SwapQuoteConsumerError,
+    SwapQuoter,
+} from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -19,17 +26,26 @@ import { Button } from './ui/button';
 export interface BuyButtonProps {
     accountAddress?: string;
     accountEthBalanceInWei?: BigNumber;
-    buyQuote?: BuyQuote;
-    assetBuyer: AssetBuyer;
+    swapQuote?: MarketBuySwapQuote;
+    swapQuoter: SwapQuoter;
+    swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
     selectedAsset?: Asset;
-    onValidationPending: (buyQuote: BuyQuote) => void;
-    onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
-    onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
+    onValidationFail: (
+        swapQuote: MarketBuySwapQuote,
+        errorMessage: SwapQuoteConsumerError | ZeroExInstantError,
+    ) => void;
+    onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
+    onBuyProcessing: (
+        swapQuote: MarketBuySwapQuote,
+        txHash: string,
+        startTimeUnix: number,
+        expectedEndTimeUnix: number,
+    ) => void;
+    onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
+    onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
 }
 
 export class BuyButton extends React.PureComponent<BuyButtonProps> {
@@ -39,8 +55,8 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const { buyQuote, accountAddress, selectedAsset } = this.props;
-        const shouldDisableButton = buyQuote === undefined || accountAddress === undefined;
+        const { swapQuote, accountAddress, selectedAsset } = this.props;
+        const shouldDisableButton = swapQuote === undefined || accountAddress === undefined;
         const buttonText =
             selectedAsset !== undefined && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
                 ? `Buy ${selectedAsset.metaData.symbol.toUpperCase()}`
@@ -58,63 +74,81 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        const { buyQuote, assetBuyer, affiliateInfo, accountAddress, accountEthBalanceInWei, web3Wrapper } = this.props;
-        if (buyQuote === undefined || accountAddress === undefined) {
+        const {
+            swapQuote,
+            swapQuoteConsumer,
+            affiliateInfo,
+            accountAddress,
+            accountEthBalanceInWei,
+            web3Wrapper,
+        } = this.props;
+        if (swapQuote === undefined || accountAddress === undefined) {
             return;
         }
-        this.props.onValidationPending(buyQuote);
-        const ethNeededForBuy = buyQuote.worstCaseQuoteInfo.totalEthAmount;
+        this.props.onValidationPending(swapQuote);
+        const ethNeededForBuy = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(swapQuote.worstCaseQuoteInfo, 0);
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = accountEthBalanceInWei === undefined || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
-            analytics.trackBuyNotEnoughEth(buyQuote);
-            this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
+            analytics.trackBuyNotEnoughEth(swapQuote);
+            this.props.onValidationFail(swapQuote, ZeroExInstantError.InsufficientETH);
             return;
         }
         let txHash: string | undefined;
         const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         const feeRecipient = oc(affiliateInfo).feeRecipient();
+        const feePercentage = oc(affiliateInfo).feePercentage();
         try {
-            analytics.trackBuyStarted(buyQuote);
-            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, {
-                feeRecipient,
+            analytics.trackBuyStarted(swapQuote);
+            txHash = await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(swapQuote, {
+                useExtensionContract: ExtensionContractType.Forwarder,
+                extensionContractOpts: {
+                    feeRecipient,
+                    feePercentage,
+                },
                 takerAddress: accountAddress,
-                gasPrice: gasInfo.gasPriceInWei,
             });
         } catch (e) {
             if (e instanceof Error) {
-                if (e.message === AssetBuyerError.TransactionValueTooLow) {
-                    analytics.trackBuySimulationFailed(buyQuote);
-                    this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
+                if (e.message === SwapQuoteConsumerError.TransactionValueTooLow) {
+                    analytics.trackBuySimulationFailed(swapQuote);
+                    this.props.onValidationFail(swapQuote, SwapQuoteConsumerError.TransactionValueTooLow);
                     return;
-                } else if (e.message === AssetBuyerError.SignatureRequestDenied) {
-                    analytics.trackBuySignatureDenied(buyQuote);
-                    this.props.onSignatureDenied(buyQuote);
+                } else if (e.message === SwapQuoteConsumerError.SignatureRequestDenied) {
+                    analytics.trackBuySignatureDenied(swapQuote);
+                    this.props.onSignatureDenied(swapQuote);
                     return;
                 } else {
                     errorReporter.report(e);
-                    analytics.trackBuyUnknownError(buyQuote, e.message);
-                    this.props.onValidationFail(buyQuote, ZeroExInstantError.CouldNotSubmitTransaction);
+                    analytics.trackBuyUnknownError(swapQuote, e.message);
+                    this.props.onValidationFail(swapQuote, ZeroExInstantError.CouldNotSubmitTransaction);
                     return;
                 }
+            }
+            // HACK(dekz): Wrappers no longer include decorators which map errors
+            // like transaction deny
+            if (e.message && e.message.includes('User denied transaction signature')) {
+                analytics.trackBuySignatureDenied(swapQuote);
+                this.props.onSignatureDenied(swapQuote);
+                return;
             }
             throw e;
         }
         const startTimeUnix = new Date().getTime();
         const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
-        this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+        this.props.onBuyProcessing(swapQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         try {
-            analytics.trackBuyTxSubmitted(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+            analytics.trackBuyTxSubmitted(swapQuote, txHash, startTimeUnix, expectedEndTimeUnix);
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
-                analytics.trackBuyTxFailed(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
-                this.props.onBuyFailure(buyQuote, txHash);
+                analytics.trackBuyTxFailed(swapQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+                this.props.onBuyFailure(swapQuote, txHash);
                 return;
             }
             throw e;
         }
-        analytics.trackBuyTxSucceeded(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
-        this.props.onBuySuccess(buyQuote, txHash);
+        analytics.trackBuyTxSucceeded(swapQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+        this.props.onBuySuccess(swapQuote, txHash);
     };
 }

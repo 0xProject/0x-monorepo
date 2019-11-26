@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { DevUtilsContract } from '@0x/abi-gen-wrappers';
 import { orderCalculationUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';

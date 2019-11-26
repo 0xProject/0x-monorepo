@@ -16,8 +16,9 @@ export const affiliateFeeUtils = {
             feePercentage >= 0 && feePercentage <= constants.MAX_AFFILIATE_FEE_PERCENTAGE,
             'feePercentage must be between range 0-0.05 (inclusive)',
         );
-        const ethAmount = swapQuoteInfo.protocolFeeInEthAmount.plus(swapQuoteInfo.totalTakerAssetAmount);
-        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage);
+        const ethAmount = swapQuoteInfo.protocolFeeInWeiAmount.plus(swapQuoteInfo.totalTakerAssetAmount);
+        // HACK(dekz): This is actually in WEI amount not ETH
+        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage).toFixed(0, BigNumber.ROUND_UP);
         const ethAmountWithFees = ethAmount.plus(affiliateFeeAmount);
         return ethAmountWithFees;
     },

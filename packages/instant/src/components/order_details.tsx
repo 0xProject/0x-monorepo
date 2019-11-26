@@ -1,4 +1,4 @@
-import { BuyQuoteInfo } from '@0x/asset-buyer';
+import { SwapQuoteInfo } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -17,7 +17,7 @@ import { Flex } from './ui/flex';
 import { Text, TextProps } from './ui/text';
 
 export interface OrderDetailsProps {
-    buyQuoteInfo?: BuyQuoteInfo;
+    swapQuoteInfo?: SwapQuoteInfo;
     selectedAssetUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     isLoading: boolean;
@@ -37,22 +37,27 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
         );
     }
 
+    // TODO(dave4506) currently instant has affiliate fees disabled, until we resolve that, this displays only takerFees + protocolFees
     private _renderRows(): React.ReactNode {
-        const { buyQuoteInfo } = this.props;
+        const { swapQuoteInfo } = this.props;
         return (
             <React.Fragment>
                 <OrderDetailsRow
                     labelText={this._assetAmountLabel()}
-                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.assetEthAmount)}
+                    primaryValue={this._displayAmountOrPlaceholder(swapQuoteInfo && swapQuoteInfo.takerAssetAmount)}
                 />
                 <OrderDetailsRow
                     labelText="Fee"
-                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.feeEthAmount)}
+                    primaryValue={this._displayAmountOrPlaceholder(
+                        swapQuoteInfo && swapQuoteInfo.feeTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInWeiAmount),
+                    )}
                 />
                 <OrderDetailsRow
                     labelText="Total Cost"
                     isLabelBold={true}
-                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.totalEthAmount)}
+                    primaryValue={this._displayAmountOrPlaceholder(
+                        swapQuoteInfo && swapQuoteInfo.totalTakerAssetAmount.plus(swapQuoteInfo.protocolFeeInWeiAmount),
+                    )}
                     isPrimaryValueBold={true}
                     secondaryValue={this._totalCostSecondaryValue()}
                 />
@@ -87,8 +92,11 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
             secondaryCurrency === BaseCurrency.ETH ||
             (secondaryCurrency === BaseCurrency.USD && this.props.ethUsdPrice && !this._hadErrorFetchingUsdPrice());
 
-        if (this.props.buyQuoteInfo && canDisplayCurrency) {
-            return this._displayAmount(secondaryCurrency, this.props.buyQuoteInfo.totalEthAmount);
+        if (this.props.swapQuoteInfo && canDisplayCurrency) {
+            return this._displayAmount(
+                secondaryCurrency,
+                this.props.swapQuoteInfo.totalTakerAssetAmount.plus(this.props.swapQuoteInfo.protocolFeeInWeiAmount),
+            );
         } else {
             return undefined;
         }
@@ -150,8 +158,8 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     }
 
     private _pricePerTokenWei(): BigNumber | undefined {
-        const buyQuoteAccessor = oc(this.props.buyQuoteInfo);
-        const assetTotalInWei = buyQuoteAccessor.assetEthAmount();
+        const swapQuoteAccessor = oc(this.props.swapQuoteInfo);
+        const assetTotalInWei = swapQuoteAccessor.totalTakerAssetAmount();
         const selectedAssetUnitAmount = this.props.selectedAssetUnitAmount;
         return assetTotalInWei !== undefined &&
             selectedAssetUnitAmount !== undefined &&

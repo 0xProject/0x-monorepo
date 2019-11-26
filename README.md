@@ -65,7 +65,6 @@ These packages are all under development. See [/contracts/README.md](/contracts/
 | [`@0x/abi-gen-wrappers`](/packages/abi-gen-wrappers)     | [![npm](https://img.shields.io/npm/v/@0x/abi-gen-wrappers.svg)](https://www.npmjs.com/package/@0x/abi-gen-wrappers)     | Low-level 0x smart contract wrappers generated using `@0x/abi-gen`                                |
 | [`@0x/sra-spec`](/packages/sra-spec)                     | [![npm](https://img.shields.io/npm/v/@0x/sra-spec.svg)](https://www.npmjs.com/package/@0x/sra-spec)                     | OpenAPI specification for the Standard Relayer API                                                |
 | [`@0x/connect`](/packages/connect)                       | [![npm](https://img.shields.io/npm/v/@0x/connect.svg)](https://www.npmjs.com/package/@0x/connect)                       | An HTTP/WS client for interacting with the Standard Relayer API                                   |
-| [`@0x/asset-buyer`](/packages/asset-buyer)               | [![npm](https://img.shields.io/npm/v/@0x/asset-buyer.svg)](https://www.npmjs.com/package/@0x/asset-buyer)               | Convenience package for discovering and buying assets with Ether                                  |
 | [`@0x/asset-swapper`](/packages/asset-swapper)           | [![npm](https://img.shields.io/npm/v/@0x/asset-swapper.svg)](https://www.npmjs.com/package/@0x/asset-swapper)           | Convenience package for discovering and performing swaps for any ERC20 Assets                     |
 
 #### Ethereum tooling

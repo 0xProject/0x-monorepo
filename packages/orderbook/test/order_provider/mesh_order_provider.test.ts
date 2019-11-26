@@ -151,7 +151,7 @@ describe('MeshOrderProvider', () => {
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             connection.sendUTF(eventResponse);
-            await utils.delayAsync(5);
+            await utils.delayAsync(100);
             const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
@@ -162,11 +162,11 @@ describe('MeshOrderProvider', () => {
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             connection.sendUTF(added);
-            await utils.delayAsync(5);
+            await utils.delayAsync(100);
             const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
             connection.sendUTF(removed);
-            await utils.delayAsync(5);
+            await utils.delayAsync(100);
             expect(orders.size()).toBe(0);
         });
     });
@@ -230,11 +230,11 @@ describe('MeshOrderProvider', () => {
             expect(addOrdersStub.callCount).toBe(0);
             const added = JSON.stringify(addedResponse);
             connection.sendUTF(added);
-            await utils.delayAsync(5);
+            await utils.delayAsync(100);
             expect(orders.size()).toBe(1);
             // Drop the connection and check orders are re-validated
             connection.drop();
-            await utils.delayAsync(5);
+            await utils.delayAsync(100);
             expect(addOrdersStub.callCount).toBe(1);
         });
     });

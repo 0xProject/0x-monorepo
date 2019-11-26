@@ -16,7 +16,7 @@ export {
 export { ERC20Wrapper } from './erc20_wrapper';
 export { ERC721Wrapper } from './erc721_wrapper';
 export { ERC1155ProxyWrapper } from './erc1155_proxy_wrapper';
-export { Erc1155Wrapper, ERC1155MintableContract } from '@0x/contracts-erc1155';
+export { ERC1155MintableContract, Erc1155Wrapper } from '@0x/contracts-erc1155';
 export { DummyERC20TokenContract } from '@0x/contracts-erc20';
 export { DummyERC721TokenContract } from '@0x/contracts-erc721';
 export {
