@@ -160,7 +160,7 @@ blockchainTests('Supported asset type unit tests', env => {
                 .transferAssetToSender(erc721AssetData, invalidAmount)
                 .awaitTransactionSuccessAsync({ from: receiver });
             const expectedError = new ForwarderRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
-            expect(tx).to.revertWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('transfers an ERC20 token given ERC20Bridge assetData', async () => {
             const txReceipt = await forwarder
@@ -178,7 +178,7 @@ blockchainTests('Supported asset type unit tests', env => {
                 .transferAssetToSender(randomBytes, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             const expectedError = new ForwarderRevertErrors.UnsupportedAssetProxyError(hexSlice(randomBytes, 0, 4));
-            expect(tx).to.revertWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 });

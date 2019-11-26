@@ -3,11 +3,10 @@
         "version": "1.0.3-beta.2",
         "changes": [
             {
-                "note": "Forwader <> ERC20Bridge integration testsg",
+                "note": "Forwader <> ERC20Bridge integration tests",
                 "pr": 2356
             }
-        ],
-        "timestamp": 1574461784
+        ]
     },
     {
         "version": "1.0.3-beta.1",
