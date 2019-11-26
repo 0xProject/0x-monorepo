@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 - TBD
+
+-   Fixed bug which was preventing clients from pre-building transactions when using a node without any unlocked accounts.
+-   Added a `build_transaction()` interface to all `ContractMethod` subclasses.
+-   Renamed wrappers' attribute `underlying_method` to `_underlying_method` to denote private intention.
+
 ## 1.1.0 - 2019-08-14
 
 -   Added wrapper for DevUtils contract.
