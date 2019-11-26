@@ -1,6 +1,5 @@
+import { DevUtilsContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ExchangeContract } from '@0x/contracts-exchange';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -158,7 +157,7 @@ export class SwapQuoter {
         this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._exchangeContract = new ExchangeContract(this._contractAddresses.exchange, provider);
-        this._protocolFeeUtils = new ProtocolFeeUtils(this._exchangeContract);
+        this._protocolFeeUtils = new ProtocolFeeUtils();
         this._orderPruner = new OrderPruner(this._devUtilsContract, {
             expiryBufferMs: this.expiryBufferMs,
             permittedOrderFeeTypes: this.permittedOrderFeeTypes,

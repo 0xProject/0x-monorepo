@@ -1,7 +1,5 @@
+import { DevUtilsContract, ERC20TokenContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ERC20TokenContract } from '@0x/contracts-erc20';
-import { ExchangeContract } from '@0x/contracts-exchange';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
@@ -132,7 +130,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils(exchangeContract);
+        protocolFeeUtils = new ProtocolFeeUtils();
         expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TakerTokenContract,
             makerAddress,
