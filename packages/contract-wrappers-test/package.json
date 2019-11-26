@@ -40,6 +40,7 @@
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^3.1.0-beta.2",
         "@0x/types": "^2.5.0-beta.2",
+        "@0x/utils": "^4.6.0-beta.2",
         "@0x/web3-wrapper": "^6.1.0-beta.2",
         "@types/nock": "^10.0.3",
         "chai": "^4.0.1",

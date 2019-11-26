@@ -67,7 +67,37 @@ export {
 } from './generated-wrappers/weth9';
 export { CoordinatorContract } from './generated-wrappers/coordinator';
 export { OrderStatus, ContractError, ForwarderError, ContractWrappersConfig, OrderInfo } from './types';
-
+export {
+    StakingAuthorizedAddressAddedEventArgs,
+    StakingAuthorizedAddressRemovedEventArgs,
+    StakingContract,
+    StakingEpochEndedEventArgs,
+    StakingEpochFinalizedEventArgs,
+    StakingEventArgs,
+    StakingEvents,
+    StakingExchangeAddedEventArgs,
+    StakingExchangeRemovedEventArgs,
+    StakingMakerStakingPoolSetEventArgs,
+    StakingMoveStakeEventArgs,
+    StakingOperatorShareDecreasedEventArgs,
+    StakingOwnershipTransferredEventArgs,
+    StakingParamsSetEventArgs,
+    StakingRewardsPaidEventArgs,
+    StakingStakeEventArgs,
+    StakingStakingPoolCreatedEventArgs,
+    StakingStakingPoolEarnedRewardsInEpochEventArgs,
+    StakingUnstakeEventArgs,
+} from './generated-wrappers/staking';
+export {
+    StakingProxyAuthorizedAddressAddedEventArgs,
+    StakingProxyAuthorizedAddressRemovedEventArgs,
+    StakingProxyContract,
+    StakingProxyEventArgs,
+    StakingProxyEvents,
+    StakingProxyOwnershipTransferredEventArgs,
+    StakingProxyStakingContractAttachedToProxyEventArgs,
+    StakingProxyStakingContractDetachedFromProxyEventArgs,
+} from './generated-wrappers/staking_proxy';
 export {
     BlockRange,
     SupportedProvider,

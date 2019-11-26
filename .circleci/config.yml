@@ -371,7 +371,7 @@ jobs:
                       - coverage-connect-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
-                      - coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                      - coverage-contract-wrappers-test-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
