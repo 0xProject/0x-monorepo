@@ -11,9 +11,9 @@ export function shortZip<T1, T2>(a: T1[], b: T2[]): Array<[T1, T2]> {
 /**
  * Replaces the keys in a deeply nested object. Adapted from https://stackoverflow.com/a/39126851
  */
-export function replaceKeysDeep(obj: {}, mapKeys: (key: string) => string | void) {
-    return _.transform(obj, function(result, value, key) {
-        var currentKey = mapKeys(key) || key;
+export function replaceKeysDeep(obj: {}, mapKeys: (key: string) => string | void): _.Dictionary<{}> {
+    return _.transform(obj, (result, value, key) => {
+        const currentKey = mapKeys(key) || key;
         result[currentKey] = _.isObject(value) ? replaceKeysDeep(value, mapKeys) : value;
     });
 }
