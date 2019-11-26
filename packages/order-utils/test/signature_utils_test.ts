@@ -1,5 +1,5 @@
-import { DevUtilsContract } from '@0x/contract-wrappers';
 import { assert } from '@0x/assert';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { Order, SignatureType, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';

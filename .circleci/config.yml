@@ -121,7 +121,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
             - run: yarn wsrun test:circleci @0x/connect
-            - run: yarn wsrun test:circleci @0x/contract-wrappers
+            - run: yarn wsrun test:circleci @0x/contract-wrappers-test
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
             - run: yarn wsrun test:circleci @0x/order-utils
@@ -154,9 +154,9 @@ jobs:
                   paths:
                       - ~/repo/packages/connect/coverage/lcov.info
             - save_cache:
-                  key: coverage-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  key: coverage-contract-wrappers-test-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/contract-wrappers/coverage/lcov.info
+                      - ~/repo/packages/contract-wrappers-test/coverage/lcov.info
             - save_cache:
                   key: coverage-dev-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:

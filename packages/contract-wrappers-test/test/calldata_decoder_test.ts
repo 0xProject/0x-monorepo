@@ -6,7 +6,7 @@ import { addressUtils, BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { ContractAddresses, ContractWrappers } from '../src';
+import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, web3Wrapper } from './utils/web3_wrapper';

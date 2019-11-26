@@ -1,0 +1,9 @@
+# Blacklist all files
+.*
+*
+# Whitelist lib
+!lib/**/*
+# Blacklist tests and publish scripts
+/lib/test/*
+/lib/monorepo_scripts/
+# Package specific ignore
