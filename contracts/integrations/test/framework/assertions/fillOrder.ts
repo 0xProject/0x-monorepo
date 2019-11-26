@@ -2,7 +2,7 @@ import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc
 import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { constants, expect, orderHashUtils, verifyEvents } from '@0x/contracts-test-utils';
 import { FillResults, Order } from '@0x/types';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -74,7 +74,7 @@ export function validFillOrderCompleteFillAssertion(
 ): FunctionAssertion<[Order, BigNumber, string], {}, FillResults> {
     const exchange = deployment.exchange;
 
-    return new FunctionAssertion<[Order, BigNumber, string], {}, FillResults>(exchange.fillOrder.bind(exchange), {
+    return new FunctionAssertion<[Order, BigNumber, string], {}, FillResults>(exchange, 'fillOrder', {
         after: async (
             _beforeInfo,
             result: FunctionResult,
@@ -88,8 +88,6 @@ export function validFillOrderCompleteFillAssertion(
 
             // Ensure that the correct events were emitted.
             verifyFillEvents(txData.from!, order, result.receipt!, deployment);
-
-            logUtils.log(`Order filled by ${txData.from}`);
 
             // TODO: Add validation for on-chain state (like balances)
         },

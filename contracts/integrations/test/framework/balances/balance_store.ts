@@ -1,5 +1,5 @@
 import { BaseContract } from '@0x/base-contract';
-import { constants, expect, TokenBalances } from '@0x/contracts-test-utils';
+import { constants, expect, replaceKeysDeep, TokenBalances } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
 import { TokenAddresses, TokenContractsByName, TokenOwnersByName } from './types';
@@ -66,6 +66,14 @@ export class BalanceStore {
         this._tokenAddresses = _.cloneDeep(balanceStore._tokenAddresses);
         this._ownerAddresses = _.cloneDeep(balanceStore._ownerAddresses);
         this._addressNames = _.cloneDeep(balanceStore._addressNames);
+    }
+
+    /**
+     * Returns a version of balances where keys are replaced with their readable counterparts, if
+     * they exist.
+     */
+    public toReadable(): _.Dictionary<{}> {
+        return replaceKeysDeep(this.balances, this._readableAddressName.bind(this));
     }
 
     /**

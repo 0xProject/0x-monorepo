@@ -7,7 +7,7 @@ import {
     StoredBalance,
 } from '@0x/contracts-staking';
 import { constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -86,61 +86,50 @@ export function validMoveStakeAssertion(
 ): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void>(
-        stakingWrapper.moveStake.bind(stakingWrapper),
-        {
-            after: async (
-                _beforeInfo: {},
-                _result: FunctionResult,
-                args: [StakeInfo, StakeInfo, BigNumber],
-                txData: Partial<TxData>,
-            ) => {
-                const [from, to, amount] = args;
+    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void>(stakingWrapper, 'moveStake', {
+        after: async (
+            _beforeInfo: {},
+            _result: FunctionResult,
+            args: [StakeInfo, StakeInfo, BigNumber],
+            txData: Partial<TxData>,
+        ) => {
+            const [from, to, amount] = args;
 
-                logUtils.log(
-                    `moveStake({status: ${StakeStatus[from.status]}, poolId: ${from.poolId} }, { status: ${
-                        StakeStatus[to.status]
-                    }, poolId: ${to.poolId} }, ${amount})`,
-                );
+            const owner = txData.from!; // tslint:disable-line:no-non-null-assertion
 
-                const owner = txData.from!; // tslint:disable-line:no-non-null-assertion
+            // Update local balances to match the expected result of this `moveStake` operation
+            const updatedPools = updateNextEpochBalances(globalStake, ownerStake, pools, from, to, amount);
 
-                // Update local balances to match the expected result of this `moveStake` operation
-                const updatedPools = updateNextEpochBalances(globalStake, ownerStake, pools, from, to, amount);
+            // Fetches on-chain owner stake balances and checks against local balances
+            const ownerUndelegatedStake = {
+                ...new StoredBalance(),
+                ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Undelegated).callAsync()),
+            };
+            const ownerDelegatedStake = {
+                ...new StoredBalance(),
+                ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Delegated).callAsync()),
+            };
+            expect(ownerUndelegatedStake).to.deep.equal(ownerStake[StakeStatus.Undelegated]);
+            expect(ownerDelegatedStake).to.deep.equal(ownerStake[StakeStatus.Delegated].total);
 
-                // Fetches on-chain owner stake balances and checks against local balances
-                const ownerUndelegatedStake = {
-                    ...new StoredBalance(),
-                    ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Undelegated).callAsync()),
-                };
-                const ownerDelegatedStake = {
-                    ...new StoredBalance(),
-                    ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Delegated).callAsync()),
-                };
-                expect(ownerUndelegatedStake).to.deep.equal(ownerStake[StakeStatus.Undelegated]);
-                expect(ownerDelegatedStake).to.deep.equal(ownerStake[StakeStatus.Delegated].total);
+            // Fetches on-chain global stake balances and checks against local balances
+            const globalUndelegatedStake = await stakingWrapper
+                .getGlobalStakeByStatus(StakeStatus.Undelegated)
+                .callAsync();
+            const globalDelegatedStake = await stakingWrapper.getGlobalStakeByStatus(StakeStatus.Delegated).callAsync();
+            expect(globalUndelegatedStake).to.deep.equal(globalStake[StakeStatus.Undelegated]);
+            expect(globalDelegatedStake).to.deep.equal(globalStake[StakeStatus.Delegated]);
 
-                // Fetches on-chain global stake balances and checks against local balances
-                const globalUndelegatedStake = await stakingWrapper
-                    .getGlobalStakeByStatus(StakeStatus.Undelegated)
+            // Fetches on-chain pool stake balances and checks against local balances
+            for (const poolId of updatedPools) {
+                const stakeDelegatedByOwner = await stakingWrapper
+                    .getStakeDelegatedToPoolByOwner(owner, poolId)
                     .callAsync();
-                const globalDelegatedStake = await stakingWrapper
-                    .getGlobalStakeByStatus(StakeStatus.Delegated)
-                    .callAsync();
-                expect(globalUndelegatedStake).to.deep.equal(globalStake[StakeStatus.Undelegated]);
-                expect(globalDelegatedStake).to.deep.equal(globalStake[StakeStatus.Delegated]);
-
-                // Fetches on-chain pool stake balances and checks against local balances
-                for (const poolId of updatedPools) {
-                    const stakeDelegatedByOwner = await stakingWrapper
-                        .getStakeDelegatedToPoolByOwner(owner, poolId)
-                        .callAsync();
-                    const totalStakeDelegated = await stakingWrapper.getTotalStakeDelegatedToPool(poolId).callAsync();
-                    expect(stakeDelegatedByOwner).to.deep.equal(ownerStake[StakeStatus.Delegated][poolId]);
-                    expect(totalStakeDelegated).to.deep.equal(pools[poolId].delegatedStake);
-                }
-            },
+                const totalStakeDelegated = await stakingWrapper.getTotalStakeDelegatedToPool(poolId).callAsync();
+                expect(stakeDelegatedByOwner).to.deep.equal(ownerStake[StakeStatus.Delegated][poolId]);
+                expect(totalStakeDelegated).to.deep.equal(pools[poolId].delegatedStake);
+            }
         },
-    );
+    });
 }
 /* tslint:enable:no-unnecessary-type-assertion */
