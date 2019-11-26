@@ -25,7 +25,7 @@ import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AssetProxyDispatcher, Authorizable, Ownable } from './wrapper_interfaces';
+import { AssetProxyDispatcher, Authorizable, Ownable } from './utils/wrapper_interfaces';
 
 /**
  * Adds a batch of authorities to a list of authorizable contracts.

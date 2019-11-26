@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { validCreateStakingPoolAssertion } from '../assertions/createStakingPool';
 import { validDecreaseStakingPoolOperatorShareAssertion } from '../assertions/decreaseStakingPoolOperatorShare';
 import { AssertionResult } from '../assertions/function_assertion';
-import { Pseudorandom } from '../pseudorandom';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
 

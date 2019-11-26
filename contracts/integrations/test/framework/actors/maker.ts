@@ -4,7 +4,7 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { AssertionResult } from '../assertions/function_assertion';
 import { validJoinStakingPoolAssertion } from '../assertions/joinStakingPool';
-import { Pseudorandom } from '../pseudorandom';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, ActorConfig, Constructor } from './base';
 

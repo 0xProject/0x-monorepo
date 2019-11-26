@@ -7,7 +7,7 @@ import { AssertionResult } from '../assertions/function_assertion';
 import { validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { validUnstakeAssertion } from '../assertions/unstake';
-import { Pseudorandom } from '../pseudorandom';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
 

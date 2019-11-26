@@ -22,7 +22,7 @@ class PRNGWrapper {
     /*
      * Pseudorandom version of getRandomPortion/getRandomInteger. If two arguments are provided,
      * treats those arguments as the min and max (inclusive) of the desired range. If only one
-     * argument is provided, picks an integer between 0 and the argument. 
+     * argument is provided, picks an integer between 0 and the argument.
      */
     public integer(max: Numberish): BigNumber;
     public integer(min: Numberish, max: Numberish): BigNumber;

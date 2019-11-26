@@ -5,8 +5,8 @@ import { Staker } from '../framework/actors/staker';
 import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
-import { Pseudorandom } from '../framework/pseudorandom';
 import { Simulation, SimulationEnvironment } from '../framework/simulation';
+import { Pseudorandom } from '../framework/utils/pseudorandom';
 
 import { PoolManagementSimulation } from './pool_management_test';
 

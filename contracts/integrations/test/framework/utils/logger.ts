@@ -1,6 +1,6 @@
 import { TxData } from 'ethereum-types';
 
-import { Pseudorandom} from './pseudorandom';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 // tslint:disable:no-console
 

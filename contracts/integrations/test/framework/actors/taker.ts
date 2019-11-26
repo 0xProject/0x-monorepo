@@ -6,7 +6,7 @@ import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import { validFillOrderCompleteFillAssertion } from '../assertions/fillOrder';
 import { AssertionResult } from '../assertions/function_assertion';
 import { DeploymentManager } from '../deployment_manager';
-import { Pseudorandom } from '../pseudorandom';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
 

@@ -4,7 +4,7 @@ import { Maker } from './actors/maker';
 import { AssertionResult } from './assertions/function_assertion';
 import { BlockchainBalanceStore } from './balances/blockchain_balance_store';
 import { DeploymentManager } from './deployment_manager';
-import { logger } from './logger';
+import { logger } from './utils/logger';
 
 // tslint:disable:max-classes-per-file
 
