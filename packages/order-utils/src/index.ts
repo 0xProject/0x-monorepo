@@ -5,6 +5,7 @@ export { marketUtils } from './market_utils';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderCalculationUtils } from './order_calculation_utils';
+export { orderHashUtils } from './order_hash_utils';
 
 export { eip712Utils } from './eip712_utils';
 

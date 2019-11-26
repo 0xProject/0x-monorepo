@@ -1,50 +1,28 @@
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import AuthorizableRevertErrors = require('../src/authorizable_revert_errors');
 import OwnableRevertErrors = require('../src/ownable_revert_errors');
 
 import { artifacts } from './artifacts';
-import { AuthorizableContract } from './wrappers';
+import { TestAuthorizableContract } from './wrappers';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('Authorizable', () => {
+blockchainTests.resets('Authorizable', env => {
     let owner: string;
     let notOwner: string;
     let address: string;
-    let authorizable: AuthorizableContract;
+    let authorizable: TestAuthorizableContract;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
-    before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
         [owner, address, notOwner] = _.slice(accounts, 0, 3);
-        authorizable = await AuthorizableContract.deployFrom0xArtifactAsync(
-            artifacts.Authorizable,
-            provider,
-            txDefaults,
-            {},
+        authorizable = await TestAuthorizableContract.deployFrom0xArtifactAsync(
+            artifacts.TestAuthorizable,
+            env.provider,
+            env.txDefaults,
+            artifacts,
         );
-    });
-
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
     });
 
     describe('addAuthorizedAddress', () => {
@@ -71,6 +49,26 @@ describe('Authorizable', () => {
             const expectedError = new AuthorizableRevertErrors.TargetAlreadyAuthorizedError(address);
             const tx = authorizable.addAuthorizedAddress(address).sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('onlyAuthorized', () => {
+        before(async () => {
+            await authorizable.addAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
+        });
+
+        after(async () => {
+            await authorizable.removeAuthorizedAddress(owner).awaitTransactionSuccessAsync({ from: owner });
+        });
+
+        it('should revert if sender is not authorized', async () => {
+            const tx = authorizable.onlyAuthorizedFn().callAsync({ from: notOwner });
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notOwner);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should succeed if sender is authorized', async () => {
+            await authorizable.onlyAuthorizedFn().callAsync({ from: owner });
         });
     });
 
@@ -151,16 +149,20 @@ describe('Authorizable', () => {
     });
 
     describe('getAuthorizedAddresses', () => {
-        it('should return all authorized addresses', async () => {
-            const initial = await authorizable.getAuthorizedAddresses().callAsync();
-            expect(initial).to.have.length(0);
+        it('should return correct authorized addresses', async () => {
+            // Initial Authorities
+            let authorities = await authorizable.getAuthorizedAddresses().callAsync();
+            expect(authorities).to.be.deep.eq([]);
+
+            // Authorities after addition
             await authorizable.addAuthorizedAddress(address).awaitTransactionSuccessAsync({ from: owner });
-            const afterAdd = await authorizable.getAuthorizedAddresses().callAsync();
-            expect(afterAdd).to.have.length(1);
-            expect(afterAdd).to.include(address);
+            authorities = await authorizable.getAuthorizedAddresses().callAsync();
+            expect(authorities).to.be.deep.eq([address]);
+
+            // Authorities after removal
             await authorizable.removeAuthorizedAddress(address).awaitTransactionSuccessAsync({ from: owner });
-            const afterRemove = await authorizable.getAuthorizedAddresses().callAsync();
-            expect(afterRemove).to.have.length(0);
+            authorities = await authorizable.getAuthorizedAddresses().callAsync();
+            expect(authorities).to.be.deep.eq([]);
         });
     });
 });

@@ -26,6 +26,7 @@ import * as LibSafeMathRichErrors from '../test/generated-artifacts/LibSafeMathR
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../test/generated-artifacts/ReentrancyGuard.json';
 import * as Refundable from '../test/generated-artifacts/Refundable.json';
+import * as TestAuthorizable from '../test/generated-artifacts/TestAuthorizable.json';
 import * as TestLibAddress from '../test/generated-artifacts/TestLibAddress.json';
 import * as TestLibAddressArray from '../test/generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../test/generated-artifacts/TestLibBytes.json';
@@ -60,6 +61,7 @@ export const artifacts = {
     Refundable: Refundable as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
+    TestAuthorizable: TestAuthorizable as ContractArtifact,
     TestLibAddress: TestLibAddress as ContractArtifact,
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,

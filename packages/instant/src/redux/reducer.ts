@@ -1,4 +1,4 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { MarketBuySwapQuote } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -30,7 +30,7 @@ import { Action, ActionTypes } from './actions';
 export interface DefaultState {
     network: Network;
     assetMetaDataMap: ObjectMap<AssetMetaData>;
-    buyOrderState: OrderState;
+    swapOrderState: OrderState;
     latestErrorDisplayStatus: DisplayStatus;
     quoteRequestState: AsyncProcessState;
     standardSlidingPanelSettings: StandardSlidingPanelSettings;
@@ -48,7 +48,7 @@ interface OptionalState {
     availableAssets: Asset[];
     selectedAssetUnitAmount: BigNumber;
     ethUsdPrice: BigNumber;
-    latestBuyQuote: BuyQuote;
+    latestSwapQuote: MarketBuySwapQuote;
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
     walletDisplayName: string;
@@ -60,7 +60,7 @@ export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;
 export const DEFAULT_STATE: DefaultState = {
     network: Network.Mainnet,
     assetMetaDataMap,
-    buyOrderState: { processState: OrderProcessState.None },
+    swapOrderState: { processState: OrderProcessState.None },
     latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.None,
     standardSlidingPanelSettings: {
@@ -115,14 +115,14 @@ export const createReducer = (initialState: State) => {
                     ...state,
                     selectedAssetUnitAmount: action.data,
                 };
-            case ActionTypes.UpdateLatestBuyQuote:
-                const newBuyQuoteIfExists = action.data;
+            case ActionTypes.UpdateLatestSwapQuote:
+                const newSwapQuoteIfExists = action.data;
                 const shouldUpdate =
-                    newBuyQuoteIfExists === undefined || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
+                    newSwapQuoteIfExists === undefined || doesSwapQuoteMatchState(newSwapQuoteIfExists, state);
                 if (shouldUpdate) {
                     return {
                         ...state,
-                        latestBuyQuote: newBuyQuoteIfExists,
+                        latestSwapQuote: newSwapQuoteIfExists,
                         quoteRequestState: AsyncProcessState.Success,
                     };
                 } else {
@@ -131,31 +131,31 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.SetQuoteRequestStatePending:
                 return {
                     ...state,
-                    latestBuyQuote: undefined,
+                    latestSwapQuote: undefined,
                     quoteRequestState: AsyncProcessState.Pending,
                 };
             case ActionTypes.SetQuoteRequestStateFailure:
                 return {
                     ...state,
-                    latestBuyQuote: undefined,
+                    latestSwapQuote: undefined,
                     quoteRequestState: AsyncProcessState.Failure,
                 };
-            case ActionTypes.SetBuyOrderStateNone:
+            case ActionTypes.SetSwapOrderStateNone:
                 return {
                     ...state,
-                    buyOrderState: { processState: OrderProcessState.None },
+                    swapOrderState: { processState: OrderProcessState.None },
                 };
-            case ActionTypes.SetBuyOrderStateValidating:
+            case ActionTypes.SetSwapOrderStateValidating:
                 return {
                     ...state,
-                    buyOrderState: { processState: OrderProcessState.Validating },
+                    swapOrderState: { processState: OrderProcessState.Validating },
                 };
-            case ActionTypes.SetBuyOrderStateProcessing:
+            case ActionTypes.SetSwapOrderStateProcessing:
                 const processingData = action.data;
                 const { startTimeUnix, expectedEndTimeUnix } = processingData;
                 return {
                     ...state,
-                    buyOrderState: {
+                    swapOrderState: {
                         processState: OrderProcessState.Processing,
                         txHash: processingData.txHash,
                         progress: {
@@ -164,14 +164,14 @@ export const createReducer = (initialState: State) => {
                         },
                     },
                 };
-            case ActionTypes.SetBuyOrderStateFailure:
+            case ActionTypes.SetSwapOrderStateFailure:
                 const failureTxHash = action.data;
-                if ('txHash' in state.buyOrderState) {
-                    if (state.buyOrderState.txHash === failureTxHash) {
-                        const { txHash, progress } = state.buyOrderState;
+                if ('txHash' in state.swapOrderState) {
+                    if (state.swapOrderState.txHash === failureTxHash) {
+                        const { txHash, progress } = state.swapOrderState;
                         return {
                             ...state,
-                            buyOrderState: {
+                            swapOrderState: {
                                 processState: OrderProcessState.Failure,
                                 txHash,
                                 progress,
@@ -180,14 +180,14 @@ export const createReducer = (initialState: State) => {
                     }
                 }
                 return state;
-            case ActionTypes.SetBuyOrderStateSuccess:
+            case ActionTypes.SetSwapOrderStateSuccess:
                 const successTxHash = action.data;
-                if ('txHash' in state.buyOrderState) {
-                    if (state.buyOrderState.txHash === successTxHash) {
-                        const { txHash, progress } = state.buyOrderState;
+                if ('txHash' in state.swapOrderState) {
+                    if (state.swapOrderState.txHash === successTxHash) {
+                        const { txHash, progress } = state.swapOrderState;
                         return {
                             ...state,
-                            buyOrderState: {
+                            swapOrderState: {
                                 processState: OrderProcessState.Success,
                                 txHash,
                                 progress,
@@ -221,9 +221,9 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.ResetAmount:
                 return {
                     ...state,
-                    latestBuyQuote: undefined,
+                    latestSwapQuote: undefined,
                     quoteRequestState: AsyncProcessState.None,
-                    buyOrderState: { processState: OrderProcessState.None },
+                    swapOrderState: { processState: OrderProcessState.None },
                     selectedAssetUnitAmount: undefined,
                 };
             case ActionTypes.SetAvailableAssets:
@@ -271,18 +271,18 @@ const reduceStateWithAccount = (state: State, account: Account) => {
     };
 };
 
-const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
+const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): boolean => {
     const selectedAssetIfExists = state.selectedAsset;
     const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false
     if (selectedAssetIfExists === undefined || selectedAssetUnitAmountIfExists === undefined) {
         return false;
     }
-    // if buyQuote's assetData does not match that of the current selected asset, return false
-    if (selectedAssetIfExists.assetData !== buyQuote.assetData) {
+    // if swapQuote's assetData does not match that of the current selected asset, return false
+    if (selectedAssetIfExists.assetData !== swapQuote.makerAssetData) {
         return false;
     }
-    // if ERC20 and buyQuote's assetBuyAmount does not match selectedAssetAmount, return false
+    // if ERC20 and swapQuote's makerAssetFillAmount does not match selectedAssetAmount, return false
     // if ERC721, return true
     const selectedAssetMetaData = selectedAssetIfExists.metaData;
     if (selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20) {
@@ -290,7 +290,8 @@ const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
             selectedAssetUnitAmountIfExists,
             selectedAssetMetaData.decimals,
         );
-        const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(buyQuote.assetBuyAmount);
+        const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(swapQuote.makerAssetFillAmount);
+
         return doesAssetAmountMatch;
     } else {
         return true;

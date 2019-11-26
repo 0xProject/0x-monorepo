@@ -14,48 +14,53 @@ import {
 } from '../types';
 
 import { marketUtils } from './market_utils';
-import { protocolFeeUtils } from './protocol_fee_utils';
+import { ProtocolFeeUtils } from './protocol_fee_utils';
 import { utils } from './utils';
 
 // Calculates a swap quote for orders
 export const swapQuoteCalculator = {
-    calculateMarketSellSwapQuote(
+    async calculateMarketSellSwapQuoteAsync(
         prunedOrders: PrunedSignedOrder[],
         takerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         gasPrice: BigNumber,
-    ): MarketSellSwapQuote {
-        return calculateSwapQuote(
+        protocolFeeUtils: ProtocolFeeUtils,
+    ): Promise<MarketSellSwapQuote> {
+        return (await calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
             slippagePercentage,
             gasPrice,
+            protocolFeeUtils,
             MarketOperation.Sell,
-        ) as MarketSellSwapQuote;
+        )) as MarketSellSwapQuote;
     },
-    calculateMarketBuySwapQuote(
+    async calculateMarketBuySwapQuoteAsync(
         prunedOrders: PrunedSignedOrder[],
         takerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         gasPrice: BigNumber,
-    ): MarketBuySwapQuote {
-        return calculateSwapQuote(
+        protocolFeeUtils: ProtocolFeeUtils,
+    ): Promise<MarketBuySwapQuote> {
+        return (await calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
             slippagePercentage,
             gasPrice,
+            protocolFeeUtils,
             MarketOperation.Buy,
-        ) as MarketBuySwapQuote;
+        )) as MarketBuySwapQuote;
     },
 };
 
-function calculateSwapQuote(
+async function calculateSwapQuoteAsync(
     prunedOrders: PrunedSignedOrder[],
     assetFillAmount: BigNumber,
     slippagePercentage: number,
     gasPrice: BigNumber,
+    protocolFeeUtils: ProtocolFeeUtils,
     marketOperation: MarketOperation,
-): SwapQuote {
+): Promise<SwapQuote> {
     const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
 
     let resultOrders: PrunedSignedOrder[];
@@ -98,12 +103,19 @@ function calculateSwapQuote(
     const takerAssetData = resultOrders[0].takerAssetData;
     const makerAssetData = resultOrders[0].makerAssetData;
 
-    const bestCaseQuoteInfo = calculateQuoteInfo(resultOrders, assetFillAmount, gasPrice, marketOperation);
+    const bestCaseQuoteInfo = await calculateQuoteInfoAsync(
+        resultOrders,
+        assetFillAmount,
+        gasPrice,
+        protocolFeeUtils,
+        marketOperation,
+    );
     // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
-    const worstCaseQuoteInfo = calculateQuoteInfo(
+    const worstCaseQuoteInfo = await calculateQuoteInfoAsync(
         _.reverse(_.clone(resultOrders)),
         assetFillAmount,
         gasPrice,
+        protocolFeeUtils,
         marketOperation,
     );
 
@@ -113,6 +125,7 @@ function calculateSwapQuote(
         orders: resultOrders,
         bestCaseQuoteInfo,
         worstCaseQuoteInfo,
+        gasPrice,
     };
 
     if (marketOperation === MarketOperation.Buy) {
@@ -130,24 +143,26 @@ function calculateSwapQuote(
     }
 }
 
-function calculateQuoteInfo(
+async function calculateQuoteInfoAsync(
     prunedOrders: PrunedSignedOrder[],
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
+    protocolFeeUtils: ProtocolFeeUtils,
     operation: MarketOperation,
-): SwapQuoteInfo {
+): Promise<SwapQuoteInfo> {
     if (operation === MarketOperation.Buy) {
-        return calculateMarketBuyQuoteInfo(prunedOrders, assetFillAmount, gasPrice);
+        return calculateMarketBuyQuoteInfoAsync(prunedOrders, assetFillAmount, gasPrice, protocolFeeUtils);
     } else {
-        return calculateMarketSellQuoteInfo(prunedOrders, assetFillAmount, gasPrice);
+        return calculateMarketSellQuoteInfoAsync(prunedOrders, assetFillAmount, gasPrice, protocolFeeUtils);
     }
 }
 
-function calculateMarketSellQuoteInfo(
+async function calculateMarketSellQuoteInfoAsync(
     prunedOrders: PrunedSignedOrder[],
     takerAssetSellAmount: BigNumber,
     gasPrice: BigNumber,
-): SwapQuoteInfo {
+    protocolFeeUtils: ProtocolFeeUtils,
+): Promise<SwapQuoteInfo> {
     const result = _.reduce(
         prunedOrders,
         (acc, order) => {
@@ -190,20 +205,22 @@ function calculateMarketSellQuoteInfo(
             remainingTakerAssetFillAmount: takerAssetSellAmount,
         },
     );
+    const protocolFeeInWeiAmount = await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
     return {
         feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
         takerAssetAmount: result.totalTakerAssetAmount,
         totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
         makerAssetAmount: result.totalMakerAssetAmount,
-        protocolFeeInEthAmount: protocolFeeUtils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice),
+        protocolFeeInWeiAmount,
     };
 }
 
-function calculateMarketBuyQuoteInfo(
+async function calculateMarketBuyQuoteInfoAsync(
     prunedOrders: PrunedSignedOrder[],
     makerAssetBuyAmount: BigNumber,
     gasPrice: BigNumber,
-): SwapQuoteInfo {
+    protocolFeeUtils: ProtocolFeeUtils,
+): Promise<SwapQuoteInfo> {
     const result = _.reduce(
         prunedOrders,
         (acc, order) => {
@@ -243,12 +260,13 @@ function calculateMarketBuyQuoteInfo(
             remainingMakerAssetFillAmount: makerAssetBuyAmount,
         },
     );
+    const protocolFeeInWeiAmount = await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
     return {
         feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
         takerAssetAmount: result.totalTakerAssetAmount,
         totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
         makerAssetAmount: result.totalMakerAssetAmount,
-        protocolFeeInEthAmount: protocolFeeUtils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice),
+        protocolFeeInWeiAmount,
     };
 }
 

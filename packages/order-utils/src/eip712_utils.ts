@@ -1,5 +1,5 @@
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { assert } from '@0x/assert';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { schemas } from '@0x/json-schemas';
 import {
     EIP712DomainWithDefaultSchema,
@@ -112,9 +112,7 @@ export const eip712Utils = {
             version: constants.COORDINATOR_DOMAIN_VERSION,
             verifyingContract,
         };
-        const transactionHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
-            isEIP1193: true,
-        } as any)
+        const transactionHash = await new DevUtilsContract(constants.NULL_ADDRESS, constants.FAKED_PROVIDER as any)
             .getTransactionHash(
                 transaction,
                 new BigNumber(transaction.domain.chainId),

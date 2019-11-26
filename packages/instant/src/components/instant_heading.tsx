@@ -22,7 +22,7 @@ export interface InstantHeadingProps {
     totalEthBaseUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
-    buyOrderState: OrderState;
+    swapOrderState: OrderState;
     onSelectAssetClick?: (asset?: ERC20Asset) => void;
 }
 
@@ -127,7 +127,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
     }
 
     private _renderIcon(): React.ReactNode {
-        const processState = this.props.buyOrderState.processState;
+        const processState = this.props.swapOrderState.processState;
 
         if (processState === OrderProcessState.Failure) {
             return <Icon icon="failed" width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
@@ -140,7 +140,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
     }
 
     private _renderTopText(): React.ReactNode {
-        const processState = this.props.buyOrderState.processState;
+        const processState = this.props.swapOrderState.processState;
         if (processState === OrderProcessState.Failure) {
             return 'Order failed';
         } else if (processState === OrderProcessState.Processing) {

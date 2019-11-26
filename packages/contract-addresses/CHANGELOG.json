@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.3.0-beta.5",
+        "changes": [
+            {
+                "note": "`1337` addresses updated with Forwarder deployed after Exchange is configured",
+                "pr": 2368
+            }
+        ]
+    },
+    {
         "version": "3.3.0-beta.4",
         "changes": [
             {

@@ -5,12 +5,14 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import { SwapQuoterError } from '../types';
 
-// tslint:disable:no-unnecessary-type-assertion
-export const protocolFeeUtils = {
-    /**
-     * Gets 'fast' gas price from Eth Gas Station.
-     */
-    async getGasPriceEstimationOrThrowAsync(): Promise<BigNumber> {
+export class ProtocolFeeUtils {
+    // tslint:disable-next-line:prefer-function-over-method
+    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
+        return new BigNumber(150000);
+    }
+
+    // tslint:disable-next-line: prefer-function-over-method
+    public async getGasPriceEstimationOrThrowAsync(): Promise<BigNumber> {
         try {
             const res = await fetch(`${constants.ETH_GAS_STATION_API_BASE_URL}/json/ethgasAPI.json`);
             const gasInfo = await res.json();
@@ -20,12 +22,16 @@ export const protocolFeeUtils = {
         } catch (e) {
             throw new Error(SwapQuoterError.NoGasPriceProvidedOrEstimated);
         }
-    },
+    }
     /**
      * Calculates protocol fee with protofol fee multiplier for each fill.
      */
-    calculateWorstCaseProtocolFee<T extends Order>(orders: T[], gasPrice: BigNumber): BigNumber {
-        const protocolFee = new BigNumber(orders.length * constants.PROTOCOL_FEE_MULTIPLIER).times(gasPrice);
+    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(
+        orders: T[],
+        gasPrice: BigNumber,
+    ): Promise<BigNumber> {
+        const protocolFeeMultiplier = await this.getProtocolFeeMultiplierAsync();
+        const protocolFee = new BigNumber(orders.length).times(protocolFeeMultiplier).times(gasPrice);
         return protocolFee;
-    },
-};
+    }
+}

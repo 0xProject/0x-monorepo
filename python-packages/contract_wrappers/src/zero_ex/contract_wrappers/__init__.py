@@ -178,6 +178,14 @@ The `takerAssetAmount`:code: parameter specifies the amount of tokens (in this
 case WETH) that the taker wants to fill.  This example fills the order
 completely, but partial fills are possible too.
 
+Note that sending value in the fill transaction is a way to pay the protocol
+fee.  The value to send is a function of the gas price, so we'll need some help
+in that determination:
+
+>>> from web3.gas_strategies.rpc import rpc_gas_price_strategy
+>>> web3 = Web3(ganache)
+>>> web3.eth.setGasPriceStrategy(rpc_gas_price_strategy)
+
 One may wish to first call the method in a read-only way, to ensure that it
 will not revert, and to validate that the return data is as expected:
 
@@ -186,11 +194,13 @@ will not revert, and to validate that the return data is as expected:
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
-...     tx_params=TxParams(from_=taker_address)
+...     tx_params=TxParams(
+...         from_=taker_address, value=web3.eth.generateGasPrice() * 150000
+...     ),
 ... ))
 {'makerAssetFilledAmount': 100000000000000000,
  'makerFeePaid': 0,
- 'protocolFeePaid': 0,
+ 'protocolFeePaid': ...,
  'takerAssetFilledAmount': 100000000000000000,
  'takerFeePaid': 0}
 
@@ -200,7 +210,9 @@ Finally, submit the transaction:
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
-...     tx_params=TxParams(from_=taker_address)
+...     tx_params=TxParams(
+...         from_=taker_address, value=web3.eth.generateGasPrice() * 150000
+...     )
 ... )
 
 Once the transaction is mined, we can get the details of our exchange through
@@ -333,7 +345,11 @@ Fill order_1 and order_2 together:
 ...     orders=[order_1, order_2],
 ...     taker_asset_fill_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
-...     tx_params=TxParams(from_=taker_address))
+...     tx_params=TxParams(
+...         from_=taker_address,
+...         value=2*web3.eth.generateGasPrice()*150000
+...     )
+... )
 HexBytes('0x...')
 
 Estimating gas consumption

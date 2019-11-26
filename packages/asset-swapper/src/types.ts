@@ -167,19 +167,20 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOpts {}
+export interface SwapQuoteGetOutputOpts {
+    useExtensionContract: ExtensionContractType;
+    extensionContractOpts?: ForwarderExtensionContractOpts | any;
+}
 
 /**
+ * ethAmount: The amount of eth sent with the execution of a swap.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
- * gasPrice: Gas price in Wei to use for a transaction
- * ethAmount: The amount of eth sent with the execution of a swap
  */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
+    ethAmount?: BigNumber;
     takerAddress?: string;
     gasLimit?: number;
-    gasPrice?: BigNumber;
-    ethAmount?: BigNumber;
 }
 
 /**
@@ -188,16 +189,8 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  */
 export interface ForwarderExtensionContractOpts {
-    ethAmount?: BigNumber;
     feePercentage: number;
     feeRecipient: string;
-}
-
-/*
- * Options for how SwapQuoteConsumer will generate output
- */
-export interface SwapQuoteConsumingOpts {
-    useExtensionContract: ExtensionContractType;
 }
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
@@ -210,6 +203,7 @@ export interface GetExtensionContractTypeOpts {
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+ * gasPrice: gas price used to determine protocolFee amount, default to ethGasStation fast amount.
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * bestCaseQuoteInfo: Info about the best case price for the asset.
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
@@ -217,6 +211,7 @@ export interface GetExtensionContractTypeOpts {
 export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
+    gasPrice: BigNumber;
     orders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
@@ -245,14 +240,14 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
  * takerAssetAmount: The amount of takerAsset swapped for desired makerAsset.
  * totalTakerAssetAmount: The total amount of takerAsset required to complete the swap (filling orders, and paying takerFees).
  * makerAssetAmount: The amount of makerAsset that will be acquired through the swap.
- * protocolFeeInEthAmount: The amount of eth to pay as protocol fee to perform the swap for desired asset.
+ * protocolFeeInWeiAmount: The amount of ETH to pay (in WEI) as protocol fee to perform the swap for desired asset.
  */
 export interface SwapQuoteInfo {
     feeTakerAssetAmount: BigNumber;
     takerAssetAmount: BigNumber;
     totalTakerAssetAmount: BigNumber;
     makerAssetAmount: BigNumber;
-    protocolFeeInEthAmount: BigNumber;
+    protocolFeeInWeiAmount: BigNumber;
 }
 
 /**

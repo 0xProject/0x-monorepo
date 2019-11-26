@@ -38,6 +38,7 @@ export const docGenConfigs: DocGenConfigs = {
         'SubscriptionErrors',
         'TypedDataError',
         'SwapQuoterError',
+        'SwapQuoteConsumerError',
         'SwapQuoteGetOutputOpts',
         'SwapQuoteExecutionOpts',
         'ForwarderError',

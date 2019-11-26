@@ -1,6 +1,5 @@
+import { DevUtilsContract, ForwarderContract } from '@0x/contract-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -9,7 +8,6 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    ForwarderExtensionContractOpts,
     ForwarderSmartContractParams,
     MarketOperation,
     SmartContractParamsInfo,
@@ -54,7 +52,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts> = {},
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
@@ -86,21 +84,15 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts> = {},
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { ethAmount: providedEthAmount, feeRecipient, feePercentage } = _.merge(
-            {},
-            constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
-            opts,
-        );
+        const { extensionContractOpts } = _.merge({}, constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS, opts);
 
-        assert.isValidPercentage('feePercentage', feePercentage);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
-        if (providedEthAmount !== undefined) {
-            assert.isBigNumber('ethAmount', providedEthAmount);
-        }
+        assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
+
+        const { feeRecipient, feePercentage } = extensionContractOpts;
 
         const { orders, worstCaseQuoteInfo } = quote;
 
@@ -146,7 +138,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         return {
             params,
             toAddress: this._forwarder.address,
-            ethAmount: providedEthAmount || ethAmountWithFees,
+            ethAmount: ethAmountWithFees,
             methodAbi,
         };
     }
@@ -158,18 +150,20 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOpts & ForwarderExtensionContractOpts>,
+        opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { ethAmount: providedEthAmount, takerAddress, gasLimit, gasPrice, feeRecipient, feePercentage } = _.merge(
+        const { ethAmount: providedEthAmount, takerAddress, gasLimit, extensionContractOpts } = _.merge(
             {},
             constants.DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
             opts,
         );
 
-        assert.isValidPercentage('feePercentage', feePercentage);
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
+        assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
+
+        const { feeRecipient, feePercentage } = extensionContractOpts;
+
         if (providedEthAmount !== undefined) {
             assert.isBigNumber('ethAmount', providedEthAmount);
         }
@@ -179,11 +173,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         if (gasLimit !== undefined) {
             assert.isNumber('gasLimit', gasLimit);
         }
-        if (gasPrice !== undefined) {
-            assert.isBigNumber('gasPrice', gasPrice);
-        }
-
-        const { orders, worstCaseQuoteInfo } = quote; // tslint:disable-line:no-unused-variable
+        const { orders, worstCaseQuoteInfo, gasPrice } = quote; // tslint:disable-line:no-unused-variable
 
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);

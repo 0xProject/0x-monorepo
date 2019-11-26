@@ -1,4 +1,4 @@
-import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
+import { BigNumber, SwapQuoter } from '@0x/asset-swapper';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { providerUtils } from '@0x/utils';
@@ -172,30 +172,31 @@ export const hasMetaDataForAssetData = (assetData: string): boolean => {
 };
 
 export const hasLiquidityForAssetDataAsync = async (
-    assetData: string,
+    takerAssetData: string,
     orderSource: OrderSource,
-    networkId: Network = Network.Mainnet,
+    chainId: Network = Network.Mainnet,
     supportedProvider?: SupportedProvider,
 ): Promise<boolean> => {
-    assert.isHexString('assetData', assetData);
+    assert.isHexString('takerAssetData', takerAssetData);
     assert.isValidOrderSource('orderSource', orderSource);
-    assert.isNumber('networkId', networkId);
+    assert.isNumber('chainId', chainId);
 
     let provider = supportedProvider;
     if (provider !== undefined) {
         provider = providerUtils.standardizeOrThrow(provider);
     }
 
-    const bestProvider: ZeroExProvider = provider || providerFactory.getFallbackNoSigningProvider(networkId);
+    const bestProvider: ZeroExProvider = provider || providerFactory.getFallbackNoSigningProvider(chainId);
 
-    const assetBuyerOptions = { networkId };
+    const swapQuoterOptions = { chainId };
 
-    const assetBuyer = _.isString(orderSource)
-        ? AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(bestProvider, orderSource, assetBuyerOptions)
-        : AssetBuyer.getAssetBuyerForProvidedOrders(bestProvider, orderSource, assetBuyerOptions);
+    const swapQuoter = _.isString(orderSource)
+        ? SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(bestProvider, orderSource, swapQuoterOptions)
+        : SwapQuoter.getSwapQuoterForProvidedOrders(bestProvider, orderSource, swapQuoterOptions);
 
-    const liquidity = await assetBuyer.getLiquidityForAssetDataAsync(assetData);
-    return liquidity.ethValueAvailableInWei.gt(new BigNumber(0));
+    const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
+    const liquidity = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(wethAssetData, takerAssetData);
+    return liquidity.makerAssetAvailableInBaseUnits.gt(new BigNumber(0));
 };
 
 // Write version info to the exported object for debugging

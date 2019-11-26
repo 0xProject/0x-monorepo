@@ -1,4 +1,4 @@
-import { BigNumber } from '@0x/utils';
+import { BigNumber, NULL_ADDRESS, NULL_BYTES } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
 const ERC20_METHOD_ABI: MethodAbi = {
@@ -84,8 +84,9 @@ const STATIC_CALL_METHOD_ABI: MethodAbi = {
 };
 
 export const constants = {
-    NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
-    NULL_BYTES: '0x',
+    NULL_ADDRESS,
+    FAKED_PROVIDER: { isEIP1193: true },
+    NULL_BYTES,
     NULL_ERC20_ASSET_DATA: '0xf47261b00000000000000000000000000000000000000000000000000000000000000000',
     // tslint:disable-next-line:custom-no-magic-numbers
     UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),

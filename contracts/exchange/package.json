@@ -65,6 +65,9 @@
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^3.1.0-beta.2",
         "@0x/web3-wrapper": "^6.1.0-beta.2",
+        "@0x/types": "^2.5.0-beta.2",
+        "@0x/typescript-typings": "^4.4.0-beta.2",
+        "ethereum-types": "^2.2.0-beta.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",
@@ -91,10 +94,7 @@
         "@0x/contracts-erc20": "^2.3.0-beta.3",
         "@0x/contracts-erc721": "^2.2.0-beta.3",
         "@0x/order-utils": "^8.5.0-beta.3",
-        "@0x/types": "^2.5.0-beta.2",
-        "@0x/typescript-typings": "^4.4.0-beta.2",
         "@0x/utils": "^4.6.0-beta.2",
-        "ethereum-types": "^2.2.0-beta.2",
         "lodash": "^4.17.11"
     },
     "publishConfig": {

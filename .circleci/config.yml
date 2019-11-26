@@ -77,7 +77,7 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-tests @0x/contracts-staking @0x/contracts-coordinator
+            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-tests @0x/contracts-staking @0x/contracts-coordinator @0x/contracts-erc20-bridge-sampler 
             # TODO(dorothy-zbornak): Re-enable after updating this package for
             # 3.0. At that time, also remove exclusion from monorepo
             # package.json's test script.
@@ -93,8 +93,8 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
-                command: yarn test:publish:circleci
-                no_output_timeout: 1800
+                  command: yarn test:publish:circleci
+                  no_output_timeout: 1800
     test-doc-generation:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -104,8 +104,8 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
-                command: yarn test:generate_docs:circleci
-                no_output_timeout: 1200
+                  command: yarn test:generate_docs:circleci
+                  no_output_timeout: 1200
     test-rest:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -116,23 +116,16 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
-            # TODO (xianny): Needs to be updated for 3.0
-            # - run: yarn wsrun test:circleci @0x/asset-buyer
-            # TODO: Needs to be updated for 3.0.  At that time, also remove
-            # exclusion from monorepo package.json's test script.
-            # - run: yarn wsrun test:circleci @0x/asset-swapper
+            - run: yarn wsrun test:circleci @0x/asset-swapper
             - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
-            # TODO (xianny): Needs to be updated for 3.0
-            # - run: yarn wsrun test:circleci @0x/connect
+            - run: yarn wsrun test:circleci @0x/connect
             - run: yarn wsrun test:circleci @0x/contract-wrappers
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
             - run: yarn wsrun test:circleci @0x/order-utils
-            # TODO: Needs to be updated for 3.0. At that time, also remove
-            # exclusion from monorepo package.json's test script.
-            # - run: yarn wsrun test:circleci @0x/orderbook
+            - run: yarn wsrun test:circleci @0x/orderbook
             - run: yarn wsrun test:circleci @0x/sol-compiler
             - run: yarn wsrun test:circleci @0x/sol-tracing-utils
             - run: yarn wsrun test:circleci @0x/sol-doc
@@ -149,9 +142,9 @@ jobs:
                   paths:
                       - ~/repo/packages/assert/coverage/lcov.info
             - save_cache:
-                  key: coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                  key: coverage-asset-swapper-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/asset-buyer/coverage/lcov.info
+                      - ~/repo/packages/asset-swapper/coverage/lcov.info
             - save_cache:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -202,9 +195,9 @@ jobs:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/ganache-cli:4.4.0-beta.1
               environment:
-                  VERSION: 4.4.0-beta.1
+                  VERSION: latest
                   SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta
-            - image: 0xorg/mesh:6.0.0-beta-0xv3
+            - image: 0xorg/mesh:0xV3
               environment:
                   ETHEREUM_RPC_URL: 'http://localhost:8545'
                   ETHEREUM_NETWORK_ID: '50'
@@ -369,7 +362,7 @@ jobs:
                       - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
-                      - coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                      - coverage-asset-swapper-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}

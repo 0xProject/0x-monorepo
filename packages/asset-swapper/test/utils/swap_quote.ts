@@ -4,15 +4,16 @@ import * as _ from 'lodash';
 
 import { constants } from '../../src/constants';
 import { MarketOperation, PrunedSignedOrder, SwapQuote } from '../../src/types';
-import { protocolFeeUtils } from '../../src/utils/protocol_fee_utils';
+import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
 
-export const getFullyFillableSwapQuoteWithNoFees = (
+export const getFullyFillableSwapQuoteWithNoFeesAsync = async (
     makerAssetData: string,
     takerAssetData: string,
     orders: PrunedSignedOrder[],
     operation: MarketOperation,
     gasPrice: BigNumber,
-): SwapQuote => {
+    protocolFeeUtils: ProtocolFeeUtils,
+): Promise<SwapQuote> => {
     const makerAssetFillAmount = _.reduce(
         orders,
         (a: BigNumber, c: SignedOrder) => a.plus(c.makerAssetAmount),
@@ -28,13 +29,14 @@ export const getFullyFillableSwapQuoteWithNoFees = (
         feeTakerAssetAmount: constants.ZERO_AMOUNT,
         takerAssetAmount: totalTakerAssetAmount,
         totalTakerAssetAmount,
-        protocolFeeInEthAmount: protocolFeeUtils.calculateWorstCaseProtocolFee(orders, gasPrice),
+        protocolFeeInWeiAmount: await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(orders, gasPrice),
     };
 
     const quoteBase = {
         makerAssetData,
         takerAssetData,
         orders,
+        gasPrice,
         bestCaseQuoteInfo: quoteInfo,
         worstCaseQuoteInfo: quoteInfo,
     };

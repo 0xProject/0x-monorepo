@@ -1,4 +1,4 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { MarketBuySwapQuote } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 
 import { ActionsUnion, AddressAndEthBalanceInWei, Asset, BaseCurrency, StandardSlidingPanelContent } from '../types';
@@ -26,12 +26,12 @@ export enum ActionTypes {
     UpdateAccountEthBalance = 'UPDATE_ACCOUNT_ETH_BALANCE',
     UpdateEthUsdPrice = 'UPDATE_ETH_USD_PRICE',
     UpdateSelectedAssetUnitAmount = 'UPDATE_SELECTED_ASSET_UNIT_AMOUNT',
-    SetBuyOrderStateNone = 'SET_BUY_ORDER_STATE_NONE',
-    SetBuyOrderStateValidating = 'SET_BUY_ORDER_STATE_VALIDATING',
-    SetBuyOrderStateProcessing = 'SET_BUY_ORDER_STATE_PROCESSING',
-    SetBuyOrderStateFailure = 'SET_BUY_ORDER_STATE_FAILURE',
-    SetBuyOrderStateSuccess = 'SET_BUY_ORDER_STATE_SUCCESS',
-    UpdateLatestBuyQuote = 'UPDATE_LATEST_BUY_QUOTE',
+    SetSwapOrderStateNone = 'SET_SWAP_ORDER_STATE_NONE',
+    SetSwapOrderStateValidating = 'SET_SWAP_ORDER_STATE_VALIDATING',
+    SetSwapOrderStateProcessing = 'SET_SWAP_ORDER_STATE_PROCESSING',
+    SetSwapOrderStateFailure = 'SET_SWAP_ORDER_STATE_FAILURE',
+    SetSwapOrderStateSuccess = 'SET_SWAP_ORDER_STATE_SUCCESS',
+    UpdateLatestSwapQuote = 'UPDATE_LATEST_SWAP_QUOTE',
     UpdateSelectedAsset = 'UPDATE_SELECTED_ASSET',
     SetAvailableAssets = 'SET_AVAILABLE_ASSETS',
     SetQuoteRequestStatePending = 'SET_QUOTE_REQUEST_STATE_PENDING',
@@ -53,13 +53,14 @@ export const actions = {
         createAction(ActionTypes.UpdateAccountEthBalance, addressAndBalance),
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UpdateEthUsdPrice, price),
     updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UpdateSelectedAssetUnitAmount, amount),
-    setBuyOrderStateNone: () => createAction(ActionTypes.SetBuyOrderStateNone),
-    setBuyOrderStateValidating: () => createAction(ActionTypes.SetBuyOrderStateValidating),
-    setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
-        createAction(ActionTypes.SetBuyOrderStateProcessing, { txHash, startTimeUnix, expectedEndTimeUnix }),
-    setBuyOrderStateFailure: (txHash: string) => createAction(ActionTypes.SetBuyOrderStateFailure, txHash),
-    setBuyOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SetBuyOrderStateSuccess, txHash),
-    updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UpdateLatestBuyQuote, buyQuote),
+    setSwapOrderStateNone: () => createAction(ActionTypes.SetSwapOrderStateNone),
+    setSwapOrderStateValidating: () => createAction(ActionTypes.SetSwapOrderStateValidating),
+    setSwapOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        createAction(ActionTypes.SetSwapOrderStateProcessing, { txHash, startTimeUnix, expectedEndTimeUnix }),
+    setSwapOrderStateFailure: (txHash: string) => createAction(ActionTypes.SetSwapOrderStateFailure, txHash),
+    setSwapOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SetSwapOrderStateSuccess, txHash),
+    updateLatestSwapQuote: (swapQuote?: MarketBuySwapQuote) =>
+        createAction(ActionTypes.UpdateLatestSwapQuote, swapQuote),
     updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UpdateSelectedAsset, asset),
     setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SetAvailableAssets, availableAssets),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SetQuoteRequestStatePending),

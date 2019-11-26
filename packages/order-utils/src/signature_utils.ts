@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,
@@ -16,12 +16,12 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
+import { constants } from './constants';
 import { eip712Utils } from './eip712_utils';
+import { orderHashUtils } from './order_hash_utils';
 import { TypedDataError } from './types';
 
-const devUtilsContract = new DevUtilsContract('0x0000000000000000000000000000000000000000', {
-    isEIP1193: true,
-} as any);
+const devUtilsContract = new DevUtilsContract(constants.NULL_ADDRESS, constants.FAKED_PROVIDER as any);
 
 export const signatureUtils = {
     /**
@@ -51,9 +51,7 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const orderHash = await devUtilsContract
-                .getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress)
-                .callAsync();
+            const orderHash = await orderHashUtils.getOrderHashAsync(order);
             const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
                 ...order,

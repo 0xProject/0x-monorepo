@@ -22,7 +22,7 @@ export type AddedRemovedListeners = (addedRemoved: AddedRemovedOrders) => void;
  * Constructor options for a SRA Websocket Order Provider
  */
 export interface SRAWebsocketOrderProviderOpts {
-    // The http endpoint to the SRA service, e.g https://sra.0x.org/v2
+    // The http endpoint to the SRA service, e.g https://sra.0x.org/v3
     httpEndpoint: string;
     // The websocket endpoint to the SRA service, e.g wss://ws.sra.0x.org/
     websocketEndpoint: string;
@@ -32,7 +32,7 @@ export interface SRAWebsocketOrderProviderOpts {
  * Constructor options for a SRA Polling Order Provider
  */
 export interface SRAPollingOrderProviderOpts {
-    // The http endpoint to the SRA service, e.g https://sra.0x.org/v2
+    // The http endpoint to the SRA service, e.g https://sra.0x.org/v3
     httpEndpoint: string;
     // The interval between polling for each subscription
     pollingIntervalMs: number;

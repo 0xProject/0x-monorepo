@@ -260,8 +260,20 @@ consists just of our order):
 Select an order from the orderbook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+We'll select the order we just submitted, which must be referred to by order
+hash.  To calculate an order hash, we'll use the Exchange contract:
+
+>>> from zero_ex.contract_wrappers.exchange import Exchange
+>>> exchange = Exchange(
+...     web3_or_provider=eth_node,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).exchange
+... )
 >>> from zero_ex.contract_wrappers.order_conversions import jsdict_to_order
->>> order = jsdict_to_order(orderbook.bids.records[0].order)
+>>> order = jsdict_to_order(
+...     relayer.get_order(
+...         '0x' + exchange.get_order_info.call(order)["orderHash"].hex()
+...     ).order
+... )
 >>> from pprint import pprint
 >>> pprint(order)
 {'chainId': 1337,
@@ -326,23 +338,48 @@ Recall that in a previous example we selected a specific order from the order
 book.  Now let's have the taker fill it:
 
 >>> from zero_ex.contract_wrappers import TxParams
->>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> from zero_ex.order_utils import Order
->>> exchange = Exchange(
-...     web3_or_provider=eth_node,
-...     contract_address=chain_to_addresses(ChainId.GANACHE).exchange
-... )
 
 (Due to `an Issue with the Launch Kit Backend
 <https://github.com/0xProject/0x-launch-kit-backend/issues/73>`_, we need to
 checksum the address in the order before filling it.)
 >>> order['makerAddress'] = Web3.toChecksumAddress(order['makerAddress'])
 
+Finally, filling an order requires paying a protocol fee, which can be sent as
+value in the transaction.  The calculation of the amount to send is a function
+of the gas price, so we need some help from Web3.py for that:
+
+>>> from web3.gas_strategies.rpc import rpc_gas_price_strategy
+>>> web3 = Web3(eth_node)
+>>> web3.eth.setGasPriceStrategy(rpc_gas_price_strategy)
+
+Before actually executing the fill, it's a good idea to run it as read-only
+(non-transactional) so that we can get intelligible errors in case there's
+something wrong:
+
+>>> pprint(exchange.fill_order.call(
+...     order=order,
+...     taker_asset_fill_amount=order['takerAssetAmount']/2, # note the half fill
+...     signature=bytes.fromhex(order['signature'].replace('0x', '')),
+...     tx_params=TxParams(
+...         from_=taker_address, value=web3.eth.generateGasPrice()*150000,
+...     ),
+... ))
+{'makerAssetFilledAmount': 1,
+ 'makerFeePaid': 0,
+ 'protocolFeePaid': ...,
+ 'takerAssetFilledAmount': 1,
+ 'takerFeePaid': 0}
+
+Now we're finally ready to execute the fill:
+
 >>> exchange.fill_order.send_transaction(
 ...     order=order,
-...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
+...     taker_asset_fill_amount=order['takerAssetAmount']/2, # note the half fill
 ...     signature=bytes.fromhex(order['signature'].replace('0x', '')),
-...     tx_params=TxParams(from_=taker_address)
+...     tx_params=TxParams(
+...         from_=taker_address, value=web3.eth.generateGasPrice()*150000,
+...     ),
 ... )
 HexBytes('0x...')
 

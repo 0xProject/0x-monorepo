@@ -1,7 +1,5 @@
+import { DevUtilsContract, ERC20TokenContract, ForwarderContract } from '@0x/contract-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
-import { ERC20TokenContract } from '@0x/contracts-erc20';
-import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
@@ -19,9 +17,10 @@ import {
     MarketOperation,
     PrunedSignedOrder,
 } from '../src/types';
+import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -31,11 +30,9 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
-const FILLABLE_AMOUNTS = [new BigNumber(2), new BigNumber(3), new BigNumber(5)].map(value =>
-    value.multipliedBy(ONE_ETH_IN_WEI),
-);
-const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
+const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
+const FEE_PERCENTAGE = 0.05;
 const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
     {
         takerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
@@ -69,7 +66,7 @@ const expectMakerAndTakerBalancesAsyncFactory = (
 };
 
 describe('ForwarderSwapQuoteConsumer', () => {
-    const FEE_PERCENTAGE = 0.05;
+    let protocolFeeUtils: ProtocolFeeUtils;
     let userAddresses: string[];
     let coinbaseAddress: string;
     let makerAddress: string;
@@ -99,7 +96,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
     const chainId = TESTRPC_CHAIN_ID;
 
     before(async () => {
-        contractAddresses = await migrateOnceAsync();
+        contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
@@ -135,6 +132,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        protocolFeeUtils = new ProtocolFeeUtils();
         expectMakerAndTakerBalancesAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TokenContract,
             makerAddress,
@@ -149,10 +147,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         await blockchainLifecycle.startAsync();
         const UNLIMITED_ALLOWANCE = UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
 
-        const totalFillableAmount = FILLABLE_AMOUNTS.reduce(
-            (a: BigNumber, c: BigNumber) => a.plus(c),
-            new BigNumber(0),
-        );
+        const totalFillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
 
         await erc20TokenContract.transfer(makerAddress, totalFillableAmount).sendTransactionAsync({
             from: coinbaseAddress,
@@ -184,28 +179,31 @@ describe('ForwarderSwapQuoteConsumer', () => {
             invalidOrders.push(prunedOrder as PrunedSignedOrder);
         }
 
-        marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             wethAssetData,
             orders,
             MarketOperation.Sell,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
-        marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             wethAssetData,
             orders,
             MarketOperation.Buy,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
-        invalidMarketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        invalidMarketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             takerAssetData,
             invalidOrders,
             MarketOperation.Buy,
             GAS_PRICE,
+            protocolFeeUtils,
         );
 
         swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, contractAddresses, {
@@ -239,8 +237,8 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, {
                     takerAddress,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
+                    ethAmount: new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 });
                 await expectMakerAndTakerBalancesAsync(
                     constants.ZERO_AMOUNT,
@@ -255,7 +253,6 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
                     takerAddress,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
                 });
                 await expectMakerAndTakerBalancesAsync(
@@ -272,10 +269,11 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const feeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, {
                     takerAddress,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
-                    feePercentage: FEE_PERCENTAGE,
-                    feeRecipient,
+                    extensionContractOpts: {
+                        feePercentage: 0.05,
+                        feeRecipient,
+                    },
                 });
                 await expectMakerAndTakerBalancesAsync(
                     constants.ZERO_AMOUNT,
@@ -283,7 +281,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
                     new BigNumber(FEE_PERCENTAGE).times(totalEthSpent),
@@ -298,10 +296,11 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const feeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
                     takerAddress,
-                    feePercentage: FEE_PERCENTAGE,
-                    feeRecipient,
-                    gasPrice: GAS_PRICE,
                     gasLimit: 4000000,
+                    extensionContractOpts: {
+                        feePercentage: 0.05,
+                        feeRecipient,
+                    },
                 });
                 await expectMakerAndTakerBalancesAsync(
                     constants.ZERO_AMOUNT,
@@ -309,7 +308,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
                     new BigNumber(FEE_PERCENTAGE).times(totalEthSpent),
@@ -374,8 +373,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketSellSwapQuote,
                     {
-                        feePercentage: 0.05,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(forwarderContract.address);
@@ -395,8 +396,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketBuySwapQuote,
                     {
-                        feePercentage: 0.05,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(forwarderContract.address);
@@ -484,8 +487,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { calldataHexString, toAddress, ethAmount } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketSellSwapQuote,
                     {
-                        feePercentage: FEE_PERCENTAGE,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(contractAddresses.forwarder);
@@ -502,7 +507,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 );
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
@@ -518,8 +523,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 const { calldataHexString, toAddress, ethAmount } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketBuySwapQuote,
                     {
-                        feePercentage: FEE_PERCENTAGE,
-                        feeRecipient,
+                        extensionContractOpts: {
+                            feePercentage: 0.05,
+                            feeRecipient,
+                        },
                     },
                 );
                 expect(toAddress).to.deep.equal(contractAddresses.forwarder);
@@ -536,7 +543,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 );
                 const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInEthAmount,
+                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(

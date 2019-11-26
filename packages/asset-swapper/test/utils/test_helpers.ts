@@ -3,14 +3,14 @@ import { BigNumber } from '@0x/utils';
 import { InsufficientAssetLiquidityError } from '../../src/errors';
 
 export const testHelpers = {
-    expectInsufficientLiquidityError: (
+    expectInsufficientLiquidityErrorAsync: async (
         expect: Chai.ExpectStatic,
-        functionWhichTriggersError: () => void,
+        functionWhichTriggersErrorAsync: () => Promise<void>,
         expectedAmountAvailableToFill: BigNumber,
-    ): void => {
+    ): Promise<void> => {
         let wasErrorThrown = false;
         try {
-            functionWhichTriggersError();
+            await functionWhichTriggersErrorAsync();
         } catch (e) {
             wasErrorThrown = true;
             expect(e).to.be.instanceOf(InsufficientAssetLiquidityError);

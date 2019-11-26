@@ -1,9 +1,10 @@
-import { HttpClient, ordersChannelFactory, OrdersChannelHandler } from '@0x/connect';
+import { APIOrder, HttpClient, ordersChannelFactory, OrdersChannelHandler } from '@0x/connect';
 import * as sinon from 'sinon';
 
 import { SRAWebsocketOrderProvider } from '../../src';
 import { BaseOrderProvider } from '../../src/order_provider/base_order_provider';
 import { OrderStore } from '../../src/order_store';
+import { utils } from '../../src/utils';
 import { createOrder } from '../utils';
 
 // tslint:disable-next-line:no-empty
@@ -56,10 +57,11 @@ describe('SRAWebsocketOrderProvider', () => {
             expect(stub.callCount).toBe(2);
         });
         test('adds orders from the subscription', async () => {
+            const orders: APIOrder[] = [];
             const stub = sinon.stub(HttpClient.prototype, 'getOrdersAsync').callsFake(async () =>
                 Promise.resolve({
-                    records: [],
-                    total: 0,
+                    records: orders,
+                    total: orders.length,
                     perPage: 1,
                     page: 1,
                 }),
@@ -79,11 +81,12 @@ describe('SRAWebsocketOrderProvider', () => {
             if (handler) {
                 const channel = '';
                 const subscriptionOpts = {};
-                const orders = [createOrder(makerAssetData, takerAssetData)];
+                orders.push(createOrder(makerAssetData, takerAssetData));
                 handler.onUpdate(channel as any, subscriptionOpts as any, orders);
             }
             expect(stub.callCount).toBe(2);
             expect(wsStub.callCount).toBe(1);
+            await utils.delayAsync(5);
             const storedOrders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
             expect(storedOrders.size()).toBe(1);
         });

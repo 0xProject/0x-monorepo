@@ -87,6 +87,14 @@ contract TestLibERC20TokenTarget {
         _execute();
     }
 
+    function decimals()
+        external
+        view
+        returns (uint8)
+    {
+        _execute();
+    }
+
     function _execute() private view {
         if (_shouldRevert) {
             bytes memory revertData = _revertData;
