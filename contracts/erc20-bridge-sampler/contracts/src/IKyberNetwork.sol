@@ -18,15 +18,15 @@
 
 pragma solidity ^0.5.9;
 
-import "./IUniswapExchange.sol";
 
+interface IKyberNetwork {
 
-interface IUniswapExchangeFactory {
-
-    /// @dev Get the exchange for a token.
-    /// @param tokenAddress The address of the token contract.
-    function getExchange(address tokenAddress)
+    function getExpectedRate(
+        address fromToken,
+        address toToken,
+        uint256 fromAmount
+    )
         external
         view
-        returns (address);
+        returns (uint256 expectedRate, uint256 slippageRate);
 }

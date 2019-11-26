@@ -79,6 +79,8 @@ TODO.md
 .vscode
 
 # generated contract artifacts/
+contracts/erc20-bridge-sampler/generated-artifacts/
+contracts/erc20-bridge-sampler/test/generated-artifacts/
 contracts/integrations/generated-artifacts/
 contracts/integrations/test/generated-artifacts/
 contracts/staking/generated-artifacts/
@@ -111,6 +113,7 @@ packages/sol-tracing-utils/test/fixtures/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
 # generated truffle contract artifacts/
+contracts/erc20-bridge-sampler/build/
 contracts/staking/build/
 contracts/coordinator/build/
 contracts/exchange/build/
@@ -127,6 +130,8 @@ contracts/dev-utils/build/
 
 # generated contract wrappers
 packages/python-contract-wrappers/generated/
+contracts/erc20-bridge-sampler/generated-wrappers/
+contracts/erc20-bridge-sampler/test/generated-wrappers/
 contracts/integrations/generated-wrappers/
 contracts/integrations/test/generated-wrappers/
 contracts/staking/generated-wrappers/

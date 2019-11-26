@@ -18,15 +18,24 @@
 
 pragma solidity ^0.5.9;
 
-import "./IUniswapExchange.sol";
 
+interface IEth2Dai {
 
-interface IUniswapExchangeFactory {
-
-    /// @dev Get the exchange for a token.
-    /// @param tokenAddress The address of the token contract.
-    function getExchange(address tokenAddress)
+    function getBuyAmount(
+        address buyToken,
+        address payToken,
+        uint256 payAmount
+    )
         external
         view
-        returns (address);
+        returns (uint256 buyAmount);
+
+    function getPayAmount(
+        address payToken,
+        address buyToken,
+        uint256 buyAmount
+    )
+        external
+        view
+        returns (uint256 payAmount);
 }

@@ -18,15 +18,34 @@
 
 pragma solidity ^0.5.9;
 
-import "./IUniswapExchange.sol";
 
+interface IUniswapExchangeQuotes {
 
-interface IUniswapExchangeFactory {
-
-    /// @dev Get the exchange for a token.
-    /// @param tokenAddress The address of the token contract.
-    function getExchange(address tokenAddress)
+    function getEthToTokenInputPrice(
+        uint256 ethSold
+    )
         external
         view
-        returns (address);
+        returns (uint256 tokensBought);
+
+    function getEthToTokenOutputPrice(
+        uint256 tokensBought
+    )
+        external
+        view
+        returns (uint256 ethSold);
+
+    function getTokenToEthInputPrice(
+        uint256 tokensSold
+    )
+        external
+        view
+        returns (uint256 ethBought);
+
+    function getTokenToEthOutputPrice(
+        uint256 ethBought
+    )
+        external
+        view
+        returns (uint256 tokensSold);
 }

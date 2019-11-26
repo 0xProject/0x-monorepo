@@ -51,7 +51,7 @@
         "lint:contracts": "wsrun lint -p ${npm_package_config_contractsPackages} -c --fast-exit --stages --exclude-missing"
     },
     "config": {
-        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-integrations @0x/contracts-multisig @0x/contracts-staking @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator @0x/contracts-tests",
+        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc20-bridge-sampler @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-integrations @0x/contracts-multisig @0x/contracts-staking @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator @0x/contracts-tests @0x/contracts-erc20-bridge-sampler",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "0x.js @0x/contract-wrappers @0x/connect @0x/json-schemas @0x/subproviders @0x/web3-wrapper @0x/order-utils @0x/sol-compiler @0x/sol-coverage @0x/sol-profiler @0x/sol-trace @0x/dev-utils @0x/asset-swapper @0x/migrations @0x/orderbook @0x/contracts-asset-proxy @0x/contracts-coordinator @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-staking",
         "ignoreDependencyVersions": "@types/styled-components @types/node",

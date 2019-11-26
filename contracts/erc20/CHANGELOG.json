@@ -14,6 +14,10 @@
             {
                 "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
                 "pr": 2330
+            },
+            {
+                "note": "Add `decimals()` to `LibERC20Token`.",
+                "pr": 2344
             }
         ],
         "timestamp": 1574030254
