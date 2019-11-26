@@ -1,13 +1,13 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { constants } from './constants';
+import { orderHashUtils } from './order_hash_utils';
 import { generatePseudoRandomSalt } from './salt';
 import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
+
 export const orderFactory = {
     createOrderFromPartial(partialOrder: Partial<Order>): Order {
         const chainId: number = getChainIdFromPartial(partialOrder);
@@ -77,20 +77,16 @@ export const orderFactory = {
             await providerUtils.getChainIdAsync(supportedProvider),
             createOrderOpts,
         );
-        const orderHash = await new DevUtilsContract('0x0000000000000000000000000000000000000000', {
-            isEIP1193: true,
-        } as any)
-            .getOrderHash(order, new BigNumber(order.chainId), order.exchangeAddress)
-            .callAsync();
+        const orderHash = await orderHashUtils.getOrderHashAsync(order);
         const signature = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, makerAddress);
-        const signedOrder: SignedOrder = _.assign(order, { signature });
+        const signedOrder: SignedOrder = { ...order, signature };
         return signedOrder;
     },
 };
 
 function getChainIdFromPartial(partialOrder: Partial<Order> | Partial<SignedOrder>): number {
     const chainId = partialOrder.chainId;
-    if (!_.isNumber(chainId)) {
+    if (chainId === undefined || !Number.isInteger(chainId)) {
         throw new Error('chainId must be valid');
     }
     return chainId;

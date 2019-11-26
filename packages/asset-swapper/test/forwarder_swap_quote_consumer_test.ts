@@ -1,4 +1,4 @@
-import { DevUtilsContract, ERC20TokenContract, ExchangeContract, ForwarderContract } from '@0x/abi-gen-wrappers';
+import { DevUtilsContract, ERC20TokenContract, ForwarderContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
@@ -82,7 +82,6 @@ describe('ForwarderSwapQuoteConsumer', () => {
     let contractAddresses: ContractAddresses;
     let erc20TokenContract: ERC20TokenContract;
     let forwarderContract: ForwarderContract;
-    let exchangeContract: ExchangeContract;
 
     let orders: PrunedSignedOrder[];
     let invalidOrders: PrunedSignedOrder[];
@@ -104,7 +103,6 @@ describe('ForwarderSwapQuoteConsumer', () => {
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         forwarderContract = new ForwarderContract(contractAddresses.forwarder, provider);
-        exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
             devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
