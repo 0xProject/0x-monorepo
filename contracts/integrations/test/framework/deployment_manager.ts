@@ -1,6 +1,7 @@
 import {
     artifacts as assetProxyArtifacts,
     ERC1155ProxyContract,
+    ERC20BridgeProxyContract,
     ERC20ProxyContract,
     ERC721ProxyContract,
     IAssetDataContract,
@@ -85,6 +86,7 @@ interface AssetProxyContracts {
     erc1155Proxy: ERC1155ProxyContract;
     multiAssetProxy: MultiAssetProxyContract;
     staticCallProxy: StaticCallProxyContract;
+    erc20BridgeProxy: ERC20BridgeProxyContract;
 }
 
 // Contract wrappers for all of the staking contracts
@@ -189,6 +191,7 @@ export class DeploymentManager {
             assetProxies.erc721Proxy,
             assetProxies.erc1155Proxy,
             assetProxies.multiAssetProxy,
+            assetProxies.erc20BridgeProxy,
             exchange,
             staking.stakingProxy,
         ]);
@@ -232,6 +235,7 @@ export class DeploymentManager {
                 assetProxies.erc1155Proxy.address,
                 assetProxies.multiAssetProxy.address,
                 assetProxies.staticCallProxy.address,
+                assetProxies.erc20BridgeProxy.address,
             ],
         );
 
@@ -244,13 +248,19 @@ export class DeploymentManager {
                 assetProxies.erc721Proxy.address,
                 assetProxies.erc1155Proxy.address,
                 assetProxies.staticCallProxy.address,
+                assetProxies.erc20BridgeProxy.address,
             ],
         );
 
         // Add the multi-asset proxy as an authorized address of the token proxies.
         await batchAddAuthorizedAddressAsync(
             owner,
-            [assetProxies.erc20Proxy, assetProxies.erc721Proxy, assetProxies.erc1155Proxy],
+            [
+                assetProxies.erc20Proxy,
+                assetProxies.erc721Proxy,
+                assetProxies.erc1155Proxy,
+                assetProxies.erc20BridgeProxy,
+            ],
             [assetProxies.multiAssetProxy.address],
         );
 
@@ -262,6 +272,7 @@ export class DeploymentManager {
                 assetProxies.erc721Proxy,
                 assetProxies.erc1155Proxy,
                 assetProxies.multiAssetProxy,
+                assetProxies.erc20BridgeProxy,
             ],
             [exchange.address],
         );
@@ -327,12 +338,19 @@ export class DeploymentManager {
             txDefaults,
             assetProxyArtifacts,
         );
+        const erc20BridgeProxy = await ERC20BridgeProxyContract.deployFrom0xArtifactAsync(
+            assetProxyArtifacts.ERC20BridgeProxy,
+            environment.provider,
+            txDefaults,
+            assetProxyArtifacts,
+        );
         return {
             erc20Proxy,
             erc721Proxy,
             erc1155Proxy,
             multiAssetProxy,
             staticCallProxy,
+            erc20BridgeProxy,
         };
     }
 

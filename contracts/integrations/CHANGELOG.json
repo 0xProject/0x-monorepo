@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.3-beta.2",
+        "changes": [
+            {
+                "note": "Forwader <> ERC20Bridge integration tests",
+                "pr": 2356
+            }
+        ]
+    },
+    {
         "version": "1.0.3-beta.1",
         "changes": [
             {

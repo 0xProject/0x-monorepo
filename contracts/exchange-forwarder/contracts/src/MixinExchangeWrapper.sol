@@ -19,12 +19,15 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 import "./MixinAssets.sol";
@@ -34,6 +37,7 @@ contract MixinExchangeWrapper is
     LibConstants,
     MixinAssets
 {
+    using LibBytes for bytes;
     using LibSafeMath for uint256;
 
     /// @dev Fills the input order.
@@ -88,7 +92,10 @@ contract MixinExchangeWrapper is
         )
     {
         // No taker fee or percentage fee
-        if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.makerAssetData)) {
+        if (
+            order.takerFee == 0 ||
+            _areUnderlyingAssetsEqual(order.takerFeeAssetData, order.makerAssetData)
+        ) {
             // Attempt to sell the remaining amount of WETH
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
@@ -103,7 +110,7 @@ contract MixinExchangeWrapper is
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount
                 .safeSub(singleFillResults.takerFeePaid);
         // WETH fee
-        } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
+        } else if (_areUnderlyingAssetsEqual(order.takerFeeAssetData, order.takerAssetData)) {
 
             // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
             // This ensures that we reserve enough to pay the taker and protocol fees.
@@ -150,9 +157,10 @@ contract MixinExchangeWrapper is
             uint256 totalMakerAssetAcquiredAmount
         )
     {
-        uint256 ordersLength = orders.length;
         uint256 protocolFee = tx.gasprice.safeMul(EXCHANGE.protocolFeeMultiplier());
+        bytes4 erc20BridgeProxyId = IAssetData(address(0)).ERC20Bridge.selector;
 
+        uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
             // Preemptively skip to avoid division by zero in _marketSellSingleOrder
             if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
@@ -164,6 +172,15 @@ contract MixinExchangeWrapper is
                 .safeSub(totalWethSpentAmount)
                 .safeSub(protocolFee);
 
+            // If the maker asset is ERC20Bridge, take a snapshot of the Forwarder contract's balance.
+            bytes4 makerAssetProxyId = orders[i].makerAssetData.readBytes4(0);
+            address tokenAddress;
+            uint256 balanceBefore;
+            if (makerAssetProxyId == erc20BridgeProxyId) {
+                tokenAddress = orders[i].makerAssetData.readAddress(16);
+                balanceBefore = IERC20Token(tokenAddress).balanceOf(address(this));
+            }
+
             (
                 uint256 wethSpentAmount,
                 uint256 makerAssetAcquiredAmount
@@ -172,6 +189,15 @@ contract MixinExchangeWrapper is
                 signatures[i],
                 remainingTakerAssetFillAmount
             );
+
+            // Account for the ERC20Bridge transfering more of the maker asset than expected.
+            if (makerAssetProxyId == erc20BridgeProxyId) {
+                uint256 balanceAfter = IERC20Token(tokenAddress).balanceOf(address(this));
+                makerAssetAcquiredAmount = LibSafeMath.max256(
+                    balanceAfter.safeSub(balanceBefore),
+                    makerAssetAcquiredAmount
+                );
+            }
 
             _transferAssetToSender(orders[i].makerAssetData, makerAssetAcquiredAmount);
 
@@ -206,7 +232,10 @@ contract MixinExchangeWrapper is
         )
     {
         // No taker fee or WETH fee
-        if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.takerAssetData)) {
+        if (
+            order.takerFee == 0 ||
+            _areUnderlyingAssetsEqual(order.takerFeeAssetData, order.takerAssetData)
+        ) {
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
@@ -228,7 +257,7 @@ contract MixinExchangeWrapper is
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
         // Percentage fee
-        } else if (order.takerFeeAssetData.equals(order.makerAssetData)) {
+        } else if (_areUnderlyingAssetsEqual(order.takerFeeAssetData, order.makerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
@@ -277,6 +306,8 @@ contract MixinExchangeWrapper is
             uint256 totalMakerAssetAcquiredAmount
         )
     {
+        bytes4 erc20BridgeProxyId = IAssetData(address(0)).ERC20Bridge.selector;
+
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
             // Preemptively skip to avoid division by zero in _marketBuySingleOrder
@@ -287,6 +318,15 @@ contract MixinExchangeWrapper is
             uint256 remainingMakerAssetFillAmount = makerAssetBuyAmount
                 .safeSub(totalMakerAssetAcquiredAmount);
 
+            // If the maker asset is ERC20Bridge, take a snapshot of the Forwarder contract's balance.
+            bytes4 makerAssetProxyId = orders[i].makerAssetData.readBytes4(0);
+            address tokenAddress;
+            uint256 balanceBefore;
+            if (makerAssetProxyId == erc20BridgeProxyId) {
+                tokenAddress = orders[i].makerAssetData.readAddress(16);
+                balanceBefore = IERC20Token(tokenAddress).balanceOf(address(this));
+            }
+
             (
                 uint256 wethSpentAmount,
                 uint256 makerAssetAcquiredAmount
@@ -295,6 +335,15 @@ contract MixinExchangeWrapper is
                 signatures[i],
                 remainingMakerAssetFillAmount
             );
+
+            // Account for the ERC20Bridge transfering more of the maker asset than expected.
+            if (makerAssetProxyId == erc20BridgeProxyId) {
+                uint256 balanceAfter = IERC20Token(tokenAddress).balanceOf(address(this));
+                makerAssetAcquiredAmount = LibSafeMath.max256(
+                    balanceAfter.safeSub(balanceBefore),
+                    makerAssetAcquiredAmount
+                );
+            }
 
             _transferAssetToSender(orders[i].makerAssetData, makerAssetAcquiredAmount);
 
@@ -314,6 +363,38 @@ contract MixinExchangeWrapper is
                 makerAssetBuyAmount,
                 totalMakerAssetAcquiredAmount
             ));
+        }
+    }
+
+    /// @dev Checks whether one asset is effectively equal to another asset.
+    ///      This is the case if they have the same ERC20Proxy/ERC20BridgeProxy asset data, or if
+    ///      one is the ERC20Bridge equivalent of the other.
+    /// @param assetData1 Byte array encoded for the takerFee asset proxy.
+    /// @param assetData2 Byte array encoded for the maker asset proxy.
+    /// @return areEqual Whether or not the underlying assets are equal.
+    function _areUnderlyingAssetsEqual(
+        bytes memory assetData1,
+        bytes memory assetData2
+    )
+        internal
+        pure
+        returns (bool)
+    {
+        bytes4 assetProxyId1 = assetData1.readBytes4(0);
+        bytes4 assetProxyId2 = assetData2.readBytes4(0);
+        bytes4 erc20ProxyId = IAssetData(address(0)).ERC20Token.selector;
+        bytes4 erc20BridgeProxyId = IAssetData(address(0)).ERC20Bridge.selector;
+
+        if (
+            (assetProxyId1 == erc20ProxyId || assetProxyId1 == erc20BridgeProxyId) &&
+            (assetProxyId2 == erc20ProxyId || assetProxyId2 == erc20BridgeProxyId)
+        ) {
+            // Compare the underlying token addresses.
+            address token1 = assetData1.readAddress(16);
+            address token2 = assetData2.readAddress(16);
+            return (token1 == token2);
+        } else {
+            return false;
         }
     }
 }

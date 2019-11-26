@@ -2,6 +2,8 @@ export {
     DummyERC721ReceiverContract,
     DummyERC721TokenContract,
     ERC721TokenContract,
+    ERC721TokenEvents,
+    ERC721TokenTransferEventArgs,
     IERC721ReceiverContract,
 } from './wrappers';
 export { artifacts } from './artifacts';

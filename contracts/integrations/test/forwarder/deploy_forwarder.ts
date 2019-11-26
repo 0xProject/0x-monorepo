@@ -17,6 +17,6 @@ export async function deployForwarderAsync(
         deployment.txDefaults,
         { ...exchangeArtifacts, ...artifacts },
         deployment.exchange.address,
-        deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
+        deployment.tokens.weth.address,
     );
 }

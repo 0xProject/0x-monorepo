@@ -2,5 +2,13 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": ["generated-artifacts/TestFramework.json", "test/generated-artifacts/TestFramework.json"]
+    "files": [
+        "generated-artifacts/TestFramework.json",
+        "test/generated-artifacts/TestEth2Dai.json",
+        "test/generated-artifacts/TestEth2DaiBridge.json",
+        "test/generated-artifacts/TestFramework.json",
+        "test/generated-artifacts/TestUniswapBridge.json",
+        "test/generated-artifacts/TestUniswapExchange.json",
+        "test/generated-artifacts/TestUniswapExchangeFactory.json"
+    ]
 }

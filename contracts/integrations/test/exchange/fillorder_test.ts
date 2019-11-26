@@ -118,7 +118,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         msgValue?: BigNumber,
     ): Promise<LocalBalanceStore> {
         let remainingValue = msgValue !== undefined ? msgValue : DeploymentManager.protocolFee;
-        const localBalanceStore = LocalBalanceStore.create(deployment.devUtils, balanceStore);
+        const localBalanceStore = LocalBalanceStore.create(balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
 
@@ -266,7 +266,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
 
         // Fetch the current balances
         await balanceStore.updateBalancesAsync();
-        const expectedBalances = LocalBalanceStore.create(deployment.devUtils, balanceStore);
+        const expectedBalances = LocalBalanceStore.create(balanceStore);
 
         // End the epoch. This should wrap the staking proxy's ETH balance.
         const endEpochReceipt = await delegator.endEpochAsync();

@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0-beta.4",
+        "changes": [
+            {
+                "note": "Added buy support for ERC20Bridge",
+                "pr": 2356
+            }
+        ]
+    },
+    {
         "version": "3.1.0-beta.3",
         "changes": [
             {

@@ -1,12 +1,19 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
-import { constants, expect, getPercentageOfValue, OrderStatus } from '@0x/contracts-test-utils';
-import { OrderInfo, SignedOrder } from '@0x/types';
+import {
+    constants,
+    expect,
+    getPercentageOfValue,
+    hexSlice,
+    Numberish,
+    OrderStatus,
+    provider,
+} from '@0x/contracts-test-utils';
+import { AssetProxyId, OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { FeeRecipient } from '../framework/actors/fee_recipient';
-import { Maker } from '../framework/actors/maker';
 import { Taker } from '../framework/actors/taker';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { LocalBalanceStore } from '../framework/balances/local_balance_store';
@@ -20,12 +27,35 @@ interface ForwarderFillState {
 }
 
 interface MarketSellOptions {
-    forwarderFeePercentage: BigNumber;
+    forwarderFeePercentage: Numberish;
     revertError: RevertError;
+    bridgeExcessBuyAmount: BigNumber;
 }
 
 interface MarketBuyOptions extends MarketSellOptions {
     ethValueAdjustment: number; // Used to provided insufficient/excess ETH
+}
+
+function areUnderlyingAssetsEqual(assetData1: string, assetData2: string): boolean {
+    const assetProxyId1 = hexSlice(assetData1, 0, 4);
+    const assetProxyId2 = hexSlice(assetData2, 0, 4);
+    if (
+        (assetProxyId1 === AssetProxyId.ERC20 || assetProxyId1 === AssetProxyId.ERC20Bridge) &&
+        (assetProxyId2 === AssetProxyId.ERC20 || assetProxyId2 === AssetProxyId.ERC20Bridge)
+    ) {
+        const assetDataDecoder = new IAssetDataContract(constants.NULL_ADDRESS, provider);
+        const tokenAddress1 =
+            assetProxyId1 === AssetProxyId.ERC20
+                ? assetDataDecoder.getABIDecodedTransactionData<string>('ERC20Token', assetData1)
+                : assetDataDecoder.getABIDecodedTransactionData<[string]>('ERC20Bridge', assetData1)[0];
+        const tokenAddress2 =
+            assetProxyId2 === AssetProxyId.ERC20
+                ? assetDataDecoder.getABIDecodedTransactionData<string>('ERC20Token', assetData2)
+                : assetDataDecoder.getABIDecodedTransactionData<[string]>('ERC20Bridge', assetData2)[0];
+        return tokenAddress2 === tokenAddress1;
+    } else {
+        return false;
+    }
 }
 
 export class ForwarderTestFactory {
@@ -33,11 +63,8 @@ export class ForwarderTestFactory {
         private readonly _forwarder: ForwarderContract,
         private readonly _deployment: DeploymentManager,
         private readonly _balanceStore: BlockchainBalanceStore,
-        private readonly _maker: Maker,
         private readonly _taker: Taker,
-        private readonly _orderFeeRecipient: FeeRecipient,
         private readonly _forwarderFeeRecipient: FeeRecipient,
-        private readonly _devUtils: DevUtilsContract,
     ) {}
 
     public async marketBuyTestAsync(
@@ -69,7 +96,7 @@ export class ForwarderTestFactory {
         const tx = this._forwarder
             .marketBuyOrdersWithEth(
                 orders,
-                makerAssetAcquiredAmount,
+                makerAssetAcquiredAmount.minus(options.bridgeExcessBuyAmount || 0),
                 orders.map(signedOrder => signedOrder.signature),
                 feePercentage,
                 this._forwarderFeeRecipient.address,
@@ -164,7 +191,7 @@ export class ForwarderTestFactory {
         options: Partial<MarketBuyOptions>,
     ): Promise<ForwarderFillState> {
         await this._balanceStore.updateBalancesAsync();
-        const balances = LocalBalanceStore.create(this._devUtils, this._balanceStore);
+        const balances = LocalBalanceStore.create(this._balanceStore);
         const currentTotal = {
             wethSpentAmount: constants.ZERO_AMOUNT,
             makerAssetAcquiredAmount: constants.ZERO_AMOUNT,
@@ -185,6 +212,7 @@ export class ForwarderTestFactory {
                 order,
                 ordersInfoBefore[i].orderTakerAssetFilledAmount,
                 Math.min(remainingOrdersToFill, 1),
+                options.bridgeExcessBuyAmount || constants.ZERO_AMOUNT,
             );
             remainingOrdersToFill = Math.max(remainingOrdersToFill - 1, 0);
 
@@ -209,6 +237,7 @@ export class ForwarderTestFactory {
         order: SignedOrder,
         takerAssetFilled: BigNumber,
         fillFraction: number,
+        bridgeExcessBuyAmount: BigNumber,
     ): Promise<ForwarderFillState> {
         let { makerAssetAmount, takerAssetAmount, makerFee, takerFee } = order;
         makerAssetAmount = makerAssetAmount.times(fillFraction).integerValue(BigNumber.ROUND_CEIL);
@@ -228,9 +257,10 @@ export class ForwarderTestFactory {
         const takerFeeFilled = takerAssetFilled.times(order.takerFee).dividedToIntegerBy(order.takerAssetAmount);
         takerFee = BigNumber.max(takerFee.minus(takerFeeFilled), 0);
 
+        makerAssetAmount = makerAssetAmount.plus(bridgeExcessBuyAmount);
         let wethSpentAmount = takerAssetAmount.plus(DeploymentManager.protocolFee);
         let makerAssetAcquiredAmount = makerAssetAmount;
-        if (order.takerFeeAssetData === order.makerAssetData) {
+        if (areUnderlyingAssetsEqual(order.takerFeeAssetData, order.makerAssetData)) {
             makerAssetAcquiredAmount = makerAssetAcquiredAmount.minus(takerFee);
         } else if (order.takerFeeAssetData === order.takerAssetData) {
             wethSpentAmount = wethSpentAmount.plus(takerFee);
@@ -244,29 +274,29 @@ export class ForwarderTestFactory {
 
         // Maker -> Forwarder
         await balances.transferAssetAsync(
-            this._maker.address,
+            order.makerAddress,
             this._forwarder.address,
             makerAssetAmount,
             order.makerAssetData,
         );
         // Maker -> Order fee recipient
         await balances.transferAssetAsync(
-            this._maker.address,
-            this._orderFeeRecipient.address,
+            order.makerAddress,
+            order.feeRecipientAddress,
             makerFee,
             order.makerFeeAssetData,
         );
         // Forwarder -> Maker
         await balances.transferAssetAsync(
             this._forwarder.address,
-            this._maker.address,
+            order.makerAddress,
             takerAssetAmount,
             order.takerAssetData,
         );
         // Forwarder -> Order fee recipient
         await balances.transferAssetAsync(
             this._forwarder.address,
-            this._orderFeeRecipient.address,
+            order.feeRecipientAddress,
             takerFee,
             order.takerFeeAssetData,
         );

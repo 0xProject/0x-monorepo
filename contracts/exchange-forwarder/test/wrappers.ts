@@ -13,3 +13,4 @@ export * from '../test/generated-wrappers/mixin_assets';
 export * from '../test/generated-wrappers/mixin_exchange_wrapper';
 export * from '../test/generated-wrappers/mixin_forwarder_core';
 export * from '../test/generated-wrappers/mixin_weth';
+export * from '../test/generated-wrappers/test_forwarder';

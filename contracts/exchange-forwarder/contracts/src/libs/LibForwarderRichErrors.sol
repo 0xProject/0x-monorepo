@@ -18,8 +18,6 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-
 
 library LibForwarderRichErrors {
 

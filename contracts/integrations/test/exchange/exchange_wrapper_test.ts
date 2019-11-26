@@ -112,7 +112,7 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         await blockchainBalances.updateBalancesAsync();
 
-        initialLocalBalances = LocalBalanceStore.create(deployment.devUtils, blockchainBalances);
+        initialLocalBalances = LocalBalanceStore.create(blockchainBalances);
 
         wethAssetData = deployment.assetDataEncoder
             .ERC20Token(deployment.tokens.weth.address)
@@ -120,7 +120,7 @@ blockchainTests.resets('Exchange wrappers', env => {
     });
 
     beforeEach(async () => {
-        localBalances = LocalBalanceStore.create(deployment.devUtils, initialLocalBalances);
+        localBalances = LocalBalanceStore.create(initialLocalBalances);
     });
 
     after(async () => {

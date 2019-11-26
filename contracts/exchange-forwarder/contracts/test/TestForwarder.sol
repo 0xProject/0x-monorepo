@@ -19,27 +19,45 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./MixinForwarderCore.sol";
-import "./libs/LibConstants.sol";
+import "../src/MixinExchangeWrapper.sol";
+import "../src/libs/LibConstants.sol";
 
 
-// solhint-disable no-empty-blocks
-// MixinAssets, MixinExchangeWrapper, and MixinWeth are all inherited via
-// MixinForwarderCore.
-contract Forwarder is
+contract TestForwarder is
     LibConstants,
-    MixinForwarderCore
+    MixinExchangeWrapper
 {
-    constructor (
-        address _exchange,
-        address _weth
+    // solhint-disable no-empty-blocks
+    constructor ()
+        public
+        LibConstants(
+            address(0),
+            address(0)
+        )
+    {}
+
+    function areUnderlyingAssetsEqual(
+        bytes memory assetData1,
+        bytes memory assetData2
     )
         public
-        Ownable()
-        LibConstants(
-            _exchange,
-            _weth
-        )
-        MixinForwarderCore()
-    {}
+        returns (bool)
+    {
+        return _areUnderlyingAssetsEqual(
+            assetData1,
+            assetData2
+        );
+    }
+
+    function transferAssetToSender(
+        bytes memory assetData,
+        uint256 amount
+    )
+        public
+    {
+        _transferAssetToSender(
+            assetData,
+            amount
+        );
+    }
 }

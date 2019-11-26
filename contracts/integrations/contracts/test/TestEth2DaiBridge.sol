@@ -19,27 +19,27 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./MixinForwarderCore.sol";
-import "./libs/LibConstants.sol";
+import "@0x/contracts-asset-proxy/contracts/src/bridges/Eth2DaiBridge.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IEth2Dai.sol";
 
 
-// solhint-disable no-empty-blocks
-// MixinAssets, MixinExchangeWrapper, and MixinWeth are all inherited via
-// MixinForwarderCore.
-contract Forwarder is
-    LibConstants,
-    MixinForwarderCore
+contract TestEth2DaiBridge is
+    Eth2DaiBridge
 {
-    constructor (
-        address _exchange,
-        address _weth
-    )
+    // solhint-disable var-name-mixedcase
+    address public TEST_ETH2DAI_ADDRESS;
+
+    constructor (address testEth2Dai)
         public
-        Ownable()
-        LibConstants(
-            _exchange,
-            _weth
-        )
-        MixinForwarderCore()
-    {}
+    {
+        TEST_ETH2DAI_ADDRESS = testEth2Dai;
+    }
+
+    function _getEth2DaiContract()
+        internal
+        view
+        returns (IEth2Dai exchange)
+    {
+        return IEth2Dai(TEST_ETH2DAI_ADDRESS);
+    }
 }
