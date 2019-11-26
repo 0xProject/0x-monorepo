@@ -19,6 +19,8 @@ export {
 } from './generated-wrappers/dummy_erc721_token';
 export {
     ERC1155MintableContract,
+    ERC1155MintableEventArgs,
+    ERC1155MintableEvents,
     ERC1155MintableApprovalForAllEventArgs,
     ERC1155MintableTransferBatchEventArgs,
     ERC1155MintableTransferSingleEventArgs,
@@ -53,40 +55,7 @@ export {
     ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
 export { ForwarderContract } from './generated-wrappers/forwarder';
-export { IValidatorContract } from './generated-wrappers/i_validator';
-export { IWalletContract } from './generated-wrappers/i_wallet';
 export { OrderValidatorContract } from './generated-wrappers/order_validator';
-export {
-    StakingAuthorizedAddressAddedEventArgs,
-    StakingAuthorizedAddressRemovedEventArgs,
-    StakingContract,
-    StakingEpochEndedEventArgs,
-    StakingEpochFinalizedEventArgs,
-    StakingEventArgs,
-    StakingEvents,
-    StakingExchangeAddedEventArgs,
-    StakingExchangeRemovedEventArgs,
-    StakingMakerStakingPoolSetEventArgs,
-    StakingMoveStakeEventArgs,
-    StakingOperatorShareDecreasedEventArgs,
-    StakingOwnershipTransferredEventArgs,
-    StakingParamsSetEventArgs,
-    StakingRewardsPaidEventArgs,
-    StakingStakeEventArgs,
-    StakingStakingPoolCreatedEventArgs,
-    StakingStakingPoolEarnedRewardsInEpochEventArgs,
-    StakingUnstakeEventArgs,
-} from './generated-wrappers/staking';
-export {
-    StakingProxyAuthorizedAddressAddedEventArgs,
-    StakingProxyAuthorizedAddressRemovedEventArgs,
-    StakingProxyContract,
-    StakingProxyEventArgs,
-    StakingProxyEvents,
-    StakingProxyOwnershipTransferredEventArgs,
-    StakingProxyStakingContractAttachedToProxyEventArgs,
-    StakingProxyStakingContractDetachedFromProxyEventArgs,
-} from './generated-wrappers/staking_proxy';
 export {
     WETH9EventArgs,
     WETH9Events,
@@ -97,12 +66,6 @@ export {
     WETH9Contract,
 } from './generated-wrappers/weth9';
 export { CoordinatorContract } from './generated-wrappers/coordinator';
-export {
-    CoordinatorRegistryEventArgs,
-    CoordinatorRegistryEvents,
-    CoordinatorRegistryCoordinatorEndpointSetEventArgs,
-    CoordinatorRegistryContract,
-} from './generated-wrappers/coordinator_registry';
 export { OrderStatus, ContractError, ForwarderError, ContractWrappersConfig, OrderInfo } from './types';
 
 export {
