@@ -23,6 +23,7 @@ from pkg_resources import resource_string
 
 from mypy_extensions import TypedDict
 
+from eth_typing import HexStr
 from eth_utils import keccak, remove_0x_prefix, to_bytes, to_checksum_address
 from web3 import Web3
 import web3.exceptions
@@ -361,5 +362,5 @@ def sign_hash_to_bytes(
     '1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
     """  # noqa: E501 (line too long)
     return remove_0x_prefix(
-        sign_hash(provider, signer_address, hash_hex)
+        HexStr(sign_hash(provider, signer_address, hash_hex))
     ).encode(encoding="utf_8")

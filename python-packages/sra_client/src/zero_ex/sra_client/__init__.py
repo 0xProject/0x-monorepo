@@ -330,7 +330,7 @@ checksum the address in the order before filling it.)
 
 >>> exchange.fill_order.send_transaction(
 ...     order=order,
-...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
+...     taker_asset_fill_amount=order['takerAssetAmount']/2, # note the half fill
 ...     signature=order['signature'].replace('0x', '').encode('utf-8'),
 ...     tx_params=TxParams(from_=taker_address)
 ... )

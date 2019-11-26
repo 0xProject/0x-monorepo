@@ -5,7 +5,7 @@
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path
-from sys import argv
+from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from distutils.command.clean import clean
 import distutils.command.build_py
@@ -107,7 +107,7 @@ class TestCommandExtension(TestCommand):
 
     def run_tests(self):
         """Invoke pytest."""
-        import pytest
+        import pytest  # pylint: disable=import-outside-toplevel
 
         exit(pytest.main(["--doctest-modules", "-rapP"]))
         #        show short test summary at end ^
