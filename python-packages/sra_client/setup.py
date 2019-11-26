@@ -19,7 +19,7 @@ from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
 
 NAME = "0x-sra-client"
-VERSION = "4.0.0"
+VERSION = "4.0.0.dev0"
 # To install the library, run the following
 #
 # python setup.py install
@@ -92,6 +92,9 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
 
     def run(self):
         """Run `docker-compose up`."""
+        subprocess.call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml pull").split()
+        )
         subprocess.call(  # nosec
             ("docker-compose -f test/relayer/docker-compose.yml up -d").split()
         )
@@ -210,9 +213,10 @@ setup(
     },
     extras_require={
         "dev": [
-            "0x-contract-artifacts",
-            "0x-contract-addresses",
-            "0x-order-utils",
+            "0x-contract-artifacts==3.0.0.dev2",
+            "0x-contract-addresses==3.0.0.dev3",
+            "0x-contract-wrappers==2.0.0.dev10",
+            "0x-order-utils==4.0.0.dev8",
             "web3",
             "bandit",
             "black",

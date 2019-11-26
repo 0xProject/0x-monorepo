@@ -171,6 +171,7 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dummy_erc721_tok
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dutch_auction/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc1155_mintable/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc1155_proxy/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_bridge_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc721_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc721_token/__init__.py
@@ -185,6 +186,7 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/staking_proxy/__
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/static_call_proxy/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/weth9/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_token/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_vault/__init__.py
 
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/

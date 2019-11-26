@@ -195,7 +195,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-contract-wrappers",
-    version="2.0.0",
+    version="2.0.0.dev10",
     description="Python wrappers for 0x smart contracts",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -216,10 +216,10 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
-        "0x-contract-addresses",
-        "0x-contract-artifacts",
-        "0x-json-schemas",
-        "0x-order-utils",
+        "0x-contract-addresses==3.0.0.dev3",
+        "0x-contract-artifacts==3.0.0.dev2",
+        "0x-json-schemas==2.1.0.dev2",
+        "0x-order-utils==4.0.0.dev8",
         "web3",
         "attrs",
         "eth_utils",
