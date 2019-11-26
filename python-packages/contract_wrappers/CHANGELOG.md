@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 - TBD
+## 1.2.0 - 2019-11-26
 
 -   Fixed bug which was preventing clients from pre-building transactions when using a node without any unlocked accounts.
 -   Added a `build_transaction()` interface to all `ContractMethod` subclasses.
