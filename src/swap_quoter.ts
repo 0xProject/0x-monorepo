@@ -1,4 +1,4 @@
-import { DevUtilsContract, ExchangeContract } from '@0x/abi-gen-wrappers';
+import { DevUtilsContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
@@ -37,7 +37,6 @@ export class SwapQuoter {
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _orderPruner: OrderPruner;
     private readonly _devUtilsContract: DevUtilsContract;
-    private readonly _exchangeContract: ExchangeContract;
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
      * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
@@ -156,7 +155,6 @@ export class SwapQuoter {
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
         this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
-        this._exchangeContract = new ExchangeContract(this._contractAddresses.exchange, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils();
         this._orderPruner = new OrderPruner(this._devUtilsContract, {
             expiryBufferMs: this.expiryBufferMs,

@@ -1,4 +1,4 @@
-import { DevUtilsContract, ExchangeContract, WETH9Contract } from '@0x/abi-gen-wrappers';
+import { DevUtilsContract, WETH9Contract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
@@ -69,7 +69,6 @@ const PARTIAL_LARGE_PRUNED_SIGNED_ORDERS: Array<Partial<PrunedSignedOrder>> = [
 describe('swapQuoteConsumerUtils', () => {
     let wethContract: WETH9Contract;
     let protocolFeeUtils: ProtocolFeeUtils;
-    let exchangeContract: ExchangeContract;
     let userAddresses: string[];
     let makerAddress: string;
     let takerAddress: string;
@@ -90,7 +89,6 @@ describe('swapQuoteConsumerUtils', () => {
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         wethContract = new WETH9Contract(contractAddresses.etherToken, provider);
-        exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
         [takerAddress, makerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
