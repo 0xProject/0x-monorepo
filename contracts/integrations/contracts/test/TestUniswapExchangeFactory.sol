@@ -21,7 +21,6 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/bridges/UniswapBridge.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFactory.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchange.sol";
 
 
 contract TestUniswapExchangeFactory is
@@ -46,8 +45,8 @@ contract TestUniswapExchangeFactory is
     function getExchange(address tokenAddress)
         external
         view
-        returns (IUniswapExchange)
+        returns (address)
     {
-        return IUniswapExchange(_testExchanges[tokenAddress]);
+        return _testExchanges[tokenAddress];
     }
 }
