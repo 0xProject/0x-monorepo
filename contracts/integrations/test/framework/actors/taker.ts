@@ -1,12 +1,12 @@
-import { constants, getRandomInteger } from '@0x/contracts-test-utils';
+import { constants } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { validFillOrderCompleteFillAssertion } from '../assertions/fillOrder';
 import { AssertionResult } from '../assertions/function_assertion';
 import { DeploymentManager } from '../deployment_manager';
+import { Pseudorandom } from '../pseudorandom';
 
 import { Actor, Constructor } from './base';
 
@@ -65,7 +65,7 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             const { marketMakers } = this.actor.simulationEnvironment!;
             const assertion = validFillOrderCompleteFillAssertion(this.actor.deployment);
             while (true) {
-                const maker = _.sample(marketMakers);
+                const maker = Pseudorandom.sample(marketMakers);
                 if (maker === undefined) {
                     yield undefined;
                 } else {
@@ -82,8 +82,8 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                     ]);
 
                     const order = await maker.signOrderAsync({
-                        makerAssetAmount: getRandomInteger(constants.ZERO_AMOUNT, constants.INITIAL_ERC20_BALANCE),
-                        takerAssetAmount: getRandomInteger(constants.ZERO_AMOUNT, constants.INITIAL_ERC20_BALANCE),
+                        makerAssetAmount: Pseudorandom.integer(constants.INITIAL_ERC20_BALANCE),
+                        takerAssetAmount: Pseudorandom.integer(constants.INITIAL_ERC20_BALANCE),
                     });
                     yield assertion.executeAsync([order, order.takerAssetAmount, order.signature], {
                         from: this.actor.address,

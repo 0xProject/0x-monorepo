@@ -1,5 +1,4 @@
 import { constants, StakingPoolById } from '@0x/contracts-staking';
-import { getRandomInteger } from '@0x/contracts-test-utils';
 import '@azure/core-asynciterator-polyfill';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -7,6 +6,7 @@ import * as _ from 'lodash';
 import { validCreateStakingPoolAssertion } from '../assertions/createStakingPool';
 import { validDecreaseStakingPoolOperatorShareAssertion } from '../assertions/decreaseStakingPoolOperatorShare';
 import { AssertionResult } from '../assertions/function_assertion';
+import { Pseudorandom } from '../pseudorandom';
 
 import { Actor, Constructor } from './base';
 
@@ -83,7 +83,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             const { stakingPools } = this.actor.simulationEnvironment!;
             const assertion = validCreateStakingPoolAssertion(this.actor.deployment, stakingPools);
             while (true) {
-                const operatorShare = getRandomInteger(0, constants.PPM).toNumber();
+                const operatorShare = Pseudorandom.integer(constants.PPM).toNumber();
                 yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
             }
         }
@@ -92,11 +92,11 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             const { stakingPools } = this.actor.simulationEnvironment!;
             const assertion = validDecreaseStakingPoolOperatorShareAssertion(this.actor.deployment, stakingPools);
             while (true) {
-                const poolId = _.sample(this._getOperatorPoolIds(stakingPools));
+                const poolId = Pseudorandom.sample(this._getOperatorPoolIds(stakingPools));
                 if (poolId === undefined) {
                     yield undefined;
                 } else {
-                    const operatorShare = getRandomInteger(0, stakingPools[poolId].operatorShare).toNumber();
+                    const operatorShare = Pseudorandom.integer(stakingPools[poolId].operatorShare).toNumber();
                     yield assertion.executeAsync([poolId, operatorShare], { from: this.actor.address });
                 }
             }
