@@ -1,11 +1,8 @@
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ERC1155MintableContract, ERC1155TransferSingleEventArgs } from './wrappers';
-
-const expect = chai.expect;
 
 export class Erc1155Wrapper {
     private readonly _erc1155Contract: ERC1155MintableContract;
@@ -135,7 +132,9 @@ export class Erc1155Wrapper {
         });
         const balances = await this.getBalancesAsync(ownersExtended, tokensExtended);
         _.each(balances, (balance: BigNumber, i: number) => {
-            expect(balance, `${ownersExtended[i]}${tokensExtended[i]}`).to.be.bignumber.equal(expectedBalances[i]);
+            if (!balance.isEqualTo(expectedBalances[i])) {
+                throw new Error(`${ownersExtended[i]}${tokensExtended[i]} balance not equal ${expectedBalances[i]}`);
+            }
         });
     }
     public async isNonFungibleItemAsync(tokenId: BigNumber): Promise<boolean> {
