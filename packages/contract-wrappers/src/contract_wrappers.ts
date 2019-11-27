@@ -95,7 +95,7 @@ export class ContractWrappers {
         this.weth9 = new WETH9Contract(contractAddresses.etherToken, this.getProvider());
         this.exchange = new ExchangeContract(contractAddresses.exchange, this.getProvider());
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
-        this.staking = new StakingContract(contractAddresses.staking, this.getProvider());
+        this.staking = new StakingContract(contractAddresses.stakingProxy, this.getProvider());
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorContract(contractAddresses.coordinator, this.getProvider());
         this.contractAddresses = contractAddresses;
