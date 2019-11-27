@@ -35,6 +35,8 @@ export interface SignedOrder extends Order {
     signature: string;
 }
 
+export type SignedOrderWithoutDomain = Pick<SignedOrder, Exclude<keyof SignedOrder, 'chainId' | 'exchangeAddress'>>;
+
 export enum MarketOperation {
     Sell = 'Sell',
     Buy = 'Buy',

@@ -16,7 +16,7 @@
                 "pr": 2373
             },
             {
-                "note": "Add `OrderWithoutDomain` type",
+                "note": "Add `OrderWithoutDomain` and `SignedOrderWithoutDomain` type",
                 "pr": 2353
             }
         ],
