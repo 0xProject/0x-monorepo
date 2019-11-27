@@ -10,7 +10,7 @@ import {
     shortZip,
 } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { OrderInfo, OrderStatus, OrderWithoutDomain } from '@0x/types';
+import { OrderInfo, OrderStatus, SignedOrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -39,7 +39,7 @@ describe('aggregation utils tests', () => {
     const MAKER_ASSET_DATA = createERC20AssetData(MAKER_TOKEN);
     const TAKER_ASSET_DATA = createERC20AssetData(TAKER_TOKEN);
 
-    function createOrder(overrides?: Partial<OrderWithoutDomain>): OrderWithoutDomain {
+    function createOrder(overrides?: Partial<SignedOrderWithoutDomain>): SignedOrderWithoutDomain {
         return {
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,
@@ -55,6 +55,7 @@ describe('aggregation utils tests', () => {
             takerAssetAmount: getRandomInteger(1, 1e18),
             makerFee: getRandomInteger(1, 1e17),
             takerFee: getRandomInteger(1, 1e17),
+            signature: hexRandom(),
             ...overrides,
         };
     }
@@ -99,7 +100,7 @@ describe('aggregation utils tests', () => {
         expect(actual.substr(0, expected.length)).to.eq(expected);
     }
 
-    function createOrdersFromSellRates(takerAssetAmount: BigNumber, rates: BigNumber[]): OrderWithoutDomain[] {
+    function createOrdersFromSellRates(takerAssetAmount: BigNumber, rates: BigNumber[]): SignedOrderWithoutDomain[] {
         const singleTakerAssetAmount = takerAssetAmount.div(rates.length).integerValue(BigNumber.ROUND_UP);
         return rates.map(r =>
             createOrder({
@@ -109,7 +110,7 @@ describe('aggregation utils tests', () => {
         );
     }
 
-    function createOrdersFromBuyRates(makerAssetAmount: BigNumber, rates: BigNumber[]): OrderWithoutDomain[] {
+    function createOrdersFromBuyRates(makerAssetAmount: BigNumber, rates: BigNumber[]): SignedOrderWithoutDomain[] {
         const singleMakerAssetAmount = makerAssetAmount.div(rates.length).integerValue(BigNumber.ROUND_UP);
         return rates.map(r =>
             createOrder({

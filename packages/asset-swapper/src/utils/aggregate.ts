@@ -1,6 +1,6 @@
 import { ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { OrderInfo, OrderWithoutDomain } from '@0x/types';
+import { SignedOrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { SupportedProvider } from 'ethereum-types';
 
@@ -58,11 +58,19 @@ export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai
  * Represents a node on a fill path.
  */
 export interface Fill {
+    // See `FillFlags`.
     flags: number;
+    // `FillFlags` that are incompatible with this fill, e.g., to prevent
+    // Kyber from mixing with Uniswap and Eth2Dai and vice versa.
     exclusionMask: number;
+    // Input fill amount (taker asset amount in a sell, maker asset amount in a buy).
     input: BigNumber;
+    // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
     output: BigNumber;
+    // Fill that must precede this one. This enforces certain fills to be contiguous.
     parent?: Fill;
+    // Arbitrary data to store in this Fill object. Used to reconstruct orders
+    // from paths.
     data?: any;
 }
 
@@ -73,8 +81,7 @@ interface FillData {
 
 // `FillData` for native fills.
 interface NativeFillData extends FillData {
-    order: OrderWithoutDomain;
-    orderInfo: OrderInfo;
+    order: SignedOrderWithoutDomain;
 }
 
 /**
@@ -164,10 +171,10 @@ export enum FillFlags {
  * @return Improved orders.
  */
 export async function improveMarketSellAsync(
-    nativeOrders: OrderWithoutDomain[],
+    nativeOrders: SignedOrderWithoutDomain[],
     takerAmount: BigNumber,
     opts?: Partial<ImproveOrdersOpts>,
-): Promise<OrderWithoutDomain[]> {
+): Promise<SignedOrderWithoutDomain[]> {
     if (nativeOrders.length === 0) {
         throw new Error(AggregationError.EmptyOrders);
     }
@@ -175,14 +182,14 @@ export async function improveMarketSellAsync(
         ...IMPROVE_ORDERS_OPTS_DEFAULTS,
         ...opts,
     };
-    const [orderInfos, dexQuotes] = await queryNetworkAsync(
+    const [fillableAmounts, dexQuotes] = await queryNetworkAsync(
         nativeOrders,
         getSampleAmounts(takerAmount, _opts.numSamples),
         difference(SELL_SOURCES, _opts.excludedSources),
         _opts.provider,
     );
     const nativePath = pruneDustFillsFromNativePath(
-        createSellPathFromNativeOrders(nativeOrders, orderInfos),
+        createSellPathFromNativeOrders(nativeOrders, fillableAmounts),
         takerAmount,
         _opts.dustThreshold,
     );
@@ -215,10 +222,10 @@ export async function improveMarketSellAsync(
  * @return Improved orders.
  */
 export async function improveMarketBuyAsync(
-    nativeOrders: OrderWithoutDomain[],
+    nativeOrders: SignedOrderWithoutDomain[],
     makerAmount: BigNumber,
     opts?: Partial<ImproveOrdersOpts>,
-): Promise<OrderWithoutDomain[]> {
+): Promise<SignedOrderWithoutDomain[]> {
     if (nativeOrders.length === 0) {
         throw new Error(AggregationError.EmptyOrders);
     }
@@ -226,7 +233,7 @@ export async function improveMarketBuyAsync(
         ...IMPROVE_ORDERS_OPTS_DEFAULTS,
         ...opts,
     };
-    const [orderInfos, dexQuotes] = await queryNetworkAsync(
+    const [fillableAmounts, dexQuotes] = await queryNetworkAsync(
         nativeOrders,
         getSampleAmounts(makerAmount, _opts.numSamples),
         difference(BUY_SOURCES, _opts.excludedSources),
@@ -234,7 +241,7 @@ export async function improveMarketBuyAsync(
         true,
     );
     const nativePath = pruneDustFillsFromNativePath(
-        createBuyPathFromNativeOrders(nativeOrders, orderInfos),
+        createBuyPathFromNativeOrders(nativeOrders, fillableAmounts),
         makerAmount,
         _opts.dustThreshold,
     );
@@ -282,26 +289,35 @@ export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
  * Query the sampler contract to get native order statuses and DEX quotes.
  */
 export async function queryNetworkAsync(
-    nativeOrders: OrderWithoutDomain[],
+    nativeOrders: SignedOrderWithoutDomain[],
     sampleAmounts: BigNumber[],
     sources: ERC20BridgeSource[],
     provider?: SupportedProvider,
     isBuy?: boolean,
-): Promise<[OrderInfo[], DexSample[][]]> {
+): Promise<[BigNumber[], DexSample[][]]> {
     if (!provider) {
         throw new Error(AggregationError.MissingProvider);
     }
     const sampler = new ERC20BridgeSamplerContract(SAMPLER_ADDRESS, provider);
-    let orderInfos;
+    const signatures = nativeOrders.map(o => o.signature);
+    let fillableAmount;
     let rawSamples;
     if (isBuy) {
-        [orderInfos, rawSamples] = await sampler
-            .queryOrdersAndSampleBuys(nativeOrders, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
-            .callAsync();
+        [fillableAmount, rawSamples] = await sampler
+            .queryOrdersAndSampleBuys(
+                nativeOrders,
+                signatures,
+                sources.map(s => SOURCE_TO_ADDRESS[s]),
+                sampleAmounts,
+            ).callAsync();
     } else {
-        [orderInfos, rawSamples] = await sampler
-            .queryOrdersAndSampleSells(nativeOrders, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
-            .callAsync();
+        [fillableAmount, rawSamples] = await sampler
+            .queryOrdersAndSampleSells(
+                nativeOrders,
+                signatures,
+                sources.map(s => SOURCE_TO_ADDRESS[s]),
+                sampleAmounts,
+            ).callAsync();
     }
     const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
         const source = sources[sourceIdx];
@@ -311,7 +327,7 @@ export async function queryNetworkAsync(
             output: sample,
         }));
     });
-    return [orderInfos, quotes];
+    return [fillableAmount, quotes];
 }
 
 /**
@@ -335,13 +351,13 @@ function difference<T>(a: T[], b: T[]): T[] {
     return a.filter(x => b.indexOf(x) === -1);
 }
 
-function createSellPathFromNativeOrders(orders: OrderWithoutDomain[], orderInfos: OrderInfo[]): Fill[] {
+function createSellPathFromNativeOrders(orders: SignedOrderWithoutDomain[], fillableAmounts: BigNumber[]): Fill[] {
     const path: Fill[] = [];
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
-        const orderInfo = orderInfos[i];
-        const [makerAmount, takerAmount] = getOrderFillableAmounts(order, orderInfo);
+        const takerAmount = fillableAmounts[i];
+        const makerAmount = getOrderFillableMakerAmount(order, takerAmount);
         // Native orders can be filled in any order, so they're all root nodes.
         path.push({
             flags: FillFlags.SourceNative,
@@ -351,20 +367,32 @@ function createSellPathFromNativeOrders(orders: OrderWithoutDomain[], orderInfos
             data: {
                 source: ERC20BridgeSource.Native,
                 order,
-                orderInfo,
             },
         });
     }
     return path;
 }
 
-function createBuyPathFromNativeOrders(orders: OrderWithoutDomain[], orderInfos: OrderInfo[]): Fill[] {
-    // Equivalent to `createSellPathFromNativeOrders` with sizes and rewards flipped.
-    return createSellPathFromNativeOrders(orders, orderInfos).map(f => ({
-        ...f,
-        input: f.output,
-        output: f.input,
-    }));
+function createBuyPathFromNativeOrders(orders: SignedOrderWithoutDomain[], fillableAmounts: BigNumber[]): Fill[] {
+    const path: Fill[] = [];
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < orders.length; i++) {
+        const order = orders[i];
+        const makerAmount = fillableAmounts[i];
+        const takerAmount = getOrderFillableTakerAmount(order, makerAmount);
+        // Native orders can be filled in any order, so they're all root nodes.
+        path.push({
+            flags: FillFlags.SourceNative,
+            exclusionMask: 0,
+            input: takerAmount,
+            output: makerAmount,
+            data: {
+                source: ERC20BridgeSource.Native,
+                order,
+            },
+        });
+    }
+    return path;
 }
 
 function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean): Fill[][] {
@@ -418,13 +446,18 @@ function sourceToExclusionMask(source: ERC20BridgeSource): number {
     return 0;
 }
 
-function getOrderFillableAmounts(order: OrderWithoutDomain, orderInfo: OrderInfo): [BigNumber, BigNumber] {
-    const takerAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
-    const makerAmount = takerAmount
+function getOrderFillableMakerAmount(order: SignedOrderWithoutDomain, fillableTakerAmmount: BigNumber): BigNumber {
+    return fillableTakerAmmount
         .times(order.makerAssetAmount)
         .div(order.takerAssetAmount)
         .integerValue(BigNumber.ROUND_DOWN);
-    return [makerAmount, takerAmount];
+}
+
+function getOrderFillableTakerAmount(order: SignedOrderWithoutDomain, fillableMakerAmmount: BigNumber): BigNumber {
+    return fillableMakerAmmount
+        .times(order.takerAssetAmount)
+        .div(order.makerAssetAmount)
+        .integerValue(BigNumber.ROUND_DOWN);
 }
 
 function pruneDustFillsFromNativePath(path: Fill[], fillAmount: BigNumber, dustThreshold: number): Fill[] {
@@ -503,7 +536,7 @@ function sortFillsByPrice(fills: Fill[]): Fill[] {
     });
 }
 
-function getOrderTokens(order: OrderWithoutDomain): [string, string] {
+function getOrderTokens(order: SignedOrderWithoutDomain): [string, string] {
     const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
     return [encoder.strictDecode(order.makerAssetData), encoder.strictDecode(order.takerAssetData)];
 }
@@ -514,8 +547,8 @@ function createSellOrdersFromPath(
     outputToken: string,
     path: Fill[],
     bridgeSlippage: number,
-): OrderWithoutDomain[] {
-    const orders: OrderWithoutDomain[] = [];
+): SignedOrderWithoutDomain[] {
+    const orders: SignedOrderWithoutDomain[] = [];
     for (const fill of path) {
         const source = (fill.data as FillData).source;
         if (source === ERC20BridgeSource.Native) {
@@ -539,8 +572,8 @@ function createBuyOrdersFromPath(
     outputToken: string,
     path: Fill[],
     bridgeSlippage: number,
-): OrderWithoutDomain[] {
-    const orders: OrderWithoutDomain[] = [];
+): SignedOrderWithoutDomain[] {
+    const orders: SignedOrderWithoutDomain[] = [];
     for (const fill of path) {
         const source = (fill.data as FillData).source;
         if (source === ERC20BridgeSource.Native) {
@@ -563,7 +596,7 @@ function createKyberOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): OrderWithoutDomain {
+): SignedOrderWithoutDomain {
     return createBridgeOrder(
         KYBER_BRIDGE_ADDRESS,
         makerToken,
@@ -582,7 +615,7 @@ function createEth2DaiOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): OrderWithoutDomain {
+): SignedOrderWithoutDomain {
     return createBridgeOrder(
         ETH2DAI_BRIDGE_ADDRESS,
         makerToken,
@@ -601,7 +634,7 @@ function createUniswapOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): OrderWithoutDomain {
+): SignedOrderWithoutDomain {
     return createBridgeOrder(
         UNISWAP_BRIDGE_ADDRESS,
         makerToken,
@@ -621,7 +654,7 @@ function createBridgeOrder(
     takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): OrderWithoutDomain {
+): SignedOrderWithoutDomain {
     return {
         makerAddress: bridgeAddress,
         makerAssetData: createBridgeAssetData(makerToken, bridgeAddress, createBridgeData(takerToken)),
@@ -656,8 +689,8 @@ function createBridgeData(tokenAddress: string): string {
 }
 
 type CommonOrderFields = Pick<
-    OrderWithoutDomain,
-    Exclude<keyof OrderWithoutDomain, 'makerAddress' | 'makerAssetData' | 'takerAssetData'>
+    SignedOrderWithoutDomain,
+    Exclude<keyof SignedOrderWithoutDomain, 'makerAddress' | 'makerAssetData' | 'takerAssetData'>
 >;
 
 function createCommonOrderFields(
@@ -682,6 +715,7 @@ function createCommonOrderFields(
         takerAssetAmount: isBuy
             ? takerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
             : takerAssetAmount,
+        signature: '0x04',
     };
 }
 
