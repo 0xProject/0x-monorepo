@@ -3,30 +3,6 @@ export { ContractAddresses } from '@0x/contract-addresses';
 export { ContractWrappers } from './contract_wrappers';
 export { DevUtilsContract } from './generated-wrappers/dev_utils';
 export {
-    DummyERC20TokenEventArgs,
-    DummyERC20TokenEvents,
-    DummyERC20TokenTransferEventArgs,
-    DummyERC20TokenApprovalEventArgs,
-    DummyERC20TokenContract,
-} from './generated-wrappers/dummy_erc20_token';
-export {
-    DummyERC721TokenEventArgs,
-    DummyERC721TokenEvents,
-    DummyERC721TokenTransferEventArgs,
-    DummyERC721TokenApprovalEventArgs,
-    DummyERC721TokenApprovalForAllEventArgs,
-    DummyERC721TokenContract,
-} from './generated-wrappers/dummy_erc721_token';
-export {
-    ERC1155MintableContract,
-    ERC1155MintableEventArgs,
-    ERC1155MintableEvents,
-    ERC1155MintableApprovalForAllEventArgs,
-    ERC1155MintableTransferBatchEventArgs,
-    ERC1155MintableTransferSingleEventArgs,
-    ERC1155MintableURIEventArgs,
-} from './generated-wrappers/erc1155_mintable';
-export {
     ERC20TokenEventArgs,
     ERC20TokenEvents,
     ERC20TokenTransferEventArgs,
