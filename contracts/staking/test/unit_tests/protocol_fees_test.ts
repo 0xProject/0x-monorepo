@@ -7,11 +7,9 @@ import {
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, StakingRevertErrors } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
-
-import { StakingRevertErrors } from '../../src';
 
 import { artifacts } from '../artifacts';
 import {

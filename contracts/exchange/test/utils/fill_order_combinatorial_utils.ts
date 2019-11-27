@@ -8,13 +8,11 @@ import {
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, expect, LogDecoder, orderHashUtils, orderUtils, signingUtils } from '@0x/contracts-test-utils';
 import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
+import { BigNumber, errorUtils, ExchangeRevertErrors, providerUtils, RevertError, StringRevertError } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
-
-import { ExchangeRevertErrors } from '../../src';
 
 import { artifacts } from '../artifacts';
 

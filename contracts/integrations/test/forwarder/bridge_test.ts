@@ -1,6 +1,6 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ForwarderContract, ForwarderRevertErrors } from '@0x/contracts-exchange-forwarder';
+import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import {
     blockchainTests,
     constants,
@@ -10,7 +10,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
-import { AbiEncoder, BigNumber } from '@0x/utils';
+import { AbiEncoder, BigNumber, ExchangeForwarderRevertErrors } from '@0x/utils';
 
 import { deployEth2DaiBridgeAsync } from '../bridges/deploy_eth2dai_bridge';
 import { deployUniswapBridgeAsync } from '../bridges/deploy_uniswap_bridge';
@@ -251,7 +251,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 takerFee: toBaseUnitAmount(0.01),
                 takerFeeAssetData: makerFeeTokenAssetData,
             };
-            const expectedError = new ForwarderRevertErrors.UnsupportedFeeError(makerFeeTokenAssetData);
+            const expectedError = new ExchangeForwarderRevertErrors.UnsupportedFeeError(makerFeeTokenAssetData);
             await testFactory.marketSellTestAsync([order], 1.23, { revertError: expectedError });
         });
     });
@@ -301,7 +301,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
             await testFactory.marketBuyTestAsync(orders, 2.56, { forwarderFeePercentage: 1 });
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount (Eth2Dai)', async () => {
-            const expectedError = new ForwarderRevertErrors.CompleteBuyFailedError(
+            const expectedError = new ExchangeForwarderRevertErrors.CompleteBuyFailedError(
                 eth2DaiBridgeOrder.makerAssetAmount.times(0.5),
                 constants.ZERO_AMOUNT,
             );
@@ -352,7 +352,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
             await testFactory.marketBuyTestAsync(orders, 2.56, { forwarderFeePercentage: 1 });
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount (Uniswap)', async () => {
-            const expectedError = new ForwarderRevertErrors.CompleteBuyFailedError(
+            const expectedError = new ExchangeForwarderRevertErrors.CompleteBuyFailedError(
                 uniswapBridgeOrder.makerAssetAmount.times(0.5),
                 constants.ZERO_AMOUNT,
             );
@@ -370,7 +370,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 takerFee: toBaseUnitAmount(0.01),
                 takerFeeAssetData: makerFeeTokenAssetData,
             };
-            const expectedError = new ForwarderRevertErrors.UnsupportedFeeError(makerFeeTokenAssetData);
+            const expectedError = new ExchangeForwarderRevertErrors.UnsupportedFeeError(makerFeeTokenAssetData);
             await testFactory.marketBuyTestAsync([order], 1.23, { revertError: expectedError });
         });
     });
