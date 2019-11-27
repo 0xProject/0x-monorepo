@@ -77,6 +77,8 @@
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
+        "ethereumjs-abi": "0.6.5",
+        "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.11",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",

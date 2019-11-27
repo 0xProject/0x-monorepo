@@ -1,10 +1,11 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { AffiliateInfo, AssetMetaData } from '../types';
+
+import { devUtilsContract } from './dev_utils_contract';
 
 export const assert = {
     ...sharedAssert,
@@ -18,11 +19,11 @@ export const assert = {
     areValidAssetDatas(variableName: string, assetDatas: string[]): void {
         _.forEach(assetDatas, (assetData, index) => assert.isHexString(`${variableName}[${index}]`, assetData));
     },
-    isValidAssetMetaDataMap(variableName: string, metaDataMap: ObjectMap<AssetMetaData>): void {
+    async isValidAssetMetaDataMapAsync(variableName: string, metaDataMap: ObjectMap<AssetMetaData>): Promise<void> {
         _.forEach(metaDataMap, (metaData, assetData) => {
             assert.isHexString(`key ${assetData} of ${variableName}`, assetData);
             assert.isValidAssetMetaData(`${variableName}.${assetData}`, metaData);
-            const assetDataProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+            const assetDataProxyId = await devUtilsContract.decodeAssetProxyId(assetData).callAsync();
             assert.assert(
                 metaData.assetProxyId === assetDataProxyId,
                 `Expected meta data for assetData ${assetData} to have asset proxy id of ${assetDataProxyId}, but instead got ${
