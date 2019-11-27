@@ -1,5 +1,7 @@
-import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
+
+import { BigNumber } from '../../configured_bignumber';
+import { RevertError } from '../../revert_error';
 
 // tslint:disable:max-classes-per-file
 

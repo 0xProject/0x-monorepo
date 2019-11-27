@@ -25,3 +25,16 @@ export {
     StringRevertError,
     AnyRevertError,
 } from './revert_error';
+
+export import CoordinatorRevertErrors = require('./revert_errors/coordinator/revert_errors');
+export import ExchangeForwarderRevertErrors = require('./revert_errors/exchange-forwarder/revert_errors');
+export import LibMathRevertErrors = require('./revert_errors/exchange-libs/lib_math_revert_errors');
+export import ExchangeRevertErrors = require('./revert_errors/exchange/revert_errors');
+export import FixedMathRevertErrors = require('./revert_errors/staking/fixed_math_revert_errors');
+export import StakingRevertErrors = require('./revert_errors/staking/staking_revert_errors');
+export import AuthorizableRevertErrors = require('./revert_errors/utils/authorizable_revert_errors');
+export import LibAddressArrayRevertErrors = require('./revert_errors/utils/lib_address_array_revert_errors');
+export import LibBytesRevertErrors = require('./revert_errors/utils/lib_bytes_revert_errors');
+export import OwnableRevertErrors = require('./revert_errors/utils/ownable_revert_errors');
+export import ReentrancyGuardRevertErrors = require('./revert_errors/utils/reentrancy_guard_revert_errors');
+export import SafeMathRevertErrors = require('./revert_errors/utils/safe_math_revert_errors');

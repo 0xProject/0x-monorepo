@@ -1,4 +1,5 @@
-import { BigNumber, RevertError } from '@0x/utils';
+import { BigNumber } from '../../configured_bignumber';
+import { RevertError } from '../../revert_error';
 
 export enum InvalidByteOperationErrorCodes {
     FromLessThanOrEqualsToRequired,

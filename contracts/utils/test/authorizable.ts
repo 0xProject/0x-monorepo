@@ -1,9 +1,6 @@
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { AuthorizableRevertErrors, BigNumber, OwnableRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
-
-import AuthorizableRevertErrors = require('../src/authorizable_revert_errors');
-import OwnableRevertErrors = require('../src/ownable_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestAuthorizableContract } from './wrappers';

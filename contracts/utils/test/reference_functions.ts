@@ -1,7 +1,7 @@
 import { constants, describe, expect } from '@0x/contracts-test-utils';
+import { SafeMathRevertErrors } from '@0x/utils';
 
 import { safeAdd, safeDiv, safeMul, safeSub } from '../src/reference_functions';
-import SafeMathRevertErrors = require('../src/safe_math_revert_errors');
 
 describe('Reference Functions', () => {
     const { ONE_ETHER, MAX_UINT256, ZERO_AMOUNT } = constants;

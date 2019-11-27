@@ -7,12 +7,11 @@ import {
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, StakingRevertErrors } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants as stakingConstants } from '../../src/constants';
-import StakingRevertErrors = require('../../src/staking_revert_errors');
 
 import { artifacts } from '../artifacts';
 import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';

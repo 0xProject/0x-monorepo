@@ -21,9 +21,7 @@ import {
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
-
-import { ForwarderRevertErrors } from '../src';
+import { BigNumber, ExchangeForwarderRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { TestForwarderContract } from './wrappers';
@@ -159,7 +157,7 @@ blockchainTests('Supported asset type unit tests', env => {
             const tx = forwarder
                 .transferAssetToSender(erc721AssetData, invalidAmount)
                 .awaitTransactionSuccessAsync({ from: receiver });
-            const expectedError = new ForwarderRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
+            const expectedError = new ExchangeForwarderRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
             return expect(tx).to.revertWith(expectedError);
         });
         it('transfers an ERC20 token given ERC20Bridge assetData', async () => {
@@ -177,7 +175,9 @@ blockchainTests('Supported asset type unit tests', env => {
             const tx = forwarder
                 .transferAssetToSender(randomBytes, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
-            const expectedError = new ForwarderRevertErrors.UnsupportedAssetProxyError(hexSlice(randomBytes, 0, 4));
+            const expectedError = new ExchangeForwarderRevertErrors.UnsupportedAssetProxyError(
+                hexSlice(randomBytes, 0, 4),
+            );
             return expect(tx).to.revertWith(expectedError);
         });
     });

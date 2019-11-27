@@ -1,6 +1,6 @@
 export { artifacts } from './artifacts';
 export { ForwarderContract } from './wrappers';
-export import ForwarderRevertErrors = require('./revert_errors');
+export { ExchangeForwarderRevertErrors } from '@0x/utils';
 export {
     ContractArtifact,
     ContractChains,

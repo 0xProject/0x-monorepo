@@ -1,9 +1,8 @@
 import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { AuthorizableRevertErrors } from '@0x/contracts-utils';
-import { BigNumber, StringRevertError } from '@0x/utils';
+import { BigNumber, StakingRevertErrors, StringRevertError } from '@0x/utils';
 
 import { constants as stakingConstants } from '../src/constants';
-import StakingRevertErrors = require('../src/staking_revert_errors');
 
 import { artifacts } from './artifacts';
 import {

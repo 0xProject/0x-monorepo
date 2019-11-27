@@ -15,13 +15,12 @@ import {
     transactionHashUtils,
 } from '@0x/contracts-test-utils';
 import { FillResults, OrderStatus } from '@0x/types';
-import { AbiEncoder, BigNumber } from '@0x/utils';
+import { AbiEncoder, BigNumber, ExchangeRevertErrors } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { exchangeDataEncoder } from '../src/exchange_data_encoder';
-import ExchangeRevertErrors = require('../src/revert_errors');
 
 import { artifacts as localArtifacts } from './artifacts';
 import { ExchangeWrapper } from './utils/exchange_wrapper';

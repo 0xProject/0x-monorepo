@@ -41,8 +41,7 @@ export {
     IStakingEventsRewardsPaidEventArgs,
 } from './wrappers';
 export { artifacts } from './artifacts';
-export import FixedMathRevertErrors = require('./fixed_math_revert_errors');
-export import StakingRevertErrors = require('./staking_revert_errors');
+export { StakingRevertErrors, FixedMathRevertErrors } from '@0x/utils';
 export { constants } from './constants';
 export {
     StakeInfo,

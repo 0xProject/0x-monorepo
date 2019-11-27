@@ -1,6 +1,6 @@
 import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { AuthorizableRevertErrors } from '@0x/contracts-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, StakingRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
@@ -12,7 +12,6 @@ import {
 } from '../wrappers';
 
 import { constants as stakingConstants } from '../../src/constants';
-import StakingRevertErrors = require('../../src/staking_revert_errors');
 
 blockchainTests.resets('StakingProxy unit tests', env => {
     const testString = 'Hello, World!';

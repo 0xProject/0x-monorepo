@@ -1,9 +1,8 @@
 import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import * as ReferenceFunctions from '../src/reference_functions';
-import SafeMathRevertErrors = require('../src/safe_math_revert_errors');
 
 import { artifacts } from './artifacts';
 import { TestLibSafeMathContract } from './wrappers';

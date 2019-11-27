@@ -19,17 +19,14 @@ import {
 import { OwnableRevertErrors } from '@0x/contracts-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
-import { BigNumber, StringRevertError } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import ExchangeRevertErrors = require('../src/revert_errors');
-
 import { artifacts } from './artifacts';
-import { TestAssetProxyDispatcherAssetProxyRegisteredEventArgs, TestAssetProxyDispatcherContract } from './wrappers';
-
 import { dependencyArtifacts } from './utils/dependency_artifacts';
+import { TestAssetProxyDispatcherAssetProxyRegisteredEventArgs, TestAssetProxyDispatcherContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;
