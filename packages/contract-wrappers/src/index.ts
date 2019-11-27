@@ -31,7 +31,6 @@ export {
     ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
 export { ForwarderContract } from './generated-wrappers/forwarder';
-export { OrderValidatorContract } from './generated-wrappers/order_validator';
 export {
     WETH9EventArgs,
     WETH9Events,

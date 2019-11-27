@@ -111,24 +111,7 @@ describe('ABI Decoding Calldata', () => {
     });
 
     describe('decode', () => {
-        // TODO (xianny): dutch auction contract is broken, revisit when it is fixed
-        it.skip('should successfully decode DutchAuction.matchOrders calldata', async () => {
-            const contractName = 'DutchAuction';
-            const decodedTxData = contractWrappers
-                .getAbiDecoder()
-                .decodeCalldataOrThrow(matchOrdersTxData, contractName);
-            const expectedFunctionName = 'matchOrders';
-            const expectedFunctionArguments = {
-                buyOrder: orderLeft,
-                sellOrder: orderRight,
-                buySignature: signedOrderLeft.signature,
-                sellSignature: signedOrderRight.signature,
-            };
-            expect(decodedTxData.functionName).to.be.equal(expectedFunctionName);
-            expect(decodedTxData.functionSignature).to.be.equal(matchOrdersSignature);
-            expect(decodedTxData.functionArguments).to.be.deep.equal(expectedFunctionArguments);
-        });
-        it('should successfully decode Exchange.matchOrders calldata (and distinguish from DutchAuction.matchOrders)', async () => {
+        it('should successfully decode Exchange.matchOrders calldata', async () => {
             const contractName = 'Exchange';
             const decodedTxData = contractWrappers
                 .getAbiDecoder()

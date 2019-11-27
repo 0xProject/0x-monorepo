@@ -3,12 +3,12 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import {
     Coordinator,
     DevUtils,
-    DutchAuction,
     ERC20Token,
     ERC721Token,
     Exchange,
     Forwarder,
-    OrderValidator,
+    Staking,
+    StakingProxy,
     WETH9,
 } from '@0x/contract-artifacts';
 import { AbiDecoder } from '@0x/utils';
@@ -20,7 +20,7 @@ import { CoordinatorContract } from './generated-wrappers/coordinator';
 import { DevUtilsContract } from './generated-wrappers/dev_utils';
 import { ExchangeContract } from './generated-wrappers/exchange';
 import { ForwarderContract } from './generated-wrappers/forwarder';
-import { OrderValidatorContract } from './generated-wrappers/order_validator';
+import { StakingContract } from './generated-wrappers/staking';
 import { WETH9Contract } from './generated-wrappers/weth9';
 
 import { ContractWrappersConfig } from './types';
@@ -47,11 +47,6 @@ export class ContractWrappers {
      * An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
      */
     public forwarder: ForwarderContract;
-    // TODO(fabio): Remove orderValidator after @0x/asset-buyer is deleted
-    /**
-     * An instance of the OrderValidatorContract class containing methods for interacting with any OrderValidator smart contract.
-     */
-    public orderValidator: OrderValidatorContract;
     /**
      * An instance of the DevUtilsContract class containing methods for interacting with the DevUtils smart contract.
      */
@@ -60,6 +55,10 @@ export class ContractWrappers {
      * An instance of the CoordinatorContract class containing methods for interacting with the Coordinator extension contract.
      */
     public coordinator: CoordinatorContract;
+    /**
+     * An instance of the StakingContract class containing methods for interacting with the Coordinator extension contract.
+     */
+    public staking: StakingContract;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
@@ -78,12 +77,12 @@ export class ContractWrappers {
         const artifactsArray = [
             Coordinator,
             DevUtils,
-            DutchAuction,
             ERC20Token,
             ERC721Token,
             Exchange,
             Forwarder,
-            OrderValidator,
+            Staking,
+            StakingProxy,
             WETH9,
         ];
         artifactsArray.forEach(artifact => {
@@ -96,7 +95,7 @@ export class ContractWrappers {
         this.weth9 = new WETH9Contract(contractAddresses.etherToken, this.getProvider());
         this.exchange = new ExchangeContract(contractAddresses.exchange, this.getProvider());
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
-        this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
+        this.staking = new StakingContract(contractAddresses.staking, this.getProvider());
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorContract(contractAddresses.coordinator, this.getProvider());
         this.contractAddresses = contractAddresses;

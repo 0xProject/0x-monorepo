@@ -15,7 +15,7 @@ export const ContractWrappersConfigSchema = {
                 exchange: { $ref: '/addressSchema' },
                 assetProxyOwner: { $ref: '/addressSchema' },
                 forwarder: { $ref: '/addressSchema' },
-                orderValidator: { $ref: '/addressSchema' },
+                staking: { $ref: '/addressSchema' },
             },
         },
         blockPollingIntervalMs: { type: 'number' },
