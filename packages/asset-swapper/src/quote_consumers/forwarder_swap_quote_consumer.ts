@@ -1,5 +1,5 @@
-import { DevUtilsContract, ForwarderContract } from '@0x/contract-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
+import { DevUtilsContract, ForwarderContract } from '@0x/contract-wrappers';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';

@@ -1,5 +1,5 @@
-import { DevUtilsContract, ERC20TokenContract, ForwarderContract } from '@0x/contract-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
+import { DevUtilsContract, ERC20TokenContract, ForwarderContract } from '@0x/contract-wrappers';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';

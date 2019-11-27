@@ -1,5 +1,5 @@
-import { DevUtilsContract, WETH9Contract } from '@0x/contract-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
+import { DevUtilsContract, WETH9Contract } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
