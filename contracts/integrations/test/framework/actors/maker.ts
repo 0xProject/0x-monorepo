@@ -21,7 +21,7 @@ export interface MakerInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with makers within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with makers within the 0x ecosystem.
  * This includes signing and canceling orders, as well as joining a staking pool as a maker.
  */
 export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<MakerInterface> {
@@ -90,7 +90,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             while (true) {
                 const poolId = Pseudorandom.sample(Object.keys(stakingPools));
                 if (poolId === undefined) {
-                    yield undefined;
+                    yield;
                 } else {
                     yield assertion.executeAsync([poolId], { from: this.actor.address });
                 }

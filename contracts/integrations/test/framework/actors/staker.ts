@@ -16,7 +16,7 @@ export interface StakerInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with stakers within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with stakers within the 0x ecosystem.
  * This includes staking ZRX (and optionally delegating it to a specific pool).
  */
 export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<StakerInterface> {

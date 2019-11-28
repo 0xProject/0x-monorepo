@@ -1,4 +1,8 @@
-import { IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs, TestStakingEvents } from '@0x/contracts-staking';
+import {
+    IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
+    TestStakingContract,
+    TestStakingEvents,
+} from '@0x/contracts-staking';
 import { filterLogsToArguments, web3Wrapper } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -10,8 +14,19 @@ export interface KeeperInterface {
     finalizePoolsAsync: (poolIds?: string[]) => Promise<TransactionReceiptWithDecodedLogs[]>;
 }
 
+async function fastForwardToNextEpochAsync(stakingContract: TestStakingContract): Promise<void> {
+    // increase timestamp of next block by how many seconds we need to
+    // get to the next epoch.
+    const epochEndTime = await stakingContract.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
+    const lastBlockTime = await web3Wrapper.getBlockTimestampAsync('latest');
+    const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
+    await web3Wrapper.increaseTimeAsync(dt);
+    // mine next block
+    await web3Wrapper.mineBlockAsync();
+}
+
 /**
- * This mixin encapsulates functionaltiy associated with keepers within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with keepers within the 0x ecosystem.
  * This includes ending epochs sand finalizing pools in the staking system.
  */
 export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<KeeperInterface> {
@@ -35,14 +50,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
         public async endEpochAsync(shouldFastForward: boolean = true): Promise<TransactionReceiptWithDecodedLogs> {
             const { stakingWrapper } = this.actor.deployment.staking;
             if (shouldFastForward) {
-                // increase timestamp of next block by how many seconds we need to
-                // get to the next epoch.
-                const epochEndTime = await stakingWrapper.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
-                const lastBlockTime = await web3Wrapper.getBlockTimestampAsync('latest');
-                const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
-                await web3Wrapper.increaseTimeAsync(dt);
-                // mine next block
-                await web3Wrapper.mineBlockAsync();
+                await fastForwardToNextEpochAsync(stakingWrapper);
             }
             return stakingWrapper.endEpoch().awaitTransactionSuccessAsync({ from: this.actor.address });
         }

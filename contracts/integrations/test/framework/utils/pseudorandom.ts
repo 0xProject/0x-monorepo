@@ -18,6 +18,21 @@ class PRNGWrapper {
         return arr[index];
     }
 
+    /*
+     * Pseudorandom version of _.sampleSize. Returns an array of `n` samples from the given array
+     * (with replacement), chosen with uniform probability. Return undefined if the array is empty.
+     */
+    public sampleSize<T>(arr: T[], n: number): T[] | undefined {
+        if (arr.length === 0) {
+            return undefined;
+        }
+        const samples = [];
+        for (let i = 0; i < n; i++) {
+            samples.push(this.sample(arr) as T);
+        }
+        return samples;
+    }
+
     // tslint:disable:unified-signatures
     /*
      * Pseudorandom version of getRandomPortion/getRandomInteger. If two arguments are provided,

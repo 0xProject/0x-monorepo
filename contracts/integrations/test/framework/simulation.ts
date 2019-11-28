@@ -1,6 +1,13 @@
-import { GlobalStakeByStatus, StakeStatus, StakingPoolById, StoredBalance } from '@0x/contracts-staking';
+import {
+    constants as stakingConstants,
+    GlobalStakeByStatus,
+    StakeStatus,
+    StakingPoolById,
+    StoredBalance,
+} from '@0x/contracts-staking';
+import { BigNumber } from '@0x/utils';
 
-import { Maker } from './actors/maker';
+import { Actor } from './actors/base';
 import { AssertionResult } from './assertions/function_assertion';
 import { BlockchainBalanceStore } from './balances/blockchain_balance_store';
 import { DeploymentManager } from './deployment_manager';
@@ -14,11 +21,12 @@ export class SimulationEnvironment {
         [StakeStatus.Delegated]: new StoredBalance(),
     };
     public stakingPools: StakingPoolById = {};
+    public currentEpoch: BigNumber = stakingConstants.INITIAL_EPOCH;
 
     public constructor(
         public readonly deployment: DeploymentManager,
         public balanceStore: BlockchainBalanceStore,
-        public marketMakers: Maker[] = [],
+        public actors: Actor[] = [],
     ) {}
 
     public state(): any {

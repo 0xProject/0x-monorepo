@@ -47,7 +47,10 @@ export class Actor {
         this.name = config.name || this.address;
         this.deployment = config.deployment;
         this.privateKey = constants.TESTRPC_PRIVATE_KEYS[config.deployment.accounts.indexOf(this.address)];
-        this.simulationEnvironment = config.simulationEnvironment;
+        if (config.simulationEnvironment !== undefined) {
+            this.simulationEnvironment = config.simulationEnvironment;
+            this.simulationEnvironment.actors.push(this);
+        }
         this._transactionFactory = new TransactionFactory(
             this.privateKey,
             config.deployment.exchange.address,
@@ -123,7 +126,6 @@ export class Actor {
         if (logs.length !== 1) {
             throw new Error('Invalid number of `TransferSingle` logs');
         }
-
         const { id } = logs[0];
 
         // Mint the token

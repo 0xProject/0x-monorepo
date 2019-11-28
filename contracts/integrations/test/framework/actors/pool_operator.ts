@@ -19,7 +19,7 @@ export interface PoolOperatorInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with pool operators within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with pool operators within the 0x ecosystem.
  * This includes creating staking pools and decreasing the operator share of a pool.
  */
 export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<PoolOperatorInterface> {

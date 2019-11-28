@@ -147,12 +147,45 @@ export interface OwnerStakeByStatus {
     };
 }
 
-export interface StakingPool {
-    operator: string;
-    operatorShare: number;
-    delegatedStake: StoredBalance;
+interface Fraction {
+    numerator: BigNumber;
+    denominator: BigNumber;
+}
+
+export class StakingPool {
+    public delegatedStake: StoredBalance = new StoredBalance();
+    public rewards: BigNumber = constants.ZERO_AMOUNT;
+    public cumulativeRewards: {
+        [epoch: string]: Fraction;
+    } = {};
+    public cumulativeRewardsLastStored: string = stakingConstants.INITIAL_EPOCH.toString();
+    public stats: {
+        [epoch: string]: PoolStats;
+    } = {};
+
+    constructor(public readonly operator: string, public operatorShare: number) {}
+
+    public finalize(): void {}
+    public creditProtocolFee(): void {}
+    public withdrawDelegatorRewards(delegator: string): void {}
+    public delegateStake(delegator: string, amount: BigNumber): void {}
+    public undelegateStake(delegator: string, amount: BigNumber): void {}
 }
 
 export interface StakingPoolById {
     [poolId: string]: StakingPool;
+}
+
+export interface PoolStats {
+    feesCollected: BigNumber;
+    weightedStake: BigNumber;
+    membersStake: BigNumber;
+}
+
+export interface AggregatedStats {
+    rewardsAvailable: BigNumber;
+    numPoolsToFinalize: BigNumber;
+    totalFeesCollected: BigNumber;
+    totalWeightedStake: BigNumber;
+    totalRewardsFinalized: BigNumber;
 }

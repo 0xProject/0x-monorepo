@@ -103,7 +103,7 @@ export function calculateFillResults(
         order.takerAssetAmount,
         order.makerAssetAmount,
     );
-    const makerFeePaid = safeGetPartialAmountFloor(makerAssetFilledAmount, order.makerAssetAmount, order.makerFee);
+    const makerFeePaid = safeGetPartialAmountFloor(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
     const takerFeePaid = safeGetPartialAmountFloor(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
     return {
         makerAssetFilledAmount,

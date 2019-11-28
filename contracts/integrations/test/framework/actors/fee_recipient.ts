@@ -18,7 +18,7 @@ export interface FeeRecipientInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with fee recipients within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with fee recipients within the 0x ecosystem.
  * As of writing, the only extra functionality provided is signing Coordinator approvals.
  */
 export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<FeeRecipientInterface> {

@@ -1,4 +1,4 @@
-import { StakingPoolById, StoredBalance } from '@0x/contracts-staking';
+import { StakingPool, StakingPoolById } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
@@ -44,11 +44,7 @@ export function validCreateStakingPoolAssertion(
             expect(actualPoolId).to.equal(expectedPoolId);
 
             // Adds the new pool to local state
-            pools[actualPoolId] = {
-                operator: txData.from!,
-                operatorShare,
-                delegatedStake: new StoredBalance(),
-            };
+            pools[actualPoolId] = new StakingPool(txData.from!, operatorShare);
         },
     });
 }

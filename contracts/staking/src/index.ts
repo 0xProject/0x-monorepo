@@ -44,6 +44,7 @@ export { artifacts } from './artifacts';
 export { StakingRevertErrors, FixedMathRevertErrors } from '@0x/utils';
 export { constants } from './constants';
 export {
+    AggregatedStats,
     StakeInfo,
     StakeStatus,
     StoredBalance,
