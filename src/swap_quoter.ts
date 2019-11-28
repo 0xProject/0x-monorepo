@@ -1,5 +1,5 @@
-import { DevUtilsContract } from '@0x/abi-gen-wrappers';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
