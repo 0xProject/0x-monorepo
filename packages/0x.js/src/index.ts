@@ -33,7 +33,7 @@ export {
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,
-} from '@0x/abi-gen-wrappers';
+} from '@0x/contract-wrappers';
 
 export {
     ContractEvent,

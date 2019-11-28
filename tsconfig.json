@@ -36,7 +36,6 @@
         { "path": "./contracts/dev-utils" },
         { "path": "./contracts/integrations" },
         { "path": "./packages/0x.js" },
-        { "path": "./packages/abi-gen-wrappers" },
         { "path": "./packages/abi-gen" },
         { "path": "./packages/assert" },
         { "path": "./packages/asset-swapper" },

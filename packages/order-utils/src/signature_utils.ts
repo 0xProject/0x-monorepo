@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/abi-gen-wrappers';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,

@@ -12,8 +12,6 @@ export interface ContractAddresses {
     assetProxyOwner: string;
     zeroExGovernor: string;
     forwarder: string;
-    orderValidator: string;
-    dutchAuction: string;
     coordinatorRegistry: string;
     coordinator: string;
     multiAssetProxy: string;

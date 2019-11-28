@@ -4,10 +4,9 @@ import { migrateOnceAsync } from '@0x/migrations';
 import { SignedOrder } from '@0x/types';
 import { addressUtils, BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 import 'mocha';
 
-import { ContractAddresses, ContractWrappers } from '../src';
+import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
@@ -112,24 +111,7 @@ describe('ABI Decoding Calldata', () => {
     });
 
     describe('decode', () => {
-        // TODO (xianny): dutch auction contract is broken, revisit when it is fixed
-        it.skip('should successfully decode DutchAuction.matchOrders calldata', async () => {
-            const contractName = 'DutchAuction';
-            const decodedTxData = contractWrappers
-                .getAbiDecoder()
-                .decodeCalldataOrThrow(matchOrdersTxData, contractName);
-            const expectedFunctionName = 'matchOrders';
-            const expectedFunctionArguments = {
-                buyOrder: orderLeft,
-                sellOrder: orderRight,
-                buySignature: signedOrderLeft.signature,
-                sellSignature: signedOrderRight.signature,
-            };
-            expect(decodedTxData.functionName).to.be.equal(expectedFunctionName);
-            expect(decodedTxData.functionSignature).to.be.equal(matchOrdersSignature);
-            expect(decodedTxData.functionArguments).to.be.deep.equal(expectedFunctionArguments);
-        });
-        it('should successfully decode Exchange.matchOrders calldata (and distinguish from DutchAuction.matchOrders)', async () => {
+        it('should successfully decode Exchange.matchOrders calldata', async () => {
             const contractName = 'Exchange';
             const decodedTxData = contractWrappers
                 .getAbiDecoder()

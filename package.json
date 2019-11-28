@@ -27,7 +27,7 @@
         "lerna": "lerna",
         "build": "lerna link && wsrun build $PKG -r --stages --fast-exit --exclude-missing --exclude @0x/contracts-extensions",
         "build:ci": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude-missing --exclude @0x/contracts-extensions",
-        "build:contracts": "lerna link && wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing",
+        "build:contracts": "lerna link && wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing --exclude @0x/contracts-extensions",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",

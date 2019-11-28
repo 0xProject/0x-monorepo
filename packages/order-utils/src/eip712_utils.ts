@@ -1,5 +1,5 @@
-import { DevUtilsContract } from '@0x/abi-gen-wrappers';
 import { assert } from '@0x/assert';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import {
     EIP712DomainWithDefaultSchema,

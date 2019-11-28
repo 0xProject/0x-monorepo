@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/abi-gen-wrappers';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
