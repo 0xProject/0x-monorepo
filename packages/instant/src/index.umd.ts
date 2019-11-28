@@ -18,20 +18,20 @@ import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { Network, OrderSource } from './types';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
-import { devUtilsContract } from './util/dev_utils_contract';
+import { assetDataEncoder } from './util/asset_data_encoder';
 import { orderCoercionUtil } from './util/order_coercion';
 import { providerFactory } from './util/provider_factory';
 import { util } from './util/util';
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
 
-const validateInstantRenderConfigAsync = async (config: ZeroExInstantConfig, selector: string) => {
+const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: string) => {
     assert.isValidOrderSource('orderSource', config.orderSource);
     if (config.defaultSelectedAssetData !== undefined) {
         assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
     }
     if (config.additionalAssetMetaDataMap !== undefined) {
-        await assert.isValidAssetMetaDataMapAsync('additionalAssetMetaDataMap', config.additionalAssetMetaDataMap);
+        assert.isValidAssetMetaDataMap('additionalAssetMetaDataMap', config.additionalAssetMetaDataMap);
     }
     if (config.defaultAssetBuyAmount !== undefined) {
         assert.isNumber('defaultAssetBuyAmount', config.defaultAssetBuyAmount);
@@ -108,7 +108,7 @@ export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
     shouldDisablePushToHistory?: boolean;
 }
 
-export const render = async (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
+export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
     // Coerces BigNumber provided in config to version utilized by 0x packages
     const coercedConfig = _.assign({}, config, {
         orderSource: _.isArray(config.orderSource)
@@ -116,7 +116,7 @@ export const render = async (config: ZeroExInstantConfig, selector: string = DEF
             : config.orderSource,
     });
 
-    await validateInstantRenderConfigAsync(coercedConfig, selector);
+    validateInstantRenderConfig(coercedConfig, selector);
 
     if (coercedConfig.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {
@@ -156,17 +156,14 @@ export const ERC721_PROXY_ID = AssetProxyId.ERC721;
 
 export const ERC20_PROXY_ID = AssetProxyId.ERC20;
 
-export const assetDataForERC20TokenAddressAsync = async (tokenAddress: string): Promise<string> => {
+export const assetDataForERC20TokenAddress = (tokenAddress: string): string => {
     assert.isETHAddressHex('tokenAddress', tokenAddress);
-    return devUtilsContract.encodeERC20AssetData(tokenAddress).callAsync();
+    return assetDataEncoder.ERC20Token(tokenAddress).getABIEncodedTransactionData();
 };
 
-export const assetDataForERC721TokenAddressAsync = async (
-    tokenAddress: string,
-    tokenId: string | number,
-): Promise<string> => {
+export const assetDataForERC721TokenAddress = (tokenAddress: string, tokenId: string | number): string => {
     assert.isETHAddressHex('tokenAddress', tokenAddress);
-    return devUtilsContract.encodeERC721AssetData(tokenAddress, new BigNumber(tokenId)).callAsync();
+    return assetDataEncoder.ERC721Token(tokenAddress, new BigNumber(tokenId)).getABIEncodedTransactionData();
 };
 
 export const hasMetaDataForAssetData = (assetData: string): boolean => {

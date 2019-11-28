@@ -2,6 +2,7 @@ export { ContractAddresses } from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
 export { DevUtilsContract } from './generated-wrappers/dev_utils';
+export { IAssetDataContract } from './generated-wrappers/i_asset_data'; // used for synchronously encoding and decoding asset data
 export {
     ERC20TokenEventArgs,
     ERC20TokenEvents,

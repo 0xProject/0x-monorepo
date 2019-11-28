@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { AffiliateInfo, AssetMetaData } from '../types';
 
-import { devUtilsContract } from './dev_utils_contract';
+import { decodeAssetProxyId } from './asset_data_encoder';
 
 export const assert = {
     ...sharedAssert,
@@ -19,11 +19,11 @@ export const assert = {
     areValidAssetDatas(variableName: string, assetDatas: string[]): void {
         _.forEach(assetDatas, (assetData, index) => assert.isHexString(`${variableName}[${index}]`, assetData));
     },
-    async isValidAssetMetaDataMapAsync(variableName: string, metaDataMap: ObjectMap<AssetMetaData>): Promise<void> {
+    isValidAssetMetaDataMap(variableName: string, metaDataMap: ObjectMap<AssetMetaData>): void {
         _.forEach(metaDataMap, (metaData, assetData) => {
             assert.isHexString(`key ${assetData} of ${variableName}`, assetData);
             assert.isValidAssetMetaData(`${variableName}.${assetData}`, metaData);
-            const assetDataProxyId = await devUtilsContract.decodeAssetProxyId(assetData).callAsync();
+            const assetDataProxyId = decodeAssetProxyId(assetData);
             assert.assert(
                 metaData.assetProxyId === assetDataProxyId,
                 `Expected meta data for assetData ${assetData} to have asset proxy id of ${assetDataProxyId}, but instead got ${
