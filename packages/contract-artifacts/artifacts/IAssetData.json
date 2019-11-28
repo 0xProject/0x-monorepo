@@ -1,251 +1,251 @@
 {
-	"schemaVersion": "2.0.0",
-	"contractName": "IAssetData",
-	"compilerOutput": {
-		"abi": [
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "tokenIds",
-						"type": "uint256[]"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "values",
-						"type": "uint256[]"
-					},
-					{
-						"internalType": "bytes",
-						"name": "callbackData",
-						"type": "bytes"
-					}
-				],
-				"name": "ERC1155Assets",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "bridgeAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "bytes",
-						"name": "bridgeData",
-						"type": "bytes"
-					}
-				],
-				"name": "ERC20Bridge",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenAddress",
-						"type": "address"
-					}
-				],
-				"name": "ERC20Token",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "tokenId",
-						"type": "uint256"
-					}
-				],
-				"name": "ERC721Token",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "values",
-						"type": "uint256[]"
-					},
-					{
-						"internalType": "bytes[]",
-						"name": "nestedAssetData",
-						"type": "bytes[]"
-					}
-				],
-				"name": "MultiAsset",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "staticCallTargetAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "bytes",
-						"name": "staticCallData",
-						"type": "bytes"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "expectedReturnDataHash",
-						"type": "bytes32"
-					}
-				],
-				"name": "StaticCall",
-				"outputs": [],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			}
-		],
-		"devdoc": {
-			"methods": {
-				"ERC1155Assets(address,uint256[],uint256[],bytes)": {
-					"details": "Function signature for encoding ERC1155 assetData.",
-					"params": {
-						"callbackData": "Extra data to be passed to receiver's `onERC1155Received` callback function.",
-						"tokenAddress": "Address of ERC1155 token contract.",
-						"tokenIds": "Array of ids of tokens to be transferred.",
-						"values": "Array of values that correspond to each token id to be transferred.        Note that each value will be multiplied by the amount being filled in the order before transferring."
-					}
-				},
-				"ERC20Bridge(address,address,bytes)": {
-					"details": "Function signature for encoding ERC20Bridge assetData.",
-					"params": {
-						"bridgeAddress": "Address of the bridge contract.",
-						"bridgeData": "Arbitrary data to be passed to the bridge contract.",
-						"tokenAddress": "Address of token to transfer."
-					}
-				},
-				"ERC20Token(address)": {
-					"details": "Function signature for encoding ERC20 assetData.",
-					"params": {
-						"tokenAddress": "Address of ERC20Token contract."
-					}
-				},
-				"ERC721Token(address,uint256)": {
-					"details": "Function signature for encoding ERC721 assetData.",
-					"params": {
-						"tokenAddress": "Address of ERC721 token contract.",
-						"tokenId": "Id of ERC721 token to be transferred."
-					}
-				},
-				"MultiAsset(uint256[],bytes[])": {
-					"details": "Function signature for encoding MultiAsset assetData.",
-					"params": {
-						"nestedAssetData": "Array of assetData fields that will be be dispatched to their correspnding AssetProxy contract.",
-						"values": "Array of amounts that correspond to each asset to be transferred.        Note that each value will be multiplied by the amount being filled in the order before transferring."
-					}
-				},
-				"StaticCall(address,bytes,bytes32)": {
-					"details": "Function signature for encoding StaticCall assetData.",
-					"params": {
-						"expectedReturnDataHash": "Keccak-256 hash of the expected staticcall return data.",
-						"staticCallData": "Data that will be executed via staticcall on the staticCallTargetAddress.",
-						"staticCallTargetAddress": "Address that will execute the staticcall."
-					}
-				}
-			}
-		},
-		"evm": {
-			"bytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			},
-			"deployedBytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			}
-		}
-	},
-	"sources": {
-		"src/interfaces/IAssetData.sol": {
-			"id": 11
-		}
-	},
-	"sourceCodes": {
-		"src/interfaces/IAssetData.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\n// solhint-disable\npragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\n\n// @dev Interface of the asset proxy's assetData.\n// The asset proxies take an ABI encoded `bytes assetData` as argument.\n// This argument is ABI encoded as one of the methods of this interface.\ninterface IAssetData {\n\n    /// @dev Function signature for encoding ERC20 assetData.\n    /// @param tokenAddress Address of ERC20Token contract.\n    function ERC20Token(address tokenAddress)\n        external;\n\n    /// @dev Function signature for encoding ERC721 assetData.\n    /// @param tokenAddress Address of ERC721 token contract.\n    /// @param tokenId Id of ERC721 token to be transferred.\n    function ERC721Token(\n        address tokenAddress,\n        uint256 tokenId\n    )\n        external;\n\n    /// @dev Function signature for encoding ERC1155 assetData.\n    /// @param tokenAddress Address of ERC1155 token contract.\n    /// @param tokenIds Array of ids of tokens to be transferred.\n    /// @param values Array of values that correspond to each token id to be transferred.\n    ///        Note that each value will be multiplied by the amount being filled in the order before transferring.\n    /// @param callbackData Extra data to be passed to receiver's `onERC1155Received` callback function.\n    function ERC1155Assets(\n        address tokenAddress,\n        uint256[] calldata tokenIds,\n        uint256[] calldata values,\n        bytes calldata callbackData\n    )\n        external;\n\n    /// @dev Function signature for encoding MultiAsset assetData.\n    /// @param values Array of amounts that correspond to each asset to be transferred.\n    ///        Note that each value will be multiplied by the amount being filled in the order before transferring.\n    /// @param nestedAssetData Array of assetData fields that will be be dispatched to their correspnding AssetProxy contract.\n    function MultiAsset(\n        uint256[] calldata values,\n        bytes[] calldata nestedAssetData\n    )\n        external;\n\n    /// @dev Function signature for encoding StaticCall assetData.\n    /// @param staticCallTargetAddress Address that will execute the staticcall.\n    /// @param staticCallData Data that will be executed via staticcall on the staticCallTargetAddress.\n    /// @param expectedReturnDataHash Keccak-256 hash of the expected staticcall return data.\n    function StaticCall(\n        address staticCallTargetAddress,\n        bytes calldata staticCallData,\n        bytes32 expectedReturnDataHash\n    )\n        external;\n\n    /// @dev Function signature for encoding ERC20Bridge assetData.\n    /// @param tokenAddress Address of token to transfer.\n    /// @param bridgeAddress Address of the bridge contract.\n    /// @param bridgeData Arbitrary data to be passed to the bridge contract.\n    function ERC20Bridge(\n        address tokenAddress,\n        address bridgeAddress,\n        bytes calldata bridgeData\n    )\n        external;\n}\n"
-	},
-	"sourceTreeHashHex": "0x3ceff1522c201d446ee98d9ecd912ad2ca6adc6fae9fc10d458ff557d570decc",
-	"compiler": {
-		"name": "solc",
-		"version": "soljson-v0.5.13+commit.5b0b510c.js",
-		"settings": {
-			"optimizer": {
-				"enabled": true,
-				"runs": 1000000,
-				"details": {
-					"yul": true,
-					"deduplicate": true,
-					"cse": true,
-					"constantOptimizer": true
-				}
-			},
-			"outputSelection": {
-				"*": {
-					"*": [
-						"abi",
-						"devdoc",
-						"evm.bytecode.object",
-						"evm.bytecode.sourceMap",
-						"evm.deployedBytecode.object",
-						"evm.deployedBytecode.sourceMap"
-					]
-				}
-			},
-			"evmVersion": "constantinople",
-			"remappings": [
-				"@0x/contracts-utils=/Users/xianny/src/copy-0x-monorepo/contracts/asset-proxy/node_modules/@0x/contracts-utils",
-				"@0x/contracts-erc1155=/Users/xianny/src/copy-0x-monorepo/contracts/asset-proxy/node_modules/@0x/contracts-erc1155",
-				"@0x/contracts-erc20=/Users/xianny/src/copy-0x-monorepo/contracts/asset-proxy/node_modules/@0x/contracts-erc20",
-				"@0x/contracts-exchange-libs=/Users/xianny/src/copy-0x-monorepo/node_modules/@0x/contracts-exchange-libs"
-			]
-		}
-	},
-	"chains": {}
+    "schemaVersion": "2.0.0",
+    "contractName": "IAssetData",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256[]",
+                        "name": "tokenIds",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "internalType": "uint256[]",
+                        "name": "values",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "callbackData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "ERC1155Assets",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "bridgeAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "bridgeData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "ERC20Bridge",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC20Token",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ERC721Token",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "uint256[]",
+                        "name": "values",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "internalType": "bytes[]",
+                        "name": "nestedAssetData",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "MultiAsset",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "staticCallTargetAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "staticCallData",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "expectedReturnDataHash",
+                        "type": "bytes32"
+                    }
+                ],
+                "name": "StaticCall",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {
+                "ERC1155Assets(address,uint256[],uint256[],bytes)": {
+                    "details": "Function signature for encoding ERC1155 assetData.",
+                    "params": {
+                        "callbackData": "Extra data to be passed to receiver's `onERC1155Received` callback function.",
+                        "tokenAddress": "Address of ERC1155 token contract.",
+                        "tokenIds": "Array of ids of tokens to be transferred.",
+                        "values": "Array of values that correspond to each token id to be transferred.        Note that each value will be multiplied by the amount being filled in the order before transferring."
+                    }
+                },
+                "ERC20Bridge(address,address,bytes)": {
+                    "details": "Function signature for encoding ERC20Bridge assetData.",
+                    "params": {
+                        "bridgeAddress": "Address of the bridge contract.",
+                        "bridgeData": "Arbitrary data to be passed to the bridge contract.",
+                        "tokenAddress": "Address of token to transfer."
+                    }
+                },
+                "ERC20Token(address)": {
+                    "details": "Function signature for encoding ERC20 assetData.",
+                    "params": {
+                        "tokenAddress": "Address of ERC20Token contract."
+                    }
+                },
+                "ERC721Token(address,uint256)": {
+                    "details": "Function signature for encoding ERC721 assetData.",
+                    "params": {
+                        "tokenAddress": "Address of ERC721 token contract.",
+                        "tokenId": "Id of ERC721 token to be transferred."
+                    }
+                },
+                "MultiAsset(uint256[],bytes[])": {
+                    "details": "Function signature for encoding MultiAsset assetData.",
+                    "params": {
+                        "nestedAssetData": "Array of assetData fields that will be be dispatched to their correspnding AssetProxy contract.",
+                        "values": "Array of amounts that correspond to each asset to be transferred.        Note that each value will be multiplied by the amount being filled in the order before transferring."
+                    }
+                },
+                "StaticCall(address,bytes,bytes32)": {
+                    "details": "Function signature for encoding StaticCall assetData.",
+                    "params": {
+                        "expectedReturnDataHash": "Keccak-256 hash of the expected staticcall return data.",
+                        "staticCallData": "Data that will be executed via staticcall on the staticCallTargetAddress.",
+                        "staticCallTargetAddress": "Address that will execute the staticcall."
+                    }
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sources": {
+        "src/interfaces/IAssetData.sol": {
+            "id": 11
+        }
+    },
+    "sourceCodes": {
+        "src/interfaces/IAssetData.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\n// solhint-disable\npragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\n\n// @dev Interface of the asset proxy's assetData.\n// The asset proxies take an ABI encoded `bytes assetData` as argument.\n// This argument is ABI encoded as one of the methods of this interface.\ninterface IAssetData {\n\n    /// @dev Function signature for encoding ERC20 assetData.\n    /// @param tokenAddress Address of ERC20Token contract.\n    function ERC20Token(address tokenAddress)\n        external;\n\n    /// @dev Function signature for encoding ERC721 assetData.\n    /// @param tokenAddress Address of ERC721 token contract.\n    /// @param tokenId Id of ERC721 token to be transferred.\n    function ERC721Token(\n        address tokenAddress,\n        uint256 tokenId\n    )\n        external;\n\n    /// @dev Function signature for encoding ERC1155 assetData.\n    /// @param tokenAddress Address of ERC1155 token contract.\n    /// @param tokenIds Array of ids of tokens to be transferred.\n    /// @param values Array of values that correspond to each token id to be transferred.\n    ///        Note that each value will be multiplied by the amount being filled in the order before transferring.\n    /// @param callbackData Extra data to be passed to receiver's `onERC1155Received` callback function.\n    function ERC1155Assets(\n        address tokenAddress,\n        uint256[] calldata tokenIds,\n        uint256[] calldata values,\n        bytes calldata callbackData\n    )\n        external;\n\n    /// @dev Function signature for encoding MultiAsset assetData.\n    /// @param values Array of amounts that correspond to each asset to be transferred.\n    ///        Note that each value will be multiplied by the amount being filled in the order before transferring.\n    /// @param nestedAssetData Array of assetData fields that will be be dispatched to their correspnding AssetProxy contract.\n    function MultiAsset(\n        uint256[] calldata values,\n        bytes[] calldata nestedAssetData\n    )\n        external;\n\n    /// @dev Function signature for encoding StaticCall assetData.\n    /// @param staticCallTargetAddress Address that will execute the staticcall.\n    /// @param staticCallData Data that will be executed via staticcall on the staticCallTargetAddress.\n    /// @param expectedReturnDataHash Keccak-256 hash of the expected staticcall return data.\n    function StaticCall(\n        address staticCallTargetAddress,\n        bytes calldata staticCallData,\n        bytes32 expectedReturnDataHash\n    )\n        external;\n\n    /// @dev Function signature for encoding ERC20Bridge assetData.\n    /// @param tokenAddress Address of token to transfer.\n    /// @param bridgeAddress Address of the bridge contract.\n    /// @param bridgeData Arbitrary data to be passed to the bridge contract.\n    function ERC20Bridge(\n        address tokenAddress,\n        address bridgeAddress,\n        bytes calldata bridgeData\n    )\n        external;\n}\n"
+    },
+    "sourceTreeHashHex": "0x3ceff1522c201d446ee98d9ecd912ad2ca6adc6fae9fc10d458ff557d570decc",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.13+commit.5b0b510c.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "constantinople",
+            "remappings": [
+                "@0x/contracts-utils=/Users/xianny/src/copy-0x-monorepo/contracts/asset-proxy/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc1155=/Users/xianny/src/copy-0x-monorepo/contracts/asset-proxy/node_modules/@0x/contracts-erc1155",
+                "@0x/contracts-erc20=/Users/xianny/src/copy-0x-monorepo/contracts/asset-proxy/node_modules/@0x/contracts-erc20",
+                "@0x/contracts-exchange-libs=/Users/xianny/src/copy-0x-monorepo/node_modules/@0x/contracts-exchange-libs"
+            ]
+        }
+    },
+    "chains": {}
 }
