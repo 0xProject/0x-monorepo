@@ -1,6 +1,6 @@
 import { artifacts } from '@0x/contracts-erc20-bridge-sampler';
 import { hexSlice, randomAddress } from '@0x/contracts-test-utils';
-import { OrderInfo, OrderWithoutDomain } from '@0x/types';
+import { OrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { JSONRPCErrorCallback, JSONRPCRequestPayload, MethodAbi, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 const SELECTOR_SIZE = 4;
 
 export interface SamplerCallResult {
-    orderInfos: OrderInfo[];
+    fillableAmounts: BigNumber[];
     samples: BigNumber[][];
 }
 
@@ -20,6 +20,7 @@ export enum SamplerFunction {
 export interface SamplerCallParams {
     fn: SamplerFunction;
     orders: OrderWithoutDomain[];
+    signatures: string[];
     sources: string[];
     fillAmounts: BigNumber[];
 }
@@ -86,10 +87,11 @@ export class SamplerProvider implements Provider {
 function decodeSamplerEthCallData(callData: string): SamplerCallParams {
     const encoder = AbiEncoder.create(QUERY_AND_SAMPLE_SELL_ABI_FN.inputs);
     const selector = hexSlice(callData, 0, SELECTOR_SIZE);
-    const [orders, sources, fillAmounts] = encoder.decodeAsArray(hexSlice(callData, SELECTOR_SIZE));
+    const [orders, signatures, sources, fillAmounts] = encoder.decodeAsArray(hexSlice(callData, SELECTOR_SIZE));
     return {
         fn: selectorToFunction(selector),
         orders,
+        signatures,
         sources,
         fillAmounts,
     };
@@ -97,7 +99,7 @@ function decodeSamplerEthCallData(callData: string): SamplerCallParams {
 
 function encodeSamplerEthCallResult(result: SamplerCallResult): string {
     const encoder = AbiEncoder.create(QUERY_AND_SAMPLE_SELL_ABI_FN.outputs);
-    return encoder.encode([result.orderInfos, result.samples]);
+    return encoder.encode([result.fillableAmounts, result.samples]);
 }
 
 function selectorToFunction(selector: string): SamplerFunction {

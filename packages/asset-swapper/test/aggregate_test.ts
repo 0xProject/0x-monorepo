@@ -10,7 +10,7 @@ import {
     shortZip,
 } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { OrderInfo, OrderStatus, SignedOrderWithoutDomain } from '@0x/types';
+import { SignedOrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -56,15 +56,6 @@ describe('aggregation utils tests', () => {
             makerFee: getRandomInteger(1, 1e17),
             takerFee: getRandomInteger(1, 1e17),
             signature: hexRandom(),
-            ...overrides,
-        };
-    }
-
-    function createOrderInfo(overrides?: Partial<OrderInfo>): OrderInfo {
-        return {
-            orderHash: hexRandom(),
-            orderStatus: OrderStatus.Fillable,
-            orderTakerAssetFilledAmount: getRandomInteger(1, 1e18),
             ...overrides,
         };
     }
@@ -125,7 +116,7 @@ describe('aggregation utils tests', () => {
         const ORDERS = _.times(4, () => createOrder());
         const DEFAULT_PROVIDER_HANDLER = (params: SamplerCallParams): SamplerCallResult => {
             return {
-                orderInfos: params.orders.map(() => createOrderInfo()),
+                fillableAmounts: params.orders.map(() => getRandomInteger(1, 1e18)),
                 samples: params.sources.map(() => params.fillAmounts.map(() => getRandomInteger(1, 1e18))),
             };
         };
@@ -133,7 +124,7 @@ describe('aggregation utils tests', () => {
         it('makes an eth_call with the correct arguments for a sell', async () => {
             const provider = new SamplerProvider(params => {
                 expect(params.fn).to.deep.eq(SamplerFunction.QueryOrdersAndSampleSells);
-                expect(params.orders).to.deep.eq(ORDERS);
+                expect(params.orders).to.deep.eq(ORDERS.map(o => _.omit(o, ['signature'])));
                 expect(params.sources).to.deep.eq(SELL_SOURCES.map(s => SOURCE_TO_ADDRESS[s].toLowerCase()));
                 expect(params.fillAmounts).to.deep.eq(SAMPLE_AMOUNTS);
                 return DEFAULT_PROVIDER_HANDLER(params);
@@ -144,7 +135,7 @@ describe('aggregation utils tests', () => {
         it('makes an eth_call with the correct arguments for a buy', async () => {
             const provider = new SamplerProvider(params => {
                 expect(params.fn).to.deep.eq(SamplerFunction.QueryOrdersAndSampleBuys);
-                expect(params.orders).to.deep.eq(ORDERS);
+                expect(params.orders).to.deep.eq(ORDERS.map(o => _.omit(o, ['signature'])));
                 expect(params.sources).to.deep.eq(BUY_SOURCES.map(s => SOURCE_TO_ADDRESS[s].toLowerCase()));
                 expect(params.fillAmounts).to.deep.eq(SAMPLE_AMOUNTS);
                 return DEFAULT_PROVIDER_HANDLER(params);
@@ -152,16 +143,16 @@ describe('aggregation utils tests', () => {
             await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, BUY_SOURCES, provider, true);
         });
 
-        it('returns correct order infos', async () => {
-            const orderInfos = _.times(SAMPLE_AMOUNTS.length, () => createOrderInfo());
+        it('returns correct fillable amounts', async () => {
+            const fillableAmounts = _.times(SAMPLE_AMOUNTS.length, () => getRandomInteger(1, 1e18));
             const provider = new SamplerProvider(params => {
                 return {
                     ...DEFAULT_PROVIDER_HANDLER(params),
-                    orderInfos,
+                    fillableAmounts,
                 };
             });
-            const [actualOrderInfos] = await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES, provider);
-            expect(actualOrderInfos).to.deep.eq(orderInfos);
+            const [actualFillableAmounts] = await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES, provider);
+            expect(actualFillableAmounts).to.deep.eq(fillableAmounts);
         });
 
         it('converts samples to DEX quotes', async () => {
@@ -235,12 +226,7 @@ describe('aggregation utils tests', () => {
             provider: new SamplerProvider(params => {
                 lastContractCallParams = params;
                 return {
-                    orderInfos: params.orders.map(() =>
-                        createOrderInfo({
-                            orderStatus: OrderStatus.Fillable,
-                            orderTakerAssetFilledAmount: constants.ZERO_AMOUNT,
-                        }),
-                    ),
+                    fillableAmounts: params.orders.map(o => o.takerAssetAmount),
                     samples: params.sources.map(srcAddr =>
                         params.fillAmounts.map(n =>
                             n.times(SOURCE_RATES[getSourceFromAddress(srcAddr)]).integerValue(BigNumber.ROUND_UP),
@@ -473,12 +459,7 @@ describe('aggregation utils tests', () => {
             provider: new SamplerProvider(params => {
                 lastContractCallParams = params;
                 return {
-                    orderInfos: params.orders.map(() =>
-                        createOrderInfo({
-                            orderStatus: OrderStatus.Fillable,
-                            orderTakerAssetFilledAmount: constants.ZERO_AMOUNT,
-                        }),
-                    ),
+                    fillableAmounts: params.orders.map(o => o.makerAssetAmount),
                     samples: params.sources.map(srcAddr =>
                         params.fillAmounts.map(n =>
                             n.div(SOURCE_RATES[getSourceFromAddress(srcAddr)]).integerValue(BigNumber.ROUND_UP),

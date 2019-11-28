@@ -304,20 +304,12 @@ export async function queryNetworkAsync(
     let rawSamples;
     if (isBuy) {
         [fillableAmount, rawSamples] = await sampler
-            .queryOrdersAndSampleBuys(
-                nativeOrders,
-                signatures,
-                sources.map(s => SOURCE_TO_ADDRESS[s]),
-                sampleAmounts,
-            ).callAsync();
+            .queryOrdersAndSampleBuys(nativeOrders, signatures, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
+            .callAsync();
     } else {
         [fillableAmount, rawSamples] = await sampler
-            .queryOrdersAndSampleSells(
-                nativeOrders,
-                signatures,
-                sources.map(s => SOURCE_TO_ADDRESS[s]),
-                sampleAmounts,
-            ).callAsync();
+            .queryOrdersAndSampleSells(nativeOrders, signatures, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
+            .callAsync();
     }
     const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
         const source = sources[sourceIdx];
@@ -384,8 +376,8 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithoutDomain[], filla
         path.push({
             flags: FillFlags.SourceNative,
             exclusionMask: 0,
-            input: takerAmount,
-            output: makerAmount,
+            input: makerAmount,
+            output: takerAmount,
             data: {
                 source: ERC20BridgeSource.Native,
                 order,
