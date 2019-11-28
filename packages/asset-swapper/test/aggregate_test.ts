@@ -6,11 +6,12 @@ import {
     getRandomInteger,
     hexRandom,
     hexSlice,
+    Numberish,
     randomAddress,
     shortZip,
 } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { SignedOrderWithoutDomain } from '@0x/types';
+import { OrderWithoutDomain, SignedOrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -30,7 +31,7 @@ import {
     UNISWAP_BRIDGE_ADDRESS,
 } from '../src/utils/aggregate';
 
-import { SamplerCallParams, SamplerCallResult, SamplerFunction, SamplerProvider } from './utils/sampler_provider';
+import { MockSamplerContract, QueryAndSampleResult } from './utils/mock_sampler_contract';
 
 // tslint:disable: custom-no-magic-numbers
 describe('aggregation utils tests', () => {
@@ -91,7 +92,7 @@ describe('aggregation utils tests', () => {
         expect(actual.substr(0, expected.length)).to.eq(expected);
     }
 
-    function createOrdersFromSellRates(takerAssetAmount: BigNumber, rates: BigNumber[]): SignedOrderWithoutDomain[] {
+    function createOrdersFromSellRates(takerAssetAmount: BigNumber, rates: Numberish[]): SignedOrderWithoutDomain[] {
         const singleTakerAssetAmount = takerAssetAmount.div(rates.length).integerValue(BigNumber.ROUND_UP);
         return rates.map(r =>
             createOrder({
@@ -101,9 +102,9 @@ describe('aggregation utils tests', () => {
         );
     }
 
-    function createOrdersFromBuyRates(makerAssetAmount: BigNumber, rates: BigNumber[]): SignedOrderWithoutDomain[] {
+    function createOrdersFromBuyRates(makerAssetAmount: BigNumber, rates: Numberish[]): SignedOrderWithoutDomain[] {
         const singleMakerAssetAmount = makerAssetAmount.div(rates.length).integerValue(BigNumber.ROUND_UP);
-        return rates.map(r =>
+        return (rates as any).map((r: Numberish) =>
             createOrder({
                 makerAssetAmount: singleMakerAssetAmount,
                 takerAssetAmount: singleMakerAssetAmount.div(r),
@@ -111,68 +112,31 @@ describe('aggregation utils tests', () => {
         );
     }
 
-    describe('queryNetworkAsync()', () => {
-        const SAMPLE_AMOUNTS = [100, 500, 1000].map(v => new BigNumber(v));
-        const ORDERS = _.times(4, () => createOrder());
-        const DEFAULT_PROVIDER_HANDLER = (params: SamplerCallParams): SamplerCallResult => {
-            return {
-                fillableAmounts: params.orders.map(() => getRandomInteger(1, 1e18)),
-                samples: params.sources.map(() => params.fillAmounts.map(() => getRandomInteger(1, 1e18))),
-            };
-        };
-
-        it('makes an eth_call with the correct arguments for a sell', async () => {
-            const provider = new SamplerProvider(params => {
-                expect(params.fn).to.deep.eq(SamplerFunction.QueryOrdersAndSampleSells);
-                expect(params.orders).to.deep.eq(ORDERS.map(o => _.omit(o, ['signature'])));
-                expect(params.sources).to.deep.eq(SELL_SOURCES.map(s => SOURCE_TO_ADDRESS[s].toLowerCase()));
-                expect(params.fillAmounts).to.deep.eq(SAMPLE_AMOUNTS);
-                return DEFAULT_PROVIDER_HANDLER(params);
-            });
-            await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES, provider, false);
+    function createSamplerFromSellRates(rates: Numberish[][]): MockSamplerContract {
+        return new MockSamplerContract({
+            queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => [
+                orders.map(o => o.takerAssetAmount),
+                sources.map(s =>
+                    shortZip(fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
+                        f.times(r).integerValue(BigNumber.ROUND_UP),
+                    ),
+                ),
+            ],
         });
+    }
 
-        it('makes an eth_call with the correct arguments for a buy', async () => {
-            const provider = new SamplerProvider(params => {
-                expect(params.fn).to.deep.eq(SamplerFunction.QueryOrdersAndSampleBuys);
-                expect(params.orders).to.deep.eq(ORDERS.map(o => _.omit(o, ['signature'])));
-                expect(params.sources).to.deep.eq(BUY_SOURCES.map(s => SOURCE_TO_ADDRESS[s].toLowerCase()));
-                expect(params.fillAmounts).to.deep.eq(SAMPLE_AMOUNTS);
-                return DEFAULT_PROVIDER_HANDLER(params);
-            });
-            await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, BUY_SOURCES, provider, true);
+    function createSamplerFromBuyRates(rates: Numberish[][]): MockSamplerContract {
+        return new MockSamplerContract({
+            queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => [
+                orders.map(o => o.makerAssetAmount),
+                sources.map(s =>
+                    shortZip(fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
+                        f.div(r).integerValue(BigNumber.ROUND_UP),
+                    ),
+                ),
+            ],
         });
-
-        it('returns correct fillable amounts', async () => {
-            const fillableAmounts = _.times(SAMPLE_AMOUNTS.length, () => getRandomInteger(1, 1e18));
-            const provider = new SamplerProvider(params => {
-                return {
-                    ...DEFAULT_PROVIDER_HANDLER(params),
-                    fillableAmounts,
-                };
-            });
-            const [actualFillableAmounts] = await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES, provider);
-            expect(actualFillableAmounts).to.deep.eq(fillableAmounts);
-        });
-
-        it('converts samples to DEX quotes', async () => {
-            const quotes = SELL_SOURCES.map(source =>
-                SAMPLE_AMOUNTS.map(s => ({
-                    source,
-                    input: s,
-                    output: getRandomInteger(1, 1e18),
-                })),
-            );
-            const provider = new SamplerProvider(params => {
-                return {
-                    ...DEFAULT_PROVIDER_HANDLER(params),
-                    samples: quotes.map(q => q.map(s => s.output)),
-                };
-            });
-            const [, actualQuotes] = await queryNetworkAsync(ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES, provider);
-            expect(actualQuotes).to.deep.eq(quotes);
-        });
-    });
+    }
 
     describe('getSampleAmounts()', () => {
         const FILL_AMOUNT = getRandomInteger(1, 1e18);
@@ -209,84 +173,160 @@ describe('aggregation utils tests', () => {
         });
     });
 
-    describe('improveMarketSellAsync()', () => {
-        let lastContractCallParams: SamplerCallParams | undefined;
-        const NUM_ORDERS = 3;
-        const FILL_AMOUNT = getRandomInteger(1, 1e18);
-        const SOURCE_RATES = _.times(ERC20BridgeSource.NumSources, () => getRandomFloat(1e-3, 2));
-        const ORDERS = _.times(NUM_ORDERS, () =>
-            createOrder({
-                makerAssetAmount: FILL_AMOUNT.div(NUM_ORDERS)
-                    .times(SOURCE_RATES[ERC20BridgeSource.Native])
-                    .integerValue(BigNumber.ROUND_UP),
-                takerAssetAmount: FILL_AMOUNT.div(NUM_ORDERS).integerValue(BigNumber.ROUND_UP),
-            }),
-        );
-        const DEFAULT_OPTS = {
-            provider: new SamplerProvider(params => {
-                lastContractCallParams = params;
-                return {
-                    fillableAmounts: params.orders.map(o => o.takerAssetAmount),
-                    samples: params.sources.map(srcAddr =>
-                        params.fillAmounts.map(n =>
-                            n.times(SOURCE_RATES[getSourceFromAddress(srcAddr)]).integerValue(BigNumber.ROUND_UP),
-                        ),
-                    ),
-                };
-            }),
-            numSamples: 3,
-            runLimit: 0,
-        };
+    const DUMMY_QUERY_AND_SAMPLE_HANDLER = (
+        orders: OrderWithoutDomain[],
+        signatures: string[],
+        sources: string[],
+        fillAmounts: BigNumber[],
+    ): QueryAndSampleResult => [
+        orders.map(() => getRandomInteger(1, 1e18)),
+        sources.map(() => fillAmounts.map(() => getRandomInteger(1, 1e18))),
+    ];
 
-        beforeEach(async () => {
-            lastContractCallParams = undefined;
+    describe('queryNetworkAsync()', () => {
+        const SAMPLE_AMOUNTS = [100, 500, 1000].map(v => new BigNumber(v));
+        const ORDERS = _.times(4, () => createOrder());
+
+        it('makes an eth_call with the correct arguments for a sell', async () => {
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => {
+                    expect(orders).to.deep.eq(ORDERS);
+                    expect(signatures).to.deep.eq(ORDERS.map(o => o.signature));
+                    expect(sources).to.deep.eq(SELL_SOURCES.map(s => SOURCE_TO_ADDRESS[s]));
+                    expect(fillAmounts).to.deep.eq(SAMPLE_AMOUNTS);
+                    return [
+                        orders.map(() => getRandomInteger(1, 1e18)),
+                        sources.map(() => fillAmounts.map(() => getRandomInteger(1, 1e18))),
+                    ];
+                },
+            });
+            await queryNetworkAsync(sampler, ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES);
         });
 
+        it('makes an eth_call with the correct arguments for a buy', async () => {
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => {
+                    expect(orders).to.deep.eq(ORDERS);
+                    expect(signatures).to.deep.eq(ORDERS.map(o => o.signature));
+                    expect(sources).to.deep.eq(SELL_SOURCES.map(s => SOURCE_TO_ADDRESS[s]));
+                    expect(fillAmounts).to.deep.eq(SAMPLE_AMOUNTS);
+                    return [
+                        orders.map(() => getRandomInteger(1, 1e18)),
+                        sources.map(() => fillAmounts.map(() => getRandomInteger(1, 1e18))),
+                    ];
+                },
+            });
+            await queryNetworkAsync(sampler, ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES, true);
+        });
+
+        it('returns correct fillable amounts', async () => {
+            const fillableAmounts = _.times(SAMPLE_AMOUNTS.length, () => getRandomInteger(1, 1e18));
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => [
+                    fillableAmounts,
+                    sources.map(() => fillAmounts.map(() => getRandomInteger(1, 1e18))),
+                ],
+            });
+            const [actualFillableAmounts] = await queryNetworkAsync(sampler, ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES);
+            expect(actualFillableAmounts).to.deep.eq(fillableAmounts);
+        });
+
+        it('converts samples to DEX quotes', async () => {
+            const quotes = SELL_SOURCES.map(source =>
+                SAMPLE_AMOUNTS.map(s => ({
+                    source,
+                    input: s,
+                    output: getRandomInteger(1, 1e18),
+                })),
+            );
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => [
+                    orders.map(() => getRandomInteger(1, 1e18)),
+                    quotes.map(q => q.map(s => s.output)),
+                ],
+            });
+            const [, actualQuotes] = await queryNetworkAsync(sampler, ORDERS, SAMPLE_AMOUNTS, SELL_SOURCES);
+            expect(actualQuotes).to.deep.eq(quotes);
+        });
+    });
+
+    describe('improveMarketSellAsync()', () => {
+        const FILL_AMOUNT = getRandomInteger(1, 1e18);
+        const SOURCE_RATES = _.times(ERC20BridgeSource.NumSources, () => getRandomFloat(1e-3, 2));
+        const ORDERS = createOrdersFromSellRates(FILL_AMOUNT, _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native]));
+        const DEFAULT_SAMPLER = createSamplerFromSellRates(SOURCE_RATES.map(r => _.times(32, () => r)));
+        const DEFAULT_OPTS = { numSamples: 3, runLimit: 0 };
+
         it('calls `queryOrdersAndSampleSells()`', async () => {
-            await improveMarketSellAsync(ORDERS, FILL_AMOUNT, DEFAULT_OPTS);
-            expect(_.get(lastContractCallParams, ['fn'])).to.eq(SamplerFunction.QueryOrdersAndSampleSells);
+            let wasCalled = false;
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (...args) => {
+                    wasCalled = true;
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(...args);
+                },
+            });
+            await improveMarketSellAsync(sampler, ORDERS, FILL_AMOUNT, DEFAULT_OPTS);
+            expect(wasCalled).to.be.true();
         });
 
         it('queries `numSamples` samples', async () => {
             const numSamples = _.random(1, 16);
-            await improveMarketSellAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, numSamples });
-            expect(_.get(lastContractCallParams, ['fillAmounts'])).to.deep.eq(
-                getSampleAmounts(FILL_AMOUNT, numSamples),
-            );
+            let fillAmountsLength = 0;
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => {
+                    fillAmountsLength = fillAmounts.length;
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(orders, signatures, sources, fillAmounts);
+                },
+            });
+            await improveMarketSellAsync(sampler, ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, numSamples });
+            expect(fillAmountsLength).eq(numSamples);
         });
 
         it('polls all DEXes if `excludedSources` is empty', async () => {
-            await improveMarketSellAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources: [] });
-            expect(_.get(lastContractCallParams, ['sources'])).to.deep.eq(
-                SELL_SOURCES.map(s => SOURCE_TO_ADDRESS[s].toLowerCase()),
-            );
+            let sourcesPolled: ERC20BridgeSource[] = [];
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => {
+                    sourcesPolled = sources.map(a => getSourceFromAddress(a));
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(orders, signatures, sources, fillAmounts);
+                },
+            });
+            await improveMarketSellAsync(sampler, ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources: [] });
+            expect(sourcesPolled).to.deep.eq(SELL_SOURCES);
         });
 
         it('does not poll DEXes in `excludedSources`', async () => {
             const excludedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
-            await improveMarketSellAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources });
-            expect(_.get(lastContractCallParams, ['sources'])).to.deep.eq(
-                SELL_SOURCES.filter(s => !_.includes(excludedSources, s)).map(s => SOURCE_TO_ADDRESS[s].toLowerCase()),
-            );
+            let sourcesPolled: ERC20BridgeSource[] = [];
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => {
+                    sourcesPolled = sources.map(a => getSourceFromAddress(a));
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(orders, signatures, sources, fillAmounts);
+                },
+            });
+            await improveMarketSellAsync(sampler, ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources });
+            expect(sourcesPolled).to.deep.eq(_.without(SELL_SOURCES, ...excludedSources));
         });
 
         it('returns the most cost-effective single source if `runLimit == 0`', async () => {
             const bestRate = BigNumber.max(...SOURCE_RATES);
             const bestSource = _.findIndex(SOURCE_RATES, n => n.eq(bestRate)) as ERC20BridgeSource;
             expect(bestSource).to.exist('');
-            const improvedOrders = await improveMarketSellAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, runLimit: 0 });
+            const improvedOrders = await improveMarketSellAsync(DEFAULT_SAMPLER, ORDERS, FILL_AMOUNT, {
+                ...DEFAULT_OPTS,
+                runLimit: 0,
+            });
             const uniqueAssetDatas = _.uniq(improvedOrders.map(o => o.makerAssetData));
             expect(uniqueAssetDatas).to.be.length(1);
             expect(getSourceFromAssetData(uniqueAssetDatas[0])).to.be.eq(bestSource);
         });
 
         it('generates bridge orders with correct asset data', async () => {
-            const bridgeSlippage = _.random(0.1, true);
             const improvedOrders = await improveMarketSellAsync(
+                DEFAULT_SAMPLER,
                 // Pass in empty orders to prevent native orders from being used.
                 ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, bridgeSlippage },
+                DEFAULT_OPTS,
             );
             expect(improvedOrders).to.not.be.length(0);
             for (const order of improvedOrders) {
@@ -302,12 +342,12 @@ describe('aggregation utils tests', () => {
         });
 
         it('generates bridge orders with correct taker amount', async () => {
-            const bridgeSlippage = _.random(0.1, true);
             const improvedOrders = await improveMarketSellAsync(
+                DEFAULT_SAMPLER,
                 // Pass in empty orders to prevent native orders from being used.
                 ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, bridgeSlippage },
+                DEFAULT_OPTS,
             );
             const totalTakerAssetAmount = BigNumber.sum(...improvedOrders.map(o => o.takerAssetAmount));
             expect(totalTakerAssetAmount).to.bignumber.gte(FILL_AMOUNT);
@@ -316,6 +356,7 @@ describe('aggregation utils tests', () => {
         it('generates bridge orders with max slippage of `bridgeSlippage`', async () => {
             const bridgeSlippage = _.random(0.1, true);
             const improvedOrders = await improveMarketSellAsync(
+                DEFAULT_SAMPLER,
                 // Pass in empty orders to prevent native orders from being used.
                 ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                 FILL_AMOUNT,
@@ -340,6 +381,7 @@ describe('aggregation utils tests', () => {
                 takerAssetAmount: dustAmount,
             });
             const improvedOrders = await improveMarketSellAsync(
+                DEFAULT_SAMPLER,
                 _.shuffle([dustOrder, ...ORDERS]),
                 FILL_AMOUNT,
                 // Ignore all DEX sources so only native orders are returned.
@@ -357,18 +399,11 @@ describe('aggregation utils tests', () => {
             rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
-            const provider = new SamplerProvider(params => ({
-                ...DEFAULT_OPTS.provider.handler(params),
-                samples: params.sources.map(s =>
-                    shortZip(params.fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
-                        f.times(r).integerValue(BigNumber.ROUND_UP),
-                    ),
-                ),
-            }));
             const improvedOrders = await improveMarketSellAsync(
-                createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native].map(r => new BigNumber(r))),
+                createSamplerFromSellRates(rates),
+                createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, provider, numSamples: 4, runLimit: 512 },
+                { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512 },
             );
             expect(improvedOrders).to.be.length(4);
             const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData)).sort();
@@ -387,18 +422,11 @@ describe('aggregation utils tests', () => {
             rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
-            const provider = new SamplerProvider(params => ({
-                ...DEFAULT_OPTS.provider.handler(params),
-                samples: params.sources.map(s =>
-                    shortZip(params.fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
-                        f.times(r).integerValue(BigNumber.ROUND_UP),
-                    ),
-                ),
-            }));
             const improvedOrders = await improveMarketSellAsync(
-                createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native].map(r => new BigNumber(r))),
+                createSamplerFromSellRates(rates),
+                createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, provider, numSamples: 4, runLimit: 512, noConflicts: true },
+                { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512, noConflicts: true },
             );
             expect(improvedOrders).to.be.length(4);
             const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData)).sort();
@@ -417,18 +445,11 @@ describe('aggregation utils tests', () => {
             rates[ERC20BridgeSource.Uniswap] = [0.15, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Eth2Dai] = [0.15, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
-            const provider = new SamplerProvider(params => ({
-                ...DEFAULT_OPTS.provider.handler(params),
-                samples: params.sources.map(s =>
-                    shortZip(params.fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
-                        f.times(r).integerValue(BigNumber.ROUND_UP),
-                    ),
-                ),
-            }));
             const improvedOrders = await improveMarketSellAsync(
-                createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native].map(r => new BigNumber(r))),
+                createSamplerFromSellRates(rates),
+                createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, provider, numSamples: 4, runLimit: 512, noConflicts: true },
+                { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512, noConflicts: true },
             );
             expect(improvedOrders).to.be.length(4);
             const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData)).sort();
@@ -443,64 +464,60 @@ describe('aggregation utils tests', () => {
     });
 
     describe('improveMarketBuyAsync()', () => {
-        let lastContractCallParams: SamplerCallParams | undefined;
-        const NUM_ORDERS = 3;
         const FILL_AMOUNT = getRandomInteger(1, 1e18);
         const SOURCE_RATES = _.times(ERC20BridgeSource.NumSources, () => getRandomFloat(1e-3, 2));
-        const ORDERS = _.times(NUM_ORDERS, () =>
-            createOrder({
-                makerAssetAmount: FILL_AMOUNT.div(NUM_ORDERS).integerValue(BigNumber.ROUND_UP),
-                takerAssetAmount: FILL_AMOUNT.div(NUM_ORDERS)
-                    .div(SOURCE_RATES[ERC20BridgeSource.Native])
-                    .integerValue(BigNumber.ROUND_UP),
-            }),
-        );
-        const DEFAULT_OPTS = {
-            provider: new SamplerProvider(params => {
-                lastContractCallParams = params;
-                return {
-                    fillableAmounts: params.orders.map(o => o.makerAssetAmount),
-                    samples: params.sources.map(srcAddr =>
-                        params.fillAmounts.map(n =>
-                            n.div(SOURCE_RATES[getSourceFromAddress(srcAddr)]).integerValue(BigNumber.ROUND_UP),
-                        ),
-                    ),
-                };
-            }),
-            numSamples: 3,
-            runLimit: 0,
-        };
-
-        beforeEach(async () => {
-            lastContractCallParams = undefined;
-        });
+        const ORDERS = createOrdersFromBuyRates(FILL_AMOUNT, _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native]));
+        const DEFAULT_SAMPLER = createSamplerFromBuyRates(SOURCE_RATES.map(r => _.times(32, () => r)));
+        const DEFAULT_OPTS = { numSamples: 3, runLimit: 0 };
 
         it('calls `queryOrdersAndSampleBuys()`', async () => {
-            await improveMarketBuyAsync(ORDERS, FILL_AMOUNT, DEFAULT_OPTS);
-            expect(_.get(lastContractCallParams, ['fn'])).to.eq(SamplerFunction.QueryOrdersAndSampleBuys);
+            let wasCalled = false;
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleBuys: (...args) => {
+                    wasCalled = true;
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(...args);
+                },
+            });
+            await improveMarketBuyAsync(sampler, ORDERS, FILL_AMOUNT, DEFAULT_OPTS);
+            expect(wasCalled).to.be.true();
         });
 
         it('queries `numSamples` samples', async () => {
             const numSamples = _.random(1, 16);
-            await improveMarketBuyAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, numSamples });
-            expect(_.get(lastContractCallParams, ['fillAmounts'])).to.deep.eq(
-                getSampleAmounts(FILL_AMOUNT, numSamples),
-            );
+            let fillAmountsLength = 0;
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => {
+                    fillAmountsLength = fillAmounts.length;
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(orders, signatures, sources, fillAmounts);
+                },
+            });
+            await improveMarketBuyAsync(sampler, ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, numSamples });
+            expect(fillAmountsLength).eq(numSamples);
         });
 
         it('polls all DEXes if `excludedSources` is empty', async () => {
-            await improveMarketBuyAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources: [] });
-            expect(_.get(lastContractCallParams, ['sources'])).to.deep.eq(
-                BUY_SOURCES.map(s => SOURCE_TO_ADDRESS[s].toLowerCase()),
-            );
+            let sourcesPolled: ERC20BridgeSource[] = [];
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => {
+                    sourcesPolled = sources.map(a => getSourceFromAddress(a));
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(orders, signatures, sources, fillAmounts);
+                },
+            });
+            await improveMarketBuyAsync(sampler, ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources: [] });
+            expect(sourcesPolled).to.deep.eq(BUY_SOURCES);
         });
 
         it('does not poll DEXes in `excludedSources`', async () => {
             const excludedSources = _.sampleSize(BUY_SOURCES, _.random(1, BUY_SOURCES.length));
-            await improveMarketBuyAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources });
-            expect(_.get(lastContractCallParams, ['sources'])).to.deep.eq(
-                BUY_SOURCES.filter(s => !_.includes(excludedSources, s)).map(s => SOURCE_TO_ADDRESS[s].toLowerCase()),
-            );
+            let sourcesPolled: ERC20BridgeSource[] = [];
+            const sampler = new MockSamplerContract({
+                queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => {
+                    sourcesPolled = sources.map(a => getSourceFromAddress(a));
+                    return DUMMY_QUERY_AND_SAMPLE_HANDLER(orders, signatures, sources, fillAmounts);
+                },
+            });
+            await improveMarketBuyAsync(sampler, ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, excludedSources });
+            expect(sourcesPolled).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources));
         });
 
         it('returns the most cost-effective single source if `runLimit == 0`', async () => {
@@ -508,19 +525,22 @@ describe('aggregation utils tests', () => {
             const bestRate = BigNumber.max(...SOURCE_RATES.filter((r, i) => validSources.includes(i)));
             const bestSource = _.findIndex(SOURCE_RATES, n => n.eq(bestRate)) as ERC20BridgeSource;
             expect(bestSource).to.exist('');
-            const improvedOrders = await improveMarketBuyAsync(ORDERS, FILL_AMOUNT, { ...DEFAULT_OPTS, runLimit: 0 });
+            const improvedOrders = await improveMarketBuyAsync(DEFAULT_SAMPLER, ORDERS, FILL_AMOUNT, {
+                ...DEFAULT_OPTS,
+                runLimit: 0,
+            });
             const uniqueAssetDatas = _.uniq(improvedOrders.map(o => o.makerAssetData));
             expect(uniqueAssetDatas).to.be.length(1);
             expect(getSourceFromAssetData(uniqueAssetDatas[0])).to.be.eq(bestSource);
         });
 
         it('generates bridge orders with correct asset data', async () => {
-            const bridgeSlippage = _.random(0.1, true);
             const improvedOrders = await improveMarketBuyAsync(
+                DEFAULT_SAMPLER,
                 // Pass in empty orders to prevent native orders from being used.
                 ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, bridgeSlippage },
+                DEFAULT_OPTS,
             );
             expect(improvedOrders).to.not.be.length(0);
             for (const order of improvedOrders) {
@@ -535,13 +555,13 @@ describe('aggregation utils tests', () => {
             }
         });
 
-        it('generates bridge orders with correct maker amount', async () => {
-            const bridgeSlippage = _.random(0.1, true);
+        it('generates bridge orders with correct taker amount', async () => {
             const improvedOrders = await improveMarketBuyAsync(
+                DEFAULT_SAMPLER,
                 // Pass in empty orders to prevent native orders from being used.
                 ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, bridgeSlippage },
+                DEFAULT_OPTS,
             );
             const totalMakerAssetAmount = BigNumber.sum(...improvedOrders.map(o => o.makerAssetAmount));
             expect(totalMakerAssetAmount).to.bignumber.gte(FILL_AMOUNT);
@@ -550,6 +570,7 @@ describe('aggregation utils tests', () => {
         it('generates bridge orders with max slippage of `bridgeSlippage`', async () => {
             const bridgeSlippage = _.random(0.1, true);
             const improvedOrders = await improveMarketBuyAsync(
+                DEFAULT_SAMPLER,
                 // Pass in empty orders to prevent native orders from being used.
                 ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                 FILL_AMOUNT,
@@ -574,6 +595,7 @@ describe('aggregation utils tests', () => {
                 takerAssetAmount: dustAmount.div(maxRate.plus(0.01)).integerValue(BigNumber.ROUND_DOWN),
             });
             const improvedOrders = await improveMarketBuyAsync(
+                DEFAULT_SAMPLER,
                 _.shuffle([dustOrder, ...ORDERS]),
                 FILL_AMOUNT,
                 // Ignore all DEX sources so only native orders are returned.
@@ -590,18 +612,11 @@ describe('aggregation utils tests', () => {
             rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
             rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
             rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
-            const provider = new SamplerProvider(params => ({
-                ...DEFAULT_OPTS.provider.handler(params),
-                samples: params.sources.map(s =>
-                    shortZip(params.fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
-                        f.div(r).integerValue(BigNumber.ROUND_UP),
-                    ),
-                ),
-            }));
             const improvedOrders = await improveMarketBuyAsync(
-                createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native].map(r => new BigNumber(r))),
+                createSamplerFromBuyRates(rates),
+                createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                 FILL_AMOUNT,
-                { ...DEFAULT_OPTS, provider, numSamples: 4, runLimit: 512 },
+                { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512 },
             );
             expect(improvedOrders).to.be.length(4);
             const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData)).sort();

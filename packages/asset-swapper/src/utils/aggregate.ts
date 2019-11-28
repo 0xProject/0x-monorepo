@@ -1,8 +1,7 @@
-import { ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
+import { IERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
-import { SupportedProvider } from 'ethereum-types';
 
 import { constants } from '../constants';
 
@@ -10,7 +9,6 @@ const { NULL_BYTES, NULL_ADDRESS } = constants;
 const ZERO = new BigNumber(0);
 const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
 // TODO(dorothy-zbornak): Point these addresses to the mainnet.
-export const SAMPLER_ADDRESS = '0x425335175ecb488d7d656952da9819a48d3ffd6e';
 export const KYBER_BRIDGE_ADDRESS = '0xa0cdca934847556eaf431d909fb3cf4aca01df66';
 export const ETH2DAI_BRIDGE_ADDRESS = '0x27b8c4473c6b885d0b060d722cf614dbc3f9adfb';
 export const UNISWAP_BRIDGE_ADDRESS = '0x9b81c8beee5d0ff8b128adc04db71f33022c5163';
@@ -21,7 +19,6 @@ export const UNISWAP_BRIDGE_ADDRESS = '0x9b81c8beee5d0ff8b128adc04db71f33022c516
 export enum AggregationError {
     NoOptimalPath = 'no optimal path',
     EmptyOrders = 'empty orders',
-    MissingProvider = 'missing provider',
 }
 
 /**
@@ -119,16 +116,11 @@ export interface ImproveOrdersOpts {
      * Default is 0.01 (100 basis points).
      */
     dustThreshold: number;
-    /**
-     * A Web3 provider. Required.
-     */
-    provider: SupportedProvider;
 }
 
 const IMPROVE_ORDERS_OPTS_DEFAULTS = {
     runLimit: 1024,
     excludedSources: [],
-    provider: undefined,
     bridgeSlippage: 0.0005,
     dustThreshold: 0.01,
     numSamples: 8,
@@ -165,12 +157,14 @@ export enum FillFlags {
 /**
  * Improve a market sell operation by (potentially) merging native orders with
  * generated bridge orders.
+ * @param samplerContract The `IERC20BridgeSamplerContract` contract.
  * @param nativeOrders Native orders.
  * @param takerAmount Amount of taker asset to sell.
  * @param opts Options object.
  * @return Improved orders.
  */
 export async function improveMarketSellAsync(
+    samplerContract: IERC20BridgeSamplerContract,
     nativeOrders: SignedOrderWithoutDomain[],
     takerAmount: BigNumber,
     opts?: Partial<ImproveOrdersOpts>,
@@ -183,10 +177,10 @@ export async function improveMarketSellAsync(
         ...opts,
     };
     const [fillableAmounts, dexQuotes] = await queryNetworkAsync(
+        samplerContract,
         nativeOrders,
         getSampleAmounts(takerAmount, _opts.numSamples),
         difference(SELL_SOURCES, _opts.excludedSources),
-        _opts.provider,
     );
     const nativePath = pruneDustFillsFromNativePath(
         createSellPathFromNativeOrders(nativeOrders, fillableAmounts),
@@ -196,6 +190,7 @@ export async function improveMarketSellAsync(
     const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
     const allPaths = [...dexPaths];
     const allFills = flattenDexPaths(dexPaths);
+    // If native orders are allowed, splice them in.
     if (!(_opts.excludedSources as ERC20BridgeSource[]).includes(ERC20BridgeSource.Native)) {
         allPaths.splice(0, 0, nativePath);
         allFills.splice(0, 0, ...nativePath);
@@ -216,12 +211,14 @@ export async function improveMarketSellAsync(
 /**
  * Improve a market buy operation by (potentially) merging native orders with
  * generated bridge orders.
+ * @param samplerContract The `IERC20BridgeSamplerContract` contract.
  * @param nativeOrders Native orders.
  * @param makerAmount Amount of maker asset to buy.
  * @param opts Options object.
  * @return Improved orders.
  */
 export async function improveMarketBuyAsync(
+    samplerContract: IERC20BridgeSamplerContract,
     nativeOrders: SignedOrderWithoutDomain[],
     makerAmount: BigNumber,
     opts?: Partial<ImproveOrdersOpts>,
@@ -234,10 +231,10 @@ export async function improveMarketBuyAsync(
         ...opts,
     };
     const [fillableAmounts, dexQuotes] = await queryNetworkAsync(
+        samplerContract,
         nativeOrders,
         getSampleAmounts(makerAmount, _opts.numSamples),
         difference(BUY_SOURCES, _opts.excludedSources),
-        _opts.provider,
         true,
     );
     const nativePath = pruneDustFillsFromNativePath(
@@ -248,6 +245,7 @@ export async function improveMarketBuyAsync(
     const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
     const allPaths = [...dexPaths];
     const allFills = flattenDexPaths(dexPaths);
+    // If native orders are allowed, splice them in.
     if (!(_opts.excludedSources as ERC20BridgeSource[]).includes(ERC20BridgeSource.Native)) {
         allPaths.splice(0, 0, nativePath);
         allFills.splice(0, 0, ...nativePath);
@@ -263,6 +261,39 @@ export async function improveMarketBuyAsync(
     }
     const [inputToken, outputToken] = getOrderTokens(nativeOrders[0]);
     return createBuyOrdersFromPath(inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
+}
+
+/**
+ * Query the sampler contract to get native order statuses and DEX quotes.
+ */
+export async function queryNetworkAsync(
+    samplerContract: IERC20BridgeSamplerContract,
+    nativeOrders: SignedOrderWithoutDomain[],
+    sampleAmounts: BigNumber[],
+    sources: ERC20BridgeSource[],
+    isBuy?: boolean,
+): Promise<[BigNumber[], DexSample[][]]> {
+    const signatures = nativeOrders.map(o => o.signature);
+    let fillableAmount;
+    let rawSamples;
+    if (isBuy) {
+        [fillableAmount, rawSamples] = await samplerContract
+            .queryOrdersAndSampleBuys(nativeOrders, signatures, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
+            .callAsync();
+    } else {
+        [fillableAmount, rawSamples] = await samplerContract
+            .queryOrdersAndSampleSells(nativeOrders, signatures, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
+            .callAsync();
+    }
+    const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
+        const source = sources[sourceIdx];
+        return rawDexSamples.map((sample, sampleIdx) => ({
+            source,
+            input: sampleAmounts[sampleIdx],
+            output: sample,
+        }));
+    });
+    return [fillableAmount, quotes];
 }
 
 /**
@@ -283,43 +314,6 @@ export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
         }
     }
     return currentOutput;
-}
-
-/**
- * Query the sampler contract to get native order statuses and DEX quotes.
- */
-export async function queryNetworkAsync(
-    nativeOrders: SignedOrderWithoutDomain[],
-    sampleAmounts: BigNumber[],
-    sources: ERC20BridgeSource[],
-    provider?: SupportedProvider,
-    isBuy?: boolean,
-): Promise<[BigNumber[], DexSample[][]]> {
-    if (!provider) {
-        throw new Error(AggregationError.MissingProvider);
-    }
-    const sampler = new ERC20BridgeSamplerContract(SAMPLER_ADDRESS, provider);
-    const signatures = nativeOrders.map(o => o.signature);
-    let fillableAmount;
-    let rawSamples;
-    if (isBuy) {
-        [fillableAmount, rawSamples] = await sampler
-            .queryOrdersAndSampleBuys(nativeOrders, signatures, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
-            .callAsync();
-    } else {
-        [fillableAmount, rawSamples] = await sampler
-            .queryOrdersAndSampleSells(nativeOrders, signatures, sources.map(s => SOURCE_TO_ADDRESS[s]), sampleAmounts)
-            .callAsync();
-    }
-    const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
-        const source = sources[sourceIdx];
-        return rawDexSamples.map((sample, sampleIdx) => ({
-            source,
-            input: sampleAmounts[sampleIdx],
-            output: sample,
-        }));
-    });
-    return [fillableAmount, quotes];
 }
 
 /**
