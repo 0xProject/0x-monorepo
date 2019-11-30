@@ -7,7 +7,6 @@ import {
     constants,
     expect,
     getLatestBlockTimestampAsync,
-    getPercentageOfValue,
     toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
@@ -24,7 +23,7 @@ import { DeploymentManager } from '../framework/deployment_manager';
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
 
-blockchainTests('Forwarder integration tests', env => {
+blockchainTests.only('Forwarder integration tests', env => {
     let deployment: DeploymentManager;
     let forwarder: ForwarderContract;
     let balanceStore: BlockchainBalanceStore;
@@ -312,18 +311,7 @@ blockchainTests('Forwarder integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(36),
             });
             await testFactory.marketSellTestAsync([order], 0.67, {
-                forwarderFeePercentage: new BigNumber(2),
-            });
-        });
-        it('should fail if the fee is set too high', async () => {
-            const order = await maker.signOrderAsync();
-            const forwarderFeePercentage = new BigNumber(6);
-            const revertError = new ExchangeForwarderRevertErrors.FeePercentageTooLargeError(
-                getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeePercentage),
-            );
-            await testFactory.marketSellTestAsync([order], 0.5, {
-                forwarderFeePercentage,
-                revertError,
+                forwarderFeeAmount: toBaseUnitAmount(0.2),
             });
         });
     });
@@ -585,30 +573,19 @@ blockchainTests('Forwarder integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(11),
             });
             await testFactory.marketBuyTestAsync([order], 0.33, {
-                forwarderFeePercentage: new BigNumber(2),
-            });
-        });
-        it('should fail if the fee is set too high', async () => {
-            const order = await maker.signOrderAsync();
-            const revertError = new ExchangeForwarderRevertErrors.FeePercentageTooLargeError(
-                getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, new BigNumber(6)),
-            );
-            await testFactory.marketBuyTestAsync([order], 0.5, {
-                forwarderFeePercentage: new BigNumber(6),
-                revertError,
+                forwarderFeeAmount: toBaseUnitAmount(0.2),
             });
         });
         it('should fail if there is not enough ETH remaining to pay the fee', async () => {
             const order = await maker.signOrderAsync();
-            const forwarderFeePercentage = new BigNumber(2);
-            const ethFee = getPercentageOfValue(
-                order.takerAssetAmount.times(0.5).plus(DeploymentManager.protocolFee),
-                forwarderFeePercentage,
+            const forwarderFeeAmount = toBaseUnitAmount(1);
+            const revertError = new ExchangeForwarderRevertErrors.InsufficientEthForFeeError(
+                forwarderFeeAmount,
+                forwarderFeeAmount.minus(1),
             );
-            const revertError = new ExchangeForwarderRevertErrors.InsufficientEthForFeeError(ethFee, ethFee.minus(1));
             await testFactory.marketBuyTestAsync([order], 0.5, {
                 ethValueAdjustment: -1,
-                forwarderFeePercentage,
+                forwarderFeeAmount,
                 revertError,
             });
         });

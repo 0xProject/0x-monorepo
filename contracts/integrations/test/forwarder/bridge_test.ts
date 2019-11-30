@@ -20,7 +20,7 @@ import { TestEth2DaiContract, TestUniswapExchangeContract } from '../wrappers';
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
 
-blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
+blockchainTests.resets.only('Forwarder <> ERC20Bridge integration tests', env => {
     let deployment: DeploymentManager;
     let balanceStore: BlockchainBalanceStore;
     let testFactory: ForwarderTestFactory;
@@ -193,7 +193,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 eth2DaiBridgeOrder,
                 await maker.signOrderAsync({ makerAssetData: makerTokenAssetData }), // Non-bridge order of the same ERC20
             ];
-            await testFactory.marketSellTestAsync(orders, 2.56, { forwarderFeePercentage: 1 });
+            await testFactory.marketSellTestAsync(orders, 2.56, { forwarderFeeAmount: toBaseUnitAmount(0.1) });
         });
         it('should fully fill a single UniswapBridge order without a taker fee', async () => {
             await testFactory.marketSellTestAsync([uniswapBridgeOrder], 1);
@@ -234,7 +234,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 uniswapBridgeOrder,
                 await maker.signOrderAsync({ makerAssetData: makerTokenAssetData }), // Non-bridge order of the same ERC20
             ];
-            await testFactory.marketSellTestAsync(orders, 2.56, { forwarderFeePercentage: 1 });
+            await testFactory.marketSellTestAsync(orders, 2.56, { forwarderFeeAmount: toBaseUnitAmount(0.1) });
         });
         it('should fill multiple bridge orders', async () => {
             await testFactory.marketSellTestAsync([eth2DaiBridgeOrder, uniswapBridgeOrder], 1.23);
@@ -292,7 +292,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 eth2DaiBridgeOrder,
                 await maker.signOrderAsync({ makerAssetData: makerTokenAssetData }), // Non-bridge order of the same ERC20
             ];
-            await testFactory.marketBuyTestAsync(orders, 2.56, { forwarderFeePercentage: 1 });
+            await testFactory.marketBuyTestAsync(orders, 2.56, { forwarderFeeAmount: toBaseUnitAmount(0.1) });
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount (Eth2Dai)', async () => {
             const expectedError = new ExchangeForwarderRevertErrors.CompleteBuyFailedError(
@@ -343,7 +343,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 uniswapBridgeOrder,
                 await maker.signOrderAsync({ makerAssetData: makerTokenAssetData }), // Non-bridge order of the same ERC20
             ];
-            await testFactory.marketBuyTestAsync(orders, 2.56, { forwarderFeePercentage: 1 });
+            await testFactory.marketBuyTestAsync(orders, 2.56, { forwarderFeeAmount: toBaseUnitAmount(0.1) });
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount (Uniswap)', async () => {
             const expectedError = new ExchangeForwarderRevertErrors.CompleteBuyFailedError(
