@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 
@@ -66,19 +65,6 @@ contract MixinWeth is
         internal
         returns (uint256 ethFee)
     {
-        // Ensure feePercentage is less than 5%.
-        uint256 feePercentage = LibMath.getPartialAmountFloor(
-            ethFeeAmount,
-            wethSpent,
-            PERCENTAGE_DENOMINATOR
-        );
-
-        if (feePercentage > MAX_FEE_PERCENTAGE) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.FeePercentageTooLargeError(
-                feePercentage
-            ));
-        }
-
         // Ensure that no extra WETH owned by this contract has been spent.
         if (wethSpent > msg.value) {
             LibRichErrors.rrevert(LibForwarderRichErrors.OverspentWethError(
