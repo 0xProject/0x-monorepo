@@ -33,7 +33,6 @@ contract IForwarderCore {
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
-    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
@@ -44,8 +43,7 @@ contract IForwarderCore {
         payable
         returns (
             uint256 wethSpentAmount,
-            uint256 makerAssetAcquiredAmount,
-            uint256 ethFeePaid
+            uint256 makerAssetAcquiredAmount
         );
 
     /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
@@ -59,7 +57,6 @@ contract IForwarderCore {
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
-    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
         uint256 makerAssetBuyAmount,
@@ -71,7 +68,6 @@ contract IForwarderCore {
         payable
         returns (
             uint256 wethSpentAmount,
-            uint256 makerAssetAcquiredAmount,
-            uint256 ethFeePaid
+            uint256 makerAssetAcquiredAmount
         );
 }

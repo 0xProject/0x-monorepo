@@ -63,7 +63,6 @@ contract MixinWeth is
         address payable feeRecipient
     )
         internal
-        returns (uint256 ethFee)
     {
         // Ensure that no extra WETH owned by this contract has been spent.
         if (wethSpent > msg.value) {
@@ -79,7 +78,7 @@ contract MixinWeth is
         // Ensure fee is less than amount of WETH remaining.
         if (ethFeeAmount > wethRemaining) {
             LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError(
-                ethFee,
+                ethFeeAmount,
                 wethRemaining
             ));
         }
