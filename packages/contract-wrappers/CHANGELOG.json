@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Remove dependency on `abi-gen-wrappers`"
+            },
+            {
+                "note": "Regenrate Forwarder wrapper",
+                "pr": 2374
             }
         ]
     },

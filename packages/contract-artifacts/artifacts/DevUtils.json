@@ -4,13 +4,7 @@
     "compilerOutput": {
         "abi": [
             {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_exchange",
-                        "type": "address"
-                    }
-                ],
+                "inputs": [{ "internalType": "address", "name": "_exchange", "type": "address" }],
                 "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "constructor"
@@ -19,26 +13,14 @@
                 "constant": true,
                 "inputs": [],
                 "name": "EIP712_EXCHANGE_DOMAIN_HASH",
-                "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "",
-                        "type": "bytes32"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeAssetProxyDispatchError",
                 "outputs": [
                     {
@@ -46,16 +28,8 @@
                         "name": "errorCode",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "bytes32",
-                        "name": "orderHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" },
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -63,25 +37,11 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeAssetProxyExistsError",
                 "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "assetProxyAddress",
-                        "type": "address"
-                    }
+                    { "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" },
+                    { "internalType": "address", "name": "assetProxyAddress", "type": "address" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -89,51 +49,21 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "decodeAssetProxyId",
-                "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeAssetProxyTransferError",
                 "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "orderHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "errorData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" },
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" },
+                    { "internalType": "bytes", "name": "errorData", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -141,35 +71,13 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeEIP1271SignatureError",
                 "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "verifyingContractAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "data",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "errorData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "address", "name": "verifyingContractAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "data", "type": "bytes" },
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" },
+                    { "internalType": "bytes", "name": "errorData", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -177,40 +85,14 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "decodeERC1155AssetData",
                 "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "tokenIds",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "tokenValues",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "callbackData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" },
+                    { "internalType": "address", "name": "tokenAddress", "type": "address" },
+                    { "internalType": "uint256[]", "name": "tokenIds", "type": "uint256[]" },
+                    { "internalType": "uint256[]", "name": "tokenValues", "type": "uint256[]" },
+                    { "internalType": "bytes", "name": "callbackData", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -218,25 +100,11 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "decodeERC20AssetData",
                 "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    }
+                    { "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" },
+                    { "internalType": "address", "name": "tokenAddress", "type": "address" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -244,30 +112,12 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "decodeERC721AssetData",
                 "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                    }
+                    { "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" },
+                    { "internalType": "address", "name": "tokenAddress", "type": "address" },
+                    { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -275,13 +125,7 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeExchangeInvalidContextError",
                 "outputs": [
                     {
@@ -289,16 +133,8 @@
                         "name": "errorCode",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "bytes32",
-                        "name": "orderHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "contextAddress",
-                        "type": "address"
-                    }
+                    { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" },
+                    { "internalType": "address", "name": "contextAddress", "type": "address" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -306,13 +142,7 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeFillError",
                 "outputs": [
                     {
@@ -320,11 +150,7 @@
                         "name": "errorCode",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "bytes32",
-                        "name": "orderHash",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -332,13 +158,7 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeIncompleteFillError",
                 "outputs": [
                     {
@@ -346,16 +166,8 @@
                         "name": "errorCode",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "expectedAssetFillAmount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "actualAssetFillAmount",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "expectedAssetFillAmount", "type": "uint256" },
+                    { "internalType": "uint256", "name": "actualAssetFillAmount", "type": "uint256" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -363,30 +175,12 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "decodeMultiAssetData",
                 "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "amounts",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "nestedAssetData",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" },
+                    { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" },
+                    { "internalType": "bytes[]", "name": "nestedAssetData", "type": "bytes[]" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -394,25 +188,11 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeNegativeSpreadError",
                 "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "leftOrderHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "rightOrderHash",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "bytes32", "name": "leftOrderHash", "type": "bytes32" },
+                    { "internalType": "bytes32", "name": "rightOrderHash", "type": "bytes32" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -420,30 +200,12 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeOrderEpochError",
                 "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "makerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "orderSenderAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "currentEpoch",
-                        "type": "uint256"
-                    }
+                    { "internalType": "address", "name": "makerAddress", "type": "address" },
+                    { "internalType": "address", "name": "orderSenderAddress", "type": "address" },
+                    { "internalType": "uint256", "name": "currentEpoch", "type": "uint256" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -451,25 +213,11 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeOrderStatusError",
                 "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "orderHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "enum LibOrder.OrderStatus",
-                        "name": "orderStatus",
-                        "type": "uint8"
-                    }
+                    { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" },
+                    { "internalType": "enum LibOrder.OrderStatus", "name": "orderStatus", "type": "uint8" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -477,13 +225,7 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeSignatureError",
                 "outputs": [
                     {
@@ -491,21 +233,9 @@
                         "name": "errorCode",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "bytes32",
-                        "name": "hash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "signerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
+                    { "internalType": "address", "name": "signerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -513,25 +243,11 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeSignatureValidatorNotApprovedError",
                 "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "signerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "validatorAddress",
-                        "type": "address"
-                    }
+                    { "internalType": "address", "name": "signerAddress", "type": "address" },
+                    { "internalType": "address", "name": "validatorAddress", "type": "address" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -539,35 +255,13 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeSignatureWalletError",
                 "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "hash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "signerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "errorData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
+                    { "internalType": "address", "name": "signerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" },
+                    { "internalType": "bytes", "name": "errorData", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -575,35 +269,13 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "decodeStaticCallAssetData",
                 "outputs": [
-                    {
-                        "internalType": "bytes4",
-                        "name": "assetProxyId",
-                        "type": "bytes4"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "staticCallTargetAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "staticCallData",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "expectedReturnDataHash",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "bytes4", "name": "assetProxyId", "type": "bytes4" },
+                    { "internalType": "address", "name": "staticCallTargetAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "staticCallData", "type": "bytes" },
+                    { "internalType": "bytes32", "name": "expectedReturnDataHash", "type": "bytes32" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -611,13 +283,7 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeTransactionError",
                 "outputs": [
                     {
@@ -625,11 +291,7 @@
                         "name": "errorCode",
                         "type": "uint8"
                     },
-                    {
-                        "internalType": "bytes32",
-                        "name": "transactionHash",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "bytes32", "name": "transactionHash", "type": "bytes32" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -637,25 +299,11 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "encoded",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "encoded", "type": "bytes" }],
                 "name": "decodeTransactionExecutionError",
                 "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "transactionHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "errorData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes32", "name": "transactionHash", "type": "bytes32" },
+                    { "internalType": "bytes", "name": "errorData", "type": "bytes" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -663,107 +311,33 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "transactionData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "transactionData", "type": "bytes" }],
                 "name": "decodeZeroExTransactionData",
                 "outputs": [
-                    {
-                        "internalType": "string",
-                        "name": "functionName",
-                        "type": "string"
-                    },
+                    { "internalType": "string", "name": "functionName", "type": "string" },
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "makerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "takerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "feeRecipientAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "senderAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerFeeAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerFeeAssetData",
-                                "type": "bytes"
-                            }
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
                         "internalType": "struct LibOrder.Order[]",
                         "name": "orders",
                         "type": "tuple[]"
                     },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "takerAssetFillAmounts",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "signatures",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "uint256[]", "name": "takerAssetFillAmounts", "type": "uint256[]" },
+                    { "internalType": "bytes[]", "name": "signatures", "type": "bytes[]" }
                 ],
                 "payable": false,
                 "stateMutability": "pure",
@@ -772,56 +346,22 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "tokenIds",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "tokenValues",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "callbackData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "address", "name": "tokenAddress", "type": "address" },
+                    { "internalType": "uint256[]", "name": "tokenIds", "type": "uint256[]" },
+                    { "internalType": "uint256[]", "name": "tokenValues", "type": "uint256[]" },
+                    { "internalType": "bytes", "name": "callbackData", "type": "bytes" }
                 ],
                 "name": "encodeERC1155AssetData",
-                "outputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    }
-                ],
+                "inputs": [{ "internalType": "address", "name": "tokenAddress", "type": "address" }],
                 "name": "encodeERC20AssetData",
-                "outputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -829,25 +369,11 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                    }
+                    { "internalType": "address", "name": "tokenAddress", "type": "address" },
+                    { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
                 ],
                 "name": "encodeERC721AssetData",
-                "outputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -855,25 +381,11 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "amounts",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "nestedAssetData",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" },
+                    { "internalType": "bytes[]", "name": "nestedAssetData", "type": "bytes[]" }
                 ],
                 "name": "encodeMultiAssetData",
-                "outputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -881,30 +393,12 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "staticCallTargetAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "staticCallData",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "expectedReturnDataHash",
-                        "type": "bytes32"
-                    }
+                    { "internalType": "address", "name": "staticCallTargetAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "staticCallData", "type": "bytes" },
+                    { "internalType": "bytes32", "name": "expectedReturnDataHash", "type": "bytes32" }
                 ],
                 "name": "encodeStaticCallAssetData",
-                "outputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -912,25 +406,11 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" }
                 ],
                 "name": "getAssetProxyAllowance",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "allowance",
-                        "type": "uint256"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256", "name": "allowance", "type": "uint256" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -938,25 +418,11 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" }
                 ],
                 "name": "getBalance",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "balance",
-                        "type": "uint256"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256", "name": "balance", "type": "uint256" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -964,29 +430,13 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" }
                 ],
                 "name": "getBalanceAndAssetProxyAllowance",
                 "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "balance",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "allowance",
-                        "type": "uint256"
-                    }
+                    { "internalType": "uint256", "name": "balance", "type": "uint256" },
+                    { "internalType": "uint256", "name": "allowance", "type": "uint256" }
                 ],
                 "payable": false,
                 "stateMutability": "view",
@@ -995,25 +445,11 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "assetData",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes[]", "name": "assetData", "type": "bytes[]" }
                 ],
                 "name": "getBatchAssetProxyAllowances",
-                "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "allowances",
-                        "type": "uint256[]"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256[]", "name": "allowances", "type": "uint256[]" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -1021,25 +457,11 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "assetData",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes[]", "name": "assetData", "type": "bytes[]" }
                 ],
                 "name": "getBatchBalances",
-                "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "balances",
-                        "type": "uint256[]"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256[]", "name": "balances", "type": "uint256[]" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -1047,29 +469,13 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "assetData",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes[]", "name": "assetData", "type": "bytes[]" }
                 ],
                 "name": "getBatchBalancesAndAssetProxyAllowances",
                 "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "balances",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "allowances",
-                        "type": "uint256[]"
-                    }
+                    { "internalType": "uint256[]", "name": "balances", "type": "uint256[]" },
+                    { "internalType": "uint256[]", "name": "allowances", "type": "uint256[]" }
                 ],
                 "payable": false,
                 "stateMutability": "view",
@@ -1077,21 +483,9 @@
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "address[]",
-                        "name": "addresses",
-                        "type": "address[]"
-                    }
-                ],
+                "inputs": [{ "internalType": "address[]", "name": "addresses", "type": "address[]" }],
                 "name": "getEthBalances",
-                "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "",
-                        "type": "uint256[]"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -1101,100 +495,30 @@
                 "inputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "makerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "takerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "feeRecipientAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "senderAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerFeeAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerFeeAssetData",
-                                "type": "bytes"
-                            }
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
                         "internalType": "struct LibOrder.Order",
                         "name": "order",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "chainId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "exchange",
-                        "type": "address"
-                    }
+                    { "internalType": "uint256", "name": "chainId", "type": "uint256" },
+                    { "internalType": "address", "name": "exchange", "type": "address" }
                 ],
                 "name": "getOrderHash",
-                "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "orderHash",
-                        "type": "bytes32"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes32", "name": "orderHash", "type": "bytes32" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -1204,121 +528,41 @@
                 "inputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "makerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "takerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "feeRecipientAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "senderAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerFeeAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerFeeAssetData",
-                                "type": "bytes"
-                            }
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
                         "internalType": "struct LibOrder.Order",
                         "name": "order",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
-                    }
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "name": "getOrderRelevantState",
                 "outputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "uint8",
-                                "name": "orderStatus",
-                                "type": "uint8"
-                            },
-                            {
-                                "internalType": "bytes32",
-                                "name": "orderHash",
-                                "type": "bytes32"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "orderTakerAssetFilledAmount",
-                                "type": "uint256"
-                            }
+                            { "internalType": "uint8", "name": "orderStatus", "type": "uint8" },
+                            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" },
+                            { "internalType": "uint256", "name": "orderTakerAssetFilledAmount", "type": "uint256" }
                         ],
                         "internalType": "struct LibOrder.OrderInfo",
                         "name": "orderInfo",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "fillableTakerAssetAmount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "isValidSignature",
-                        "type": "bool"
-                    }
+                    { "internalType": "uint256", "name": "fillableTakerAssetAmount", "type": "uint256" },
+                    { "internalType": "bool", "name": "isValidSignature", "type": "bool" }
                 ],
                 "payable": false,
                 "stateMutability": "view",
@@ -1329,121 +573,41 @@
                 "inputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "makerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "takerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "feeRecipientAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "senderAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerFeeAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerFeeAssetData",
-                                "type": "bytes"
-                            }
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
                         "internalType": "struct LibOrder.Order[]",
                         "name": "orders",
                         "type": "tuple[]"
                     },
-                    {
-                        "internalType": "bytes[]",
-                        "name": "signatures",
-                        "type": "bytes[]"
-                    }
+                    { "internalType": "bytes[]", "name": "signatures", "type": "bytes[]" }
                 ],
                 "name": "getOrderRelevantStates",
                 "outputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "uint8",
-                                "name": "orderStatus",
-                                "type": "uint8"
-                            },
-                            {
-                                "internalType": "bytes32",
-                                "name": "orderHash",
-                                "type": "bytes32"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "orderTakerAssetFilledAmount",
-                                "type": "uint256"
-                            }
+                            { "internalType": "uint8", "name": "orderStatus", "type": "uint8" },
+                            { "internalType": "bytes32", "name": "orderHash", "type": "bytes32" },
+                            { "internalType": "uint256", "name": "orderTakerAssetFilledAmount", "type": "uint256" }
                         ],
                         "internalType": "struct LibOrder.OrderInfo[]",
                         "name": "ordersInfo",
                         "type": "tuple[]"
                     },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "fillableTakerAssetAmounts",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "bool[]",
-                        "name": "isValidSignature",
-                        "type": "bool[]"
-                    }
+                    { "internalType": "uint256[]", "name": "fillableTakerAssetAmounts", "type": "uint256[]" },
+                    { "internalType": "bool[]", "name": "isValidSignature", "type": "bool[]" }
                 ],
                 "payable": false,
                 "stateMutability": "view",
@@ -1454,91 +618,27 @@
                 "inputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "makerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "takerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "feeRecipientAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "senderAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerFeeAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerFeeAssetData",
-                                "type": "bytes"
-                            }
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
                         "internalType": "struct LibOrder.Order",
                         "name": "order",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "address",
-                        "name": "takerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "takerAssetFillAmount",
-                        "type": "uint256"
-                    }
+                    { "internalType": "address", "name": "takerAddress", "type": "address" },
+                    { "internalType": "uint256", "name": "takerAssetFillAmount", "type": "uint256" }
                 ],
                 "name": "getSimulatedOrderTransferResults",
                 "outputs": [
@@ -1557,91 +657,27 @@
                 "inputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "address",
-                                "name": "makerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "takerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "feeRecipientAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "senderAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerAssetAmount",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "makerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "takerFee",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "makerFeeAssetData",
-                                "type": "bytes"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "takerFeeAssetData",
-                                "type": "bytes"
-                            }
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
                         "internalType": "struct LibOrder.Order[]",
                         "name": "orders",
                         "type": "tuple[]"
                     },
-                    {
-                        "internalType": "address[]",
-                        "name": "takerAddresses",
-                        "type": "address[]"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "takerAssetFillAmounts",
-                        "type": "uint256[]"
-                    }
+                    { "internalType": "address[]", "name": "takerAddresses", "type": "address[]" },
+                    { "internalType": "uint256[]", "name": "takerAssetFillAmounts", "type": "uint256[]" }
                 ],
                 "name": "getSimulatedOrdersTransferResults",
                 "outputs": [
@@ -1660,55 +696,21 @@
                 "inputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "uint256",
-                                "name": "salt",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "expirationTimeSeconds",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "gasPrice",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "signerAddress",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "data",
-                                "type": "bytes"
-                            }
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "gasPrice", "type": "uint256" },
+                            { "internalType": "address", "name": "signerAddress", "type": "address" },
+                            { "internalType": "bytes", "name": "data", "type": "bytes" }
                         ],
                         "internalType": "struct LibZeroExTransaction.ZeroExTransaction",
                         "name": "transaction",
                         "type": "tuple"
                     },
-                    {
-                        "internalType": "uint256",
-                        "name": "chainId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "exchange",
-                        "type": "address"
-                    }
+                    { "internalType": "uint256", "name": "chainId", "type": "uint256" },
+                    { "internalType": "address", "name": "exchange", "type": "address" }
                 ],
                 "name": "getTransactionHash",
-                "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "transactionHash",
-                        "type": "bytes32"
-                    }
-                ],
+                "outputs": [{ "internalType": "bytes32", "name": "transactionHash", "type": "bytes32" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -1716,38 +718,18 @@
             {
                 "constant": true,
                 "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ownerAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
+                    { "internalType": "address", "name": "ownerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" }
                 ],
                 "name": "getTransferableAssetAmount",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "transferableAssetAmount",
-                        "type": "uint256"
-                    }
-                ],
+                "outputs": [{ "internalType": "uint256", "name": "transferableAssetAmount", "type": "uint256" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             },
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "internalType": "bytes",
-                        "name": "assetData",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "internalType": "bytes", "name": "assetData", "type": "bytes" }],
                 "name": "revertIfInvalidAssetData",
                 "outputs": [],
                 "payable": false,

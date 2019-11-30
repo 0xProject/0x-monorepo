@@ -5,6 +5,10 @@
             {
                 "note": "`1337` addresses updated with Forwarder deployed after Exchange is configured",
                 "pr": 2368
+            },
+            {
+                "note": "Update Forwarder addresses on all newtorks",
+                "pr": 2374
             }
         ]
     },
