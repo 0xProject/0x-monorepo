@@ -34,14 +34,6 @@ export class UnsupportedFeeError extends RevertError {
     }
 }
 
-export class FeePercentageTooLargeError extends RevertError {
-    constructor(feePercentage?: BigNumber | number | string) {
-        super('FeePercentageTooLargeError', 'FeePercentageTooLargeError(uint256 feePercentage)', {
-            feePercentage,
-        });
-    }
-}
-
 export class InsufficientEthForFeeError extends RevertError {
     constructor(ethFeeRequired?: BigNumber | number | string, ethAvailable?: BigNumber | number | string) {
         super(
@@ -88,7 +80,6 @@ const types = [
     UnsupportedAssetProxyError,
     CompleteBuyFailedError,
     UnsupportedFeeError,
-    FeePercentageTooLargeError,
     InsufficientEthForFeeError,
     OverspentWethError,
     DefaultFunctionWethContractOnlyError,
