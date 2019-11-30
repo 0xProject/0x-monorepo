@@ -109,6 +109,7 @@ contract MixinExchangeWrapper is
             // Subtract fee from makerAssetFilledAmount for the net amount acquired.
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount
                 .safeSub(singleFillResults.takerFeePaid);
+
         // WETH fee
         } else if (_areUnderlyingAssetsEqual(order.takerFeeAssetData, order.takerAssetData)) {
 
@@ -132,6 +133,7 @@ contract MixinExchangeWrapper is
                 .safeAdd(singleFillResults.protocolFeePaid);
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
+
         // Unsupported fee
         } else {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
@@ -256,6 +258,7 @@ contract MixinExchangeWrapper is
                 .safeAdd(singleFillResults.protocolFeePaid);
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
+
         // Percentage fee
         } else if (_areUnderlyingAssetsEqual(order.takerFeeAssetData, order.makerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
@@ -278,6 +281,7 @@ contract MixinExchangeWrapper is
             // Subtract fee from makerAssetFilledAmount for the net amount acquired.
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount
                 .safeSub(singleFillResults.takerFeePaid);
+
         // Unsupported fee
         } else {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
@@ -295,7 +299,7 @@ contract MixinExchangeWrapper is
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
     /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
-    function _marketBuyExactAmountWithWeth(
+    function _marketBuyFillOrKill(
         LibOrder.Order[] memory orders,
         uint256 makerAssetBuyAmount,
         bytes[] memory signatures

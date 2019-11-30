@@ -63,7 +63,7 @@ contract MixinForwarderCore is
     ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+    /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
@@ -71,7 +71,7 @@ contract MixinForwarderCore is
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        uint256 feePercentage,
+        uint256 ethFeeAmount,
         address payable feeRecipient
     )
         public
@@ -86,11 +86,7 @@ contract MixinForwarderCore is
         _convertEthToWeth();
 
         // Calculate amount of WETH that won't be spent on the forwarder fee.
-        uint256 wethSellAmount = LibMath.getPartialAmountFloor(
-            PERCENTAGE_DENOMINATOR,
-            feePercentage.safeAdd(PERCENTAGE_DENOMINATOR),
-            msg.value
-        );
+        uint256 wethSellAmount = msg.value.safeSub(ethFeeAmount);
 
         // Spends up to wethSellAmount to fill orders, transfers purchased assets to msg.sender,
         // and pays WETH order fees.
@@ -103,11 +99,11 @@ contract MixinForwarderCore is
             signatures
         );
 
-        // Transfer feePercentage of total ETH spent on orders to feeRecipient.
+        // Transfer ethFeeAmount to feeRecipient.
         // Refund remaining ETH to msg.sender.
         ethFeePaid = _transferEthFeeAndRefund(
             wethSpentAmount,
-            feePercentage,
+            ethFeeAmount,
             feeRecipient
         );
     }
@@ -119,7 +115,7 @@ contract MixinForwarderCore is
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+    /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
@@ -128,7 +124,7 @@ contract MixinForwarderCore is
         LibOrder.Order[] memory orders,
         uint256 makerAssetBuyAmount,
         bytes[] memory signatures,
-        uint256 feePercentage,
+        uint256 ethFeeAmount,
         address payable feeRecipient
     )
         public
@@ -146,17 +142,17 @@ contract MixinForwarderCore is
         (
             wethSpentAmount,
             makerAssetAcquiredAmount
-        ) = _marketBuyExactAmountWithWeth(
+        ) = _marketBuyFillOrKill(
             orders,
             makerAssetBuyAmount,
             signatures
         );
 
-        // Transfer feePercentage of total ETH spent on orders to feeRecipient.
+        // Transfer ethFeeAmount to feeRecipient.
         // Refund remaining ETH to msg.sender.
         ethFeePaid = _transferEthFeeAndRefund(
             wethSpentAmount,
-            feePercentage,
+            ethFeeAmount,
             feeRecipient
         );
     }

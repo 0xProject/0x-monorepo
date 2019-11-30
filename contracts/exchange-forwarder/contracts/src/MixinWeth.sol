@@ -55,18 +55,24 @@ contract MixinWeth is
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
     ///      Refunds any excess ETH to msg.sender.
     /// @param wethSpent Amount of WETH spent when filling orders.
-    /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+    /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return ethFee Amount paid to feeRecipient as a percentage fee on the total WETH sold.
     function _transferEthFeeAndRefund(
         uint256 wethSpent,
-        uint256 feePercentage,
+        uint256 ethFeeAmount,
         address payable feeRecipient
     )
         internal
         returns (uint256 ethFee)
     {
         // Ensure feePercentage is less than 5%.
+        uint256 feePercentage = LibMath.getPartialAmountFloor(
+            ethFeeAmount,
+            wethSpent,
+            PERCENTAGE_DENOMINATOR
+        );
+
         if (feePercentage > MAX_FEE_PERCENTAGE) {
             LibRichErrors.rrevert(LibForwarderRichErrors.FeePercentageTooLargeError(
                 feePercentage
@@ -84,15 +90,8 @@ contract MixinWeth is
         // Calculate amount of WETH that hasn't been spent.
         uint256 wethRemaining = msg.value.safeSub(wethSpent);
 
-        // Calculate ETH fee to pay to feeRecipient.
-        ethFee = LibMath.getPartialAmountFloor(
-            feePercentage,
-            PERCENTAGE_DENOMINATOR,
-            wethSpent
-        );
-
         // Ensure fee is less than amount of WETH remaining.
-        if (ethFee > wethRemaining) {
+        if (ethFeeAmount > wethRemaining) {
             LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError(
                 ethFee,
                 wethRemaining
@@ -105,12 +104,12 @@ contract MixinWeth is
             ETHER_TOKEN.withdraw(wethRemaining);
 
             // Pay ETH to feeRecipient
-            if (ethFee > 0) {
-                feeRecipient.transfer(ethFee);
+            if (ethFeeAmount > 0) {
+                feeRecipient.transfer(ethFeeAmount);
             }
 
             // Refund remaining ETH to msg.sender.
-            uint256 ethRefund = wethRemaining.safeSub(ethFee);
+            uint256 ethRefund = wethRemaining.safeSub(ethFeeAmount);
             if (ethRefund > 0) {
                 msg.sender.transfer(ethRefund);
             }
