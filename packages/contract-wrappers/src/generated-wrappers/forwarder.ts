@@ -7,6 +7,7 @@ import {
     ContractTxFunctionObj,
     SendTransactionOpts,
     BaseContract,
+    SubscriptionManager,
     PromiseWithTransactionHash,
     methodAbiToFunctionSignature,
 } from '@0x/base-contract';
@@ -19,6 +20,7 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
+    LogWithDecodedArgs,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -32,6 +34,17 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
+export type ForwarderEventArgs = ForwarderOwnershipTransferredEventArgs;
+
+export enum ForwarderEvents {
+    OwnershipTransferred = 'OwnershipTransferred',
+}
+
+export interface ForwarderOwnershipTransferredEventArgs extends DecodedLogArgs {
+    previousOwner: string;
+    newOwner: string;
+}
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -41,13 +54,14 @@ export class ForwarderContract extends BaseContract {
      */
     public static deployedBytecode: string | undefined;
     private readonly _methodABIIndex: { [name: string]: number } = {};
+    private readonly _subscriptionManager: SubscriptionManager<ForwarderEventArgs, ForwarderEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _exchange: string,
-        _wethAssetData: string,
+        _weth: string,
     ): Promise<ForwarderContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -73,7 +87,7 @@ export class ForwarderContract extends BaseContract {
             txDefaults,
             logDecodeDependenciesAbiOnly,
             _exchange,
-            _wethAssetData,
+            _weth,
         );
     }
     public static async deployAsync(
@@ -83,7 +97,7 @@ export class ForwarderContract extends BaseContract {
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
         _exchange: string,
-        _wethAssetData: string,
+        _weth: string,
     ): Promise<ForwarderContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -93,14 +107,14 @@ export class ForwarderContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_exchange, _wethAssetData] = BaseContract._formatABIDataItemList(
+        [_exchange, _weth] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_exchange, _wethAssetData],
+            [_exchange, _weth],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange, _wethAssetData]);
+        const txData = deployInfo.encode(bytecode, [_exchange, _weth]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
             {
@@ -119,7 +133,7 @@ export class ForwarderContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [_exchange, _wethAssetData];
+        contractInstance.constructorArgs = [_exchange, _weth];
         return contractInstance;
     }
 
@@ -135,14 +149,32 @@ export class ForwarderContract extends BaseContract {
                         type: 'address',
                     },
                     {
-                        name: '_wethAssetData',
-                        type: 'bytes',
+                        name: '_weth',
+                        type: 'address',
                     },
                 ],
                 outputs: [],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'constructor',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: 'previousOwner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: 'newOwner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                ],
+                name: 'OwnershipTransferred',
+                outputs: [],
+                type: 'event',
             },
             {
                 inputs: [],
@@ -744,11 +776,10 @@ export class ForwarderContract extends BaseContract {
         };
     }
     /**
-     * Withdraws assets from this contract. The contract formerly required a ZRX balance in order
-     * to function optimally, and this function allows the ZRX to be withdrawn by owner.
-     * It may also be used to withdraw assets that were accidentally sent to this contract.
+     * Withdraws assets from this contract. It may be used by the owner to withdraw assets
+     * that were accidentally sent to this contract.
      * @param assetData Byte array encoded for the respective asset proxy.
-     * @param amount Amount of ERC20 token to withdraw.
+     * @param amount Amount of the asset to withdraw.
      */
     public withdrawAsset(assetData: string, amount: BigNumber): ContractTxFunctionObj<void> {
         const self = (this as any) as ForwarderContract;
@@ -798,6 +829,74 @@ export class ForwarderContract extends BaseContract {
         };
     }
 
+    /**
+     * Subscribe to an event type emitted by the Forwarder contract.
+     * @param eventName The Forwarder contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @return Subscription token used later to unsubscribe
+     */
+    public subscribe<ArgsType extends ForwarderEventArgs>(
+        eventName: ForwarderEvents,
+        indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
+        blockPollingIntervalMs?: number,
+    ): string {
+        assert.doesBelongToStringEnum('eventName', eventName, ForwarderEvents);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        assert.isFunction('callback', callback);
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
+            this.address,
+            eventName,
+            indexFilterValues,
+            ForwarderContract.ABI(),
+            callback,
+            isVerbose,
+            blockPollingIntervalMs,
+        );
+        return subscriptionToken;
+    }
+    /**
+     * Cancel a subscription
+     * @param subscriptionToken Subscription token returned by `subscribe()`
+     */
+    public unsubscribe(subscriptionToken: string): void {
+        this._subscriptionManager.unsubscribe(subscriptionToken);
+    }
+    /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        this._subscriptionManager.unsubscribeAll();
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param eventName The Forwarder contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
+     */
+    public async getLogsAsync<ArgsType extends ForwarderEventArgs>(
+        eventName: ForwarderEvents,
+        blockRange: BlockRange,
+        indexFilterValues: IndexedFilterValues,
+    ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
+        assert.doesBelongToStringEnum('eventName', eventName, ForwarderEvents);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
+            this.address,
+            eventName,
+            blockRange,
+            indexFilterValues,
+            ForwarderContract.ABI(),
+        );
+        return logs;
+    }
     constructor(
         address: string,
         supportedProvider: SupportedProvider,
@@ -815,6 +914,10 @@ export class ForwarderContract extends BaseContract {
             deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        this._subscriptionManager = new SubscriptionManager<ForwarderEventArgs, ForwarderEvents>(
+            ForwarderContract.ABI(),
+            this._web3Wrapper,
+        );
         ForwarderContract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
