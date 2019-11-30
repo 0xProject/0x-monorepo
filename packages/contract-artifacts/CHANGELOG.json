@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0-beta.4",
+        "changes": [
+            {
+                "note": "Regenerate Forwarder and DevUtils artifacts",
+                "pr": 2374
+            }
+        ]
+    },
+    {
         "version": "2.3.0-beta.3",
         "changes": [
             {
