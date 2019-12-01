@@ -55,12 +55,12 @@ contract MixinWeth is
     ///      Refunds any excess ETH to msg.sender.
     /// @param wethSpent Amount of WETH spent when filling orders.
     /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
-    /// @param feeRecipient Address that will receive ETH when orders are filled.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return ethFee Amount paid to feeRecipient as a percentage fee on the total WETH sold.
     function _transferEthFeeAndRefund(
         uint256 wethSpent,
         uint256 ethFeeAmount,
-        address payable feeRecipient
+        address payable[] memory feeRecipients
     )
         internal
     {
@@ -90,7 +90,11 @@ contract MixinWeth is
 
             // Pay ETH to feeRecipient
             if (ethFeeAmount > 0) {
-                feeRecipient.transfer(ethFeeAmount);
+                uint256 feeRecipientsLen = feeRecipients.length;
+                uint256 ethFeePerRecipient = ethFeeAmount.safeDiv(feeRecipientsLen);
+                for (uint256 i = 0; i != feeRecipientsLen; i++) {
+                    feeRecipients[i].transfer(ethFeePerRecipient);
+                }
             }
 
             // Refund remaining ETH to msg.sender.
