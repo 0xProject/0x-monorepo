@@ -7,9 +7,10 @@ import {
     constants,
     expect,
     getLatestBlockTimestampAsync,
+    randomAddress,
     toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 
 import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';
@@ -23,7 +24,7 @@ import { DeploymentManager } from '../framework/deployment_manager';
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
 
-blockchainTests.only('Forwarder integration tests', env => {
+blockchainTests('Forwarder integration tests', env => {
     let deployment: DeploymentManager;
     let forwarder: ForwarderContract;
     let balanceStore: BlockchainBalanceStore;
@@ -101,7 +102,7 @@ blockchainTests.only('Forwarder integration tests', env => {
         const tokenIds = { erc721: { [erc721Token.address]: [nftId] } };
         balanceStore = new BlockchainBalanceStore(tokenOwners, tokenContracts, tokenIds);
 
-        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker, forwarderFeeRecipient);
+        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker, [forwarderFeeRecipient]);
     });
 
     after(async () => {
@@ -179,12 +180,9 @@ blockchainTests.only('Forwarder integration tests', env => {
             await balanceStore.updateBalancesAsync();
             // Execute test case
             const tx = await forwarder
-                .marketSellOrdersWithEth(
-                    [order],
-                    [order.signature],
-                    constants.ZERO_AMOUNT,
+                .marketSellOrdersWithEth([order], [order.signature], constants.ZERO_AMOUNT, [
                     forwarderFeeRecipient.address,
-                )
+                ])
                 .awaitTransactionSuccessAsync({
                     value: order.takerAssetAmount.plus(DeploymentManager.protocolFee),
                     from: taker.address,
@@ -223,12 +221,9 @@ blockchainTests.only('Forwarder integration tests', env => {
             const ethValue = order.takerAssetAmount.plus(DeploymentManager.protocolFee).plus(2);
             const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(taker.address);
             const tx = await forwarder
-                .marketSellOrdersWithEth(
-                    [order],
-                    [order.signature],
-                    constants.ZERO_AMOUNT,
+                .marketSellOrdersWithEth([order], [order.signature], constants.ZERO_AMOUNT, [
                     forwarderFeeRecipient.address,
-                )
+                ])
                 .awaitTransactionSuccessAsync({
                     value: ethValue,
                     from: taker.address,
@@ -312,6 +307,44 @@ blockchainTests.only('Forwarder integration tests', env => {
             });
             await testFactory.marketSellTestAsync([order], 0.67, {
                 forwarderFeeAmount: toBaseUnitAmount(0.2),
+            });
+        });
+        it('should fill the order and send fees to different feeRecipient addresses', async () => {
+            const order = await maker.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(157),
+                takerAssetAmount: toBaseUnitAmount(36),
+            });
+            await testFactory.marketSellTestAsync([order], 0.67, {
+                forwarderFeeAmount: toBaseUnitAmount(0.2),
+                forwarderFeeRecipientAddresses: [randomAddress(), randomAddress()],
+            });
+        });
+        it('should fill the order and send fees to multiple instances of the same feeRecipient address', async () => {
+            const order = await maker.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(157),
+                takerAssetAmount: toBaseUnitAmount(36),
+            });
+            const feeRecipient = randomAddress();
+            await testFactory.marketSellTestAsync([order], 0.67, {
+                forwarderFeeAmount: toBaseUnitAmount(0.2),
+                forwarderFeeRecipientAddresses: [feeRecipient, feeRecipient],
+            });
+        });
+        it('should fail if a fee is specified with no feeRecipient', async () => {
+            const order = await maker.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(157),
+                takerAssetAmount: toBaseUnitAmount(36),
+            });
+            const forwarderFeeAmount = toBaseUnitAmount(0.2);
+            const revertError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
+                forwarderFeeAmount,
+                constants.ZERO_AMOUNT,
+            );
+            await testFactory.marketSellTestAsync([order], 0.67, {
+                forwarderFeeAmount,
+                forwarderFeeRecipientAddresses: [],
+                revertError,
             });
         });
     });
@@ -490,7 +523,7 @@ blockchainTests.only('Forwarder integration tests', env => {
                     desiredMakerAssetFillAmount,
                     [order.signature],
                     constants.ZERO_AMOUNT,
-                    forwarderFeeRecipient.address,
+                    [forwarderFeeRecipient.address],
                 )
                 .awaitTransactionSuccessAsync({
                     value: ethValue,
@@ -537,7 +570,7 @@ blockchainTests.only('Forwarder integration tests', env => {
                     desiredMakerAssetFillAmount,
                     [order.signature],
                     constants.ZERO_AMOUNT,
-                    forwarderFeeRecipient.address,
+                    [forwarderFeeRecipient.address],
                 )
                 .awaitTransactionSuccessAsync({
                     value: takerAssetFillAmount.plus(DeploymentManager.protocolFee),

@@ -20,7 +20,7 @@ import { TestEth2DaiContract, TestUniswapExchangeContract } from '../wrappers';
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
 
-blockchainTests.resets.only('Forwarder <> ERC20Bridge integration tests', env => {
+blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
     let deployment: DeploymentManager;
     let balanceStore: BlockchainBalanceStore;
     let testFactory: ForwarderTestFactory;
@@ -146,7 +146,7 @@ blockchainTests.resets.only('Forwarder <> ERC20Bridge integration tests', env =>
         const tokenIds = { erc721: { [erc721Token.address]: [nftId] } };
         balanceStore = new BlockchainBalanceStore(tokenOwners, tokenContracts, tokenIds);
 
-        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker, forwarderFeeRecipient);
+        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker, [forwarderFeeRecipient]);
     });
 
     after(async () => {
