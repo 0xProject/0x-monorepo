@@ -55,7 +55,7 @@ contract Eth2DaiBridge is
         // Decode the bridge data to get the `fromTokenAddress`.
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
 
-        IEth2Dai exchange = _getEth2DaiContract();
+        IEth2Dai exchange = IEth2Dai(_getEth2DaiAddress());
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
         LibERC20Token.approve(fromTokenAddress, address(exchange), uint256(-1));
 
@@ -83,15 +83,5 @@ contract Eth2DaiBridge is
         returns (bytes4 magicValue)
     {
         return LEGACY_WALLET_MAGIC_VALUE;
-    }
-
-    /// @dev Overridable way to get the eth2dai contract.
-    /// @return exchange The Eth2Dai exchange contract.
-    function _getEth2DaiContract()
-        internal
-        view
-        returns (IEth2Dai exchange)
-    {
-        return IEth2Dai(_getEth2DaiAddress());
     }
 }

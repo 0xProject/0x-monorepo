@@ -192,11 +192,11 @@ contract TestEth2DaiBridge is
     }
 
     // @dev This contract will double as the Eth2Dai contract.
-    function _getEth2DaiContract()
+    function _getEth2DaiAddress()
         internal
         view
-        returns (IEth2Dai)
+        returns (address)
     {
-        return IEth2Dai(address(this));
+        return address(this);
     }
 }

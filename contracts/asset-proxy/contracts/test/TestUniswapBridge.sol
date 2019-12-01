@@ -413,20 +413,20 @@ contract TestUniswapBridge is
     }
 
     // @dev Use `wethToken`.
-    function getWethContract()
-        public
+    function _getWethAddress()
+        internal
         view
-        returns (IEtherToken)
+        returns (address)
     {
-        return IEtherToken(address(wethToken));
+        return address(wethToken);
     }
 
     // @dev This contract will double as the Uniswap contract.
-    function getUniswapExchangeFactoryContract()
-        public
+    function _getUniswapExchangeFactoryAddress()
+        internal
         view
-        returns (IUniswapExchangeFactory)
+        returns (address)
     {
-        return IUniswapExchangeFactory(address(this));
+        return address(this);
     }
 }

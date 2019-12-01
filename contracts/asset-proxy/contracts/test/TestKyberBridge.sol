@@ -303,20 +303,20 @@ contract TestKyberBridge is
     }
 
     // @dev overridden to point to this contract.
-    function _getKyberContract()
+    function _getKyberNetworkProxyAddress()
         internal
         view
-        returns (IKyberNetworkProxy kyber)
+        returns (address)
     {
-        return IKyberNetworkProxy(address(this));
+        return address(this);
     }
 
     // @dev overridden to point to test WETH.
-    function _getWETHContract()
+    function _getWethAddress()
         internal
         view
-        returns (IEtherToken weth_)
+        returns (address)
     {
-        return weth;
+        return address(weth);
     }
 }
