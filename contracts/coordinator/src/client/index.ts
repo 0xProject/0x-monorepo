@@ -103,7 +103,7 @@ export class CoordinatorClient {
         this.chainId = chainId;
         const contractAddresses = getContractAddressesForChainOrThrow(this.chainId);
         this.address = address === undefined ? contractAddresses.coordinator : address;
-        this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
+        this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.exchange : exchangeAddress;
         this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._txDefaults = { ...txDefaults, ...DEFAULT_TX_DATA };
@@ -624,7 +624,7 @@ export class CoordinatorClient {
         const data = (this._exchangeInstance as any)[exchangeFn](...args).getABIEncodedTransactionData();
 
         // generate and sign a ZeroExTransaction
-        const signedZrxTx = await this._generateSignedZeroExTransactionAsync(data, txData.from);
+        const signedZrxTx = await this._generateSignedZeroExTransactionAsync(data, txData.from, txData.gasPrice);
 
         // get approval signatures from registered coordinator operators
         const approvalSignatures = await this._getApprovalsAsync(signedZrxTx, ordersNeedingApprovals, txData.from);
@@ -643,6 +643,7 @@ export class CoordinatorClient {
     private async _generateSignedZeroExTransactionAsync(
         data: string,
         signerAddress: string,
+        gasPrice?: BigNumber | string | number,
     ): Promise<SignedZeroExTransaction> {
         const transaction: ZeroExTransaction = {
             salt: generatePseudoRandomSalt(),
@@ -657,7 +658,7 @@ export class CoordinatorClient {
                     DEFAULT_APPROVAL_EXPIRATION_TIME_SECONDS -
                     DEFAULT_EXPIRATION_TIME_BUFFER_SECONDS,
             ),
-            gasPrice: new BigNumber(1),
+            gasPrice: gasPrice ? new BigNumber(gasPrice) : new BigNumber(1),
         };
         const signedZrxTx = await signatureUtils.ecSignTransactionAsync(
             this._web3Wrapper.getProvider(),
