@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-exchange-libs",
-    "version": "3.1.0-beta.4",
+    "version": "4.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -52,15 +52,15 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/libs/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^4.4.0-beta.4",
-        "@0x/contracts-gen": "^1.1.0-beta.4",
-        "@0x/contracts-test-utils": "^3.2.0-beta.4",
-        "@0x/dev-utils": "^2.4.0-beta.4",
-        "@0x/sol-compiler": "^3.2.0-beta.4",
-        "@0x/subproviders": "^5.1.0-beta.3",
+        "@0x/abi-gen": "^5.0.0",
+        "@0x/contracts-gen": "^2.0.0",
+        "@0x/contracts-test-utils": "^4.0.0",
+        "@0x/dev-utils": "^3.0.0",
+        "@0x/sol-compiler": "^4.0.0",
+        "@0x/subproviders": "^6.0.0",
         "@0x/ts-doc-gen": "^0.0.22",
-        "@0x/tslint-config": "^3.1.0-beta.2",
-        "@0x/web3-wrapper": "^6.1.0-beta.3",
+        "@0x/tslint-config": "^4.0.0",
+        "@0x/web3-wrapper": "^7.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
         "@types/node": "*",
@@ -81,13 +81,13 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.5.0-beta.4",
-        "@0x/contracts-utils": "^3.3.0-beta.4",
-        "@0x/order-utils": "^8.5.0-beta.4",
-        "@0x/types": "^2.5.0-beta.3",
-        "@0x/typescript-typings": "^4.4.0-beta.2",
-        "@0x/utils": "^4.6.0-beta.3",
-        "ethereum-types": "^2.2.0-beta.2"
+        "@0x/base-contract": "^6.0.0",
+        "@0x/contracts-utils": "^4.0.0",
+        "@0x/order-utils": "^9.0.0",
+        "@0x/types": "^3.0.0",
+        "@0x/typescript-typings": "^5.0.0",
+        "@0x/utils": "^5.0.0",
+        "ethereum-types": "^3.0.0"
     },
     "publishConfig": {
         "access": "public"

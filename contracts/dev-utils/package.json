@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-dev-utils",
-    "version": "0.1.0-beta.4",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -41,14 +41,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/dev-utils/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^4.4.0-beta.4",
-        "@0x/assert": "^2.2.0-beta.3",
-        "@0x/contracts-gen": "^1.1.0-beta.4",
-        "@0x/sol-compiler": "^3.2.0-beta.4",
+        "@0x/abi-gen": "^5.0.0",
+        "@0x/assert": "^3.0.0",
+        "@0x/contracts-gen": "^2.0.0",
+        "@0x/sol-compiler": "^4.0.0",
         "@0x/ts-doc-gen": "^0.0.22",
-        "@0x/tslint-config": "^3.1.0-beta.2",
+        "@0x/tslint-config": "^4.0.0",
         "@types/node": "*",
-        "ethereum-types": "^2.2.0-beta.2",
+        "ethereum-types": "^3.0.0",
         "ethers": "~4.0.4",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
@@ -59,7 +59,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.5.0-beta.4"
+        "@0x/base-contract": "^6.0.0"
     },
     "publishConfig": {
         "access": "public"
