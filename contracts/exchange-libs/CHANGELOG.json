@@ -118,7 +118,8 @@
                 "note": "Move `IWallet.sol` from `asset-proxy` and `exchange` packages to here.",
                 "pr": 2233
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "3.1.0-beta.4",

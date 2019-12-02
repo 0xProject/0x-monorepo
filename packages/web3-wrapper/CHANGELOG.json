@@ -6,7 +6,8 @@
                 "note": "Let `toBaseUnitAmount()` accept a `number`",
                 "pr": 1819
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "6.1.0-beta.3",

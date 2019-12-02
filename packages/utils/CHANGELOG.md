@@ -5,6 +5,21 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _December 2, 2019_
+
+    * Re-export all `RevertErrors` (#2362)
+    * Removed exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors (#2321)
+    * Decode `Parity` revert errors (#2341)
+    * Update BigNumber version to ~9.0.0 (#2342)
+    * Consolidated FixedMathRevertErrors (#2255)
+    * Changed provider_utils.providerUtils.getChainIdAsync() to invoke RPC method eth_chainId rather than net_version (#2270)
+    * Allow for array types in `RevertError`s. (#2075)
+    * Have Ganache `Error` -> `RevertError` coercion fail if it can't look up the selector. (#2109)
+    * Add `LibFixedMath` `RevertError` types. (#2109)
+    * Add `RawRevertError` `RevertError` type. (#2109)
+    * Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown. (#2109)
+    * Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`. (#2109)
+
 ## v4.6.0-beta.3 - _December 2, 2019_
 
     * Re-export all `RevertErrors` (#2362)

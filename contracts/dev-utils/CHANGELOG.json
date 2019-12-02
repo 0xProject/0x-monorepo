@@ -38,7 +38,8 @@
                 "note": "`run_mocha` package script runs with `UNLIMITED_CONTRACT_SIZE=true` environment variable.",
                 "pr": 2075
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "0.1.0-beta.4",

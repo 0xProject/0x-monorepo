@@ -18,7 +18,8 @@
                 "note": "Replaced `SafeMath` with `LibSafeMath`",
                 "pr": 2254
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.3.0-beta.4",

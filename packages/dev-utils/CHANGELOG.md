@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _December 2, 2019_
+
+    * `revertWith` mocha extensions now accept Promise-like objects instead of just Promises (#2031)
+    * Add `shouldAllowUnlimitedContractSize` to `Web3Config`. (#2075)
+    * Add `UNLIMITED_CONTRACT_SIZE` to `EnvVars`. (#2075)
+    * Add `total_accounts` option to `Web3Config`. (#2109)
+    * Add `chaiSetup` function with `RevertError` testing support (#1761)
+    * Refactor out `Error` coercion code into the `utils` package (#1819)
+
 ## v2.4.0-beta.4 - _December 2, 2019_
 
     * Dependencies updated

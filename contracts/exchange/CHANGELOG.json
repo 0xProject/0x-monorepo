@@ -218,7 +218,8 @@
                 "note": "Overridden functions in `ReentrancyTester` now return sane values.",
                 "pr": 2075
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.2.0-beta.4",

@@ -14,7 +14,8 @@
                 "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
                 "pr": 2055
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "3.2.0-beta.4",

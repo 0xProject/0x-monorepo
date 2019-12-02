@@ -54,7 +54,8 @@
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.1.0-beta.4",

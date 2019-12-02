@@ -50,7 +50,8 @@
                 "note": "Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`.",
                 "pr": 2109
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "4.6.0-beta.3",

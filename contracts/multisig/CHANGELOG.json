@@ -6,7 +6,8 @@
                 "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
                 "pr": 2330
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "3.2.0-beta.4",

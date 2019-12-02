@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.0 - _December 2, 2019_
+
+    * Moved shared logic into `BaseContract` helpers to reduce size. (#2343)
+    * Make `evmExecAsync` protected and rename to `_evmExecAsync` (#2243)
+    * Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback` (#2243)
+    * Added ContractFunctionObj type and supporting types (#2325)
+    * Added AwaitTransactionSuccessOpts and SendTransactionOpts (#2325)
+    * Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult` (#1761)
+    * Remove dependency on ethers.js (#1761)
+    * Add more RevertError decoding functions (#1819)
+    * Make the Promise returned by `awaitTransactionSuccessAsync` compatible with base Promise type (#1885)
+    * Properly encode `BigNumber` indexed filter values in `getTopicsForIndexedArgs()` (#2155)
+
 ## v5.5.0-beta.4 - _December 2, 2019_
 
     * Dependencies updated

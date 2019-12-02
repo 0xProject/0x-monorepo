@@ -14,7 +14,8 @@
                 "note": "Add `DecodedLogs` type",
                 "pr": 2220
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.2.0-beta.2",

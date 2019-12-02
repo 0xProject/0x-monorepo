@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.0.0 - _December 2, 2019_
+
+    * Remove ZRXToken contract wrapper (#2324)
+    * ContractWrappers no longer exposes `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers (#2324)
+    * [Breaking] Big refactor of contract wrapper interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details (#2325)
+    * Remove IWallet and IValidator contract wrappers (#2337)
+    * Remove exports orderHashUtils and transactionHashUtils (#2321)
+    * Update BigNumber version to ~9.0.0 (#2342)
+    * Exported intefaces changed: from getContractAddressesForNetworkOrThrow to getContractAddressesForChainOrThrow, from NetworkId to ChainId, from ContractNetworks to ContractChains, and from ContractNetworkData to ContractChainData. (#2313)
+    * Updated to work with 0x v3
+
 ## v8.0.0-beta.3 - _December 2, 2019_
 
     * Dependencies updated

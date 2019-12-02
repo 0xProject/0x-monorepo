@@ -6,7 +6,8 @@
                 "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
                 "pr": 2313
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.1.0-beta.3",

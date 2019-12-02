@@ -30,7 +30,8 @@
                 "note": "Add `ERC20Bridge` to `AssetProxyId`",
                 "pr": 2220
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.5.0-beta.3",

@@ -5,6 +5,20 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _December 2, 2019_
+
+    * Implement `KyberBridge`. (#2352)
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * ERC20Wrapper and ERC1155ProxyWrapper constructors now require an instance of DevUtilsContract (#2034)
+    * Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable (#2019)
+    * Remove `LibAssetProxyIds` contract (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+    * Remove unused dependency on IAuthorizable in IAssetProxy (#1910)
+    * Add `ERC20BridgeProxy` (#2220)
+    * Add `Eth2DaiBridge` (#2221)
+    * Add `UniswapBridge` (#2233)
+    * Replaced `SafeMath` with `LibSafeMath` (#2254)
+
 ## v2.3.0-beta.4 - _December 2, 2019_
 
     * Implement `KyberBridge`. (#2352)

@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _December 2, 2019_
+
+    * Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts (#2325)
+    * Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers (#2243)
+    * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)
+    * Add `OrderStatus` type (#1761)
+    * Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types (#2031)
+    * Add status types for Staking contracts (#1910)
+    * Add `ERC20Bridge` to `AssetProxyId` (#2220)
+
 ## v2.5.0-beta.3 - _December 2, 2019_
 
     * Dependencies updated

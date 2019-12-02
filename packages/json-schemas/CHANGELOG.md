@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _December 2, 2019_
+
+    * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)
+    * Add `eip712DomainSchema` schema (#1742)
+    * Add required field `domain` to `order` and `zeroExTransaction` schemas (#1742)
+    * Add `makerAssetData` and `takerAssetData` to `Order` schemas (#1819)
+    * Add `expirationTimeSeconds` to `ZeroExTransaction` schema (#1832)
+
 ## v4.1.0-beta.3 - _December 2, 2019_
 
     * Dependencies updated

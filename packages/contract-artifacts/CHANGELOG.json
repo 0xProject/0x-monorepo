@@ -29,7 +29,8 @@
                 "note": "Add `deployedBytecode` field",
                 "pr": 2181
             }
-        ]
+        ],
+        "timestamp": 1575296764
     },
     {
         "version": "2.3.0-beta.4",
