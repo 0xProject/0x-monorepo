@@ -29,7 +29,6 @@ export {
     SignedOrder,
     Order,
     ECSignature,
-    AssetData,
     SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,
