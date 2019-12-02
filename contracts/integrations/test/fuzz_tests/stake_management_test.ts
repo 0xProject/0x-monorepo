@@ -32,7 +32,13 @@ export class StakeManagementSimulation extends Simulation {
     }
 }
 
-blockchainTests.skip('Stake management fuzz test', env => {
+blockchainTests('Stake management fuzz test', env => {
+    before(function(): void {
+        if (process.env.FUZZ_TEST !== 'stake_management') {
+            this.skip();
+        }
+    });
+
     after(async () => {
         Actor.reset();
     });

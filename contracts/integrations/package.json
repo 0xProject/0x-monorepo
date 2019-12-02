@@ -19,6 +19,7 @@
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "test:trace": "SOLIDITY_REVERT_TRACE=true run-s build run_mocha",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
+        "test:fuzz": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/fuzz_tests/*.js' --timeout 0 --bail --exit",
         "compile": "sol-compiler",
         "watch": "sol-compiler -w",
         "clean": "shx rm -rf lib test/generated-artifacts test/generated-wrappers generated-artifacts generated-wrappers",

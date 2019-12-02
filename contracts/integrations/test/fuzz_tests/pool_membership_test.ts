@@ -35,11 +35,15 @@ class PoolMembershipSimulation extends Simulation {
     }
 }
 
-blockchainTests.skip('pool membership fuzz test', env => {
+blockchainTests('pool membership fuzz test', env => {
     let deployment: DeploymentManager;
     let maker: Maker;
 
-    before(async () => {
+    before(async function(): Promise<void> {
+        if (process.env.FUZZ_TEST !== 'pool_membership') {
+            this.skip();
+        }
+
         deployment = await DeploymentManager.deployAsync(env, {
             numErc20TokensToDeploy: 2,
             numErc721TokensToDeploy: 0,

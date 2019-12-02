@@ -28,7 +28,12 @@ export class PoolManagementSimulation extends Simulation {
     }
 }
 
-blockchainTests.skip('Pool management fuzz test', env => {
+blockchainTests('Pool management fuzz test', env => {
+    before(function(): void {
+        if (process.env.FUZZ_TEST !== 'pool_management') {
+            this.skip();
+        }
+    });
     after(async () => {
         Actor.reset();
     });
