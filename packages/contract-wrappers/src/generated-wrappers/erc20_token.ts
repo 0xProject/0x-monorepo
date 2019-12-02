@@ -61,6 +61,7 @@ export class ERC20TokenContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'ERC20Token';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>;
     public static async deployFrom0xArtifactAsync(

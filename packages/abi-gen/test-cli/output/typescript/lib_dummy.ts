@@ -40,6 +40,7 @@ export class LibDummyContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'LibDummy';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

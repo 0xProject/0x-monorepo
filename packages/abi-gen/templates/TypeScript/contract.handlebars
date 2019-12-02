@@ -65,6 +65,7 @@ export class {{contractName}}Contract extends BaseContract {
     {{else~}}
     public static deployedBytecode = '{{this.deployedBytecode}}';
     {{/ifEquals~}}
+    public static contractName = '{{contractName}}';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     {{#if events~}}
     private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;

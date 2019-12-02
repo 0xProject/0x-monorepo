@@ -77,6 +77,7 @@ export class WETH9Contract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'WETH9';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
     public static async deployFrom0xArtifactAsync(

@@ -71,6 +71,7 @@ export class ERC721TokenContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'ERC721Token';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
     public static async deployFrom0xArtifactAsync(

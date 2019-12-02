@@ -1,10 +1,10 @@
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { crypto } from '@0x/order-utils/lib/src/crypto';
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
+import { hexHash } from './hex_utils';
 import { BatchMatchOrder, CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {
@@ -59,8 +59,7 @@ export const orderUtils = {
     },
     generatePseudoRandomOrderHash(): string {
         const randomBigNum = generatePseudoRandomSalt();
-        const randomBuff = crypto.solSHA3([randomBigNum]);
-        const randomHash = `0x${randomBuff.toString('hex')}`;
+        const randomHash = hexHash(randomBigNum);
         return randomHash;
     },
 };

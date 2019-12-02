@@ -53,6 +53,7 @@ export class ForwarderContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'Forwarder';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<ForwarderEventArgs, ForwarderEvents>;
     public static async deployFrom0xArtifactAsync(

@@ -59,10 +59,8 @@ export { DecodedCalldata, BigNumber } from '@0x/utils';
 export {
     Order,
     SignedOrder,
-    DutchAuctionData,
     ECSignature,
     AssetProxyId,
-    AssetData,
     SingleAssetData,
     ERC20AssetData,
     ERC721AssetData,
