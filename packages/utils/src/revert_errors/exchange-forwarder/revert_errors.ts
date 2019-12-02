@@ -75,6 +75,19 @@ export class Erc721AmountMustEqualOneError extends RevertError {
     }
 }
 
+export class EthFeeLengthMismatchError extends RevertError {
+    constructor(ethFeesLength?: BigNumber | number | string, feeRecipientsLength?: BigNumber | number | string) {
+        super(
+            'EthFeeLengthMismatchError',
+            'EthFeeLengthMismatchError(uint256 ethFeesLength, uint256 feeRecipientsLength)',
+            {
+                ethFeesLength,
+                feeRecipientsLength,
+            },
+        );
+    }
+}
+
 const types = [
     UnregisteredAssetProxyError,
     UnsupportedAssetProxyError,
@@ -85,6 +98,7 @@ const types = [
     DefaultFunctionWethContractOnlyError,
     MsgValueCannotEqualZeroError,
     Erc721AmountMustEqualOneError,
+    EthFeeLengthMismatchError,
 ];
 
 // Register the types we've defined.
