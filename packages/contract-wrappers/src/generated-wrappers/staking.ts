@@ -172,6 +172,7 @@ export class StakingContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'Staking';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<StakingEventArgs, StakingEvents>;
     public static async deployFrom0xArtifactAsync(

@@ -1,6 +1,5 @@
 import {
     AssetProxyId,
-    DutchAuctionData,
     ERC1155AssetData,
     ERC1155AssetDataNoProxyId,
     ERC20AssetData,
@@ -11,8 +10,6 @@ import {
     StaticCallAssetData,
 } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
-import * as ethAbi from 'ethereumjs-abi';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -231,59 +228,6 @@ export const assetDataUtils = {
             callTarget: decodedAssetData.callTarget,
             callResultHash: decodedAssetData.callResultHash,
             staticCallData: decodedAssetData.staticCallData,
-        };
-    },
-    /**
-     * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
-     * encoded assetData string, containing information both about the asset being traded and the
-     * dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
-     * @param assetData Hex encoded assetData string for the asset being auctioned.
-     * @param beginTimeSeconds Begin time of the dutch auction.
-     * @param beginAmount Starting amount being sold in the dutch auction.
-     * @return The hex encoded assetData string.
-     */
-    encodeDutchAuctionAssetData(assetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
-        const assetDataBuffer = ethUtil.toBuffer(assetData);
-        const abiEncodedAuctionData = (ethAbi as any).rawEncode(
-            ['uint256', 'uint256'],
-            [beginTimeSeconds.toString(), beginAmount.toString()],
-        );
-        const abiEncodedAuctionDataBuffer = ethUtil.toBuffer(abiEncodedAuctionData);
-        const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
-        const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
-        return dutchAuctionData;
-    },
-    /**
-     * Dutch auction details are encoded with the asset data for a 0x order. This function decodes a hex
-     * encoded assetData string, containing information both about the asset being traded and the
-     * dutch auction.
-     * @param dutchAuctionData Hex encoded assetData string for the asset being auctioned.
-     * @return An object containing the auction asset, auction begin time and auction begin amount.
-     */
-    decodeDutchAuctionData(dutchAuctionData: string): DutchAuctionData {
-        const dutchAuctionDataBuffer = ethUtil.toBuffer(dutchAuctionData);
-        // Decode asset data
-        const dutchAuctionDataLengthInBytes = 64;
-        const assetDataBuffer = dutchAuctionDataBuffer.slice(
-            0,
-            dutchAuctionDataBuffer.byteLength - dutchAuctionDataLengthInBytes,
-        );
-        const assetDataHex = ethUtil.bufferToHex(assetDataBuffer);
-        const assetData = assetDataUtils.decodeAssetDataOrThrow(assetDataHex);
-        // Decode auction details
-        const dutchAuctionDetailsBuffer = dutchAuctionDataBuffer.slice(
-            dutchAuctionDataBuffer.byteLength - dutchAuctionDataLengthInBytes,
-        );
-        const [beginTimeSecondsAsBN, beginAmountAsBN] = ethAbi.rawDecode(
-            ['uint256', 'uint256'],
-            dutchAuctionDetailsBuffer,
-        );
-        const beginTimeSeconds = new BigNumber(beginTimeSecondsAsBN.toString());
-        const beginAmount = new BigNumber(beginAmountAsBN.toString());
-        return {
-            assetData,
-            beginTimeSeconds,
-            beginAmount,
         };
     },
     /**

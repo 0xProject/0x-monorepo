@@ -78,6 +78,7 @@ export class StakingProxyContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'StakingProxy';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<StakingProxyEventArgs, StakingProxyEvents>;
     public static async deployFrom0xArtifactAsync(

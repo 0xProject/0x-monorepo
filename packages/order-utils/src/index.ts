@@ -31,7 +31,6 @@ export {
     ECSignature,
     AssetData,
     SingleAssetData,
-    DutchAuctionData,
     ERC20AssetData,
     ERC721AssetData,
     ERC1155AssetData,

@@ -64,14 +64,10 @@
     },
     "dependencies": {
         "@0x/assert": "^2.2.0-beta.2",
-        "@0x/contract-addresses": "^3.3.0-beta.4",
-        "@0x/contract-artifacts": "^2.3.0-beta.3",
         "@0x/contract-wrappers": "^12.2.0-beta.3",
         "@0x/json-schemas": "^4.1.0-beta.2",
         "@0x/utils": "^4.6.0-beta.2",
         "@0x/web3-wrapper": "^6.1.0-beta.2",
-        "bn.js": "^4.11.8",
-        "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"
