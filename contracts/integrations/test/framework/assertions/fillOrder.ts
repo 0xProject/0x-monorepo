@@ -90,6 +90,8 @@ export function validFillOrderCompleteFillAssertion(
             verifyFillEvents(txData.from!, order, result.receipt!, deployment);
 
             logUtils.log(`Order filled by ${txData.from}`);
+
+            // TODO: Add validation for on-chain state (like balances)
         },
     });
 }
