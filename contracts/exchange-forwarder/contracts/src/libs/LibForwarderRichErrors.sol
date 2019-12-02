@@ -49,13 +49,13 @@ library LibForwarderRichErrors {
     bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
         0x08b18698;
 
-    // bytes4(keccak256("MsgValueCannotEqualZeroError()"))
-    bytes4 internal constant MSG_VALUE_CANNOT_EQUAL_ZERO_ERROR_SELECTOR =
-        0x8c0e562b;
-
     // bytes4(keccak256("Erc721AmountMustEqualOneError(uint256)"))
     bytes4 internal constant ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR =
         0xbaffa474;
+    
+    // bytes4(keccak256("EthFeeLengthMismatchError(uint256,uint256)"))
+    bytes4 internal constant ETH_FEE_LENGTH_MISMATCH_ERROR_SELECTOR =
+        0x3ecb6ceb;
 
     // solhint-disable func-name-mixedcase
     function UnregisteredAssetProxyError()
@@ -150,14 +150,6 @@ library LibForwarderRichErrors {
         );
     }
 
-    function MsgValueCannotEqualZeroError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(MSG_VALUE_CANNOT_EQUAL_ZERO_ERROR_SELECTOR);
-    }
-
     function Erc721AmountMustEqualOneError(
         uint256 amount
     )
@@ -171,4 +163,18 @@ library LibForwarderRichErrors {
         );
     }
 
+    function EthFeeLengthMismatchError(
+        uint256 ethFeesLength,
+        uint256 feeRecipientsLength
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            ETH_FEE_LENGTH_MISMATCH_ERROR_SELECTOR,
+            ethFeesLength,
+            feeRecipientsLength
+        );
+    }
 }

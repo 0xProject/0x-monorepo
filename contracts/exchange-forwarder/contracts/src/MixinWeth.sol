@@ -41,31 +41,61 @@ contract MixinWeth is
         }
     }
 
-    /// @dev Converts message call's ETH value into WETH.
-    function _convertEthToWeth()
+    /// @dev Transfers ETH denominated fees to all feeRecipient addresses
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are payed to corresponding feeRecipients.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
+    /// @return ethRemaining msg.value minus the amount of ETH spent on affiliate fees.
+    function _transferEthFeesAndWrapRemaining(
+        uint256[] memory ethFeeAmounts,
+        address payable[] memory feeRecipients
+    )
         internal
+        returns (uint256 ethRemaining)
     {
-        if (msg.value == 0) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.MsgValueCannotEqualZeroError());
+        uint256 feesLen = ethFeeAmounts.length;
+        // ethFeeAmounts len must equal feeRecipients len
+        if (feesLen != feeRecipients.length) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.EthFeeLengthMismatchError(
+                feesLen,
+                feeRecipients.length
+            ));
         }
-        ETHER_TOKEN.deposit.value(msg.value)();
+
+        // This function is always called before any other function, so we assume that
+        // the ETH remaining is the entire msg.value.
+        ethRemaining = msg.value;
+
+        for (uint256 i = 0; i != feesLen; i++) {
+            uint256 ethFeeAmount = ethFeeAmounts[i];
+            // Ensure there is enough ETH to pay the fee
+            if (ethRemaining < ethFeeAmount) {
+                LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError(
+                    ethFeeAmount,
+                    ethRemaining
+                ));
+            }
+            // Decrease ethRemaining and transfer fee to corresponding feeRecipient
+            ethRemaining = ethRemaining.safeSub(ethFeeAmount);
+            feeRecipients[i].transfer(ethFeeAmount);
+        }
+
+        // Convert remaining ETH to WETH.
+        ETHER_TOKEN.deposit.value(ethRemaining)();
+
+        return ethRemaining;
     }
 
-    /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
-    ///      Refunds any excess ETH to msg.sender.
+    /// @dev Refunds any excess ETH to msg.sender.
+    /// @param initialWethAmount Amount of WETH available after transferring affiliate fees.
     /// @param wethSpent Amount of WETH spent when filling orders.
-    /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
-    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
-    /// @return ethFee Amount paid to feeRecipient as a percentage fee on the total WETH sold.
-    function _transferEthFeeAndRefund(
-        uint256 wethSpent,
-        uint256 ethFeeAmount,
-        address payable[] memory feeRecipients
+    function _transferEthRefund(
+        uint256 initialWethAmount,
+        uint256 wethSpent
     )
         internal
     {
         // Ensure that no extra WETH owned by this contract has been spent.
-        if (wethSpent > msg.value) {
+        if (wethSpent > initialWethAmount) {
             LibRichErrors.rrevert(LibForwarderRichErrors.OverspentWethError(
                 wethSpent,
                 msg.value
@@ -73,35 +103,15 @@ contract MixinWeth is
         }
 
         // Calculate amount of WETH that hasn't been spent.
-        uint256 wethRemaining = msg.value.safeSub(wethSpent);
-
-        // Ensure fee is less than amount of WETH remaining.
-        if (ethFeeAmount > wethRemaining) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError(
-                ethFeeAmount,
-                wethRemaining
-            ));
-        }
+        uint256 wethRemaining = initialWethAmount.safeSub(wethSpent);
 
         // Do nothing if no WETH remaining
         if (wethRemaining > 0) {
             // Convert remaining WETH to ETH
             ETHER_TOKEN.withdraw(wethRemaining);
 
-            // Pay ETH to feeRecipient
-            if (ethFeeAmount > 0) {
-                uint256 feeRecipientsLen = feeRecipients.length;
-                uint256 ethFeePerRecipient = ethFeeAmount.safeDiv(feeRecipientsLen);
-                for (uint256 i = 0; i != feeRecipientsLen; i++) {
-                    feeRecipients[i].transfer(ethFeePerRecipient);
-                }
-            }
-
-            // Refund remaining ETH to msg.sender.
-            uint256 ethRefund = wethRemaining.safeSub(ethFeeAmount);
-            if (ethRefund > 0) {
-                msg.sender.transfer(ethRefund);
-            }
+            // Transfer remaining ETH to sender
+            msg.sender.transfer(wethRemaining);
         }
     }
 }

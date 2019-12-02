@@ -63,14 +63,14 @@ contract MixinForwarderCore is
     ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are payed to corresponding feeRecipients.
     /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        uint256 ethFeeAmount,
+        uint256[] memory ethFeeAmounts,
         address payable[] memory feeRecipients
     )
         public
@@ -80,30 +80,25 @@ contract MixinForwarderCore is
             uint256 makerAssetAcquiredAmount
         )
     {
-        // Convert ETH to WETH.
-        _convertEthToWeth();
+        // Pay ETH affiliate fees to all feeRecipient addresses
+        uint256 wethRemaining = _transferEthFeesAndWrapRemaining(
+            ethFeeAmounts,
+            feeRecipients
+        );
 
-        // Calculate amount of WETH that won't be spent on the forwarder fee.
-        uint256 wethSellAmount = msg.value.safeSub(ethFeeAmount);
-
-        // Spends up to wethSellAmount to fill orders, transfers purchased assets to msg.sender,
+        // Spends up to wethRemaining to fill orders, transfers purchased assets to msg.sender,
         // and pays WETH order fees.
         (
             wethSpentAmount,
             makerAssetAcquiredAmount
         ) = _marketSellWeth(
             orders,
-            wethSellAmount,
+            wethRemaining,
             signatures
         );
 
-        // Transfer ethFeeAmount to feeRecipient.
         // Refund remaining ETH to msg.sender.
-        _transferEthFeeAndRefund(
-            wethSpentAmount,
-            ethFeeAmount,
-            feeRecipients
-        );
+        _transferEthRefund(wethRemaining, wethSpentAmount);
     }
 
     /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
@@ -113,7 +108,7 @@ contract MixinForwarderCore is
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param ethFeeAmount Amount of ETH, denominatoed in Wei, that is payed to feeRecipient.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are payed to corresponding feeRecipients.
     /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
@@ -121,7 +116,7 @@ contract MixinForwarderCore is
         LibOrder.Order[] memory orders,
         uint256 makerAssetBuyAmount,
         bytes[] memory signatures,
-        uint256 ethFeeAmount,
+        uint256[] memory ethFeeAmounts,
         address payable[] memory feeRecipients
     )
         public
@@ -131,8 +126,11 @@ contract MixinForwarderCore is
             uint256 makerAssetAcquiredAmount
         )
     {
-        // Convert ETH to WETH.
-        _convertEthToWeth();
+        // Pay ETH affiliate fees to all feeRecipient addresses
+        uint256 wethRemaining = _transferEthFeesAndWrapRemaining(
+            ethFeeAmounts,
+            feeRecipients
+        );
 
         // Attempts to fill the desired amount of makerAsset and trasnfer purchased assets to msg.sender.
         (
@@ -144,12 +142,7 @@ contract MixinForwarderCore is
             signatures
         );
 
-        // Transfer ethFeeAmount to feeRecipient.
         // Refund remaining ETH to msg.sender.
-        _transferEthFeeAndRefund(
-            wethSpentAmount,
-            ethFeeAmount,
-            feeRecipients
-        );
+        _transferEthRefund(wethRemaining, wethSpentAmount);
     }
 }
