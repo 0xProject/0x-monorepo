@@ -1,5 +1,54 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Implement `KyberBridge`.",
+                "pr": 2352
+            },
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
+                "note": "ERC20Wrapper and ERC1155ProxyWrapper constructors now require an instance of DevUtilsContract",
+                "pr": 2034
+            },
+            {
+                "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",
+                "pr": 2019
+            },
+            {
+                "note": "Remove `LibAssetProxyIds` contract",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            },
+            {
+                "note": "Remove unused dependency on IAuthorizable in IAssetProxy",
+                "pr": 1910
+            },
+            {
+                "note": "Add `ERC20BridgeProxy`",
+                "pr": 2220
+            },
+            {
+                "note": "Add `Eth2DaiBridge`",
+                "pr": 2221
+            },
+            {
+                "note": "Add `UniswapBridge`",
+                "pr": 2233
+            },
+            {
+                "note": "Replaced `SafeMath` with `LibSafeMath`",
+                "pr": 2254
+            }
+        ]
+    },
+    {
         "version": "2.3.0-beta.4",
         "changes": [
             {

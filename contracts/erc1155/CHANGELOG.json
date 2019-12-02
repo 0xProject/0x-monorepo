@@ -1,5 +1,22 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
+                "note": "Add `mintKnownFungibleTokensAsync()`, `isNonFungibleItemAsync()`, `isFungibleItemAsync()`, `getOwnerOfAsync()`, `getBalanceAsync()` to `Erc1155Wrapper`.",
+                "pr": 1819
+            },
+            {
+                "note": "Replaced `SafeMath` with `LibSafeMath`",
+                "pr": 2254
+            }
+        ]
+    },
+    {
         "version": "1.2.0-beta.4",
         "changes": [
             {

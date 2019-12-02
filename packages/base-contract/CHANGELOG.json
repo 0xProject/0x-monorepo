@@ -1,5 +1,50 @@
 [
     {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            },
+            {
+                "note": "Make `evmExecAsync` protected and rename to `_evmExecAsync`",
+                "pr": 2243
+            },
+            {
+                "note": "Remove duplicate types `IndexedFilterValues`, `DecodedLogEvent`, `EventCallback`",
+                "pr": 2243
+            },
+            {
+                "note": "Added ContractFunctionObj type and supporting types",
+                "pr": 2325
+            },
+            {
+                "note": "Added AwaitTransactionSuccessOpts and SendTransactionOpts",
+                "pr": 2325
+            },
+            {
+                "note": "Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult`",
+                "pr": 1761
+            },
+            {
+                "note": "Remove dependency on ethers.js",
+                "pr": 1761
+            },
+            {
+                "note": "Add more RevertError decoding functions",
+                "pr": 1819
+            },
+            {
+                "note": "Make the Promise returned by `awaitTransactionSuccessAsync` compatible with base Promise type",
+                "pr": 1885
+            },
+            {
+                "note": "Properly encode `BigNumber` indexed filter values in `getTopicsForIndexedArgs()`",
+                "pr": 2155
+            }
+        ]
+    },
+    {
         "version": "5.5.0-beta.4",
         "changes": [
             {

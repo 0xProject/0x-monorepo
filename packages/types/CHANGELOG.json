@@ -1,5 +1,38 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts",
+                "pr": 2325
+            },
+            {
+                "note": "Add `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types for contract wrappers",
+                "pr": 2243
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Add `OrderStatus` type",
+                "pr": 1761
+            },
+            {
+                "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
+                "pr": 2031
+            },
+            {
+                "note": "Add status types for Staking contracts",
+                "pr": 1910
+            },
+            {
+                "note": "Add `ERC20Bridge` to `AssetProxyId`",
+                "pr": 2220
+            }
+        ]
+    },
+    {
         "version": "2.5.0-beta.3",
         "changes": [
             {

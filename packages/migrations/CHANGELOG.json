@@ -1,5 +1,54 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Deploy Forwarder after Exchange is configured as Staking Proxy is queried",
+                "pr": 2368
+            },
+            {
+                "note": "Subsequent contract addresses after the Forwarder are now modified",
+                "pr": 2368
+            },
+            {
+                "note": "Update Exchange, DevUtils, Coordinator, and Forwarder addresses on all networks",
+                "pr": 2349
+            },
+            {
+                "note": "Update StakingProxy, Staking, and ZrxVault addresses on mainnet",
+                "pr": 2349
+            },
+            {
+                "note": "Add UniswapBridge and Eth2DaiBridge addresses to schema, add mainnet addresses",
+                "pr": 2349
+            },
+            {
+                "note": "Deploy Forwarder AFTER staking is hooked up",
+                "pr": 2350
+            },
+            {
+                "note": "Migrations script no longer deploys DutchAuction since it is not yet upgraded for V3 of the protocol",
+                "pr": 2324
+            },
+            {
+                "note": "Added `Staking` and `ERC20BridgeProxy` contracts",
+                "pr": 2323
+            },
+            {
+                "note": "Update all contract deployments to pass the actual chain ID (rather than the network ID) via the newly modified @0x/utils/provider_utils",
+                "pr": 2270
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Update Coordinator and Exchange deployments to pass `chainId`",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.4",
         "changes": [
             {

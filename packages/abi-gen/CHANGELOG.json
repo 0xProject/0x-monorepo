@@ -1,5 +1,70 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details.",
+                "pr": 2284
+            },
+            {
+                "note": "Python: Corrected return types and values for call() interface to generated method wrappers.  (Fixes #2298)",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Stopped generating send_transaction() interface for constant (view/pure) methods",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Added a build_transaction() interface to contract method classes",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Removed `validator` argument to contract method classes for methods that don't have any inputs",
+                "pr": 2345
+            },
+            {
+                "note": "Python: Changed the names of generated tuples to use the `internalType` field in the ABI, if it's present, resulting in human readable struct names rather than hashes of component field names.",
+                "pr": 2345
+            },
+            {
+                "note": "Moved shared logic into `BaseContract` helpers to reduce size.",
+                "pr": 2343
+            },
+            {
+                "note": "Re-enable gas estimation when `gas` is not provided.",
+                "pr": 2343
+            },
+            {
+                "note": "In Python wrappers, accept string arguments to bytes parameters",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, support module-local, Web3.py-compatible middleware",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, allow contracts to be instantiated with EITHER a Web3.py BaseProvider OR a Web3 client object",
+                "pr": 2284
+            },
+            {
+                "note": "In Python wrappers, fix bug with casting some bytes objects using bytes.fromhex()",
+                "pr": 2284
+            },
+            {
+                "note": "Add `getSelector` method to all functions",
+                "pr": 2224
+            },
+            {
+                "note": "Command-line argument network-id has changed to chain-id",
+                "pr": 2313
+            },
+            {
+                "note": "Fix templates not being included in published tarball",
+                "pr": 2315
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.4",
         "changes": [
             {

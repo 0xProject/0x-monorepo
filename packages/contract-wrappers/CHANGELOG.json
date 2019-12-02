@@ -1,5 +1,42 @@
 [
     {
+        "version": "13.0.0",
+        "changes": [
+            {
+                "note": "Remove dependency on `abi-gen-wrappers`",
+                "pr": 2370
+            },
+            {
+                "note": "Regenrate Forwarder wrapper",
+                "pr": 2374
+            },
+            {
+                "note": "[Breaking] Remove `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers",
+                "pr": 2324
+            },
+            {
+                "note": "[Breaking] Big refactor of contract wrapper interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details",
+                "pr": 2325
+            },
+            {
+                "note": "Export types `ContractFunctionObj` and `ContractTxFunctionObj`",
+                "pr": 2325
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Use new `Order` and `ZeroExTransaction` structures with `domain` field",
+                "pr": 1742
+            },
+            {
+                "note": "Update exchange wrapper",
+                "pr": 1742
+            }
+        ]
+    },
+    {
         "version": "12.2.0-beta.4",
         "changes": [
             {

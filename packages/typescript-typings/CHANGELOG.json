@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Add types for `@0x/dev-utils` chai helpers in `types/@0x`",
+                "pr": 1761
+            }
+        ]
+    },
+    {
         "version": "4.4.0-beta.2",
         "changes": [
             {

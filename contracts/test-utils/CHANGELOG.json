@@ -1,5 +1,126 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
+                "note": "Add new exports orderHashUtils and transactionHashUtils",
+                "pr": 2321
+            },
+            {
+                "note": "Remove TransactionHelper and MutatorContractFunction",
+                "pr": 2325
+            },
+            {
+                "note": "OrderFactory default order expiration time increased from ten minutes to fifteen minutes ",
+                "pr": 2304
+            },
+            {
+                "note": "Add `chainId` to `TransactionFactory` constructor",
+                "pr": 1742
+            },
+            {
+                "note": "Use new `Order` structure with `domain` field",
+                "pr": 1742
+            },
+            {
+                "note": "Inherit `chaiSetup` from `@0x/dev-utils`",
+                "pr": 1761
+            },
+            {
+                "note": "Add `generatePseudoRandomOrderHash()` to `orderUtils`",
+                "pr": 1761
+            },
+            {
+                "note": "Inherit `OrderStatus` from `@0x/types`",
+                "pr": 1761
+            },
+            {
+                "note": "Update types for arbitrary fee tokens",
+                "pr": 1819
+            },
+            {
+                "note": "Remove formatters",
+                "pr": 1834
+            },
+            {
+                "note": "Add `hexConcat()` in `hex_utils.ts`",
+                "pr": 1885
+            },
+            {
+                "note": "Introduce Mocha blockchain extensions",
+                "pr": 2007
+            },
+            {
+                "note": "Move `*FillResults`, `OrderInfo` types to `@0x/types`",
+                "pr": 2031
+            },
+            {
+                "note": "Add `log_utils.ts`",
+                "pr": 2031
+            },
+            {
+                "note": "Add `haxRandom()` to `hex_utils.ts`",
+                "pr": 2031
+            },
+            {
+                "note": "Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`, `MAX_UINT256_ROOT`, `ONE_ETHER`",
+                "pr": 2031
+            },
+            {
+                "note": "Make `testCombinatoriallyWithReferenceFuncAsync` non-async",
+                "pr": 2031
+            },
+            {
+                "note": "Update `testWithReferenceFuncAsync` to work with `RevertErrors`",
+                "pr": 2031
+            },
+            {
+                "note": "`web3Wrapper` is created with `shouldAllowUnlimitedContractSize` if `UNLIMITED_CONTRACT_SIZE` environment variable is set.",
+                "pr": 2075
+            },
+            {
+                "note": "Add `toHex()`, `hexLeftPad()`, `hexRightPad()`, and 'hexInvert()' hex utils",
+                "pr": 2109
+            },
+            {
+                "note": "Add `PPM_DENOMINATOR` and `PPM_100_PERCENT` constants.",
+                "pr": 2109
+            },
+            {
+                "note": "Increase the number of ganache accounts to 20",
+                "pr": 2109
+            },
+            {
+                "note": "Add `Numberish` type.",
+                "pr": 2131
+            },
+            {
+                "note": "Tweaks/Upgrades to `hex_utils`, most notably `hexSlice()`",
+                "pr": 2155
+            },
+            {
+                "note": "Add `hexHash()` to `hex_utils`",
+                "pr": 2155
+            },
+            {
+                "note": "Add `shortZip()` to `lang_utils.ts`",
+                "pr": 2155
+            },
+            {
+                "note": "Add `number_utils.ts` and `hexSize()`",
+                "pr": 2220
+            },
+            {
+                "note": "Add `verifyEventsFromLogs()`",
+                "pr": 2287
+            }
+        ]
+    },
+    {
         "version": "3.2.0-beta.4",
         "changes": [
             {

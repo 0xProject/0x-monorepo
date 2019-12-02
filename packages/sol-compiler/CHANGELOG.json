@@ -1,5 +1,22 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Add `shouldSaveStandardInput` config",
+                "pr": 2322
+            },
+            {
+                "note": "Output artifacts now include a 'chains' attribute rather than 'networks'",
+                "pr": 2313
+            },
+            {
+                "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
+                "pr": 2055
+            }
+        ]
+    },
+    {
         "version": "3.2.0-beta.4",
         "changes": [
             {
