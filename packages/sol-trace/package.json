@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-trace",
-    "version": "2.1.0-beta.3",
+    "version": "2.1.0-beta.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -33,8 +33,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-trace/README.md",
     "dependencies": {
-        "@0x/sol-tracing-utils": "^6.1.0-beta.3",
-        "@0x/subproviders": "^5.1.0-beta.2",
+        "@0x/sol-tracing-utils": "^6.1.0-beta.4",
+        "@0x/subproviders": "^5.1.0-beta.3",
         "@0x/typescript-typings": "^4.4.0-beta.2",
         "chalk": "^2.3.0",
         "ethereum-types": "^2.2.0-beta.2",

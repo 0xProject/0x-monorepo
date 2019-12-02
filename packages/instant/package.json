@@ -1,6 +1,6 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.35",
+    "version": "1.0.36",
     "engines": {
         "node": ">=6.12"
     },
@@ -43,13 +43,13 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.2",
-        "@0x/asset-swapper": "^2.1.0-beta.3",
-        "@0x/json-schemas": "^4.1.0-beta.2",
-        "@0x/order-utils": "^8.5.0-beta.3",
-        "@0x/subproviders": "^5.1.0-beta.2",
-        "@0x/utils": "^4.6.0-beta.2",
-        "@0x/web3-wrapper": "^6.1.0-beta.2",
+        "@0x/assert": "^2.2.0-beta.3",
+        "@0x/asset-swapper": "^2.1.0-beta.4",
+        "@0x/json-schemas": "^4.1.0-beta.3",
+        "@0x/order-utils": "^8.5.0-beta.4",
+        "@0x/subproviders": "^5.1.0-beta.3",
+        "@0x/utils": "^4.6.0-beta.3",
+        "@0x/web3-wrapper": "^6.1.0-beta.3",
         "babel-runtime": "^6.26.0",
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",
@@ -65,10 +65,9 @@
         "ts-optchain": "^0.1.1"
     },
     "devDependencies": {
-        "ethereum-types": "^2.2.0-beta.2",
-        "@0x/types": "^2.5.0-beta.2",
-        "@0x/typescript-typings": "^4.4.0-beta.2",
         "@0x/tslint-config": "^3.1.0-beta.2",
+        "@0x/types": "^2.5.0-beta.3",
+        "@0x/typescript-typings": "^4.4.0-beta.2",
         "@static/discharge": "https://github.com/0xProject/discharge.git",
         "@types/enzyme": "^3.1.14",
         "@types/enzyme-adapter-react-16": "^1.0.3",
@@ -91,6 +90,7 @@
         "dotenv-cli": "^1.4.0",
         "enzyme": "^3.6.0",
         "enzyme-adapter-react-16": "^1.5.0",
+        "ethereum-types": "^2.2.0-beta.2",
         "ip": "^1.1.5",
         "jest": "^23.6.0",
         "make-promises-safe": "^1.1.0",
