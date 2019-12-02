@@ -1,5 +1,26 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Refactor of logic for marketBuy/marketSell order pruning and selecting, introduced protocol fees, and refactored types used by the package",
+                "pr": 2272
+            },
+            {
+                "note": "Incorporate paying protocol fees.",
+                "pr": 2350
+            },
+            {
+                "note": "Update BigNumber version to ~9.0.0",
+                "pr": 2342
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            }
+        ]
+    },
+    {
         "version": "2.1.0-beta.4",
         "changes": [
             {
