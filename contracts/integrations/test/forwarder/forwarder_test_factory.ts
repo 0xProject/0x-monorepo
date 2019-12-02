@@ -5,7 +5,6 @@ import { AssetProxyId, OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { FeeRecipient } from '../framework/actors/fee_recipient';
 import { Taker } from '../framework/actors/taker';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { LocalBalanceStore } from '../framework/balances/local_balance_store';
@@ -19,7 +18,7 @@ interface ForwarderFillState {
 }
 
 interface MarketSellOptions {
-    forwarderFeeAmount: BigNumber;
+    forwarderFeeAmounts: BigNumber[];
     forwarderFeeRecipientAddresses: string[];
     revertError: RevertError;
     bridgeExcessBuyAmount: BigNumber;
@@ -57,7 +56,6 @@ export class ForwarderTestFactory {
         private readonly _deployment: DeploymentManager,
         private readonly _balanceStore: BlockchainBalanceStore,
         private readonly _taker: Taker,
-        private readonly _forwarderFeeRecipients: FeeRecipient[],
     ) {}
 
     public async marketBuyTestAsync(
@@ -66,10 +64,8 @@ export class ForwarderTestFactory {
         options: Partial<MarketBuyOptions> = {},
     ): Promise<void> {
         const ethValueAdjustment = options.ethValueAdjustment || 0;
-        const forwarderFeeAmount = options.forwarderFeeAmount || constants.ZERO_AMOUNT;
-        const forwarderFeeRecipientAddresses =
-            options.forwarderFeeRecipientAddresses ||
-            this._forwarderFeeRecipients.map(feeRecipient => feeRecipient.address);
+        const forwarderFeeAmounts = options.forwarderFeeAmounts || [];
+        const forwarderFeeRecipientAddresses = options.forwarderFeeRecipientAddresses || [];
 
         const orderInfoBefore = await Promise.all(
             orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
@@ -91,11 +87,13 @@ export class ForwarderTestFactory {
                 orders,
                 makerAssetAcquiredAmount.minus(options.bridgeExcessBuyAmount || 0),
                 orders.map(signedOrder => signedOrder.signature),
-                forwarderFeeAmount,
+                forwarderFeeAmounts,
                 forwarderFeeRecipientAddresses,
             )
             .awaitTransactionSuccessAsync({
-                value: wethSpentAmount.plus(forwarderFeeAmount).plus(ethValueAdjustment),
+                value: wethSpentAmount
+                    .plus(forwarderFeeAmounts.reduce((prev, curr) => prev.plus(curr), constants.ZERO_AMOUNT))
+                    .plus(ethValueAdjustment),
                 from: this._taker.address,
             });
 
@@ -128,20 +126,20 @@ export class ForwarderTestFactory {
             options,
         );
 
-        const forwarderFeeAmount = options.forwarderFeeAmount || constants.ZERO_AMOUNT;
-        const forwarderFeeRecipientAddresses =
-            options.forwarderFeeRecipientAddresses ||
-            this._forwarderFeeRecipients.map(feeRecipient => feeRecipient.address);
+        const forwarderFeeAmounts = options.forwarderFeeAmounts || [];
+        const forwarderFeeRecipientAddresses = options.forwarderFeeRecipientAddresses || [];
 
         const tx = this._forwarder
             .marketSellOrdersWithEth(
                 orders,
                 orders.map(signedOrder => signedOrder.signature),
-                forwarderFeeAmount,
+                forwarderFeeAmounts,
                 forwarderFeeRecipientAddresses,
             )
             .awaitTransactionSuccessAsync({
-                value: wethSpentAmount.plus(forwarderFeeAmount),
+                value: wethSpentAmount.plus(
+                    forwarderFeeAmounts.reduce((prev, curr) => prev.plus(curr), constants.ZERO_AMOUNT),
+                ),
                 from: this._taker.address,
             });
 
@@ -186,6 +184,15 @@ export class ForwarderTestFactory {
     ): Promise<ForwarderFillState> {
         await this._balanceStore.updateBalancesAsync();
         const balances = LocalBalanceStore.create(this._balanceStore);
+
+        const forwarderFeeAmounts = options.forwarderFeeAmounts || [];
+        const forwarderFeeRecipientAddresses = options.forwarderFeeRecipientAddresses || [];
+
+        forwarderFeeAmounts.forEach((feeAmount, i) =>
+            // In reality the Forwarder is a middleman in this transaction and the ETH gets wrapped and unwrapped.
+            balances.sendEth(this._taker.address, forwarderFeeRecipientAddresses[i], feeAmount),
+        );
+
         const currentTotal = {
             wethSpentAmount: constants.ZERO_AMOUNT,
             makerAssetAcquiredAmount: constants.ZERO_AMOUNT,
@@ -215,17 +222,6 @@ export class ForwarderTestFactory {
                 makerAssetAcquiredAmount,
             );
         }
-
-        const ethSpentOnForwarderFee = options.forwarderFeeAmount || constants.ZERO_AMOUNT;
-        const forwarderFeeRecipientAddresses =
-            options.forwarderFeeRecipientAddresses ||
-            this._forwarderFeeRecipients.map(feeRecipient => feeRecipient.address);
-        const ethFeePerFeeRecipient = ethSpentOnForwarderFee.dividedToIntegerBy(forwarderFeeRecipientAddresses.length);
-
-        forwarderFeeRecipientAddresses.forEach(feeRecipientAddress =>
-            // In reality the Forwarder is a middleman in this transaction and the ETH gets wrapped and unwrapped.
-            balances.sendEth(this._taker.address, feeRecipientAddress, ethFeePerFeeRecipient),
-        );
 
         return { ...currentTotal, balances };
     }

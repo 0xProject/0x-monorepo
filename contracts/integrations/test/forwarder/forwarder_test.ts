@@ -10,7 +10,7 @@ import {
     randomAddress,
     toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 
 import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';
@@ -102,7 +102,7 @@ blockchainTests('Forwarder integration tests', env => {
         const tokenIds = { erc721: { [erc721Token.address]: [nftId] } };
         balanceStore = new BlockchainBalanceStore(tokenOwners, tokenContracts, tokenIds);
 
-        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker, [forwarderFeeRecipient]);
+        testFactory = new ForwarderTestFactory(forwarder, deployment, balanceStore, taker);
     });
 
     after(async () => {
@@ -180,9 +180,7 @@ blockchainTests('Forwarder integration tests', env => {
             await balanceStore.updateBalancesAsync();
             // Execute test case
             const tx = await forwarder
-                .marketSellOrdersWithEth([order], [order.signature], constants.ZERO_AMOUNT, [
-                    forwarderFeeRecipient.address,
-                ])
+                .marketSellOrdersWithEth([order], [order.signature], [], [])
                 .awaitTransactionSuccessAsync({
                     value: order.takerAssetAmount.plus(DeploymentManager.protocolFee),
                     from: taker.address,
@@ -221,9 +219,7 @@ blockchainTests('Forwarder integration tests', env => {
             const ethValue = order.takerAssetAmount.plus(DeploymentManager.protocolFee).plus(2);
             const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(taker.address);
             const tx = await forwarder
-                .marketSellOrdersWithEth([order], [order.signature], constants.ZERO_AMOUNT, [
-                    forwarderFeeRecipient.address,
-                ])
+                .marketSellOrdersWithEth([order], [order.signature], [], [])
                 .awaitTransactionSuccessAsync({
                     value: ethValue,
                     from: taker.address,
@@ -306,44 +302,83 @@ blockchainTests('Forwarder integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(36),
             });
             await testFactory.marketSellTestAsync([order], 0.67, {
-                forwarderFeeAmount: toBaseUnitAmount(0.2),
+                forwarderFeeAmounts: [toBaseUnitAmount(0.2)],
+                forwarderFeeRecipientAddresses: [forwarderFeeRecipient.address],
             });
         });
-        it('should fill the order and send fees to different feeRecipient addresses', async () => {
+        it('should fill the order and send the same fees to different feeRecipient addresses', async () => {
             const order = await maker.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(157),
                 takerAssetAmount: toBaseUnitAmount(36),
             });
             await testFactory.marketSellTestAsync([order], 0.67, {
-                forwarderFeeAmount: toBaseUnitAmount(0.2),
+                forwarderFeeAmounts: [toBaseUnitAmount(0.2), toBaseUnitAmount(0.2)],
                 forwarderFeeRecipientAddresses: [randomAddress(), randomAddress()],
             });
         });
-        it('should fill the order and send fees to multiple instances of the same feeRecipient address', async () => {
+        it('should fill the order and send different fees to different feeRecipient addresses', async () => {
+            const order = await maker.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(157),
+                takerAssetAmount: toBaseUnitAmount(36),
+            });
+            await testFactory.marketSellTestAsync([order], 0.67, {
+                forwarderFeeAmounts: [toBaseUnitAmount(0.2), toBaseUnitAmount(0.1)],
+                forwarderFeeRecipientAddresses: [randomAddress(), randomAddress()],
+            });
+        });
+        it('should fill the order and send the same fees to multiple instances of the same feeRecipient address', async () => {
             const order = await maker.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(157),
                 takerAssetAmount: toBaseUnitAmount(36),
             });
             const feeRecipient = randomAddress();
             await testFactory.marketSellTestAsync([order], 0.67, {
-                forwarderFeeAmount: toBaseUnitAmount(0.2),
+                forwarderFeeAmounts: [toBaseUnitAmount(0.2), toBaseUnitAmount(0.2)],
                 forwarderFeeRecipientAddresses: [feeRecipient, feeRecipient],
             });
         });
-        it('should fail if a fee is specified with no feeRecipient', async () => {
+        it('should fill the order and send different fees to multiple instances of the same feeRecipient address', async () => {
             const order = await maker.signOrderAsync({
                 makerAssetAmount: toBaseUnitAmount(157),
                 takerAssetAmount: toBaseUnitAmount(36),
             });
-            const forwarderFeeAmount = toBaseUnitAmount(0.2);
-            const revertError = new SafeMathRevertErrors.Uint256BinOpError(
-                SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
-                forwarderFeeAmount,
-                constants.ZERO_AMOUNT,
+            const feeRecipient = randomAddress();
+            await testFactory.marketSellTestAsync([order], 0.67, {
+                forwarderFeeAmounts: [toBaseUnitAmount(0.2), toBaseUnitAmount(0.1)],
+                forwarderFeeRecipientAddresses: [feeRecipient, feeRecipient],
+            });
+        });
+        it('should fail if ethFeeAmounts is longer than feeRecipients', async () => {
+            const order = await maker.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(157),
+                takerAssetAmount: toBaseUnitAmount(36),
+            });
+            const forwarderFeeAmounts = [toBaseUnitAmount(0.2)];
+            const forwarderFeeRecipientAddresses: string[] = [];
+            const revertError = new ExchangeForwarderRevertErrors.EthFeeLengthMismatchError(
+                new BigNumber(forwarderFeeAmounts.length),
+                new BigNumber(forwarderFeeRecipientAddresses.length),
             );
             await testFactory.marketSellTestAsync([order], 0.67, {
-                forwarderFeeAmount,
-                forwarderFeeRecipientAddresses: [],
+                forwarderFeeAmounts,
+                forwarderFeeRecipientAddresses,
+                revertError,
+            });
+        });
+        it('should fail if feeRecipients is longer than ethFeeAmounts', async () => {
+            const order = await maker.signOrderAsync({
+                makerAssetAmount: toBaseUnitAmount(157),
+                takerAssetAmount: toBaseUnitAmount(36),
+            });
+            const forwarderFeeAmounts: BigNumber[] = [];
+            const forwarderFeeRecipientAddresses = [randomAddress()];
+            const revertError = new ExchangeForwarderRevertErrors.EthFeeLengthMismatchError(
+                new BigNumber(forwarderFeeAmounts.length),
+                new BigNumber(forwarderFeeRecipientAddresses.length),
+            );
+            await testFactory.marketSellTestAsync([order], 0.67, {
+                forwarderFeeAmounts,
+                forwarderFeeRecipientAddresses,
                 revertError,
             });
         });
@@ -518,13 +553,7 @@ blockchainTests('Forwarder integration tests', env => {
             await balanceStore.updateBalancesAsync();
             // Execute test case
             const tx = await forwarder
-                .marketBuyOrdersWithEth(
-                    [order],
-                    desiredMakerAssetFillAmount,
-                    [order.signature],
-                    constants.ZERO_AMOUNT,
-                    [forwarderFeeRecipient.address],
-                )
+                .marketBuyOrdersWithEth([order], desiredMakerAssetFillAmount, [order.signature], [], [])
                 .awaitTransactionSuccessAsync({
                     value: ethValue,
                     from: taker.address,
@@ -565,13 +594,7 @@ blockchainTests('Forwarder integration tests', env => {
             await balanceStore.updateBalancesAsync();
             // Execute test case
             const tx = await forwarder
-                .marketBuyOrdersWithEth(
-                    [order],
-                    desiredMakerAssetFillAmount,
-                    [order.signature],
-                    constants.ZERO_AMOUNT,
-                    [forwarderFeeRecipient.address],
-                )
+                .marketBuyOrdersWithEth([order], desiredMakerAssetFillAmount, [order.signature], [], [])
                 .awaitTransactionSuccessAsync({
                     value: takerAssetFillAmount.plus(DeploymentManager.protocolFee),
                     from: taker.address,
@@ -606,21 +629,39 @@ blockchainTests('Forwarder integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(11),
             });
             await testFactory.marketBuyTestAsync([order], 0.33, {
-                forwarderFeeAmount: toBaseUnitAmount(0.2),
+                forwarderFeeAmounts: [toBaseUnitAmount(0.2)],
+                forwarderFeeRecipientAddresses: [randomAddress()],
+            });
+        });
+        it('should fail if there is not enough ETH remaining to complete the fill', async () => {
+            const order = await maker.signOrderAsync();
+            const forwarderFeeAmounts = [toBaseUnitAmount(1)];
+            const revertError = new ExchangeForwarderRevertErrors.CompleteBuyFailedError(
+                order.takerAssetAmount,
+                constants.ZERO_AMOUNT,
+            );
+            await testFactory.marketBuyTestAsync([order], 0.5, {
+                ethValueAdjustment: -1,
+                forwarderFeeAmounts,
+                forwarderFeeRecipientAddresses: [randomAddress()],
+                revertError,
             });
         });
         it('should fail if there is not enough ETH remaining to pay the fee', async () => {
             const order = await maker.signOrderAsync();
-            const forwarderFeeAmount = toBaseUnitAmount(1);
+            const forwarderFeeAmounts = [toBaseUnitAmount(1)];
+            const value = forwarderFeeAmounts[0].minus(1);
             const revertError = new ExchangeForwarderRevertErrors.InsufficientEthForFeeError(
-                forwarderFeeAmount,
-                forwarderFeeAmount.minus(1),
+                forwarderFeeAmounts[0],
+                value,
             );
-            await testFactory.marketBuyTestAsync([order], 0.5, {
-                ethValueAdjustment: -1,
-                forwarderFeeAmount,
-                revertError,
-            });
+            return expect(
+                forwarder
+                    .marketBuyOrdersWithEth([order], order.makerAssetAmount, [order.signature], forwarderFeeAmounts, [
+                        randomAddress(),
+                    ])
+                    .awaitTransactionSuccessAsync({ value }),
+            ).to.revertWith(revertError);
         });
     });
 });
