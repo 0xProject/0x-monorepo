@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.6.0-beta.3 - _December 2, 2019_
+
+    * Re-export all `RevertErrors` (#2362)
+
 ## v4.6.0-beta.2 - _November 17, 2019_
 
     * Removed exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors (#2321)

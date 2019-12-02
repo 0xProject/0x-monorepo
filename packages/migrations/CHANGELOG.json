@@ -10,7 +10,8 @@
                 "note": "Subsequent contract addresses after the Forwarder are now modified",
                 "pr": 2368
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "4.4.0-beta.3",

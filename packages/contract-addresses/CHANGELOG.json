@@ -10,7 +10,8 @@
                 "note": "Update Forwarder addresses on all newtorks",
                 "pr": 2374
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "3.3.0-beta.4",

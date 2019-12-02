@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.4 - _December 2, 2019_
+
+    * Implement `KyberBridge`. (#2352)
+
 ## v2.3.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

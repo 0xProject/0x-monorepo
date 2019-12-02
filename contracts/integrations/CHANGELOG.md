@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.3-beta.2 - _December 2, 2019_
+
+    * Forwader <> ERC20Bridge integration tests (#2356)
+
 ## v1.0.3-beta.1 - _November 20, 2019_
 
     * Dependencies updated

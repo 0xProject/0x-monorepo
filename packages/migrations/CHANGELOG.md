@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.4 - _December 2, 2019_
+
+    * Deploy Forwarder after Exchange is configured as Staking Proxy is queried (#2368)
+    * Subsequent contract addresses after the Forwarder are now modified (#2368)
+
 ## v4.4.0-beta.3 - _November 20, 2019_
 
     * Update Exchange, DevUtils, Coordinator, and Forwarder addresses on all networks (#2349)

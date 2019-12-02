@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v2.1.0-beta.3 - _November 20, 2019_
 
     * Refactor of logic for marketBuy/marketSell order pruning and selecting, introduced protocol fees, and refactored types used by the package (#2272)

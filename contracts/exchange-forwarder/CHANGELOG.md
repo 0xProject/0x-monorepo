@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0-beta.4 - _December 2, 2019_
+
+    * Added buy support for ERC20Bridge (#2356)
+
 ## v3.1.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

@@ -6,7 +6,8 @@
                 "note": "Re-export all `RevertErrors`",
                 "pr": 2362
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "4.6.0-beta.2",

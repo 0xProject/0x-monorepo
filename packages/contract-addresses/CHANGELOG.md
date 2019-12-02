@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0-beta.5 - _December 2, 2019_
+
+    * `1337` addresses updated with Forwarder deployed after Exchange is configured (#2368)
+    * Update Forwarder addresses on all newtorks (#2374)
+
 ## v3.3.0-beta.4 - _November 20, 2019_
 
     * Dependencies updated

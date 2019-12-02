@@ -6,7 +6,8 @@
                 "note": "Added buy support for ERC20Bridge",
                 "pr": 2356
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "3.1.0-beta.3",

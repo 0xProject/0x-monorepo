@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.4 - _December 2, 2019_
+
+    * Regenerate Forwarder and DevUtils artifacts (#2374)
+
 ## v2.3.0-beta.3 - _November 17, 2019_
 
     * Replace Staking artifact with TestStaking (#2322)

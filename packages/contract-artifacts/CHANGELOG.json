@@ -6,7 +6,8 @@
                 "note": "Regenerate Forwarder and DevUtils artifacts",
                 "pr": 2374
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "2.3.0-beta.3",

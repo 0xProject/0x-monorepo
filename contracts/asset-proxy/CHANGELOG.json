@@ -6,7 +6,8 @@
                 "note": "Implement `KyberBridge`.",
                 "pr": 2352
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "2.3.0-beta.3",
