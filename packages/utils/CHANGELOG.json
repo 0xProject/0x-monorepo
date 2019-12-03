@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Added hex_utils",
+                "pr": 2373
+            }
+        ]
+    },
+    {
         "version": "5.0.0",
         "changes": [
             {

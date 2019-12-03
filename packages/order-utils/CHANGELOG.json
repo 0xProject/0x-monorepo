@@ -1,5 +1,18 @@
 [
     {
+        "version": "10.0.0",
+        "changes": [
+            {
+                "note": "Removed `assetDataUtils`",
+                "pr": 2373
+            },
+            {
+                "note": "Exported function `decodeAssetDataOrThrow`",
+                "pr": 2373
+            }
+        ]
+    },
+    {
         "version": "9.0.0",
         "changes": [
             {

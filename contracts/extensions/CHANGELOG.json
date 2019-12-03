@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Export function `encodeDutchAuctionAssetData`",
+                "pr": 2373
+            }
+        ]
+    },
+    {
         "version": "5.0.0",
         "changes": [
             {
