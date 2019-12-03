@@ -79,6 +79,7 @@ export {
     StakingProxyStakingContractAttachedToProxyEventArgs,
     StakingProxyStakingContractDetachedFromProxyEventArgs,
 } from './generated-wrappers/staking_proxy';
+export { IERC20BridgeSamplerContract } from './generated-wrappers/i_erc20_bridge_sampler';
 export {
     BlockRange,
     SupportedProvider,
