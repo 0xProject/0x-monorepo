@@ -146,7 +146,7 @@ blockchainTests.resets('matchOrders integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     describe('batchMatchOrders and batchMatchOrdersWithMaximalFill rich errors', async () => {

@@ -37,7 +37,7 @@ export function validStakeAssertion(
         before: async (amount: BigNumber, txData: Partial<TxData>) => {
             // Simulates the transfer of ZRX from staker to vault
             const expectedBalances = LocalBalanceStore.create(balanceStore);
-            await expectedBalances.transferAssetAsync(
+            expectedBalances.transferAsset(
                 txData.from as string,
                 zrxVault.address,
                 amount,

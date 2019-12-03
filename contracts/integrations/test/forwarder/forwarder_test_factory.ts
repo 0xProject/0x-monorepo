@@ -207,7 +207,7 @@ export class ForwarderTestFactory {
                 continue;
             }
 
-            const { wethSpentAmount, makerAssetAcquiredAmount } = await this._simulateSingleFillAsync(
+            const { wethSpentAmount, makerAssetAcquiredAmount } = this._simulateSingleFill(
                 balances,
                 order,
                 ordersInfoBefore[i].orderTakerAssetFilledAmount,
@@ -232,13 +232,13 @@ export class ForwarderTestFactory {
         return { ...currentTotal, balances };
     }
 
-    private async _simulateSingleFillAsync(
+    private _simulateSingleFill(
         balances: LocalBalanceStore,
         order: SignedOrder,
         takerAssetFilled: BigNumber,
         fillFraction: number,
         bridgeExcessBuyAmount: BigNumber,
-    ): Promise<ForwarderFillState> {
+    ): ForwarderFillState {
         let { makerAssetAmount, takerAssetAmount, makerFee, takerFee } = order;
         makerAssetAmount = makerAssetAmount.times(fillFraction).integerValue(BigNumber.ROUND_CEIL);
         takerAssetAmount = takerAssetAmount.times(fillFraction).integerValue(BigNumber.ROUND_CEIL);
@@ -272,43 +272,23 @@ export class ForwarderTestFactory {
         balances.wrapEth(this._forwarder.address, this._deployment.tokens.weth.address, wethSpentAmount);
         // (In reality this is done all at once, but we simulate it order by order)
 
-        // Maker -> Forwarder
-        await balances.transferAssetAsync(
-            order.makerAddress,
-            this._forwarder.address,
-            makerAssetAmount,
-            order.makerAssetData,
-        );
-        // Maker -> Order fee recipient
-        await balances.transferAssetAsync(
-            order.makerAddress,
-            order.feeRecipientAddress,
-            makerFee,
-            order.makerFeeAssetData,
-        );
         // Forwarder -> Maker
-        await balances.transferAssetAsync(
-            this._forwarder.address,
-            order.makerAddress,
-            takerAssetAmount,
-            order.takerAssetData,
-        );
+        balances.transferAsset(this._forwarder.address, order.makerAddress, takerAssetAmount, order.takerAssetData);
+        // Maker -> Forwarder
+        balances.transferAsset(order.makerAddress, this._forwarder.address, makerAssetAmount, order.makerAssetData);
         // Forwarder -> Order fee recipient
-        await balances.transferAssetAsync(
-            this._forwarder.address,
-            order.feeRecipientAddress,
-            takerFee,
-            order.takerFeeAssetData,
-        );
+        balances.transferAsset(this._forwarder.address, order.feeRecipientAddress, takerFee, order.takerFeeAssetData);
+        // Maker -> Order fee recipient
+        balances.transferAsset(order.makerAddress, order.feeRecipientAddress, makerFee, order.makerFeeAssetData);
         // Forwarder pays the protocol fee in WETH
-        await balances.transferAssetAsync(
+        balances.transferAsset(
             this._forwarder.address,
             this._deployment.staking.stakingProxy.address,
             DeploymentManager.protocolFee,
             order.takerAssetData,
         );
         // Forwarder gives acquired maker asset to taker
-        await balances.transferAssetAsync(
+        balances.transferAsset(
             this._forwarder.address,
             this._taker.address,
             makerAssetAcquiredAmount,

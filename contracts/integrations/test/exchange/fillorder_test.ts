@@ -109,53 +109,8 @@ blockchainTests.resets('fillOrder integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
-
-    async function simulateFillAsync(
-        order: SignedOrder,
-        txReceipt: TransactionReceiptWithDecodedLogs,
-        msgValue?: BigNumber,
-    ): Promise<LocalBalanceStore> {
-        let remainingValue = msgValue !== undefined ? msgValue : DeploymentManager.protocolFee;
-        const localBalanceStore = LocalBalanceStore.create(balanceStore);
-        // Transaction gas cost
-        localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
-
-        // Taker -> Maker
-        await localBalanceStore.transferAssetAsync(
-            taker.address,
-            maker.address,
-            order.takerAssetAmount,
-            order.takerAssetData,
-        );
-        // Maker -> Taker
-        await localBalanceStore.transferAssetAsync(
-            maker.address,
-            taker.address,
-            order.makerAssetAmount,
-            order.makerAssetData,
-        );
-
-        // Protocol fee
-        if (remainingValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
-            localBalanceStore.sendEth(
-                txReceipt.from,
-                deployment.staking.stakingProxy.address,
-                DeploymentManager.protocolFee,
-            );
-            remainingValue = remainingValue.minus(DeploymentManager.protocolFee);
-        } else {
-            await localBalanceStore.transferAssetAsync(
-                taker.address,
-                deployment.staking.stakingProxy.address,
-                DeploymentManager.protocolFee,
-                deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
-            );
-        }
-
-        return localBalanceStore;
-    }
 
     function verifyFillEvents(order: SignedOrder, receipt: TransactionReceiptWithDecodedLogs): void {
         // Ensure that the fill event was correct.
@@ -207,7 +162,8 @@ blockchainTests.resets('fillOrder integration tests', env => {
         const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
 
         // Check balances
-        const expectedBalances = await simulateFillAsync(order, receipt);
+        const expectedBalances = LocalBalanceStore.create(balanceStore);
+        expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
         await balanceStore.updateBalancesAsync();
         balanceStore.assertEquals(expectedBalances);
 
@@ -233,7 +189,8 @@ blockchainTests.resets('fillOrder integration tests', env => {
         const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
 
         // Check balances
-        const expectedBalances = await simulateFillAsync(order, receipt);
+        const expectedBalances = LocalBalanceStore.create(balanceStore);
+        expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
         await balanceStore.updateBalancesAsync();
         balanceStore.assertEquals(expectedBalances);
 
@@ -310,7 +267,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         const [finalizePoolReceipt] = await delegator.finalizePoolsAsync([poolId]);
 
         // Check balances
-        await expectedBalances.transferAssetAsync(
+        expectedBalances.transferAsset(
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
@@ -371,7 +328,8 @@ blockchainTests.resets('fillOrder integration tests', env => {
         const order = await maker.signOrderAsync();
         const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount, { value: constants.ZERO_AMOUNT });
         const rewardsAvailable = DeploymentManager.protocolFee;
-        const expectedBalances = await simulateFillAsync(order, receipt, constants.ZERO_AMOUNT);
+        const expectedBalances = LocalBalanceStore.create(balanceStore);
+        expectedBalances.simulateFills([order], taker.address, receipt, deployment);
 
         // End the epoch. This should wrap the staking proxy's ETH balance.
         const endEpochReceipt = await delegator.endEpochAsync();
@@ -392,7 +350,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         const [finalizePoolReceipt] = await delegator.finalizePoolsAsync([poolId]);
 
         // Check balances
-        await expectedBalances.transferAssetAsync(
+        expectedBalances.transferAsset(
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,

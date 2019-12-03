@@ -106,7 +106,7 @@ blockchainTests('Forwarder integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     blockchainTests.resets('constructor', () => {
@@ -511,20 +511,10 @@ blockchainTests('Forwarder integration tests', env => {
 
             // Compute expected balances
             const expectedBalances = LocalBalanceStore.create(balanceStore);
-            await expectedBalances.transferAssetAsync(
-                maker.address,
-                taker.address,
-                makerAssetFillAmount,
-                makerAssetData,
-            );
+            expectedBalances.transferAsset(maker.address, taker.address, makerAssetFillAmount, makerAssetData);
             expectedBalances.wrapEth(taker.address, deployment.tokens.weth.address, ethValue);
-            await expectedBalances.transferAssetAsync(
-                taker.address,
-                maker.address,
-                primaryTakerAssetFillAmount,
-                wethAssetData,
-            );
-            await expectedBalances.transferAssetAsync(
+            expectedBalances.transferAsset(taker.address, maker.address, primaryTakerAssetFillAmount, wethAssetData);
+            expectedBalances.transferAsset(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,
@@ -568,24 +558,14 @@ blockchainTests('Forwarder integration tests', env => {
 
             // Compute expected balances
             const expectedBalances = LocalBalanceStore.create(balanceStore);
-            await expectedBalances.transferAssetAsync(
-                maker.address,
-                taker.address,
-                makerAssetFillAmount,
-                makerAssetData,
-            );
+            expectedBalances.transferAsset(maker.address, taker.address, makerAssetFillAmount, makerAssetData);
             expectedBalances.wrapEth(
                 taker.address,
                 deployment.tokens.weth.address,
                 takerAssetFillAmount.plus(DeploymentManager.protocolFee),
             );
-            await expectedBalances.transferAssetAsync(
-                taker.address,
-                maker.address,
-                takerAssetFillAmount,
-                wethAssetData,
-            );
-            await expectedBalances.transferAssetAsync(
+            expectedBalances.transferAsset(taker.address, maker.address, takerAssetFillAmount, wethAssetData);
+            expectedBalances.transferAsset(
                 taker.address,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,

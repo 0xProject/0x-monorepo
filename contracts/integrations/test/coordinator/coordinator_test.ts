@@ -19,7 +19,6 @@ import {
 } from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';
@@ -96,71 +95,8 @@ blockchainTests.resets('Coordinator integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
-
-    async function simulateFillsAsync(
-        orders: SignedOrder[],
-        txReceipt: TransactionReceiptWithDecodedLogs,
-        msgValue?: BigNumber,
-    ): Promise<LocalBalanceStore> {
-        let remainingValue = msgValue || constants.ZERO_AMOUNT;
-        const localBalanceStore = LocalBalanceStore.create(balanceStore);
-        // Transaction gas cost
-        localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
-
-        for (const order of orders) {
-            // Taker -> Maker
-            await localBalanceStore.transferAssetAsync(
-                taker.address,
-                maker.address,
-                order.takerAssetAmount,
-                order.takerAssetData,
-            );
-            // Maker -> Taker
-            await localBalanceStore.transferAssetAsync(
-                maker.address,
-                taker.address,
-                order.makerAssetAmount,
-                order.makerAssetData,
-            );
-            // Taker -> Fee Recipient
-            await localBalanceStore.transferAssetAsync(
-                taker.address,
-                feeRecipient.address,
-                order.takerFee,
-                order.takerFeeAssetData,
-            );
-            // Maker -> Fee Recipient
-            await localBalanceStore.transferAssetAsync(
-                maker.address,
-                feeRecipient.address,
-                order.makerFee,
-                order.makerFeeAssetData,
-            );
-
-            // Protocol fee
-            if (remainingValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
-                localBalanceStore.sendEth(
-                    txReceipt.from,
-                    deployment.staking.stakingProxy.address,
-                    DeploymentManager.protocolFee,
-                );
-                remainingValue = remainingValue.minus(DeploymentManager.protocolFee);
-            } else {
-                await localBalanceStore.transferAssetAsync(
-                    taker.address,
-                    deployment.staking.stakingProxy.address,
-                    DeploymentManager.protocolFee,
-                    deployment.assetDataEncoder
-                        .ERC20Token(deployment.tokens.weth.address)
-                        .getABIEncodedTransactionData(),
-                );
-            }
-        }
-
-        return localBalanceStore;
-    }
 
     function expectedFillEvent(order: SignedOrder): ExchangeFillEventArgs {
         return {
@@ -191,10 +127,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
             before(async () => {
                 order = await maker.signOrderAsync();
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
-                transaction = await taker.signTransactionAsync({
-                    data,
-                    gasPrice: DeploymentManager.gasPrice,
-                });
+                transaction = await taker.signTransactionAsync({ data });
                 approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
             });
 
@@ -204,7 +137,14 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, taker.address, transaction.signature, [approval.signature])
                     .awaitTransactionSuccessAsync({ from: taker.address, value: DeploymentManager.protocolFee });
 
-                const expectedBalances = await simulateFillsAsync([order], txReceipt, DeploymentManager.protocolFee);
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills(
+                    [order],
+                    taker.address,
+                    txReceipt,
+                    deployment,
+                    DeploymentManager.protocolFee,
+                );
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -215,7 +155,14 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, feeRecipient.address, transaction.signature, [])
                     .awaitTransactionSuccessAsync({ from: feeRecipient.address, value: DeploymentManager.protocolFee });
 
-                const expectedBalances = await simulateFillsAsync([order], txReceipt, DeploymentManager.protocolFee);
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills(
+                    [order],
+                    taker.address,
+                    txReceipt,
+                    deployment,
+                    DeploymentManager.protocolFee,
+                );
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -229,9 +176,12 @@ blockchainTests.resets('Coordinator integration tests', env => {
                         value: DeploymentManager.protocolFee.plus(1),
                     });
 
-                const expectedBalances = await simulateFillsAsync(
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills(
                     [order],
+                    taker.address,
                     txReceipt,
+                    deployment,
                     DeploymentManager.protocolFee.plus(1),
                 );
                 await balanceStore.updateBalancesAsync();
@@ -244,7 +194,8 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, feeRecipient.address, transaction.signature, [])
                     .awaitTransactionSuccessAsync({ from: feeRecipient.address });
 
-                const expectedBalances = await simulateFillsAsync([order], txReceipt);
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills([order], taker.address, txReceipt, deployment);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -255,7 +206,8 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, feeRecipient.address, transaction.signature, [])
                     .awaitTransactionSuccessAsync({ from: feeRecipient.address, value: new BigNumber(1) });
 
-                const expectedBalances = await simulateFillsAsync([order], txReceipt, new BigNumber(1));
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills([order], taker.address, txReceipt, deployment, new BigNumber(1));
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
@@ -309,10 +261,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
             before(async () => {
                 orders = [await maker.signOrderAsync(), await maker.signOrderAsync()];
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                transaction = await taker.signTransactionAsync({
-                    data,
-                    gasPrice: DeploymentManager.gasPrice,
-                });
+                transaction = await taker.signTransactionAsync({ data });
                 approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
             });
 
@@ -323,7 +272,8 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, taker.address, transaction.signature, [approval.signature])
                     .awaitTransactionSuccessAsync({ from: taker.address, value });
 
-                const expectedBalances = await simulateFillsAsync(orders, txReceipt, value);
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills(orders, taker.address, txReceipt, deployment, value);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);
@@ -335,7 +285,8 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, feeRecipient.address, transaction.signature, [])
                     .awaitTransactionSuccessAsync({ from: feeRecipient.address, value });
 
-                const expectedBalances = await simulateFillsAsync(orders, txReceipt, value);
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills(orders, taker.address, txReceipt, deployment, value);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);
@@ -347,7 +298,8 @@ blockchainTests.resets('Coordinator integration tests', env => {
                     .executeTransaction(transaction, feeRecipient.address, transaction.signature, [])
                     .awaitTransactionSuccessAsync({ from: feeRecipient.address, value });
 
-                const expectedBalances = await simulateFillsAsync(orders, txReceipt, value);
+                const expectedBalances = LocalBalanceStore.create(balanceStore);
+                expectedBalances.simulateFills(orders, taker.address, txReceipt, deployment, value);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);
@@ -400,7 +352,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: DeploymentManager.gasPrice,
             });
             const txReceipt = await coordinator
                 .executeTransaction(transaction, maker.address, transaction.signature, [])
@@ -413,7 +364,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: DeploymentManager.gasPrice,
             });
             const txReceipt = await coordinator
                 .executeTransaction(transaction, maker.address, transaction.signature, [])
@@ -425,7 +375,6 @@ blockchainTests.resets('Coordinator integration tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, []);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: DeploymentManager.gasPrice,
             });
             const txReceipt = await coordinator
                 .executeTransaction(transaction, maker.address, transaction.signature, [])

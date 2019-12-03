@@ -163,7 +163,7 @@ blockchainTests.resets('matchOrdersWithMaximalFill integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     describe('matchOrdersWithMaximalFill', () => {
