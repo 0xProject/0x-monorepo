@@ -1,12 +1,11 @@
-import { IERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
+import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../constants';
 
-const { NULL_BYTES, NULL_ADDRESS } = constants;
-const ZERO = new BigNumber(0);
+const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
 const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
 // TODO(dorothy-zbornak): Point these addresses to the mainnet.
 export const KYBER_BRIDGE_ADDRESS = '0xa0cdca934847556eaf431d909fb3cf4aca01df66';
@@ -66,12 +65,12 @@ export interface Fill {
     output: BigNumber;
     // Fill that must precede this one. This enforces certain fills to be contiguous.
     parent?: Fill;
-    // Arbitrary data to store in this Fill object. Used to reconstruct orders
+    // Data associated with this this Fill object. Used to reconstruct orders
     // from paths.
-    data?: any;
+    fillData: FillData | NativeFillData;
 }
 
-// Internal `data` field for `Fill` objects.
+// Internal `fillData` field for `Fill` objects.
 interface FillData {
     source: ERC20BridgeSource;
 }
@@ -115,14 +114,14 @@ export interface ImproveOrdersOpts {
      * Dust amount, as a fraction of the fill amount.
      * Default is 0.01 (100 basis points).
      */
-    dustThreshold: number;
+    dustFractionThreshold: number;
 }
 
 const IMPROVE_ORDERS_OPTS_DEFAULTS = {
     runLimit: 1024,
     excludedSources: [],
     bridgeSlippage: 0.0005,
-    dustThreshold: 0.01,
+    dustFractionThreshold: 0.01,
     numSamples: 8,
     noConflicts: false,
 };
@@ -185,7 +184,7 @@ export async function improveMarketSellAsync(
     const nativePath = pruneDustFillsFromNativePath(
         createSellPathFromNativeOrders(nativeOrders, fillableAmounts),
         takerAmount,
-        _opts.dustThreshold,
+        _opts.dustFractionThreshold,
     );
     const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
     const allPaths = [...dexPaths];
@@ -197,6 +196,9 @@ export async function improveMarketSellAsync(
     }
     const optimizer = new FillsOptimizer(_opts.runLimit);
     const optimalPath = optimizer.optimize(
+        // Sorting the orders by price effectively causes the optimizer to walk
+        // the greediest solution first, which is the optimal solution in most
+        // cases.
         sortFillsByPrice(allFills),
         takerAmount,
         pickOptimalPath(allPaths, takerAmount),
@@ -240,7 +242,7 @@ export async function improveMarketBuyAsync(
     const nativePath = pruneDustFillsFromNativePath(
         createBuyPathFromNativeOrders(nativeOrders, fillableAmounts),
         makerAmount,
-        _opts.dustThreshold,
+        _opts.dustFractionThreshold,
     );
     const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
     const allPaths = [...dexPaths];
@@ -252,6 +254,9 @@ export async function improveMarketBuyAsync(
     }
     const optimizer = new FillsOptimizer(_opts.runLimit, true);
     const optimalPath = optimizer.optimize(
+        // Sorting the orders by price effectively causes the optimizer to walk
+        // the greediest solution first, which is the optimal solution in most
+        // cases.
         sortFillsByPrice(allFills),
         makerAmount,
         pickOptimalPath(allPaths, makerAmount, true),
@@ -301,8 +306,8 @@ export async function queryNetworkAsync(
  * to `maxInput`.
  */
 export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
-    let currentInput = ZERO;
-    let currentOutput = ZERO;
+    let currentInput = ZERO_AMOUNT;
+    let currentOutput = ZERO_AMOUNT;
     for (const fill of path) {
         if (maxInput && currentInput.plus(fill.input).gte(maxInput)) {
             const partialInput = maxInput.minus(currentInput);
@@ -350,7 +355,7 @@ function createSellPathFromNativeOrders(orders: SignedOrderWithoutDomain[], fill
             exclusionMask: 0,
             input: takerAmount,
             output: makerAmount,
-            data: {
+            fillData: {
                 source: ERC20BridgeSource.Native,
                 order,
             },
@@ -372,7 +377,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithoutDomain[], filla
             exclusionMask: 0,
             input: makerAmount,
             output: takerAmount,
-            data: {
+            fillData: {
                 source: ERC20BridgeSource.Native,
                 order,
             },
@@ -398,7 +403,7 @@ function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean
                 exclusionMask: noConflicts ? sourceToExclusionMask(sample.source) : 0,
                 input: sample.input.minus(prev ? prev.input : 0),
                 output: sample.output.minus(prev ? prev.output : 0),
-                data: { source: sample.source },
+                fillData: { source: sample.source },
             });
         }
     }
@@ -446,8 +451,8 @@ function getOrderFillableTakerAmount(order: SignedOrderWithoutDomain, fillableMa
         .integerValue(BigNumber.ROUND_DOWN);
 }
 
-function pruneDustFillsFromNativePath(path: Fill[], fillAmount: BigNumber, dustThreshold: number): Fill[] {
-    const dustAmount = fillAmount.times(dustThreshold);
+function pruneDustFillsFromNativePath(path: Fill[], fillAmount: BigNumber, dustFractionThreshold: number): Fill[] {
+    const dustAmount = fillAmount.times(dustFractionThreshold);
     return path.filter(f => f.input.gt(dustAmount));
 }
 
@@ -465,7 +470,7 @@ function flattenDexPaths(dexFills: Fill[][]): Fill[] {
 // Picks the path with the highest (or lowest if `shouldMinimize` is true) output.
 function pickOptimalPath(paths: Fill[][], maxInput: BigNumber, shouldMinimize?: boolean): Fill[] | undefined {
     let optimalPath: Fill[] | undefined;
-    let optimalPathOutput: BigNumber = ZERO;
+    let optimalPathOutput: BigNumber = ZERO_AMOUNT;
     for (const path of paths) {
         if (getPathInput(path).gte(maxInput)) {
             const output = getPathOutput(path, maxInput);
@@ -493,10 +498,10 @@ function compareOutputs(a: BigNumber, b: BigNumber, shouldMinimize: boolean): nu
 function simplifyPath(path: Fill[]): Fill[] {
     const simplified: Fill[] = [];
     for (const fill of path) {
-        const source = (fill.data as FillData).source;
+        const source = (fill.fillData as FillData).source;
         if (simplified.length !== 0 && source !== ERC20BridgeSource.Native) {
             const prevFill = simplified[simplified.length - 1];
-            const prevSource = (prevFill.data as FillData).source;
+            const prevSource = (prevFill.fillData as FillData).source;
             // If the last fill is from the same source, merge them.
             if (prevSource === source) {
                 prevFill.input = prevFill.input.plus(fill.input);
@@ -536,9 +541,9 @@ function createSellOrdersFromPath(
 ): SignedOrderWithoutDomain[] {
     const orders: SignedOrderWithoutDomain[] = [];
     for (const fill of path) {
-        const source = (fill.data as FillData).source;
+        const source = (fill.fillData as FillData).source;
         if (source === ERC20BridgeSource.Native) {
-            orders.push((fill.data as NativeFillData).order);
+            orders.push((fill.fillData as NativeFillData).order);
         } else if (source === ERC20BridgeSource.Kyber) {
             orders.push(createKyberOrder(outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
         } else if (source === ERC20BridgeSource.Eth2Dai) {
@@ -561,9 +566,9 @@ function createBuyOrdersFromPath(
 ): SignedOrderWithoutDomain[] {
     const orders: SignedOrderWithoutDomain[] = [];
     for (const fill of path) {
-        const source = (fill.data as FillData).source;
+        const source = (fill.fillData as FillData).source;
         if (source === ERC20BridgeSource.Native) {
-            orders.push((fill.data as NativeFillData).order);
+            orders.push((fill.fillData as NativeFillData).order);
         } else if (source === ERC20BridgeSource.Eth2Dai) {
             orders.push(createEth2DaiOrder(inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
         } else if (source === ERC20BridgeSource.Uniswap) {
@@ -693,8 +698,8 @@ function createCommonOrderFields(
         expirationTimeSeconds: INFINITE_TIMESTAMP_SEC,
         makerFeeAssetData: NULL_BYTES,
         takerFeeAssetData: NULL_BYTES,
-        makerFee: ZERO,
-        takerFee: ZERO,
+        makerFee: ZERO_AMOUNT,
+        takerFee: ZERO_AMOUNT,
         makerAssetAmount: isBuy
             ? makerAssetAmount
             : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_UP),
@@ -720,7 +725,7 @@ export class FillsOptimizer {
     private readonly _shouldMinimize: boolean;
     private _currentRunCount: number = 0;
     private _optimalPath?: Fill[] = undefined;
-    private _optimalPathOutput: BigNumber = ZERO;
+    private _optimalPathOutput: BigNumber = ZERO_AMOUNT;
 
     constructor(runLimit: number, shouldMinimize?: boolean) {
         this._runLimit = runLimit;
@@ -730,14 +735,14 @@ export class FillsOptimizer {
     public optimize(fills: Fill[], input: BigNumber, optimalPath?: Fill[]): Fill[] | undefined {
         this._currentRunCount = 0;
         this._optimalPath = optimalPath;
-        this._optimalPathOutput = optimalPath ? getPathOutput(optimalPath, input) : ZERO;
+        this._optimalPathOutput = optimalPath ? getPathOutput(optimalPath, input) : ZERO_AMOUNT;
         const ctx = {
             currentPath: [],
-            currentPathInput: ZERO,
-            currentPathOutput: ZERO,
+            currentPathInput: ZERO_AMOUNT,
+            currentPathOutput: ZERO_AMOUNT,
             currentPathFlags: 0,
         };
-        // Visit all valid combintations of fills to find the optimal path.
+        // Visit all valid combinations of fills to find the optimal path.
         this._walk(fills, input, ctx);
         return this._optimalPath;
     }

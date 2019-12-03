@@ -371,9 +371,9 @@ describe('aggregation utils tests', () => {
             }
         });
 
-        it('Ignores native orders below `dustThreshold`', async () => {
-            const dustThreshold = 0.01;
-            const dustAmount = FILL_AMOUNT.times(dustThreshold).integerValue(BigNumber.ROUND_DOWN);
+        it('Ignores native orders below `dustFractionThreshold`', async () => {
+            const dustFractionThreshold = 0.01;
+            const dustAmount = FILL_AMOUNT.times(dustFractionThreshold).integerValue(BigNumber.ROUND_DOWN);
             const maxRate = BigNumber.max(...ORDERS.map(o => o.makerAssetAmount.div(o.takerAssetAmount)));
             // Pass in an order with the globally best rate but with a dust input amount.
             const dustOrder = createOrder({
@@ -385,7 +385,7 @@ describe('aggregation utils tests', () => {
                 _.shuffle([dustOrder, ...ORDERS]),
                 FILL_AMOUNT,
                 // Ignore all DEX sources so only native orders are returned.
-                { ...DEFAULT_OPTS, dustThreshold, excludedSources: SELL_SOURCES },
+                { ...DEFAULT_OPTS, dustFractionThreshold, excludedSources: SELL_SOURCES },
             );
             expect(improvedOrders).to.not.be.length(0);
             for (const order of improvedOrders) {
@@ -585,9 +585,9 @@ describe('aggregation utils tests', () => {
             }
         });
 
-        it('Ignores native orders below `dustThreshold`', async () => {
-            const dustThreshold = 0.01;
-            const dustAmount = FILL_AMOUNT.times(dustThreshold).integerValue(BigNumber.ROUND_DOWN);
+        it('Ignores native orders below `dustFractionThreshold`', async () => {
+            const dustFractionThreshold = 0.01;
+            const dustAmount = FILL_AMOUNT.times(dustFractionThreshold).integerValue(BigNumber.ROUND_DOWN);
             const maxRate = BigNumber.max(...ORDERS.map(o => o.makerAssetAmount.div(o.takerAssetAmount)));
             // Pass in an order with the globally best rate but with a dust input amount.
             const dustOrder = createOrder({
@@ -599,7 +599,7 @@ describe('aggregation utils tests', () => {
                 _.shuffle([dustOrder, ...ORDERS]),
                 FILL_AMOUNT,
                 // Ignore all DEX sources so only native orders are returned.
-                { ...DEFAULT_OPTS, dustThreshold, excludedSources: BUY_SOURCES },
+                { ...DEFAULT_OPTS, dustFractionThreshold, excludedSources: BUY_SOURCES },
             );
             expect(improvedOrders).to.not.be.length(0);
             for (const order of improvedOrders) {

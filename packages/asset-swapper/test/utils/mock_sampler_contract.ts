@@ -1,5 +1,5 @@
 import { ContractFunctionObj } from '@0x/base-contract';
-import { IERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
+import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { OrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
