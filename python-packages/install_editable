@@ -5,7 +5,18 @@
 from os import path
 import subprocess
 
-# install all packages
+# install all packages, WITHOUT dev dependencies first, because some packages
+# have dev dependencies on other pacakges, to support tests and examples, and
+# if we don't do then then those cross-dev-dependencies will trigger
+# installation of some local packages from PyPI rather than the local
+# filesystem.
+subprocess.check_call(
+    (
+        path.join(".", "cmd_pkgs_in_dep_order.py") + " pip install -e ."
+    ).split()
+)
+
+# NOW install the dev dependencies
 subprocess.check_call(
     (
         path.join(".", "cmd_pkgs_in_dep_order.py") + " pip install -e .[dev]"
