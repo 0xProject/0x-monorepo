@@ -43,7 +43,7 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("0x_sra_client.egg-info", ignore_errors=True)
+        rmtree("src/0x_sra_client.egg-info", ignore_errors=True)
         rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
         subprocess.check_call(  # nosec
