@@ -5,6 +5,10 @@
             {
                 "note": "Add `IAssetData` artifact",
                 "pr": 2373
+            },
+            {
+                "note": "Add `IERC20BridgeSampler` artifact.",
+                "pr": 2353
             }
         ],
         "timestamp": 1575931811
