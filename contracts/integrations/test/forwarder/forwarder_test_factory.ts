@@ -272,14 +272,14 @@ export class ForwarderTestFactory {
         balances.wrapEth(this._forwarder.address, this._deployment.tokens.weth.address, wethSpentAmount);
         // (In reality this is done all at once, but we simulate it order by order)
 
-        // Maker -> Forwarder
-        balances.transferAsset(order.makerAddress, this._forwarder.address, makerAssetAmount, order.makerAssetData);
-        // Maker -> Order fee recipient
-        balances.transferAsset(order.makerAddress, order.feeRecipientAddress, makerFee, order.makerFeeAssetData);
         // Forwarder -> Maker
         balances.transferAsset(this._forwarder.address, order.makerAddress, takerAssetAmount, order.takerAssetData);
+        // Maker -> Forwarder
+        balances.transferAsset(order.makerAddress, this._forwarder.address, makerAssetAmount, order.makerAssetData);
         // Forwarder -> Order fee recipient
         balances.transferAsset(this._forwarder.address, order.feeRecipientAddress, takerFee, order.takerFeeAssetData);
+        // Maker -> Order fee recipient
+        balances.transferAsset(order.makerAddress, order.feeRecipientAddress, makerFee, order.makerFeeAssetData);
         // Forwarder pays the protocol fee in WETH
         balances.transferAsset(
             this._forwarder.address,

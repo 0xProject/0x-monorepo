@@ -410,7 +410,7 @@ blockchainTests.resets('Transaction <> protocol fee integration tests', env => {
                 const tx = deployment.exchange
                     .batchExecuteTransactions(transactions, signatures)
                     .awaitTransactionSuccessAsync({ from: alice.address, value: MIXED_FEES_WITH_REFUND });
-                expect(tx).to.revertWith(protocolFeeError(order, failTransaction));
+                return expect(tx).to.revertWith(protocolFeeError(order, failTransaction));
             });
         });
         describe('Nested', () => {
