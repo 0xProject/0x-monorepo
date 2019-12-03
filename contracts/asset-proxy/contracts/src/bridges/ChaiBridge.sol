@@ -54,9 +54,20 @@ contract ChaiBridge is
 
         // Withdraw `from` address's Dai.
         // NOTE: This contract must be approved to spend Chai on behalf of `from`.
-        IChai(_getChaiAddress()).draw(from, amount);
+        bytes memory drawCalldata = abi.encodeWithSelector(
+            IChai(address(0)).draw.selector,
+            from,
+            amount
+        );
+
+        (bool success,) = _getChaiAddress().call(drawCalldata);
+        require(
+            success,
+            "ChaiBridge/DRAW_DAI_FAILED"
+        );
 
         // Transfer Dai to `to`
+        // This will never fail if the `draw` call was successful
         IERC20Token(_getDaiAddress()).transfer(to, amount);
 
         return BRIDGE_SUCCESS;
