@@ -26,7 +26,7 @@ import "@0x/contracts-erc20/contracts/src/ERC20Token.sol";
 contract TestChaiDai is
     ERC20Token
 {
-    address private ALWAYS_REVERT_ADDRESS = address(1);
+    address private constant ALWAYS_REVERT_ADDRESS = address(1);
 
     function draw(
         address from,
@@ -41,11 +41,12 @@ contract TestChaiDai is
     }
 }
 
+
 contract TestChaiBridge is
     ChaiBridge
 {
     address public testChaiDai;
-    address private ALWAYS_REVERT_ADDRESS = address(1);
+    address private constant ALWAYS_REVERT_ADDRESS = address(1);
 
     constructor()
         public

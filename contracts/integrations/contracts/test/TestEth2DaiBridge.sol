@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/bridges/Eth2DaiBridge.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IEth2Dai.sol";
 
 
 contract TestEth2DaiBridge is
@@ -35,11 +34,11 @@ contract TestEth2DaiBridge is
         TEST_ETH2DAI_ADDRESS = testEth2Dai;
     }
 
-    function _getEth2DaiContract()
+    function _getEth2DaiAddress()
         internal
         view
-        returns (IEth2Dai exchange)
+        returns (address exchange)
     {
-        return IEth2Dai(TEST_ETH2DAI_ADDRESS);
+        return TEST_ETH2DAI_ADDRESS;
     }
 }
