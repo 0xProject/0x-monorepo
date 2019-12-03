@@ -11,14 +11,12 @@ import {
     constants,
     ExchangeFunctionName,
     expect,
-    hexConcat,
-    hexSlice,
     orderHashUtils,
     transactionHashUtils,
     verifyEvents,
 } from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexConcat, hexSlice } from '@0x/utils';
 
 import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';

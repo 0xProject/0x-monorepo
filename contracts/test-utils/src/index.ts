@@ -28,17 +28,6 @@ export { bytes32Values, testCombinatoriallyWithReferenceFunc, uint256Values } fr
 export { TransactionFactory } from './transaction_factory';
 export { testWithReferenceFuncAsync } from './test_with_reference';
 export {
-    hexConcat,
-    hexHash,
-    hexLeftPad,
-    hexInvert,
-    hexSlice,
-    hexRandom,
-    hexRightPad,
-    hexSize,
-    toHex,
-} from './hex_utils';
-export {
     BatchMatchOrder,
     ContractName,
     ERC20BalancesByOwner,

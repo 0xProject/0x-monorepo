@@ -3,13 +3,10 @@ import {
     constants,
     expect,
     filterLogsToArguments,
-    hexLeftPad,
-    hexRandom,
-    toHex,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexLeftPad, hexRandom, toHex } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingRevertErrors } from '../../src';

@@ -26,6 +26,18 @@ export {
     AnyRevertError,
 } from './revert_error';
 
+export {
+    hexConcat,
+    hexHash,
+    hexLeftPad,
+    hexInvert,
+    hexSlice,
+    hexRandom,
+    hexRightPad,
+    hexSize,
+    toHex,
+} from './hex_utils';
+
 export import CoordinatorRevertErrors = require('./revert_errors/coordinator/revert_errors');
 export import ExchangeForwarderRevertErrors = require('./revert_errors/exchange-forwarder/revert_errors');
 export import LibMathRevertErrors = require('./revert_errors/exchange-libs/lib_math_revert_errors');

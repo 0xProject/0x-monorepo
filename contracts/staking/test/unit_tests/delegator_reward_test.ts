@@ -3,13 +3,10 @@ import {
     constants,
     expect,
     filterLogsToArguments,
-    hexHash,
-    hexRandom,
-    hexSlice,
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexHash, hexRandom, hexSlice } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 
 import { artifacts } from '../artifacts';

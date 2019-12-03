@@ -1,10 +1,9 @@
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { Order, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexHash } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { hexHash } from './hex_utils';
 import { BatchMatchOrder, CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {

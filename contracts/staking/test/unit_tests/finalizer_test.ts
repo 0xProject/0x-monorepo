@@ -3,11 +3,10 @@ import {
     constants,
     expect,
     filterLogsToArguments,
-    hexRandom,
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { BigNumber, StakingRevertErrors } from '@0x/utils';
+import { BigNumber, hexRandom, StakingRevertErrors } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 

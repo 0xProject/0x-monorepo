@@ -4,15 +4,10 @@ import {
     expect,
     getRandomInteger,
     getRandomPortion,
-    hexConcat,
-    hexHash,
-    hexLeftPad,
-    hexRandom,
     randomAddress,
-    toHex,
 } from '@0x/contracts-test-utils';
 import { Order, OrderInfo } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexConcat, hexHash, hexLeftPad, hexRandom, toHex } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';

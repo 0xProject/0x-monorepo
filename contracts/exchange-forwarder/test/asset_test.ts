@@ -16,12 +16,10 @@ import {
     constants,
     expect,
     getRandomInteger,
-    hexRandom,
-    hexSlice,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { BigNumber, ExchangeForwarderRevertErrors } from '@0x/utils';
+import { BigNumber, ExchangeForwarderRevertErrors, hexRandom, hexSlice } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { TestForwarderContract } from './wrappers';

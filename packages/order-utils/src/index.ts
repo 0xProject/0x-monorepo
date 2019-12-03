@@ -5,6 +5,7 @@ export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
 export { orderCalculationUtils } from './order_calculation_utils';
 export { orderHashUtils } from './order_hash_utils';
+export { decodeAssetDataOrThrow } from './decode_asset_data';
 
 export { eip712Utils } from './eip712_utils';
 
@@ -28,6 +29,15 @@ export {
     SignedOrder,
     Order,
     ECSignature,
+    AssetData,
+    SingleAssetData,
+    ERC20AssetData,
+    ERC20BridgeAssetData,
+    ERC721AssetData,
+    ERC1155AssetData,
+    MultiAssetData,
+    StaticCallAssetData,
+    MultiAssetDataWithRecursiveDecoding,
     SignatureType,
     EIP712Parameter,
     EIP712TypedData,

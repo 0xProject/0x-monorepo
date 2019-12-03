@@ -3,11 +3,10 @@ import {
     constants,
     expect,
     getRandomInteger,
-    hexLeftPad,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { RawRevertError, StringRevertError } from '@0x/utils';
+import { hexLeftPad, RawRevertError, StringRevertError } from '@0x/utils';
 
 import { TestLibERC20TokenContract, TestLibERC20TokenTargetEvents } from './wrappers';
 

@@ -4,12 +4,10 @@ import {
     filterLogs,
     filterLogsToArguments,
     getRandomInteger,
-    hexLeftPad,
-    hexRandom,
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { BigNumber, StakingRevertErrors } from '@0x/utils';
+import { BigNumber, hexLeftPad, hexRandom, StakingRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakeStatus } from '../../src/types';

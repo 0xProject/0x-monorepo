@@ -1,14 +1,6 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    hexRandom,
-    OrderStatus,
-    orderUtils,
-    randomAddress,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, OrderStatus, orderUtils, randomAddress } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { BigNumber, ExchangeRevertErrors, RevertError } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexRandom, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';

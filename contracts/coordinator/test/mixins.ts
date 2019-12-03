@@ -4,15 +4,13 @@ import {
     constants,
     ExchangeFunctionName,
     expect,
-    hexConcat,
-    hexSlice,
     randomAddress,
     TransactionFactory,
     transactionHashUtils,
 } from '@0x/contracts-test-utils';
 import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, CoordinatorRevertErrors } from '@0x/utils';
+import { BigNumber, CoordinatorRevertErrors, hexConcat, hexSlice } from '@0x/utils';
 
 import { ApprovalFactory } from '../src/approval_factory';
 

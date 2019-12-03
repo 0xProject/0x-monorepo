@@ -1,6 +1,6 @@
 export { getContractAddressesForChainOrThrow, ChainId, ContractAddresses } from '@0x/contract-addresses';
 
-export { signatureUtils, generatePseudoRandomSalt } from '@0x/order-utils';
+export { signatureUtils, generatePseudoRandomSalt, decodeAssetDataOrThrow } from '@0x/order-utils';
 
 export {
     ExchangeEventArgs,
@@ -60,6 +60,15 @@ export {
     Order,
     SignedOrder,
     ECSignature,
+    AssetData,
+    SingleAssetData,
+    ERC20AssetData,
+    ERC20BridgeAssetData,
+    ERC721AssetData,
+    ERC1155AssetData,
+    MultiAssetData,
+    StaticCallAssetData,
+    MultiAssetDataWithRecursiveDecoding,
     SignatureType,
     ZeroExTransaction,
     SignedZeroExTransaction,

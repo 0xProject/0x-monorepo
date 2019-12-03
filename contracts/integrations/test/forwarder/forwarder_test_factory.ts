@@ -1,16 +1,8 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
-import {
-    constants,
-    expect,
-    getPercentageOfValue,
-    hexSlice,
-    Numberish,
-    OrderStatus,
-    provider,
-} from '@0x/contracts-test-utils';
+import { constants, expect, getPercentageOfValue, Numberish, OrderStatus, provider } from '@0x/contracts-test-utils';
 import { AssetProxyId, OrderInfo, SignedOrder } from '@0x/types';
-import { BigNumber, RevertError } from '@0x/utils';
+import { BigNumber, hexSlice, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { FeeRecipient } from '../framework/actors/fee_recipient';

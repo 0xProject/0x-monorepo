@@ -5,8 +5,6 @@ import {
     blockchainTests,
     constants,
     expect,
-    hexConcat,
-    hexRandom,
     LogDecoder,
     OrderFactory,
     orderHashUtils,
@@ -16,7 +14,7 @@ import {
     transactionHashUtils,
 } from '@0x/contracts-test-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
-import { BigNumber, ExchangeRevertErrors, StringRevertError } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexConcat, hexRandom, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 

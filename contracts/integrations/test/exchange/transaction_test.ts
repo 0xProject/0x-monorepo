@@ -18,15 +18,13 @@ import {
     ExchangeFunctionName,
     expect,
     getLatestBlockTimestampAsync,
-    hexConcat,
-    hexRandom,
     orderHashUtils,
     randomAddress,
     transactionHashUtils,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { FillResults, OrderStatus, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexConcat, hexRandom } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import { Actor } from '../framework/actors/base';

@@ -1,13 +1,6 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    getRandomInteger,
-    hexRandom,
-    randomAddress,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexRandom } from '@0x/utils';
 
 import { artifacts } from '../artifacts';
 import { TestMixinStakeBalancesContract } from '../wrappers';

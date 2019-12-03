@@ -2,7 +2,7 @@ import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { constants, Numberish, provider } from '@0x/contracts-test-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
-import { BigNumber, hexSlice} from '@0x/utils';
+import { BigNumber, hexSlice } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 

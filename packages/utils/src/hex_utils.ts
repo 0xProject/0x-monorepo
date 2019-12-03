@@ -1,11 +1,12 @@
-import { BigNumber } from '@0x/utils';
 import * as crypto from 'crypto';
 import * as ethUtil from 'ethereumjs-util';
 
-import { constants } from './constants';
+import { BigNumber } from './index';
 import { Numberish } from './types';
 
-const { WORD_LENGTH } = constants;
+// tslint:disable:custom-no-magic-numbers
+
+const WORD_LENGTH = 32;
 const WORD_CEIL = new BigNumber(2).pow(WORD_LENGTH * 8);
 
 /**

@@ -1,13 +1,6 @@
-import {
-    blockchainTests,
-    constants,
-    describe,
-    expect,
-    hexRandom,
-    transactionHashUtils,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, transactionHashUtils } from '@0x/contracts-test-utils';
 import { EIP712DomainWithDefaultSchema, ZeroExTransaction } from '@0x/types';
-import { BigNumber, ExchangeRevertErrors, StringRevertError } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexRandom, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 

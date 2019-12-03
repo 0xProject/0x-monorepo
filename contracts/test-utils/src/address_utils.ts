@@ -1,5 +1,6 @@
+import { hexRandom } from '@0x/utils';
+
 import { constants } from './constants';
-import { hexRandom } from './hex_utils';
 
 /**
  * Generates a random address.

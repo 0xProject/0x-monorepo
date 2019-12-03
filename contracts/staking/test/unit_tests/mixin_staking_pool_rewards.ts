@@ -5,12 +5,11 @@ import {
     expect,
     getRandomInteger,
     getRandomPortion,
-    hexRandom,
     Numberish,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexRandom } from '@0x/utils';
 import { LogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { StoredBalance } from '../../src/types';
