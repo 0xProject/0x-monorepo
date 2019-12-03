@@ -25,6 +25,7 @@ export * from '../test/generated-wrappers/mixin_authorizable';
 export * from '../test/generated-wrappers/multi_asset_proxy';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/static_call_proxy';
+export * from '../test/generated-wrappers/test_chai_bridge';
 export * from '../test/generated-wrappers/test_erc20_bridge';
 export * from '../test/generated-wrappers/test_eth2_dai_bridge';
 export * from '../test/generated-wrappers/test_kyber_bridge';

@@ -3,6 +3,7 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
+        "generated-artifacts/ChaiBridge.json",
         "generated-artifacts/ERC1155Proxy.json",
         "generated-artifacts/ERC20BridgeProxy.json",
         "generated-artifacts/ERC20Proxy.json",
@@ -37,6 +38,7 @@
         "test/generated-artifacts/MultiAssetProxy.json",
         "test/generated-artifacts/Ownable.json",
         "test/generated-artifacts/StaticCallProxy.json",
+        "test/generated-artifacts/TestChaiBridge.json",
         "test/generated-artifacts/TestERC20Bridge.json",
         "test/generated-artifacts/TestEth2DaiBridge.json",
         "test/generated-artifacts/TestKyberBridge.json",

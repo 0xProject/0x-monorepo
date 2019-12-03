@@ -5,6 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as ChaiBridge from '../generated-artifacts/ChaiBridge.json';
 import * as ERC1155Proxy from '../generated-artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../generated-artifacts/ERC20BridgeProxy.json';
 import * as ERC20Proxy from '../generated-artifacts/ERC20Proxy.json';
@@ -29,5 +30,6 @@ export const artifacts = {
     IAssetProxy: IAssetProxy as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
     KyberBridge: KyberBridge as ContractArtifact,
+    ChaiBridge: ChaiBridge as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
 };
