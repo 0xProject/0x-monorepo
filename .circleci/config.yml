@@ -193,7 +193,7 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
-            - image: 0xorg/ganache-cli:4.4.0-beta.1
+            - image: 0xorg/ganache-cli
               environment:
                   VERSION: latest
                   SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta

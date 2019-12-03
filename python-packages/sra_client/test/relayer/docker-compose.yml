@@ -2,7 +2,7 @@
 version: '3'
 services:
     ganache:
-        image: "0xorg/ganache-cli:4.4.0-beta.1"
+        image: "0xorg/ganache-cli"
         ports:
             - "8545:8545"
         environment:
