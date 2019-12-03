@@ -213,10 +213,10 @@ setup(
     },
     extras_require={
         "dev": [
-            "0x-contract-artifacts==3.0.0.dev2",
-            "0x-contract-addresses==3.0.0.dev3",
-            "0x-contract-wrappers==2.0.0.dev10",
-            "0x-order-utils==4.0.0.dev8",
+            "0x-contract-artifacts",
+            "0x-contract-addresses",
+            "0x-contract-wrappers",
+            "0x-order-utils",
             "web3",
             "bandit",
             "black",

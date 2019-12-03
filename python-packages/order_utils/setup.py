@@ -176,9 +176,9 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
-        "0x-contract-addresses==3.0.0.dev3",
-        "0x-contract-artifacts==3.0.0.dev2",
-        "0x-json-schemas==2.1.0.dev2",
+        "0x-contract-addresses",
+        "0x-contract-artifacts",
+        "0x-json-schemas",
         "deprecated",
         "web3",
         "eth-abi",

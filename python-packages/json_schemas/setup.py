@@ -165,7 +165,7 @@ setup(
     install_requires=["jsonschema", "mypy_extensions", "stringcase"],
     extras_require={
         "dev": [
-            "0x-contract-addresses==3.0.0.dev3",
+            "0x-contract-addresses",
             "bandit",
             "black",
             "coverage",
