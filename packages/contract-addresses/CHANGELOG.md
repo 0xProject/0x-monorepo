@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _December 2, 2019_
+
+    * `1337` addresses updated with Forwarder deployed after Exchange is configured (#2368)
+    * Update Forwarder addresses on all newtorks (#2374)
+    * Update all v3 mainnet addresses (#2322)
+    * Update ZeroExGovernor address on all testnets (#2322)
+    * Updated devUtils contract addresses on testnets
+    * Remove `readOnlyProxy` from addresses interface (#2295)
+    * Add `zeroExGovernor` and `erc20BridgeProxy` to addresses interface (#2296)
+    * Update `exchange`, `staking`, `stakingProxy`, `zeroExGovernor`, `assetProxyOwner`, and `erc20BridgeProxy` addresses for each tesnet (#2296)
+    * Contract addresses are no longer indexed by network ID.  Now they're indexed by chain ID. (#2313)
+    * Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling. (#2170)
+    * Add `zrxVault`, `readOnlyProxy`, `staking`, and `stakingProxy` schema with addresses for each tesnet (#2224)
+    * Update `assetProxyOwner` address for each testnet (#2224)
+
+## v3.3.0-beta.5 - _December 2, 2019_
+
+    * `1337` addresses updated with Forwarder deployed after Exchange is configured (#2368)
+    * Update Forwarder addresses on all newtorks (#2374)
+
 ## v3.3.0-beta.4 - _November 20, 2019_
 
     * Dependencies updated

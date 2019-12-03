@@ -156,7 +156,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
     });
 
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     describe('marketSellOrdersWithEth', () => {

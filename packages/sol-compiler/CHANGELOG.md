@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _December 2, 2019_
+
+    * Add `shouldSaveStandardInput` config (#2322)
+    * Output artifacts now include a 'chains' attribute rather than 'networks' (#2313)
+    * Convert `getContractNamesToCompile` to public function of `Compiler` class (#2055)
+
+## v3.2.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v3.2.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

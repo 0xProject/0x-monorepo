@@ -1,5 +1,44 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "`revertWith` mocha extensions now accept Promise-like objects instead of just Promises",
+                "pr": 2031
+            },
+            {
+                "note": "Add `shouldAllowUnlimitedContractSize` to `Web3Config`.",
+                "pr": 2075
+            },
+            {
+                "note": "Add `UNLIMITED_CONTRACT_SIZE` to `EnvVars`.",
+                "pr": 2075
+            },
+            {
+                "note": "Add `total_accounts` option to `Web3Config`.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `chaiSetup` function with `RevertError` testing support",
+                "pr": 1761
+            },
+            {
+                "note": "Refactor out `Error` coercion code into the `utils` package",
+                "pr": 1819
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "2.4.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "2.4.0-beta.3",
         "changes": [
             {

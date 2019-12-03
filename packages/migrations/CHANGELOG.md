@@ -5,6 +5,25 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _December 2, 2019_
+
+    * Deploy Forwarder after Exchange is configured as Staking Proxy is queried (#2368)
+    * Subsequent contract addresses after the Forwarder are now modified (#2368)
+    * Update Exchange, DevUtils, Coordinator, and Forwarder addresses on all networks (#2349)
+    * Update StakingProxy, Staking, and ZrxVault addresses on mainnet (#2349)
+    * Add UniswapBridge and Eth2DaiBridge addresses to schema, add mainnet addresses (#2349)
+    * Deploy Forwarder AFTER staking is hooked up (#2350)
+    * Migrations script no longer deploys DutchAuction since it is not yet upgraded for V3 of the protocol (#2324)
+    * Added `Staking` and `ERC20BridgeProxy` contracts (#2323)
+    * Update all contract deployments to pass the actual chain ID (rather than the network ID) via the newly modified @0x/utils/provider_utils (#2270)
+    * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)
+    * Update Coordinator and Exchange deployments to pass `chainId` (#1742)
+
+## v4.4.0-beta.4 - _December 2, 2019_
+
+    * Deploy Forwarder after Exchange is configured as Staking Proxy is queried (#2368)
+    * Subsequent contract addresses after the Forwarder are now modified (#2368)
+
 ## v4.4.0-beta.3 - _November 20, 2019_
 
     * Update Exchange, DevUtils, Coordinator, and Forwarder addresses on all networks (#2349)

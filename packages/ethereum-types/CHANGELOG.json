@@ -1,5 +1,23 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Add `RevertErrorAbi` interface as part of `AbiDefinition` types",
+                "pr": 1761
+            },
+            {
+                "note": "Add `DecodedLogs` type",
+                "pr": 2220
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
         "version": "2.2.0-beta.2",
         "changes": [
             {

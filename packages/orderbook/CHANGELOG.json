@@ -1,5 +1,32 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Added dependency on @0x/contracts-dev-utils",
+                "pr": 2321
+            },
+            {
+                "note": "Update Mesh RPC logic to v6.0.1-beta",
+                "pr": 2325
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "0.1.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "0.1.0-beta.3",
         "changes": [
             {

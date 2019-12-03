@@ -30,7 +30,7 @@ export class PoolManagementSimulation extends Simulation {
 
 blockchainTests.skip('Pool management fuzz test', env => {
     after(async () => {
-        Actor.count = 0;
+        Actor.reset();
     });
 
     it('fuzz', async () => {

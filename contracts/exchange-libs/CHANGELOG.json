@@ -1,5 +1,136 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
+                "note": "Introduced new export LibMathRevertErrors",
+                "pr": 2321
+            },
+            {
+                "note": "Break up `LibEIP712` into reusable components",
+                "pr": 1742
+            },
+            {
+                "note": "Add `chainId` to EIP712 domain schema",
+                "pr": 1742
+            },
+            {
+                "note": "Rename `verifyingContract` to `verifyingContractAddress` in domain schema",
+                "pr": 1742
+            },
+            {
+                "note": "Add LibZeroExTransaction contract",
+                "pr": 1753
+            },
+            {
+                "note": "Add verifyingContractIfExists arg to LibEIP712ExchangeDomain constructor",
+                "pr": 1753
+            },
+            {
+                "note": "Remove LibEIP712ExchangeDomainConstants and LibEIP712 contracts",
+                "pr": 1753
+            },
+            {
+                "note": "Add `LibExchangeRichErrorDecoder` contract.",
+                "pr": 1790
+            },
+            {
+                "note": "Break out types/interaces from `MExchangeRichErrors` into `MExchangeRichErrorTypes`.",
+                "pr": 1790
+            },
+            {
+                "note": "Reorder some revert error parameters for consistency",
+                "pr": 1790
+            },
+            {
+                "note": "Add new `Order` fields for arbitrary fee tokens (ZEIP-28).",
+                "pr": 1819
+            },
+            {
+                "note": "Remove `LibAbiEncoder` and `LibConstants`.",
+                "pr": 1819
+            },
+            {
+                "note": "Add `generate-exchange-selectors` package script.",
+                "pr": 1819
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` struct",
+                "pr": 1823
+            },
+            {
+                "note": "Add reference functions for `LibMath` and `LibFillResults`",
+                "pr": 2031
+            },
+            {
+                "note": "Move in revamped `LibMath` tests from the `contracts-exchange` package.",
+                "pr": 2031
+            },
+            {
+                "note": "Move in revamped `LibFillResults` tests from the `contracts-exchange` package.",
+                "pr": 2031
+            },
+            {
+                "note": "Remove unecessary zero-denominator checks in `LibMath`.",
+                "pr": 2031
+            },
+            {
+                "note": "Fix coverage hooks.",
+                "pr": 2031
+            },
+            {
+                "note": "Regenerate selectors.",
+                "pr": 2042
+            },
+            {
+                "note": "Convert `LibFillResults`, `LibOrder`, `LibZeroExTransaction`, and `LibMath` to libraries",
+                "pr": 2055
+            },
+            {
+                "note": "Remove `LibExchangeSelectors`",
+                "pr": 2055
+            },
+            {
+                "note": "Add `LibExchangeRichErrors`",
+                "pr": 2055
+            },
+            {
+                "note": "Add `calculateFillResults` and `calculateMatchedFillResults` to `LibFillResults`",
+                "pr": 2055
+            },
+            {
+                "note": "Remove `_hashEIP712ExchangeMessage` from `LibEIP712ExchangeDomain`",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            },
+            {
+                "note": "Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields.",
+                "pr": 2075
+            },
+            {
+                "note": "Move `IWallet.sol` from `asset-proxy` and `exchange` packages to here.",
+                "pr": 2233
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "3.1.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "3.1.0-beta.3",
         "changes": [
             {

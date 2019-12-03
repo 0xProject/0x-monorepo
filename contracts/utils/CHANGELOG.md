@@ -5,6 +5,33 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduced new exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors (#2321)
+    * Change ReentrancyGuard implementation to cheaper one (#1699)
+    * Add LibEIP712 contract (#1753)
+    * Add `RichErrors` and `mixins/MRichErrors` (#1761)
+    * Break out types/interaces from `MRichErrors` into `MRichErrorTypes`. (#1790)
+    * Add LibEIP1271.sol (#1885)
+    * Updated RichErrors to the library pattern, and implemented RichErrors for all remaining reverts and requires (#1913)
+    * Added unit tests for all of the internal functions in the package (#2014)
+    * Updated Ownable to revert when the owner attempts to transfer ownership to the zero address (#2019)
+    * Add reference functions for `SafeMath` functions. (#2031)
+    * Throw a `SafeMathError` in `SafeMath._safeDiv()` when denominator is zero. (#2031)
+    * Create `LibSafeMath` (#2055)
+    * Rename `_rrevert` to `rrevert` in `LibRichErrors` contract (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+    * Added LibFractions (#2118)
+    * Introduce automatic normalization and some zero-value shortcuts in `LibFractions`. (#2155)
+    * Emit an event in `transferOwnership` (#2253)
+    * Removed `deepCopyBytes`, `popLast20Bytes`, `readBytesWithLength`, and `writeBytesWithLength` in `LibBytes`. (#2265)
+    * Replaced `SafeMath` with `LibSafeMath` (#2254)
+
+## v3.3.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v3.3.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

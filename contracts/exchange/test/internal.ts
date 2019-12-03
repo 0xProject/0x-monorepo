@@ -1,8 +1,8 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, expect, hexRandom, orderHashUtils } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, orderHashUtils } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { Order } from '@0x/types';
-import { BigNumber, ExchangeRevertErrors } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexRandom } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';

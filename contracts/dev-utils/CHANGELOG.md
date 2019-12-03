@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add new method getOrderHash() to DevUtils contract (#2321)
+    * Add new method getTransactionHash() to DevUtils contract (#2321)
+    * Add `encodeStaticCallAssetData` and `decodeStaticCallAssetData` in LibAssetData (#2034)
+    * Add `revertIfInvalidAssetData` in LibAssetData (#2034)
+    * Use built in selectors instead of hard coded constants (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+    * Add `marketBuy/SellOrdersNoThrow` and `marketBuy/SellOrdersFillOrKill` to `LibTransactionDecoder`. (#2075)
+    * `run_mocha` package script runs with `UNLIMITED_CONTRACT_SIZE=true` environment variable. (#2075)
+
+## v0.1.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v0.1.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

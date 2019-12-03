@@ -120,6 +120,7 @@ export class ExchangeContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'Exchange';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     private readonly _subscriptionManager: SubscriptionManager<ExchangeEventArgs, ExchangeEvents>;
     public static async deployFrom0xArtifactAsync(

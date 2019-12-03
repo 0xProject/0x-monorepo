@@ -99,7 +99,7 @@ export class FillOrderWrapper {
         await this._assertOrderStateAsync(signedOrder, initTakerAssetFilledAmount);
         // Simulate and execute fill then assert outputs
         const [fillResults, fillEvent, txReceipt] = await this._fillOrderAsync(signedOrder, from, opts);
-        const [simulatedFillResults, simulatedFillEvent, simulatedFinalBalanceStore] = await simulateFillOrderAsync(
+        const [simulatedFillResults, simulatedFillEvent, simulatedFinalBalanceStore] = simulateFillOrder(
             txReceipt,
             signedOrder,
             from,
@@ -169,13 +169,13 @@ export class FillOrderWrapper {
  * @param initBalanceStore Account balances prior to the fill.
  * @return The expected account balances, fill results, and fill events.
  */
-async function simulateFillOrderAsync(
+function simulateFillOrder(
     txReceipt: TransactionReceiptWithDecodedLogs,
     signedOrder: SignedOrder,
     takerAddress: string,
     initBalanceStore: BalanceStore,
     opts: { takerAssetFillAmount?: BigNumber } = {},
-): Promise<[FillResults, FillEventArgs, BalanceStore]> {
+): [FillResults, FillEventArgs, BalanceStore] {
     const balanceStore = LocalBalanceStore.create(initBalanceStore);
     const takerAssetFillAmount =
         opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
@@ -188,28 +188,28 @@ async function simulateFillOrderAsync(
     );
     const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
     // Taker -> Maker
-    await balanceStore.transferAssetAsync(
+    balanceStore.transferAsset(
         takerAddress,
         signedOrder.makerAddress,
         fillResults.takerAssetFilledAmount,
         signedOrder.takerAssetData,
     );
     // Maker -> Taker
-    await balanceStore.transferAssetAsync(
+    balanceStore.transferAsset(
         signedOrder.makerAddress,
         takerAddress,
         fillResults.makerAssetFilledAmount,
         signedOrder.makerAssetData,
     );
     // Taker -> Fee Recipient
-    await balanceStore.transferAssetAsync(
+    balanceStore.transferAsset(
         takerAddress,
         signedOrder.feeRecipientAddress,
         fillResults.takerFeePaid,
         signedOrder.takerFeeAssetData,
     );
     // Maker -> Fee Recipient
-    await balanceStore.transferAssetAsync(
+    balanceStore.transferAsset(
         signedOrder.makerAddress,
         signedOrder.feeRecipientAddress,
         fillResults.makerFeePaid,

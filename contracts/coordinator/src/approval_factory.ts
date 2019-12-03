@@ -1,5 +1,6 @@
-import { hexConcat, signingUtils } from '@0x/contracts-test-utils';
+import { signingUtils } from '@0x/contracts-test-utils';
 import { SignatureType, SignedZeroExTransaction } from '@0x/types';
+import { hexConcat } from '@0x/utils';
 
 import { hashUtils } from './hash_utils';
 import { SignedCoordinatorApproval } from './types';

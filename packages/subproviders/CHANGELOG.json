@@ -1,5 +1,24 @@
 [
     {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Adds DebugSubprovider",
+                "pr": 2329
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "5.1.0-beta.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "5.1.0-beta.2",
         "changes": [
             {

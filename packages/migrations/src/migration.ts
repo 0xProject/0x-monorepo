@@ -17,40 +17,11 @@ import { ExchangeContract } from '@0x/contracts-exchange';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { StakingProxyContract, TestStakingContract, ZrxVaultContract } from '@0x/contracts-staking';
 import { Web3ProviderEngine } from '@0x/subproviders';
-import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
-import { MethodAbi, SupportedProvider, TxData } from 'ethereum-types';
+import { BigNumber, providerUtils } from '@0x/utils';
+import { SupportedProvider, TxData } from 'ethereum-types';
 
 import { constants } from './utils/constants';
 import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
-
-// HACK (xianny): Copied from @0x/order-utils to get rid of circular dependency
-/**
- * Encodes an ERC20 token address into a hex encoded assetData string, usable in the makerAssetData or
- * takerAssetData fields in a 0x order.
- * @param tokenAddress  The ERC20 token address to encode
- * @return The hex encoded assetData string
- */
-function encodeERC20AssetData(tokenAddress: string): string {
-    const ERC20_METHOD_ABI: MethodAbi = {
-        constant: false,
-        inputs: [
-            {
-                name: 'tokenContract',
-                type: 'address',
-            },
-        ],
-        name: 'ERC20Token',
-        outputs: [],
-        payable: false,
-        stateMutability: 'nonpayable',
-        type: 'function',
-    };
-    const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: true };
-    const abiEncoder = new AbiEncoder.Method(ERC20_METHOD_ABI);
-    const args = [tokenAddress];
-    const assetData = abiEncoder.encode(args, encodingRules);
-    return assetData;
-}
 
 /**
  * Creates and deploys all the contracts that are required for the latest
@@ -272,7 +243,7 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
-        encodeERC20AssetData(etherToken.address),
+        etherToken.address,
     );
 
     const contractAddresses = {

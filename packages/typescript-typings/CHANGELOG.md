@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _December 2, 2019_
+
+    * Add types for `@0x/dev-utils` chai helpers in `types/@0x` (#1761)
+
 ## v4.4.0-beta.2 - _November 17, 2019_
 
     * Dependencies updated

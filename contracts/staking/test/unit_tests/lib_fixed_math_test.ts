@@ -1,5 +1,5 @@
-import { blockchainTests, expect, hexRandom, Numberish } from '@0x/contracts-test-utils';
-import { BigNumber, FixedMathRevertErrors } from '@0x/utils';
+import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
+import { BigNumber, FixedMathRevertErrors, hexRandom } from '@0x/utils';
 import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 

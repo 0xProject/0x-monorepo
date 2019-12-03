@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add `mintKnownFungibleTokensAsync()`, `isNonFungibleItemAsync()`, `isFungibleItemAsync()`, `getOwnerOfAsync()`, `getBalanceAsync()` to `Erc1155Wrapper`. (#1819)
+    * Replaced `SafeMath` with `LibSafeMath` (#2254)
+
+## v1.2.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v1.2.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

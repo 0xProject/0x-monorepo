@@ -198,7 +198,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     }
 
     function getDeterministicOrderInfo(order: Order): OrderInfo {
-        const hash = getPackedHash(toHex(order.salt, 32));
+        const hash = getPackedHash(hexLeftPad(order.salt, 32));
         return {
             orderHash: hash,
             orderStatus: new BigNumber(hash).mod(255).toNumber(),

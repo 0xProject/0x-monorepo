@@ -1,5 +1,5 @@
-import { blockchainTests, expect, hexRandom } from '@0x/contracts-test-utils';
-import { coerceThrownErrorAsRevertError, StringRevertError } from '@0x/utils';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { coerceThrownErrorAsRevertError, hexRandom, StringRevertError } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { TestLibRichErrorsContract } from './wrappers';

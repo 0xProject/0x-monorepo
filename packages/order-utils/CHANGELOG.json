@@ -1,5 +1,160 @@
 [
     {
+        "version": "9.0.0",
+        "changes": [
+            {
+                "note": "[Breaking] Removed `OrderStateUtils`, `OrderValidationUtils`, `ExchangeTransferSimulator` and all abstract and store classes. For order validation, please use the `DevUtils` contract wrapper method `getOrderRelevantState`|`getOrderRelevantStates`",
+                "pr": 2324
+            },
+            {
+                "note": "Removed exports CoordinatorRevertErrors, ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors, orderHashUtils, orderParsingUtils, StakingRevertErrors and transactionHashUtils",
+                "pr": 2321
+            },
+            {
+                "note": "Removed many functions from export signatureUtils",
+                "pr": 2321
+            },
+            {
+                "note": "Removed function isValidOrderHash from export orderHashUtils",
+                "pr": 2321
+            },
+            {
+                "note": "Remove `TransferFailedError` from `ForwarderRevertErrors`.",
+                "pr": 2309
+            },
+            {
+                "note": "All references to network ID have been removed, and references to chain ID have been introduced instead",
+                "pr": 2313
+            },
+            {
+                "note": "Add `chainId` `OrderValidationUtils`, `OrderFactory`",
+                "pr": 1742
+            },
+            {
+                "note": "Update tools to use new `Order` and `ZeroExTransaction` structure",
+                "pr": 1742
+            },
+            {
+                "note": "Update domain schema for Exchange and Coordinator",
+                "pr": 1742
+            },
+            {
+                "note": "Add Exchange `RevertError` types to `ExchangeRevertErrors`",
+                "pr": 1761
+            },
+            {
+                "note": "Add `SignatureOrderValidatorError` type to `ExchangeRevertErrors`",
+                "pr": 1774
+            },
+            {
+                "note": "Add `SignatureWalletOrderValidatorError` type to `ExchangeRevertErrors`",
+                "pr": 1774
+            },
+            {
+                "note": "Reorder parameters of some `RevertError` types to match smart contracts.",
+                "pr": 1790
+            },
+            {
+                "note": "Use arbitrary fee tokens instead of ZRX (ZEIP-28) for tools needed by contracts packages.",
+                "pr": 1819
+            },
+            {
+                "note": "Update `RevertError` types for new base constructor",
+                "pr": 1819
+            },
+            {
+                "note": "Add `Expired` TransactionErrorCode",
+                "pr": 1832
+            },
+            {
+                "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` parameters used for hashing",
+                "pr": 1832
+            },
+            {
+                "note": "Add `validator` field to `SignatureValidatorError` `RevertError` types.",
+                "pr": 1885
+            },
+            {
+                "note": "Remove unused `RevertError` types.",
+                "pr": 1885
+            },
+            {
+                "note": "Add `ExchangeRevertErrors.SignatureErrorCode.InvalidSigner`.",
+                "pr": 2042
+            },
+            {
+                "note": "Add `takerAssetFillAmount` field to `IncompleteFillError` type",
+                "pr": 2075
+            },
+            {
+                "note": "Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields.",
+                "pr": 2075
+            },
+            {
+                "note": "Add EIP712 types for Staking",
+                "pr": 1910
+            },
+            {
+                "note": "Add `InvalidCobbDouglasAlphaError` `RevertError` type to `StakingRevertErrors`",
+                "pr": 2109
+            },
+            {
+                "note": "Rename `OperatorShareMustBeBetween0And100Error` `RevertError` type to `InvalidPoolOperatorShareError`.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `TransactionGasPriceError` and `TransactionInvalidContextError` to error registry.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `EthVaultNotSetError, `RewardVaultNotSetError`, and `InvalidStakeStatusError` to error registry.",
+                "pr": 2118
+            },
+            {
+                "note": "Add `InvalidStakeStatusError` to error registry.",
+                "pr": 2126
+            },
+            {
+                "note": "Add `InitializationError`, `InvalidParamValue` to `StakingRevertErrors`.",
+                "pr": 2131
+            },
+            {
+                "note": "Add `CumulativeRewardIntervalError`.",
+                "pr": 2154
+            },
+            {
+                "note": "Remove `validateOrderFillableOrThrowAsync`, `simpleValidateOrderFillableOrThrowAsync`, `validateMakerTransferThrowIfInvalidAsync`",
+                "pr": 2181
+            },
+            {
+                "note": "Add `PreviousEpochNotFinalizedError` to `StakingRevertErrors`.",
+                "pr": 2155
+            },
+            {
+                "note": "Add `InvalidMinimumPoolStake` to `StakingRevertErrors.InvalidParamValueErrorCode`.",
+                "pr": 2155
+            },
+            {
+                "note": "Renamed `OnlyCallableByPoolOperatorOrMakerError` to `OnlyCallableByPoolOperatorError`.",
+                "pr": 2250
+            },
+            {
+                "note": "Removed protocol fee != 0 error.",
+                "pr": 2278
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "8.5.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "8.5.0-beta.3",
         "changes": [
             {

@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.0.0 - _December 2, 2019_
+
+    * Remove dependency on `abi-gen-wrappers` (#2370)
+    * Regenrate Forwarder wrapper (#2374)
+    * [Breaking] Remove `erc20Proxy`, `erc721Proxy` and `dutchAuction` wrappers (#2324)
+    * [Breaking] Big refactor of contract wrapper interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details (#2325)
+    * Export types `ContractFunctionObj` and `ContractTxFunctionObj` (#2325)
+    * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)
+    * Use new `Order` and `ZeroExTransaction` structures with `domain` field (#1742)
+    * Update exchange wrapper (#1742)
+
+## v12.2.0-beta.4 - _December 2, 2019_
+
+    * Remove dependency on `abi-gen-wrappers`
+    * Regenrate Forwarder wrapper (#2374)
+
 ## v12.2.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

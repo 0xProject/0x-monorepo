@@ -1,5 +1,5 @@
-import { constants, hexRandom, increaseTimeAndMineBlockAsync } from '@0x/contracts-test-utils';
-import { AbiEncoder, BigNumber } from '@0x/utils';
+import { constants, increaseTimeAndMineBlockAsync } from '@0x/contracts-test-utils';
+import { AbiEncoder, BigNumber, hexRandom } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 

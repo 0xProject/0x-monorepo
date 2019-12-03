@@ -31,7 +31,12 @@ export {
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
-export { ForwarderContract } from './generated-wrappers/forwarder';
+export {
+    ForwarderContract,
+    ForwarderEventArgs,
+    ForwarderEvents,
+    ForwarderOwnershipTransferredEventArgs,
+} from './generated-wrappers/forwarder';
 export {
     WETH9EventArgs,
     WETH9Events,

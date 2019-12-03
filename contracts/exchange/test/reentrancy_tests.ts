@@ -1,5 +1,5 @@
-import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
+import { BigNumber, hexRandom } from '@0x/utils';
 import { DataItem, MethodAbi, TupleDataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 

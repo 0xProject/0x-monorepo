@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add `decimals()` to `LibERC20Token`. (#2344)
+    * Create `LibERC20Token` (#2309)
+    * Replaced `SafeMath` with `LibSafeMath` (#2254)
+
+## v2.3.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v2.3.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated
@@ -12,6 +23,7 @@ CHANGELOG
 ## v2.3.0-beta.2 - _November 17, 2019_
 
     * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add `decimals()` to `LibERC20Token`. (#2344)
 
 ## v2.3.0-beta.1 - _November 7, 2019_
 

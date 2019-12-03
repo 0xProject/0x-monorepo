@@ -1,12 +1,67 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Re-export all `RevertErrors`",
+                "pr": 2362
+            },
+            {
+                "note": "Removed exports AuthorizableRevertErrors, LibAddressArrayRevertErrors, LibBytesRevertErrors, OwnableRevertErrors, ReentrancyGuardRevertErrors and SafeMathRevertErrors",
+                "pr": 2321
+            },
+            {
+                "note": "Decode `Parity` revert errors",
+                "pr": 2341
+            },
+            {
+                "note": "Update BigNumber version to ~9.0.0",
+                "pr": 2342
+            },
+            {
+                "note": "Consolidated FixedMathRevertErrors",
+                "pr": 2255
+            },
+            {
+                "note": "Changed provider_utils.providerUtils.getChainIdAsync() to invoke RPC method eth_chainId rather than net_version",
+                "pr": 2270
+            },
+            {
+                "note": "Allow for array types in `RevertError`s.",
+                "pr": 2075
+            },
+            {
+                "note": "Have Ganache `Error` -> `RevertError` coercion fail if it can't look up the selector.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `LibFixedMath` `RevertError` types.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `RawRevertError` `RevertError` type.",
+                "pr": 2109
+            },
+            {
+                "note": "Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown.",
+                "pr": 2109
+            },
+            {
+                "note": "Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`.",
+                "pr": 2109
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
         "version": "4.6.0-beta.3",
         "changes": [
             {
                 "note": "Re-export all `RevertErrors`",
                 "pr": 2362
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "4.6.0-beta.2",

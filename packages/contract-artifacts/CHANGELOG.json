@@ -1,5 +1,48 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Regenerate Forwarder and DevUtils artifacts",
+                "pr": 2374
+            },
+            {
+                "note": "Replace Staking artifact with TestStaking",
+                "pr": 2322
+            },
+            {
+                "note": "Added `ZrxVault` and `ERC20BridgeProxy` artifacts",
+                "pr": 2323
+            },
+            {
+                "note": "Updated Coordinator + Coordinator Registry artifacts",
+                "pr": 2346
+            },
+            {
+                "note": "Update DevUtils contract artifacts"
+            },
+            {
+                "note": "Use V3 contracts",
+                "pr": 2181
+            },
+            {
+                "note": "Add `deployedBytecode` field",
+                "pr": 2181
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "2.3.0-beta.4",
+        "changes": [
+            {
+                "note": "Regenerate Forwarder and DevUtils artifacts",
+                "pr": 2374
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "2.3.0-beta.3",
         "changes": [
             {

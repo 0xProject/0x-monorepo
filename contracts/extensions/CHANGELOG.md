@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Replaced the use of `SafeMath` with `LibSafeMath` (#2254)
+
+## v4.1.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v4.1.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

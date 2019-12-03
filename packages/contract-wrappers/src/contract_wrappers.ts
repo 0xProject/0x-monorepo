@@ -1,16 +1,5 @@
 import { assert } from '@0x/assert';
 import { ContractAddresses } from '@0x/contract-addresses';
-import {
-    Coordinator,
-    DevUtils,
-    ERC20Token,
-    ERC721Token,
-    Exchange,
-    Forwarder,
-    Staking,
-    StakingProxy,
-    WETH9,
-} from '@0x/contract-artifacts';
 import { AbiDecoder } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
@@ -18,11 +7,12 @@ import { SupportedProvider } from 'ethereum-types';
 import { ContractWrappersConfigSchema } from './contract_wrappers_config_schema';
 import { CoordinatorContract } from './generated-wrappers/coordinator';
 import { DevUtilsContract } from './generated-wrappers/dev_utils';
+import { ERC20TokenContract } from './generated-wrappers/erc20_token';
+import { ERC721TokenContract } from './generated-wrappers/erc721_token';
 import { ExchangeContract } from './generated-wrappers/exchange';
 import { ForwarderContract } from './generated-wrappers/forwarder';
 import { StakingContract } from './generated-wrappers/staking';
 import { WETH9Contract } from './generated-wrappers/weth9';
-
 import { ContractWrappersConfig } from './types';
 import { _getDefaultContractAddresses } from './utils/contract_addresses';
 
@@ -74,19 +64,18 @@ export class ContractWrappers {
             gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
-        const artifactsArray = [
-            Coordinator,
-            DevUtils,
-            ERC20Token,
-            ERC721Token,
-            Exchange,
-            Forwarder,
-            Staking,
-            StakingProxy,
-            WETH9,
+        const contractsArray = [
+            CoordinatorContract,
+            DevUtilsContract,
+            ERC20TokenContract,
+            ERC721TokenContract,
+            ExchangeContract,
+            ForwarderContract,
+            StakingContract,
+            WETH9Contract,
         ];
-        artifactsArray.forEach(artifact => {
-            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
+        contractsArray.forEach(contract => {
+            this._web3Wrapper.abiDecoder.addABI(contract.ABI(), contract.contractName);
         });
         const contractAddresses =
             config.contractAddresses === undefined

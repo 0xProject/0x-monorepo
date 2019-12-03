@@ -31,6 +31,10 @@ export class Actor {
     } = {};
     protected readonly _transactionFactory: TransactionFactory;
 
+    public static reset(): void {
+        Actor.count = 0;
+    }
+
     constructor(config: ActorConfig) {
         Actor.count++;
 
@@ -142,6 +146,12 @@ export class Actor {
         customTransactionParams: Partial<ZeroExTransaction>,
         signatureType: SignatureType = SignatureType.EthSign,
     ): Promise<SignedZeroExTransaction> {
-        return this._transactionFactory.newSignedTransactionAsync(customTransactionParams, signatureType);
+        return this._transactionFactory.newSignedTransactionAsync(
+            {
+                gasPrice: DeploymentManager.gasPrice,
+                ...customTransactionParams,
+            },
+            signatureType,
+        );
     }
 }

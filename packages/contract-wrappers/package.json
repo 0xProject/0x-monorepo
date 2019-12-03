@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-wrappers",
-    "version": "12.2.0-beta.3",
+    "version": "13.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,21 +44,20 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-wrappers/README.md",
     "devDependencies": {
         "@0x/ts-doc-gen": "^0.0.22",
-        "@0x/tslint-config": "^3.1.0-beta.2",
+        "@0x/tslint-config": "^4.0.0",
         "tslint": "5.11.0",
         "typedoc": "^0.15.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/assert": "^2.2.0-beta.2",
-        "@0x/base-contract": "^5.5.0-beta.3",
-        "@0x/contract-addresses": "^3.3.0-beta.4",
-        "@0x/contract-artifacts": "^2.3.0-beta.3",
-        "@0x/json-schemas": "^4.1.0-beta.2",
-        "@0x/types": "^2.5.0-beta.2",
-        "@0x/utils": "^4.6.0-beta.2",
-        "@0x/web3-wrapper": "^6.1.0-beta.2",
-        "ethereum-types": "^2.2.0-beta.2",
+        "@0x/assert": "^3.0.0",
+        "@0x/base-contract": "^6.0.0",
+        "@0x/contract-addresses": "^4.0.0",
+        "@0x/json-schemas": "^5.0.0",
+        "@0x/types": "^3.0.0",
+        "@0x/utils": "^5.0.0",
+        "@0x/web3-wrapper": "^7.0.0",
+        "ethereum-types": "^3.0.0",
         "ethers": "~4.0.4"
     },
     "publishConfig": {

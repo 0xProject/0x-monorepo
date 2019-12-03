@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _December 2, 2019_
+
+    * Added buy support for ERC20Bridge (#2356)
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduced new export ForwarderRevertErrors (#2321)
+    * Use `LibERC20Token` in `MixinAssets` (#2309)
+
+## v3.1.0-beta.4 - _December 2, 2019_
+
+    * Added buy support for ERC20Bridge (#2356)
+
 ## v3.1.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

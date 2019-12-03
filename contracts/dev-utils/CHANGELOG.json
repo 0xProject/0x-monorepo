@@ -1,5 +1,56 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
+                "note": "Add new method getOrderHash() to DevUtils contract",
+                "pr": 2321
+            },
+            {
+                "note": "Add new method getTransactionHash() to DevUtils contract",
+                "pr": 2321
+            },
+            {
+                "note": "Add `encodeStaticCallAssetData` and `decodeStaticCallAssetData` in LibAssetData",
+                "pr": 2034
+            },
+            {
+                "note": "Add `revertIfInvalidAssetData` in LibAssetData",
+                "pr": 2034
+            },
+            {
+                "note": "Use built in selectors instead of hard coded constants",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            },
+            {
+                "note": "Add `marketBuy/SellOrdersNoThrow` and `marketBuy/SellOrdersFillOrKill` to `LibTransactionDecoder`.",
+                "pr": 2075
+            },
+            {
+                "note": "`run_mocha` package script runs with `UNLIMITED_CONTRACT_SIZE=true` environment variable.",
+                "pr": 2075
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "0.1.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "0.1.0-beta.3",
         "changes": [
             {

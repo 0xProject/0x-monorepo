@@ -5,6 +5,42 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Add new exports orderHashUtils and transactionHashUtils (#2321)
+    * Remove TransactionHelper and MutatorContractFunction (#2325)
+    * OrderFactory default order expiration time increased from ten minutes to fifteen minutes  (#2304)
+    * Add `chainId` to `TransactionFactory` constructor (#1742)
+    * Use new `Order` structure with `domain` field (#1742)
+    * Inherit `chaiSetup` from `@0x/dev-utils` (#1761)
+    * Add `generatePseudoRandomOrderHash()` to `orderUtils` (#1761)
+    * Inherit `OrderStatus` from `@0x/types` (#1761)
+    * Update types for arbitrary fee tokens (#1819)
+    * Remove formatters (#1834)
+    * Add `hexConcat()` in `hex_utils.ts` (#1885)
+    * Introduce Mocha blockchain extensions (#2007)
+    * Move `*FillResults`, `OrderInfo` types to `@0x/types` (#2031)
+    * Add `log_utils.ts` (#2031)
+    * Add `haxRandom()` to `hex_utils.ts` (#2031)
+    * Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`, `MAX_UINT256_ROOT`, `ONE_ETHER` (#2031)
+    * Make `testCombinatoriallyWithReferenceFuncAsync` non-async (#2031)
+    * Update `testWithReferenceFuncAsync` to work with `RevertErrors` (#2031)
+    * `web3Wrapper` is created with `shouldAllowUnlimitedContractSize` if `UNLIMITED_CONTRACT_SIZE` environment variable is set. (#2075)
+    * Add `toHex()`, `hexLeftPad()`, `hexRightPad()`, and 'hexInvert()' hex utils (#2109)
+    * Add `PPM_DENOMINATOR` and `PPM_100_PERCENT` constants. (#2109)
+    * Increase the number of ganache accounts to 20 (#2109)
+    * Add `Numberish` type. (#2131)
+    * Tweaks/Upgrades to `hex_utils`, most notably `hexSlice()` (#2155)
+    * Add `hexHash()` to `hex_utils` (#2155)
+    * Add `shortZip()` to `lang_utils.ts` (#2155)
+    * Add `number_utils.ts` and `hexSize()` (#2220)
+    * Add `verifyEventsFromLogs()` (#2287)
+
+## v3.2.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v3.2.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

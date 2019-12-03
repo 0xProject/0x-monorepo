@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _December 2, 2019_
+
+    * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
+    * Introduced new export CoordinatorRevertErrors (#2321)
+    * Added dependency on @0x/contracts-utils (#2321)
+    * Add chainId to domain separator (#1742)
+    * Inherit Exchange domain constants from `exchange-libs` to reduce code duplication (#1742)
+    * Update domain separator (#1742)
+    * Refactor contract to use new ITransactions interface (#1753)
+    * Add verifyingContractIfExists arg to LibEIP712CoordinatorDomain constructor (#1753)
+    * Remove LibZeroExTransaction contract (#1753)
+    * Update tests for arbitrary fee tokens (ZEIP-28). (#1819)
+    * Update for new `marketXOrders` consolidation. (#2042)
+    * Use built in selectors instead of hard coded constants (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+
+## v2.1.0-beta.4 - _December 2, 2019_
+
+    * Dependencies updated
+
 ## v2.1.0-beta.3 - _November 20, 2019_
 
     * Dependencies updated

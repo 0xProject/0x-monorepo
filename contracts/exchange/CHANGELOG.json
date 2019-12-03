@@ -1,5 +1,236 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils",
+                "pr": 2330
+            },
+            {
+                "note": "Introduced new export ExchangeRevertErrors",
+                "pr": 2321
+            },
+            {
+                "note": "Round up in `marketBuyOrdersNoThrow()` so `marketBuyOrdersFillOrKill()` doesn't throw up.",
+                "pr": 2338
+            },
+            {
+                "note": "LocalBalanceStore.create and constructor now require an instance of DevUtilsContract",
+                "pr": 2304
+            },
+            {
+                "note": "In LocalBalanceStore, `transferAsset` is now `transferAssetAsync`",
+                "pr": 2304
+            },
+            {
+                "note": "Test utility classes AssetWrapper, MatchOrderTester, and OrderFactoryFromScenario constructors now require an instance of DevUtilsContract",
+                "pr": 2304
+            },
+            {
+                "note": "In OrderFactoryFromScenario, `generateOrder` is now `generateOrderAsync`",
+                "pr": 2304
+            },
+            {
+                "note": "Use new/cheaper reentrancy guard/mutex",
+                "pr": 1699
+            },
+            {
+                "note": "Update domain separator",
+                "pr": 1742
+            },
+            {
+                "note": "Refactor `executeTransaction` to take `ZeroExTransaction` struct as input",
+                "pr": 1753
+            },
+            {
+                "note": "Refactor example contracts that use `executeTransaction`",
+                "pr": 1753
+            },
+            {
+                "note": "Upgrade all string reverts to rich reverts",
+                "pr": 1761
+            },
+            {
+                "note": "Add support for `SignatureType.OrderValidator` for orders",
+                "pr": 1774
+            },
+            {
+                "note": "Add support for `SignatureType.WalletOrderValidator` for orders",
+                "pr": 1774
+            },
+            {
+                "note": "Add a `bytes` return value to `executeTransaction`, which is equal to the encoded return data of the underlying Exchange function call",
+                "pr": 1793
+            },
+            {
+                "note": "Implement `batchExecuteTransactions`",
+                "pr": 1793
+            },
+            {
+                "note": "Refactor preSign to be compatible with `executeTransaction`",
+                "pr": 1793
+            },
+            {
+                "note": "Remove ZRX fees in lieu of arbitrary maker and taker fee tokens.",
+                "pr": 1819
+            },
+            {
+                "note": "Incorporate Multi-asset and ERC1155 tests into `fillOrder` and `matchOrders` tests",
+                "pr": 1819
+            },
+            {
+                "note": "Swap fill order from maker -> taker to taker -> maker",
+                "pr": 1819
+            },
+            {
+                "note": "Avoid redundant transfer in `fillOrder()` and `matchOrders()` when maker/taker is the same as feeRecipient and assets are the same",
+                "pr": 1819
+            },
+            {
+                "note": "Implement `cancelOrderNoThrow` and `batchCancelOrdersNoThrow` functions",
+                "pr": 1827
+            },
+            {
+                "note": "`executeTransaction` will now revert if the input transaction is expired",
+                "pr": 1832
+            },
+            {
+                "note": "Log an `TransactionExecuted` event when an `executeTransaction` call is successful",
+                "pr": 1832
+            },
+            {
+                "note": "Return a FillResults array for batch fill variants",
+                "pr": 1834
+            },
+            {
+                "note": "Add `MixinTransferSimulator` contract for simulating multiple transfers on-chain",
+                "pr": 1868
+            },
+            {
+                "note": "Add `EIP1271Wallet` signature type",
+                "pr": 1885
+            },
+            {
+                "note": "Remove `WalletOrderValidator` and `OrderValidator` signature types",
+                "pr": 1885
+            },
+            {
+                "note": "Make the regular `Validator` signature type have EIP1271 behavior",
+                "pr": 1885
+            },
+            {
+                "note": "Always check signature types that are validated via contract (not just on first fill).",
+                "pr": 1885
+            },
+            {
+                "note": "Remove unecessary rich revert error types.",
+                "pr": 1885
+            },
+            {
+                "note": "Add `IEIP1271Wallet` interface",
+                "pr": 1885
+            },
+            {
+                "note": "Add `validatorAddress` field to `SignatureValidatorError` rich reverts",
+                "pr": 1885
+            },
+            {
+                "note": "Make `calculateMatchedFillResults` public",
+                "pr": 1885
+            },
+            {
+                "note": "Updated RichErrors to the library pattern",
+                "pr": 1913
+            },
+            {
+                "note": "Rewrote _dispatchTransferFrom in Solidity",
+                "pr": 2020
+            },
+            {
+                "note": "Add `TestIsolatedExchange` contract and `IsolatedExchangeWrapper` test class",
+                "pr": 2031
+            },
+            {
+                "note": "Add `ReferenceFunctions` as package export.",
+                "pr": 2031
+            },
+            {
+                "note": "Remove `TestExchangeMath.sol`. Exchange math functions are now tested in the `exchange-libs` package and reference implementations are available there as well.",
+                "pr": 2031
+            },
+            {
+                "note": "Remove functions from `TestExchangeInternals.sol` that are no longer tested in this package.",
+                "pr": 2031
+            },
+            {
+                "note": "Remove `_assertValidFill()`",
+                "pr": 2031
+            },
+            {
+                "note": "Add `wrapper_unit_tests` tests and `TestWrapperFunctions` contract",
+                "pr": 2042
+            },
+            {
+                "note": "Disallow `signerAddress == 0` in signature validation functions.",
+                "pr": 2042
+            },
+            {
+                "note": "Update `Wallet` signature type behavior to be in line with v2.1.",
+                "pr": 2042
+            },
+            {
+                "note": "Add (semi) automated reentrancy tests and remove manual ones",
+                "pr": 2042
+            },
+            {
+                "note": "Refactor to use new `LibFillResults`, `LibOrder`, `LibZeroExTransaction`, and `LibMath` to libraries",
+                "pr": 2055
+            },
+            {
+                "note": "Remove `LibExchangeRichErrors` and `IExchangeRichErrors`",
+                "pr": 2055
+            },
+            {
+                "note": "Use built in selectors instead of `LibExchangeSelectors` constants",
+                "pr": 2055
+            },
+            {
+                "note": "Move `calculateFillResults` and `calculateMatchedFillResults` to `LibFillResults` in `exchange-libs` package",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            },
+            {
+                "note": "Rename `marketSellOrders` and `marketBuyOrders` back to `marketSellOrdersNoThrow` and `marketBuyOrdersNoThrow`.",
+                "pr": 2075
+            },
+            {
+                "note": "Introduce new `marketSellOrdersFillOrKill` and `marketBuyOrdersFillOrKill` functions.",
+                "pr": 2075
+            },
+            {
+                "note": "Use `abi.decode()` in `LibExchangeRichErrorDecoder` over `LibBytes`.",
+                "pr": 2075
+            },
+            {
+                "note": "Overridden functions in `ReentrancyTester` now return sane values.",
+                "pr": 2075
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
+        "version": "2.2.0-beta.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1575290197
+    },
+    {
         "version": "2.2.0-beta.3",
         "changes": [
             {

@@ -221,7 +221,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     ]);
     await submitAndExecuteTransactionAsync(governor, governor.address, batchTransactionData);
 
-    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+    await DevUtilsContract.deployFrom0xArtifactAsync(
         devUtilsArtifacts.DevUtils,
         provider,
         txDefaults,
@@ -238,14 +238,13 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         chainId,
     );
 
-    const wethAssetData = await devUtils.encodeERC20AssetData(deployedAddresses.etherToken).callAsync();
     const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
         forwarderArtifacts.Forwarder,
         provider,
         txDefaults,
         forwarderArtifacts,
         exchange.address,
-        wethAssetData,
+        deployedAddresses.etherToken,
     );
     await forwarder.approveMakerAssetProxy(deployedAddresses.etherToken).awaitTransactionSuccessAsync();
 }

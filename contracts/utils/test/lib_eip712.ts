@@ -1,6 +1,6 @@
-import { chaiSetup, constants, hexConcat, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, hexConcat, signTypedDataUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';

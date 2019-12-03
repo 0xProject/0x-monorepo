@@ -1,12 +1,70 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "`1337` addresses updated with Forwarder deployed after Exchange is configured",
+                "pr": 2368
+            },
+            {
+                "note": "Update Forwarder addresses on all newtorks",
+                "pr": 2374
+            },
+            {
+                "note": "Update all v3 mainnet addresses",
+                "pr": 2322
+            },
+            {
+                "note": "Update ZeroExGovernor address on all testnets",
+                "pr": 2322
+            },
+            {
+                "note": "Updated devUtils contract addresses on testnets"
+            },
+            {
+                "note": "Remove `readOnlyProxy` from addresses interface",
+                "pr": 2295
+            },
+            {
+                "note": "Add `zeroExGovernor` and `erc20BridgeProxy` to addresses interface",
+                "pr": 2296
+            },
+            {
+                "note": "Update `exchange`, `staking`, `stakingProxy`, `zeroExGovernor`, `assetProxyOwner`, and `erc20BridgeProxy` addresses for each tesnet",
+                "pr": 2296
+            },
+            {
+                "note": "Contract addresses are no longer indexed by network ID.  Now they're indexed by chain ID.",
+                "pr": 2313
+            },
+            {
+                "note": "Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling.",
+                "pr": 2170
+            },
+            {
+                "note": "Add `zrxVault`, `readOnlyProxy`, `staking`, and `stakingProxy` schema with addresses for each tesnet",
+                "pr": 2224
+            },
+            {
+                "note": "Update `assetProxyOwner` address for each testnet",
+                "pr": 2224
+            }
+        ],
+        "timestamp": 1575296764
+    },
+    {
         "version": "3.3.0-beta.5",
         "changes": [
             {
                 "note": "`1337` addresses updated with Forwarder deployed after Exchange is configured",
                 "pr": 2368
+            },
+            {
+                "note": "Update Forwarder addresses on all newtorks",
+                "pr": 2374
             }
-        ]
+        ],
+        "timestamp": 1575290197
     },
     {
         "version": "3.3.0-beta.4",
