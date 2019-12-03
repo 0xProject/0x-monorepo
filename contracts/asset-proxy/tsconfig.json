@@ -36,7 +36,11 @@
         "test/generated-artifacts/IDyDx.json",
 =======
         "test/generated-artifacts/IDydx.json",
+<<<<<<< HEAD
 >>>>>>> ee82a0f67... Consistent capitalization for "dydx"`
+=======
+        "test/generated-artifacts/IDydxBridge.json",
+>>>>>>> 5e2de489d... Updating bridge to work w/o MAP
         "test/generated-artifacts/IERC20Bridge.json",
         "test/generated-artifacts/IEth2Dai.json",
         "test/generated-artifacts/IKyberNetworkProxy.json",

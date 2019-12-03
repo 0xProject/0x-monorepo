@@ -27,9 +27,10 @@ interface IDydxBridge {
     }
 
     struct BridgeData {
-        BridgeAction action;        // Action to run on dydx account.
-        address accountOwner;       // The owner of the dydx account.
-        uint256 accountNumber;      // Account number used to identify the owner's specific account.
-        uint256 marketId;           // Market to operate on.
+        BridgeAction[] actions;                 // Action to run on dydx account.
+        uint256 accountNumber;                  // Account number used to identify the owner's specific account.
+        uint256 marketId;                       // Market to operate on.
+        uint256 conversionRateNumerator;        //
+        uint256 conversionRateDenominator;      //
     }
 }

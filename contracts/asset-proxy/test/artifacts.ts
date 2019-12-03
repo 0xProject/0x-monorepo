@@ -25,7 +25,11 @@ import * as IChai from '../test/generated-artifacts/IChai.json';
 import * as IDyDx from '../test/generated-artifacts/IDyDx.json';
 =======
 import * as IDydx from '../test/generated-artifacts/IDydx.json';
+<<<<<<< HEAD
 >>>>>>> ee82a0f67... Consistent capitalization for "dydx"`
+=======
+import * as IDydxBridge from '../test/generated-artifacts/IDydxBridge.json';
+>>>>>>> 5e2de489d... Updating bridge to work w/o MAP
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
 import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkProxy.json';
@@ -72,7 +76,11 @@ export const artifacts = {
     IDyDx: IDyDx as ContractArtifact,
 =======
     IDydx: IDydx as ContractArtifact,
+<<<<<<< HEAD
 >>>>>>> ee82a0f67... Consistent capitalization for "dydx"`
+=======
+    IDydxBridge: IDydxBridge as ContractArtifact,
+>>>>>>> 5e2de489d... Updating bridge to work w/o MAP
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
