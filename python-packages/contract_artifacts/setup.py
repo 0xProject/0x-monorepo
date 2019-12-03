@@ -152,7 +152,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-contract-artifacts",
-    version="3.0.0.dev2",
+    version="3.0.0",
     description="0x smart contract compilation artifacts",
     long_description=README_MD,
     long_description_content_type="text/markdown",
