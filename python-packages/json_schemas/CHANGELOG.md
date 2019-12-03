@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 - TBD
+## 1.2.0 - 2019-12-03
 
 -   Removed dev dependency on package `0x-contract-wrappers`
 -   Migrated examples to using new version of `0x-contract-addresses`.

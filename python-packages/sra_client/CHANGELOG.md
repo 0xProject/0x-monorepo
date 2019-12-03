@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.0 - TBD
+## 4.0.0 - 2019-12-03
 
 -   Migrated from v2 to v3 of the 0x protocol.
 

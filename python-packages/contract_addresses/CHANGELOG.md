@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 - TBD
+## 3.0.0 - 2019-12-03
 
 -   Addresses are now indexed by chain ID rather than by network ID.
 
