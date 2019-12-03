@@ -184,10 +184,11 @@ class GanacheCommand(distutils.command.build_py.build_py):
     def run(self):
         """Run ganache."""
         subprocess.call(("docker pull 0xorg/ganache-cli").split())  # nosec
-        cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
-        ).split()
-        subprocess.call(cmd_line)  # nosec
+        subprocess.call(  # nosec
+            (
+                "docker run -d -p 8545:8545 -e SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta 0xorg/ganache-cli"
+            ).split()
+        )
 
 
 with open("README.md", "r") as file_handle:
