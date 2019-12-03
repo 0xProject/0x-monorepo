@@ -88,6 +88,7 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
+        rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
