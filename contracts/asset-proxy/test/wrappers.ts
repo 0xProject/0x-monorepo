@@ -23,7 +23,11 @@ export * from '../test/generated-wrappers/i_chai';
 export * from '../test/generated-wrappers/i_dy_dx';
 =======
 export * from '../test/generated-wrappers/i_dydx';
+<<<<<<< HEAD
 >>>>>>> ee82a0f67... Consistent capitalization for "dydx"`
+=======
+export * from '../test/generated-wrappers/i_dydx_bridge';
+>>>>>>> 5e2de489d... Updating bridge to work w/o MAP
 export * from '../test/generated-wrappers/i_erc20_bridge';
 export * from '../test/generated-wrappers/i_eth2_dai';
 export * from '../test/generated-wrappers/i_kyber_network_proxy';
