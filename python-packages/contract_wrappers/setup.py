@@ -183,6 +183,7 @@ class GanacheCommand(distutils.command.build_py.build_py):
 
     def run(self):
         """Run ganache."""
+        subprocess.call(("docker pull 0xorg/ganache-cli").split())  # nosec
         cmd_line = (
             "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
         ).split()
