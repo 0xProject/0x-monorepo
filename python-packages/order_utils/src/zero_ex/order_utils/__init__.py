@@ -12,7 +12,7 @@ For local testing one may construct such a provider pointing at an instance of
 `ganache-cli <https://www.npmjs.com/package/ganache-cli>`_ which has the 0x
 contracts deployed on it.  For convenience, a docker container is provided for
 just this purpose.  To start it:
-`docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2`:code:.
+`docker run -d -p 8545:8545 -e SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta 0xorg/ganache-cli`:code:.
 
 """
 
