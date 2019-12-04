@@ -2,12 +2,9 @@
 version: '3'
 services:
     ganache:
-        image: "0xorg/ganache-cli:4.4.0-beta.1"
+        image: "0xorg/ganache-cli"
         ports:
             - "8545:8545"
-        environment:
-            - VERSION=latest
-            - SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta
     mesh:
         image: 0xorg/mesh:0xV3
         depends_on:
@@ -43,4 +40,4 @@ services:
             - TAKER_FEE_UNIT_AMOUNT=0
             - MESH_ENDPOINT=ws://localhost:60557
         command: |
-            sh -c "waitForMesh () { sleep 3; }; waitForMesh && sleep 5 && node_modules/.bin/forever ts/lib/index.js"
+            sh -c "waitForMesh () { sleep 30; }; waitForMesh && node_modules/.bin/forever ts/lib/index.js"

@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 - TBD
+## 2.0.0 - 2019-12-03
 
 -   Updated for version 3 of the protocol.
 -   Allow wrappers to be instantiated with EITHER a Web3.py `BaseProvider` OR an already-instantiated `Web3` client object.

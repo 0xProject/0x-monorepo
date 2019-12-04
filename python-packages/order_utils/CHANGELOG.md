@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.0 - TBD
+## 4.0.0 - 2019-12-03
 
 -   Upgraded to protocol version 3.
 -   `is_valid_signature()` now returns just a boolean. (Formerly, it returned a tuple consisting of the boolean and a reason string.)

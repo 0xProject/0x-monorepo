@@ -70,6 +70,7 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
+        rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
@@ -136,7 +137,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-middlewares",
-    version="1.0.0.dev0",
+    version="1.0.0",
     description="Web3 middlewares for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",

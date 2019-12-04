@@ -90,11 +90,12 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
+        rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/*.egg-info", ignore_errors=True)
+        rmtree("src/0x_json_schemas.egg-info", ignore_errors=True)
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
@@ -143,7 +144,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-json-schemas",
-    version="2.1.0.dev2",
+    version="2.1.0",
     description="JSON schemas for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -165,7 +166,7 @@ setup(
     install_requires=["jsonschema", "mypy_extensions", "stringcase"],
     extras_require={
         "dev": [
-            "0x-contract-addresses==3.0.0.dev3",
+            "0x-contract-addresses",
             "bandit",
             "black",
             "coverage",

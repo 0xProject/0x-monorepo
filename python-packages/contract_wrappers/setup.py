@@ -123,6 +123,7 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
+        rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
@@ -183,10 +184,10 @@ class GanacheCommand(distutils.command.build_py.build_py):
 
     def run(self):
         """Run ganache."""
-        cmd_line = (
-            "docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2"
-        ).split()
-        subprocess.call(cmd_line)  # nosec
+        subprocess.call(("docker pull 0xorg/ganache-cli").split())  # nosec
+        subprocess.call(  # nosec
+            ("docker run -d -p 8545:8545 0xorg/ganache-cli").split()
+        )
 
 
 with open("README.md", "r") as file_handle:
@@ -195,7 +196,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-contract-wrappers",
-    version="2.0.0.dev10",
+    version="2.0.0",
     description="Python wrappers for 0x smart contracts",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -216,10 +217,10 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
-        "0x-contract-addresses==3.0.0.dev3",
-        "0x-contract-artifacts==3.0.0.dev2",
-        "0x-json-schemas==2.1.0.dev2",
-        "0x-order-utils==4.0.0.dev8",
+        "0x-contract-addresses",
+        "0x-contract-artifacts",
+        "0x-json-schemas",
+        "0x-order-utils",
         "web3",
         "attrs",
         "eth_utils",

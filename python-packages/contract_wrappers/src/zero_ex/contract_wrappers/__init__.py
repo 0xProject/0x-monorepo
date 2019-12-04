@@ -12,8 +12,8 @@ Install the 0x-contract-wrappers with pip::
 
 We need a Web3 provider to allow us to talk to the blockchain. You can
 read `more about providers in the Web3.py documentation
-<https://web3py.readthedocs.io/en/stable/providers.htm>`_.  The examples below
-assume there's a local instance of Ganache listening on port 8545:
+<https://web3py.readthedocs.io/en/stable/>`_.  The examples below assume
+there's a local instance of Ganache listening on port 8545:
 
 >>> from web3 import HTTPProvider
 >>> ganache = HTTPProvider("http://localhost:8545")
@@ -21,7 +21,7 @@ assume there's a local instance of Ganache listening on port 8545:
 To replicate these examples, one can use the `0xorg/ganache-cli`:code: docker
 image, which comes with the 0x contracts pre-deployed.  To start it::
 
-    docker run docker run -d -p 8545:8545 0xorg/ganache-cli
+    docker run -d -p 8545:8545 0xorg/ganache-cli
 
 Accounts
 --------

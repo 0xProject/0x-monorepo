@@ -87,6 +87,7 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
+        rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
@@ -151,7 +152,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-contract-addresses",
-    version="3.0.0.dev3",
+    version="3.0.0",
     description="Addresses at which the 0x smart contracts have been deployed",
     long_description=README_MD,
     long_description_content_type="text/markdown",
