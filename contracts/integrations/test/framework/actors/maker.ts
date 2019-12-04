@@ -1,6 +1,10 @@
 import { constants, OrderFactory } from '@0x/contracts-test-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
+
+import { AssertionResult } from '../assertions/function_assertion';
+import { validJoinStakingPoolAssertion } from '../assertions/joinStakingPool';
 
 import { Actor, ActorConfig, Constructor } from './base';
 
@@ -45,6 +49,12 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 ...orderConfig,
             };
             this.orderFactory = new OrderFactory(this.actor.privateKey, defaultOrderParams);
+
+            // Register this mixin's assertion generators
+            this.actor.simulationActions = {
+                ...this.actor.simulationActions,
+                validJoinStakingPool: this._validJoinStakingPool(),
+            };
         }
 
         /**
@@ -72,6 +82,19 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             return stakingContract.joinStakingPoolAsMaker(poolId).awaitTransactionSuccessAsync({
                 from: this.actor.address,
             });
+        }
+
+        private async *_validJoinStakingPool(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validJoinStakingPoolAssertion(this.actor.deployment);
+            while (true) {
+                const poolId = _.sample(Object.keys(stakingPools));
+                if (poolId === undefined) {
+                    yield undefined;
+                } else {
+                    yield assertion.executeAsync([poolId], { from: this.actor.address });
+                }
+            }
         }
     };
 }

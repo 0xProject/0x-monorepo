@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 
 import { DeploymentManager } from '../deployment_manager';
 
-import { FunctionAssertion } from './function_assertion';
+import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 function incrementNextEpochBalance(stakeBalance: StoredBalance, amount: BigNumber): void {
     _.update(stakeBalance, ['nextEpochBalance'], balance => (balance || constants.ZERO_AMOUNT).plus(amount));
@@ -77,63 +77,70 @@ function updateNextEpochBalances(
  * Returns a FunctionAssertion for `moveStake` which assumes valid input is provided. The
  * FunctionAssertion checks that the staker's
  */
+/* tslint:disable:no-unnecessary-type-assertion */
 export function validMoveStakeAssertion(
     deployment: DeploymentManager,
     globalStake: GlobalStakeByStatus,
     ownerStake: OwnerStakeByStatus,
     pools: StakingPoolById,
-): FunctionAssertion<{}, void> {
+): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<{}, void>(stakingWrapper.moveStake, {
-        after: async (
-            _beforeInfo,
-            _result,
-            from: StakeInfo,
-            to: StakeInfo,
-            amount: BigNumber,
-            txData: Partial<TxData>,
-        ) => {
-            logUtils.log(
-                `moveStake({status: ${StakeStatus[from.status]}, poolId: ${from.poolId} }, { status: ${
-                    StakeStatus[to.status]
-                }, poolId: ${to.poolId} }, ${amount})`,
-            );
+    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void>(
+        stakingWrapper.moveStake.bind(stakingWrapper),
+        {
+            after: async (
+                _beforeInfo: {},
+                _result: FunctionResult,
+                args: [StakeInfo, StakeInfo, BigNumber],
+                txData: Partial<TxData>,
+            ) => {
+                const [from, to, amount] = args;
 
-            const owner = txData.from as string;
+                logUtils.log(
+                    `moveStake({status: ${StakeStatus[from.status]}, poolId: ${from.poolId} }, { status: ${
+                        StakeStatus[to.status]
+                    }, poolId: ${to.poolId} }, ${amount})`,
+                );
 
-            // Update local balances to match the expected result of this `moveStake` operation
-            const updatedPools = updateNextEpochBalances(globalStake, ownerStake, pools, from, to, amount);
+                const owner = txData.from!; // tslint:disable-line:no-non-null-assertion
 
-            // Fetches on-chain owner stake balances and checks against local balances
-            const ownerUndelegatedStake = {
-                ...new StoredBalance(),
-                ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Undelegated).callAsync()),
-            };
-            const ownerDelegatedStake = {
-                ...new StoredBalance(),
-                ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Delegated).callAsync()),
-            };
-            expect(ownerUndelegatedStake).to.deep.equal(ownerStake[StakeStatus.Undelegated]);
-            expect(ownerDelegatedStake).to.deep.equal(ownerStake[StakeStatus.Delegated].total);
+                // Update local balances to match the expected result of this `moveStake` operation
+                const updatedPools = updateNextEpochBalances(globalStake, ownerStake, pools, from, to, amount);
 
-            // Fetches on-chain global stake balances and checks against local balances
-            const globalUndelegatedStake = await stakingWrapper
-                .getGlobalStakeByStatus(StakeStatus.Undelegated)
-                .callAsync();
-            const globalDelegatedStake = await stakingWrapper.getGlobalStakeByStatus(StakeStatus.Delegated).callAsync();
-            expect(globalUndelegatedStake).to.deep.equal(globalStake[StakeStatus.Undelegated]);
-            expect(globalDelegatedStake).to.deep.equal(globalStake[StakeStatus.Delegated]);
+                // Fetches on-chain owner stake balances and checks against local balances
+                const ownerUndelegatedStake = {
+                    ...new StoredBalance(),
+                    ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Undelegated).callAsync()),
+                };
+                const ownerDelegatedStake = {
+                    ...new StoredBalance(),
+                    ...(await stakingWrapper.getOwnerStakeByStatus(owner, StakeStatus.Delegated).callAsync()),
+                };
+                expect(ownerUndelegatedStake).to.deep.equal(ownerStake[StakeStatus.Undelegated]);
+                expect(ownerDelegatedStake).to.deep.equal(ownerStake[StakeStatus.Delegated].total);
 
-            // Fetches on-chain pool stake balances and checks against local balances
-            for (const poolId of updatedPools) {
-                const stakeDelegatedByOwner = await stakingWrapper
-                    .getStakeDelegatedToPoolByOwner(owner, poolId)
+                // Fetches on-chain global stake balances and checks against local balances
+                const globalUndelegatedStake = await stakingWrapper
+                    .getGlobalStakeByStatus(StakeStatus.Undelegated)
                     .callAsync();
-                const totalStakeDelegated = await stakingWrapper.getTotalStakeDelegatedToPool(poolId).callAsync();
-                expect(stakeDelegatedByOwner).to.deep.equal(ownerStake[StakeStatus.Delegated][poolId]);
-                expect(totalStakeDelegated).to.deep.equal(pools[poolId].delegatedStake);
-            }
+                const globalDelegatedStake = await stakingWrapper
+                    .getGlobalStakeByStatus(StakeStatus.Delegated)
+                    .callAsync();
+                expect(globalUndelegatedStake).to.deep.equal(globalStake[StakeStatus.Undelegated]);
+                expect(globalDelegatedStake).to.deep.equal(globalStake[StakeStatus.Delegated]);
+
+                // Fetches on-chain pool stake balances and checks against local balances
+                for (const poolId of updatedPools) {
+                    const stakeDelegatedByOwner = await stakingWrapper
+                        .getStakeDelegatedToPoolByOwner(owner, poolId)
+                        .callAsync();
+                    const totalStakeDelegated = await stakingWrapper.getTotalStakeDelegatedToPool(poolId).callAsync();
+                    expect(stakeDelegatedByOwner).to.deep.equal(ownerStake[StakeStatus.Delegated][poolId]);
+                    expect(totalStakeDelegated).to.deep.equal(pools[poolId].delegatedStake);
+                }
+            },
         },
-    });
+    );
 }
+/* tslint:enable:no-unnecessary-type-assertion */
