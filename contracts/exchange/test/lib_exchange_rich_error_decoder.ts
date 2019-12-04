@@ -1,14 +1,6 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    hexRandom,
-    OrderStatus,
-    orderUtils,
-    randomAddress,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, OrderStatus, orderUtils, randomAddress } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { BigNumber, ExchangeRevertErrors, RevertError } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexUtils, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
@@ -63,9 +55,9 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
         const signer = randomAddress();
         const validator = randomAddress();
-        const data = hexRandom(ERROR_DATA_LENGTH);
-        const signature = hexRandom(SIGNATURE_LENGTH);
-        const errorData = hexRandom(ERROR_DATA_LENGTH);
+        const data = hexUtils.random(ERROR_DATA_LENGTH);
+        const signature = hexUtils.random(SIGNATURE_LENGTH);
+        const errorData = hexUtils.random(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.SignatureError, [errorCode, orderHash, signer, signature]);
         createDecodeTest(ExchangeRevertErrors.SignatureValidatorNotApprovedError, [signer, validator]);
         createDecodeTest(ExchangeRevertErrors.EIP1271SignatureError, [validator, data, signature, errorData]);
@@ -114,7 +106,7 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     (() => {
         const assetProxyAddress = randomAddress();
         createDecodeTest(ExchangeRevertErrors.AssetProxyExistsError, [
-            hexRandom(ASSET_PROXY_ID_LENGTH),
+            hexUtils.random(ASSET_PROXY_ID_LENGTH),
             assetProxyAddress,
         ]);
     })();
@@ -122,14 +114,14 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     (() => {
         const errorCode = ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy;
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const assetData = hexRandom(ASSET_DATA_LENGTH);
+        const assetData = hexUtils.random(ASSET_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.AssetProxyDispatchError, [errorCode, orderHash, assetData]);
     })();
 
     (() => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const assetData = hexRandom(ASSET_DATA_LENGTH);
-        const errorData = hexRandom(ERROR_DATA_LENGTH);
+        const assetData = hexUtils.random(ASSET_DATA_LENGTH);
+        const errorData = hexUtils.random(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.AssetProxyTransferError, [orderHash, assetData, errorData]);
     })();
 
@@ -147,14 +139,14 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
 
     (() => {
         const transactionHash = orderUtils.generatePseudoRandomOrderHash();
-        const errorData = hexRandom(ERROR_DATA_LENGTH);
+        const errorData = hexUtils.random(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.TransactionExecutionError, [transactionHash, errorData]);
     })();
 
     (() => {
         const errorCode = ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketSellOrders;
-        const expectedAmount = new BigNumber(hexRandom(WORD_LENGTH));
-        const actualAmount = new BigNumber(hexRandom(WORD_LENGTH));
+        const expectedAmount = new BigNumber(hexUtils.random(WORD_LENGTH));
+        const actualAmount = new BigNumber(hexUtils.random(WORD_LENGTH));
         createDecodeTest(ExchangeRevertErrors.IncompleteFillError, [errorCode, expectedAmount, actualAmount]);
     })();
 });

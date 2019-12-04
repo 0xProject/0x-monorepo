@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Removed `hex_utils.ts`. Moved to @0x/utils",
+                "pr": 2373
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
@@ -63,7 +72,7 @@
                 "pr": 2031
             },
             {
-                "note": "Add `haxRandom()` to `hex_utils.ts`",
+                "note": "Add `hexRandom()` to `hex_utils.ts`",
                 "pr": 2031
             },
             {

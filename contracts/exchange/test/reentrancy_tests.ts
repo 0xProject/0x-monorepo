@@ -1,5 +1,5 @@
-import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { DataItem, MethodAbi, TupleDataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -47,11 +47,11 @@ blockchainTests.resets('Reentrancy Tests', env => {
         }
         // Handle bytes.
         if (item.type === 'bytes') {
-            return hexRandom(36);
+            return hexUtils.random(36);
         }
         // Handle addresses.
         if (item.type === 'address') {
-            return hexRandom(constants.ADDRESS_LENGTH);
+            return hexUtils.random(constants.ADDRESS_LENGTH);
         }
         // Handle bools.
         if (item.type === 'bool') {
@@ -84,7 +84,7 @@ blockchainTests.resets('Reentrancy Tests', env => {
         m = /^bytes(\d+)$/.exec(item.type);
         if (m) {
             const size = parseInt(m[1], 10) || 32;
-            return hexRandom(size);
+            return hexUtils.random(size);
         }
         throw new Error(`Unhandled input type: ${item.type}`);
     }

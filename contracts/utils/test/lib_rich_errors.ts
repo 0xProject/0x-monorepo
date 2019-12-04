@@ -1,5 +1,5 @@
-import { blockchainTests, expect, hexRandom } from '@0x/contracts-test-utils';
-import { coerceThrownErrorAsRevertError, StringRevertError } from '@0x/utils';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { coerceThrownErrorAsRevertError, hexUtils, StringRevertError } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { TestLibRichErrorsContract } from './wrappers';
@@ -19,7 +19,7 @@ blockchainTests('LibRichErrors', env => {
 
     describe('_rrevert', () => {
         it('should correctly revert the extra bytes', async () => {
-            const extraBytes = hexRandom(100);
+            const extraBytes = hexUtils.random(100);
             try {
                 await lib.externalRRevert(extraBytes).callAsync();
             } catch (err) {

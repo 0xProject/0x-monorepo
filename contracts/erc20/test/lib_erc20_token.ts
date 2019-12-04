@@ -3,11 +3,10 @@ import {
     constants,
     expect,
     getRandomInteger,
-    hexLeftPad,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { RawRevertError, StringRevertError } from '@0x/utils';
+import { hexUtils, RawRevertError, StringRevertError } from '@0x/utils';
 
 import { TestLibERC20TokenContract, TestLibERC20TokenTargetEvents } from './wrappers';
 
@@ -17,11 +16,11 @@ blockchainTests('LibERC20Token', env => {
     let testContract: TestLibERC20TokenContract;
     const REVERT_STRING = 'WHOOPSIE';
     const ENCODED_REVERT = new StringRevertError(REVERT_STRING).encode();
-    const ENCODED_TRUE = hexLeftPad(1);
-    const ENCODED_FALSE = hexLeftPad(0);
-    const ENCODED_TWO = hexLeftPad(2);
-    const ENCODED_SHORT_TRUE = hexLeftPad(2, 31);
-    const ENCODED_LONG_TRUE = hexLeftPad(2, 33);
+    const ENCODED_TRUE = hexUtils.leftPad(1);
+    const ENCODED_FALSE = hexUtils.leftPad(0);
+    const ENCODED_TWO = hexUtils.leftPad(2);
+    const ENCODED_SHORT_TRUE = hexUtils.leftPad(2, 31);
+    const ENCODED_LONG_TRUE = hexUtils.leftPad(2, 33);
 
     before(async () => {
         testContract = await TestLibERC20TokenContract.deployFrom0xArtifactAsync(
@@ -301,14 +300,14 @@ blockchainTests('LibERC20Token', env => {
 
     describe('decimals()', () => {
         const DEFAULT_DECIMALS = 18;
-        const ENCODED_ZERO = hexLeftPad(0);
-        const ENCODED_SHORT_ZERO = hexLeftPad(0, 31);
-        const ENCODED_LONG_ZERO = hexLeftPad(0, 33);
+        const ENCODED_ZERO = hexUtils.leftPad(0);
+        const ENCODED_SHORT_ZERO = hexUtils.leftPad(0, 31);
+        const ENCODED_LONG_ZERO = hexUtils.leftPad(0, 33);
         const randomDecimals = () => Math.floor(Math.random() * 256) + 1;
 
         it('returns the number of decimals defined by the token', async () => {
             const decimals = randomDecimals();
-            const encodedDecimals = hexLeftPad(decimals);
+            const encodedDecimals = hexUtils.leftPad(decimals);
             const result = await testContract.testDecimals(false, ENCODED_REVERT, encodedDecimals).callAsync();
             return expect(result).to.bignumber.eq(decimals);
         });

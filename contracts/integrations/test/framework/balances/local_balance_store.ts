@@ -1,8 +1,8 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { constants, hexSlice, Numberish, provider } from '@0x/contracts-test-utils';
+import { constants, Numberish, provider } from '@0x/contracts-test-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -82,7 +82,7 @@ export class LocalBalanceStore extends BalanceStore {
         if (fromAddress === toAddress || amount.isZero()) {
             return;
         }
-        const assetProxyId = hexSlice(assetData, 0, 4);
+        const assetProxyId = hexUtils.slice(assetData, 0, 4);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
                 const tokenAddress = this._assetDataDecoder.getABIDecodedTransactionData<string>(

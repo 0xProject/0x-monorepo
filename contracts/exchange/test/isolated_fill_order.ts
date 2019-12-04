@@ -1,8 +1,8 @@
 import { LibMathRevertErrors, ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, expect, hexRandom } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
-import { BigNumber, ExchangeRevertErrors } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
@@ -16,7 +16,7 @@ import {
 } from './utils/isolated_exchange_wrapper';
 
 blockchainTests('Isolated fillOrder() tests', env => {
-    const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
+    const randomAddress = () => hexUtils.random(constants.ADDRESS_LENGTH);
     const getCurrentTime = () => Math.floor(_.now() / 1000);
     const { ZERO_AMOUNT, ONE_ETHER, MAX_UINT256_ROOT } = constants;
     const ONE_DAY = 60 * 60 * 24;

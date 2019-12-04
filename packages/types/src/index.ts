@@ -173,6 +173,13 @@ export interface ERC20AssetData {
     tokenAddress: string;
 }
 
+export interface ERC20BridgeAssetData {
+    assetProxyId: string;
+    tokenAddress: string;
+    bridgeAddress: string;
+    bridgeData: string;
+}
+
 export interface ERC721AssetData {
     assetProxyId: string;
     tokenAddress: string;
@@ -201,7 +208,12 @@ export interface ERC1155AssetDataNoProxyId {
     callbackData: string;
 }
 
-export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData | StaticCallAssetData;
+export type SingleAssetData =
+    | ERC20AssetData
+    | ERC20BridgeAssetData
+    | ERC721AssetData
+    | ERC1155AssetData
+    | StaticCallAssetData;
 
 export interface MultiAssetData {
     assetProxyId: string;

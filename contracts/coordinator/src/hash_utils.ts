@@ -1,7 +1,6 @@
-import { hexConcat } from '@0x/contracts-test-utils';
 import { eip712Utils } from '@0x/order-utils';
 import { SignedZeroExTransaction } from '@0x/types';
-import { signTypedDataUtils } from '@0x/utils';
+import { hexUtils, signTypedDataUtils } from '@0x/utils';
 
 export const hashUtils = {
     async getApprovalHashBufferAsync(
@@ -22,7 +21,9 @@ export const hashUtils = {
         verifyingContract: string,
         txOrigin: string,
     ): Promise<string> {
-        const hashHex = hexConcat(await hashUtils.getApprovalHashBufferAsync(transaction, verifyingContract, txOrigin));
+        const hashHex = hexUtils.concat(
+            await hashUtils.getApprovalHashBufferAsync(transaction, verifyingContract, txOrigin),
+        );
         return hashHex;
     },
 };

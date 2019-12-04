@@ -18,15 +18,13 @@ import {
     ExchangeFunctionName,
     expect,
     getLatestBlockTimestampAsync,
-    hexConcat,
-    hexRandom,
     orderHashUtils,
     randomAddress,
     transactionHashUtils,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { FillResults, OrderStatus, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import { Actor } from '../framework/actors/base';
@@ -190,7 +188,7 @@ blockchainTests.resets('Transaction integration tests', env => {
                     const order = await maker.signOrderAsync();
                     const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                     const transaction = await takers[0].signTransactionAsync({ data });
-                    transaction.signature = hexConcat(hexRandom(65), SignatureType.EthSign);
+                    transaction.signature = hexUtils.concat(hexUtils.random(65), SignatureType.EthSign);
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
                     const expectedError = new ExchangeRevertErrors.SignatureError(
                         ExchangeRevertErrors.SignatureErrorCode.BadTransactionSignature,

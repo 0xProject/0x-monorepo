@@ -58,7 +58,7 @@
         "@0x/contracts-exchange-libs": "^4.0.0",
         "@0x/contracts-gen": "^2.0.0",
         "@0x/contracts-utils": "^4.0.0",
-        "@0x/coordinator-server": "^1.0.3",
+        "@0x/coordinator-server": "^1.0.4",
         "@0x/dev-utils": "^3.0.0",
         "@0x/migrations": "^5.0.0",
         "@0x/order-utils": "^9.0.0",

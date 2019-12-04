@@ -5,13 +5,11 @@ import {
     filterLogs,
     filterLogsToArguments,
     getRandomInteger,
-    hexLeftPad,
-    hexRandom,
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -46,7 +44,9 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
     describe('isValidSignature()', () => {
         it('returns success bytes', async () => {
             const LEGACY_WALLET_MAGIC_VALUE = '0xb0671381';
-            const result = await testContract.isValidSignature(hexRandom(), hexRandom(_.random(0, 32))).callAsync();
+            const result = await testContract
+                .isValidSignature(hexUtils.random(), hexUtils.random(_.random(0, 32)))
+                .callAsync();
             expect(result).to.eq(LEGACY_WALLET_MAGIC_VALUE);
         });
     });
@@ -126,7 +126,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 // The amount to transfer to "to"
                 new BigNumber(_opts.amount),
                 // ABI-encoded "from" token address.
-                hexLeftPad(_opts.fromTokenAddress),
+                hexUtils.leftPad(_opts.fromTokenAddress),
             );
             const result = await bridgeTransferFromFn.callAsync();
             const receipt = await bridgeTransferFromFn.awaitTransactionSuccessAsync();
@@ -208,7 +208,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                         randomAddress(),
                         randomAddress(),
                         getRandomInteger(1, 1e18),
-                        hexLeftPad(randomAddress()),
+                        hexUtils.leftPad(randomAddress()),
                     )
                     .awaitTransactionSuccessAsync();
                 return expect(tx).to.eventually.be.rejectedWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
@@ -282,7 +282,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                         randomAddress(),
                         randomAddress(),
                         getRandomInteger(1, 1e18),
-                        hexLeftPad(wethTokenAddress),
+                        hexUtils.leftPad(wethTokenAddress),
                     )
                     .awaitTransactionSuccessAsync();
                 return expect(tx).to.eventually.be.rejectedWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
@@ -342,7 +342,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                         randomAddress(),
                         randomAddress(),
                         getRandomInteger(1, 1e18),
-                        hexLeftPad(randomAddress()),
+                        hexUtils.leftPad(randomAddress()),
                     )
                     .awaitTransactionSuccessAsync();
                 return expect(tx).to.eventually.be.rejectedWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');

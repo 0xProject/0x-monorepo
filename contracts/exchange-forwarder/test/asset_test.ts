@@ -16,12 +16,10 @@ import {
     constants,
     expect,
     getRandomInteger,
-    hexRandom,
-    hexSlice,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { BigNumber, ExchangeForwarderRevertErrors } from '@0x/utils';
+import { BigNumber, ExchangeForwarderRevertErrors, hexUtils } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { TestForwarderContract } from './wrappers';
@@ -76,7 +74,7 @@ blockchainTests('Supported asset type unit tests', env => {
         erc721AssetData = assetDataEncoder.ERC721Token(erc721Token.address, nftId).getABIEncodedTransactionData();
 
         bridgeAddress = randomAddress();
-        bridgeData = hexRandom();
+        bridgeData = hexUtils.random();
         erc20BridgeAssetData = assetDataEncoder
             .ERC20Bridge(erc20Token.address, bridgeAddress, bridgeData)
             .getABIEncodedTransactionData();
@@ -171,12 +169,12 @@ blockchainTests('Supported asset type unit tests', env => {
             );
         });
         it('reverts if assetData is unsupported', async () => {
-            const randomBytes = hexRandom();
+            const randomBytes = hexUtils.random();
             const tx = forwarder
                 .transferAssetToSender(randomBytes, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             const expectedError = new ExchangeForwarderRevertErrors.UnsupportedAssetProxyError(
-                hexSlice(randomBytes, 0, 4),
+                hexUtils.slice(randomBytes, 0, 4),
             );
             return expect(tx).to.revertWith(expectedError);
         });

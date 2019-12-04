@@ -4,12 +4,10 @@ import {
     filterLogs,
     filterLogsToArguments,
     getRandomInteger,
-    hexLeftPad,
-    hexRandom,
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { BigNumber, StakingRevertErrors } from '@0x/utils';
+import { BigNumber, hexUtils, StakingRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakeStatus } from '../../src/types';
@@ -157,8 +155,8 @@ blockchainTests.resets('MixinStake unit tests', env => {
 
     describe('moveStake()', () => {
         const INVALID_POOL_ERROR = 'INVALID_POOL';
-        const INVALID_POOL_ID = hexLeftPad(0);
-        const VALID_POOL_IDS = [hexRandom(), hexRandom()];
+        const INVALID_POOL_ID = hexUtils.leftPad(0);
+        const VALID_POOL_IDS = [hexUtils.random(), hexUtils.random()];
         let delegatedStakeToPoolByOwnerSlots: string[];
         let delegatedStakeByPoolIdSlots: string[];
         let globalDelegatedStakeSlot: string;

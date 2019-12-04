@@ -1,13 +1,6 @@
-import {
-    blockchainTests,
-    constants,
-    describe,
-    expect,
-    hexRandom,
-    transactionHashUtils,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, transactionHashUtils } from '@0x/contracts-test-utils';
 import { EIP712DomainWithDefaultSchema, ZeroExTransaction } from '@0x/types';
-import { BigNumber, ExchangeRevertErrors, StringRevertError } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, hexUtils, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -19,7 +12,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
     let accounts: string[];
     let domain: EIP712DomainWithDefaultSchema;
 
-    const randomSignature = () => hexRandom(66);
+    const randomSignature = () => hexUtils.random(66);
 
     const EMPTY_ZERO_EX_TRANSACTION = {
         salt: constants.ZERO_AMOUNT,
@@ -668,7 +661,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
 
     describe('setCurrentContextAddressIfRequired', () => {
         it('should set the currentContextAddress if signer not equal to sender', async () => {
-            const randomAddress = hexRandom(20);
+            const randomAddress = hexUtils.random(20);
             await transactionsContract
                 .setCurrentContextAddressIfRequired(randomAddress, randomAddress)
                 .awaitTransactionSuccessAsync();
@@ -676,7 +669,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             expect(currentContextAddress).to.eq(randomAddress);
         });
         it('should not set the currentContextAddress if signer equal to sender', async () => {
-            const randomAddress = hexRandom(20);
+            const randomAddress = hexUtils.random(20);
             await transactionsContract
                 .setCurrentContextAddressIfRequired(accounts[0], randomAddress)
                 .awaitTransactionSuccessAsync({

@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.1.0",
+        "changes": [
+            {
+                "note": "Add wrapper for `IAssetDataContract`",
+                "pr": 2373
+            }
+        ]
+    },
+    {
         "version": "13.0.0",
         "changes": [
             {

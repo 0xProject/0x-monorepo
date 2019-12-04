@@ -6,12 +6,11 @@ import {
     describe,
     expect,
     getRandomPortion,
-    hexRandom,
     orderHashUtils,
 } from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilReferenceFunctions, SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, Order } from '@0x/types';
-import { AnyRevertError, BigNumber, ExchangeRevertErrors, StringRevertError } from '@0x/utils';
+import { AnyRevertError, BigNumber, ExchangeRevertErrors, hexUtils, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -30,11 +29,11 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
     const { addFillResults, getPartialAmountCeil } = LibReferenceFunctions;
     const { safeSub } = UtilReferenceFunctions;
     const protocolFeeMultiplier = new BigNumber(150000);
-    const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
-    const randomAssetData = () => hexRandom(34);
+    const randomAddress = () => hexUtils.random(constants.ADDRESS_LENGTH);
+    const randomAssetData = () => hexUtils.random(34);
     const randomAmount = (maxAmount: BigNumber = ONE_ETHER) => maxAmount.times(_.random(0, 100, true).toFixed(12));
     const randomTimestamp = () => new BigNumber(Math.floor(_.now() / 1000) + _.random(0, 34560));
-    const randomSalt = () => new BigNumber(hexRandom(constants.WORD_LENGTH).substr(2), 16);
+    const randomSalt = () => new BigNumber(hexUtils.random(constants.WORD_LENGTH).substr(2), 16);
     const ALWAYS_FAILING_SALT = constants.MAX_UINT256;
     const ALWAYS_FAILING_SALT_REVERT_ERROR = new StringRevertError('ALWAYS_FAILING_SALT');
     const EMPTY_FILL_RESULTS = {
@@ -1090,7 +1089,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                             takerAssetAmount: new BigNumber(20000),
                         }),
                     ];
-                    const signatures = [hexRandom()];
+                    const signatures = [hexUtils.random()];
                     const fillAmount = new BigNumber(10000);
                     const fillResults = await roundingTestContract
                         .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
@@ -1105,7 +1104,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                             takerAssetAmount: new BigNumber('6300000000000000000'),
                         }),
                     ];
-                    const signatures = [hexRandom()];
+                    const signatures = [hexUtils.random()];
                     const fillAmount = new BigNumber('2400000000000000000');
                     const fillResults = await roundingTestContract
                         .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
@@ -1120,7 +1119,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                             takerAssetAmount: new BigNumber('103048102885858024121'),
                         }),
                     ];
-                    const signatures = [hexRandom()];
+                    const signatures = [hexUtils.random()];
                     const fillAmount = new BigNumber('84819838457312347759');
                     const fillResults = await roundingTestContract
                         .marketBuyOrdersNoThrow(orders, fillAmount, signatures)
@@ -1134,7 +1133,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                         it(`${i + 1}/${FUZZ_COUNT}`, async () => {
                             const ordersCount = _.random(1, 10);
                             const orders = _.times(ordersCount, () => randomOrder());
-                            const signatures = orders.map(() => hexRandom());
+                            const signatures = orders.map(() => hexUtils.random());
                             const totalMakerAssetAmount = BigNumber.sum(...orders.map(o => o.makerAssetAmount));
                             const fillAmount = getRandomPortion(totalMakerAssetAmount);
                             const fillResults = await roundingTestContract

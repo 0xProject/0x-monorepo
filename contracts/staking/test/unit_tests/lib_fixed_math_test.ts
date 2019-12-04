@@ -1,5 +1,5 @@
-import { blockchainTests, expect, hexRandom, Numberish } from '@0x/contracts-test-utils';
-import { BigNumber, FixedMathRevertErrors } from '@0x/utils';
+import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
+import { BigNumber, FixedMathRevertErrors, hexUtils } from '@0x/utils';
 import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 
@@ -803,7 +803,7 @@ blockchainTests('LibFixedMath unit tests', env => {
 
     function getRandomDecimal(min: Numberish, max: Numberish): BigNumber {
         const range = new BigNumber(max).minus(min);
-        const random = fromFixed(new BigNumber(hexRandom().substr(2), 16));
+        const random = fromFixed(new BigNumber(hexUtils.random().substr(2), 16));
         return random.mod(range).plus(min);
     }
 

@@ -4,13 +4,11 @@ import {
     expect,
     filterLogsToArguments,
     getRandomInteger,
-    hexLeftPad,
-    hexRandom,
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, RawRevertError } from '@0x/utils';
+import { BigNumber, hexUtils, RawRevertError } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -39,7 +37,9 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
     describe('isValidSignature()', () => {
         it('returns success bytes', async () => {
             const LEGACY_WALLET_MAGIC_VALUE = '0xb0671381';
-            const result = await testContract.isValidSignature(hexRandom(), hexRandom(_.random(0, 32))).callAsync();
+            const result = await testContract
+                .isValidSignature(hexUtils.random(), hexUtils.random(_.random(0, 32)))
+                .callAsync();
             expect(result).to.eq(LEGACY_WALLET_MAGIC_VALUE);
         });
     });
@@ -71,7 +71,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 fillAmount: getRandomInteger(1, 100e18),
                 fromTokenBalance: getRandomInteger(1, 100e18),
                 toTokentransferRevertReason: '',
-                toTokenTransferReturnData: hexLeftPad(1),
+                toTokenTransferReturnData: hexUtils.leftPad(1),
                 ...opts,
             };
         }
@@ -111,7 +111,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                 _opts.toAddress,
                 new BigNumber(_opts.amount),
                 // ABI-encode the "from" token address as the bridge data.
-                hexLeftPad(_opts.fromTokenAddress as string),
+                hexUtils.leftPad(_opts.fromTokenAddress as string),
             );
             const result = await bridgeTransferFromFn.callAsync();
             const { logs } = await bridgeTransferFromFn.awaitTransactionSuccessAsync();
@@ -179,13 +179,13 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
         });
 
         it('fails if `toTokenAddress.transfer()` returns false', async () => {
-            const opts = createWithdrawToOpts({ toTokenTransferReturnData: hexLeftPad(0) });
+            const opts = createWithdrawToOpts({ toTokenTransferReturnData: hexUtils.leftPad(0) });
             const tx = withdrawToAsync(opts);
-            return expect(tx).to.revertWith(new RawRevertError(hexLeftPad(0)));
+            return expect(tx).to.revertWith(new RawRevertError(hexUtils.leftPad(0)));
         });
 
         it('succeeds if `toTokenAddress.transfer()` returns true', async () => {
-            await withdrawToAsync({ toTokenTransferReturnData: hexLeftPad(1) });
+            await withdrawToAsync({ toTokenTransferReturnData: hexUtils.leftPad(1) });
         });
     });
 });

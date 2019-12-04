@@ -1,5 +1,4 @@
 import { BigNumber, SwapQuoter } from '@0x/asset-swapper';
-import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -19,6 +18,7 @@ import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { Network, OrderSource } from './types';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
+import { assetDataEncoder } from './util/asset_data_encoder';
 import { orderCoercionUtil } from './util/order_coercion';
 import { providerFactory } from './util/provider_factory';
 import { util } from './util/util';
@@ -158,12 +158,12 @@ export const ERC20_PROXY_ID = AssetProxyId.ERC20;
 
 export const assetDataForERC20TokenAddress = (tokenAddress: string): string => {
     assert.isETHAddressHex('tokenAddress', tokenAddress);
-    return assetDataUtils.encodeERC20AssetData(tokenAddress);
+    return assetDataEncoder.ERC20Token(tokenAddress).getABIEncodedTransactionData();
 };
 
 export const assetDataForERC721TokenAddress = (tokenAddress: string, tokenId: string | number): string => {
     assert.isETHAddressHex('tokenAddress', tokenAddress);
-    return assetDataUtils.encodeERC721AssetData(tokenAddress, new BigNumber(tokenId));
+    return assetDataEncoder.ERC721Token(tokenAddress, new BigNumber(tokenId)).getABIEncodedTransactionData();
 };
 
 export const hasMetaDataForAssetData = (assetData: string): boolean => {

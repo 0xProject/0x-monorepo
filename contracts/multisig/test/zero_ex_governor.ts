@@ -1,7 +1,7 @@
-import { blockchainTests, constants, expect, getLatestBlockTimestampAsync, hexRandom } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, getLatestBlockTimestampAsync } from '@0x/contracts-test-utils';
 import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -71,8 +71,8 @@ blockchainTests.resets('ZeroExGovernor', env => {
             functionCallTimeLockSecondsLength === undefined
                 ? functionSelectorLength
                 : functionCallTimeLockSecondsLength;
-        const functionSelectors = _.times(functionSelectorLength, () => hexRandom(4));
-        const destinations = _.times(_destinationsLength, () => hexRandom(20));
+        const functionSelectors = _.times(functionSelectorLength, () => hexUtils.random(4));
+        const destinations = _.times(_destinationsLength, () => hexUtils.random(20));
         const functionCallTimeLockSeconds = _.times(_functionCallTimeLockSecondsLength, () =>
             BigNumber.random() // random int > 0 and < 1000
                 .times(10000000)
@@ -395,7 +395,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(executionLog.args.transactionId).to.bignumber.eq(txId);
         }
         it('should revert if the transaction is not confirmed by the required amount of signers', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
             const tx = governor.executeTransaction(results.txId).awaitTransactionSuccessAsync({
@@ -404,7 +404,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
         });
         it('should revert if the transaction is not confirmed by the required amount of signers and called by the submitter', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
             const tx = governor.executeTransaction(results.txId).awaitTransactionSuccessAsync({
@@ -413,7 +413,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
         });
         it('should be able to execute an unregistered function after the default timelock with no value', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
@@ -424,7 +424,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId);
         });
         it('should be able to execute an unregistered function after the default timelock with a value', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const values = [INITIAL_BALANCE];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
@@ -437,7 +437,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId, values);
         });
         it('should be able to execute a registered function after a custom timelock with no value', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
             await governor
@@ -452,7 +452,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId);
         });
         it('should be able to execute a registered function with no timelock', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const newTimeLock = constants.ZERO_AMOUNT;
             await governor
@@ -467,7 +467,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId);
         });
         it('should be able to execute a registered function after a custom timelock with a value', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
             await governor
@@ -484,7 +484,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId, values);
         });
         it('should be able to call multiple functions with a single destination and no values', async () => {
-            const data = [hexRandom(), hexRandom()];
+            const data = [hexUtils.random(), hexUtils.random()];
             const destinations = [receiver.address, receiver.address];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
@@ -501,7 +501,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
                 env.txDefaults,
                 {},
             );
-            const data = [hexRandom(), hexRandom()];
+            const data = [hexUtils.random(), hexUtils.random()];
             const destinations = [receiver.address, receiver2.address];
             const values = [INITIAL_BALANCE.dividedToIntegerBy(4), INITIAL_BALANCE.dividedToIntegerBy(3)];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
@@ -514,7 +514,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId, values);
         });
         it('should be able to call a combination of registered and unregistered functions', async () => {
-            const data = [hexRandom(), hexRandom()];
+            const data = [hexUtils.random(), hexUtils.random()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
             await governor
@@ -529,7 +529,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId);
         });
         it('should fail if a single function has not passed the timelock', async () => {
-            const data = [hexRandom(), hexRandom()];
+            const data = [hexUtils.random(), hexUtils.random()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
             await governor
@@ -544,7 +544,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(tx).to.revertWith(RevertReason.DefaultTimeLockIncomplete);
         });
         it('should be able to execute a transaction if called by any address', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
@@ -579,7 +579,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             assertReceiverCalledFromLogs(results.executionTxReceipt.logs, data, destinations, results.txId);
         });
         it('should revert if destinations.length != data.length', async () => {
-            const data = [hexRandom(), hexRandom()];
+            const data = [hexUtils.random(), hexUtils.random()];
             const destinations = [receiver.address];
             const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
@@ -590,7 +590,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(tx).to.revertWith(RevertReason.EqualLengthsRequired);
         });
         it('should revert if values.length != data.length', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const values = [constants.ZERO_AMOUNT, constants.ZERO_AMOUNT];
             const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
@@ -603,7 +603,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
             expect(tx).to.revertWith(RevertReason.EqualLengthsRequired);
         });
         it('should revert if the transaction is already executed', async () => {
-            const data = [hexRandom()];
+            const data = [hexUtils.random()];
             const destinations = [receiver.address];
             const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
@@ -628,7 +628,7 @@ blockchainTests.resets('ZeroExGovernor', env => {
         });
         it('should revert if the any call is unsuccessful', async () => {
             const alwaysRevertSelector = '0xF1F2F3F4';
-            const data = [hexRandom(), alwaysRevertSelector];
+            const data = [hexUtils.random(), alwaysRevertSelector];
             const destinations = [receiver.address, receiver.address];
             const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,

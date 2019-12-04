@@ -1,14 +1,7 @@
-import {
-    blockchainTests,
-    constants,
-    describe,
-    expect,
-    hexRandom,
-    transactionHashUtils,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, transactionHashUtils } from '@0x/contracts-test-utils';
 import { eip712Utils } from '@0x/order-utils';
 import { ZeroExTransaction } from '@0x/types';
-import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, hexUtils, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -19,10 +12,10 @@ import { artifacts } from './artifacts';
 blockchainTests('LibZeroExTransaction', env => {
     let libZeroExTransactionContract: TestLibZeroExTransactionContract;
 
-    const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
-    const randomHash = () => hexRandom(constants.WORD_LENGTH);
+    const randomAddress = () => hexUtils.random(constants.ADDRESS_LENGTH);
+    const randomHash = () => hexUtils.random(constants.WORD_LENGTH);
     const randomUint256 = () => new BigNumber(randomHash());
-    const randomAssetData = () => hexRandom(36);
+    const randomAssetData = () => hexUtils.random(36);
 
     const EMPTY_TRANSACTION: ZeroExTransaction = {
         salt: constants.ZERO_AMOUNT,

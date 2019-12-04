@@ -1,4 +1,5 @@
 import { AbiEncoder } from '.';
+import { BigNumber } from './index';
 
 export interface FunctionInfo {
     functionSignature: string;
@@ -17,3 +18,5 @@ export interface DecodedCalldata {
     functionSignature: string;
     functionArguments: any;
 }
+
+export type Numberish = BigNumber | string | number;

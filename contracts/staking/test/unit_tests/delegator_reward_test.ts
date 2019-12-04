@@ -3,13 +3,10 @@ import {
     constants,
     expect,
     filterLogsToArguments,
-    hexHash,
-    hexRandom,
-    hexSlice,
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 
 import { artifacts } from '../artifacts';
@@ -47,7 +44,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
 
     async function rewardPoolAsync(opts?: Partial<RewardPoolOpts>): Promise<RewardPoolOpts> {
         const _opts = {
-            poolId: hexRandom(),
+            poolId: hexUtils.random(),
             operator: constants.NULL_ADDRESS,
             membersReward: getRandomInteger(1, toBaseUnitAmount(100)),
             operatorReward: getRandomInteger(1, toBaseUnitAmount(100)),
@@ -79,7 +76,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         opts?: Partial<SetUnfinalizedMembersRewardsOpts>,
     ): Promise<SetUnfinalizedMembersRewardsOpts> {
         const _opts = {
-            poolId: hexRandom(),
+            poolId: hexUtils.random(),
             operator: constants.NULL_ADDRESS,
             membersReward: getRandomInteger(1, toBaseUnitAmount(100)),
             operatorReward: getRandomInteger(1, toBaseUnitAmount(100)),
@@ -107,7 +104,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
 
     // Generates a deterministic operator address given a pool ID.
     function poolIdToOperator(poolId: string): string {
-        return hexSlice(hexHash(poolId), -20);
+        return hexUtils.slice(hexUtils.hash(poolId), -20);
     }
 
     // Converts pre-split rewards to the amounts the contracts will calculate
@@ -320,7 +317,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('nothing in epoch 2 for delegator delegating in epoch 1', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             // rewards paid for stake in epoch 1.
@@ -330,7 +327,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('all rewards from epoch 3 for delegator delegating in epoch 1', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -341,7 +338,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('all rewards from epoch 3 and 3 for delegator delegating in epoch 1', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -353,7 +350,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('partial rewards from epoch 3 and 3 for delegator partially delegating in epoch 1', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake: delegatorStake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -368,7 +365,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('has correct reward immediately after undelegating', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -381,7 +378,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('has correct reward immediately after undelegating and redelegating', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -395,7 +392,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('has correct reward immediately after undelegating, redelegating, and rewarding fees', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -412,7 +409,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('ignores rewards paid in the same epoch the stake was first active in', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             // stake at 0
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
@@ -425,7 +422,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('uses old stake for rewards paid in the same epoch extra stake is added', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             // stake at 0
             const { delegator, stake: stake1 } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake1 now active)
@@ -453,7 +450,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('uses old stake for rewards paid in the epoch right after extra stake is added', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             // stake at 0
             const { delegator, stake: stake1 } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake1 now active)
@@ -478,7 +475,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('computes correct rewards for 2 staggered delegators', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake A now active)
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
@@ -501,7 +498,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('computes correct rewards for 2 staggered delegators with a 2 epoch gap between payments', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake A now active)
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
@@ -525,7 +522,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('correct rewards for rewards with different stakes', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake: delegatorStake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -550,7 +547,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
 
         describe('with unfinalized rewards', async () => {
             it('nothing with only unfinalized rewards from epoch 2 for delegator with nothing delegated', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId, { stake: 0 });
                 await advanceEpochAsync(); // epoch 2
                 await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
@@ -559,7 +556,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             });
 
             it('nothing with only unfinalized rewards from epoch 2 for delegator delegating in epoch 1', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
@@ -568,7 +565,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             });
 
             it('returns unfinalized rewards from epoch 3 for delegator delegating in epoch 1', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
@@ -581,7 +578,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             });
 
             it('returns unfinalized rewards from epoch 4 for delegator delegating in epoch 1', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
@@ -595,7 +592,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             });
 
             it('returns unfinalized rewards from epoch 4 + rewards from epoch 3 for delegator delegating in epoch 1', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
@@ -611,7 +608,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             });
 
             it('returns unfinalized rewards from epoch 5 + rewards from epoch 3 for delegator delegating in epoch 2', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
@@ -628,7 +625,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             });
 
             it('returns correct rewards if unfinalized stake is different from previous rewards', async () => {
-                const poolId = hexRandom();
+                const poolId = hexUtils.random();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
@@ -657,7 +654,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
 
     describe('reward transfers', async () => {
         it('transfers all rewards to delegator when touching stake', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
@@ -670,7 +667,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('does not collect extra rewards from delegating more stake in the reward epoch', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const stakeResults = [];
             // stake
             stakeResults.push(await delegateStakeAsync(poolId));
@@ -693,7 +690,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('only collects rewards from staked epochs', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const stakeResults = [];
             // stake
             stakeResults.push(await delegateStakeAsync(poolId));
@@ -724,7 +721,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('two delegators can collect split rewards as soon as available', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
@@ -741,7 +738,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('delegator B collects correct rewards after delegator A finalizes', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
@@ -765,7 +762,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         it('delegator A and B collect correct rewards after external finalization', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);

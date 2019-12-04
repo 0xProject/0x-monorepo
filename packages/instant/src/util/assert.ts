@@ -1,10 +1,11 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { AffiliateInfo, AssetMetaData } from '../types';
+
+import { decodeAssetProxyId } from './asset_data_encoder';
 
 export const assert = {
     ...sharedAssert,
@@ -22,7 +23,7 @@ export const assert = {
         _.forEach(metaDataMap, (metaData, assetData) => {
             assert.isHexString(`key ${assetData} of ${variableName}`, assetData);
             assert.isValidAssetMetaData(`${variableName}.${assetData}`, metaData);
-            const assetDataProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+            const assetDataProxyId = decodeAssetProxyId(assetData);
             assert.assert(
                 metaData.assetProxyId === assetDataProxyId,
                 `Expected meta data for assetData ${assetData} to have asset proxy id of ${assetDataProxyId}, but instead got ${

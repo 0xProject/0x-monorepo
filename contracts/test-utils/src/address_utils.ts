@@ -1,9 +1,10 @@
+import { hexUtils } from '@0x/utils';
+
 import { constants } from './constants';
-import { hexRandom } from './hex_utils';
 
 /**
  * Generates a random address.
  */
 export function randomAddress(): string {
-    return hexRandom(constants.ADDRESS_LENGTH);
+    return hexUtils.random(constants.ADDRESS_LENGTH);
 }

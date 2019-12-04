@@ -5,12 +5,11 @@ import {
     expect,
     getRandomInteger,
     getRandomPortion,
-    hexRandom,
     Numberish,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { LogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { StoredBalance } from '../../src/types';
@@ -21,7 +20,7 @@ import { TestMixinStakingPoolRewardsContract, TestMixinStakingPoolRewardsEvents 
 blockchainTests.resets('MixinStakingPoolRewards unit tests', env => {
     let testContract: TestMixinStakingPoolRewardsContract;
 
-    const POOL_ID = hexRandom();
+    const POOL_ID = hexUtils.random();
     const OPERATOR = randomAddress();
     const OPERATOR_SHARE = getRandomInteger(1, constants.PPM_100_PERCENT);
     let caller: string;

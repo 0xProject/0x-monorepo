@@ -1,16 +1,10 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
-import {
-    blockchainTests,
-    constants,
-    getLatestBlockTimestampAsync,
-    hexConcat,
-    toBaseUnitAmount,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, getLatestBlockTimestampAsync, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
-import { AbiEncoder, BigNumber, ExchangeForwarderRevertErrors } from '@0x/utils';
+import { AbiEncoder, BigNumber, ExchangeForwarderRevertErrors, hexUtils } from '@0x/utils';
 
 import { deployEth2DaiBridgeAsync } from '../bridges/deploy_eth2dai_bridge';
 import { deployUniswapBridgeAsync } from '../bridges/deploy_uniswap_bridge';
@@ -111,7 +105,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
             takerFeeAssetData: wethAssetData,
             expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(fifteenMinutesInSeconds),
             salt: generatePseudoRandomSalt(),
-            signature: hexConcat(SignatureType.Wallet),
+            signature: hexUtils.concat(SignatureType.Wallet),
         };
         eth2DaiBridgeOrder = {
             ...orderDefaults,

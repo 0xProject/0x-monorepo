@@ -3,13 +3,12 @@ import {
     constants,
     describe,
     expect,
-    hexRandom,
     testCombinatoriallyWithReferenceFunc,
     uint256Values,
 } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { FillResults, MatchedFillResults, Order } from '@0x/types';
-import { BigNumber, LibMathRevertErrors } from '@0x/utils';
+import { BigNumber, hexUtils, LibMathRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -46,9 +45,9 @@ blockchainTests('LibFillResults', env => {
         exchangeAddress: constants.NULL_ADDRESS,
     };
 
-    const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
-    const randomAssetData = () => hexRandom(36);
-    const randomUint256 = () => new BigNumber(hexRandom(constants.WORD_LENGTH));
+    const randomAddress = () => hexUtils.random(constants.ADDRESS_LENGTH);
+    const randomAssetData = () => hexUtils.random(36);
+    const randomUint256 = () => new BigNumber(hexUtils.random(constants.WORD_LENGTH));
 
     let libsContract: TestLibFillResultsContract;
     let makerAddressLeft: string;

@@ -1,13 +1,6 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    getRandomInteger,
-    hexRandom,
-    randomAddress,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 
 import { artifacts } from '../artifacts';
 import { TestMixinStakeBalancesContract } from '../wrappers';
@@ -170,8 +163,8 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
     describe('getStakeDelegatedToPoolByOwner()', () => {
         const staker = randomAddress();
         const notStaker = randomAddress();
-        const poolId = hexRandom();
-        const notPoolId = hexRandom();
+        const poolId = hexUtils.random();
+        const notPoolId = hexUtils.random();
         const delegatedBalance = randomStoredBalance();
 
         before(async () => {
@@ -197,8 +190,8 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
     });
 
     describe('getTotalStakeDelegatedToPool()', () => {
-        const poolId = hexRandom();
-        const notPoolId = hexRandom();
+        const poolId = hexUtils.random();
+        const notPoolId = hexUtils.random();
         const delegatedBalance = randomStoredBalance();
 
         before(async () => {

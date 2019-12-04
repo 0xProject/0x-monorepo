@@ -643,7 +643,7 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
-"@0x/abi-gen-wrappers@^5.4.0-beta.2", "@0x/abi-gen-wrappers@^5.4.0-beta.3":
+"@0x/abi-gen-wrappers@^5.4.0-beta.3":
   version "5.4.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-5.4.0-beta.3.tgz#8c2d71ef5695fe2d73359917375cfc99b7ba8112"
   dependencies:
@@ -660,7 +660,6 @@
 "@0x/assert@2.2.0-beta.2":
   version "2.2.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.2.0-beta.2.tgz#de78c0bb2c9eff263df5bbe743fe73f19ca9c3bd"
-  integrity sha512-30i5fQ2kqejMkLHMrmqTsZedrJ3DR1KKdO6/CfEtP0wN7eF198yIm1VBHsXGRBWcS+1yCd076qbyj0h2X2Deng==
   dependencies:
     "@0x/json-schemas" "^4.1.0-beta.2"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -671,7 +670,6 @@
 "@0x/assert@^2.2.0-beta.2", "@0x/assert@^2.2.0-beta.3":
   version "2.2.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.2.0-beta.3.tgz#8fb95c265000532cd8dced44d44d29ca544b2bfc"
-  integrity sha512-ShENc8QJU4ur/5TkRl3l7J3Yt7WaxHAbuoTRm/djcA0iwYyUVlP5yN9Ab9ua+VLizQQTNw1n+kF1mJWg5lQXuA==
   dependencies:
     "@0x/json-schemas" "^4.1.0-beta.3"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -679,10 +677,9 @@
     lodash "^4.17.11"
     valid-url "^1.0.9"
 
-"@0x/base-contract@^5.5.0-beta.2", "@0x/base-contract@^5.5.0-beta.3", "@0x/base-contract@^5.5.0-beta.4":
+"@0x/base-contract@^5.5.0-beta.3", "@0x/base-contract@^5.5.0-beta.4":
   version "5.5.0-beta.4"
   resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-5.5.0-beta.4.tgz#eb26473e033e1a305a9fa87ab9e26325c9face59"
-  integrity sha512-6OC3Rg2ESoi1k4wABLt67aMGxqdb6FraeEHdAGb07VuPElpyH9jT8dl2aJFAI8tVcnrUQTXeDYJjuK7rimNReg==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/json-schemas" "^4.1.0-beta.3"
@@ -696,40 +693,37 @@
     js-sha3 "^0.7.0"
     uuid "^3.3.2"
 
-"@0x/contract-addresses@3.3.0-beta.3":
-  version "3.3.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.3.0-beta.3.tgz#0fa8ad47e22aecdb99f9a044ba3c705c4173b61e"
+"@0x/contract-addresses@3.3.0-beta.4":
+  version "3.3.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.3.0-beta.4.tgz#eec4492702b2e707bcace6ac274f9826761e08a4"
   dependencies:
     lodash "^4.17.11"
 
-"@0x/contract-addresses@^3.3.0-beta.3", "@0x/contract-addresses@^3.3.0-beta.4", "@0x/contract-addresses@^3.3.0-beta.5":
+"@0x/contract-addresses@^3.3.0-beta.4", "@0x/contract-addresses@^3.3.0-beta.5":
   version "3.3.0-beta.5"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-3.3.0-beta.5.tgz#9d5f80a258f1d103b127159c237f9bcdad182e80"
-  integrity sha512-/8de6W1MnVc2zElnCGjK3zgWabBAJZck+zCmNRIMiGtPJIWEW+F3EkAFPfMX6bSZIyrUBlYJIr0xVIWLPU45Aw==
   dependencies:
     lodash "^4.17.11"
 
 "@0x/contract-artifacts@^2.3.0-beta.3":
   version "2.3.0-beta.4"
   resolved "https://registry.yarnpkg.com/@0x/contract-artifacts/-/contract-artifacts-2.3.0-beta.4.tgz#ca056885be387344aaccf5c69fe80aec248df37d"
-  integrity sha512-NpZk3PVE9c2g5kolCcZej2i1l1XlvCFm9FXAny0tCz+/vNb3RhI0m6ecoiS7b1nFEFZ9q6jjsCCb5OEsxMudnw==
 
-"@0x/contract-wrappers@12.2.0-beta.2":
-  version "12.2.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-12.2.0-beta.2.tgz#62b3c13e35282df14734d1f6b1a617ed51901a27"
+"@0x/contract-wrappers@12.2.0-beta.3":
+  version "12.2.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-12.2.0-beta.3.tgz#e85a7e42170e98244ab57a1089f8831cf10e3f2d"
   dependencies:
-    "@0x/abi-gen-wrappers" "^5.4.0-beta.2"
-    "@0x/base-contract" "^5.5.0-beta.2"
-    "@0x/contract-addresses" "^3.3.0-beta.3"
+    "@0x/abi-gen-wrappers" "^5.4.0-beta.3"
+    "@0x/base-contract" "^5.5.0-beta.3"
+    "@0x/contract-addresses" "^3.3.0-beta.4"
     "@0x/contract-artifacts" "^2.3.0-beta.3"
-    "@0x/order-utils" "^8.5.0-beta.2"
+    "@0x/order-utils" "^8.5.0-beta.3"
     ethers "~4.0.4"
     http-status-codes "^1.3.2"
 
 "@0x/contract-wrappers@^12.2.0-beta.4":
   version "12.2.0-beta.4"
   resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-12.2.0-beta.4.tgz#7a7301dd50c28887879df4d385e80a49e040748d"
-  integrity sha512-JVoYG3Rd430fZw9ogBSqeLOaJXkqp9N7g614X5/bzzuG/dSDdwXl48X02m66aGFWcNofx/iMsT4tpOZrJ2bDBg==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/base-contract" "^5.5.0-beta.4"
@@ -741,32 +735,31 @@
     ethereum-types "^2.2.0-beta.2"
     ethers "~4.0.4"
 
-"@0x/contracts-dev-utils@^0.1.0-beta.2":
+"@0x/contracts-dev-utils@^0.1.0-beta.3":
   version "0.1.0-beta.4"
   resolved "https://registry.yarnpkg.com/@0x/contracts-dev-utils/-/contracts-dev-utils-0.1.0-beta.4.tgz#87f51a7ed778b619beb8b32bf08ea6b3e4495d4e"
-  integrity sha512-6fQ13/L8aKKnO/vs2WIg0D7FXz3QpMKBHrTYdzvpwFrOcd6MPavQEj0KCQdT/4aplMvWnWDSVAOqn8i/lJJ8jQ==
   dependencies:
     "@0x/base-contract" "^5.5.0-beta.4"
 
-"@0x/contracts-erc20@2.3.0-beta.2":
-  version "2.3.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@0x/contracts-erc20/-/contracts-erc20-2.3.0-beta.2.tgz#218239f5594fdbbf8c1ff757a6356ac6fb787421"
+"@0x/contracts-erc20@2.3.0-beta.3":
+  version "2.3.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@0x/contracts-erc20/-/contracts-erc20-2.3.0-beta.3.tgz#744f911d340576a27253b5961d52b09bb8659a98"
   dependencies:
-    "@0x/base-contract" "^5.5.0-beta.2"
+    "@0x/base-contract" "^5.5.0-beta.3"
     "@0x/types" "^2.5.0-beta.2"
     "@0x/typescript-typings" "^4.4.0-beta.2"
     ethereum-types "^2.2.0-beta.2"
 
-"@0x/coordinator-server@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-1.0.3.tgz#736640edc5960bd65674436f96050fd7b4da7ac3"
+"@0x/coordinator-server@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-1.0.4.tgz#9729ce789fb772a5ae0a8dcdf5928de9e80ac1af"
   dependencies:
     "@0x/assert" "2.2.0-beta.2"
-    "@0x/contract-addresses" "3.3.0-beta.3"
-    "@0x/contract-wrappers" "12.2.0-beta.2"
-    "@0x/contracts-erc20" "2.3.0-beta.2"
+    "@0x/contract-addresses" "3.3.0-beta.4"
+    "@0x/contract-wrappers" "12.2.0-beta.3"
+    "@0x/contracts-erc20" "2.3.0-beta.3"
     "@0x/json-schemas" "4.1.0-beta.2"
-    "@0x/order-utils" "8.5.0-beta.2"
+    "@0x/order-utils" "8.5.0-beta.3"
     "@0x/subproviders" "5.1.0-beta.2"
     "@0x/types" "2.5.0-beta.2"
     "@0x/typescript-typings" "4.4.0-beta.2"
@@ -789,7 +782,6 @@
 "@0x/json-schemas@4.1.0-beta.2":
   version "4.1.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-4.1.0-beta.2.tgz#79d05d0c91525e2356f783dae5e572dd3624969f"
-  integrity sha512-GWLAC4GlcRcn3ct+0wV/ppey+M9bnfnznB1fFcBWS7qmjM0iq36ex3DP48MJroWLWwUiXIWHrAZkp5QCAlc3FA==
   dependencies:
     "@0x/typescript-typings" "^4.4.0-beta.2"
     "@types/node" "*"
@@ -799,7 +791,6 @@
 "@0x/json-schemas@^4.1.0-beta.2", "@0x/json-schemas@^4.1.0-beta.3":
   version "4.1.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-4.1.0-beta.3.tgz#af70a35691108ea162140640bae93a7fc84ca6ee"
-  integrity sha512-vcgzSeaOXiUQ4KjqdLTTBHbkWnp4IE7cXbUblRy8Y0XYPQsPywhs9mtjY4lBVNmm1DDpLhreo1mwrvPS3HW5YA==
   dependencies:
     "@0x/typescript-typings" "^4.4.0-beta.2"
     "@types/node" "*"
@@ -819,15 +810,15 @@
     uuid "^3.3.2"
     websocket "^1.0.29"
 
-"@0x/order-utils@8.5.0-beta.2":
-  version "8.5.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-8.5.0-beta.2.tgz#ffd3da985e79aab4d0308ab33e399ec51c835ec1"
+"@0x/order-utils@8.5.0-beta.3":
+  version "8.5.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-8.5.0-beta.3.tgz#67bc733cf64cb7cc5653a913e986c5f211b1b7d2"
   dependencies:
-    "@0x/abi-gen-wrappers" "^5.4.0-beta.2"
+    "@0x/abi-gen-wrappers" "^5.4.0-beta.3"
     "@0x/assert" "^2.2.0-beta.2"
-    "@0x/contract-addresses" "^3.3.0-beta.3"
+    "@0x/contract-addresses" "^3.3.0-beta.4"
     "@0x/contract-artifacts" "^2.3.0-beta.3"
-    "@0x/contracts-dev-utils" "^0.1.0-beta.2"
+    "@0x/contracts-dev-utils" "^0.1.0-beta.3"
     "@0x/json-schemas" "^4.1.0-beta.2"
     "@0x/types" "^2.5.0-beta.2"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -841,10 +832,9 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@0x/order-utils@^8.5.0-beta.2":
+"@0x/order-utils@^8.5.0-beta.3":
   version "8.5.0-beta.4"
   resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-8.5.0-beta.4.tgz#900387631008cc9dc9ece125d28450d2beaea462"
-  integrity sha512-a3vFDAETaPVo/hN5iFr1gxgshfSzAO23NnaUSjeEhs4Ff8eKxuISc6UARFaNzdQeXygDWHMjwlmZ7iegBHe93g==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/contract-wrappers" "^12.2.0-beta.4"
@@ -858,7 +848,6 @@
 "@0x/subproviders@5.1.0-beta.2":
   version "5.1.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/subproviders/-/subproviders-5.1.0-beta.2.tgz#020369711330755448397b3b8cecf2868ae7c54c"
-  integrity sha512-Nk8iSlR95Zo6L1tq2tHLKupX5bCD/NlxQ/KKli4qyAawyxuXQcQbl8flUApJFd+BYY7mghLDwY5u4o8CCR56Nw==
   dependencies:
     "@0x/assert" "^2.2.0-beta.2"
     "@0x/types" "^2.5.0-beta.2"
@@ -899,7 +888,6 @@
 "@0x/types@2.5.0-beta.2":
   version "2.5.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/types/-/types-2.5.0-beta.2.tgz#19d8bda61d5c1b1febc569d30dc8e7bf764d38f9"
-  integrity sha512-/7+n09z1dngIN7Kw7L+nleGe0+YXCT4O0VzTihZj6Z2vVHCt+Wo4q1ma9r11vviv07tmqglyw7QbYAfTHIz8Ew==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
@@ -916,7 +904,6 @@
 "@0x/types@^2.5.0-beta.2", "@0x/types@^2.5.0-beta.3":
   version "2.5.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/types/-/types-2.5.0-beta.3.tgz#e010e9dbf62e37e59177c1d6df8d1acf3a9ea1b4"
-  integrity sha512-5wJs4/EZGPcU6W5IZ87zuya9vQUPD4DchyP29bXyguGHg9dOxuUOF4WauJZExWlPCS7eivviiUHpZD9DZhni+w==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
@@ -925,7 +912,6 @@
 "@0x/typescript-typings@4.4.0-beta.2", "@0x/typescript-typings@^4.4.0-beta.2":
   version "4.4.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-4.4.0-beta.2.tgz#67c621252f162914186b8f684ac5e306206c1cf2"
-  integrity sha512-Fq2nOKvopdLMEjuPiKqomGog06bxAXGjqnodCwv9OKr11V5W1twFTUM3c1TENfHeGvcqf1aMl1hsH3fuVP61jg==
   dependencies:
     "@types/bn.js" "^4.11.0"
     "@types/react" "*"
@@ -946,7 +932,6 @@
 "@0x/utils@4.6.0-beta.2":
   version "4.6.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.6.0-beta.2.tgz#ffa70f05736a74ac8d7ca5debe01bff7e6d8f073"
-  integrity sha512-HjewJF4Ibsizh6oWZZxdVxeNc9mGgjdwTCVp/Xj2k9GN6GI8m8EKiowk4Db86wG0/B6y0PDK+985rZ3dtc3MLQ==
   dependencies:
     "@0x/types" "^2.5.0-beta.2"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -983,7 +968,6 @@
 "@0x/utils@^4.6.0-beta.2", "@0x/utils@^4.6.0-beta.3":
   version "4.6.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.6.0-beta.3.tgz#d40278916d98c48ea05821ae4987c88f032c7bff"
-  integrity sha512-aPIUgfhaDhwgddJAlIQJ2Ki87A60ovatBLCjareLUbsQSvFS5i3iujUBQHgFxZAv9tgl35fyg2ISEJ1YkQyubA==
   dependencies:
     "@0x/types" "^2.5.0-beta.3"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -1018,7 +1002,6 @@
 "@0x/web3-wrapper@6.1.0-beta.2":
   version "6.1.0-beta.2"
   resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.1.0-beta.2.tgz#24aae8a0063057ebb6d3a7893a01d0abac8cd19c"
-  integrity sha512-XTurMsspRe089KybRbaEDUce/p25LjHBuGh5zMWb6OWctIoD7iJ2QHJOoH5AMJMlXObTO3CFwpwybbDmlbaKGQ==
   dependencies:
     "@0x/assert" "^2.2.0-beta.2"
     "@0x/json-schemas" "^4.1.0-beta.2"
@@ -1032,7 +1015,6 @@
 "@0x/web3-wrapper@^6.1.0-beta.2", "@0x/web3-wrapper@^6.1.0-beta.3":
   version "6.1.0-beta.3"
   resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.1.0-beta.3.tgz#82161147e9283391e0c7cd6027c971749c5a2f77"
-  integrity sha512-mc8120n8w88gICbDm8pkmC83Ul3RgE4BGsjY5BRBFefmKbv/XLeBZiWdhsaWYmkk8v4f+ZxAQ+HHTBDsRH87Og==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/json-schemas" "^4.1.0-beta.3"
@@ -6768,7 +6750,6 @@ ethereum-types@^2.1.6:
 ethereum-types@^2.2.0-beta.2:
   version "2.2.0-beta.2"
   resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-2.2.0-beta.2.tgz#0b446842474c2afacd351258ed4a2d0841f2608f"
-  integrity sha512-5ANYHI/InHqf4Nt8oYrpvcph9/D6gi3sbM7Rlr8r0QjXb2mqocqEvOH460Zkf1robc7WDqurp9baeMy+um8kww==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
