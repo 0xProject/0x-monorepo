@@ -216,7 +216,7 @@ jobs:
                   TAKER_FEE_UNIT_AMOUNT: 0
                   MESH_ENDPOINT: 'ws://localhost:60557'
               command: |
-                  sh -c "waitForMesh () { sleep 5; }; waitForMesh && node_modules/.bin/forever ts/lib/index.js"
+                  sh -c "waitForMesh () { sleep 30; }; waitForMesh && node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - restore_cache:
