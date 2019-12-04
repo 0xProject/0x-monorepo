@@ -1,6 +1,7 @@
 import { StakingPoolById } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { logUtils } from '@0x/utils';
+import { TxData } from 'ethereum-types';
 
 import { DeploymentManager } from '../deployment_manager';
 
@@ -13,18 +14,24 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
 export function validDecreaseStakingPoolOperatorShareAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
-): FunctionAssertion<{}, void> {
+): FunctionAssertion<[string, number], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<{}, void>(stakingWrapper.decreaseStakingPoolOperatorShare, {
-        after: async (_beforeInfo, _result: FunctionResult, poolId: string, expectedOperatorShare: number) => {
-            logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
+    return new FunctionAssertion<[string, number], {}, void>(
+        stakingWrapper.decreaseStakingPoolOperatorShare.bind(stakingWrapper),
+        {
+            after: async (_beforeInfo, _result: FunctionResult, args: [string, number], txData: Partial<TxData>) => {
+                const [poolId, expectedOperatorShare] = args;
 
-            // Checks that the on-chain pool's operator share has been updated.
-            const { operatorShare } = await stakingWrapper.getStakingPool(poolId).callAsync();
-            expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
-            // Updates the pool in local state.
-            pools[poolId].operatorShare = operatorShare;
+                logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
+
+                // Checks that the on-chain pool's operator share has been updated.
+                const { operatorShare } = await stakingWrapper.getStakingPool(poolId).callAsync();
+                expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
+
+                // Updates the pool in local state.
+                pools[poolId].operatorShare = operatorShare;
+            },
         },
-    });
+    );
 }

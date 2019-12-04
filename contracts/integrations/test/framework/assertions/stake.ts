@@ -25,20 +25,23 @@ function expectedUndelegatedStake(
  * FunctionAssertion checks that the staker and zrxVault's balances of ZRX decrease and increase,
  * respectively, by the input amount.
  */
+/* tslint:disable:no-unnecessary-type-assertion */
 export function validStakeAssertion(
     deployment: DeploymentManager,
     balanceStore: BlockchainBalanceStore,
     globalStake: GlobalStakeByStatus,
     ownerStake: OwnerStakeByStatus,
-): FunctionAssertion<LocalBalanceStore, void> {
+): FunctionAssertion<[BigNumber], LocalBalanceStore, void> {
     const { stakingWrapper, zrxVault } = deployment.staking;
 
-    return new FunctionAssertion(stakingWrapper.stake, {
-        before: async (amount: BigNumber, txData: Partial<TxData>) => {
+    return new FunctionAssertion(stakingWrapper.stake.bind(stakingWrapper), {
+        before: async (args: [BigNumber], txData: Partial<TxData>) => {
+            const [amount] = args;
+
             // Simulates the transfer of ZRX from staker to vault
             const expectedBalances = LocalBalanceStore.create(balanceStore);
             expectedBalances.transferAsset(
-                txData.from as string,
+                txData.from!, // tslint:disable-line:no-non-null-assertion
                 zrxVault.address,
                 amount,
                 deployment.assetDataEncoder.ERC20Token(deployment.tokens.zrx.address).getABIEncodedTransactionData(),
@@ -48,9 +51,11 @@ export function validStakeAssertion(
         after: async (
             expectedBalances: LocalBalanceStore,
             _result: FunctionResult,
-            amount: BigNumber,
+            args: [BigNumber],
             txData: Partial<TxData>,
         ) => {
+            const [amount] = args;
+
             logUtils.log(`stake(${amount})`);
 
             // Checks that the ZRX transfer updated balances as expected.
@@ -59,7 +64,7 @@ export function validStakeAssertion(
 
             // Checks that the owner's undelegated stake has increased by the stake amount
             const ownerUndelegatedStake = await stakingWrapper
-                .getOwnerStakeByStatus(txData.from as string, StakeStatus.Undelegated)
+                .getOwnerStakeByStatus(txData.from!, StakeStatus.Undelegated) // tslint:disable-line:no-non-null-assertion
                 .callAsync();
             const expectedOwnerUndelegatedStake = expectedUndelegatedStake(ownerStake, amount);
             expect(ownerUndelegatedStake, 'Owner undelegated stake').to.deep.equal(expectedOwnerUndelegatedStake);
@@ -77,3 +82,4 @@ export function validStakeAssertion(
         },
     });
 }
+/* tslint:enable:no-unnecessary-type-assertion */

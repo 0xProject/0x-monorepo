@@ -156,7 +156,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-order-utils",
-    version="4.0.0.dev8",
+    version="4.0.0",
     description="Order utilities for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -176,9 +176,9 @@ setup(
         "ganache": GanacheCommand,
     },
     install_requires=[
-        "0x-contract-addresses==3.0.0.dev3",
-        "0x-contract-artifacts==3.0.0.dev2",
-        "0x-json-schemas==2.1.0.dev2",
+        "0x-contract-addresses",
+        "0x-contract-artifacts",
+        "0x-json-schemas",
         "deprecated",
         "web3",
         "eth-abi",

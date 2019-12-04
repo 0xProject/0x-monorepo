@@ -203,23 +203,23 @@ zero_ex.contract_wrappers.exchange: Generated Tuples
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.LibOrderOrder
 
-    This is the generated class representing `the Order struct <https://0x.org/docs/contracts#structs-Order>`_.
+    This is the generated class representing `the Order struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order>`_.
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.LibFillResultsFillResults
 
-    This is the generated class representing `the FillResults struct <https://0x.org/docs/contracts#structs-FillResults>`_.
+    This is the generated class representing `the FillResults struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#fillresults>`_.
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.LibFillResultsMatchedFillResults
 
-    This is the generated class representing `the MatchedFillResults struct <https://0x.org/docs/contracts#structs-MatchedFillResults>`_.
+    This is the generated class representing `the MatchedFillResults struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#matchedfillresults>`_.
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.LibOrderOrderInfo
 
-    This is the generated class representing `the OrderInfo struct <https://0x.org/docs/contracts#structs-OrderInfo>`_.
+    This is the generated class representing `the OrderInfo struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#orderinfo>`_.
 
 .. autoclass:: zero_ex.contract_wrappers.exchange.LibZeroExTransactionZeroExTransaction
 
-    This is the generated class representing `the ZeroExTransaction struct <https://0x.org/docs/contracts#structs-ZeroExTransaction>`_.
+    This is the generated class representing `the ZeroExTransaction struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#zeroextransaction>`_.
 
 Indices and tables
 ==================

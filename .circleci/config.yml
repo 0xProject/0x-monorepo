@@ -193,10 +193,7 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
-            - image: 0xorg/ganache-cli:4.4.0-beta.1
-              environment:
-                  VERSION: latest
-                  SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta
+            - image: 0xorg/ganache-cli
             - image: 0xorg/mesh:0xV3
               environment:
                   ETHEREUM_RPC_URL: 'http://localhost:8545'
@@ -219,7 +216,7 @@ jobs:
                   TAKER_FEE_UNIT_AMOUNT: 0
                   MESH_ENDPOINT: 'ws://localhost:60557'
               command: |
-                  sh -c "waitForMesh () { sleep 5; }; waitForMesh && node_modules/.bin/forever ts/lib/index.js"
+                  sh -c "waitForMesh () { sleep 30; }; waitForMesh && node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - restore_cache:

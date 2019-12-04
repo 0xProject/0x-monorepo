@@ -83,8 +83,8 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             const { stakingPools } = this.actor.simulationEnvironment!;
             const assertion = validCreateStakingPoolAssertion(this.actor.deployment, stakingPools);
             while (true) {
-                const operatorShare = getRandomInteger(0, constants.PPM);
-                yield assertion.executeAsync(operatorShare, false, { from: this.actor.address });
+                const operatorShare = getRandomInteger(0, constants.PPM).toNumber();
+                yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
             }
         }
 
@@ -96,8 +96,8 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                 if (poolId === undefined) {
                     yield undefined;
                 } else {
-                    const operatorShare = getRandomInteger(0, stakingPools[poolId].operatorShare);
-                    yield assertion.executeAsync(poolId, operatorShare, { from: this.actor.address });
+                    const operatorShare = getRandomInteger(0, stakingPools[poolId].operatorShare).toNumber();
+                    yield assertion.executeAsync([poolId, operatorShare], { from: this.actor.address });
                 }
             }
         }

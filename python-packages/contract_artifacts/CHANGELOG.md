@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 - TBD
+## 3.0.0 - 2019-12-03
 
 -   Updated with artifacts for version 3 of the protocol.
 
