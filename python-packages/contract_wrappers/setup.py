@@ -186,9 +186,7 @@ class GanacheCommand(distutils.command.build_py.build_py):
         """Run ganache."""
         subprocess.call(("docker pull 0xorg/ganache-cli").split())  # nosec
         subprocess.call(  # nosec
-            (
-                "docker run -d -p 8545:8545 -e SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta 0xorg/ganache-cli"
-            ).split()
+            ("docker run -d -p 8545:8545 0xorg/ganache-cli").split()
         )
 
 

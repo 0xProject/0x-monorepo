@@ -5,9 +5,6 @@ services:
         image: "0xorg/ganache-cli"
         ports:
             - "8545:8545"
-        environment:
-            - VERSION=latest
-            - SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta
     mesh:
         image: 0xorg/mesh:0xV3
         depends_on:

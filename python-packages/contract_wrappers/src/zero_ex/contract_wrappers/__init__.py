@@ -21,7 +21,7 @@ assume there's a local instance of Ganache listening on port 8545:
 To replicate these examples, one can use the `0xorg/ganache-cli`:code: docker
 image, which comes with the 0x contracts pre-deployed.  To start it::
 
-    docker run -d -p 8545:8545 -e SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta 0xorg/ganache-cli
+    docker run -d -p 8545:8545 0xorg/ganache-cli
 
 Accounts
 --------

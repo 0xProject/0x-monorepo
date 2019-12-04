@@ -194,9 +194,6 @@ jobs:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/ganache-cli
-              environment:
-                  VERSION: latest
-                  SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta
             - image: 0xorg/mesh:0xV3
               environment:
                   ETHEREUM_RPC_URL: 'http://localhost:8545'

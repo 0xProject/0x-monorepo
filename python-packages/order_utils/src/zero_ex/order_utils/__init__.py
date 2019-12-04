@@ -13,9 +13,7 @@ For local testing one may construct such a provider pointing at an instance of
 contracts deployed on it.  For convenience, a docker container is provided for
 just this purpose.  To start it::
 
-    docker run -d -p 8545:8545 \
-        -e SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta \
-        0xorg/ganache-cli
+    docker run -d -p 8545:8545 0xorg/ganache-cli
 
 """
 
