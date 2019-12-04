@@ -1,9 +1,8 @@
-import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants as stakingConstants } from '../../src/constants';
-import { toBaseUnitAmount } from '../utils/number_utils';
 
 import { artifacts } from '../artifacts';
 import { TestMixinCumulativeRewardsContract } from '../wrappers';
@@ -74,7 +73,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             await testContract
                 .addCumulativeReward(testPoolId, testRewards[0].numerator, testRewards[0].denominator)
                 .awaitTransactionSuccessAsync();
-            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward(testPoolId).callAsync();
+            const [mostRecentCumulativeReward] = await testContract
+                .getMostRecentCumulativeReward(testPoolId)
+                .callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(testRewards[0]);
         });
 
@@ -86,7 +87,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             await testContract
                 .addCumulativeReward(testPoolId, testRewards[1].numerator, testRewards[1].denominator)
                 .awaitTransactionSuccessAsync();
-            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward(testPoolId).callAsync();
+            const [mostRecentCumulativeReward] = await testContract
+                .getMostRecentCumulativeReward(testPoolId)
+                .callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(testRewards[0]);
         });
 
@@ -98,7 +101,9 @@ blockchainTests.resets('MixinCumulativeRewards unit tests', env => {
             await testContract
                 .addCumulativeReward(testPoolId, testRewards[1].numerator, testRewards[1].denominator)
                 .awaitTransactionSuccessAsync();
-            const mostRecentCumulativeReward = await testContract.getMostRecentCumulativeReward(testPoolId).callAsync();
+            const [mostRecentCumulativeReward] = await testContract
+                .getMostRecentCumulativeReward(testPoolId)
+                .callAsync();
             expect(mostRecentCumulativeReward).to.deep.equal(sumOfTestRewardsNormalized);
         });
     });

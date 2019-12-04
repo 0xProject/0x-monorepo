@@ -54,12 +54,15 @@ export { replaceKeysDeep, shortZip } from './lang_utils';
 export {
     assertIntegerRoughlyEquals,
     assertRoughlyEquals,
+    fromFixed,
     getRandomFloat,
     getRandomInteger,
     getRandomPortion,
     getNumericalDivergence,
     getPercentageOfValue,
     toBaseUnitAmount,
+    toDecimal,
+    toFixed,
 } from './number_utils';
 export { orderHashUtils } from './order_hash';
 export { transactionHashUtils } from './transaction_hash';

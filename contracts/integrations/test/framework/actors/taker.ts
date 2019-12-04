@@ -66,7 +66,7 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
 
         private async *_validFillOrder(): AsyncIterableIterator<AssertionResult | void> {
             const { actors, balanceStore } = this.actor.simulationEnvironment!;
-            const assertion = validFillOrderAssertion(this.actor.deployment);
+            const assertion = validFillOrderAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
                 const maker = Pseudorandom.sample(filterActorsByRole(actors, Maker));
                 if (maker === undefined) {

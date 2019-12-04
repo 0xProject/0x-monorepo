@@ -34,6 +34,7 @@ export class SimulationEnvironment {
             globalStake: this.globalStake,
             stakingPools: this.stakingPools,
             balanceStore: this.balanceStore.toReadable(),
+            currentEpoch: this.currentEpoch,
         };
     }
 }

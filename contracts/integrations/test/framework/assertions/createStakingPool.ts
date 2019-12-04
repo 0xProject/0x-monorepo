@@ -1,9 +1,10 @@
-import { StakingPool, StakingPoolById } from '@0x/contracts-staking';
+import { StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
 import { DeploymentManager } from '../deployment_manager';
+import { SimulationEnvironment } from '../simulation';
 
 import { FunctionAssertion, FunctionResult } from './function_assertion';
 
@@ -16,7 +17,7 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
 /* tslint:disable:no-non-null-assertion */
 export function validCreateStakingPoolAssertion(
     deployment: DeploymentManager,
-    pools: StakingPoolById,
+    simulationEnvironment: SimulationEnvironment,
 ): FunctionAssertion<[number, boolean], string, string> {
     const { stakingWrapper } = deployment.staking;
 
@@ -44,7 +45,12 @@ export function validCreateStakingPoolAssertion(
             expect(actualPoolId).to.equal(expectedPoolId);
 
             // Adds the new pool to local state
-            pools[actualPoolId] = new StakingPool(txData.from!, operatorShare);
+            simulationEnvironment.stakingPools[actualPoolId] = {
+                operator: txData.from!,
+                operatorShare,
+                delegatedStake: new StoredBalance(),
+                lastFinalized: simulationEnvironment.currentEpoch,
+            };
         },
     });
 }

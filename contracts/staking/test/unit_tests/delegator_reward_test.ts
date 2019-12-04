@@ -1,20 +1,18 @@
 import {
+    assertIntegerRoughlyEquals as assertRoughlyEquals,
     blockchainTests,
     constants,
     expect,
     filterLogsToArguments,
+    getRandomInteger,
     Numberish,
     randomAddress,
+    toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
 import { BigNumber, hexUtils } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 
 import { artifacts } from '../artifacts';
-import {
-    assertIntegerRoughlyEquals as assertRoughlyEquals,
-    getRandomInteger,
-    toBaseUnitAmount,
-} from '../utils/number_utils';
 
 import {
     TestDelegatorRewardsContract,

@@ -1,5 +1,5 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { blockchainTests, describe } from '@0x/contracts-test-utils';
+import { blockchainTests, describe, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber, StakingRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -7,7 +7,6 @@ import { StakeInfo, StakeStatus } from '../src/types';
 
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { toBaseUnitAmount } from './utils/number_utils';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Stake Statuses', env => {

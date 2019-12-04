@@ -147,45 +147,49 @@ export interface OwnerStakeByStatus {
     };
 }
 
-interface Fraction {
-    numerator: BigNumber;
-    denominator: BigNumber;
-}
-
-export class StakingPool {
-    public delegatedStake: StoredBalance = new StoredBalance();
-    public rewards: BigNumber = constants.ZERO_AMOUNT;
-    public cumulativeRewards: {
-        [epoch: string]: Fraction;
-    } = {};
-    public cumulativeRewardsLastStored: string = stakingConstants.INITIAL_EPOCH.toString();
-    public stats: {
-        [epoch: string]: PoolStats;
-    } = {};
-
-    constructor(public readonly operator: string, public operatorShare: number) {}
-
-    public finalize(): void {}
-    public creditProtocolFee(): void {}
-    public withdrawDelegatorRewards(delegator: string): void {}
-    public delegateStake(delegator: string, amount: BigNumber): void {}
-    public undelegateStake(delegator: string, amount: BigNumber): void {}
+export interface StakingPool {
+    operator: string;
+    operatorShare: number;
+    delegatedStake: StoredBalance;
+    lastFinalized: BigNumber; // Epoch during which the pool was most recently finalized
 }
 
 export interface StakingPoolById {
     [poolId: string]: StakingPool;
 }
 
-export interface PoolStats {
-    feesCollected: BigNumber;
-    weightedStake: BigNumber;
-    membersStake: BigNumber;
+export class PoolStats {
+    public feesCollected: BigNumber = constants.ZERO_AMOUNT;
+    public weightedStake: BigNumber = constants.ZERO_AMOUNT;
+    public membersStake: BigNumber = constants.ZERO_AMOUNT;
+
+    public static fromArray(arr: [BigNumber, BigNumber, BigNumber]): PoolStats {
+        const poolStats = new PoolStats();
+        [poolStats.feesCollected, poolStats.weightedStake, poolStats.membersStake] = arr;
+        return poolStats;
+    }
 }
 
-export interface AggregatedStats {
-    rewardsAvailable: BigNumber;
-    numPoolsToFinalize: BigNumber;
-    totalFeesCollected: BigNumber;
-    totalWeightedStake: BigNumber;
-    totalRewardsFinalized: BigNumber;
+export class AggregatedStats {
+    public rewardsAvailable: BigNumber = constants.ZERO_AMOUNT;
+    public numPoolsToFinalize: BigNumber = constants.ZERO_AMOUNT;
+    public totalFeesCollected: BigNumber = constants.ZERO_AMOUNT;
+    public totalWeightedStake: BigNumber = constants.ZERO_AMOUNT;
+    public totalRewardsFinalized: BigNumber = constants.ZERO_AMOUNT;
+
+    public static fromArray(arr: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]): AggregatedStats {
+        const aggregatedStats = new AggregatedStats();
+        [
+            aggregatedStats.rewardsAvailable,
+            aggregatedStats.numPoolsToFinalize,
+            aggregatedStats.totalFeesCollected,
+            aggregatedStats.totalWeightedStake,
+            aggregatedStats.totalRewardsFinalized,
+        ] = arr;
+        return aggregatedStats;
+    }
+}
+
+export interface AggregatedStatsByEpoch {
+    [epoch: string]: AggregatedStats;
 }

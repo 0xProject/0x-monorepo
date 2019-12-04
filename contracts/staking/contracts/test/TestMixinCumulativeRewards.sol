@@ -102,15 +102,6 @@ contract TestMixinCumulativeRewards is
         _cumulativeRewardsByPoolLastStored[poolId] = epoch;
     }
 
-    /// @dev Returns the most recent cumulative reward for a given pool.
-    function getMostRecentCumulativeReward(bytes32 poolId)
-        public
-        returns (IStructs.Fraction memory)
-    {
-        uint256 mostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
-        return _cumulativeRewardsByPool[poolId][mostRecentEpoch];
-    }
-
     /// @dev Returns the raw cumulative reward for a given pool in an epoch.
     ///      This is considered "raw" because the internal implementation
     ///      (_getCumulativeRewardAtEpochRaw) will query other state variables
@@ -122,4 +113,3 @@ contract TestMixinCumulativeRewards is
         return  _cumulativeRewardsByPool[poolId][epoch];
     }
 }
-

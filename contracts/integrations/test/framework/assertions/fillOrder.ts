@@ -1,18 +1,22 @@
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
+import { AggregatedStats, constants as stakingConstants, PoolStats } from '@0x/contracts-staking';
 import { expect, orderHashUtils, verifyEvents } from '@0x/contracts-test-utils';
 import { FillResults, Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { Maker } from '../actors/maker';
+import { filterActorsByRole } from '../actors/utils';
 import { DeploymentManager } from '../deployment_manager';
+import { SimulationEnvironment } from '../simulation';
 
 import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 function verifyFillEvents(
-    takerAddress: string,
+    txData: Partial<TxData>,
     order: Order,
     receipt: TransactionReceiptWithDecodedLogs,
     deployment: DeploymentManager,
@@ -24,6 +28,8 @@ function verifyFillEvents(
         DeploymentManager.protocolFeeMultiplier,
         DeploymentManager.gasPrice,
     );
+    const takerAddress = txData.from!;
+    const value = new BigNumber(txData.value || 0);
     // Ensure that the fill event was correct.
     verifyEvents<ExchangeFillEventArgs>(
         receipt,
@@ -44,38 +50,48 @@ function verifyFillEvents(
         ExchangeEvents.Fill,
     );
 
+    const expectedTransferEvents = [
+        {
+            _from: takerAddress,
+            _to: order.makerAddress,
+            _value: fillResults.takerAssetFilledAmount,
+        },
+        {
+            _from: order.makerAddress,
+            _to: takerAddress,
+            _value: fillResults.makerAssetFilledAmount,
+        },
+        {
+            _from: takerAddress,
+            _to: order.feeRecipientAddress,
+            _value: fillResults.takerFeePaid,
+        },
+        {
+            _from: order.makerAddress,
+            _to: order.feeRecipientAddress,
+            _value: fillResults.makerFeePaid,
+        },
+    ];
+
+    // If not enough wei is sent to cover the protocol fee, there will be an additional WETH transfer event
+    if (value.isLessThan(DeploymentManager.protocolFee)) {
+        expectedTransferEvents.push({
+            _from: takerAddress,
+            _to: deployment.staking.stakingProxy.address,
+            _value: DeploymentManager.protocolFee,
+        });
+    }
+
     // Ensure that the transfer events were correctly emitted.
-    verifyEvents<ERC20TokenTransferEventArgs>(
-        receipt,
-        [
-            {
-                _from: takerAddress,
-                _to: order.makerAddress,
-                _value: fillResults.takerAssetFilledAmount,
-            },
-            {
-                _from: order.makerAddress,
-                _to: takerAddress,
-                _value: fillResults.makerAssetFilledAmount,
-            },
-            {
-                _from: takerAddress,
-                _to: order.feeRecipientAddress,
-                _value: fillResults.takerFeePaid,
-            },
-            {
-                _from: order.makerAddress,
-                _to: order.feeRecipientAddress,
-                _value: fillResults.makerFeePaid,
-            },
-            {
-                _from: takerAddress,
-                _to: deployment.staking.stakingProxy.address,
-                _value: DeploymentManager.protocolFee,
-            },
-        ],
-        ERC20TokenEvents.Transfer,
-    );
+    verifyEvents<ERC20TokenTransferEventArgs>(receipt, expectedTransferEvents, ERC20TokenEvents.Transfer);
+}
+
+interface FillOrderBeforeInfo {
+    poolStats: PoolStats;
+    aggregatedStats: AggregatedStats;
+    poolStake: BigNumber;
+    operatorStake: BigNumber;
+    poolId: string;
 }
 
 /**
@@ -85,27 +101,96 @@ function verifyFillEvents(
 /* tslint:disable:no-non-null-assertion */
 export function validFillOrderAssertion(
     deployment: DeploymentManager,
-): FunctionAssertion<[Order, BigNumber, string], {}, FillResults> {
-    const exchange = deployment.exchange;
+    simulationEnvironment: SimulationEnvironment,
+): FunctionAssertion<[Order, BigNumber, string], FillOrderBeforeInfo | void, FillResults> {
+    const { stakingWrapper } = deployment.staking;
+    const { actors, currentEpoch } = simulationEnvironment;
 
-    return new FunctionAssertion<[Order, BigNumber, string], {}, FillResults>(exchange, 'fillOrder', {
-        after: async (
-            _beforeInfo,
-            result: FunctionResult,
-            args: [Order, BigNumber, string],
-            txData: Partial<TxData>,
-        ) => {
-            const [order, fillAmount] = args;
+    return new FunctionAssertion<[Order, BigNumber, string], FillOrderBeforeInfo | void, FillResults>(
+        deployment.exchange,
+        'fillOrder',
+        {
+            before: async (args: [Order, BigNumber, string]) => {
+                const [order] = args;
+                const maker = filterActorsByRole(actors, Maker).find(maker => maker.address === order.makerAddress);
 
-            // Ensure that the tx succeeded.
-            expect(result.success, `Error: ${result.data}`).to.be.true();
+                const poolId = maker!.makerPoolId;
+                if (poolId === undefined) {
+                    return;
+                } else {
+                    const poolStats = PoolStats.fromArray(
+                        await stakingWrapper.poolStatsByEpoch(poolId, currentEpoch).callAsync(),
+                    );
+                    const aggregatedStats = AggregatedStats.fromArray(
+                        await stakingWrapper.aggregatedStatsByEpoch(currentEpoch).callAsync(),
+                    );
+                    const { currentEpochBalance: poolStake } = await stakingWrapper
+                        .getTotalStakeDelegatedToPool(poolId)
+                        .callAsync();
+                    const { currentEpochBalance: operatorStake } = await stakingWrapper
+                        .getStakeDelegatedToPoolByOwner(simulationEnvironment.stakingPools[poolId].operator, poolId)
+                        .callAsync();
+                    return { poolStats, aggregatedStats, poolStake, poolId, operatorStake };
+                }
+            },
+            after: async (
+                beforeInfo: FillOrderBeforeInfo | void,
+                result: FunctionResult,
+                args: [Order, BigNumber, string],
+                txData: Partial<TxData>,
+            ) => {
+                const [order, fillAmount] = args;
 
-            // Ensure that the correct events were emitted.
-            verifyFillEvents(txData.from!, order, result.receipt!, deployment, fillAmount);
+                // Ensure that the tx succeeded.
+                expect(result.success, `Error: ${result.data}`).to.be.true();
 
-            // TODO: Add validation for on-chain state (like balances)
+                // Ensure that the correct events were emitted.
+                verifyFillEvents(txData, order, result.receipt!, deployment, fillAmount);
+
+                if (beforeInfo !== undefined) {
+                    const expectedPoolStats = { ...beforeInfo.poolStats };
+                    const expectedAggregatedStats = { ...beforeInfo.aggregatedStats };
+
+                    if (beforeInfo.poolStake.isGreaterThanOrEqualTo(stakingConstants.DEFAULT_PARAMS.minimumPoolStake)) {
+                        if (beforeInfo.poolStats.feesCollected.isZero()) {
+                            const membersStakeInPool = beforeInfo.poolStake.minus(beforeInfo.operatorStake);
+                            const weightedStakeInPool = beforeInfo.operatorStake.plus(
+                                ReferenceFunctions.getPartialAmountFloor(
+                                    stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
+                                    new BigNumber(stakingConstants.PPM),
+                                    membersStakeInPool,
+                                ),
+                            );
+                            expectedPoolStats.membersStake = membersStakeInPool;
+                            expectedPoolStats.weightedStake = weightedStakeInPool;
+                            expectedAggregatedStats.totalWeightedStake = beforeInfo.aggregatedStats.totalWeightedStake.plus(
+                                weightedStakeInPool,
+                            );
+                            expectedAggregatedStats.numPoolsToFinalize = beforeInfo.aggregatedStats.numPoolsToFinalize.plus(
+                                1,
+                            );
+                            // TODO: Check event
+                        }
+
+                        expectedPoolStats.feesCollected = beforeInfo.poolStats.feesCollected.plus(
+                            DeploymentManager.protocolFee,
+                        );
+                        expectedAggregatedStats.totalFeesCollected = beforeInfo.aggregatedStats.totalFeesCollected.plus(
+                            DeploymentManager.protocolFee,
+                        );
+                    }
+                    const poolStats = PoolStats.fromArray(
+                        await stakingWrapper.poolStatsByEpoch(beforeInfo.poolId, currentEpoch).callAsync(),
+                    );
+                    const aggregatedStats = AggregatedStats.fromArray(
+                        await stakingWrapper.aggregatedStatsByEpoch(currentEpoch).callAsync(),
+                    );
+                    expect(poolStats).to.deep.equal(expectedPoolStats);
+                    expect(aggregatedStats).to.deep.equal(expectedAggregatedStats);
+                }
+            },
         },
-    });
+    );
 }
 /* tslint:enable:no-non-null-assertion */
 /* tslint:enable:no-unnecessary-type-assertion */

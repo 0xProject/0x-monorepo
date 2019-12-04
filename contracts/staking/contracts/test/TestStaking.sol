@@ -21,7 +21,9 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "../src/Staking.sol";
+import "../src/interfaces/IStructs.sol";
 
 
 contract TestStaking is
@@ -54,6 +56,78 @@ contract TestStaking is
         external
     {
         testZrxVaultAddress = zrxVaultAddress;
+    }
+
+    function getMostRecentCumulativeReward(bytes32 poolId)
+        external
+        view
+        returns (IStructs.Fraction memory cumulativeRewards, uint256 lastStoredEpoch)
+    {
+        lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        cumulativeRewards = _cumulativeRewardsByPool[poolId][lastStoredEpoch];
+    }
+
+    function computeMemberRewardOverInterval(
+        bytes32 poolId,
+        uint256 memberStakeOverInterval,
+        uint256 beginEpoch,
+        uint256 endEpoch
+    )
+        external
+        view
+        returns (uint256 reward)
+    {
+        // Sanity check if we can skip computation, as it will result in zero.
+        if (memberStakeOverInterval == 0 || beginEpoch == endEpoch) {
+            return 0;
+        }
+
+        // Sanity check interval
+        require(beginEpoch < endEpoch, "CR_INTERVAL_INVALID");
+
+        // Sanity check begin reward
+        IStructs.Fraction memory beginReward = getCumulativeRewardAtEpoch(poolId, beginEpoch);
+        IStructs.Fraction memory endReward = getCumulativeRewardAtEpoch(poolId, endEpoch);
+
+        // Compute reward
+        reward = LibFractions.scaleDifference(
+            endReward.numerator,
+            endReward.denominator,
+            beginReward.numerator,
+            beginReward.denominator,
+            memberStakeOverInterval
+        );
+    }
+
+    function getCumulativeRewardAtEpoch(bytes32 poolId, uint256 epoch)
+        public
+        view
+        returns (IStructs.Fraction memory cumulativeReward)
+    {
+        // Return CR at `epoch`, given it's set.
+        cumulativeReward = _cumulativeRewardsByPool[poolId][epoch];
+        if (_isCumulativeRewardSet(cumulativeReward)) {
+            return cumulativeReward;
+        }
+
+        // Return CR at `epoch-1`, given it's set.
+        uint256 lastEpoch = epoch.safeSub(1);
+        cumulativeReward = _cumulativeRewardsByPool[poolId][lastEpoch];
+        if (_isCumulativeRewardSet(cumulativeReward)) {
+            return cumulativeReward;
+        }
+
+        // Return the most recent CR, given it's less than `epoch`.
+        uint256 mostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        if (mostRecentEpoch < epoch) {
+            cumulativeReward = _cumulativeRewardsByPool[poolId][mostRecentEpoch];
+            if (_isCumulativeRewardSet(cumulativeReward)) {
+                return cumulativeReward;
+            }
+        }
+
+        // Otherwise return an empty CR.
+        return IStructs.Fraction(0, 1);
     }
 
     /// @dev Overridden to use testWethAddress;

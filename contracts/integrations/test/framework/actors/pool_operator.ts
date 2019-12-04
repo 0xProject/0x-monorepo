@@ -80,8 +80,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
         }
 
         private async *_validCreateStakingPool(): AsyncIterableIterator<AssertionResult> {
-            const { stakingPools } = this.actor.simulationEnvironment!;
-            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, stakingPools);
+            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
                 const operatorShare = Pseudorandom.integer(constants.PPM).toNumber();
                 yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
