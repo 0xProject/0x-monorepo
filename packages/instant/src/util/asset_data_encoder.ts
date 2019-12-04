@@ -1,5 +1,5 @@
 import { IAssetDataContract } from '@0x/contract-wrappers';
-import { hexSlice, NULL_ADDRESS } from '@0x/utils';
+import { hexUtils, NULL_ADDRESS } from '@0x/utils';
 
 const fakeProvider = { isEIP1193: true } as any;
 
@@ -15,5 +15,5 @@ export const assetDataEncoder = new IAssetDataContract(NULL_ADDRESS, fakeProvide
  *
  */
 export function decodeAssetProxyId(assetData: string): string {
-    return hexSlice(assetData, 0, 4);
+    return hexUtils.slice(assetData, 0, 4);
 }

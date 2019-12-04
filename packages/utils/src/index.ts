@@ -12,6 +12,7 @@ export { NULL_BYTES, NULL_ADDRESS } from './constants';
 export { errorUtils } from './error_utils';
 export { fetchAsync } from './fetch_async';
 export { signTypedDataUtils } from './sign_typed_data_utils';
+export { hexUtils } from './hex_utils';
 export import AbiEncoder = require('./abi_encoder');
 export * from './types';
 export { generatePseudoRandom256BitNumber } from './random';
@@ -25,18 +26,6 @@ export {
     StringRevertError,
     AnyRevertError,
 } from './revert_error';
-
-export {
-    hexConcat,
-    hexHash,
-    hexLeftPad,
-    hexInvert,
-    hexSlice,
-    hexRandom,
-    hexRightPad,
-    hexSize,
-    toHex,
-} from './hex_utils';
 
 export import CoordinatorRevertErrors = require('./revert_errors/coordinator/revert_errors');
 export import ExchangeForwarderRevertErrors = require('./revert_errors/exchange-forwarder/revert_errors');

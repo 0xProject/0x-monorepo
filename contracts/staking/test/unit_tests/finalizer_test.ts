@@ -6,7 +6,7 @@ import {
     Numberish,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { BigNumber, hexRandom, StakingRevertErrors } from '@0x/utils';
+import { BigNumber, hexUtils, StakingRevertErrors } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -33,8 +33,8 @@ blockchainTests.resets('Finalizer unit tests', env => {
     let testContract: TestFinalizerContract;
 
     before(async () => {
-        operatorRewardsReceiver = hexRandom(constants.ADDRESS_LENGTH);
-        membersRewardsReceiver = hexRandom(constants.ADDRESS_LENGTH);
+        operatorRewardsReceiver = hexUtils.random(constants.ADDRESS_LENGTH);
+        membersRewardsReceiver = hexUtils.random(constants.ADDRESS_LENGTH);
         testContract = await TestFinalizerContract.deployFrom0xArtifactAsync(
             artifacts.TestFinalizer,
             env.provider,
@@ -68,7 +68,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
     async function addActivePoolAsync(opts?: Partial<ActivePoolOpts>): Promise<ActivePoolOpts> {
         const maxAmount = toBaseUnitAmount(1e9);
         const _opts = {
-            poolId: hexRandom(),
+            poolId: hexUtils.random(),
             operatorShare: Math.floor(Math.random() * constants.PPM_DENOMINATOR) / constants.PPM_DENOMINATOR,
             feesCollected: getRandomInteger(0, maxAmount),
             membersStake: getRandomInteger(0, maxAmount),
@@ -345,7 +345,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
     describe('_finalizePool()', () => {
         it('does nothing if there were no pools to finalize', async () => {
             await testContract.endEpoch().awaitTransactionSuccessAsync();
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             const logs = await finalizePoolsAsync([poolId]);
             expect(logs).to.deep.eq([]);
         });
@@ -458,7 +458,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
         });
 
         it('rolls over leftover rewards into the next epoch', async () => {
-            const poolIds = _.times(3, () => hexRandom());
+            const poolIds = _.times(3, () => hexUtils.random());
             await Promise.all(poolIds.map(async id => addActivePoolAsync({ poolId: id })));
             await testContract.endEpoch().awaitTransactionSuccessAsync();
             const finalizeLogs = await finalizePoolsAsync(poolIds);
@@ -495,13 +495,13 @@ blockchainTests.resets('Finalizer unit tests', env => {
         };
 
         it('returns empty if epoch is 1', async () => {
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             return assertUnfinalizedPoolRewardsAsync(poolId, ZERO_REWARDS);
         });
 
         it('returns empty if pool did not earn rewards', async () => {
             await testContract.endEpoch().awaitTransactionSuccessAsync();
-            const poolId = hexRandom();
+            const poolId = hexUtils.random();
             return assertUnfinalizedPoolRewardsAsync(poolId, ZERO_REWARDS);
         });
 

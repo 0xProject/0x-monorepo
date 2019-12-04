@@ -7,7 +7,7 @@ import {
     randomAddress,
 } from '@0x/contracts-test-utils';
 import { Order, OrderInfo } from '@0x/types';
-import { BigNumber, hexConcat, hexHash, hexLeftPad, hexRandom, toHex } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
@@ -26,8 +26,8 @@ blockchainTests('erc20-bridge-sampler', env => {
     const ETH2DAI_SALT = '0xb713b61bb9bb2958a0f5d1534b21e94fc68c4c0c034b0902ed844f2f6cd1b4f7';
     const UNISWAP_BASE_SALT = '0x1d6a6a0506b0b4a554b907a4c29d9f4674e461989d9c1921feb17b26716385ab';
     const ERC20_PROXY_ID = '0xf47261b0';
-    const INVALID_ASSET_PROXY_ASSET_DATA = hexConcat('0xf47261b1', hexLeftPad(randomAddress()));
-    const INVALID_ASSET_DATA = hexRandom(37);
+    const INVALID_ASSET_PROXY_ASSET_DATA = hexUtils.concat('0xf47261b1', hexUtils.leftPad(randomAddress()));
+    const INVALID_ASSET_DATA = hexUtils.random(37);
     const SELL_SOURCES = ['Eth2Dai', 'Kyber', 'Uniswap'];
     const BUY_SOURCES = ['Eth2Dai', 'Uniswap'];
     const EMPTY_ORDERS_ERROR = 'EMPTY_ORDERS';
@@ -55,7 +55,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     });
 
     function getPackedHash(...args: string[]): string {
-        return hexHash(hexConcat(...args.map(a => toHex(a))));
+        return hexUtils.hash(hexUtils.concat(...args.map(a => hexUtils.toHex(a))));
     }
 
     function getUniswapExchangeSalt(tokenAddress: string): string {
@@ -193,7 +193,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     }
 
     function getDeterministicOrderInfo(order: Order): OrderInfo {
-        const hash = getPackedHash(hexLeftPad(order.salt, 32));
+        const hash = getPackedHash(hexUtils.leftPad(order.salt, 32));
         return {
             orderHash: hash,
             orderStatus: new BigNumber(hash).mod(255).toNumber(),
@@ -202,7 +202,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     }
 
     function getERC20AssetData(tokenAddress: string): string {
-        return hexConcat(ERC20_PROXY_ID, hexLeftPad(tokenAddress));
+        return hexUtils.concat(ERC20_PROXY_ID, hexUtils.leftPad(tokenAddress));
     }
 
     function getSampleAmounts(tokenAddress: string, count?: number): BigNumber[] {
@@ -229,7 +229,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             takerAssetData: getERC20AssetData(takerToken),
             makerFeeAssetData: getERC20AssetData(randomAddress()),
             takerFeeAssetData: getERC20AssetData(randomAddress()),
-            salt: new BigNumber(hexRandom()),
+            salt: new BigNumber(hexUtils.random()),
             expirationTimeSeconds: getRandomInteger(0, 2 ** 32),
         };
     }

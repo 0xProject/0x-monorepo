@@ -1,5 +1,5 @@
 import { constants, increaseTimeAndMineBlockAsync } from '@0x/contracts-test-utils';
-import { AbiEncoder, BigNumber, hexRandom } from '@0x/utils';
+import { AbiEncoder, BigNumber, hexUtils } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -22,7 +22,7 @@ export class ZeroExGovernorWrapper {
         const batchTransactionData = batchTransactionEncoder.encode([data, destinations, values]);
         const txReceipt = await this._governor
             .submitTransaction(
-                hexRandom(20), // submitTransaction will fail if this is a null address
+                hexUtils.random(20), // submitTransaction will fail if this is a null address
                 constants.ZERO_AMOUNT,
                 batchTransactionData,
             )

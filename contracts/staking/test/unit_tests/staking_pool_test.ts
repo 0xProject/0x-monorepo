@@ -6,7 +6,7 @@ import {
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
-import { BigNumber, hexLeftPad, hexRandom, toHex } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingRevertErrors } from '../../src';
@@ -35,7 +35,7 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
     });
 
     function toNextPoolId(lastPoolId: string): string {
-        return hexLeftPad(new BigNumber(lastPoolId.slice(2), 16).plus(1));
+        return hexUtils.leftPad(new BigNumber(lastPoolId.slice(2), 16).plus(1));
     }
 
     function randomOperatorShare(): number {
@@ -50,7 +50,7 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
 
     async function createPoolAsync(opts?: Partial<CreatePoolOpts>): Promise<CreatePoolOpts> {
         const _opts = {
-            poolId: hexRandom(),
+            poolId: hexUtils.random(),
             operator,
             operatorShare: randomOperatorShare(),
             ...opts,
@@ -96,7 +96,7 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
         });
 
         it('fails if the next pool ID overflows', async () => {
-            await testContract.setLastPoolId(toHex(constants.MAX_UINT256)).awaitTransactionSuccessAsync();
+            await testContract.setLastPoolId(hexUtils.toHex(constants.MAX_UINT256)).awaitTransactionSuccessAsync();
             const tx = testContract.createStakingPool(randomOperatorShare(), false).awaitTransactionSuccessAsync();
             const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
                 SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,

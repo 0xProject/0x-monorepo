@@ -6,7 +6,7 @@ import {
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { BigNumber, hexRandom, StakingRevertErrors } from '@0x/utils';
+import { BigNumber, hexUtils, StakingRevertErrors } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -55,7 +55,7 @@ blockchainTests('Protocol Fees unit tests', env => {
 
     async function createTestPoolAsync(opts?: Partial<CreateTestPoolOpts>): Promise<CreateTestPoolOpts> {
         const _opts = {
-            poolId: hexRandom(),
+            poolId: hexUtils.random(),
             operatorStake: getRandomInteger(minimumStake, '100e18'),
             membersStake: getRandomInteger(minimumStake, '100e18'),
             makers: _.times(2, () => randomAddress()),

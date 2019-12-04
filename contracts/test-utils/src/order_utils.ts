@@ -1,6 +1,6 @@
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { Order, SignedOrder } from '@0x/types';
-import { BigNumber, hexHash } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -58,7 +58,7 @@ export const orderUtils = {
     },
     generatePseudoRandomOrderHash(): string {
         const randomBigNum = generatePseudoRandomSalt();
-        const randomHash = hexHash(randomBigNum);
+        const randomHash = hexUtils.hash(randomBigNum);
         return randomHash;
     },
 };

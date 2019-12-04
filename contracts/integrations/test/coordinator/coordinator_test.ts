@@ -16,7 +16,7 @@ import {
     verifyEvents,
 } from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
-import { BigNumber, hexConcat, hexSlice } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 
 import { Actor } from '../framework/actors/base';
 import { FeeRecipient } from '../framework/actors/fee_recipient';
@@ -223,10 +223,10 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
             it(`${fnName} should revert with an invalid approval signature`, async () => {
-                const approvalSignature = hexConcat(
-                    hexSlice(approval.signature, 0, 2),
+                const approvalSignature = hexUtils.concat(
+                    hexUtils.slice(approval.signature, 0, 2),
                     '0xFFFFFFFF',
-                    hexSlice(approval.signature, 6),
+                    hexUtils.slice(approval.signature, 6),
                 );
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
                 const tx = coordinator
@@ -303,10 +303,10 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 verifyEvents(txReceipt, orders.map(order => expectedFillEvent(order)), ExchangeEvents.Fill);
             });
             it(`${fnName} should revert with an invalid approval signature`, async () => {
-                const approvalSignature = hexConcat(
-                    hexSlice(approval.signature, 0, 2),
+                const approvalSignature = hexUtils.concat(
+                    hexUtils.slice(approval.signature, 0, 2),
                     '0xFFFFFFFF',
-                    hexSlice(approval.signature, 6),
+                    hexUtils.slice(approval.signature, 6),
                 );
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
                 const tx = coordinator

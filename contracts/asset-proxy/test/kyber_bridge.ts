@@ -7,7 +7,7 @@ import {
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, hexLeftPad, hexRandom } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -31,7 +31,9 @@ blockchainTests.resets('KyberBridge unit tests', env => {
     describe('isValidSignature()', () => {
         it('returns success bytes', async () => {
             const LEGACY_WALLET_MAGIC_VALUE = '0xb0671381';
-            const result = await testContract.isValidSignature(hexRandom(), hexRandom(_.random(0, 32))).callAsync();
+            const result = await testContract
+                .isValidSignature(hexUtils.random(), hexUtils.random(_.random(0, 32)))
+                .callAsync();
             expect(result).to.eq(LEGACY_WALLET_MAGIC_VALUE);
         });
     });
@@ -105,7 +107,7 @@ blockchainTests.resets('KyberBridge unit tests', env => {
                 // Transfer amount.
                 _opts.amount,
                 // ABI-encode the input token address as the bridge data.
-                hexLeftPad(_opts.fromTokenAddress),
+                hexUtils.leftPad(_opts.fromTokenAddress),
             );
             const result = await bridgeTransferFromFn.callAsync();
             const { logs } = await bridgeTransferFromFn.awaitTransactionSuccessAsync();

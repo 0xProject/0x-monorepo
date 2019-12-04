@@ -1,6 +1,6 @@
 import { IAssetDataContract } from '@0x/contract-wrappers';
 import { AssetData, AssetProxyId } from '@0x/types';
-import { BigNumber, hexSlice, NULL_ADDRESS } from '@0x/utils';
+import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
 
 const fakeProvider = { isEIP1193: true } as any;
 const assetDataDecoder = new IAssetDataContract(NULL_ADDRESS, fakeProvider);
@@ -11,7 +11,7 @@ const assetDataDecoder = new IAssetDataContract(NULL_ADDRESS, fakeProvider);
  * @return Either a ERC20, ERC20Bridge, ERC721, ERC1155, StaticCall, or MultiAsset assetData object
  */
 export function decodeAssetDataOrThrow(assetData: string): AssetData {
-    const assetProxyId = hexSlice(assetData, 0, 4); // tslint:disable-line:custom-no-magic-numbers
+    const assetProxyId = hexUtils.slice(assetData, 0, 4); // tslint:disable-line:custom-no-magic-numbers
     switch (assetProxyId) {
         case AssetProxyId.ERC20: {
             const tokenAddress = assetDataDecoder.getABIDecodedTransactionData<string>('ERC20Token', assetData);

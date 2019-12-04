@@ -1,6 +1,6 @@
 import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { BigNumber, hexConcat, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, hexUtils, signTypedDataUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -48,7 +48,7 @@ describe('LibEIP712', () => {
         const actualHash = await lib
             .externalHashEIP712DomainSeperator(name, version, new BigNumber(chainId), verifyingContract)
             .callAsync();
-        expect(actualHash).to.be.eq(hexConcat(expectedHash));
+        expect(actualHash).to.be.eq(hexUtils.concat(expectedHash));
     }
 
     describe('_hashEIP712Domain', async () => {

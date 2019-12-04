@@ -10,7 +10,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { LibBytesRevertErrors } from '@0x/contracts-utils';
 import { SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, CoordinatorRevertErrors, hexConcat, hexSlice } from '@0x/utils';
+import { BigNumber, CoordinatorRevertErrors, hexUtils } from '@0x/utils';
 
 import { ApprovalFactory } from '../src/approval_factory';
 
@@ -87,8 +87,8 @@ blockchainTests.resets('Mixins tests', env => {
         it('should revert with with the Illegal signature type', async () => {
             const data = constants.NULL_BYTES;
             const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-            transaction.signature = hexConcat(
-                hexSlice(transaction.signature, 0, transaction.signature.length - 1),
+            transaction.signature = hexUtils.concat(
+                hexUtils.slice(transaction.signature, 0, transaction.signature.length - 1),
                 SignatureType.Illegal,
             );
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -103,7 +103,7 @@ blockchainTests.resets('Mixins tests', env => {
         it('should revert with with the Invalid signature type', async () => {
             const data = constants.NULL_BYTES;
             const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-            transaction.signature = hexConcat(SignatureType.Invalid);
+            transaction.signature = hexUtils.concat(SignatureType.Invalid);
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             expect(mixins.getSignerAddress(transactionHash, transaction.signature).callAsync()).to.revertWith(
                 new CoordinatorRevertErrors.SignatureError(
@@ -116,8 +116,8 @@ blockchainTests.resets('Mixins tests', env => {
         it('should revert with with a signature type that equals `NSignatureTypes`', async () => {
             const data = constants.NULL_BYTES;
             const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-            transaction.signature = hexConcat(
-                hexSlice(transaction.signature, 0, transaction.signature.length - 1),
+            transaction.signature = hexUtils.concat(
+                hexUtils.slice(transaction.signature, 0, transaction.signature.length - 1),
                 SignatureType.NSignatureTypes,
             );
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -132,8 +132,8 @@ blockchainTests.resets('Mixins tests', env => {
         it("should revert with with a signature type that isn't supported", async () => {
             const data = constants.NULL_BYTES;
             const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-            transaction.signature = hexConcat(
-                hexSlice(transaction.signature, 0, transaction.signature.length - 1),
+            transaction.signature = hexUtils.concat(
+                hexUtils.slice(transaction.signature, 0, transaction.signature.length - 1),
                 SignatureType.Wallet,
             );
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -294,10 +294,10 @@ blockchainTests.resets('Mixins tests', env => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
-                const signature = hexConcat(
-                    hexSlice(approval.signature, 0, 2),
+                const signature = hexUtils.concat(
+                    hexUtils.slice(approval.signature, 0, 2),
                     '0xFFFFFFFF',
-                    hexSlice(approval.signature, 6),
+                    hexUtils.slice(approval.signature, 6),
                 );
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
@@ -430,10 +430,10 @@ blockchainTests.resets('Mixins tests', env => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
-                const signature = hexConcat(
-                    hexSlice(approval.signature, 0, 2),
+                const signature = hexUtils.concat(
+                    hexUtils.slice(approval.signature, 0, 2),
                     '0xFFFFFFFF',
-                    hexSlice(approval.signature, 6),
+                    hexUtils.slice(approval.signature, 6),
                 );
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
@@ -452,10 +452,10 @@ blockchainTests.resets('Mixins tests', env => {
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const approval1 = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
                 const approval2 = await approvalFactory2.newSignedApprovalAsync(transaction, transactionSignerAddress);
-                const approvalSignature2 = hexConcat(
-                    hexSlice(approval2.signature, 0, 2),
+                const approvalSignature2 = hexUtils.concat(
+                    hexUtils.slice(approval2.signature, 0, 2),
                     '0xFFFFFFFF',
-                    hexSlice(approval2.signature, 6),
+                    hexUtils.slice(approval2.signature, 6),
                 );
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
@@ -474,10 +474,10 @@ blockchainTests.resets('Mixins tests', env => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
                 const approval2 = await approvalFactory2.newSignedApprovalAsync(transaction, transactionSignerAddress);
-                const approvalSignature2 = hexConcat(
-                    hexSlice(approval2.signature, 0, 2),
+                const approvalSignature2 = hexUtils.concat(
+                    hexUtils.slice(approval2.signature, 0, 2),
                     '0xFFFFFFFF',
-                    hexSlice(approval2.signature, 6),
+                    hexUtils.slice(approval2.signature, 6),
                 );
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, approvalSignerAddress1, transaction.signature, [

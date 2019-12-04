@@ -1,6 +1,6 @@
 import { signingUtils } from '@0x/contracts-test-utils';
 import { SignatureType, SignedZeroExTransaction } from '@0x/types';
-import { hexConcat } from '@0x/utils';
+import { hexUtils } from '@0x/utils';
 
 import { hashUtils } from './hash_utils';
 import { SignedCoordinatorApproval } from './types';
@@ -28,7 +28,7 @@ export class ApprovalFactory {
         const signedApproval = {
             txOrigin,
             transaction,
-            signature: hexConcat(signatureBuff),
+            signature: hexUtils.concat(signatureBuff),
         };
         return signedApproval;
     }

@@ -8,7 +8,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { AuthorizableRevertErrors } from '@0x/contracts-utils';
 import { AssetProxyId } from '@0x/types';
-import { AbiEncoder, BigNumber, hexLeftPad, hexRightPad, hexSlice, StringRevertError } from '@0x/utils';
+import { AbiEncoder, BigNumber, hexUtils, StringRevertError } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -18,7 +18,7 @@ import { ERC20BridgeProxyContract, TestERC20BridgeContract } from './wrappers';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     const PROXY_ID = AssetProxyId.ERC20Bridge;
-    const BRIDGE_SUCCESS_RETURN_DATA = hexRightPad(PROXY_ID);
+    const BRIDGE_SUCCESS_RETURN_DATA = hexUtils.rightPad(PROXY_ID);
     let owner: string;
     let badCaller: string;
     let assetProxy: ERC20BridgeProxyContract;
@@ -170,7 +170,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
 
         it('fails if asset data is truncated', async () => {
             const opts = createTransferFromOpts();
-            const truncatedAssetData = hexSlice(encodeAssetData(opts.assetData), 0, -1);
+            const truncatedAssetData = hexUtils.slice(encodeAssetData(opts.assetData), 0, -1);
             const tx = assetProxy
                 .transferFrom(truncatedAssetData, opts.from, opts.to, new BigNumber(opts.amount))
                 .awaitTransactionSuccessAsync();
@@ -194,7 +194,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             const tx = transferFromAsync({
                 assetData: createAssetData({
                     bridgeData: createBridgeData({
-                        returnData: hexLeftPad('0x1'),
+                        returnData: hexUtils.leftPad('0x1'),
                     }),
                 }),
             });
@@ -207,7 +207,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             const tx = transferFromAsync({
                 assetData: createAssetData({
                     bridgeData: createBridgeData({
-                        returnData: hexRightPad('0x1'),
+                        returnData: hexUtils.rightPad('0x1'),
                     }),
                 }),
             });
