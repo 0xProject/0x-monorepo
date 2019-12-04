@@ -343,6 +343,7 @@ book.  Now let's have the taker fill it:
 (Due to `an Issue with the Launch Kit Backend
 <https://github.com/0xProject/0x-launch-kit-backend/issues/73>`_, we need to
 checksum the address in the order before filling it.)
+
 >>> order['makerAddress'] = Web3.toChecksumAddress(order['makerAddress'])
 
 Finally, filling an order requires paying a protocol fee, which can be sent as
