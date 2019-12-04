@@ -1,7 +1,10 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
 
 import { Actor } from '../framework/actors/base';
+import { StakerOperator } from '../framework/actors/hybrids';
+import { PoolOperator } from '../framework/actors/pool_operator';
 import { Staker } from '../framework/actors/staker';
+import { filterActorsByRole } from '../framework/actors/utils';
 import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
@@ -12,17 +15,15 @@ import { PoolManagementSimulation } from './pool_management_test';
 
 export class StakeManagementSimulation extends Simulation {
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
-        const { deployment, balanceStore } = this.environment;
+        const { actors } = this.environment;
+        const stakers = filterActorsByRole(actors, Staker);
+
         const poolManagement = new PoolManagementSimulation(this.environment);
 
-        const staker = new Staker({ name: 'Staker', deployment, simulationEnvironment: this.environment });
-        await staker.configureERC20TokenAsync(deployment.tokens.zrx);
-        balanceStore.registerTokenOwner(staker.address, staker.name);
-
         const actions = [
-            staker.simulationActions.validStake,
-            staker.simulationActions.validUnstake,
-            staker.simulationActions.validMoveStake,
+            ...stakers.map(staker => staker.simulationActions.validStake),
+            ...stakers.map(staker => staker.simulationActions.validUnstake),
+            ...stakers.map(staker => staker.simulationActions.validMoveStake),
             poolManagement.generator,
         ];
         while (true) {
@@ -57,8 +58,23 @@ blockchainTests('Stake management fuzz test', env => {
             { erc20: { ZRX: deployment.tokens.zrx } },
         );
 
-        const simulationEnv = new SimulationEnvironment(deployment, balanceStore);
-        const simulation = new StakeManagementSimulation(simulationEnv);
+        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
+        const actors = [
+            new Staker({ name: 'Staker 1', deployment, simulationEnvironment }),
+            new Staker({ name: 'Staker 2', deployment, simulationEnvironment }),
+            new StakerOperator({ name: 'Staker/Operator', deployment, simulationEnvironment }),
+            new PoolOperator({ deployment, simulationEnvironment, name: 'Operator' }),
+        ];
+
+        const stakers = filterActorsByRole(actors, Staker);
+        for (const staker of stakers) {
+            await staker.configureERC20TokenAsync(deployment.tokens.zrx);
+        }
+        for (const actor of actors) {
+            balanceStore.registerTokenOwner(actor.address, actor.name);
+        }
+
+        const simulation = new StakeManagementSimulation(simulationEnvironment);
         return simulation.fuzzAsync();
     });
 });

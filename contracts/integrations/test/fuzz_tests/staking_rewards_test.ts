@@ -1,9 +1,17 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
 
 import { Actor } from '../framework/actors/base';
-import { MakerTaker } from '../framework/actors/hybrids';
+import {
+    MakerTaker,
+    OperatorStakerMaker,
+    StakerKeeper,
+    StakerMaker,
+    StakerOperator,
+} from '../framework/actors/hybrids';
+import { Keeper } from '../framework/actors/keeper';
 import { Maker } from '../framework/actors/maker';
 import { PoolOperator } from '../framework/actors/pool_operator';
+import { Staker } from '../framework/actors/staker';
 import { Taker } from '../framework/actors/taker';
 import { filterActorsByRole } from '../framework/actors/utils';
 import { AssertionResult } from '../framework/assertions/function_assertion';
@@ -13,21 +21,27 @@ import { Simulation, SimulationEnvironment } from '../framework/simulation';
 import { Pseudorandom } from '../framework/utils/pseudorandom';
 
 import { PoolManagementSimulation } from './pool_management_test';
+import { PoolMembershipSimulation } from './pool_membership_test';
+import { StakeManagementSimulation } from './stake_management_test';
 
-export class PoolMembershipSimulation extends Simulation {
+export class StakingRewardsSimulation extends Simulation {
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
         const { actors } = this.environment;
-        const makers = filterActorsByRole(actors, Maker);
-        const takers = filterActorsByRole(actors, Taker);
+        const stakers = filterActorsByRole(actors, Staker);
+        const keepers = filterActorsByRole(actors, Keeper);
 
         const poolManagement = new PoolManagementSimulation(this.environment);
+        const poolMembership = new PoolMembershipSimulation(this.environment);
+        const stakeManagement = new StakeManagementSimulation(this.environment);
 
         const actions = [
-            ...makers.map(maker => maker.simulationActions.validJoinStakingPool),
-            ...takers.map(taker => taker.simulationActions.validFillOrder),
+            ...stakers.map(staker => staker.simulationActions.validWithdrawDelegatorRewards),
+            ...keepers.map(keeper => keeper.simulationActions.validFinalizePool),
+            ...keepers.map(keeper => keeper.simulationActions.validEndEpoch),
             poolManagement.generator,
+            poolMembership.generator,
+            stakeManagement.generator,
         ];
-
         while (true) {
             const action = Pseudorandom.sample(actions);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
@@ -35,9 +49,9 @@ export class PoolMembershipSimulation extends Simulation {
     }
 }
 
-blockchainTests('pool membership fuzz test', env => {
-    before(async function(): Promise<void> {
-        if (process.env.FUZZ_TEST !== 'pool_membership') {
+blockchainTests('Staking rewards fuzz test', env => {
+    before(function(): void {
+        if (process.env.FUZZ_TEST !== 'staking_rewards') {
             this.skip();
         }
     });
@@ -52,7 +66,6 @@ blockchainTests('pool membership fuzz test', env => {
             numErc721TokensToDeploy: 0,
             numErc1155TokensToDeploy: 0,
         });
-
         const balanceStore = new BlockchainBalanceStore(
             {
                 StakingProxy: deployment.staking.stakingProxy.address,
@@ -68,19 +81,29 @@ blockchainTests('pool membership fuzz test', env => {
             new Taker({ deployment, simulationEnvironment, name: 'Taker 1' }),
             new Taker({ deployment, simulationEnvironment, name: 'Taker 2' }),
             new MakerTaker({ deployment, simulationEnvironment, name: 'Maker/Taker' }),
-            new PoolOperator({ deployment, simulationEnvironment, name: 'Operator 1' }),
-            new PoolOperator({ deployment, simulationEnvironment, name: 'Operator 2' }),
+            new Staker({ deployment, simulationEnvironment, name: 'Staker 1' }),
+            new Staker({ deployment, simulationEnvironment, name: 'Staker 2' }),
+            new Keeper({ deployment, simulationEnvironment, name: 'Keeper' }),
+            new StakerKeeper({ deployment, simulationEnvironment, name: 'Staker/Keeper' }),
+            new StakerMaker({ deployment, simulationEnvironment, name: 'Staker/Maker' }),
+            new PoolOperator({ deployment, simulationEnvironment, name: 'Pool Operator' }),
+            new StakerOperator({ deployment, simulationEnvironment, name: 'Staker/Operator' }),
+            new OperatorStakerMaker({ deployment, simulationEnvironment, name: 'Operator/Staker/Maker' }),
         ];
 
         const takers = filterActorsByRole(actors, Taker);
         for (const taker of takers) {
             await taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
         }
+        const stakers = filterActorsByRole(actors, Staker);
+        for (const staker of stakers) {
+            await staker.configureERC20TokenAsync(deployment.tokens.zrx);
+        }
         for (const actor of actors) {
             balanceStore.registerTokenOwner(actor.address, actor.name);
         }
 
-        const simulation = new PoolMembershipSimulation(simulationEnvironment);
+        const simulation = new StakingRewardsSimulation(simulationEnvironment);
         return simulation.fuzzAsync();
     });
 });
