@@ -42,6 +42,10 @@ export const providerUtils = {
             enable: (supportedProvider as any).enable,
             sendAsync: _.noop.bind(_), // Will be replaced
         };
+        if (provider.enable) {
+            // Need to bind, metamask can lose reference to function without binding as of 7.7.0
+            provider.enable.bind(supportedProvider);
+        }
         // Case 1: We've already converted to our ZeroExProvider so noop.
         if ((supportedProvider as any).isStandardizedProvider) {
             // tslint:disable-next-line:no-unnecessary-type-assertion
