@@ -7,6 +7,7 @@ import { AssertionResult } from '../assertions/function_assertion';
 import { validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { validUnstakeAssertion } from '../assertions/unstake';
+import { validWithdrawDelegatorRewardsAssertion } from '../assertions/withdrawDelegatorRewards';
 import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
@@ -44,6 +45,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 validStake: this._validStake(),
                 validUnstake: this._validUnstake(),
                 validMoveStake: this._validMoveStake(),
+                validWithdrawDelegatorRewards: this._validWithdrawDelegatorRewards(),
             };
         }
 
@@ -127,6 +129,19 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 const amount = Pseudorandom.integer(moveableStake);
 
                 yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
+            }
+        }
+
+        private async *_validWithdrawDelegatorRewards(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validWithdrawDelegatorRewardsAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
+            while (true) {
+                const poolId = Pseudorandom.sample(Object.keys(stakingPools));
+                if (poolId === undefined) {
+                    yield;
+                } else {
+                    yield assertion.executeAsync([poolId], { from: this.actor.address });
+                }
             }
         }
     };

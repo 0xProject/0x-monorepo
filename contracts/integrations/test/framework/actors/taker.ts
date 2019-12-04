@@ -126,6 +126,7 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                     yield assertion.executeAsync([order, fillAmount, order.signature], {
                         from: this.actor.address,
                     });
+                    // TODO: Randomly choose msg.value
                 }
             }
         }
