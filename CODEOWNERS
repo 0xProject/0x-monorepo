@@ -14,8 +14,8 @@ packages/abi-gen/ @feuGeneA
 packages/base-contract/ @xianny
 packages/connect/ @fragosti 
 packages/abi-gen-templates/ @feuGeneA @xianny
-packages/contract-addresses/ @albrow
-packages/contract-artifacts/ @albrow
+packages/contract-addresses/ @abandeali1
+packages/contract-artifacts/ @abandeali1
 packages/dev-utils/ @LogvinovLeon @fabioberger
 packages/devnet/ @albrow
 packages/ethereum-types/ @LogvinovLeon
