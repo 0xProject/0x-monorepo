@@ -38,7 +38,7 @@ contract DeploymentConstants {
     address constant private DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     /// @dev Mainnet address of the `Chai` contract
     address constant private CHAI_ADDRESS = 0x06AF07097C9Eeb7fD685c692751D5C66dB49c215;
-    /// @dev Mainnet address of the DyDx contract.
+    /// @dev Mainnet address of the dYdX contract.
     address constant private DYDX_ADDRESS = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
@@ -113,7 +113,7 @@ contract DeploymentConstants {
 
     /// @dev Overridable way to get the DyDx contract.
     /// @return exchange The DyDx exchange contract.
-    function _getDyDxAddress()
+    function _getDydxAddress()
         internal
         view
         returns (address dydxAddress)

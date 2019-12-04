@@ -83,17 +83,17 @@ contract DydxBridge is
         for (uint256 i = 0; i < dydxActions.length; ++i) {
             BridgeAction bridgeAction = bridgeData.actions[i];
             if (bridgeAction == BridgeAction.Deposit) {
-                // Compute the amount to deposit. The `amount` parameter is the amount to be withdrawn.
-                // It is computed by the Exchange as:
-                //  amount = floor[(takerFillAmount * makerAssetAmount) / takerAssetAmount]
+                // Compute the amount to deposit.
+                // The `amount` parameter is the amount to be withdrawn. It is computed by the Exchange as:
+                //  amount = floor[(takerAssetFillAmount * makerAssetAmount) / takerAssetAmount]
                 // The amount to deposit is equal to to `takerFillAmount`, which we compute below as:
-                //  takerFillAmount ~= floor[(amount * takerAssetAmount) / makerAssetAmount]
-                //                   = floor[(amount * conversionRateNumerator) / conversionRateDenominator]
+                //  takerAssetFillAmount ~= floor[(amount * takerAssetAmount) / makerAssetAmount]
+                //                        = floor[(amount * conversionRateNumerator) / conversionRateDenominator]
                 // Note that we can only approximate the original value of `takerFillAmount`. If we were to use
-                // `ceil` then we would risk overestimating the value.
+                // `ceil` then we would risk overestimating.
                 uint256 amountToDeposit = amount
-                    .mul(bridgeData.conversionRateNumerator)
-                    .div(bridgeData.conversionRateDenominator);
+                    .safeMul(bridgeData.conversionRateNumerator)
+                    .safeDiv(bridgeData.conversionRateDenominator);
                 dydxActions[i] = _createDepositAction(
                     from,
                     amount,
