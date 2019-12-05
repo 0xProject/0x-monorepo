@@ -52,6 +52,7 @@
     "devDependencies": {
         "@0x/abi-gen": "^5.0.1",
         "@0x/contract-addresses": "^4.0.0",
+        "@0x/contract-wrappers": "^13.1.0",
         "@0x/contracts-coordinator": "^3.0.1",
         "@0x/contracts-dev-utils": "^1.0.1",
         "@0x/contracts-exchange-forwarder": "^4.0.1",
