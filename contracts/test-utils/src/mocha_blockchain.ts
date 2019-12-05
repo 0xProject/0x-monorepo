@@ -18,6 +18,7 @@ export type BlockchainSuiteCallback = (this: ISuiteCallbackContext, env: Blockch
 export type BlockchainContextDefinitionCallback<T> = (description: string, callback: BlockchainSuiteCallback) => T;
 export interface ContextDefinition extends mocha.IContextDefinition {
     optional: ContextDefinitionCallback<ISuite | void>;
+    fork: ContextDefinitionCallback<ISuite | void>;
 }
 
 /**
@@ -31,6 +32,7 @@ interface BlockchainContextDefinitionPartial {
     only: BlockchainContextDefinitionCallback<ISuite>;
     skip: BlockchainContextDefinitionCallback<void>;
     optional: BlockchainContextDefinitionCallback<ISuite | void>;
+    fork: BlockchainContextDefinitionCallback<ISuite | void>;
     (description: string, callback: BlockchainSuiteCallback): ISuite;
 }
 
@@ -97,6 +99,10 @@ export const describe = _.assign(mochaDescribe, {
         const describeCall = process.env.TEST_ALL ? mochaDescribe : mochaDescribe.skip;
         return describeCall(description, callback);
     },
+    fork(description: string, callback: SuiteCallback): ISuite | void {
+        const describeCall = process.env.FORK_RPC_URL ? mochaDescribe.only : mochaDescribe.skip;
+        return describeCall(description, callback);
+    },
 }) as ContextDefinition;
 
 /**
@@ -115,6 +121,13 @@ export const blockchainTests: BlockchainContextDefinition = _.assign(
         },
         optional(description: string, callback: BlockchainSuiteCallback): ISuite | void {
             return defineBlockchainSuite(description, callback, process.env.TEST_ALL ? describe : describe.skip);
+        },
+        fork(description: string, callback: BlockchainSuiteCallback): ISuite | void {
+            return defineBlockchainSuite(
+                description,
+                callback,
+                process.env.FORK_RPC_URL ? describe.only : describe.skip,
+            );
         },
         resets: _.assign(
             function(description: string, callback: BlockchainSuiteCallback): ISuite {
@@ -148,6 +161,14 @@ export const blockchainTests: BlockchainContextDefinition = _.assign(
                         _callback: SuiteCallback,
                     ): ISuite | void {
                         return defineResetsSuite(_description, _callback, describe.optional);
+                    });
+                },
+                fork(description: string, callback: BlockchainSuiteCallback): ISuite | void {
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: SuiteCallback,
+                    ): ISuite | void {
+                        return defineResetsSuite(_description, _callback, describe.fork);
                     });
                 },
             },
