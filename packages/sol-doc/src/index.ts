@@ -1,1 +1,1 @@
-export { SolDoc } from './sol_doc';
+export { extractDocsAsync, SolidityDocs } from './sol_doc';

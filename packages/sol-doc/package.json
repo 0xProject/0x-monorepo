@@ -5,6 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.js",
     "scripts": {
+        "start": "node ./lib/src/cli.js",
         "build": "tsc",
         "build:ci": "yarn build",
         "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --timeout 6000 --exit",
@@ -14,7 +15,7 @@
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
         "clean": "shx rm -rf lib",
-        "generate-v1-protocol-docs": "(cd ../contracts/src/1.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange_v1.sol TokenRegistry/TokenRegistry.sol TokenTransferProxy/TokenTransferProxy_v1.sol) > v1.0.0.json",
+        "generate-protocol-docs": "(cd ../../contracts; node ../node_modules/.bin/sol-doc --contracts-dir . --contracts exchange/contracts/src/Exchange.sol) > v3.0.0.json",
         "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange.sol AssetProxy/ERC20Proxy.sol AssetProxy/ERC721Proxy.sol OrderValidator/OrderValidator.sol Forwarder/Forwarder.sol  AssetProxyOwner/AssetProxyOwner.sol) > v2.0.0.json",
         "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/",
         "deploy-v1-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v1.0.0.json s3://staging-doc-jsons/contracts/"
@@ -31,7 +32,7 @@
         "@0x/utils": "^5.1.1",
         "ethereum-types": "^3.0.0",
         "ethereumjs-util": "^5.1.1",
-        "lodash": "^4.17.11",
+        "glob": "^7.1.2",
         "yargs": "^10.0.3"
     },
     "devDependencies": {

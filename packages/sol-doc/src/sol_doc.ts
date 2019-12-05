@@ -1,505 +1,662 @@
+import { Compiler } from '@0x/sol-compiler';
+import * as fs from 'fs';
 import * as path from 'path';
 
 import {
-    AbiDefinition,
-    ConstructorAbi,
-    DataItem,
-    DevdocOutput,
-    EventAbi,
-    EventParameter,
-    FallbackAbi,
-    MethodAbi,
-    StandardContractOutput,
-} from 'ethereum-types';
-import ethUtil = require('ethereumjs-util');
-import * as _ from 'lodash';
+    ArrayTypeNameNode,
+    AstNode,
+    ContractDefinitionNode,
+    ContractKind,
+    EnumDefinitionNode,
+    EnumValueNode,
+    FunctionDefinitionNode,
+    FunctionKind,
+    InheritanceSpecifierNode,
+    isArrayTypeNameNode,
+    isContractDefinitionNode,
+    isEnumDefinitionNode,
+    isEventDefinitionNode,
+    isFunctionDefinitionNode,
+    isMappingTypeNameNode,
+    isSourceUnitNode,
+    isStructDefinitionNode,
+    isUserDefinedTypeNameNode,
+    isVariableDeclarationNode,
+    MappingTypeNameNode,
+    ParameterListNode,
+    SourceUnitNode,
+    splitAstNodeSrc,
+    StateMutability,
+    StorageLocation,
+    StructDefinitionNode,
+    TypeNameNode,
+    UserDefinedTypeNameNode,
+    VariableDeclarationNode,
+    Visibility,
+} from './sol_ast';
 
-import { Compiler, CompilerOptions } from '@0x/sol-compiler';
-import {
-    CustomType,
-    CustomTypeChild,
-    DocAgnosticFormat,
-    DocSection,
-    Event,
-    EventArg,
-    ObjectMap,
-    Parameter,
-    SolidityMethod,
-    Type,
-    TypeDocTypes,
-} from '@0x/types';
+export interface DocumentedItem {
+    doc: string;
+    line: number;
+    file: string;
+}
 
-export class SolDoc {
-    private _customTypeHashToName: ObjectMap<string> | undefined;
-    private static _genEventDoc(abiDefinition: EventAbi): Event {
-        const eventDoc: Event = {
-            name: abiDefinition.name,
-            eventArgs: SolDoc._genEventArgsDoc(abiDefinition.inputs),
-        };
-        return eventDoc;
-    }
-    private static _devdocMethodDetailsIfExist(
-        methodSignature: string,
-        devdocIfExists: DevdocOutput | undefined,
-    ): string | undefined {
-        let details;
-        if (
-            devdocIfExists !== undefined &&
-            devdocIfExists.methods !== undefined &&
-            devdocIfExists.methods[methodSignature] !== undefined &&
-            devdocIfExists.methods[methodSignature].details !== undefined
-        ) {
-            details = devdocIfExists.methods[methodSignature].details;
-        }
+export interface EnumValueDocs extends DocumentedItem {
+    value: number;
+}
 
-        return details;
-    }
-    private static _genFallbackDoc(
-        abiDefinition: FallbackAbi,
-        devdocIfExists: DevdocOutput | undefined,
-    ): SolidityMethod {
-        const methodSignature = `()`;
-        const comment = SolDoc._devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
+export interface ParamDocs extends DocumentedItem {
+    type: string;
+    indexed: boolean;
+    storageLocation: string;
+    order: number;
+}
 
-        const returnComment =
-            devdocIfExists === undefined || devdocIfExists.methods[methodSignature] === undefined
-                ? undefined
-                : devdocIfExists.methods[methodSignature].return;
+export interface ParamDocsMap {
+    [name: string]: ParamDocs;
+}
 
-        const methodDoc: SolidityMethod = {
-            isConstructor: false,
-            name: 'fallback',
-            callPath: '',
-            parameters: [],
-            returnType: { name: 'void', typeDocType: TypeDocTypes.Intrinsic },
-            returnComment,
-            isConstant: true,
-            isPayable: abiDefinition.payable,
-            isFallback: true,
-            comment: _.isEmpty(comment)
-                ? 'The fallback function. It is executed on a call to the contract if none of the other functions match the given public identifier (or if no data was supplied at all).'
-                : comment,
-        };
-        return methodDoc;
-    }
-    private static _genEventArgsDoc(args: EventParameter[]): EventArg[] {
-        const eventArgsDoc: EventArg[] = [];
+export interface EnumValueDocsMap {
+    [name: string]: EnumValueDocs;
+}
 
-        for (const arg of args) {
-            const name = arg.name;
+export interface ContractMethodDocs extends DocumentedItem {
+    name: string;
+    contract: string;
+    stateMutability: string;
+    visibility: string;
+    isAccessor: boolean;
+    kind: string;
+    parameters: ParamDocsMap;
+    returns: ParamDocsMap;
+}
 
-            const type: Type = {
-                name: arg.type,
-                typeDocType: TypeDocTypes.Intrinsic,
+export interface EnumDocs extends DocumentedItem {
+    contract: string;
+    values: EnumValueDocsMap;
+}
+
+export interface StructDocs extends DocumentedItem {
+    contract: string;
+    fields: ParamDocsMap;
+}
+
+export interface EventDocs extends DocumentedItem {
+    contract: string;
+    name: string;
+    parameters: ParamDocsMap;
+}
+
+export interface ContractDocs extends DocumentedItem {
+    kind: string;
+    inherits: string[];
+    methods: ContractMethodDocs[];
+    events: EventDocs[];
+    enums: {
+        [typeName: string]: EnumDocs;
+    };
+    structs: {
+        [typeName: string]: StructDocs;
+    };
+}
+
+export interface SolidityDocs {
+    contracts: {
+        [typeName: string]: ContractDocs;
+    };
+}
+
+interface SolcOutput {
+    sources: { [file: string]: { id: number; ast: SourceUnitNode } };
+    contracts: {
+        [file: string]: {
+            [contract: string]: {
+                metadata: string;
             };
+        };
+    };
+}
 
-            const eventArgDoc: EventArg = {
-                isIndexed: arg.indexed,
-                name,
-                type,
-            };
+interface ContractMetadata {
+    sources: { [file: string]: { content: string } };
+    settings: { remappings: string[] };
+}
 
-            eventArgsDoc.push(eventArgDoc);
+interface SourceData {
+    path: string;
+    content: string;
+}
+
+interface Natspec {
+    comment: string;
+    dev: string;
+    params: { [name: string]: string };
+    returns: { [name: string]: string };
+}
+
+/**
+ * Extract documentation, as JSON, from contract files.
+ */
+export async function extractDocsAsync(
+    contractPaths: string[],
+    roots: string[] = [],
+): Promise<SolidityDocs> {
+    const outputs = await compileAsync(contractPaths);
+    const sourceContents = (
+        await Promise.all(
+            outputs.map(getSourceContentsFromCompilerOutputAsync),
+        )
+    ).map(sources => rewriteSourcePaths(sources, roots));
+    const docs = createEmptyDocs();
+    outputs.forEach((output, outputIdx) => {
+        for (const file of Object.keys(output.contracts)) {
+            const fileDocs = extractDocsFromFile(
+                output.sources[file].ast,
+                sourceContents[outputIdx][output.sources[file].id],
+            );
+            mergeDocs(docs, fileDocs);
         }
-        return eventArgsDoc;
-    }
-    private static _dedupStructs(customTypes: CustomType[]): CustomType[] {
-        const uniqueCustomTypes: CustomType[] = [];
-        const seenTypes: { [hash: string]: boolean } = {};
-        _.each(customTypes, customType => {
-            const hash = SolDoc._generateCustomTypeHash(customType);
-            if (!seenTypes[hash]) {
-                uniqueCustomTypes.push(customType);
-                seenTypes[hash] = true;
-            }
-        });
-        return uniqueCustomTypes;
-    }
-    private static _capitalize(text: string): string {
-        return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
-    }
-    private static _generateCustomTypeHash(customType: CustomType): string {
-        const customTypeWithoutName = _.cloneDeep(customType);
-        delete customTypeWithoutName.name;
-        const customTypeWithoutNameStr = JSON.stringify(customTypeWithoutName);
-        const hash = ethUtil.sha256(customTypeWithoutNameStr).toString('hex');
-        return hash;
-    }
-    private static _makeCompilerOptions(contractsDir: string, contractsToCompile?: string[]): CompilerOptions {
-        const compilerOptions: CompilerOptions = {
-            contractsDir,
-            contracts: '*',
-            compilerSettings: {
-                outputSelection: {
-                    ['*']: {
-                        ['*']: ['abi', 'devdoc'],
-                    },
+    });
+    return docs;
+}
+
+async function compileAsync(files: string[]): Promise<SolcOutput[]> {
+    const compiler = new Compiler({
+        contracts: files,
+        compilerSettings: {
+            outputSelection: {
+                '*': {
+                    '*': ['metadata'],
+                    '': ['ast'],
                 },
             },
-        };
-
-        const shouldOverrideCatchAllContractsConfig = contractsToCompile !== undefined && contractsToCompile.length > 0;
-        if (shouldOverrideCatchAllContractsConfig) {
-            compilerOptions.contracts = contractsToCompile;
-        }
-
-        return compilerOptions;
-    }
-    /**
-     * Invoke the Solidity compiler and transform its ABI and devdoc outputs into a
-     * JSON format easily consumed by documentation rendering tools.
-     * @param contractsToDocument list of contracts for which to generate doc objects
-     * @param contractsDir the directory in which to find the `contractsToCompile` as well as their dependencies.
-     * @return doc object for use with documentation generation tools.
-     */
-    public async generateSolDocAsync(
-        contractsDir: string,
-        contractsToDocument?: string[],
-        customTypeHashToName?: ObjectMap<string>,
-    ): Promise<DocAgnosticFormat> {
-        this._customTypeHashToName = customTypeHashToName;
-        const docWithDependencies: DocAgnosticFormat = {};
-        const compilerOptions = SolDoc._makeCompilerOptions(contractsDir, contractsToDocument);
-        const compiler = new Compiler(compilerOptions);
-        const compilerOutputs = await compiler.getCompilerOutputsAsync();
-        let structs: CustomType[] = [];
-        for (const compilerOutput of compilerOutputs) {
-            const contractFileNames = _.keys(compilerOutput.contracts);
-            for (const contractFileName of contractFileNames) {
-                const contractNameToOutput = compilerOutput.contracts[contractFileName];
-
-                const contractNames = _.keys(contractNameToOutput);
-                for (const contractName of contractNames) {
-                    const compiledContract = contractNameToOutput[contractName];
-                    if (compiledContract.abi === undefined) {
-                        throw new Error('compiled contract did not contain ABI output');
-                    }
-                    docWithDependencies[contractName] = this._genDocSection(compiledContract, contractName);
-                    structs = [...structs, ...this._extractStructs(compiledContract)];
-                }
-            }
-        }
-        structs = SolDoc._dedupStructs(structs);
-        structs = this._overwriteStructNames(structs);
-
-        let doc: DocAgnosticFormat = {};
-        if (contractsToDocument === undefined || contractsToDocument.length === 0) {
-            doc = docWithDependencies;
-        } else {
-            for (const contractToDocument of contractsToDocument) {
-                const contractBasename = path.basename(contractToDocument);
-                const contractName =
-                    contractBasename.lastIndexOf('.sol') === -1
-                        ? contractBasename
-                        : contractBasename.substring(0, contractBasename.lastIndexOf('.sol'));
-                doc[contractName] = docWithDependencies[contractName];
-            }
-        }
-
-        if (structs.length > 0) {
-            doc.structs = {
-                comment: '',
-                constructors: [],
-                methods: [],
-                properties: [],
-                types: structs,
-                functions: [],
-                events: [],
-            };
-        }
-
-        delete this._customTypeHashToName; // Clean up instance state
-        return doc;
-    }
-    private _getCustomTypeFromDataItem(inputOrOutput: DataItem): CustomType {
-        const customType: CustomType = {
-            name: _.capitalize(inputOrOutput.name),
-            kindString: 'Interface',
-            children: [],
-        };
-        _.each(inputOrOutput.components, (component: DataItem) => {
-            const childType = this._getTypeFromDataItem(component);
-            const customTypeChild = {
-                name: component.name,
-                type: childType,
-            };
-            // (fabio): Not sure why this type casting is necessary. Seems TS doesn't
-            // deduce that `customType.children` cannot be undefined anymore after being
-            // set to `[]` above.
-            (customType.children as CustomTypeChild[]).push(customTypeChild);
-        });
-        return customType;
-    }
-    private _getNameFromDataItemIfExists(dataItem: DataItem): string | undefined {
-        if (dataItem.components === undefined) {
-            return undefined;
-        }
-        const customType = this._getCustomTypeFromDataItem(dataItem);
-        const hash = SolDoc._generateCustomTypeHash(customType);
-        if (this._customTypeHashToName === undefined || this._customTypeHashToName[hash] === undefined) {
-            return undefined;
-        }
-        return this._customTypeHashToName[hash];
-    }
-    private _getTypeFromDataItem(dataItem: DataItem): Type {
-        const typeDocType = dataItem.components !== undefined ? TypeDocTypes.Reference : TypeDocTypes.Intrinsic;
-        let typeName: string;
-        if (typeDocType === TypeDocTypes.Reference) {
-            const nameIfExists = this._getNameFromDataItemIfExists(dataItem);
-            typeName = nameIfExists === undefined ? SolDoc._capitalize(dataItem.name) : nameIfExists;
-        } else {
-            typeName = dataItem.type;
-        }
-
-        const isArrayType = _.endsWith(dataItem.type, '[]');
-        let type: Type;
-        if (isArrayType) {
-            // tslint:disable-next-line:custom-no-magic-numbers
-            typeName = typeDocType === TypeDocTypes.Intrinsic ? typeName.slice(0, -2) : typeName;
-            type = {
-                elementType: { name: typeName, typeDocType },
-                typeDocType: TypeDocTypes.Array,
-                name: '',
-            };
-        } else {
-            type = { name: typeName, typeDocType };
-        }
-        return type;
-    }
-    private _overwriteStructNames(customTypes: CustomType[]): CustomType[] {
-        if (this._customTypeHashToName === undefined) {
-            return customTypes;
-        }
-        const localCustomTypes = _.cloneDeep(customTypes);
-        _.each(localCustomTypes, (customType, i) => {
-            const hash = SolDoc._generateCustomTypeHash(customType);
-            if (this._customTypeHashToName !== undefined && this._customTypeHashToName[hash] !== undefined) {
-                localCustomTypes[i].name = this._customTypeHashToName[hash];
-            }
-        });
-        return localCustomTypes;
-    }
-    private _extractStructs(compiledContract: StandardContractOutput): CustomType[] {
-        let customTypes: CustomType[] = [];
-        for (const abiDefinition of compiledContract.abi) {
-            let types: CustomType[] = [];
-            switch (abiDefinition.type) {
-                case 'constructor': {
-                    types = this._getStructsAsCustomTypes(abiDefinition);
-                    break;
-                }
-                case 'function': {
-                    types = this._getStructsAsCustomTypes(abiDefinition);
-                    break;
-                }
-                case 'event':
-                case 'fallback':
-                    // No types exist
-                    break;
-                default:
-                    throw new Error(
-                        `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`, // tslint:disable-line:no-unnecessary-type-assertion
-                    );
-            }
-            customTypes = [...customTypes, ...types];
-        }
-        return customTypes;
-    }
-    private _genDocSection(compiledContract: StandardContractOutput, contractName: string): DocSection {
-        const docSection: DocSection = {
-            comment:
-                compiledContract.devdoc === undefined || compiledContract.devdoc.title === undefined
-                    ? ''
-                    : compiledContract.devdoc.title,
-            constructors: [],
-            methods: [],
-            properties: [],
-            types: [],
-            functions: [],
-            events: [],
-        };
-
-        for (const abiDefinition of compiledContract.abi) {
-            switch (abiDefinition.type) {
-                case 'constructor':
-                    docSection.constructors.push(
-                        // tslint:disable-next-line:no-unnecessary-type-assertion
-                        this._genConstructorDoc(contractName, abiDefinition as ConstructorAbi, compiledContract.devdoc),
-                    );
-                    break;
-                case 'event':
-                    // tslint:disable-next-line:no-unnecessary-type-assertion
-                    (docSection.events as Event[]).push(SolDoc._genEventDoc(abiDefinition as EventAbi));
-                    // note that we're not sending devdoc to this._genEventDoc().
-                    // that's because the type of the events array doesn't have any fields for documentation!
-                    break;
-                case 'function':
-                    // tslint:disable-next-line:no-unnecessary-type-assertion
-                    docSection.methods.push(this._genMethodDoc(abiDefinition as MethodAbi, compiledContract.devdoc));
-                    break;
-                case 'fallback':
-                    // tslint:disable-next-line:no-unnecessary-type-assertion
-                    docSection.methods.push(
-                        SolDoc._genFallbackDoc(abiDefinition as FallbackAbi, compiledContract.devdoc),
-                    );
-                    break;
-                default:
-                    throw new Error(
-                        `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`, // tslint:disable-line:no-unnecessary-type-assertion
-                    );
-            }
-        }
-
-        return docSection;
-    }
-    private _genConstructorDoc(
-        contractName: string,
-        abiDefinition: ConstructorAbi,
-        devdocIfExists: DevdocOutput | undefined,
-    ): SolidityMethod {
-        const { parameters, methodSignature } = this._genMethodParamsDoc('', abiDefinition.inputs, devdocIfExists);
-
-        const comment = SolDoc._devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
-
-        const constructorDoc: SolidityMethod = {
-            isConstructor: true,
-            name: contractName,
-            callPath: '',
-            parameters,
-            returnType: { name: contractName, typeDocType: TypeDocTypes.Reference }, // sad we have to specify this
-            isConstant: false,
-            isPayable: abiDefinition.payable,
-            comment,
-        };
-
-        return constructorDoc;
-    }
-    private _genMethodDoc(abiDefinition: MethodAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
-        const name = abiDefinition.name;
-        const { parameters, methodSignature } = this._genMethodParamsDoc(name, abiDefinition.inputs, devdocIfExists);
-        const devDocComment = SolDoc._devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
-        const returnType = this._genMethodReturnTypeDoc(abiDefinition.outputs);
-        const returnComment =
-            devdocIfExists === undefined || devdocIfExists.methods[methodSignature] === undefined
-                ? undefined
-                : devdocIfExists.methods[methodSignature].return;
-
-        const hasNoNamedParameters = _.find(parameters, p => !_.isEmpty(p.name)) === undefined;
-        const isGeneratedGetter = hasNoNamedParameters;
-        const comment =
-            _.isEmpty(devDocComment) && isGeneratedGetter
-                ? `This is an auto-generated accessor method of the '${name}' contract instance variable.`
-                : devDocComment;
-        const methodDoc: SolidityMethod = {
-            isConstructor: false,
-            name,
-            callPath: '',
-            parameters,
-            returnType,
-            returnComment,
-            isConstant: abiDefinition.constant,
-            isPayable: abiDefinition.payable,
-            comment,
-        };
-        return methodDoc;
-    }
-    /**
-     * Extract documentation for each method parameter from @param params.
-     */
-    private _genMethodParamsDoc(
-        name: string,
-        abiParams: DataItem[],
-        devdocIfExists: DevdocOutput | undefined,
-    ): { parameters: Parameter[]; methodSignature: string } {
-        const parameters: Parameter[] = [];
-        for (const abiParam of abiParams) {
-            const type = this._getTypeFromDataItem(abiParam);
-
-            const parameter: Parameter = {
-                name: abiParam.name,
-                comment: '<No comment>',
-                isOptional: false, // Unsupported in Solidity, until resolution of https://github.com/ethereum/solidity/issues/232
-                type,
-            };
-            parameters.push(parameter);
-        }
-
-        const methodSignature = `${name}(${abiParams
-            .map(abiParam => {
-                if (!_.startsWith(abiParam.type, 'tuple')) {
-                    return abiParam.type;
-                } else {
-                    // Need to expand tuples:
-                    // E.g: fillOrder(tuple,uint256,bytes) -> fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)
-                    const isArray = _.endsWith(abiParam.type, '[]');
-                    const expandedTypes = _.map(abiParam.components, c => c.type);
-                    const type = `(${expandedTypes.join(',')})${isArray ? '[]' : ''}`;
-                    return type;
-                }
-            })
-            .join(',')})`;
-
-        if (devdocIfExists !== undefined) {
-            const devdocMethodIfExists = devdocIfExists.methods[methodSignature];
-            if (devdocMethodIfExists !== undefined) {
-                const devdocParamsIfExist = devdocMethodIfExists.params;
-                if (devdocParamsIfExist !== undefined) {
-                    for (const parameter of parameters) {
-                        parameter.comment = devdocParamsIfExist[parameter.name];
-                    }
-                }
-            }
-        }
-
-        return { parameters, methodSignature };
-    }
-    private _genMethodReturnTypeDoc(outputs: DataItem[]): Type {
-        let type: Type;
-        if (outputs.length > 1) {
-            type = {
-                name: '',
-                typeDocType: TypeDocTypes.Tuple,
-                tupleElements: [],
-            };
-            for (const output of outputs) {
-                const tupleType = this._getTypeFromDataItem(output);
-                (type.tupleElements as Type[]).push(tupleType);
-            }
-            return type;
-        } else if (outputs.length === 1) {
-            const output = outputs[0];
-            type = this._getTypeFromDataItem(output);
-        } else {
-            type = {
-                name: 'void',
-                typeDocType: TypeDocTypes.Intrinsic,
-            };
-        }
-        return type;
-    }
-    private _getStructsAsCustomTypes(abiDefinition: AbiDefinition): CustomType[] {
-        const customTypes: CustomType[] = [];
-        // We cast to `any` here because we do not know yet if this type of abiDefinition contains
-        // an `input` key
-        if ((abiDefinition as any).inputs !== undefined) {
-            const methodOrConstructorAbi = abiDefinition as MethodAbi | ConstructorAbi;
-            _.each(methodOrConstructorAbi.inputs, input => {
-                if (!input.components === undefined) {
-                    const customType = this._getCustomTypeFromDataItem(input);
-                    customTypes.push(customType);
-                }
-            });
-        }
-        if ((abiDefinition as any).outputs !== undefined) {
-            const methodAbi = abiDefinition as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
-            _.each(methodAbi.outputs, output => {
-                if (output.components !== undefined) {
-                    const customType = this._getCustomTypeFromDataItem(output);
-                    customTypes.push(customType);
-                }
-            });
-        }
-        return customTypes;
-    }
+        },
+    });
+    return compiler.getCompilerOutputsAsync() as any as Promise<SolcOutput[]>;
 }
-// tslint:disable:max-file-line-count
+
+async function getSourceContentsFromCompilerOutputAsync(output: SolcOutput): Promise<SourceData[]> {
+    const sources: SourceData[] = [];
+    for (const [importFile, fileOutput] of Object.entries(output.contracts)) {
+        if (importFile in sources) {
+            continue;
+        }
+        for (const contractOutput of Object.values(fileOutput)) {
+            const metadata = JSON.parse(contractOutput.metadata || '{}') as ContractMetadata;
+            let filePath = importFile;
+            if (!path.isAbsolute(filePath)) {
+                const { remappings } = metadata.settings;
+                let longestPrefix = '';
+                let longestPrefixReplacement = '';
+                for (const remapping of remappings) {
+                    const [from, to] = remapping.substr(1).split('=');
+                    if (longestPrefix.length < from.length) {
+                        if (filePath.startsWith(from)) {
+                            longestPrefix = from;
+                            longestPrefixReplacement = to;
+                        }
+                    }
+                }
+                filePath = filePath.slice(longestPrefix.length);
+                filePath = path.join(longestPrefixReplacement, filePath);
+            }
+            const content = (await fs.promises.readFile(
+                filePath,
+                { encoding: 'utf-8' },
+            )) as string;
+            sources[output.sources[importFile].id] = {
+                path: path.relative('.', filePath),
+                content,
+            };
+        }
+    }
+    return sources;
+}
+
+function rewriteSourcePaths(sources: SourceData[], roots: string[]): SourceData[] {
+    const _roots = roots.map(root => root.split('='));
+    return sources.map(s => {
+        let longestPrefix = '';
+        let longestPrefixReplacement = '';
+        for (const [from, to] of _roots) {
+            if (from.length > longestPrefix.length) {
+                if (s.path.startsWith(from)) {
+                    longestPrefix = from;
+                    longestPrefixReplacement = to || '';
+                }
+            }
+        }
+        return {
+            ...s,
+            path: `${longestPrefixReplacement}${s.path.substr(longestPrefix.length)}`,
+        };
+    });
+}
+
+function mergeDocs(dst: SolidityDocs, ...srcs: SolidityDocs[]): SolidityDocs {
+    if (srcs.length === 0) {
+        return dst;
+    }
+    for (const src of srcs) {
+        dst.contracts = {
+            ...dst.contracts,
+            ...src.contracts,
+        };
+    }
+    return dst;
+}
+
+function createEmptyDocs(): SolidityDocs {
+    return { contracts: {} };
+}
+
+function extractDocsFromFile(ast: SourceUnitNode, source: SourceData): SolidityDocs {
+    const HIDDEN_VISIBILITIES = [ Visibility.Private, Visibility.Internal ];
+    const docs = createEmptyDocs();
+    const visit = (node: AstNode, currentContractName?: string) => {
+        const { offset } = splitAstNodeSrc(node.src);
+        if (isSourceUnitNode(node)) {
+            for (const child of node.nodes) {
+                visit(child);
+            }
+        } else if (isContractDefinitionNode(node)) {
+            const natspec = getNatspecBefore(source.content, offset);
+            docs.contracts[node.name] = {
+                file: source.path,
+                line: getAstNodeLineNumber(node, source.content),
+                doc: natspec.dev || natspec.comment,
+                kind: node.contractKind,
+                inherits: node.baseContracts.map(c => normalizeType(c.baseName.typeDescriptions.typeString)),
+                methods: [],
+                events: [],
+                enums: {},
+                structs: {},
+            };
+            for (const child of node.nodes) {
+                visit(child, node.name);
+            }
+        } else if (!currentContractName) {
+            return;
+        } else if (isVariableDeclarationNode(node)) {
+            if (HIDDEN_VISIBILITIES.includes(node.visibility)) {
+                return;
+            }
+            if (!node.stateVariable) {
+                return;
+            }
+            const natspec = getNatspecBefore(source.content, offset);
+            docs.contracts[currentContractName].methods.push({
+                file: source.path,
+                line: getAstNodeLineNumber(node, source.content),
+                doc: getDocStringAround(source.content, offset),
+                name: node.name,
+                contract: currentContractName,
+                kind: FunctionKind.Function,
+                visibility: Visibility.External,
+                parameters: extractAcessorParameterDocs(node.typeName, natspec, source),
+                returns: extractAccesorReturnDocs(node.typeName, natspec, source),
+                stateMutability: StateMutability.View,
+                isAccessor: true,
+            });
+        } else if (isFunctionDefinitionNode(node)) {
+            const natspec = getNatspecBefore(source.content, offset);
+            docs.contracts[currentContractName].methods.push({
+                file: source.path,
+                line: getAstNodeLineNumber(node, source.content),
+                doc: natspec.dev || natspec.comment,
+                name: node.name,
+                contract: currentContractName,
+                kind: node.kind,
+                visibility: node.visibility,
+                parameters: extractFunctionParameterDocs(node.parameters, natspec, source),
+                returns: extractFunctionReturnDocs(node.returnParameters, natspec, source),
+                stateMutability: node.stateMutability,
+                isAccessor: false,
+            });
+        } else if (isStructDefinitionNode(node)) {
+            const natspec = getNatspecBefore(source.content, offset);
+            docs.contracts[currentContractName].structs[node.canonicalName] = {
+                contract: currentContractName,
+                file: source.path,
+                line: getAstNodeLineNumber(node, source.content),
+                doc: natspec.dev || natspec.comment || getCommentsBefore(source.content, offset),
+                fields: extractStructFieldDocs(node.members, natspec, source),
+            };
+        } else if (isEnumDefinitionNode(node)) {
+            const natspec = getNatspecBefore(source.content, offset);
+            docs.contracts[currentContractName].enums[node.canonicalName] = {
+                contract: currentContractName,
+                file: source.path,
+                line: getAstNodeLineNumber(node, source.content),
+                doc: natspec.dev || natspec.comment || getCommentsBefore(source.content, offset),
+                values: extractEnumValueDocs(node.members, natspec, source),
+            };
+        } else if (isEventDefinitionNode(node)) {
+            const natspec = getNatspecBefore(source.content, offset);
+            docs.contracts[currentContractName].events.push({
+                contract: currentContractName,
+                file: source.path,
+                line: getAstNodeLineNumber(node, source.content),
+                doc: natspec.dev || natspec.comment,
+                name: node.name,
+                parameters: extractFunctionParameterDocs(node.parameters, natspec, source),
+            });
+        }
+    };
+    visit(ast);
+    return docs;
+}
+
+function extractAcessorParameterDocs(
+    typeNameNode: TypeNameNode,
+    natspec: Natspec,
+    source: SourceData,
+): ParamDocsMap {
+    const params: ParamDocsMap = {};
+    const lineNumber = getAstNodeLineNumber(typeNameNode, source.content);
+    if (isMappingTypeNameNode(typeNameNode)) {
+        // Handle mappings.
+        let node = typeNameNode;
+        let order = 0;
+        do {
+            const paramName = `${Object.keys(params).length}`;
+            params[paramName] = {
+                file: source.path,
+                line: lineNumber,
+                doc: natspec.params[paramName] || '',
+                type: normalizeType(node.keyType.typeDescriptions.typeString),
+                indexed: false,
+                storageLocation: StorageLocation.Default,
+                order: order++,
+            };
+            node = node.valueType as MappingTypeNameNode;
+        } while (isMappingTypeNameNode(node));
+    } else if (isArrayTypeNameNode(typeNameNode)) {
+        // Handle arrays.
+        let node = typeNameNode;
+        let order = 0;
+        do {
+            const paramName = `${Object.keys(params).length}`;
+            params[paramName] = {
+                file: source.path,
+                line: lineNumber,
+                doc: natspec.params[paramName] || '',
+                type: 'uint256',
+                indexed: false,
+                storageLocation: StorageLocation.Default,
+                order: order++,
+            };
+            node = node.baseType as ArrayTypeNameNode;
+        } while (isArrayTypeNameNode(node));
+    }
+    return params;
+}
+
+function extractAccesorReturnDocs(
+    typeNameNode: TypeNameNode,
+    natspec: Natspec,
+    source: SourceData,
+): ParamDocsMap {
+    let type = typeNameNode.typeDescriptions.typeString;
+    let storageLocation = StorageLocation.Default;
+    if (isMappingTypeNameNode(typeNameNode)) {
+        // Handle mappings.
+        let node = typeNameNode;
+        while (isMappingTypeNameNode(node.valueType)) {
+            node = node.valueType;
+        }
+        type = node.valueType.typeDescriptions.typeString;
+        storageLocation = StorageLocation.Storage;
+    } else if (isArrayTypeNameNode(typeNameNode)) {
+        // Handle arrays.
+        type = typeNameNode.baseType.typeDescriptions.typeString;
+        storageLocation = StorageLocation.Memory;
+    } else if (isUserDefinedTypeNameNode(typeNameNode)) {
+        storageLocation = typeNameNode
+            .typeDescriptions
+            .typeString
+            .startsWith('struct') ?
+            StorageLocation.Memory :
+            StorageLocation.Default;
+    }
+    return {
+        '0': {
+            type,
+            storageLocation,
+            file: source.path,
+            line: getAstNodeLineNumber(typeNameNode, source.content),
+            doc: natspec.returns['0'] || '',
+            indexed: false,
+            order: 0,
+        },
+    };
+}
+
+function extractFunctionParameterDocs(
+    paramListNodes: ParameterListNode,
+    natspec: Natspec,
+    source: SourceData,
+): ParamDocsMap {
+    const params: ParamDocsMap = {};
+    for (const param of paramListNodes.parameters) {
+        params[param.name] = {
+            file: source.path,
+            line: getAstNodeLineNumber(param, source.content),
+            doc: natspec.params[param.name] || '',
+            type: normalizeType(param.typeName.typeDescriptions.typeString),
+            indexed: param.indexed,
+            storageLocation: param.storageLocation,
+            order: 0,
+        };
+    }
+    return params;
+}
+
+function extractFunctionReturnDocs(
+    paramListNodes: ParameterListNode,
+    natspec: Natspec,
+    source: SourceData,
+): ParamDocsMap {
+    const returns: ParamDocsMap = {};
+    let order = 0;
+    for (const [idx, param] of Object.entries(paramListNodes.parameters)) {
+        returns[param.name || idx] = {
+            file: source.path,
+            line: getAstNodeLineNumber(param, source.content),
+            doc: natspec.returns[param.name] || '',
+            type: normalizeType(param.typeName.typeDescriptions.typeString),
+            indexed: false,
+            storageLocation: param.storageLocation,
+            order: order++,
+        };
+    }
+    return returns;
+}
+
+function extractStructFieldDocs(
+    fieldNodes: VariableDeclarationNode[],
+    natspec: Natspec,
+    source: SourceData,
+): ParamDocsMap {
+    const fields: ParamDocsMap = {};
+    let order = 0;
+    for (const field of fieldNodes) {
+        const { offset } = splitAstNodeSrc(field.src);
+        fields[field.name] = {
+            file: source.path,
+            line: getAstNodeLineNumber(field, source.content),
+            doc: natspec.params[field.name] || getDocStringAround(source.content, offset),
+            type: normalizeType(field.typeName.typeDescriptions.typeString),
+            indexed: false,
+            storageLocation: field.storageLocation,
+            order: order++,
+        };
+    }
+    return fields;
+}
+
+function extractEnumValueDocs(
+    valuesNodes: EnumValueNode[],
+    natspec: Natspec,
+    source: SourceData,
+): EnumValueDocsMap {
+    const values: EnumValueDocsMap = {};
+    for (const value of valuesNodes) {
+        const { offset } = splitAstNodeSrc(value.src);
+        values[value.name] = {
+            file: source.path,
+            line: getAstNodeLineNumber(value, source.content),
+            doc: natspec.params[value.name] || getDocStringAround(source.content, offset),
+            value: Object.keys(values).length,
+        };
+    }
+    return values;
+}
+
+function offsetToLineIndex(code: string, offset: number): number {
+    let currentOffset = 0;
+    let lineIdx = 0;
+    while (currentOffset < offset) {
+        const lineEnd = code.indexOf('\n', currentOffset);
+        if (lineEnd === -1) {
+            return lineIdx;
+        }
+        currentOffset = lineEnd + 1;
+        ++lineIdx;
+    }
+    return lineIdx - 1;
+}
+
+function offsetToLine(code: string, offset: number): string {
+    let lineEnd = code.substr(offset).search(/\r?\n/);
+    lineEnd = lineEnd === -1 ? code.length - offset : lineEnd;
+    let lineStart = code.lastIndexOf('\n', offset);
+    lineStart = lineStart === -1 ? 0 : lineStart;
+    return code.substr(lineStart, offset - lineStart + lineEnd).trim();
+}
+
+function getPrevLine(code: string, offset: number): [string | undefined, number] {
+    const lineStart = code.lastIndexOf('\n', offset);
+    if (lineStart <= 0) {
+        return [undefined, 0];
+    }
+    const prevLineStart = code.lastIndexOf('\n', lineStart - 1);
+    if (prevLineStart === -1) {
+        return [code.substr(0, lineStart).trim(), 0];
+    }
+    return [code.substring(prevLineStart + 1, lineStart).trim(), prevLineStart + 1];
+
+}
+
+function getAstNodeLineNumber(node: AstNode, code: string): number {
+    return offsetToLineIndex(code, splitAstNodeSrc(node.src).offset) + 1;
+}
+
+function getNatspecBefore(code: string, offset: number): Natspec {
+    const natspec = { comment: '', dev: '', params: {}, returns: {} };
+    // Walk backwards through the lines until there is no longer a natspec
+    // comment.
+    let currentDirectivePayloads = [];
+    let currentLine: string | undefined;
+    let currentOffset = offset;
+    while (true) {
+        [currentLine, currentOffset] = getPrevLine(code, currentOffset);
+        if (currentLine === undefined) {
+            break;
+        }
+        const m = /^\/\/\/\s*(?:@(\w+\b)\s*)?(.*?)$/.exec(currentLine);
+        if (!m) {
+            break;
+        }
+        const directive = m[1];
+        let directiveParam: string | undefined;
+        let rest = m[2] || '';
+        // Parse directives that take a parameter.
+        if (directive === 'param' || directive === 'return') {
+            const m2 = /^(\w+\b)(.*)$/.exec(rest);
+            if (m2) {
+                directiveParam = m2[1];
+                rest = m2[2] || '';
+            }
+        }
+        currentDirectivePayloads.push(rest);
+        if (directive !== undefined) {
+            const fullPayload = currentDirectivePayloads.reverse().map(s => s.trim()).join(' ');
+            switch (directive) {
+                case 'dev':
+                    natspec.dev = fullPayload;
+                    break;
+                case 'param':
+                    if (directiveParam) {
+                        natspec.params = {
+                            ...natspec.params,
+                            [directiveParam]: fullPayload,
+                        };
+                    }
+                    break;
+                case 'return':
+                    if (directiveParam) {
+                        natspec.returns = {
+                            ...natspec.returns,
+                            [directiveParam]: fullPayload,
+                        };
+                    }
+                    break;
+                default:
+                    break;
+            }
+            currentDirectivePayloads = [];
+        }
+    }
+    if (currentDirectivePayloads.length > 0) {
+        natspec.comment = currentDirectivePayloads.reverse().map(s => s.trim()).join(' ');
+    }
+    return natspec;
+}
+
+function getTrailingCommentAt(code: string, offset: number): string {
+    const m = /\/\/\s*(.+)\s*$/.exec(offsetToLine(code, offset));
+    return m ? m[1] : '';
+}
+
+function getCommentsBefore(code: string, offset: number): string {
+    let currentOffset = offset;
+    const comments = [];
+    do {
+        let prevLine;
+        [prevLine, currentOffset] = getPrevLine(code, currentOffset);
+        if (prevLine === undefined) {
+            break;
+        }
+        const m = /^\s*\/\/\s*(.+)\s*$/.exec(prevLine);
+        if (m && !m[1].startsWith('solhint')) {
+            comments.push(m[1].trim());
+        } else {
+            break;
+        }
+    } while (currentOffset > 0);
+    return comments.reverse().join(' ');
+}
+
+function getDocStringBefore(code: string, offset: number): string {
+    const natspec = getNatspecBefore(code, offset);
+    return natspec.dev || natspec.comment || getCommentsBefore(code, offset);
+}
+
+function getDocStringAround(code: string, offset: number): string {
+    const natspec = getNatspecBefore(code, offset);
+    return natspec.dev ||
+        natspec.comment ||
+        getDocStringBefore(code, offset) ||
+        getTrailingCommentAt(code, offset);
+}
+
+function normalizeType(type: string): string {
+    const m = /^(?:\w+ )?(.*)$/.exec(type);
+    if (!m) {
+        return '';
+    }
+    return m[1];
+}
+
+// tslint:disable-next-line: max-file-line-count
