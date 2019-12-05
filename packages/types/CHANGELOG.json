@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Added `DydxBridgeOnlyCallableByErc20BridgeProxy` and `DydxBridgeUnrecognizedBridgeAction`",
+                "pr": 2378
+            }
+        ]
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {

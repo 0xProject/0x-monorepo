@@ -86,18 +86,4 @@ interface IDydx {
         ActionArgs[] calldata actions
     )
         external;
-
-    ///
-    /// @dev Return true if a particular address is approved as an operator for an owner's accounts.
-    /// Approved operators can act on the accounts of the owner as if it were the operator's own.
-    /// @param  owner     The owner of the accounts
-    /// @param  operator  The possible operator
-    /// @return           True if operator is approved for owner's accounts
-    function getIsLocalOperator(
-        address owner,
-        address operator
-    )
-        external
-        view
-        returns (bool);
 }

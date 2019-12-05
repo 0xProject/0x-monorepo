@@ -1,6 +1,5 @@
 import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
-import { AuthorizableRevertErrors } from '@0x/contracts-utils';
-import { AssetProxyId } from '@0x/types';
+import { AssetProxyId, RevertReason } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -10,27 +9,16 @@ import { TestDydxBridgeContract, TestDydxBridgeEvents } from './wrappers';
 blockchainTests.resets('DydxBridge unit tests', env => {
     const accountNumber = new BigNumber(1);
     const marketId = new BigNumber(2);
+    const notAuthorized = '0x0000000000000000000000000000000000000001';
     let testContract: TestDydxBridgeContract;
-    let owner: string;
     let authorized: string;
-    let notAuthorized: string;
     let accountOwner: string;
-    let accountOperator: string;
-    let notAccountOwnerNorOperator: string;
     let receiver: string;
 
     before(async () => {
         // Get accounts
         const accounts = await env.web3Wrapper.getAvailableAddressesAsync();
-        [
-            owner,
-            authorized,
-            notAuthorized,
-            accountOwner,
-            accountOperator,
-            notAccountOwnerNorOperator,
-            receiver,
-        ] = accounts;
+        [, /* owner */ authorized, accountOwner, receiver] = accounts;
 
         // Deploy dydx bridge
         testContract = await TestDydxBridgeContract.deployFrom0xArtifactAsync(
@@ -38,17 +26,12 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             env.provider,
             env.txDefaults,
             artifacts,
-            accountOperator,
         );
-
-        // Authorize `authorized` account on `testContract`.
-        await testContract.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
     });
 
     describe('bridgeTransferFrom()', () => {
         interface BridgeData {
             action: number;
-            accountOwner: string;
             accountNumber: BigNumber;
             marketId: BigNumber;
         }
@@ -60,6 +43,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
         let bridgeDataEncoder: AbiEncoder.DataType;
         const callBridgeTransferFrom = async (
             from: string,
+            to: string,
             bridgeData: BridgeData,
             sender: string,
         ): Promise<string> => {
@@ -67,7 +51,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 .bridgeTransferFrom(
                     constants.NULL_ADDRESS,
                     from,
-                    receiver,
+                    to,
                     new BigNumber(1),
                     bridgeDataEncoder.encode(bridgeData),
                 )
@@ -78,6 +62,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             actionType: number,
             actionAddress: string,
             from: string,
+            to: string,
             bridgeData: BridgeData,
             sender: string,
         ): Promise<void> => {
@@ -86,7 +71,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 .bridgeTransferFrom(
                     constants.NULL_ADDRESS,
                     from,
-                    receiver,
+                    to,
                     new BigNumber(1),
                     bridgeDataEncoder.encode(bridgeData),
                 )
@@ -133,7 +118,6 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             // Construct default bridge data
             defaultBridgeData = {
                 action: DydxBridgeActions.Deposit as number,
-                accountOwner,
                 accountNumber,
                 marketId,
             };
@@ -141,32 +125,20 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             // Create encoder for bridge data
             bridgeDataEncoder = AbiEncoder.create([
                 { name: 'action', type: 'uint8' },
-                { name: 'accountOwner', type: 'address' },
                 { name: 'accountNumber', type: 'uint256' },
                 { name: 'marketId', type: 'uint256' },
             ]);
         });
-        it('succeeds if `from` owns the dydx account', async () => {
-            await callBridgeTransferFrom(accountOwner, defaultBridgeData, authorized);
-        });
-        it('succeeds if `from` operates the dydx account', async () => {
-            await callBridgeTransferFrom(accountOperator, defaultBridgeData, authorized);
-        });
-        it('reverts if `from` is neither the owner nor the operator of the dydx account', async () => {
-            const tx = callBridgeTransferFrom(notAccountOwnerNorOperator, defaultBridgeData, authorized);
-            const expectedError = 'INVALID_DYDX_OWNER_OR_OPERATOR';
-            return expect(tx).to.revertWith(expectedError);
-        });
         it('succeeds when calling `operate` with the `deposit` action', async () => {
             const depositAction = 0;
-            const depositFrom = accountOwner;
             const bridgeData = {
                 ...defaultBridgeData,
                 action: depositAction,
             };
             await callBridgeTransferFromAndVerifyEvents(
                 depositAction,
-                depositFrom,
+                accountOwner,
+                receiver,
                 accountOwner,
                 bridgeData,
                 authorized,
@@ -174,30 +146,31 @@ blockchainTests.resets('DydxBridge unit tests', env => {
         });
         it('succeeds when calling `operate` with the `withdraw` action', async () => {
             const withdrawAction = 1;
-            const withdrawTo = receiver;
             const bridgeData = {
                 ...defaultBridgeData,
                 action: withdrawAction,
             };
             await callBridgeTransferFromAndVerifyEvents(
                 withdrawAction,
-                withdrawTo,
+                receiver,
                 accountOwner,
+                receiver,
                 bridgeData,
                 authorized,
             );
         });
-        it('reverts if called by an unauthorized account', async () => {
+        it('reverts if not called by the ERC20 Bridge Proxy', async () => {
             const callBridgeTransferFromPromise = callBridgeTransferFrom(
                 accountOwner,
+                receiver,
                 defaultBridgeData,
                 notAuthorized,
             );
-            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorized);
+            const expectedError = RevertReason.DydxBridgeOnlyCallableByErc20BridgeProxy;
             return expect(callBridgeTransferFromPromise).to.revertWith(expectedError);
         });
         it('should return magic bytes if call succeeds', async () => {
-            const returnValue = await callBridgeTransferFrom(accountOwner, defaultBridgeData, authorized);
+            const returnValue = await callBridgeTransferFrom(accountOwner, receiver, defaultBridgeData, authorized);
             expect(returnValue).to.equal(AssetProxyId.ERC20Bridge);
         });
     });

@@ -6,7 +6,8 @@
                 "note": "Add `DydxBridge` to `DeploymentConstants`.",
                 "pr": 2365
             }
-    }
+        ]
+    },
     {
         "timestamp": 1575931811,
         "version": "4.0.1",
