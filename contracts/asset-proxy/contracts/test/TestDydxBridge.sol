@@ -28,14 +28,7 @@ contract TestDydxBridge is
     DydxBridge
 {
 
-    address public accountOperator;
-
-    constructor(address _accountOperator)
-        public
-        DydxBridge()
-    {
-        accountOperator = _accountOperator;
-    }
+    address private constant ALWAYS_REVERT_ADDRESS = address(1);
 
     event OperateAccount(
         address owner,
@@ -88,18 +81,6 @@ contract TestDydxBridge is
         }
     }
 
-    /// @dev Return true iff `operator` equals `accountOperator` in state.
-    function getIsLocalOperator(
-        address /* owner */,
-        address operator
-    )
-        external
-        view
-        returns (bool)
-    {
-        return operator == accountOperator;
-    }
-
     /// @dev overrides `_getDydxAddress()` from `DeploymentConstants` to return this address.
     function _getDydxAddress()
         internal
@@ -107,5 +88,14 @@ contract TestDydxBridge is
         returns (address)
     {
         return address(this);
+    }
+
+    /// @dev overrides `_getERC20BridgeProxyAddress()` from `DeploymentConstants` for testing.
+    function _getERC20BridgeProxyAddress()
+        internal
+        view
+        returns (address)
+    {
+        return msg.sender == ALWAYS_REVERT_ADDRESS ? address(0) : msg.sender;
     }
 }
