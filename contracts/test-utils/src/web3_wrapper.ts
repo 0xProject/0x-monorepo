@@ -1,4 +1,4 @@
-import { devConstants, env, EnvVars, web3Factory } from '@0x/dev-utils';
+import { devConstants, env, EnvVars, Web3Config, web3Factory } from '@0x/dev-utils';
 import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -9,47 +9,31 @@ import { coverage } from './coverage';
 import { profiler } from './profiler';
 import { revertTrace } from './revert_trace';
 
-enum ProviderType {
-    Ganache = 'ganache',
-    Geth = 'geth',
-}
-
-let testProvider: ProviderType;
-switch (process.env.TEST_PROVIDER) {
-    case undefined:
-        testProvider = ProviderType.Ganache;
-        break;
-    case 'ganache':
-        testProvider = ProviderType.Ganache;
-        break;
-    case 'geth':
-        testProvider = ProviderType.Geth;
-        break;
-    default:
-        throw new Error(`Unknown TEST_PROVIDER: ${process.env.TEST_PROVIDER}`);
-}
-
-const ganacheTxDefaults = {
+export const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
     gas: devConstants.GAS_LIMIT,
     gasPrice: constants.DEFAULT_GAS_PRICE,
 };
-const gethTxDefaults = {
-    from: devConstants.TESTRPC_FIRST_ADDRESS,
-};
-export const txDefaults = testProvider === ProviderType.Ganache ? ganacheTxDefaults : gethTxDefaults;
 
-const gethConfigs = {
-    shouldUseInProcessGanache: false,
-    rpcUrl: 'http://localhost:8501',
-    shouldUseFakeGasEstimate: false,
-};
-const ganacheConfigs = {
+let providerConfigs: Web3Config = {
     total_accounts: constants.NUM_TEST_ACCOUNTS,
     shouldUseInProcessGanache: true,
     shouldAllowUnlimitedContractSize: true,
 };
-const providerConfigs = testProvider === ProviderType.Ganache ? ganacheConfigs : gethConfigs;
+
+if (process.env.FORK_RPC_URL !== undefined) {
+    providerConfigs = {
+        ...providerConfigs,
+        fork: process.env.FORK_RPC_URL,
+        blockTime: 0,
+        // ZeroExGovernor signer addresses
+        unlocked_accounts: [
+            '0x257619b7155d247e43c8b6d90c8c17278ae481f0',
+            '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2',
+            '0x894d623e0e0e8ed12c4a73dada999e275684a37d',
+        ],
+    };
+}
 
 export const provider: Web3ProviderEngine = web3Factory.getRpcProvider(providerConfigs);
 provider.stop();
