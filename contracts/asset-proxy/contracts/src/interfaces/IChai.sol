@@ -17,28 +17,17 @@
 */
 
 pragma solidity ^0.5.9;
-pragma experimental ABIEncoderV2;
-
-import "@0x/contracts-asset-proxy/contracts/src/bridges/Eth2DaiBridge.sol";
 
 
-contract TestEth2DaiBridge is
-    Eth2DaiBridge
-{
-    // solhint-disable var-name-mixedcase
-    address public TEST_ETH2DAI_ADDRESS;
+// The actual Chai contract can be found here: https://github.com/dapphub/chai
+contract IChai {
 
-    constructor (address testEth2Dai)
-        public
-    {
-        TEST_ETH2DAI_ADDRESS = testEth2Dai;
-    }
-
-    function _getEth2DaiAddress()
-        internal
-        view
-        returns (address exchange)
-    {
-        return TEST_ETH2DAI_ADDRESS;
-    }
+    /// @dev Withdraws Dai owned by `src`
+    /// @param src Address that owns Dai.
+    /// @param wad Amount of Dai to withdraw.
+    function draw(
+        address src,
+        uint256 wad
+    )
+        external;
 }

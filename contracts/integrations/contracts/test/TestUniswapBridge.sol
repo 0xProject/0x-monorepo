@@ -20,8 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/bridges/UniswapBridge.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFactory.sol";
-import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 
 
 contract TestUniswapBridge is
@@ -41,19 +39,19 @@ contract TestUniswapBridge is
         TEST_UNISWAP_EXCHANGE_FACTORY_ADDRESS = testUniswapExchangeFactory;
     }
 
-    function getWethContract()
-        public
+    function _getWethAddress()
+        internal
         view
-        returns (IEtherToken token)
+        returns (address token)
     {
-        return IEtherToken(TEST_WETH_ADDRESS);
+        return TEST_WETH_ADDRESS;
     }
 
-    function getUniswapExchangeFactoryContract()
-        public
+    function _getUniswapExchangeFactoryAddress()
+        internal
         view
-        returns (IUniswapExchangeFactory factory)
+        returns (address factory)
     {
-        return IUniswapExchangeFactory(TEST_UNISWAP_EXCHANGE_FACTORY_ADDRESS);
+        return TEST_UNISWAP_EXCHANGE_FACTORY_ADDRESS;
     }
 }

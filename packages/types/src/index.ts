@@ -350,6 +350,8 @@ export enum RevertReason {
     CustomTimeLockIncomplete = 'CUSTOM_TIME_LOCK_INCOMPLETE',
     EqualLengthsRequired = 'EQUAL_LENGTHS_REQUIRED',
     OnlyCallableByWallet = 'ONLY_CALLABLE_BY_WALLET',
+    ChaiBridgeOnlyCallableByErc20BridgeProxy = 'ChaiBridge/ONLY_CALLABLE_BY_ERC20_BRIDGE_PROXY',
+    ChaiBridgeDrawDaiFailed = 'ChaiBridge/DRAW_DAI_FAILED',
 }
 
 export enum StatusCodes {

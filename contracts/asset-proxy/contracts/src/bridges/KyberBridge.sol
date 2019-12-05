@@ -77,8 +77,8 @@ contract KyberBridge is
         returns (bytes4 success)
     {
         TradeState memory state;
-        state.kyber = _getKyberContract();
-        state.weth = _getWETHContract();
+        state.kyber = IKyberNetworkProxy(_getKyberNetworkProxyAddress());
+        state.weth = IEtherToken(_getWethAddress());
         // Decode the bridge data to get the `fromTokenAddress`.
         (state.fromTokenAddress) = abi.decode(bridgeData, (address));
         state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
@@ -142,25 +142,5 @@ contract KyberBridge is
         returns (bytes4 magicValue)
     {
         return LEGACY_WALLET_MAGIC_VALUE;
-    }
-
-    /// @dev Overridable way to get the `KyberNetworkProxy` contract.
-    /// @return kyber The `IKyberNetworkProxy` contract.
-    function _getKyberContract()
-        internal
-        view
-        returns (IKyberNetworkProxy kyber)
-    {
-        return IKyberNetworkProxy(_getKyberNetworkProxyAddress());
-    }
-
-    /// @dev Overridable way to get the WETH contract.
-    /// @return weth The WETH contract.
-    function _getWETHContract()
-        internal
-        view
-        returns (IEtherToken weth)
-    {
-        return IEtherToken(_getWETHAddress());
     }
 }

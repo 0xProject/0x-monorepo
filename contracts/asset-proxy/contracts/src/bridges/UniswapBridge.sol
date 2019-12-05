@@ -88,7 +88,7 @@ contract UniswapBridge is
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
         // Get the weth contract.
-        state.weth = getWethContract();
+        state.weth = IEtherToken(_getWethAddress());
 
         // Convert from WETH to a token.
         if (fromTokenAddress == address(state.weth)) {
@@ -161,26 +161,6 @@ contract UniswapBridge is
         return LEGACY_WALLET_MAGIC_VALUE;
     }
 
-    /// @dev Overridable way to get the weth contract.
-    /// @return token The WETH contract.
-    function getWethContract()
-        public
-        view
-        returns (IEtherToken token)
-    {
-        return IEtherToken(_getWETHAddress());
-    }
-
-    /// @dev Overridable way to get the uniswap exchange factory contract.
-    /// @return factory The exchange factory contract.
-    function getUniswapExchangeFactoryContract()
-        public
-        view
-        returns (IUniswapExchangeFactory factory)
-    {
-        return IUniswapExchangeFactory(_getUniswapExchangeFactoryAddress());
-    }
-
     /// @dev Grants an unlimited allowance to the exchange for its token
     ///      on behalf of this contract.
     /// @param exchange The Uniswap token exchange.
@@ -207,11 +187,12 @@ contract UniswapBridge is
     {
         address exchangeTokenAddress = fromTokenAddress;
         // Whichever isn't WETH is the exchange token.
-        if (fromTokenAddress == address(getWethContract())) {
+        if (fromTokenAddress == _getWethAddress()) {
             exchangeTokenAddress = toTokenAddress;
         }
         exchange = IUniswapExchange(
-            getUniswapExchangeFactoryContract().getExchange(exchangeTokenAddress)
+            IUniswapExchangeFactory(_getUniswapExchangeFactoryAddress())
+            .getExchange(exchangeTokenAddress)
         );
         require(address(exchange) != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
         return exchange;

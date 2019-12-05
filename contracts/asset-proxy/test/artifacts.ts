@@ -5,6 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
 import * as ERC1155Proxy from '../test/generated-artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../test/generated-artifacts/ERC20BridgeProxy.json';
 import * as ERC20Proxy from '../test/generated-artifacts/ERC20Proxy.json';
@@ -14,6 +15,7 @@ import * as IAssetData from '../test/generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../test/generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../test/generated-artifacts/IAssetProxyDispatcher.json';
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
+import * as IChai from '../test/generated-artifacts/IChai.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
 import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkProxy.json';
@@ -25,6 +27,7 @@ import * as MixinAuthorizable from '../test/generated-artifacts/MixinAuthorizabl
 import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
+import * as TestChaiBridge from '../test/generated-artifacts/TestChaiBridge.json';
 import * as TestERC20Bridge from '../test/generated-artifacts/TestERC20Bridge.json';
 import * as TestEth2DaiBridge from '../test/generated-artifacts/TestEth2DaiBridge.json';
 import * as TestKyberBridge from '../test/generated-artifacts/TestKyberBridge.json';
@@ -41,6 +44,7 @@ export const artifacts = {
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     StaticCallProxy: StaticCallProxy as ContractArtifact,
+    ChaiBridge: ChaiBridge as ContractArtifact,
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
     KyberBridge: KyberBridge as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
@@ -48,11 +52,13 @@ export const artifacts = {
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
+    IChai: IChai as ContractArtifact,
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
+    TestChaiBridge: TestChaiBridge as ContractArtifact,
     TestERC20Bridge: TestERC20Bridge as ContractArtifact,
     TestEth2DaiBridge: TestEth2DaiBridge as ContractArtifact,
     TestKyberBridge: TestKyberBridge as ContractArtifact,
