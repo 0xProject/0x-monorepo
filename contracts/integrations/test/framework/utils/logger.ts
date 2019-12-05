@@ -29,7 +29,7 @@ class Logger {
                 msg: `Function called: ${functionName}(${functionArgs
                     .map(arg => JSON.stringify(arg).replace(/"/g, "'"))
                     .join(', ')})`,
-                step: this._step++,
+                step: ++this._step,
                 txData,
             }),
         );

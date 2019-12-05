@@ -37,6 +37,9 @@ export function validCreateStakingPoolAssertion(
             args: [number, boolean],
             txData: Partial<TxData>,
         ) => {
+            // Ensure that the tx succeeded.
+            expect(result.success, `Error: ${result.data}`).to.be.true();
+
             const [operatorShare] = args;
 
             // Checks the logs for the new poolId, verifies that it is as expected

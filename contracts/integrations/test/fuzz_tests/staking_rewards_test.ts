@@ -20,7 +20,6 @@ import { DeploymentManager } from '../framework/deployment_manager';
 import { Simulation, SimulationEnvironment } from '../framework/simulation';
 import { Pseudorandom } from '../framework/utils/pseudorandom';
 
-import { PoolManagementSimulation } from './pool_management_test';
 import { PoolMembershipSimulation } from './pool_membership_test';
 import { StakeManagementSimulation } from './stake_management_test';
 
@@ -30,7 +29,6 @@ export class StakingRewardsSimulation extends Simulation {
         const stakers = filterActorsByRole(actors, Staker);
         const keepers = filterActorsByRole(actors, Keeper);
 
-        const poolManagement = new PoolManagementSimulation(this.environment);
         const poolMembership = new PoolMembershipSimulation(this.environment);
         const stakeManagement = new StakeManagementSimulation(this.environment);
 
@@ -38,7 +36,6 @@ export class StakingRewardsSimulation extends Simulation {
             ...stakers.map(staker => staker.simulationActions.validWithdrawDelegatorRewards),
             ...keepers.map(keeper => keeper.simulationActions.validFinalizePool),
             ...keepers.map(keeper => keeper.simulationActions.validEndEpoch),
-            poolManagement.generator,
             poolMembership.generator,
             stakeManagement.generator,
         ];
@@ -66,12 +63,22 @@ blockchainTests('Staking rewards fuzz test', env => {
             numErc721TokensToDeploy: 0,
             numErc1155TokensToDeploy: 0,
         });
+        const [ERC20TokenA, ERC20TokenB, ERC20TokenC, ERC20TokenD] = deployment.tokens.erc20;
         const balanceStore = new BlockchainBalanceStore(
             {
                 StakingProxy: deployment.staking.stakingProxy.address,
                 ZRXVault: deployment.staking.zrxVault.address,
             },
-            { erc20: { ZRX: deployment.tokens.zrx } },
+            {
+                erc20: {
+                    ZRX: deployment.tokens.zrx,
+                    WETH: deployment.tokens.weth,
+                    ERC20TokenA,
+                    ERC20TokenB,
+                    ERC20TokenC,
+                    ERC20TokenD,
+                },
+            },
         );
         const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
 

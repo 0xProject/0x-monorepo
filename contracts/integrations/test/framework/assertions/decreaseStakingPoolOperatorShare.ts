@@ -17,7 +17,10 @@ export function validDecreaseStakingPoolOperatorShareAssertion(
     const { stakingWrapper } = deployment.staking;
 
     return new FunctionAssertion<[string, number], {}, void>(stakingWrapper, 'decreaseStakingPoolOperatorShare', {
-        after: async (_beforeInfo, _result: FunctionResult, args: [string, number], _txData: Partial<TxData>) => {
+        after: async (_beforeInfo, result: FunctionResult, args: [string, number], _txData: Partial<TxData>) => {
+            // Ensure that the tx succeeded.
+            expect(result.success, `Error: ${result.data}`).to.be.true();
+
             const [poolId, expectedOperatorShare] = args;
 
             // Checks that the on-chain pool's operator share has been updated.

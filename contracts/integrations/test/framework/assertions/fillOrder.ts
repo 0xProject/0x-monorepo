@@ -104,7 +104,7 @@ export function validFillOrderAssertion(
     simulationEnvironment: SimulationEnvironment,
 ): FunctionAssertion<[Order, BigNumber, string], FillOrderBeforeInfo | void, FillResults> {
     const { stakingWrapper } = deployment.staking;
-    const { actors, currentEpoch } = simulationEnvironment;
+    const { actors } = simulationEnvironment;
 
     return new FunctionAssertion<[Order, BigNumber, string], FillOrderBeforeInfo | void, FillResults>(
         deployment.exchange,
@@ -112,6 +112,7 @@ export function validFillOrderAssertion(
         {
             before: async (args: [Order, BigNumber, string]) => {
                 const [order] = args;
+                const { currentEpoch } = simulationEnvironment;
                 const maker = filterActorsByRole(actors, Maker).find(maker => maker.address === order.makerAddress);
 
                 const poolId = maker!.makerPoolId;
@@ -138,11 +139,12 @@ export function validFillOrderAssertion(
                 result: FunctionResult,
                 args: [Order, BigNumber, string],
                 txData: Partial<TxData>,
-            ) => {
-                const [order, fillAmount] = args;
-
+            ) => {                
                 // Ensure that the tx succeeded.
                 expect(result.success, `Error: ${result.data}`).to.be.true();
+
+                const [order, fillAmount] = args;
+                const { currentEpoch } = simulationEnvironment;
 
                 // Ensure that the correct events were emitted.
                 verifyFillEvents(txData, order, result.receipt!, deployment, fillAmount);

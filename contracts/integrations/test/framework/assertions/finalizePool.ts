@@ -65,12 +65,12 @@ export function validFinalizePoolAssertion(
     simulationEnvironment: SimulationEnvironment,
 ): FunctionAssertion<[string], FinalizePoolBeforeInfo, void> {
     const { stakingWrapper } = deployment.staking;
-    const { currentEpoch } = simulationEnvironment;
-    const prevEpoch = currentEpoch.minus(1);
 
     return new FunctionAssertion<[string], FinalizePoolBeforeInfo, void>(stakingWrapper, 'finalizePool', {
         before: async (args: [string]) => {
             const [poolId] = args;
+            const { currentEpoch } = simulationEnvironment;
+            const prevEpoch = currentEpoch.minus(1);
 
             const poolStats = PoolStats.fromArray(await stakingWrapper.poolStatsByEpoch(poolId, prevEpoch).callAsync());
             const aggregatedStats = AggregatedStats.fromArray(
@@ -90,10 +90,14 @@ export function validFinalizePoolAssertion(
             };
         },
         after: async (beforeInfo: FinalizePoolBeforeInfo, result: FunctionResult, args: [string]) => {
+            // Ensure that the tx succeeded.
+            expect(result.success, `Error: ${result.data}`).to.be.true();
+
             // // Compute relevant epochs
             // uint256 currentEpoch_ = currentEpoch;
             // uint256 prevEpoch = currentEpoch_.safeSub(1);
-            const { stakingPools } = simulationEnvironment;
+            const { stakingPools, currentEpoch } = simulationEnvironment;
+            const prevEpoch = currentEpoch.minus(1);
             const [poolId] = args;
             const pool = stakingPools[poolId];
 
@@ -155,9 +159,8 @@ export function validFinalizePoolAssertion(
             expect(events.length, 'Number of RewardsPaid events emitted').to.equal(1);
             const [rewardsPaidEvent] = events;
 
-            expect(rewardsPaidEvent.currentEpoch_, 'RewardsPaid event: currentEpoch_').to.bignumber.equal(currentEpoch);
-            expect(rewardsPaidEvent.poolId, 'RewardsPaid event: poolId').to.bignumber.equal(poolId);
-            expect(rewardsPaidEvent.currentEpoch_, 'RewardsPaid event: currentEpoch_').to.bignumber.equal(currentEpoch);
+            expect(rewardsPaidEvent.poolId, 'RewardsPaid event: poolId').to.equal(poolId);
+            expect(rewardsPaidEvent.epoch, 'RewardsPaid event: currentEpoch_').to.bignumber.equal(currentEpoch);
 
             const { operatorReward, membersReward } = rewardsPaidEvent;
             const totalReward = operatorReward.plus(membersReward);
@@ -189,6 +192,7 @@ export function validFinalizePoolAssertion(
                       },
                   ]
                 : [];
+
             // Check for WETH transfer event emitted when paying out operator's reward.
             verifyEventsFromLogs<WETH9TransferEventArgs>(
                 result.receipt!.logs,

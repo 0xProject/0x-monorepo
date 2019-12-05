@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import * as seedrandom from 'seedrandom';
 
 class PRNGWrapper {
-    public readonly seed = process.env.UUID || Math.random().toString();
+    public readonly seed = process.env.SEED || Math.random().toString();
     private readonly _rng = seedrandom(this.seed);
 
     /*

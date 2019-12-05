@@ -83,11 +83,9 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                         token: DummyERC20TokenContract,
                     ): Promise<BigNumber> => {
                         let balance = balanceStore.balances.erc20[owner.address][token.address];
-                        if (balance === undefined || balance.isZero()) {
-                            await owner.configureERC20TokenAsync(token);
-                            balance = balanceStore.balances.erc20[owner.address][token.address] =
-                                constants.INITIAL_ERC20_BALANCE;
-                        }
+                        await owner.configureERC20TokenAsync(token);
+                        balance = balanceStore.balances.erc20[owner.address][token.address] =
+                            constants.INITIAL_ERC20_BALANCE;
                         return Pseudorandom.integer(balance.dividedToIntegerBy(2));
                     };
 

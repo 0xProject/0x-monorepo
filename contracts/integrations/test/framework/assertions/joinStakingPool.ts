@@ -15,12 +15,13 @@ export function validJoinStakingPoolAssertion(deployment: DeploymentManager): Fu
     const { stakingWrapper } = deployment.staking;
 
     return new FunctionAssertion<[string], {}, void>(stakingWrapper, 'joinStakingPoolAsMaker', {
-        after: async (_beforeInfo, _result: FunctionResult, args: [string], txData: Partial<TxData>) => {
+        after: async (_beforeInfo, result: FunctionResult, args: [string], txData: Partial<TxData>) => {
+            // Ensure that the tx succeeded.
+            expect(result.success, `Error: ${result.data}`).to.be.true();
+
             const [poolId] = args;
 
-            expect(_result.success).to.be.true();
-
-            const logs = _result.receipt!.logs;
+            const logs = result.receipt!.logs;
             const logArgs = filterLogsToArguments<StakingMakerStakingPoolSetEventArgs>(
                 logs,
                 StakingEvents.MakerStakingPoolSet,

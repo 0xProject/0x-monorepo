@@ -71,8 +71,8 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
 
         private async *_validStake(): AsyncIterableIterator<AssertionResult> {
             const { zrx } = this.actor.deployment.tokens;
-            const { deployment, balanceStore, globalStake } = this.actor.simulationEnvironment!;
-            const assertion = validStakeAssertion(deployment, balanceStore, globalStake, this.stake);
+            const { deployment, balanceStore } = this.actor.simulationEnvironment!;
+            const assertion = validStakeAssertion(deployment, this.actor.simulationEnvironment!, this.stake);
 
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
@@ -84,8 +84,8 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
 
         private async *_validUnstake(): AsyncIterableIterator<AssertionResult> {
             const { stakingWrapper } = this.actor.deployment.staking;
-            const { deployment, balanceStore, globalStake } = this.actor.simulationEnvironment!;
-            const assertion = validUnstakeAssertion(deployment, balanceStore, globalStake, this.stake);
+            const { deployment, balanceStore } = this.actor.simulationEnvironment!;
+            const assertion = validUnstakeAssertion(deployment, this.actor.simulationEnvironment!, this.stake);
 
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
@@ -102,22 +102,23 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
         }
 
         private async *_validMoveStake(): AsyncIterableIterator<AssertionResult> {
-            const { deployment, globalStake, stakingPools } = this.actor.simulationEnvironment!;
-            const assertion = validMoveStakeAssertion(deployment, globalStake, this.stake, stakingPools);
+            const { deployment, stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validMoveStakeAssertion(deployment, this.actor.simulationEnvironment!, this.stake);
 
             while (true) {
+                const { currentEpoch } = this.actor.simulationEnvironment!;
                 const fromPoolId = Pseudorandom.sample(
                     Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])),
                 );
                 const fromStatus =
-                    fromPoolId === undefined
+                    fromPoolId === undefined || stakingPools[fromPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
                         : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
                 const toPoolId = Pseudorandom.sample(Object.keys(stakingPools));
                 const toStatus =
-                    toPoolId === undefined
+                    toPoolId === undefined || stakingPools[toPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
                         : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const to = new StakeInfo(toStatus, toPoolId);
@@ -134,9 +135,17 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
 
         private async *_validWithdrawDelegatorRewards(): AsyncIterableIterator<AssertionResult | void> {
             const { stakingPools } = this.actor.simulationEnvironment!;
-            const assertion = validWithdrawDelegatorRewardsAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
+            const assertion = validWithdrawDelegatorRewardsAssertion(
+                this.actor.deployment,
+                this.actor.simulationEnvironment!,
+            );
             while (true) {
-                const poolId = Pseudorandom.sample(Object.keys(stakingPools));
+                const prevEpoch = this.actor.simulationEnvironment!.currentEpoch.minus(1);
+                const poolId = Pseudorandom.sample(
+                    Object.keys(stakingPools).filter(poolId =>
+                        stakingPools[poolId].lastFinalized.isGreaterThanOrEqualTo(prevEpoch),
+                    ),
+                );
                 if (poolId === undefined) {
                     yield;
                 } else {

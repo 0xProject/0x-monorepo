@@ -1,6 +1,6 @@
 import { WETH9TransferEventArgs, WETH9Events } from '@0x/contracts-erc20';
 import { StoredBalance } from '@0x/contracts-staking';
-import { expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
+import { expect, filterLogsToArguments, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
@@ -13,7 +13,6 @@ interface WithdrawDelegatorRewardsBeforeInfo {
     delegatorStake: StoredBalance;
     poolRewards: BigNumber;
     wethReservedForPoolRewards: BigNumber;
-    delegatorReward: BigNumber;
 }
 
 /**
@@ -27,35 +26,17 @@ export function validWithdrawDelegatorRewardsAssertion(
     simulationEnvironment: SimulationEnvironment,
 ): FunctionAssertion<[string], WithdrawDelegatorRewardsBeforeInfo, void> {
     const { stakingWrapper } = deployment.staking;
-    const { currentEpoch } = simulationEnvironment;
 
     return new FunctionAssertion(stakingWrapper, 'withdrawDelegatorRewards', {
         before: async (args: [string], txData: Partial<TxData>) => {
             const [poolId] = args;
+
             const delegatorStake = await stakingWrapper
                 .getStakeDelegatedToPoolByOwner(txData.from!, poolId)
                 .callAsync();
             const poolRewards = await stakingWrapper.rewardsByPoolId(poolId).callAsync();
             const wethReservedForPoolRewards = await stakingWrapper.wethReservedForPoolRewards().callAsync();
-            const delegatorReward = BigNumber.sum(
-                await stakingWrapper
-                    .computeMemberRewardOverInterval(
-                        poolId,
-                        delegatorStake.currentEpochBalance,
-                        delegatorStake.currentEpoch,
-                        delegatorStake.currentEpoch.plus(1),
-                    )
-                    .callAsync(),
-                await stakingWrapper
-                    .computeMemberRewardOverInterval(
-                        poolId,
-                        delegatorStake.nextEpochBalance,
-                        delegatorStake.currentEpoch.plus(1),
-                        currentEpoch,
-                    )
-                    .callAsync(),
-            ); // TODO: Test the reward computation more robustly
-            return { delegatorStake, poolRewards, wethReservedForPoolRewards, delegatorReward };
+            return { delegatorStake, poolRewards, wethReservedForPoolRewards };
         },
         after: async (
             beforeInfo: WithdrawDelegatorRewardsBeforeInfo,
@@ -63,7 +44,11 @@ export function validWithdrawDelegatorRewardsAssertion(
             args: [string],
             txData: Partial<TxData>,
         ) => {
+            // Ensure that the tx succeeded.
+            expect(result.success, `Error: ${result.data}`).to.be.true();
+
             const [poolId] = args;
+            const { currentEpoch } = simulationEnvironment;
 
             const expectedDelegatorStake = {
                 ...beforeInfo.delegatorStake,
@@ -77,18 +62,16 @@ export function validWithdrawDelegatorRewardsAssertion(
                 .callAsync();
             expect(delegatorStake).to.deep.equal(expectedDelegatorStake);
 
-            const expectedPoolRewards = beforeInfo.poolRewards.minus(beforeInfo.delegatorReward);
-            const poolRewards = await stakingWrapper.rewardsByPoolId(poolId).callAsync();
-            expect(poolRewards).to.bignumber.equal(expectedPoolRewards);
-
-            const expectedTransferEvents = beforeInfo.delegatorReward.isZero()
-                ? []
-                : [{ _from: stakingWrapper.address, _to: txData.from!, _value: beforeInfo.delegatorReward }];
-            verifyEventsFromLogs<WETH9TransferEventArgs>(
+            const transferEvents = filterLogsToArguments<WETH9TransferEventArgs>(
                 result.receipt!.logs,
-                expectedTransferEvents,
                 WETH9Events.Transfer,
             );
+            const expectedPoolRewards =
+                transferEvents.length > 0
+                    ? beforeInfo.poolRewards.minus(transferEvents[0]._value)
+                    : beforeInfo.poolRewards;
+            const poolRewards = await stakingWrapper.rewardsByPoolId(poolId).callAsync();
+            expect(poolRewards).to.bignumber.equal(expectedPoolRewards);
 
             // TODO: Check CR
         },
