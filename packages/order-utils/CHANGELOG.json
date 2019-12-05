@@ -3,12 +3,12 @@
         "version": "10.0.0",
         "changes": [
             {
-                "note": "Removed `assetDataUtils`",
-                "pr": 2373
+                "note": "Removed from assetDataUtils: individual decoding functions and assert functions",
+                "pr": 2388
             },
             {
-                "note": "Exported function `decodeAssetDataOrThrow`",
-                "pr": 2373
+                "note": "Add ERC20Bridge support to assetDataUtils",
+                "pr": 2388
             }
         ]
     },
