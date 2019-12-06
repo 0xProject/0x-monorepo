@@ -4,15 +4,13 @@ import {
     expect,
     getRandomFloat,
     getRandomInteger,
-    hexRandom,
-    hexSlice,
     Numberish,
     randomAddress,
     shortZip,
 } from '@0x/contracts-test-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { OrderWithoutDomain, SignedOrderWithoutDomain } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
@@ -56,7 +54,7 @@ describe('aggregation utils tests', () => {
             takerAssetAmount: getRandomInteger(1, 1e18),
             makerFee: getRandomInteger(1, 1e17),
             takerFee: getRandomInteger(1, 1e17),
-            signature: hexRandom(),
+            signature: hexUtils.random(),
             ...overrides,
         };
     }
@@ -65,7 +63,7 @@ describe('aggregation utils tests', () => {
         if (assetData.length === 74) {
             return ERC20BridgeSource.Native;
         }
-        const bridgeAddress = hexSlice(assetData, 48, 68).toLowerCase();
+        const bridgeAddress = hexUtils.slice(assetData, 48, 68).toLowerCase();
         switch (bridgeAddress) {
             case KYBER_BRIDGE_ADDRESS.toLowerCase():
                 return ERC20BridgeSource.Kyber;
@@ -331,7 +329,7 @@ describe('aggregation utils tests', () => {
             expect(improvedOrders).to.not.be.length(0);
             for (const order of improvedOrders) {
                 expect(getSourceFromAssetData(order.makerAssetData)).to.exist('');
-                const makerAssetDataPrefix = hexSlice(
+                const makerAssetDataPrefix = hexUtils.slice(
                     createBridgeAssetData(MAKER_TOKEN, constants.NULL_ADDRESS, constants.NULL_BYTES),
                     0,
                     36,
@@ -545,7 +543,7 @@ describe('aggregation utils tests', () => {
             expect(improvedOrders).to.not.be.length(0);
             for (const order of improvedOrders) {
                 expect(getSourceFromAssetData(order.makerAssetData)).to.exist('');
-                const makerAssetDataPrefix = hexSlice(
+                const makerAssetDataPrefix = hexUtils.slice(
                     createBridgeAssetData(MAKER_TOKEN, constants.NULL_ADDRESS, constants.NULL_BYTES),
                     0,
                     36,
