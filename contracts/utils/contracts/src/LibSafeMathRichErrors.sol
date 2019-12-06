@@ -21,7 +21,8 @@ library LibSafeMathRichErrors {
     enum DowncastErrorCodes {
         VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT32,
         VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT64,
-        VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96
+        VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96,
+        VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT224
     }
 
     // solhint-disable func-name-mixedcase

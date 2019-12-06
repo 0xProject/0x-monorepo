@@ -38,6 +38,10 @@ contract DeploymentConstants {
     address constant private DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     /// @dev Mainnet address of the `Chai` contract
     address constant private CHAI_ADDRESS = 0x06AF07097C9Eeb7fD685c692751D5C66dB49c215;
+    ///@dev Mainnet address of the `ZRX` token contract
+    address constant private ZRX_ADDRESS = 0xE41d2489571d322189246DaFA5ebDe1F4699F498;
+    ///@dev Mainnet address of the `StakingProxy` contract
+    address constant private STAKING_PROXY_ADDRESS = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
@@ -107,5 +111,25 @@ contract DeploymentConstants {
         returns (address chaiAddress)
     {
         return CHAI_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the `ZRX` contract.
+    /// @return zrxAddress The `ZRX` contract.
+    function _getZrxAddress()
+        internal
+        view
+        returns (address zrxAddress)
+    {
+        return ZRX_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the `StakingProxy` contract.
+    /// @return stakingProxyAddress The `StakingProxy` contract.
+    function _getStakingProxyAddress()
+        internal
+        view
+        returns (address stakingProxyAddress)
+    {
+        return STAKING_PROXY_ADDRESS;
     }
 }

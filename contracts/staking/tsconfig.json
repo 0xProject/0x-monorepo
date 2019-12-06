@@ -40,6 +40,7 @@
         "test/generated-artifacts/MixinStakingPoolRewards.json",
         "test/generated-artifacts/MixinStorage.json",
         "test/generated-artifacts/Staking.json",
+        "test/generated-artifacts/StakingParamsGovernor.json",
         "test/generated-artifacts/StakingProxy.json",
         "test/generated-artifacts/TestAssertStorageParams.json",
         "test/generated-artifacts/TestCobbDouglas.json",

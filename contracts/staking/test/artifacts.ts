@@ -33,6 +33,7 @@ import * as MixinStakingPool from '../test/generated-artifacts/MixinStakingPool.
 import * as MixinStakingPoolRewards from '../test/generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStorage from '../test/generated-artifacts/MixinStorage.json';
 import * as Staking from '../test/generated-artifacts/Staking.json';
+import * as StakingParamsGovernor from '../test/generated-artifacts/StakingParamsGovernor.json';
 import * as StakingProxy from '../test/generated-artifacts/StakingProxy.json';
 import * as TestAssertStorageParams from '../test/generated-artifacts/TestAssertStorageParams.json';
 import * as TestCobbDouglas from '../test/generated-artifacts/TestCobbDouglas.json';
@@ -61,6 +62,7 @@ import * as TestStorageLayoutAndConstants from '../test/generated-artifacts/Test
 import * as ZrxVault from '../test/generated-artifacts/ZrxVault.json';
 export const artifacts = {
     Staking: Staking as ContractArtifact,
+    StakingParamsGovernor: StakingParamsGovernor as ContractArtifact,
     StakingProxy: StakingProxy as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,

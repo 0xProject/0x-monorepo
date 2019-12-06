@@ -31,6 +31,7 @@ export * from '../test/generated-wrappers/mixin_staking_pool';
 export * from '../test/generated-wrappers/mixin_staking_pool_rewards';
 export * from '../test/generated-wrappers/mixin_storage';
 export * from '../test/generated-wrappers/staking';
+export * from '../test/generated-wrappers/staking_params_governor';
 export * from '../test/generated-wrappers/staking_proxy';
 export * from '../test/generated-wrappers/test_assert_storage_params';
 export * from '../test/generated-wrappers/test_cobb_douglas';

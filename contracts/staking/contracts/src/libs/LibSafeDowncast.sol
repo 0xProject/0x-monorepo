@@ -24,6 +24,23 @@ import "@0x/contracts-utils/contracts/src/LibSafeMathRichErrors.sol";
 
 library LibSafeDowncast {
 
+    /// @dev Safely downcasts to a uint224
+    /// Note that this reverts if the input value is too large.
+    function downcastToUint224(uint256 a)
+        internal
+        pure
+        returns (uint224 b)
+    {
+        b = uint224(a);
+        if (uint256(b) != a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256DowncastError(
+                LibSafeMathRichErrors.DowncastErrorCodes.VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT224,
+                a
+            ));
+        }
+        return b;
+    }
+
     /// @dev Safely downcasts to a uint96
     /// Note that this reverts if the input value is too large.
     function downcastToUint96(uint256 a)

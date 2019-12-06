@@ -35,7 +35,12 @@ interface IStorage {
         view
         returns (bytes32);
 
-    function numMakersByPoolId(bytes32 poolId)
+    function poolIdByMaker(address makerAddress)
+        external
+        view
+        returns (bytes32);
+
+    function rewardsByPoolId(bytes32 poolId)
         external
         view
         returns (uint256);
@@ -46,11 +51,6 @@ interface IStorage {
         returns (uint256);
 
     function currentEpochStartTimeInSeconds()
-        external
-        view
-        returns (uint256);
-
-    function protocolFeesThisEpochByPool(bytes32 poolId)
         external
         view
         returns (uint256);
@@ -84,4 +84,14 @@ interface IStorage {
         external
         view
         returns (uint32);
+
+    function poolStatsByEpoch(bytes32 poolId, uint256 epoch)
+        external
+        view
+        returns (IStructs.PoolStats memory);
+
+    function aggregatedStatsByEpoch(uint256 epoch)
+        external
+        view
+        returns (IStructs.AggregatedStats memory);
 }
