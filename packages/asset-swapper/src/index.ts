@@ -45,7 +45,7 @@ export {
     LiquidityForTakerMakerAssetDataPair,
     MarketBuySwapQuote,
     MarketSellSwapQuote,
-    PrunedSignedOrder,
+    SignedOrderWithFillableAmounts,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,

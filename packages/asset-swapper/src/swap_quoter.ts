@@ -1,5 +1,5 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract } from '@0x/contract-wrappers';
+import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -14,7 +14,7 @@ import {
     MarketOperation,
     MarketSellSwapQuote,
     OrderPrunerPermittedFeeTypes,
-    PrunedSignedOrder,
+    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteRequestOpts,
     SwapQuoterError,
@@ -22,10 +22,11 @@ import {
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
+import { ImproveSwapQuoteUtils } from './utils/improve_swap_quote_utils';
 import { OrderPruner } from './utils/order_prune_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
-import { swapQuoteCalculator } from './utils/swap_quote_calculator';
+import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
@@ -35,8 +36,10 @@ export class SwapQuoter {
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
     private readonly _contractAddresses: ContractAddresses;
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
+    private readonly _swapQuoteCalculator: SwapQuoteCalculator;
     private readonly _orderPruner: OrderPruner;
     private readonly _devUtilsContract: DevUtilsContract;
+    private readonly _improveSwapQuoteUtils: ImproveSwapQuoteUtils;
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
      * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
@@ -156,6 +159,19 @@ export class SwapQuoter {
         this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils();
+        const erc20BridgeSamplerContract = new IERC20BridgeSamplerContract(
+            // TODO(dave4506) address of ERC20BridgeSampler
+            '',
+            provider,
+        );
+        this._improveSwapQuoteUtils = new ImproveSwapQuoteUtils(
+            erc20BridgeSamplerContract,
+            {
+                chainId,
+                exchangeAddress: this._contractAddresses.exchange,
+            },
+        );
+        this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._improveSwapQuoteUtils);
         this._orderPruner = new OrderPruner(this._devUtilsContract, {
             expiryBufferMs: this.expiryBufferMs,
             permittedOrderFeeTypes: this.permittedOrderFeeTypes,
@@ -297,7 +313,7 @@ export class SwapQuoter {
             };
         }
 
-        const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
+        const prunedOrders = await this.getSignedOrderWithFillableAmountsAsync(makerAssetData, takerAssetData);
         return calculateLiquidity(prunedOrders);
     }
 
@@ -355,10 +371,10 @@ export class SwapQuoter {
      * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      */
-    public async getPrunedSignedOrdersAsync(
+    public async getSignedOrderWithFillableAmountsAsync(
         makerAssetData: string,
         takerAssetData: string,
-    ): Promise<PrunedSignedOrder[]> {
+    ): Promise<SignedOrderWithFillableAmounts[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
@@ -413,7 +429,8 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { slippagePercentage } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
+        // TODO(dave4506) enable should feature boolean flag
+        const { slippagePercentage, shouldImproveSwapQuoteWithOtherSources, improveOrderOpts } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
@@ -425,7 +442,7 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
-        const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
+        const prunedOrders = await this.getSignedOrderWithFillableAmountsAsync(makerAssetData, takerAssetData);
         if (prunedOrders.length === 0) {
             throw new Error(
                 `${
@@ -437,20 +454,26 @@ export class SwapQuoter {
         let swapQuote: SwapQuote;
 
         if (marketOperation === MarketOperation.Buy) {
-            swapQuote = await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
+            swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
                 gasPrice,
-                this._protocolFeeUtils,
+                {
+                    shouldImproveSwapQuoteWithOtherSources,
+                    improveOrderOpts,
+                },
             );
         } else {
-            swapQuote = await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
+            swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                 prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
                 gasPrice,
-                this._protocolFeeUtils,
+                {
+                    shouldImproveSwapQuoteWithOtherSources,
+                    improveOrderOpts,
+                },
             );
         }
 

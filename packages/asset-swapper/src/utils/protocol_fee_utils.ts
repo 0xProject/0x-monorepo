@@ -5,9 +5,10 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import { SwapQuoterError } from '../types';
 
+// TODO(dave4506) add a heart beat function to monitor multiplier changes
 export class ProtocolFeeUtils {
     // tslint:disable-next-line:prefer-function-over-method
-    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
+    public getProtocolFeeMultiplier(): BigNumber {
         return new BigNumber(150000);
     }
 
@@ -30,11 +31,11 @@ export class ProtocolFeeUtils {
     /**
      * Calculates protocol fee with protofol fee multiplier for each fill.
      */
-    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(
+    public calculateWorstCaseProtocolFee<T extends Order>(
         orders: T[],
         gasPrice: BigNumber,
-    ): Promise<BigNumber> {
-        const protocolFeeMultiplier = await this.getProtocolFeeMultiplierAsync();
+    ): BigNumber {
+        const protocolFeeMultiplier = this.getProtocolFeeMultiplier();
         const protocolFee = new BigNumber(orders.length).times(protocolFeeMultiplier).times(gasPrice);
         return protocolFee;
     }

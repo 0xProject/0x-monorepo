@@ -2,6 +2,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
+import { ImproveOrdersOpts } from './utils/improve_swap_quote_utils/types';
+
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  * permittedOrderFeeTypes: A set of all the takerFee types that OrderPruner will filter for
@@ -36,7 +38,7 @@ export interface OrderProviderRequest {
  * fillableTakerAssetAmount: Amount of takerAsset that is fillable
  * fillableTakerFeeAmount: Amount of takerFee paid to fill fillableTakerAssetAmount
  */
-export interface PrunedSignedOrder extends SignedOrder {
+export interface SignedOrderWithFillableAmounts extends SignedOrder {
     fillableMakerAssetAmount: BigNumber;
     fillableTakerAssetAmount: BigNumber;
     fillableTakerFeeAmount: BigNumber;
@@ -254,9 +256,18 @@ export interface SwapQuoteInfo {
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
-export interface SwapQuoteRequestOpts {
+export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
     slippagePercentage: number;
     gasPrice?: BigNumber;
+}
+
+/**
+ * shouldImproveSwapQuoteWithOtherSources: After fetching from provided source, optionally rely on on DEX aggregated with bridge contracts to improve quoted price 
+ * improveOrderOpts: options for the improveOpts optimizer
+ */
+export interface CalculateSwapQuoteOpts {
+    shouldImproveSwapQuoteWithOtherSources: boolean;
+    improveOrderOpts?: ImproveOrdersOpts;
 }
 
 /**

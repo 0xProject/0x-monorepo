@@ -4,7 +4,7 @@ import { OrderStatus, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { OrderPrunerOnChainMetadata, OrderPrunerOpts, OrderPrunerPermittedFeeTypes, PrunedSignedOrder } from '../types';
+import { OrderPrunerOnChainMetadata, OrderPrunerOpts, OrderPrunerPermittedFeeTypes, SignedOrderWithFillableAmounts } from '../types';
 import { utils } from '../utils/utils';
 
 export class OrderPruner {
@@ -21,7 +21,7 @@ export class OrderPruner {
         this._devUtils = devUtils;
     }
 
-    public async pruneSignedOrdersAsync(signedOrders: SignedOrder[]): Promise<PrunedSignedOrder[]> {
+    public async pruneSignedOrdersAsync(signedOrders: SignedOrder[]): Promise<SignedOrderWithFillableAmounts[]> {
         const unsortedOrders = this._filterForUsableOrders(signedOrders, this.expiryBufferMs);
 
         const signatures = _.map(unsortedOrders, o => o.signature);
@@ -45,7 +45,7 @@ export class OrderPruner {
     private _filterForFillableAndPermittedFeeTypeOrders(
         orders: SignedOrder[],
         ordersOnChainMetadata: OrderPrunerOnChainMetadata[],
-    ): PrunedSignedOrder[] {
+    ): SignedOrderWithFillableAmounts[] {
         const result = _.chain(orders)
             .filter(
                 (order: SignedOrder, index: number): boolean => {
@@ -63,7 +63,7 @@ export class OrderPruner {
                 },
             )
             .map(
-                (order: SignedOrder, index: number): PrunedSignedOrder => {
+                (order: SignedOrder, index: number): SignedOrderWithFillableAmounts => {
                     const { fillableTakerAssetAmount } = ordersOnChainMetadata[index];
                     return {
                         ...order,

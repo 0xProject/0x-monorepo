@@ -1,10 +1,10 @@
 import { BigNumber } from '@0x/utils';
 
-import { LiquidityForTakerMakerAssetDataPair, PrunedSignedOrder } from '../types';
+import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } from '../types';
 
 import { utils } from './utils';
 
-export const calculateLiquidity = (prunedOrders: PrunedSignedOrder[]): LiquidityForTakerMakerAssetDataPair => {
+export const calculateLiquidity = (prunedOrders: SignedOrderWithFillableAmounts[]): LiquidityForTakerMakerAssetDataPair => {
     const liquidityInBigNumbers = prunedOrders.reduce(
         (acc, order) => {
             const fillableMakerAssetAmount = utils.isOrderTakerFeePayableWithMakerAsset(order)

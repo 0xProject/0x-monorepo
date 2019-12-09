@@ -49,6 +49,7 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAUL
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     slippagePercentage: 0.2, // 20% slippage protection,
+    shouldImproveSwapQuoteWithOtherSources: true,
 };
 
 export const constants = {
