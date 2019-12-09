@@ -6,6 +6,7 @@
         "generated-artifacts/Forwarder.json",
         "test/generated-artifacts/Forwarder.json",
         "test/generated-artifacts/IAssets.json",
+        "test/generated-artifacts/IExchangeV2.json",
         "test/generated-artifacts/IForwarder.json",
         "test/generated-artifacts/IForwarderCore.json",
         "test/generated-artifacts/LibConstants.json",
