@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-utils",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -46,11 +46,11 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/subproviders": "^6.0.0",
-        "@0x/types": "^3.0.0",
+        "@0x/subproviders": "^6.0.1",
+        "@0x/types": "^3.1.0",
         "@0x/typescript-typings": "^5.0.0",
-        "@0x/utils": "^5.0.0",
-        "@0x/web3-wrapper": "^7.0.0",
+        "@0x/utils": "^5.1.0",
+        "@0x/web3-wrapper": "^7.0.1",
         "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
