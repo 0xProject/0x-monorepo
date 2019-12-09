@@ -123,8 +123,8 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                     const fillAmount = Pseudorandom.integer(order.takerAssetAmount);
                     yield assertion.executeAsync([order, fillAmount, order.signature], {
                         from: this.actor.address,
+                        value: Pseudorandom.integer(DeploymentManager.protocolFee.times(2)),
                     });
-                    // TODO: Randomly choose msg.value
                 }
             }
         }

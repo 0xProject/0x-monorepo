@@ -1,9 +1,9 @@
 import { WETH9DepositEventArgs, WETH9Events } from '@0x/contracts-erc20';
 import {
     AggregatedStats,
-    StakingEvents,
     StakingEpochEndedEventArgs,
     StakingEpochFinalizedEventArgs,
+    StakingEvents,
 } from '@0x/contracts-staking';
 import { constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
@@ -47,21 +47,19 @@ export function validEndEpochAssertion(
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
             const { currentEpoch } = simulationEnvironment;
+            const logs = result.receipt!.logs; // tslint:disable-line:no-non-null-assertion
 
             // Check WETH deposit event
             const previousEthBalance = balanceStore.balances.eth[stakingWrapper.address] || constants.ZERO_AMOUNT;
-            if (previousEthBalance.isGreaterThan(0)) {
-                verifyEventsFromLogs<WETH9DepositEventArgs>(
-                    result.receipt!.logs,
-                    [
-                        {
-                            _owner: deployment.staking.stakingProxy.address,
-                            _value: previousEthBalance,
-                        },
-                    ],
-                    WETH9Events.Deposit,
-                );
-            }
+            const expectedDepositEvents = previousEthBalance.isGreaterThan(0)
+                ? [
+                      {
+                          _owner: deployment.staking.stakingProxy.address,
+                          _value: previousEthBalance,
+                      },
+                  ]
+                : [];
+            verifyEventsFromLogs<WETH9DepositEventArgs>(logs, expectedDepositEvents, WETH9Events.Deposit);
 
             await balanceStore.updateErc20BalancesAsync();
             const { wethReservedForPoolRewards, aggregatedStatsBefore } = beforeInfo;
@@ -80,7 +78,7 @@ export function validEndEpochAssertion(
             expect(aggregatedStatsAfter).to.deep.equal(expectedAggregatedStats);
 
             verifyEventsFromLogs<StakingEpochEndedEventArgs>(
-                result.receipt!.logs,
+                logs,
                 [
                     {
                         epoch: currentEpoch,
@@ -103,7 +101,7 @@ export function validEndEpochAssertion(
                   ]
                 : [];
             verifyEventsFromLogs<StakingEpochFinalizedEventArgs>(
-                result.receipt!.logs,
+                logs,
                 expectedEpochFinalizedEvents,
                 StakingEvents.EpochFinalized,
             );

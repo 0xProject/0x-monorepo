@@ -1,7 +1,13 @@
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { AggregatedStats, constants as stakingConstants, PoolStats } from '@0x/contracts-staking';
+import {
+    AggregatedStats,
+    constants as stakingConstants,
+    PoolStats,
+    StakingEvents,
+    StakingStakingPoolEarnedRewardsInEpochEventArgs,
+} from '@0x/contracts-staking';
 import { expect, orderHashUtils, verifyEvents } from '@0x/contracts-test-utils';
 import { FillResults, Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -28,7 +34,7 @@ function verifyFillEvents(
         DeploymentManager.protocolFeeMultiplier,
         DeploymentManager.gasPrice,
     );
-    const takerAddress = txData.from!;
+    const takerAddress = txData.from as string;
     const value = new BigNumber(txData.value || 0);
     // Ensure that the fill event was correct.
     verifyEvents<ExchangeFillEventArgs>(
@@ -113,7 +119,7 @@ export function validFillOrderAssertion(
             before: async (args: [Order, BigNumber, string]) => {
                 const [order] = args;
                 const { currentEpoch } = simulationEnvironment;
-                const maker = filterActorsByRole(actors, Maker).find(maker => maker.address === order.makerAddress);
+                const maker = filterActorsByRole(actors, Maker).find(actor => actor.address === order.makerAddress);
 
                 const poolId = maker!.makerPoolId;
                 if (poolId === undefined) {
@@ -139,7 +145,7 @@ export function validFillOrderAssertion(
                 result: FunctionResult,
                 args: [Order, BigNumber, string],
                 txData: Partial<TxData>,
-            ) => {                
+            ) => {
                 // Ensure that the tx succeeded.
                 expect(result.success, `Error: ${result.data}`).to.be.true();
 
@@ -149,47 +155,59 @@ export function validFillOrderAssertion(
                 // Ensure that the correct events were emitted.
                 verifyFillEvents(txData, order, result.receipt!, deployment, fillAmount);
 
-                if (beforeInfo !== undefined) {
-                    const expectedPoolStats = { ...beforeInfo.poolStats };
-                    const expectedAggregatedStats = { ...beforeInfo.aggregatedStats };
-
-                    if (beforeInfo.poolStake.isGreaterThanOrEqualTo(stakingConstants.DEFAULT_PARAMS.minimumPoolStake)) {
-                        if (beforeInfo.poolStats.feesCollected.isZero()) {
-                            const membersStakeInPool = beforeInfo.poolStake.minus(beforeInfo.operatorStake);
-                            const weightedStakeInPool = beforeInfo.operatorStake.plus(
-                                ReferenceFunctions.getPartialAmountFloor(
-                                    stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
-                                    new BigNumber(stakingConstants.PPM),
-                                    membersStakeInPool,
-                                ),
-                            );
-                            expectedPoolStats.membersStake = membersStakeInPool;
-                            expectedPoolStats.weightedStake = weightedStakeInPool;
-                            expectedAggregatedStats.totalWeightedStake = beforeInfo.aggregatedStats.totalWeightedStake.plus(
-                                weightedStakeInPool,
-                            );
-                            expectedAggregatedStats.numPoolsToFinalize = beforeInfo.aggregatedStats.numPoolsToFinalize.plus(
-                                1,
-                            );
-                            // TODO: Check event
-                        }
-
-                        expectedPoolStats.feesCollected = beforeInfo.poolStats.feesCollected.plus(
-                            DeploymentManager.protocolFee,
-                        );
-                        expectedAggregatedStats.totalFeesCollected = beforeInfo.aggregatedStats.totalFeesCollected.plus(
-                            DeploymentManager.protocolFee,
-                        );
-                    }
-                    const poolStats = PoolStats.fromArray(
-                        await stakingWrapper.poolStatsByEpoch(beforeInfo.poolId, currentEpoch).callAsync(),
-                    );
-                    const aggregatedStats = AggregatedStats.fromArray(
-                        await stakingWrapper.aggregatedStatsByEpoch(currentEpoch).callAsync(),
-                    );
-                    expect(poolStats).to.deep.equal(expectedPoolStats);
-                    expect(aggregatedStats).to.deep.equal(expectedAggregatedStats);
+                if (beforeInfo === undefined) {
+                    return;
                 }
+
+                const expectedPoolStats = { ...beforeInfo.poolStats };
+                const expectedAggregatedStats = { ...beforeInfo.aggregatedStats };
+                const expectedEvents = [];
+
+                if (beforeInfo.poolStake.isGreaterThanOrEqualTo(stakingConstants.DEFAULT_PARAMS.minimumPoolStake)) {
+                    if (beforeInfo.poolStats.feesCollected.isZero()) {
+                        const membersStakeInPool = beforeInfo.poolStake.minus(beforeInfo.operatorStake);
+                        const weightedStakeInPool = beforeInfo.operatorStake.plus(
+                            ReferenceFunctions.getPartialAmountFloor(
+                                stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
+                                new BigNumber(stakingConstants.PPM),
+                                membersStakeInPool,
+                            ),
+                        );
+                        expectedPoolStats.membersStake = membersStakeInPool;
+                        expectedPoolStats.weightedStake = weightedStakeInPool;
+                        expectedAggregatedStats.totalWeightedStake = beforeInfo.aggregatedStats.totalWeightedStake.plus(
+                            weightedStakeInPool,
+                        );
+                        expectedAggregatedStats.numPoolsToFinalize = beforeInfo.aggregatedStats.numPoolsToFinalize.plus(
+                            1,
+                        );
+                        expectedEvents.push({
+                            epoch: currentEpoch,
+                            poolId: beforeInfo.poolId,
+                        });
+                    }
+
+                    expectedPoolStats.feesCollected = beforeInfo.poolStats.feesCollected.plus(
+                        DeploymentManager.protocolFee,
+                    );
+                    expectedAggregatedStats.totalFeesCollected = beforeInfo.aggregatedStats.totalFeesCollected.plus(
+                        DeploymentManager.protocolFee,
+                    );
+                }
+
+                const poolStats = PoolStats.fromArray(
+                    await stakingWrapper.poolStatsByEpoch(beforeInfo.poolId, currentEpoch).callAsync(),
+                );
+                const aggregatedStats = AggregatedStats.fromArray(
+                    await stakingWrapper.aggregatedStatsByEpoch(currentEpoch).callAsync(),
+                );
+                expect(poolStats).to.deep.equal(expectedPoolStats);
+                expect(aggregatedStats).to.deep.equal(expectedAggregatedStats);
+                verifyEvents<StakingStakingPoolEarnedRewardsInEpochEventArgs>(
+                    result.receipt!,
+                    expectedEvents,
+                    StakingEvents.StakingPoolEarnedRewardsInEpoch,
+                );
             },
         },
     );

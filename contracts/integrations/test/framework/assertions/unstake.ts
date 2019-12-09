@@ -1,4 +1,4 @@
-import { GlobalStakeByStatus, OwnerStakeByStatus, StakeStatus, StoredBalance } from '@0x/contracts-staking';
+import { loadCurrentBalance, OwnerStakeByStatus, StakeStatus } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
@@ -9,28 +9,12 @@ import { SimulationEnvironment } from '../simulation';
 
 import { FunctionAssertion, FunctionResult } from './function_assertion';
 
-function expectedUndelegatedStake(
-    initStake: OwnerStakeByStatus | GlobalStakeByStatus,
-    amount: BigNumber,
-    currentEpoch: BigNumber,
-): StoredBalance {
-    return {
-        currentEpoch: currentEpoch,
-        currentEpochBalance: (currentEpoch.isGreaterThan(initStake[StakeStatus.Undelegated].currentEpoch)
-            ? initStake[StakeStatus.Undelegated].nextEpochBalance
-            : initStake[StakeStatus.Undelegated].currentEpochBalance
-        ).minus(amount),
-        nextEpochBalance: initStake[StakeStatus.Undelegated].nextEpochBalance.minus(amount),
-    };
-}
-
 /**
  * Returns a FunctionAssertion for `unstake` which assumes valid input is provided. The
  * FunctionAssertion checks that the staker and zrxVault's balances of ZRX increase and decrease,
  * respectively, by the input amount.
  */
 /* tslint:disable:no-unnecessary-type-assertion */
-/* tslint:disable:no-non-null-assertion */
 export function validUnstakeAssertion(
     deployment: DeploymentManager,
     simulationEnvironment: SimulationEnvironment,
@@ -47,7 +31,7 @@ export function validUnstakeAssertion(
             const expectedBalances = LocalBalanceStore.create(balanceStore);
             expectedBalances.transferAsset(
                 zrxVault.address,
-                txData.from!,
+                txData.from as string,
                 amount,
                 deployment.assetDataEncoder.ERC20Token(deployment.tokens.zrx.address).getABIEncodedTransactionData(),
             );
@@ -63,7 +47,7 @@ export function validUnstakeAssertion(
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
             const [amount] = args;
-            const { balanceStore, globalStake, currentEpoch } = simulationEnvironment;
+            const { balanceStore, currentEpoch } = simulationEnvironment;
 
             // Checks that the ZRX transfer updated balances as expected.
             await balanceStore.updateErc20BalancesAsync();
@@ -71,23 +55,17 @@ export function validUnstakeAssertion(
 
             // Checks that the owner's undelegated stake has decreased by the stake amount
             const ownerUndelegatedStake = await stakingWrapper
-                .getOwnerStakeByStatus(txData.from!, StakeStatus.Undelegated)
+                .getOwnerStakeByStatus(txData.from as string, StakeStatus.Undelegated)
                 .callAsync();
-            const expectedOwnerUndelegatedStake = expectedUndelegatedStake(ownerStake, amount, currentEpoch);
-            expect(ownerUndelegatedStake, 'Owner undelegated stake').to.deep.equal(expectedOwnerUndelegatedStake);
-            // Updates local state accordingly
-            ownerStake[StakeStatus.Undelegated] = expectedOwnerUndelegatedStake;
-
-            // Checks that the global undelegated stake has also decreased by the stake amount
-            const globalUndelegatedStake = await stakingWrapper
-                .getGlobalStakeByStatus(StakeStatus.Undelegated)
-                .callAsync();
-            const expectedGlobalUndelegatedStake = expectedUndelegatedStake(globalStake, amount, currentEpoch);
-            expect(globalUndelegatedStake, 'Global undelegated stake').to.deep.equal(expectedGlobalUndelegatedStake);
-            // Updates local state accordingly
-            globalStake[StakeStatus.Undelegated] = expectedGlobalUndelegatedStake;
+            loadCurrentBalance(ownerStake[StakeStatus.Undelegated], currentEpoch, true);
+            ownerStake[StakeStatus.Undelegated].currentEpochBalance = ownerStake[
+                StakeStatus.Undelegated
+            ].currentEpochBalance.minus(amount);
+            ownerStake[StakeStatus.Undelegated].nextEpochBalance = ownerStake[
+                StakeStatus.Undelegated
+            ].nextEpochBalance.minus(amount);
+            expect(ownerUndelegatedStake, 'Owner undelegated stake').to.deep.equal(ownerStake[StakeStatus.Undelegated]);
         },
     });
 }
-/* tslint:enable:no-non-null-assertion */
 /* tslint:enable:no-unnecessary-type-assertion */

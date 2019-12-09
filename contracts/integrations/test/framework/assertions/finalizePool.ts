@@ -4,8 +4,8 @@ import {
     AggregatedStats,
     constants as stakingConstants,
     PoolStats,
-    StakingEvents,
     StakingEpochFinalizedEventArgs,
+    StakingEvents,
     StakingRewardsPaidEventArgs,
 } from '@0x/contracts-staking';
 import {
@@ -93,6 +93,8 @@ export function validFinalizePoolAssertion(
             // Ensure that the tx succeeded.
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
+            const logs = result.receipt!.logs; // tslint:disable-line:no-non-null-assertion
+
             // // Compute relevant epochs
             // uint256 currentEpoch_ = currentEpoch;
             // uint256 prevEpoch = currentEpoch_.safeSub(1);
@@ -113,7 +115,7 @@ export function validFinalizePoolAssertion(
             //     return;
             // }
             if (beforeInfo.aggregatedStats.numPoolsToFinalize.isZero() || beforeInfo.poolStats.feesCollected.isZero()) {
-                expect(result.receipt!.logs.length, 'Expect no events to be emitted').to.equal(0);
+                expect(logs.length, 'Expect no events to be emitted').to.equal(0);
                 return;
             }
 
@@ -153,7 +155,7 @@ export function validFinalizePoolAssertion(
             //
             // uint256 totalReward = operatorReward.safeAdd(membersReward);
             const events = filterLogsToArguments<StakingRewardsPaidEventArgs>(
-                result.receipt!.logs,
+                logs,
                 StakingEvents.RewardsPaid,
             );
             expect(events.length, 'Number of RewardsPaid events emitted').to.equal(1);
@@ -195,7 +197,7 @@ export function validFinalizePoolAssertion(
 
             // Check for WETH transfer event emitted when paying out operator's reward.
             verifyEventsFromLogs<WETH9TransferEventArgs>(
-                result.receipt!.logs,
+                logs,
                 expectedTransferEvents,
                 WETH9Events.Transfer,
             );
@@ -259,7 +261,7 @@ export function validFinalizePoolAssertion(
                   ]
                 : [];
             verifyEventsFromLogs<StakingEpochFinalizedEventArgs>(
-                result.receipt!.logs,
+                logs,
                 expectedEpochFinalizedEvents,
                 StakingEvents.EpochFinalized,
             );

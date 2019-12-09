@@ -102,7 +102,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             const assertion = validEndEpochAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             const { stakingWrapper } = this.actor.deployment.staking;
             while (true) {
-                const { currentEpoch } = this.actor.simulationEnvironment!;                
+                const { currentEpoch } = this.actor.simulationEnvironment!;
                 const aggregatedStats = AggregatedStats.fromArray(
                     await stakingWrapper.aggregatedStatsByEpoch(currentEpoch.minus(1)).callAsync(),
                 );

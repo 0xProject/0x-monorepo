@@ -142,8 +142,8 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             while (true) {
                 const prevEpoch = this.actor.simulationEnvironment!.currentEpoch.minus(1);
                 const poolId = Pseudorandom.sample(
-                    Object.keys(stakingPools).filter(poolId =>
-                        stakingPools[poolId].lastFinalized.isGreaterThanOrEqualTo(prevEpoch),
+                    Object.keys(stakingPools).filter(id =>
+                        stakingPools[id].lastFinalized.isGreaterThanOrEqualTo(prevEpoch),
                     ),
                 );
                 if (poolId === undefined) {

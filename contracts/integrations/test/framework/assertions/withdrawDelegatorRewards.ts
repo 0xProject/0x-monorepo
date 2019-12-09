@@ -1,6 +1,6 @@
-import { WETH9TransferEventArgs, WETH9Events } from '@0x/contracts-erc20';
-import { StoredBalance } from '@0x/contracts-staking';
-import { expect, filterLogsToArguments, verifyEventsFromLogs } from '@0x/contracts-test-utils';
+import { WETH9Events, WETH9TransferEventArgs } from '@0x/contracts-erc20';
+import { loadCurrentBalance, StoredBalance } from '@0x/contracts-staking';
+import { expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
@@ -32,7 +32,7 @@ export function validWithdrawDelegatorRewardsAssertion(
             const [poolId] = args;
 
             const delegatorStake = await stakingWrapper
-                .getStakeDelegatedToPoolByOwner(txData.from!, poolId)
+                .getStakeDelegatedToPoolByOwner(txData.from as string, poolId)
                 .callAsync();
             const poolRewards = await stakingWrapper.rewardsByPoolId(poolId).callAsync();
             const wethReservedForPoolRewards = await stakingWrapper.wethReservedForPoolRewards().callAsync();
@@ -50,20 +50,14 @@ export function validWithdrawDelegatorRewardsAssertion(
             const [poolId] = args;
             const { currentEpoch } = simulationEnvironment;
 
-            const expectedDelegatorStake = {
-                ...beforeInfo.delegatorStake,
-                currentEpoch: currentEpoch,
-                currentEpochBalance: currentEpoch.isGreaterThan(beforeInfo.delegatorStake.currentEpoch)
-                    ? beforeInfo.delegatorStake.nextEpochBalance
-                    : beforeInfo.delegatorStake.currentEpochBalance,
-            };
+            const expectedDelegatorStake = loadCurrentBalance(beforeInfo.delegatorStake, currentEpoch);
             const delegatorStake = await stakingWrapper
-                .getStakeDelegatedToPoolByOwner(txData.from!, poolId)
+                .getStakeDelegatedToPoolByOwner(txData.from as string, poolId)
                 .callAsync();
             expect(delegatorStake).to.deep.equal(expectedDelegatorStake);
 
             const transferEvents = filterLogsToArguments<WETH9TransferEventArgs>(
-                result.receipt!.logs,
+                result.receipt!.logs, // tslint:disable-line:no-non-null-assertion
                 WETH9Events.Transfer,
             );
             const expectedPoolRewards =

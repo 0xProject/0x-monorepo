@@ -67,6 +67,34 @@ export class StoredBalance {
     ) {}
 }
 
+export function loadCurrentBalance(
+    balance: StoredBalance,
+    epoch: BigNumber,
+    shouldMutate: boolean = false,
+): StoredBalance {
+    const loadedBalance = new StoredBalance(
+        epoch,
+        epoch.isGreaterThan(balance.currentEpoch) ? balance.nextEpochBalance : balance.currentEpochBalance,
+        balance.nextEpochBalance,
+    );
+    if (shouldMutate) {
+        balance.currentEpoch = loadedBalance.currentEpoch;
+        balance.currentEpochBalance = loadedBalance.currentEpochBalance;
+        balance.nextEpochBalance = loadedBalance.nextEpochBalance;
+    }
+    return loadedBalance;
+}
+
+export function incrementNextEpochBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
+    loadCurrentBalance(balance, epoch, true);
+    balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
+}
+
+export function decrementNextEpochBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
+    loadCurrentBalance(balance, epoch, true);
+    balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
+}
+
 export interface StakeBalanceByPool {
     [key: string]: StoredBalance;
 }

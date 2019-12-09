@@ -1,5 +1,13 @@
-import { OwnerStakeByStatus, StakeInfo, StakeStatus, StoredBalance } from '@0x/contracts-staking';
-import { constants, expect } from '@0x/contracts-test-utils';
+import {
+    decrementNextEpochBalance,
+    incrementNextEpochBalance,
+    loadCurrentBalance,
+    OwnerStakeByStatus,
+    StakeInfo,
+    StakeStatus,
+    StoredBalance,
+} from '@0x/contracts-staking';
+import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -8,32 +16,6 @@ import { DeploymentManager } from '../deployment_manager';
 import { SimulationEnvironment } from '../simulation';
 
 import { FunctionAssertion, FunctionResult } from './function_assertion';
-
-function incrementNextEpochBalance(stakeBalance: StoredBalance, amount: BigNumber, currentEpoch: BigNumber): void {
-    stakeBalance.currentEpochBalance = currentEpoch.isGreaterThan(stakeBalance.currentEpoch)
-        ? stakeBalance.nextEpochBalance
-        : stakeBalance.currentEpochBalance;
-    stakeBalance.currentEpoch = currentEpoch;
-    _.update(stakeBalance, ['nextEpochBalance'], balance => (balance || constants.ZERO_AMOUNT).plus(amount));
-}
-
-function decrementNextEpochBalance(stakeBalance: StoredBalance, amount: BigNumber, currentEpoch: BigNumber): void {
-    stakeBalance.currentEpochBalance = currentEpoch.isGreaterThan(stakeBalance.currentEpoch)
-        ? stakeBalance.nextEpochBalance
-        : stakeBalance.currentEpochBalance;
-    stakeBalance.currentEpoch = currentEpoch;
-    _.update(stakeBalance, ['nextEpochBalance'], balance => (balance || constants.ZERO_AMOUNT).minus(amount));
-}
-
-function loadCurrentBalance(balance: StoredBalance, currentEpoch: BigNumber): StoredBalance {
-    return {
-        ...balance,
-        currentEpoch: currentEpoch,
-        currentEpochBalance: currentEpoch.isGreaterThan(balance.currentEpoch)
-            ? balance.nextEpochBalance
-            : balance.currentEpochBalance,
-    };
-}
 
 function updateNextEpochBalances(
     ownerStake: OwnerStakeByStatus,
@@ -101,12 +83,12 @@ export function validMoveStakeAssertion(
     deployment: DeploymentManager,
     simulationEnvironment: SimulationEnvironment,
     ownerStake: OwnerStakeByStatus,
-): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void> {
+): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void> {
     const { stakingWrapper, zrxVault } = deployment.staking;
 
-    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], {}, void>(stakingWrapper, 'moveStake', {
+    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void>(stakingWrapper, 'moveStake', {
         after: async (
-            _beforeInfo: {},
+            _beforeInfo: void,
             result: FunctionResult,
             args: [StakeInfo, StakeInfo, BigNumber],
             txData: Partial<TxData>,
