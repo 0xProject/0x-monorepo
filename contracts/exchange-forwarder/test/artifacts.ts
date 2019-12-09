@@ -7,6 +7,7 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as Forwarder from '../test/generated-artifacts/Forwarder.json';
 import * as IAssets from '../test/generated-artifacts/IAssets.json';
+import * as IExchangeV2 from '../test/generated-artifacts/IExchangeV2.json';
 import * as IForwarder from '../test/generated-artifacts/IForwarder.json';
 import * as IForwarderCore from '../test/generated-artifacts/IForwarderCore.json';
 import * as LibConstants from '../test/generated-artifacts/LibConstants.json';
@@ -23,6 +24,7 @@ export const artifacts = {
     MixinForwarderCore: MixinForwarderCore as ContractArtifact,
     MixinWeth: MixinWeth as ContractArtifact,
     IAssets: IAssets as ContractArtifact,
+    IExchangeV2: IExchangeV2 as ContractArtifact,
     IForwarder: IForwarder as ContractArtifact,
     IForwarderCore: IForwarderCore as ContractArtifact,
     LibConstants: LibConstants as ContractArtifact,
