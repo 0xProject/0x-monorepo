@@ -1,6 +1,6 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
-import { constants, expect, hexSlice, OrderStatus, provider } from '@0x/contracts-test-utils';
+import { constants, expect, OrderStatus, provider } from '@0x/contracts-test-utils';
 import { AssetProxyId, OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -91,9 +91,7 @@ export class ForwarderTestFactory {
                 forwarderFeeRecipientAddresses,
             )
             .awaitTransactionSuccessAsync({
-                value: wethSpentAmount
-                    .plus(forwarderFeeAmounts.reduce((prev, curr) => prev.plus(curr), constants.ZERO_AMOUNT))
-                    .plus(ethValueAdjustment),
+                value: wethSpentAmount.plus(BigNumber.sum(0, ...forwarderFeeAmounts)).plus(ethValueAdjustment),
                 from: this._taker.address,
             });
 
@@ -137,9 +135,7 @@ export class ForwarderTestFactory {
                 forwarderFeeRecipientAddresses,
             )
             .awaitTransactionSuccessAsync({
-                value: wethSpentAmount.plus(
-                    forwarderFeeAmounts.reduce((prev, curr) => prev.plus(curr), constants.ZERO_AMOUNT),
-                ),
+                value: wethSpentAmount.plus(BigNumber.sum(0, ...forwarderFeeAmounts)),
                 from: this._taker.address,
             });
 

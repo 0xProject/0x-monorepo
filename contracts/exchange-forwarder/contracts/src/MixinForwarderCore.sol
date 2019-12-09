@@ -63,7 +63,7 @@ contract MixinForwarderCore is
     ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are payed to corresponding feeRecipients.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
     /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
@@ -91,7 +91,7 @@ contract MixinForwarderCore is
         (
             wethSpentAmount,
             makerAssetAcquiredAmount
-        ) = _marketSellWeth(
+        ) = _marketSellNoThrow(
             orders,
             wethRemaining,
             signatures
@@ -108,7 +108,7 @@ contract MixinForwarderCore is
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are payed to corresponding feeRecipients.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
     /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.

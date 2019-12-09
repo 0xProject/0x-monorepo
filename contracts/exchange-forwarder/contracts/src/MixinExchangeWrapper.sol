@@ -148,7 +148,7 @@ contract MixinExchangeWrapper is
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
     /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
-    function _marketSellWeth(
+    function _marketSellNoThrow(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
         bytes[] memory signatures

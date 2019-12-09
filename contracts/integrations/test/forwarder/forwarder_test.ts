@@ -655,13 +655,12 @@ blockchainTests('Forwarder integration tests', env => {
                 forwarderFeeAmounts[0],
                 value,
             );
-            return expect(
-                forwarder
-                    .marketBuyOrdersWithEth([order], order.makerAssetAmount, [order.signature], forwarderFeeAmounts, [
-                        randomAddress(),
-                    ])
-                    .awaitTransactionSuccessAsync({ value }),
-            ).to.revertWith(revertError);
+            await testFactory.marketBuyTestAsync([order], 0, {
+                revertError,
+                ethValueAdjustment: -1,
+                forwarderFeeAmounts,
+                forwarderFeeRecipientAddresses: [randomAddress()],
+            });
         });
     });
 });

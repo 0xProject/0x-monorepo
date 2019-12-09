@@ -42,7 +42,7 @@ contract MixinWeth is
     }
 
     /// @dev Transfers ETH denominated fees to all feeRecipient addresses
-    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are payed to corresponding feeRecipients.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
     /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return ethRemaining msg.value minus the amount of ETH spent on affiliate fees.
     function _transferEthFeesAndWrapRemaining(
