@@ -30,6 +30,7 @@ import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
+import "./interfaces/IExchangeV2.sol";
 import "./MixinAssets.sol";
 
 
@@ -54,23 +55,19 @@ contract MixinExchangeWrapper is
         internal
         returns (LibFillResults.FillResults memory fillResults)
     {
-        // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            IExchange(address(0)).fillOrder.selector,
+        if (order.makerFeeAssetData.readBytes4(0) == EXCHANGE_V2_ORDER_ID) {
+            return _fillV2OrderNoThrow(
+                order,
+                takerAssetFillAmount,
+                signature
+            );
+        }
+
+        return _fillV3OrderNoThrow(
             order,
             takerAssetFillAmount,
             signature
         );
-
-        address exchange = address(EXCHANGE);
-        (bool didSucceed, bytes memory returnData) = exchange.call(fillOrderCalldata);
-        if (didSucceed) {
-            assert(returnData.length == 160);
-            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
-        }
-
-        // fillResults values will be 0 by default if call was unsuccessful
-        return fillResults;
     }
 
     /// @dev Executes a single call of fillOrder according to the wethSellAmount and
@@ -368,6 +365,98 @@ contract MixinExchangeWrapper is
                 totalMakerAssetAcquiredAmount
             ));
         }
+    }
+
+    /// @dev Fills the input ExchangeV2 order. The `makerFeeAssetData` must be
+    //       equal to EXCHANGE_V2_ORDER_ID (0x770501f8).
+    ///      Returns false if the transaction would otherwise revert.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function _fillV2OrderNoThrow(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (LibFillResults.FillResults memory fillResults)
+    {
+        // Strip v3 specific fields from order
+        IExchangeV2.Order memory v2Order = IExchangeV2.Order({
+            makerAddress: order.makerAddress,
+            takerAddress: order.takerAddress,
+            feeRecipientAddress: order.feeRecipientAddress,
+            senderAddress: order.senderAddress,
+            makerAssetAmount: order.makerAssetAmount,
+            takerAssetAmount: order.takerAssetAmount,
+            makerFee: order.makerFee,
+            takerFee: order.makerFee,
+            expirationTimeSeconds: order.expirationTimeSeconds,
+            salt: order.salt,
+            makerAssetData: order.makerAssetData,
+            takerAssetData: order.takerAssetData
+        });
+
+        // ABI encode calldata for `fillOrder`
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            IExchangeV2(address(0)).fillOrder.selector,
+            v2Order,
+            takerAssetFillAmount,
+            signature
+        );
+
+        address exchange = address(EXCHANGE_V2);
+        (bool didSucceed, bytes memory returnData) = exchange.call(fillOrderCalldata);
+        if (didSucceed) {
+            assert(returnData.length == 128);
+            IExchangeV2.FillResults memory v2FillResults = abi.decode(returnData, (IExchangeV2.FillResults));
+
+            // Add `protocolFeePaid` field to v2 fill results
+            fillResults = LibFillResults.FillResults({
+                makerAssetFilledAmount: v2FillResults.makerAssetFilledAmount,
+                takerAssetFilledAmount: v2FillResults.takerAssetFilledAmount,
+                makerFeePaid: v2FillResults.makerFeePaid,
+                takerFeePaid: v2FillResults.takerFeePaid,
+                protocolFeePaid: 0
+            });
+        }
+
+        // fillResults values will be 0 by default if call was unsuccessful
+        return fillResults;
+    }
+
+    /// @dev Fills the input ExchangeV3 order. 
+    ///      Returns false if the transaction would otherwise revert.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function _fillV3OrderNoThrow(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (LibFillResults.FillResults memory fillResults)
+    {
+        // ABI encode calldata for `fillOrder`
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            IExchange(address(0)).fillOrder.selector,
+            order,
+            takerAssetFillAmount,
+            signature
+        );
+
+        address exchange = address(EXCHANGE);
+        (bool didSucceed, bytes memory returnData) = exchange.call(fillOrderCalldata);
+        if (didSucceed) {
+            assert(returnData.length == 160);
+            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
+        }
+
+        // fillResults values will be 0 by default if call was unsuccessful
+        return fillResults;
     }
 
     /// @dev Checks whether one asset is effectively equal to another asset.
