@@ -1,6 +1,13 @@
 import { IAssetDataContract } from '@0x/contract-wrappers';
-import { AssetData, AssetProxyId } from '@0x/types';
+import {
+    AssetData,
+    AssetProxyId,
+    MultiAssetData,
+    MultiAssetDataWithRecursiveDecoding,
+    SingleAssetData,
+} from '@0x/types';
 import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
+import * as _ from 'lodash';
 
 const fakeProvider = { isEIP1193: true } as any;
 const assetDataEncoder = new IAssetDataContract(NULL_ADDRESS, fakeProvider);
@@ -75,9 +82,15 @@ export const assetDataUtils = {
                 };
             }
             case AssetProxyId.ERC1155: {
-                const [tokenAddress, tokenIds, tokenValues, callbackData] = assetDataEncoder.getABIDecodedTransactionData<
-                    [string, BigNumber[], BigNumber[], string]
-                >('ERC1155Assets', assetData);
+                const [
+                    tokenAddress,
+                    tokenIds,
+                    tokenValues,
+                    callbackData,
+                ] = assetDataEncoder.getABIDecodedTransactionData<[string, BigNumber[], BigNumber[], string]>(
+                    'ERC1155Assets',
+                    assetData,
+                );
                 return {
                     assetProxyId,
                     tokenAddress,
@@ -90,11 +103,13 @@ export const assetDataUtils = {
                 const [amounts, nestedAssetData] = assetDataEncoder.getABIDecodedTransactionData<
                     [BigNumber[], string[]]
                 >('MultiAsset', assetData);
-                return {
+
+                const multiAssetData: MultiAssetData = {
                     assetProxyId,
                     amounts,
                     nestedAssetData,
                 };
+                return multiAssetData;
             }
             case AssetProxyId.StaticCall:
                 const [callTarget, staticCallData, callResultHash] = assetDataEncoder.getABIDecodedTransactionData<
@@ -109,5 +124,42 @@ export const assetDataUtils = {
             default:
                 throw new Error(`Unhandled asset proxy ID: ${assetProxyId}`);
         }
+    },
+    /**
+     * Decodes a MultiAsset assetData hex string into its corresponding amounts and decoded nestedAssetData elements (all nested elements are flattened)
+     * @param assetData Hex encoded assetData string to decode
+     * @return An object containing the decoded amounts and nestedAssetData
+     */
+    decodeMultiAssetDataRecursively(assetData: string): MultiAssetDataWithRecursiveDecoding {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData) as MultiAssetData; // tslint:disable-line:no-unnecessary-type-assertion
+        if (decodedAssetData.assetProxyId !== AssetProxyId.MultiAsset) {
+            throw new Error(`Not a MultiAssetData. Use 'decodeAssetDataOrThrow' instead`);
+        }
+        const amounts: any[] = [];
+        const decodedNestedAssetData = decodedAssetData.nestedAssetData.map((nestedAssetDataElement, index) => {
+            const decodedNestedAssetDataElement = assetDataUtils.decodeAssetDataOrThrow(nestedAssetDataElement);
+            if (decodedNestedAssetDataElement.assetProxyId === AssetProxyId.MultiAsset) {
+                const recursivelyDecodedAssetData = assetDataUtils.decodeMultiAssetDataRecursively(
+                    nestedAssetDataElement,
+                );
+                amounts.push(
+                    recursivelyDecodedAssetData.amounts.map(amountElement =>
+                        amountElement.times(decodedAssetData.amounts[index]),
+                    ),
+                );
+                return recursivelyDecodedAssetData.nestedAssetData;
+            } else {
+                amounts.push(decodedAssetData.amounts[index]);
+                return decodedNestedAssetDataElement;
+            }
+        });
+        const flattenedAmounts = _.flattenDeep(amounts);
+        const flattenedDecodedNestedAssetData = _.flattenDeep(decodedNestedAssetData);
+        return {
+            assetProxyId: decodedAssetData.assetProxyId,
+            amounts: flattenedAmounts,
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            nestedAssetData: flattenedDecodedNestedAssetData as SingleAssetData[],
+        };
     },
 };
