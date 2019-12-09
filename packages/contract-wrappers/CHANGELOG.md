@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.1.0 - _December 9, 2019_
+
+    * Add wrapper for `IAssetDataContract` (#2373)
+
 ## v13.0.0 - _December 2, 2019_
 
     * Remove dependency on `abi-gen-wrappers` (#2370)

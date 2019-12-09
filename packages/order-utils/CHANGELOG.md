@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.0.0 - _December 9, 2019_
+
+    * Removed from assetDataUtils: individual decoding functions and assert functions (#2388)
+    * Add ERC20Bridge support to assetDataUtils (#2388)
+
 ## v9.0.0 - _December 2, 2019_
 
     * [Breaking] Removed `OrderStateUtils`, `OrderValidationUtils`, `ExchangeTransferSimulator` and all abstract and store classes. For order validation, please use the `DevUtils` contract wrapper method `getOrderRelevantState`|`getOrderRelevantStates` (#2324)

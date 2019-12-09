@@ -10,7 +10,8 @@
                 "note": "Add ERC20Bridge support to assetDataUtils",
                 "pr": 2388
             }
-        ]
+        ],
+        "timestamp": 1575931811
     },
     {
         "version": "9.0.0",

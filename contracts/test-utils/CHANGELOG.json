@@ -6,7 +6,8 @@
                 "note": "Removed `hex_utils.ts`. Moved to @0x/utils",
                 "pr": 2373
             }
-        ]
+        ],
+        "timestamp": 1575931811
     },
     {
         "version": "4.0.0",

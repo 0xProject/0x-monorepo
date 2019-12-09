@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.1 - _December 9, 2019_
+
+    * Dependencies updated
+
 ## v5.0.0 - _December 2, 2019_
 
     * Refactored TS wrapper templates to result in a more succint interface. See https://github.com/0xProject/0x-monorepo/pull/2325 for details. (#2284)

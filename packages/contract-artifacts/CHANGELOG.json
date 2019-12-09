@@ -6,7 +6,8 @@
                 "note": "Add `IAssetData` artifact",
                 "pr": 2373
             }
-        ]
+        ],
+        "timestamp": 1575931811
     },
     {
         "version": "3.0.0",

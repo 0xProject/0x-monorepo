@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.1.0 - _December 9, 2019_
+
+    * Added hex_utils (#2373)
+
 ## v5.0.0 - _December 2, 2019_
 
     * Re-export all `RevertErrors` (#2362)

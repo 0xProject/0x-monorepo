@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.1 - _December 9, 2019_
+
+    * Dependencies updated
+
 ## v6.0.0 - _December 2, 2019_
 
     * Adds DebugSubprovider (#2329)

@@ -6,7 +6,8 @@
                 "note": "Add wrapper for `IAssetDataContract`",
                 "pr": 2373
             }
-        ]
+        ],
+        "timestamp": 1575931811
     },
     {
         "version": "13.0.0",

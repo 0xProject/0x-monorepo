@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _December 9, 2019_
+
+    * Removed `hex_utils.ts`. Moved to @0x/utils (#2373)
+
 ## v4.0.0 - _December 2, 2019_
 
     * Drastically reduced bundle size by adding .npmignore, only exporting specific artifacts/wrappers/utils (#2330)
@@ -22,7 +26,7 @@ CHANGELOG
     * Introduce Mocha blockchain extensions (#2007)
     * Move `*FillResults`, `OrderInfo` types to `@0x/types` (#2031)
     * Add `log_utils.ts` (#2031)
-    * Add `haxRandom()` to `hex_utils.ts` (#2031)
+    * Add `hexRandom()` to `hex_utils.ts` (#2031)
     * Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`, `MAX_UINT256_ROOT`, `ONE_ETHER` (#2031)
     * Make `testCombinatoriallyWithReferenceFuncAsync` non-async (#2031)
     * Update `testWithReferenceFuncAsync` to work with `RevertErrors` (#2031)

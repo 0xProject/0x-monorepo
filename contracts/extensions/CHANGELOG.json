@@ -6,7 +6,8 @@
                 "note": "Export function `encodeDutchAuctionAssetData`",
                 "pr": 2373
             }
-        ]
+        ],
+        "timestamp": 1575931811
     },
     {
         "version": "5.0.0",

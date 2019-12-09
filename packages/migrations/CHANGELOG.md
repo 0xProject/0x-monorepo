@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.1 - _December 9, 2019_
+
+    * Dependencies updated
+
 ## v5.0.0 - _December 2, 2019_
 
     * Deploy Forwarder after Exchange is configured as Staking Proxy is queried (#2368)

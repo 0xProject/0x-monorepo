@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _December 9, 2019_
+
+    * Add `ERC20BridgeAssetData` (#2373)
+
 ## v3.0.0 - _December 2, 2019_
 
     * Remove `SendTransactionOpts` and `AwaitTransactionSuccessOpts` types and move them to @0x/base-contracts (#2325)
