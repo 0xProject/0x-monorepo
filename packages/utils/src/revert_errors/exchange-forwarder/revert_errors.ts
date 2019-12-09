@@ -34,14 +34,6 @@ export class UnsupportedFeeError extends RevertError {
     }
 }
 
-export class FeePercentageTooLargeError extends RevertError {
-    constructor(feePercentage?: BigNumber | number | string) {
-        super('FeePercentageTooLargeError', 'FeePercentageTooLargeError(uint256 feePercentage)', {
-            feePercentage,
-        });
-    }
-}
-
 export class InsufficientEthForFeeError extends RevertError {
     constructor(ethFeeRequired?: BigNumber | number | string, ethAvailable?: BigNumber | number | string) {
         super(
@@ -83,17 +75,30 @@ export class Erc721AmountMustEqualOneError extends RevertError {
     }
 }
 
+export class EthFeeLengthMismatchError extends RevertError {
+    constructor(ethFeesLength?: BigNumber | number | string, feeRecipientsLength?: BigNumber | number | string) {
+        super(
+            'EthFeeLengthMismatchError',
+            'EthFeeLengthMismatchError(uint256 ethFeesLength, uint256 feeRecipientsLength)',
+            {
+                ethFeesLength,
+                feeRecipientsLength,
+            },
+        );
+    }
+}
+
 const types = [
     UnregisteredAssetProxyError,
     UnsupportedAssetProxyError,
     CompleteBuyFailedError,
     UnsupportedFeeError,
-    FeePercentageTooLargeError,
     InsufficientEthForFeeError,
     OverspentWethError,
     DefaultFunctionWethContractOnlyError,
     MsgValueCannotEqualZeroError,
     Erc721AmountMustEqualOneError,
+    EthFeeLengthMismatchError,
 ];
 
 // Register the types we've defined.

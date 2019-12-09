@@ -67,6 +67,7 @@ export class LocalBalanceStore extends BalanceStore {
      * @param amount Amount of ETH to transfer.
      */
     public sendEth(fromAddress: string, toAddress: string, amount: Numberish): void {
+        this.balances.eth[toAddress] = this.balances.eth[toAddress] || constants.ZERO_AMOUNT;
         this.balances.eth[fromAddress] = this.balances.eth[fromAddress].minus(amount);
         this.balances.eth[toAddress] = this.balances.eth[toAddress].plus(amount);
     }
