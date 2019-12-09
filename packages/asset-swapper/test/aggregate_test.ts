@@ -27,7 +27,7 @@ import {
     SELL_SOURCES,
     SOURCE_TO_ADDRESS,
     UNISWAP_BRIDGE_ADDRESS,
-} from '../src/utils/aggregate';
+} from '../src/utils/improve_swap_quote_utils';
 
 import { MockSamplerContract, QueryAndSampleResult } from './utils/mock_sampler_contract';
 

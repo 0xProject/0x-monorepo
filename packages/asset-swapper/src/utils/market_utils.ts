@@ -2,17 +2,17 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { MarketOperation, PrunedSignedOrder } from '../types';
+import { MarketOperation, SignedOrderWithFillableAmounts } from '../types';
 
 import { assert } from './assert';
 import { utils } from './utils';
 
 export const marketUtils = {
     findOrdersThatCoverTakerAssetFillAmount(
-        sortedOrders: PrunedSignedOrder[],
+        sortedOrders: SignedOrderWithFillableAmounts[],
         takerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
-    ): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
+    ): { resultOrders: SignedOrderWithFillableAmounts[]; remainingFillAmount: BigNumber } {
         return findOrdersThatCoverAssetFillAmount(
             sortedOrders,
             takerAssetFillAmount,
@@ -21,10 +21,10 @@ export const marketUtils = {
         );
     },
     findOrdersThatCoverMakerAssetFillAmount(
-        sortedOrders: PrunedSignedOrder[],
+        sortedOrders: SignedOrderWithFillableAmounts[],
         makerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
-    ): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
+    ): { resultOrders: SignedOrderWithFillableAmounts[]; remainingFillAmount: BigNumber } {
         return findOrdersThatCoverAssetFillAmount(
             sortedOrders,
             makerAssetFillAmount,
@@ -32,14 +32,29 @@ export const marketUtils = {
             slippageBufferAmount,
         );
     },
+    getAssetAmountAvailable(order: SignedOrderWithFillableAmounts, operation: MarketOperation): BigNumber {
+        if (operation === MarketOperation.Buy) {
+            if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
+                return order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount);
+            } else {
+                return order.fillableMakerAssetAmount;
+            }
+        } else {
+            if (utils.isOrderTakerFeePayableWithTakerAsset(order)) {
+                return order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount);
+            } else {
+                return order.fillableTakerAssetAmount;
+            }
+        }
+    },
 };
 
 function findOrdersThatCoverAssetFillAmount(
-    sortedOrders: PrunedSignedOrder[],
+    sortedOrders: SignedOrderWithFillableAmounts[],
     assetFillAmount: BigNumber,
     operation: MarketOperation,
     slippageBufferAmount: BigNumber,
-): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
+): { resultOrders: SignedOrderWithFillableAmounts[]; remainingFillAmount: BigNumber } {
     assert.isValidBaseUnitAmount('slippageBufferAmount', slippageBufferAmount);
     // calculate total amount of asset needed to be filled
     const totalFillAmount = assetFillAmount.plus(slippageBufferAmount);
@@ -53,7 +68,7 @@ function findOrdersThatCoverAssetFillAmount(
                     remainingFillAmount: constants.ZERO_AMOUNT,
                 };
             } else {
-                const assetAmountAvailable = getAssetAmountAvailable(order, operation);
+                const assetAmountAvailable = marketUtils.getAssetAmountAvailable(order, operation);
                 const shouldIncludeOrder = assetAmountAvailable.gt(constants.ZERO_AMOUNT);
                 // if there is no assetAmountAvailable do not append order to resultOrders
                 // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
@@ -67,26 +82,10 @@ function findOrdersThatCoverAssetFillAmount(
             }
         },
         {
-            resultOrders: [] as PrunedSignedOrder[],
+            resultOrders: [] as SignedOrderWithFillableAmounts[],
             remainingFillAmount: totalFillAmount,
         },
     );
 
     return result;
-}
-
-function getAssetAmountAvailable(order: PrunedSignedOrder, operation: MarketOperation): BigNumber {
-    if (operation === MarketOperation.Buy) {
-        if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
-            return order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount);
-        } else {
-            return order.fillableMakerAssetAmount;
-        }
-    } else {
-        if (utils.isOrderTakerFeePayableWithTakerAsset(order)) {
-            return order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount);
-        } else {
-            return order.fillableTakerAssetAmount;
-        }
-    }
 }

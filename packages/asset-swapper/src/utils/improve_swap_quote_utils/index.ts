@@ -3,13 +3,14 @@ import { SignedOrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
-import { SignedOrderWithFillableAmounts } from '../../types';
+import { SignedOrderWithFillableAmounts, MarketOperation } from '../../types';
 
 import { constants as improveSwapQuoteConstants } from './constants';
 import { createOrdersUtils } from './create_orders';
 import { comparePathOutputs, FillsOptimizer, getPathOutput } from './fill_optimizer';
 import { DexOrderSampler } from './sampler';
-import { AggregationError, DexSample, ERC20BridgeSource, Fill, FillData, FillFlags, ImproveOrdersOpts, OrderDomain, NativeFillData } from './types';
+import { AggregationError, DexSample, ERC20BridgeSource, Fill, FillData, FillFlags, ImproveOrdersOpts, OrderDomain } from './types';
+import { marketUtils } from '../market_utils';
 
 const { ZERO_AMOUNT } = constants;
 const { BUY_SOURCES, DEFAULT_IMPROVE_ORDERS_OPTS, SELL_SOURCES } = improveSwapQuoteConstants;
@@ -149,7 +150,7 @@ function createSellPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[]
     for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
         const takerAmount = order.fillableTakerAssetAmount;
-        const makerAmount = order.fillableMakerAssetAmount;
+        const makerAmount = marketUtils.getAssetAmountAvailable(order, MarketOperation.Sell);
         // Native orders can be filled in any order, so they're all root nodes.
         path.push({
             flags: FillFlags.SourceNative,
@@ -171,7 +172,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
     for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
         const makerAmount = order.fillableMakerAssetAmount;
-        const takerAmount = order.fillableTakerAssetAmount;
+        const takerAmount = marketUtils.getAssetAmountAvailable(order, MarketOperation.Buy);
         // Native orders can be filled in any order, so they're all root nodes.
         path.push({
             flags: FillFlags.SourceNative,
