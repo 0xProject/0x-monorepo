@@ -79,7 +79,7 @@ library LibOrder {
     // solhint-enable max-line-length
 
     struct OrderInfo {
-        uint8 orderStatus;                    // Status that describes order's validity and fillability.
+        OrderStatus orderStatus;                    // Status that describes order's validity and fillability.
         bytes32 orderHash;                    // EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).
         uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.
     }
