@@ -336,9 +336,8 @@ contract TestERC20BridgeSampler is
         bytes32 orderHash = keccak256(abi.encode(order.salt));
         // Everything else is derived from the hash.
         orderInfo.orderHash = orderHash;
-        orderInfo.orderStatus = uint8(uint256(orderHash) % uint8(-1));
-        orderInfo.orderTakerAssetFilledAmount =
-            uint256(orderHash) % order.takerAssetAmount;
+        orderInfo.orderStatus = LibOrder.OrderStatus(uint256(orderHash) % uint8(-1));
+        orderInfo.orderTakerAssetFilledAmount = uint256(orderHash) % order.takerAssetAmount;
         fillableTakerAssetAmount =
             order.takerAssetAmount - orderInfo.orderTakerAssetFilledAmount;
         isValidSignature = uint256(orderHash) % 2 == 1;
