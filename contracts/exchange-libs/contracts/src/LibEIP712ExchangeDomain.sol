@@ -29,9 +29,11 @@ contract LibEIP712ExchangeDomain {
     // EIP712 Exchange Domain Version value
     string constant internal _EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
 
-    // Hash of the EIP712 Domain Separator data
-    // solhint-disable-next-line var-name-mixedcase
+    // solhint-disable var-name-mixedcase
+    /// @dev Hash of the EIP712 Domain Separator data
+    /// @return 0 Domain hash.
     bytes32 public EIP712_EXCHANGE_DOMAIN_HASH;
+    // solhint-enable var-name-mixedcase
 
     /// @param chainId Chain ID of the network this contract is deployed on.
     /// @param verifyingContractAddressIfExists Address of the verifying contract (null if the address of this contract)

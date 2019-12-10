@@ -45,14 +45,21 @@ contract MixinExchangeCore is
     using LibSafeMath for uint256;
     using LibBytes for bytes;
 
-    // Mapping of orderHash => amount of takerAsset already bought by maker
+    /// @dev Mapping of orderHash => amount of takerAsset already bought by maker
+    /// @param 0 Order hash.
+    /// @return 0 The amount of taker asset filled.
     mapping (bytes32 => uint256) public filled;
 
-    // Mapping of orderHash => cancelled
+    /// @dev Mapping of orderHash => cancelled
+    /// @param 0 Order hash.
+    /// @return 0 Whether the order was cancelled.
     mapping (bytes32 => bool) public cancelled;
 
-    // Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable
-    // Orders with specified senderAddress and with a salt less than their epoch are considered cancelled
+    // @dev Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable
+    //      Orders with specified senderAddress and with a salt less than their epoch are considered cancelled
+    /// @param 0 Address of the order's maker.
+    /// @param 1 Address of the order's sender.
+    /// @return 0 Minimum valid order epoch.
     mapping (address => mapping (address => uint256)) public orderEpoch;
 
     /// @dev Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
@@ -94,7 +101,7 @@ contract MixinExchangeCore is
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
-    /// @return Amounts filled and fees paid by maker and taker.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
     function fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
@@ -125,7 +132,7 @@ contract MixinExchangeCore is
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.
-    /// @return OrderInfo Information about the order and its state.
+    /// @return orderInfo Information about the order and its state.
     ///         See LibOrder.OrderInfo for a complete description.
     function getOrderInfo(LibOrder.Order memory order)
         public
@@ -185,7 +192,7 @@ contract MixinExchangeCore is
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
-    /// @return Amounts filled and fees paid by maker and taker.
+    /// @return fillResults Amounts filled and fees paid by maker and taker.
     function _fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,

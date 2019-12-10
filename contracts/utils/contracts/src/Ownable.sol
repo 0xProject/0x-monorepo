@@ -26,6 +26,8 @@ import "./LibRichErrors.sol";
 contract Ownable is
     IOwnable
 {
+    /// @dev The owner of this contract.
+    /// @return 0 The owner address.
     address public owner;
 
     constructor ()
@@ -39,6 +41,8 @@ contract Ownable is
         _;
     }
 
+    /// @dev Change the owner of this contract.
+    /// @param newOwner New owner address.
     function transferOwnership(address newOwner)
         public
         onlyOwner

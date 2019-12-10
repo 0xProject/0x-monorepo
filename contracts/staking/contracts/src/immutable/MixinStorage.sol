@@ -51,19 +51,23 @@ contract MixinStorage is
     // tracking Pool Id, a unique identifier for each staking pool.
     bytes32 public lastPoolId;
 
-    // mapping from Maker Address to Pool Id of maker
+    /// @dev Mapping from Maker Address to pool Id of maker
+    /// @param 0 Maker address.
+    /// @return 0 The pool ID.
     mapping (address => bytes32) public poolIdByMaker;
 
     // mapping from Pool Id to Pool
     mapping (bytes32 => IStructs.Pool) internal _poolById;
 
-    // mapping from PoolId to balance of members
+    /// @dev mapping from pool ID to reward balance of members
+    /// @param 0 Pool ID.
+    /// @return 0 The total reward balance of members in this pool.
     mapping (bytes32 => uint256) public rewardsByPoolId;
 
-    // current epoch
+    // The current epoch.
     uint256 public currentEpoch;
 
-    // current epoch start time
+    // The current epoch start time.
     uint256 public currentEpochStartTimeInSeconds;
 
     // mapping from Pool Id to Epoch to Reward Ratio
@@ -72,7 +76,9 @@ contract MixinStorage is
     // mapping from Pool Id to Epoch
     mapping (bytes32 => uint256) internal _cumulativeRewardsByPoolLastStored;
 
-    // registered 0x Exchange contracts
+    /// @dev Registered 0x Exchange contracts, capable of paying protocol fees.
+    /// @param 0 The address to check.
+    /// @return 0 Whether the address is a registered exchange.
     mapping (address => bool) public validExchanges;
 
     /* Tweakable parameters */
@@ -95,11 +101,16 @@ contract MixinStorage is
     /* State for finalization */
 
     /// @dev Stats for each pool that generated fees with sufficient stake to earn rewards.
-    ///      See `_minimumPoolStake` in MixinParams.
+    ///      See `_minimumPoolStake` in `MixinParams`.
+    /// @param 0 Pool ID.
+    /// @param 1 Epoch number.
+    /// @return 0 Pool fee stats.
     mapping (bytes32 => mapping (uint256 => IStructs.PoolStats)) public poolStatsByEpoch;
 
     /// @dev Aggregated stats across all pools that generated fees with sufficient stake to earn rewards.
     ///      See `_minimumPoolStake` in MixinParams.
+    /// @param 0 Epoch number.
+    /// @return 0 Reward computation stats.
     mapping (uint256 => IStructs.AggregatedStats) public aggregatedStatsByEpoch;
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.

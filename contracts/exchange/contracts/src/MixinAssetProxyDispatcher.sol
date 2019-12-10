@@ -62,11 +62,11 @@ contract MixinAssetProxyDispatcher is
 
     /// @dev Gets an asset proxy.
     /// @param assetProxyId Id of the asset proxy.
-    /// @return The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
+    /// @return assetProxy The asset proxy address registered to assetProxyId. Returns 0x0 if no proxy is registered.
     function getAssetProxy(bytes4 assetProxyId)
         external
         view
-        returns (address)
+        returns (address assetProxy)
     {
         return _assetProxies[assetProxyId];
     }

@@ -26,6 +26,7 @@ import "./interfaces/IStorageInit.sol";
 import "./interfaces/IStakingProxy.sol";
 
 
+/// #dev The 0x Staking contract.
 contract StakingProxy is
     IStakingProxy,
     MixinStorage,

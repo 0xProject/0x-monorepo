@@ -50,9 +50,9 @@ interface IStructs {
     /// @dev Encapsulates a balance for the current and next epochs.
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
-    /// @param currentEpoch the current epoch
-    /// @param currentEpochBalance balance in the current epoch.
-    /// @param nextEpochBalance balance in `currentEpoch+1`.
+    /// @param currentEpoch The current epoch
+    /// @param currentEpochBalance Balance in the current epoch.
+    /// @param nextEpochBalance Balance in `currentEpoch+1`.
     struct StoredBalance {
         uint64 currentEpoch;
         uint96 currentEpochBalance;
@@ -68,7 +68,7 @@ interface IStructs {
     }
 
     /// @dev Info used to describe a status.
-    /// @param status of the stake.
+    /// @param status Status of the stake.
     /// @param poolId Unique Id of pool. This is set when status=DELEGATED.
     struct StakeInfo {
         StakeStatus status;
@@ -76,15 +76,15 @@ interface IStructs {
     }
 
     /// @dev Struct to represent a fraction.
-    /// @param numerator of fraction.
-    /// @param denominator of fraction.
+    /// @param numerator Numerator of fraction.
+    /// @param denominator Denominator of fraction.
     struct Fraction {
         uint256 numerator;
         uint256 denominator;
     }
 
     /// @dev Holds the metadata for a staking pool.
-    /// @param operator of the pool.
+    /// @param operator Operator of the pool.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
     struct Pool {
         address operator;
