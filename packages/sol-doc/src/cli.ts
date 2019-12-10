@@ -13,7 +13,7 @@ const JSON_TAB_WIDTH = 2;
 
 (async () => {
     const argv = yargs
-        .option('sources', {
+        .option('source', {
             type: 'string',
             array: true,
             description: 'glob paths of source files to compile',
@@ -49,31 +49,21 @@ const JSON_TAB_WIDTH = 2;
             type: 'string',
             description: 'prefix for markdown links',
         })
-        .help()
-        .argv;
-    const sources = await getContractsAsync(argv.sources);
+        .help().argv;
+    const sources = await getContractsAsync(argv.source);
     if (!sources.length) {
         throw new Error('no sources found');
     }
-    const docs = transformDocs(
-        await extractDocsAsync(sources, argv.root),
-        {
-            onlyExposed: !argv.complete,
-            flatten: !argv.noFlatten,
-            contracts: argv.contract,
-        },
-    );
+    const docs = transformDocs(await extractDocsAsync(sources, argv.root), {
+        onlyExposed: !argv.complete,
+        flatten: !argv.noFlatten,
+        contracts: argv.contract,
+    });
     if (argv.json) {
         await writeTextFileAsync(argv.json, JSON.stringify(docs, null, JSON_TAB_WIDTH));
     }
     if (argv.md) {
-        await writeTextFileAsync(
-            argv.md,
-            generateMarkdownFromDocs(
-                docs,
-                { urlPrefix: argv.mdUrlPrefix },
-            ),
-        );
+        await writeTextFileAsync(argv.md, generateMarkdownFromDocs(docs, { urlPrefix: argv.mdUrlPrefix }));
     }
 })().catch(err => {
     logUtils.warn(err);
@@ -83,10 +73,7 @@ const JSON_TAB_WIDTH = 2;
 async function getContractsAsync(contractsGlobs: string[]): Promise<string[]> {
     let sources: string[] = [];
     for (const g of contractsGlobs) {
-        sources = [
-            ...sources,
-            ...await promisify(glob)(g),
-        ];
+        sources = [...sources, ...(await promisify(glob)(g))];
     }
     return sources;
 }

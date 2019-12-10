@@ -5,13 +5,8 @@ import * as path from 'path';
 import {
     ArrayTypeNameNode,
     AstNode,
-    ContractDefinitionNode,
-    ContractKind,
-    EnumDefinitionNode,
     EnumValueNode,
-    FunctionDefinitionNode,
     FunctionKind,
-    InheritanceSpecifierNode,
     isArrayTypeNameNode,
     isContractDefinitionNode,
     isEnumDefinitionNode,
@@ -28,9 +23,7 @@ import {
     splitAstNodeSrc,
     StateMutability,
     StorageLocation,
-    StructDefinitionNode,
     TypeNameNode,
-    UserDefinedTypeNameNode,
     VariableDeclarationNode,
     Visibility,
 } from './sol_ast';
@@ -137,16 +130,11 @@ interface Natspec {
 /**
  * Extract documentation, as JSON, from contract files.
  */
-export async function extractDocsAsync(
-    contractPaths: string[],
-    roots: string[] = [],
-): Promise<SolidityDocs> {
+export async function extractDocsAsync(contractPaths: string[], roots: string[] = []): Promise<SolidityDocs> {
     const outputs = await compileAsync(contractPaths);
-    const sourceContents = (
-        await Promise.all(
-            outputs.map(getSourceContentsFromCompilerOutputAsync),
-        )
-    ).map(sources => rewriteSourcePaths(sources, roots));
+    const sourceContents = (await Promise.all(outputs.map(getSourceContentsFromCompilerOutputAsync))).map(sources =>
+        rewriteSourcePaths(sources, roots),
+    );
     const docs = createEmptyDocs();
     outputs.forEach((output, outputIdx) => {
         for (const file of Object.keys(output.contracts)) {
@@ -172,7 +160,7 @@ async function compileAsync(files: string[]): Promise<SolcOutput[]> {
             },
         },
     });
-    return compiler.getCompilerOutputsAsync() as any as Promise<SolcOutput[]>;
+    return (compiler.getCompilerOutputsAsync() as any) as Promise<SolcOutput[]>;
 }
 
 async function getSourceContentsFromCompilerOutputAsync(output: SolcOutput): Promise<SourceData[]> {
@@ -200,10 +188,7 @@ async function getSourceContentsFromCompilerOutputAsync(output: SolcOutput): Pro
                 filePath = filePath.slice(longestPrefix.length);
                 filePath = path.join(longestPrefixReplacement, filePath);
             }
-            const content = (await fs.promises.readFile(
-                filePath,
-                { encoding: 'utf-8' },
-            )) as string;
+            const content = (await fs.promises.readFile(filePath, { encoding: 'utf-8' })) as string;
             sources[output.sources[importFile].id] = {
                 path: path.relative('.', filePath),
                 content,
@@ -251,7 +236,7 @@ function createEmptyDocs(): SolidityDocs {
 }
 
 function extractDocsFromFile(ast: SourceUnitNode, source: SourceData): SolidityDocs {
-    const HIDDEN_VISIBILITIES = [ Visibility.Private, Visibility.Internal ];
+    const HIDDEN_VISIBILITIES = [Visibility.Private, Visibility.Internal];
     const docs = createEmptyDocs();
     const visit = (node: AstNode, currentContractName?: string) => {
         const { offset } = splitAstNodeSrc(node.src);
@@ -347,11 +332,7 @@ function extractDocsFromFile(ast: SourceUnitNode, source: SourceData): SolidityD
     return docs;
 }
 
-function extractAcessorParameterDocs(
-    typeNameNode: TypeNameNode,
-    natspec: Natspec,
-    source: SourceData,
-): ParamDocsMap {
+function extractAcessorParameterDocs(typeNameNode: TypeNameNode, natspec: Natspec, source: SourceData): ParamDocsMap {
     const params: ParamDocsMap = {};
     const lineNumber = getAstNodeLineNumber(typeNameNode, source.content);
     if (isMappingTypeNameNode(typeNameNode)) {
@@ -392,11 +373,7 @@ function extractAcessorParameterDocs(
     return params;
 }
 
-function extractAccesorReturnDocs(
-    typeNameNode: TypeNameNode,
-    natspec: Natspec,
-    source: SourceData,
-): ParamDocsMap {
+function extractAccesorReturnDocs(typeNameNode: TypeNameNode, natspec: Natspec, source: SourceData): ParamDocsMap {
     let type = typeNameNode.typeDescriptions.typeString;
     let storageLocation = StorageLocation.Default;
     if (isMappingTypeNameNode(typeNameNode)) {
@@ -412,12 +389,9 @@ function extractAccesorReturnDocs(
         type = typeNameNode.baseType.typeDescriptions.typeString;
         storageLocation = StorageLocation.Memory;
     } else if (isUserDefinedTypeNameNode(typeNameNode)) {
-        storageLocation = typeNameNode
-            .typeDescriptions
-            .typeString
-            .startsWith('struct') ?
-            StorageLocation.Memory :
-            StorageLocation.Default;
+        storageLocation = typeNameNode.typeDescriptions.typeString.startsWith('struct')
+            ? StorageLocation.Memory
+            : StorageLocation.Default;
     }
     return {
         '0': {
@@ -495,11 +469,7 @@ function extractStructFieldDocs(
     return fields;
 }
 
-function extractEnumValueDocs(
-    valuesNodes: EnumValueNode[],
-    natspec: Natspec,
-    source: SourceData,
-): EnumValueDocsMap {
+function extractEnumValueDocs(valuesNodes: EnumValueNode[], natspec: Natspec, source: SourceData): EnumValueDocsMap {
     const values: EnumValueDocsMap = {};
     for (const value of valuesNodes) {
         const { offset } = splitAstNodeSrc(value.src);
@@ -545,7 +515,6 @@ function getPrevLine(code: string, offset: number): [string | undefined, number]
         return [code.substr(0, lineStart).trim(), 0];
     }
     return [code.substring(prevLineStart + 1, lineStart).trim(), prevLineStart + 1];
-
 }
 
 function getAstNodeLineNumber(node: AstNode, code: string): number {
@@ -581,7 +550,10 @@ function getNatspecBefore(code: string, offset: number): Natspec {
         }
         currentDirectivePayloads.push(rest);
         if (directive !== undefined) {
-            const fullPayload = currentDirectivePayloads.reverse().map(s => s.trim()).join(' ');
+            const fullPayload = currentDirectivePayloads
+                .reverse()
+                .map(s => s.trim())
+                .join(' ');
             switch (directive) {
                 case 'dev':
                     natspec.dev = fullPayload;
@@ -609,7 +581,10 @@ function getNatspecBefore(code: string, offset: number): Natspec {
         }
     }
     if (currentDirectivePayloads.length > 0) {
-        natspec.comment = currentDirectivePayloads.reverse().map(s => s.trim()).join(' ');
+        natspec.comment = currentDirectivePayloads
+            .reverse()
+            .map(s => s.trim())
+            .join(' ');
     }
     return natspec;
 }
@@ -645,10 +620,7 @@ function getDocStringBefore(code: string, offset: number): string {
 
 function getDocStringAround(code: string, offset: number): string {
     const natspec = getNatspecBefore(code, offset);
-    return natspec.dev ||
-        natspec.comment ||
-        getDocStringBefore(code, offset) ||
-        getTrailingCommentAt(code, offset);
+    return natspec.dev || natspec.comment || getDocStringBefore(code, offset) || getTrailingCommentAt(code, offset);
 }
 
 function normalizeType(type: string): string {

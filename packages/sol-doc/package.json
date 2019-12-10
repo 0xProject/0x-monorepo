@@ -15,10 +15,13 @@
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
         "clean": "shx rm -rf lib",
-        "generate-protocol-docs": "COMMIT=`git rev-parse --short HEAD`; yarn start --sources ../../contracts/exchange/contracts/src/*.sol --root ../../ --root ../../node_modules/@0x/contracts-=contracts/ --contract Exchange --json docs.json --md docs.md --md-url-prefix \"https://github.com/0xProject/0x-monorepo/blob/${COMMIT}/\"",
-        "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange.sol AssetProxy/ERC20Proxy.sol AssetProxy/ERC721Proxy.sol OrderValidator/OrderValidator.sol Forwarder/Forwarder.sol  AssetProxyOwner/AssetProxyOwner.sol) > v2.0.0.json",
-        "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/",
-        "deploy-v1-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v1.0.0.json s3://staging-doc-jsons/contracts/"
+        "generate-protocol-docs": "COMMIT=`git rev-parse --short HEAD`; mkdir -p ${npm_package_config_outputDir}; yarn start `echo ${npm_package_config_sources} | sed -r 's/(\\S+?)\\b/--source \\1/g'` --root ../../ --root ../../node_modules/@0x/contracts-=contracts/ `echo ${npm_package_config_contracts} | sed -r 's/(\\w+?)\\b/--contract \\1/g'` --json ${npm_package_config_outputDir}/docs.json --md ${npm_package_config_outputDir}/docs.md --md-url-prefix \"${npm_package_config_repoBlobRoot}/${COMMIT}\""
+    },
+    "config": {
+        "outputDir": "./docs",
+        "repoBlobRoot": "https://github.com/0xProject/0x-monorepo/blob",
+        "sources": "../../contracts/exchange/contracts/src/Exchange.sol ../../contracts/exchange-forwarder/contracts/src/Forwarder.sol ../../contracts/staking/contracts/src/Staking.sol",
+        "contracts": "Exchange Forwarder Staking"
     },
     "bin": {
         "sol-doc": "bin/sol-doc.js"

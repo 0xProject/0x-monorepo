@@ -1,10 +1,4 @@
-import {
-    ContractDocs,
-    ContractMethodDocs,
-    EventDocs,
-    ParamDocsMap,
-    SolidityDocs,
-} from './sol_doc';
+import { ContractDocs, ContractMethodDocs, EventDocs, ParamDocsMap, SolidityDocs } from './sol_doc';
 
 export interface TransformOpts {
     onlyExposed: boolean;
@@ -20,6 +14,9 @@ interface TypesUsage {
     };
 }
 
+/**
+ * Apply some nice transformations to extracted JSON docs.
+ */
 export function transformDocs(docs: SolidityDocs, opts: Partial<TransformOpts> = {}): SolidityDocs {
     const _opts = {
         onlyExposed: false,
@@ -39,11 +36,7 @@ export function transformDocs(docs: SolidityDocs, opts: Partial<TransformOpts> =
     return filterTypes(_docs, _opts.contracts || Object.keys(docs.contracts), _opts.onlyExposed);
 }
 
-function flattenContract(
-    contractName: string,
-    docs: SolidityDocs,
-    seen: string[] = [],
-): ContractDocs {
+function flattenContract(contractName: string, docs: SolidityDocs, seen: string[] = []): ContractDocs {
     seen.push(contractName);
     const contract = docs.contracts[contractName];
     const bases = [];
@@ -66,13 +59,10 @@ function mergeContracts(contracts: ContractDocs[]): ContractDocs {
 }
 
 function concat<T>(...arrs: T[][]): T[] {
-    return arrs.reduce(
-        (prev: T[], curr: T[]) => {
-            prev.push(...curr);
-            return prev;
-        },
-        [],
-    );
+    return arrs.reduce((prev: T[], curr: T[]) => {
+        prev.push(...curr);
+        return prev;
+    }, []);
 }
 
 function mergeMethods(methods: ContractMethodDocs[]): ContractMethodDocs[] {
@@ -107,10 +97,10 @@ function mergeEvents(events: EventDocs[]): EventDocs[] {
         const selector = getMethodId(event.name, event.parameters);
         const existingIdx = ids.indexOf(selector);
         if (existingIdx !== -1) {
-            events[existingIdx] = event;
+            merged[existingIdx] = event;
             ids[existingIdx] = selector;
         } else {
-            events.push(event);
+            merged.push(event);
             ids.push(selector);
         }
     }
@@ -146,8 +136,8 @@ function filterTypes(docs: SolidityDocs, contracts: string[], onlyExposed: boole
                 filteredContract.enums[typeName] = doc;
             }
         }
-        if (contracts.includes(contractName) ||
-            filteredContract.events.length !== 0 ||
+        if (
+            contracts.includes(contractName) ||
             Object.keys(filteredContract.structs).length !== 0 ||
             Object.keys(filteredContract.enums).length !== 0
         ) {
@@ -172,10 +162,7 @@ function getAllInheritedContracts(contracts: string[], docs: SolidityDocs): stri
 
 function getTypeUsage(docs: SolidityDocs): TypesUsage {
     const types: TypesUsage = {};
-    const addTypeUser = (
-        type: string,
-        user: {method?: ContractMethodDocs; event?: EventDocs; struct?: string},
-    ) => {
+    const addTypeUser = (type: string, user: { method?: ContractMethodDocs; event?: EventDocs; struct?: string }) => {
         if (types[type] === undefined) {
             types[type] = { methods: [], events: [], structs: [] };
         }
@@ -230,9 +217,7 @@ function isTypeUsedByContracts(
     if (usage.events.some(e => contracts.includes(e.contract))) {
         return true;
     }
-    if (usage.methods
-            .filter(m => !onlyExposed || isMethodVisible(m))
-            .some(m => contracts.includes(m.contract))) {
+    if (usage.methods.filter(m => !onlyExposed || isMethodVisible(m)).some(m => contracts.includes(m.contract))) {
         return true;
     }
     return false;

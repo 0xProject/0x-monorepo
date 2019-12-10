@@ -1,0 +1,4949 @@
+{
+  "contracts": {
+    "Forwarder": {
+      "file": "contracts/exchange-forwarder/contracts/src/Forwarder.sol",
+      "line": 28,
+      "doc": "",
+      "kind": "contract",
+      "inherits": [
+        "LibConstants",
+        "MixinForwarderCore"
+      ],
+      "methods": [
+        {
+          "file": "contracts/exchange-forwarder/contracts/src/Forwarder.sol",
+          "line": 33,
+          "doc": "",
+          "name": "",
+          "contract": "Forwarder",
+          "kind": "constructor",
+          "visibility": "public",
+          "parameters": {
+            "_exchange": {
+              "file": "contracts/exchange-forwarder/contracts/src/Forwarder.sol",
+              "line": 34,
+              "doc": "",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "_weth": {
+              "file": "contracts/exchange-forwarder/contracts/src/Forwarder.sol",
+              "line": 35,
+              "doc": "",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange-forwarder/contracts/src/MixinAssets.sol",
+          "line": 43,
+          "doc": "Withdraws assets from this contract. It may be used by the owner to withdraw assets that were accidentally sent to this contract.",
+          "name": "withdrawAsset",
+          "contract": "MixinAssets",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "assetData": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinAssets.sol",
+              "line": 44,
+              "doc": "Byte array encoded for the respective asset proxy.",
+              "type": "bytes",
+              "storageLocation": "calldata",
+              "order": 0
+            },
+            "amount": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinAssets.sol",
+              "line": 45,
+              "doc": "Amount of the asset to withdraw.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange-forwarder/contracts/src/MixinAssets.sol",
+          "line": 59,
+          "doc": "Approves the respective proxy for a given asset to transfer tokens on the Forwarder contract's behalf. This is necessary because an order fee denominated in the maker asset (i.e. a percentage fee) is sent by the Forwarder contract to the fee recipient. This method needs to be called before forwarding orders of a maker asset that hasn't previously been approved.",
+          "name": "approveMakerAssetProxy",
+          "contract": "MixinAssets",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "assetData": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinAssets.sol",
+              "line": 59,
+              "doc": "Byte array encoded for the respective asset proxy.",
+              "type": "bytes",
+              "storageLocation": "calldata",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+          "line": 71,
+          "doc": "Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent as possible, accounting for order and forwarder fees.",
+          "name": "marketSellOrdersWithEth",
+          "contract": "MixinForwarderCore",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 72,
+              "doc": "Array of order specifications used containing desired makerAsset and WETH as takerAsset.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 73,
+              "doc": "Proofs that orders have been created by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "feePercentage": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 74,
+              "doc": "Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "feeRecipient": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 75,
+              "doc": "Address that will receive ETH when orders are filled.",
+              "type": "payable",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "wethSpentAmount": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 80,
+              "doc": "Amount of WETH spent on the given set of orders.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerAssetAcquiredAmount": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 81,
+              "doc": "Amount of maker asset acquired from the given set of orders.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "ethFeePaid": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 82,
+              "doc": "Amount of ETH spent on the given forwarder fee.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+          "line": 127,
+          "doc": "Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction. The Forwarder may *fill* more than makerAssetBuyAmount of the makerAsset so that it can pay takerFees where takerFeeAssetData == makerAssetData (i.e. percentage fees). Any ETH not spent will be refunded to sender.",
+          "name": "marketBuyOrdersWithEth",
+          "contract": "MixinForwarderCore",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 128,
+              "doc": "Array of order specifications used containing desired makerAsset and WETH as takerAsset.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "makerAssetBuyAmount": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 129,
+              "doc": "Desired amount of makerAsset to purchase.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 130,
+              "doc": "Proofs that orders have been created by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "feePercentage": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 131,
+              "doc": "Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "feeRecipient": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 132,
+              "doc": "Address that will receive ETH when orders are filled.",
+              "type": "payable",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "wethSpentAmount": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 137,
+              "doc": "Amount of WETH spent on the given set of orders.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerAssetAcquiredAmount": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 138,
+              "doc": "Amount of maker asset acquired from the given set of orders.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "ethFeePaid": {
+              "file": "contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol",
+              "line": 139,
+              "doc": "Amount of ETH spent on the given forwarder fee.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Ownable.sol",
+          "line": 46,
+          "doc": "Change the owner of this contract.",
+          "name": "transferOwnership",
+          "contract": "Ownable",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "newOwner": {
+              "file": "contracts/utils/contracts/src/Ownable.sol",
+              "line": 46,
+              "doc": "New owner address.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Ownable.sol",
+          "line": 31,
+          "doc": "The owner of this contract.",
+          "name": "owner",
+          "contract": "Ownable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "default",
+              "file": "contracts/utils/contracts/src/Ownable.sol",
+              "line": 31,
+              "doc": "The owner address.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        }
+      ],
+      "events": [
+        {
+          "contract": "IOwnable",
+          "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+          "line": 27,
+          "doc": "Emitted by Ownable when ownership is transferred.",
+          "name": "OwnershipTransferred",
+          "parameters": {
+            "previousOwner": {
+              "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+              "line": 27,
+              "doc": "The previous owner of the contract.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "newOwner": {
+              "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+              "line": 27,
+              "doc": "The new owner of the contract.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        }
+      ],
+      "enums": {},
+      "structs": {}
+    },
+    "Exchange": {
+      "file": "contracts/exchange/contracts/src/Exchange.sol",
+      "line": 32,
+      "doc": "The 0x Exchange contract.",
+      "kind": "contract",
+      "inherits": [
+        "LibEIP712ExchangeDomain",
+        "MixinMatchOrders",
+        "MixinWrapperFunctions",
+        "MixinTransferSimulator"
+      ],
+      "methods": [
+        {
+          "file": "contracts/exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol",
+          "line": 35,
+          "doc": "Hash of the EIP712 Domain Separator data",
+          "name": "EIP712_EXCHANGE_DOMAIN_HASH",
+          "contract": "LibEIP712ExchangeDomain",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "bytes32",
+              "storageLocation": "default",
+              "file": "contracts/exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol",
+              "line": 35,
+              "doc": "Domain hash.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/Exchange.sol",
+          "line": 41,
+          "doc": "Mixins are instantiated in the order they are inherited",
+          "name": "",
+          "contract": "Exchange",
+          "kind": "constructor",
+          "visibility": "public",
+          "parameters": {
+            "chainId": {
+              "file": "contracts/exchange/contracts/src/Exchange.sol",
+              "line": 41,
+              "doc": "Chain ID of the network this contract is deployed on.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 68,
+          "doc": "Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).",
+          "name": "cancelOrdersUpTo",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "targetOrderEpoch": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 68,
+              "doc": "Orders created with a salt less or equal to this value will be cancelled.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 105,
+          "doc": "Fills the input order.",
+          "name": "fillOrder",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "order": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 106,
+              "doc": "Order struct containing order specifications.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmount": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 107,
+              "doc": "Desired amount of takerAsset to sell.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signature": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 108,
+              "doc": "Proof that order has been created by maker.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 113,
+              "doc": "Amounts filled and fees paid by maker and taker.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 125,
+          "doc": "After calling, the order can not be filled anymore.",
+          "name": "cancelOrder",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "order": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 125,
+              "doc": "Order struct containing order specifications.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 137,
+          "doc": "Gets information about an order: status, hash, and amount filled.",
+          "name": "getOrderInfo",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "order": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 137,
+              "doc": "Order to gather information on.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "orderInfo": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 140,
+              "doc": "Information about the order and its state. See LibOrder.OrderInfo for a complete description.",
+              "type": "LibOrder.OrderInfo",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Ownable.sol",
+          "line": 46,
+          "doc": "Change the owner of this contract.",
+          "name": "transferOwnership",
+          "contract": "Ownable",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "newOwner": {
+              "file": "contracts/utils/contracts/src/Ownable.sol",
+              "line": 46,
+              "doc": "New owner address.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Ownable.sol",
+          "line": 31,
+          "doc": "The owner of this contract.",
+          "name": "owner",
+          "contract": "Ownable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "default",
+              "file": "contracts/utils/contracts/src/Ownable.sol",
+              "line": 31,
+              "doc": "The owner address.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinAssetProxyDispatcher.sol",
+          "line": 41,
+          "doc": "Registers an asset proxy to its asset proxy id. Once an asset proxy is registered, it cannot be unregistered.",
+          "name": "registerAssetProxy",
+          "contract": "MixinAssetProxyDispatcher",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "assetProxy": {
+              "file": "contracts/exchange/contracts/src/MixinAssetProxyDispatcher.sol",
+              "line": 41,
+              "doc": "Address of new asset proxy to register.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinAssetProxyDispatcher.sol",
+          "line": 66,
+          "doc": "Gets an asset proxy.",
+          "name": "getAssetProxy",
+          "contract": "MixinAssetProxyDispatcher",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "assetProxyId": {
+              "file": "contracts/exchange/contracts/src/MixinAssetProxyDispatcher.sol",
+              "line": 66,
+              "doc": "Id of the asset proxy.",
+              "type": "bytes4",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "assetProxy": {
+              "file": "contracts/exchange/contracts/src/MixinAssetProxyDispatcher.sol",
+              "line": 69,
+              "doc": "The asset proxy address registered to assetProxyId. Returns 0x0 if no proxy is registered.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+          "line": 42,
+          "doc": "Allows the owner to update the protocol fee multiplier.",
+          "name": "setProtocolFeeMultiplier",
+          "contract": "MixinProtocolFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "updatedProtocolFeeMultiplier": {
+              "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+              "line": 42,
+              "doc": "The updated protocol fee multiplier.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+          "line": 52,
+          "doc": "Allows the owner to update the protocolFeeCollector address.",
+          "name": "setProtocolFeeCollectorAddress",
+          "contract": "MixinProtocolFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "updatedProtocolFeeCollector": {
+              "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+              "line": 52,
+              "doc": "The updated protocolFeeCollector contract address.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+          "line": 34,
+          "doc": "The protocol fee multiplier -- the owner can update this field.",
+          "name": "protocolFeeMultiplier",
+          "contract": "MixinProtocolFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "default",
+              "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+              "line": 34,
+              "doc": "Gas multplier.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+          "line": 38,
+          "doc": "The address of the registered protocolFeeCollector contract -- the owner can update this field.",
+          "name": "protocolFeeCollector",
+          "contract": "MixinProtocolFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "default",
+              "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+              "line": 38,
+              "doc": "Contract to forward protocol fees to.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinProtocolFees.sol",
+          "line": 61,
+          "doc": "Sets the protocolFeeCollector contract address to 0. Only callable by owner.",
+          "name": "detachProtocolFeeCollector",
+          "contract": "MixinProtocolFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/LibEIP1271.sol",
+          "line": 26,
+          "doc": "Magic bytes returned by EIP1271 wallets on success.",
+          "name": "EIP1271_MAGIC_VALUE",
+          "contract": "LibEIP1271",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "bytes4",
+              "storageLocation": "default",
+              "file": "contracts/utils/contracts/src/LibEIP1271.sol",
+              "line": 26,
+              "doc": "Magic bytes.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 65,
+          "doc": "Approves a hash on-chain. After presigning a hash, the preSign signature type will become valid for that hash and signer.",
+          "name": "preSign",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "hash": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 65,
+              "doc": "Any 32-byte hash.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 78,
+          "doc": "Approves/unnapproves a Validator contract to verify signatures on signer's behalf using the `Validator` signature type.",
+          "name": "setSignatureValidatorApproval",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "validatorAddress": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 79,
+              "doc": "Address of Validator contract.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "approval": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 80,
+              "doc": "Approval or disapproval of  Validator contract.",
+              "type": "bool",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 100,
+          "doc": "Verifies that a hash has been signed by the given signer.",
+          "name": "isValidHashSignature",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "hash": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 101,
+              "doc": "Any 32-byte hash.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signerAddress": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 102,
+              "doc": "Address that should have signed the given hash.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signature": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 103,
+              "doc": "Proof that the hash has been signed by signer.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "isValid": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 107,
+              "doc": "`true` if the signature is valid for the given hash and signer.",
+              "type": "bool",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 140,
+          "doc": "Verifies that a signature for an order is valid.",
+          "name": "isValidOrderSignature",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "order": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 141,
+              "doc": "The order.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signature": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 142,
+              "doc": "Proof that the order has been signed by signer.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "isValid": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 146,
+              "doc": "`true` if the signature is valid for the given order and signer.",
+              "type": "bool",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 161,
+          "doc": "Verifies that a signature for a transaction is valid.",
+          "name": "isValidTransactionSignature",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "transaction": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 162,
+              "doc": "The transaction.",
+              "type": "LibZeroExTransaction.ZeroExTransaction",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signature": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 163,
+              "doc": "Proof that the order has been signed by signer.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "isValid": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 167,
+              "doc": "`true` if the signature is valid for the given transaction and signer.",
+              "type": "bool",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+          "line": 53,
+          "doc": "Executes an Exchange method call in the context of signer.",
+          "name": "executeTransaction",
+          "contract": "MixinTransactions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "transaction": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 54,
+              "doc": "0x transaction structure.",
+              "type": "LibZeroExTransaction.ZeroExTransaction",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signature": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 55,
+              "doc": "Proof that transaction has been signed by signer.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 60,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+          "line": 69,
+          "doc": "Executes a batch of Exchange method calls in the context of signer(s).",
+          "name": "batchExecuteTransactions",
+          "contract": "MixinTransactions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "transactions": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 70,
+              "doc": "Array of 0x transaction structures.",
+              "type": "LibZeroExTransaction.ZeroExTransaction[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 71,
+              "doc": "Array of proofs that transactions have been signed by signer(s).",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "returnData": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 76,
+              "doc": "Array containing ABI encoded return data for each of the underlying Exchange function calls.",
+              "type": "bytes[]",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+          "line": 43,
+          "doc": "Mapping of transaction hash => executed This prevents transactions from being executed more than once.",
+          "name": "transactionsExecuted",
+          "contract": "MixinTransactions",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 43,
+              "doc": "The transaction hash.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bool",
+              "storageLocation": "storage",
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 43,
+              "doc": "Whether the transation was executed.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+          "line": 47,
+          "doc": "Address of current transaction signer.",
+          "name": "currentContextAddress",
+          "contract": "MixinTransactions",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "default",
+              "file": "contracts/exchange/contracts/src/MixinTransactions.sol",
+              "line": 47,
+              "doc": "The address associated with the the current transaction.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 54,
+          "doc": "Mapping of hash => signer => signed",
+          "name": "preSigned",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 54,
+              "doc": "Order hash.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "1": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 54,
+              "doc": "Signer address.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bool",
+              "storageLocation": "storage",
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 54,
+              "doc": "Whether the hash is presigned.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+          "line": 60,
+          "doc": "Mapping of signer => validator => approved",
+          "name": "allowedValidators",
+          "contract": "MixinSignatureValidator",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 60,
+              "doc": "Signer address.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "1": {
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 60,
+              "doc": "Signature validator address.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bool",
+              "storageLocation": "storage",
+              "file": "contracts/exchange/contracts/src/MixinSignatureValidator.sol",
+              "line": 60,
+              "doc": "Whether the validator is allowed to validate on behalf of the signer.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 51,
+          "doc": "Mapping of orderHash => amount of takerAsset already bought by maker",
+          "name": "filled",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 51,
+              "doc": "Order hash.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "storage",
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 51,
+              "doc": "The amount of taker asset filled.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 56,
+          "doc": "Mapping of orderHash => cancelled",
+          "name": "cancelled",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 56,
+              "doc": "Order hash.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bool",
+              "storageLocation": "storage",
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 56,
+              "doc": "Whether the order was cancelled.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+          "line": 63,
+          "doc": "@dev Mapping of makerAddress => senderAddress => lowest salt an order can have in order to be fillable Orders with specified senderAddress and with a salt less than their epoch are considered cancelled / @param 0 Address of the order's maker. / @param 1 Address of the order's sender. / @return 0 Minimum valid order epoch.",
+          "name": "orderEpoch",
+          "contract": "MixinExchangeCore",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 63,
+              "doc": "Address of the order's maker.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "1": {
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 63,
+              "doc": "Address of the order's sender.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "storage",
+              "file": "contracts/exchange/contracts/src/MixinExchangeCore.sol",
+              "line": 63,
+              "doc": "Minimum valid order epoch.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+          "line": 46,
+          "doc": "Match complementary orders that have a profitable spread. Each order is filled at their respective price point, and the matcher receives a profit denominated in the left maker asset.",
+          "name": "batchMatchOrders",
+          "contract": "MixinMatchOrders",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "leftOrders": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 47,
+              "doc": "Set of orders with the same maker / taker asset.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightOrders": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 48,
+              "doc": "Set of orders to match against `leftOrders`",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "leftSignatures": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 49,
+              "doc": "Proof that left orders were created by the left makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightSignatures": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 50,
+              "doc": "Proof that right orders were created by the right makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "batchMatchedFillResults": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 55,
+              "doc": "Amounts filled and profit generated.",
+              "type": "LibFillResults.BatchMatchedFillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+          "line": 75,
+          "doc": "Match complementary orders that have a profitable spread. Each order is maximally filled at their respective price point, and the matcher receives a profit denominated in either the left maker asset, right maker asset, or a combination of both.",
+          "name": "batchMatchOrdersWithMaximalFill",
+          "contract": "MixinMatchOrders",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "leftOrders": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 76,
+              "doc": "Set of orders with the same maker / taker asset.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightOrders": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 77,
+              "doc": "Set of orders to match against `leftOrders`",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "leftSignatures": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 78,
+              "doc": "Proof that left orders were created by the left makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightSignatures": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 79,
+              "doc": "Proof that right orders were created by the right makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "batchMatchedFillResults": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 84,
+              "doc": "Amounts filled and profit generated.",
+              "type": "LibFillResults.BatchMatchedFillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+          "line": 104,
+          "doc": "Match two complementary orders that have a profitable spread. Each order is filled at their respective price point. However, the calculations are carried out as though the orders are both being filled at the right order's price point. The profit made by the left order goes to the taker (who matched the two orders).",
+          "name": "matchOrders",
+          "contract": "MixinMatchOrders",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "leftOrder": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 105,
+              "doc": "First order to match.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightOrder": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 106,
+              "doc": "Second order to match.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "leftSignature": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 107,
+              "doc": "Proof that order was created by the left maker.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightSignature": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 108,
+              "doc": "Proof that order was created by the right maker.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "matchedFillResults": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 113,
+              "doc": "Amounts filled and fees paid by maker and taker of matched orders.",
+              "type": "LibFillResults.MatchedFillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+          "line": 133,
+          "doc": "Match two complementary orders that have a profitable spread. Each order is maximally filled at their respective price point, and the matcher receives a profit denominated in either the left maker asset, right maker asset, or a combination of both.",
+          "name": "matchOrdersWithMaximalFill",
+          "contract": "MixinMatchOrders",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "leftOrder": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 134,
+              "doc": "First order to match.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightOrder": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 135,
+              "doc": "Second order to match.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "leftSignature": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 136,
+              "doc": "Proof that order was created by the left maker.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "rightSignature": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 137,
+              "doc": "Proof that order was created by the right maker.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "matchedFillResults": {
+              "file": "contracts/exchange/contracts/src/MixinMatchOrders.sol",
+              "line": 142,
+              "doc": "Amounts filled by maker and taker of matched orders.",
+              "type": "LibFillResults.MatchedFillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 44,
+          "doc": "Fills the input order. Reverts if exact `takerAssetFillAmount` not filled.",
+          "name": "fillOrKillOrder",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "order": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 45,
+              "doc": "Order struct containing order specifications.",
+              "type": "LibOrder.Order",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmount": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 46,
+              "doc": "Desired amount of takerAsset to sell.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signature": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 47,
+              "doc": "Proof that order has been created by maker.",
+              "type": "bytes",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 52,
+              "doc": "Amounts filled and fees paid.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 67,
+          "doc": "Executes multiple calls of fillOrder.",
+          "name": "batchFillOrders",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 68,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmounts": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 69,
+              "doc": "Array of desired amounts of takerAsset to sell in orders.",
+              "type": "uint256[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 70,
+              "doc": "Proofs that orders have been created by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 75,
+              "doc": "Array of amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults[]",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 94,
+          "doc": "Executes multiple calls of fillOrKillOrder.",
+          "name": "batchFillOrKillOrders",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 95,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmounts": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 96,
+              "doc": "Array of desired amounts of takerAsset to sell in orders.",
+              "type": "uint256[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 97,
+              "doc": "Proofs that orders have been created by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 102,
+              "doc": "Array of amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults[]",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 121,
+          "doc": "Executes multiple calls of fillOrder. If any fill reverts, the error is caught and ignored.",
+          "name": "batchFillOrdersNoThrow",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 122,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmounts": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 123,
+              "doc": "Array of desired amounts of takerAsset to sell in orders.",
+              "type": "uint256[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 124,
+              "doc": "Proofs that orders have been created by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 129,
+              "doc": "Array of amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults[]",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 150,
+          "doc": "Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker. If any fill reverts, the error is caught and ignored. NOTE: This function does not enforce that the takerAsset is the same for each order.",
+          "name": "marketSellOrdersNoThrow",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 151,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmount": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 152,
+              "doc": "Desired amount of takerAsset to sell.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 153,
+              "doc": "Proofs that orders have been signed by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 158,
+              "doc": "Amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 191,
+          "doc": "Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker. If any fill reverts, the error is caught and ignored. NOTE: This function does not enforce that the makerAsset is the same for each order.",
+          "name": "marketBuyOrdersNoThrow",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 192,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "makerAssetFillAmount": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 193,
+              "doc": "Desired amount of makerAsset to buy.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 194,
+              "doc": "Proofs that orders have been signed by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 199,
+              "doc": "Amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 239,
+          "doc": "Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold. NOTE: This function does not enforce that the takerAsset is the same for each order.",
+          "name": "marketSellOrdersFillOrKill",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 240,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "takerAssetFillAmount": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 241,
+              "doc": "Minimum amount of takerAsset to sell.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 242,
+              "doc": "Proofs that orders have been signed by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 246,
+              "doc": "Amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 264,
+          "doc": "Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought. NOTE: This function does not enforce that the makerAsset is the same for each order.",
+          "name": "marketBuyOrdersFillOrKill",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 265,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "makerAssetFillAmount": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 266,
+              "doc": "Minimum amount of makerAsset to buy.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "signatures": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 267,
+              "doc": "Proofs that orders have been signed by makers.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {
+            "fillResults": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 271,
+              "doc": "Amounts filled and fees paid by makers and taker.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+          "line": 285,
+          "doc": "Executes multiple calls of cancelOrder.",
+          "name": "batchCancelOrders",
+          "contract": "MixinWrapperFunctions",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "orders": {
+              "file": "contracts/exchange/contracts/src/MixinWrapperFunctions.sol",
+              "line": 285,
+              "doc": "Array of order specifications.",
+              "type": "LibOrder.Order[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/exchange/contracts/src/MixinTransferSimulator.sol",
+          "line": 39,
+          "doc": "This function may be used to simulate any amount of transfers As they would occur through the Exchange contract. Note that this function will always revert, even if all transfers are successful. However, it may be used with eth_call or with a try/catch pattern in order to simulate the results of the transfers.",
+          "name": "simulateDispatchTransferFromCalls",
+          "contract": "MixinTransferSimulator",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "assetData": {
+              "file": "contracts/exchange/contracts/src/MixinTransferSimulator.sol",
+              "line": 40,
+              "doc": "Array of asset details, each encoded per the AssetProxy contract specification.",
+              "type": "bytes[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "fromAddresses": {
+              "file": "contracts/exchange/contracts/src/MixinTransferSimulator.sol",
+              "line": 41,
+              "doc": "Array containing the `from` addresses that correspond with each transfer.",
+              "type": "address[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "toAddresses": {
+              "file": "contracts/exchange/contracts/src/MixinTransferSimulator.sol",
+              "line": 42,
+              "doc": "Array containing the `to` addresses that correspond with each transfer.",
+              "type": "address[]",
+              "storageLocation": "memory",
+              "order": 0
+            },
+            "amounts": {
+              "file": "contracts/exchange/contracts/src/MixinTransferSimulator.sol",
+              "line": 43,
+              "doc": "Array containing the amounts that correspond to each transfer.",
+              "type": "uint256[]",
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        }
+      ],
+      "events": [
+        {
+          "contract": "IExchangeCore",
+          "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+          "line": 29,
+          "doc": "",
+          "name": "Fill",
+          "parameters": {
+            "makerAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 30,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "feeRecipientAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 31,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerAssetData": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 32,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerAssetData": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 33,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerFeeAssetData": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 34,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerFeeAssetData": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 35,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "orderHash": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 36,
+              "doc": "",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 37,
+              "doc": "",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "senderAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 38,
+              "doc": "",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerAssetFilledAmount": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 39,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerAssetFilledAmount": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 40,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerFeePaid": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 41,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerFeePaid": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 42,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "protocolFeePaid": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 43,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IExchangeCore",
+          "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+          "line": 47,
+          "doc": "",
+          "name": "Cancel",
+          "parameters": {
+            "makerAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 48,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "feeRecipientAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 49,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "makerAssetData": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 50,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerAssetData": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 51,
+              "doc": "",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "senderAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 52,
+              "doc": "",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "orderHash": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 53,
+              "doc": "",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IExchangeCore",
+          "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+          "line": 57,
+          "doc": "",
+          "name": "CancelUpTo",
+          "parameters": {
+            "makerAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 58,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "orderSenderAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 59,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "orderEpoch": {
+              "file": "contracts/exchange/contracts/src/interfaces/IExchangeCore.sol",
+              "line": 60,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IOwnable",
+          "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+          "line": 27,
+          "doc": "Emitted by Ownable when ownership is transferred.",
+          "name": "OwnershipTransferred",
+          "parameters": {
+            "previousOwner": {
+              "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+              "line": 27,
+              "doc": "The previous owner of the contract.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "newOwner": {
+              "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+              "line": 27,
+              "doc": "The new owner of the contract.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IAssetProxyDispatcher",
+          "file": "contracts/exchange/contracts/src/interfaces/IAssetProxyDispatcher.sol",
+          "line": 25,
+          "doc": "",
+          "name": "AssetProxyRegistered",
+          "parameters": {
+            "id": {
+              "file": "contracts/exchange/contracts/src/interfaces/IAssetProxyDispatcher.sol",
+              "line": 26,
+              "doc": "",
+              "type": "bytes4",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "assetProxy": {
+              "file": "contracts/exchange/contracts/src/interfaces/IAssetProxyDispatcher.sol",
+              "line": 27,
+              "doc": "",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IProtocolFees",
+          "file": "contracts/exchange/contracts/src/interfaces/IProtocolFees.sol",
+          "line": 25,
+          "doc": "",
+          "name": "ProtocolFeeMultiplier",
+          "parameters": {
+            "oldProtocolFeeMultiplier": {
+              "file": "contracts/exchange/contracts/src/interfaces/IProtocolFees.sol",
+              "line": 25,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "updatedProtocolFeeMultiplier": {
+              "file": "contracts/exchange/contracts/src/interfaces/IProtocolFees.sol",
+              "line": 25,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IProtocolFees",
+          "file": "contracts/exchange/contracts/src/interfaces/IProtocolFees.sol",
+          "line": 28,
+          "doc": "",
+          "name": "ProtocolFeeCollectorAddress",
+          "parameters": {
+            "oldProtocolFeeCollector": {
+              "file": "contracts/exchange/contracts/src/interfaces/IProtocolFees.sol",
+              "line": 28,
+              "doc": "",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "updatedProtocolFeeCollector": {
+              "file": "contracts/exchange/contracts/src/interfaces/IProtocolFees.sol",
+              "line": 28,
+              "doc": "",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "ISignatureValidator",
+          "file": "contracts/exchange/contracts/src/interfaces/ISignatureValidator.sol",
+          "line": 41,
+          "doc": "",
+          "name": "SignatureValidatorApproval",
+          "parameters": {
+            "signerAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/ISignatureValidator.sol",
+              "line": 42,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "validatorAddress": {
+              "file": "contracts/exchange/contracts/src/interfaces/ISignatureValidator.sol",
+              "line": 43,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "isApproved": {
+              "file": "contracts/exchange/contracts/src/interfaces/ISignatureValidator.sol",
+              "line": 44,
+              "doc": "",
+              "type": "bool",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "ITransactions",
+          "file": "contracts/exchange/contracts/src/interfaces/ITransactions.sol",
+          "line": 28,
+          "doc": "",
+          "name": "TransactionExecution",
+          "parameters": {
+            "transactionHash": {
+              "file": "contracts/exchange/contracts/src/interfaces/ITransactions.sol",
+              "line": 28,
+              "doc": "",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        }
+      ],
+      "enums": {},
+      "structs": {}
+    },
+    "Staking": {
+      "file": "contracts/staking/contracts/src/Staking.sol",
+      "line": 27,
+      "doc": "",
+      "kind": "contract",
+      "inherits": [
+        "IStaking",
+        "MixinParams",
+        "MixinStake",
+        "MixinExchangeFees"
+      ],
+      "methods": [
+        {
+          "file": "contracts/staking/contracts/src/fees/MixinExchangeManager.sol",
+          "line": 43,
+          "doc": "Adds a new exchange address",
+          "name": "addExchangeAddress",
+          "contract": "MixinExchangeManager",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "addr": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeManager.sol",
+              "line": 43,
+              "doc": "Address of exchange contract to add",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+          "line": 49,
+          "doc": "Create a new staking pool. The sender will be the operator of this pool. Note that an operator must be payable.",
+          "name": "createStakingPool",
+          "contract": "MixinStakingPool",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "operatorShare": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 49,
+              "doc": "Portion of rewards owned by the operator, in ppm.",
+              "type": "uint32",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "addOperatorAsMaker": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 49,
+              "doc": "Adds operator to the created pool as a maker for convenience iff true.",
+              "type": "bool",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 51,
+              "doc": "The unique pool id generated for this pool.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+          "line": 86,
+          "doc": "Decreases the operator share for the given pool (i.e. increases pool rewards for members).",
+          "name": "decreaseStakingPoolOperatorShare",
+          "contract": "MixinStakingPool",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 86,
+              "doc": "Unique Id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "newOperatorShare": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 86,
+              "doc": "The newly decreased percentage of any rewards owned by the operator.",
+              "type": "uint32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/sys/MixinFinalizer.sol",
+          "line": 39,
+          "doc": "Begins a new epoch, preparing the prior one for finalization. Throws if not enough time has passed between epochs or if the previous epoch was not fully finalized.",
+          "name": "endEpoch",
+          "contract": "MixinFinalizer",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "file": "contracts/staking/contracts/src/sys/MixinFinalizer.sol",
+              "line": 41,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/sys/MixinFinalizer.sol",
+          "line": 90,
+          "doc": "Instantly finalizes a single pool that earned rewards in the previous epoch, crediting it rewards for members and withdrawing operator's rewards as WETH. This can be called by internal functions that need to finalize a pool immediately. Does nothing if the pool is already finalized or did not earn rewards in the previous epoch.",
+          "name": "finalizePool",
+          "contract": "MixinFinalizer",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/sys/MixinFinalizer.sol",
+              "line": 90,
+              "doc": "The pool ID to finalize.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/Staking.sol",
+          "line": 37,
+          "doc": "Initialize storage owned by this contract. This function should not be called directly. The StakingProxy contract will call it in `attachStakingContract()`.",
+          "name": "init",
+          "contract": "Staking",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {},
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+          "line": 109,
+          "doc": "Allows caller to join a staking pool as a maker.",
+          "name": "joinStakingPoolAsMaker",
+          "contract": "MixinStakingPool",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 109,
+              "doc": "Unique id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+          "line": 105,
+          "doc": "Moves stake between statuses: 'undelegated' or 'delegated'. Delegated stake can also be moved between pools. This change comes into effect next epoch.",
+          "name": "moveStake",
+          "contract": "MixinStake",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "from": {
+              "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+              "line": 106,
+              "doc": "Status to move stake out of.",
+              "type": "IStructs.StakeInfo",
+              "storageLocation": "calldata",
+              "order": 0
+            },
+            "to": {
+              "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+              "line": 107,
+              "doc": "Status to move stake into.",
+              "type": "IStructs.StakeInfo",
+              "storageLocation": "calldata",
+              "order": 0
+            },
+            "amount": {
+              "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+              "line": 108,
+              "doc": "Amount of stake to move.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+          "line": 45,
+          "doc": "Pays a protocol fee in ETH or WETH. Only a known 0x exchange can call this method. See (MixinExchangeManager).",
+          "name": "payProtocolFee",
+          "contract": "MixinExchangeFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "makerAddress": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+              "line": 46,
+              "doc": "The address of the order's maker.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "payerAddress": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+              "line": 47,
+              "doc": "The address of the protocol fee payer.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "protocolFee": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+              "line": 48,
+              "doc": "The protocol fee amount. This is either passed as ETH or transferred as WETH.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "payable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/fees/MixinExchangeManager.sol",
+          "line": 59,
+          "doc": "Removes an existing exchange address",
+          "name": "removeExchangeAddress",
+          "contract": "MixinExchangeManager",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "addr": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeManager.sol",
+              "line": 59,
+              "doc": "Address of exchange contract to remove",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+          "line": 40,
+          "doc": "Set all configurable parameters at once.",
+          "name": "setParams",
+          "contract": "MixinParams",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "_epochDurationInSeconds": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 41,
+              "doc": "Minimum seconds between epochs.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "_rewardDelegatedStakeWeight": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 42,
+              "doc": "How much delegated stake is weighted vs operator stake, in ppm.",
+              "type": "uint32",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "_minimumPoolStake": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 43,
+              "doc": "Minimum amount of stake required in a pool to collect rewards.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "_cobbDouglasAlphaNumerator": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 44,
+              "doc": "Numerator for cobb douglas alpha factor.",
+              "type": "uint32",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "_cobbDouglasAlphaDenominator": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 45,
+              "doc": "Denominator for cobb douglas alpha factor.",
+              "type": "uint32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+          "line": 35,
+          "doc": "Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX. Stake is in the 'Active' status.",
+          "name": "stake",
+          "contract": "MixinStake",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "amount": {
+              "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+              "line": 35,
+              "doc": "Amount of ZRX to stake.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+          "line": 60,
+          "doc": "Unstake. Tokens are withdrawn from the ZRX Vault and returned to the staker. Stake must be in the 'undelegated' status in both the current and next epoch in order to be unstaked.",
+          "name": "unstake",
+          "contract": "MixinStake",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "amount": {
+              "file": "contracts/staking/contracts/src/stake/MixinStake.sol",
+              "line": 60,
+              "doc": "Amount of ZRX to unstake.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+          "line": 37,
+          "doc": "Withdraws the caller's WETH rewards that have accumulated until the last epoch.",
+          "name": "withdrawDelegatorRewards",
+          "contract": "MixinStakingPoolRewards",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+              "line": 37,
+              "doc": "Unique id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+          "line": 72,
+          "doc": "Computes the reward balance in ETH of a specific member of a pool.",
+          "name": "computeRewardBalanceOfDelegator",
+          "contract": "MixinStakingPoolRewards",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+              "line": 72,
+              "doc": "Unique id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "member": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+              "line": 72,
+              "doc": "The member of the pool.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "reward": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+              "line": 75,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+          "line": 46,
+          "doc": "Computes the reward balance in ETH of the operator of a pool.",
+          "name": "computeRewardBalanceOfOperator",
+          "contract": "MixinStakingPoolRewards",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+              "line": 46,
+              "doc": "Unique id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "reward": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPoolRewards.sol",
+              "line": 49,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/sys/MixinScheduler.sol",
+          "line": 38,
+          "doc": "Returns the earliest end time in seconds of this epoch. The next epoch can begin once this time is reached. Epoch period = [startTimeInSeconds..endTimeInSeconds)",
+          "name": "getCurrentEpochEarliestEndTimeInSeconds",
+          "contract": "MixinScheduler",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "file": "contracts/staking/contracts/src/sys/MixinScheduler.sol",
+              "line": 41,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+          "line": 37,
+          "doc": "Gets global stake for a given status.",
+          "name": "getGlobalStakeByStatus",
+          "contract": "MixinStakeBalances",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "stakeStatus": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 37,
+              "doc": "UNDELEGATED or DELEGATED",
+              "type": "IStructs.StakeStatus",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "balance": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 40,
+              "doc": "",
+              "type": "IStructs.StoredBalance",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+          "line": 59,
+          "doc": "Gets an owner's stake balances by status.",
+          "name": "getOwnerStakeByStatus",
+          "contract": "MixinStakeBalances",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "staker": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 60,
+              "doc": "Owner of stake.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "stakeStatus": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 61,
+              "doc": "UNDELEGATED or DELEGATED",
+              "type": "IStructs.StakeStatus",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "balance": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 65,
+              "doc": "",
+              "type": "IStructs.StoredBalance",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+          "line": 69,
+          "doc": "Retrieves all configurable parameter values.",
+          "name": "getParams",
+          "contract": "MixinParams",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "_epochDurationInSeconds": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 73,
+              "doc": "Minimum seconds between epochs.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "_rewardDelegatedStakeWeight": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 74,
+              "doc": "How much delegated stake is weighted vs operator stake, in ppm.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "_minimumPoolStake": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 75,
+              "doc": "Minimum amount of stake required in a pool to collect rewards.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            },
+            "_cobbDouglasAlphaNumerator": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 76,
+              "doc": "Numerator for cobb douglas alpha factor.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 3
+            },
+            "_cobbDouglasAlphaDenominator": {
+              "file": "contracts/staking/contracts/src/sys/MixinParams.sol",
+              "line": 77,
+              "doc": "Denominator for cobb douglas alpha factor.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 4
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+          "line": 88,
+          "doc": "Returns the stake delegated to a specific staking pool, by a given staker.",
+          "name": "getStakeDelegatedToPoolByOwner",
+          "contract": "MixinStakeBalances",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "staker": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 88,
+              "doc": "of stake.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "poolId": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 88,
+              "doc": "Unique Id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "balance": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 91,
+              "doc": "",
+              "type": "IStructs.StoredBalance",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+          "line": 122,
+          "doc": "Returns a staking pool",
+          "name": "getStakingPool",
+          "contract": "MixinStakingPool",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 122,
+              "doc": "Unique id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "file": "contracts/staking/contracts/src/staking_pools/MixinStakingPool.sol",
+              "line": 125,
+              "doc": "",
+              "type": "IStructs.Pool",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+          "line": 117,
+          "doc": "Get stats on a staking pool in this epoch.",
+          "name": "getStakingPoolStatsThisEpoch",
+          "contract": "MixinExchangeFees",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+              "line": 117,
+              "doc": "Pool Id to query.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "file": "contracts/staking/contracts/src/fees/MixinExchangeFees.sol",
+              "line": 120,
+              "doc": "",
+              "type": "IStructs.PoolStats",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+          "line": 101,
+          "doc": "Returns the total stake delegated to a specific staking pool, across all members.",
+          "name": "getTotalStakeDelegatedToPool",
+          "contract": "MixinStakeBalances",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 101,
+              "doc": "Unique Id of pool.",
+              "type": "bytes32",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "balance": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 104,
+              "doc": "",
+              "type": "IStructs.StoredBalance",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinDeploymentConstants.sol",
+          "line": 56,
+          "doc": "An overridable way to access the deployed WETH contract. Must be view to allow overrides to access state.",
+          "name": "getWethContract",
+          "contract": "MixinDeploymentConstants",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {},
+          "returns": {
+            "wethContract": {
+              "file": "contracts/staking/contracts/src/immutable/MixinDeploymentConstants.sol",
+              "line": 59,
+              "doc": "The WETH contract instance.",
+              "type": "IEtherToken",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinDeploymentConstants.sol",
+          "line": 68,
+          "doc": "An overridable way to access the deployed zrxVault. Must be view to allow overrides to access state.",
+          "name": "getZrxVault",
+          "contract": "MixinDeploymentConstants",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {},
+          "returns": {
+            "zrxVault": {
+              "file": "contracts/staking/contracts/src/immutable/MixinDeploymentConstants.sol",
+              "line": 71,
+              "doc": "The zrxVault contract.",
+              "type": "IZrxVault",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Ownable.sol",
+          "line": 46,
+          "doc": "Change the owner of this contract.",
+          "name": "transferOwnership",
+          "contract": "Ownable",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "newOwner": {
+              "file": "contracts/utils/contracts/src/Ownable.sol",
+              "line": 46,
+              "doc": "New owner address.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Ownable.sol",
+          "line": 31,
+          "doc": "The owner of this contract.",
+          "name": "owner",
+          "contract": "Ownable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "default",
+              "file": "contracts/utils/contracts/src/Ownable.sol",
+              "line": 31,
+              "doc": "The owner address.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 48,
+          "doc": "Initializes the `owner` address.",
+          "name": "",
+          "contract": "Authorizable",
+          "kind": "constructor",
+          "visibility": "public",
+          "parameters": {},
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 55,
+          "doc": "Authorizes an address.",
+          "name": "addAuthorizedAddress",
+          "contract": "Authorizable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "target": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 55,
+              "doc": "Address to authorize.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 64,
+          "doc": "Removes authorizion of an address.",
+          "name": "removeAuthorizedAddress",
+          "contract": "Authorizable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "target": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 64,
+              "doc": "Address to remove authorization from.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 82,
+          "doc": "Removes authorizion of an address.",
+          "name": "removeAuthorizedAddressAtIndex",
+          "contract": "Authorizable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "target": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 83,
+              "doc": "Address to remove authorization from.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            },
+            "index": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 84,
+              "doc": "Index of target in authorities array.",
+              "type": "uint256",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {},
+          "stateMutability": "nonpayable",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 94,
+          "doc": "Gets all authorized addresses.",
+          "name": "getAuthorizedAddresses",
+          "contract": "Authorizable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 97,
+              "doc": "",
+              "type": "address[]",
+              "indexed": false,
+              "storageLocation": "memory",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 41,
+          "doc": "Whether an adderss is authorized to call privileged functions.",
+          "name": "authorized",
+          "contract": "Authorizable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 41,
+              "doc": "Address to query.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bool",
+              "storageLocation": "storage",
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 41,
+              "doc": "Whether the address is authorized.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/utils/contracts/src/Authorizable.sol",
+          "line": 45,
+          "doc": "Whether an adderss is authorized to call privileged functions.",
+          "name": "authorities",
+          "contract": "Authorizable",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 45,
+              "doc": "Index of authorized address.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "memory",
+              "file": "contracts/utils/contracts/src/Authorizable.sol",
+              "line": 45,
+              "doc": "Authorized address.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 35,
+          "doc": "address of staking contract",
+          "name": "stakingContract",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "address",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 35,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 52,
+          "doc": "tracking Pool Id, a unique identifier for each staking pool.",
+          "name": "lastPoolId",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "bytes32",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 52,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 57,
+          "doc": "Mapping from Maker Address to pool Id of maker",
+          "name": "poolIdByMaker",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 57,
+              "doc": "Maker address.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bytes32",
+              "storageLocation": "storage",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 57,
+              "doc": "The pool ID.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 65,
+          "doc": "mapping from pool ID to reward balance of members",
+          "name": "rewardsByPoolId",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 65,
+              "doc": "Pool ID.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "storage",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 65,
+              "doc": "The total reward balance of members in this pool.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 68,
+          "doc": "The current epoch.",
+          "name": "currentEpoch",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 68,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 71,
+          "doc": "The current epoch start time.",
+          "name": "currentEpochStartTimeInSeconds",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 71,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 82,
+          "doc": "Registered 0x Exchange contracts, capable of paying protocol fees.",
+          "name": "validExchanges",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 82,
+              "doc": "The address to check.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "bool",
+              "storageLocation": "storage",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 82,
+              "doc": "Whether the address is a registered exchange.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 87,
+          "doc": "Minimum seconds between epochs.",
+          "name": "epochDurationInSeconds",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 87,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 90,
+          "doc": "How much delegated stake is weighted vs operator stake, in ppm.",
+          "name": "rewardDelegatedStakeWeight",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint32",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 90,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 93,
+          "doc": "Minimum amount of stake required in a pool to collect rewards.",
+          "name": "minimumPoolStake",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 93,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 96,
+          "doc": "Numerator for cobb douglas alpha factor.",
+          "name": "cobbDouglasAlphaNumerator",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint32",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 96,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 99,
+          "doc": "Denominator for cobb douglas alpha factor.",
+          "name": "cobbDouglasAlphaDenominator",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint32",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 99,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 108,
+          "doc": "Stats for each pool that generated fees with sufficient stake to earn rewards. See `_minimumPoolStake` in `MixinParams`.",
+          "name": "poolStatsByEpoch",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 108,
+              "doc": "Pool ID.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "1": {
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 108,
+              "doc": "Epoch number.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "struct IStructs.PoolStats",
+              "storageLocation": "storage",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 108,
+              "doc": "Pool fee stats.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 114,
+          "doc": "Aggregated stats across all pools that generated fees with sufficient stake to earn rewards. See `_minimumPoolStake` in MixinParams.",
+          "name": "aggregatedStatsByEpoch",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {
+            "0": {
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 114,
+              "doc": "Epoch number.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "type": "struct IStructs.AggregatedStats",
+              "storageLocation": "storage",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 114,
+              "doc": "Reward computation stats.",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+          "line": 117,
+          "doc": "The WETH balance of this contract that is reserved for pool reward payouts.",
+          "name": "wethReservedForPoolRewards",
+          "contract": "MixinStorage",
+          "kind": "function",
+          "visibility": "external",
+          "parameters": {},
+          "returns": {
+            "0": {
+              "type": "uint256",
+              "storageLocation": "default",
+              "file": "contracts/staking/contracts/src/immutable/MixinStorage.sol",
+              "line": 117,
+              "doc": "",
+              "indexed": false,
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": true
+        },
+        {
+          "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+          "line": 76,
+          "doc": "Returns the total stake for a given staker.",
+          "name": "getTotalStake",
+          "contract": "MixinStakeBalances",
+          "kind": "function",
+          "visibility": "public",
+          "parameters": {
+            "staker": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 76,
+              "doc": "of stake.",
+              "type": "address",
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "returns": {
+            "0": {
+              "file": "contracts/staking/contracts/src/stake/MixinStakeBalances.sol",
+              "line": 79,
+              "doc": "",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          },
+          "stateMutability": "view",
+          "isAccessor": false
+        }
+      ],
+      "events": [
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 9,
+          "doc": "Emitted by MixinStake when ZRX is staked.",
+          "name": "Stake",
+          "parameters": {
+            "staker": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 10,
+              "doc": "of ZRX.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "amount": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 11,
+              "doc": "of ZRX staked.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 17,
+          "doc": "Emitted by MixinStake when ZRX is unstaked.",
+          "name": "Unstake",
+          "parameters": {
+            "staker": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 18,
+              "doc": "of ZRX.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "amount": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 19,
+              "doc": "of ZRX unstaked.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 25,
+          "doc": "Emitted by MixinStake when ZRX is unstaked.",
+          "name": "MoveStake",
+          "parameters": {
+            "staker": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 26,
+              "doc": "of ZRX.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "amount": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 27,
+              "doc": "of ZRX unstaked.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "fromStatus": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 28,
+              "doc": "",
+              "type": "uint8",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "fromPool": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 29,
+              "doc": "",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "toStatus": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 30,
+              "doc": "",
+              "type": "uint8",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "toPool": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 31,
+              "doc": "",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 36,
+          "doc": "Emitted by MixinExchangeManager when an exchange is added.",
+          "name": "ExchangeAdded",
+          "parameters": {
+            "exchangeAddress": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 37,
+              "doc": "Address of new exchange.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 42,
+          "doc": "Emitted by MixinExchangeManager when an exchange is removed.",
+          "name": "ExchangeRemoved",
+          "parameters": {
+            "exchangeAddress": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 43,
+              "doc": "Address of removed exchange.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 49,
+          "doc": "Emitted by MixinExchangeFees when a pool starts earning rewards in an epoch.",
+          "name": "StakingPoolEarnedRewardsInEpoch",
+          "parameters": {
+            "epoch": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 50,
+              "doc": "The epoch in which the pool earned rewards.",
+              "type": "uint256",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "poolId": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 51,
+              "doc": "The ID of the pool.",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 60,
+          "doc": "Emitted by MixinFinalizer when an epoch has ended.",
+          "name": "EpochEnded",
+          "parameters": {
+            "epoch": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 61,
+              "doc": "The epoch that ended.",
+              "type": "uint256",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "numPoolsToFinalize": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 62,
+              "doc": "Number of pools that earned rewards during `epoch` and must be finalized.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "rewardsAvailable": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 63,
+              "doc": "Rewards available to all pools that earned rewards during `epoch`.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "totalFeesCollected": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 64,
+              "doc": "Total fees collected across all pools that earned rewards during `epoch`.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "totalWeightedStake": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 65,
+              "doc": "Total weighted stake across all pools that earned rewards during `epoch`.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 72,
+          "doc": "Emitted by MixinFinalizer when an epoch is fully finalized.",
+          "name": "EpochFinalized",
+          "parameters": {
+            "epoch": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 73,
+              "doc": "The epoch being finalized.",
+              "type": "uint256",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "rewardsPaid": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 74,
+              "doc": "Total amount of rewards paid out.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "rewardsRemaining": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 75,
+              "doc": "Rewards left over.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 83,
+          "doc": "Emitted by MixinFinalizer when rewards are paid out to a pool.",
+          "name": "RewardsPaid",
+          "parameters": {
+            "epoch": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 84,
+              "doc": "The epoch when the rewards were paid out.",
+              "type": "uint256",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "poolId": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 85,
+              "doc": "The pool's ID.",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "operatorReward": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 86,
+              "doc": "Amount of reward paid to pool operator.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "membersReward": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 87,
+              "doc": "Amount of reward paid to pool members.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 96,
+          "doc": "Emitted whenever staking parameters are changed via the `setParams()` function.",
+          "name": "ParamsSet",
+          "parameters": {
+            "epochDurationInSeconds": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 97,
+              "doc": "Minimum seconds between epochs.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "rewardDelegatedStakeWeight": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 98,
+              "doc": "How much delegated stake is weighted vs operator stake, in ppm.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "minimumPoolStake": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 99,
+              "doc": "Minimum amount of stake required in a pool to collect rewards.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "cobbDouglasAlphaNumerator": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 100,
+              "doc": "Numerator for cobb douglas alpha factor.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "cobbDouglasAlphaDenominator": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 101,
+              "doc": "Denominator for cobb douglas alpha factor.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 108,
+          "doc": "Emitted by MixinStakingPool when a new pool is created.",
+          "name": "StakingPoolCreated",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 109,
+              "doc": "Unique id generated for pool.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "operator": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 110,
+              "doc": "The operator (creator) of pool.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "operatorShare": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 111,
+              "doc": "The share of rewards given to the operator, in ppm.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 117,
+          "doc": "Emitted by MixinStakingPool when a maker sets their pool.",
+          "name": "MakerStakingPoolSet",
+          "parameters": {
+            "makerAddress": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 118,
+              "doc": "Adress of maker added to pool.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "poolId": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 119,
+              "doc": "Unique id of pool.",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IStakingEvents",
+          "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+          "line": 126,
+          "doc": "Emitted when a staking pool's operator share is decreased.",
+          "name": "OperatorShareDecreased",
+          "parameters": {
+            "poolId": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 127,
+              "doc": "Unique Id of pool.",
+              "type": "bytes32",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "oldOperatorShare": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 128,
+              "doc": "Previous share of rewards owned by operator.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "newOperatorShare": {
+              "file": "contracts/staking/contracts/src/interfaces/IStakingEvents.sol",
+              "line": 129,
+              "doc": "Newly decreased share of rewards owned by operator.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IOwnable",
+          "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+          "line": 27,
+          "doc": "Emitted by Ownable when ownership is transferred.",
+          "name": "OwnershipTransferred",
+          "parameters": {
+            "previousOwner": {
+              "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+              "line": 27,
+              "doc": "The previous owner of the contract.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "newOwner": {
+              "file": "contracts/utils/contracts/src/interfaces/IOwnable.sol",
+              "line": 27,
+              "doc": "The new owner of the contract.",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IAuthorizable",
+          "file": "contracts/utils/contracts/src/interfaces/IAuthorizable.sol",
+          "line": 28,
+          "doc": "",
+          "name": "AuthorizedAddressAdded",
+          "parameters": {
+            "target": {
+              "file": "contracts/utils/contracts/src/interfaces/IAuthorizable.sol",
+              "line": 29,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "caller": {
+              "file": "contracts/utils/contracts/src/interfaces/IAuthorizable.sol",
+              "line": 30,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        },
+        {
+          "contract": "IAuthorizable",
+          "file": "contracts/utils/contracts/src/interfaces/IAuthorizable.sol",
+          "line": 34,
+          "doc": "",
+          "name": "AuthorizedAddressRemoved",
+          "parameters": {
+            "target": {
+              "file": "contracts/utils/contracts/src/interfaces/IAuthorizable.sol",
+              "line": 35,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "caller": {
+              "file": "contracts/utils/contracts/src/interfaces/IAuthorizable.sol",
+              "line": 36,
+              "doc": "",
+              "type": "address",
+              "indexed": true,
+              "storageLocation": "default",
+              "order": 0
+            }
+          }
+        }
+      ],
+      "enums": {},
+      "structs": {}
+    },
+    "IStructs": {
+      "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+      "line": 21,
+      "doc": "",
+      "kind": "interface",
+      "inherits": [],
+      "methods": [],
+      "events": [],
+      "enums": {
+        "IStructs.StakeStatus": {
+          "contract": "IStructs",
+          "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+          "line": 65,
+          "doc": "Statuses that stake can exist in. Any stake can be (re)delegated effective at the next epoch Undelegated stake can be withdrawn if it is available in both the current and next epoch",
+          "values": {
+            "UNDELEGATED": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 66,
+              "doc": "",
+              "value": 0
+            },
+            "DELEGATED": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 67,
+              "doc": "",
+              "value": 1
+            }
+          }
+        }
+      },
+      "structs": {
+        "IStructs.PoolStats": {
+          "contract": "IStructs",
+          "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+          "line": 28,
+          "doc": "Stats for a pool that earned rewards.",
+          "fields": {
+            "feesCollected": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 29,
+              "doc": "Fees collected in ETH by this pool.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "weightedStake": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 30,
+              "doc": "Amount of weighted stake in the pool.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "membersStake": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 31,
+              "doc": "Amount of non-operator stake in the pool.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            }
+          }
+        },
+        "IStructs.StoredBalance": {
+          "contract": "IStructs",
+          "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+          "line": 56,
+          "doc": "Encapsulates a balance for the current and next epochs. Note that these balances may be stale if the current epoch is greater than `currentEpoch`.",
+          "fields": {
+            "currentEpoch": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 57,
+              "doc": "The current epoch",
+              "type": "uint64",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "currentEpochBalance": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 58,
+              "doc": "Balance in the current epoch.",
+              "type": "uint96",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "nextEpochBalance": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 59,
+              "doc": "Balance in `currentEpoch+1`.",
+              "type": "uint96",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            }
+          }
+        },
+        "IStructs.StakeInfo": {
+          "contract": "IStructs",
+          "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+          "line": 73,
+          "doc": "Info used to describe a status.",
+          "fields": {
+            "status": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 74,
+              "doc": "Status of the stake.",
+              "type": "IStructs.StakeStatus",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "poolId": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 75,
+              "doc": "Unique Id of pool. This is set when status=DELEGATED.",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            }
+          }
+        },
+        "IStructs.Pool": {
+          "contract": "IStructs",
+          "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+          "line": 89,
+          "doc": "Holds the metadata for a staking pool.",
+          "fields": {
+            "operator": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 90,
+              "doc": "Operator of the pool.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "operatorShare": {
+              "file": "contracts/staking/contracts/src/interfaces/IStructs.sol",
+              "line": 91,
+              "doc": "Fraction of the total balance owned by the operator, in ppm.",
+              "type": "uint32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            }
+          }
+        }
+      }
+    },
+    "LibFillResults": {
+      "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+      "line": 25,
+      "doc": "",
+      "kind": "library",
+      "inherits": [],
+      "methods": [],
+      "events": [],
+      "enums": {},
+      "structs": {
+        "LibFillResults.BatchMatchedFillResults": {
+          "contract": "LibFillResults",
+          "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+          "line": 30,
+          "doc": "",
+          "fields": {
+            "left": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 31,
+              "doc": "Fill results for left orders",
+              "type": "LibFillResults.FillResults[]",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "right": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 32,
+              "doc": "Fill results for right orders",
+              "type": "LibFillResults.FillResults[]",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "profitInLeftMakerAsset": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 33,
+              "doc": "Profit taken from left makers",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            },
+            "profitInRightMakerAsset": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 34,
+              "doc": "Profit taken from right makers",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 3
+            }
+          }
+        },
+        "LibFillResults.FillResults": {
+          "contract": "LibFillResults",
+          "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+          "line": 37,
+          "doc": "",
+          "fields": {
+            "makerAssetFilledAmount": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 38,
+              "doc": "Total amount of makerAsset(s) filled.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerAssetFilledAmount": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 39,
+              "doc": "Total amount of takerAsset(s) filled.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "makerFeePaid": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 40,
+              "doc": "Total amount of fees paid by maker(s) to feeRecipient(s).",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            },
+            "takerFeePaid": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 41,
+              "doc": "Total amount of fees paid by taker to feeRecipients(s).",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 3
+            },
+            "protocolFeePaid": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 42,
+              "doc": "Total amount of fees paid by taker to the staking contract.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 4
+            }
+          }
+        },
+        "LibFillResults.MatchedFillResults": {
+          "contract": "LibFillResults",
+          "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+          "line": 45,
+          "doc": "",
+          "fields": {
+            "left": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 46,
+              "doc": "Amounts filled and fees paid of left order.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "right": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 47,
+              "doc": "Amounts filled and fees paid of right order.",
+              "type": "LibFillResults.FillResults",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "profitInLeftMakerAsset": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 48,
+              "doc": "Profit taken from the left maker",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            },
+            "profitInRightMakerAsset": {
+              "file": "contracts/exchange-libs/contracts/src/LibFillResults.sol",
+              "line": 49,
+              "doc": "Profit taken from the right maker",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 3
+            }
+          }
+        }
+      }
+    },
+    "LibOrder": {
+      "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+      "line": 23,
+      "doc": "",
+      "kind": "library",
+      "inherits": [],
+      "methods": [],
+      "events": [],
+      "enums": {
+        "LibOrder.OrderStatus": {
+          "contract": "LibOrder",
+          "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+          "line": 52,
+          "doc": "A valid order remains fillable until it is expired, fully filled, or cancelled. An order's status is unaffected by external factors, like account balances.",
+          "values": {
+            "INVALID": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 53,
+              "doc": "Default value",
+              "value": 0
+            },
+            "INVALID_MAKER_ASSET_AMOUNT": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 54,
+              "doc": "Order does not have a valid maker asset amount",
+              "value": 1
+            },
+            "INVALID_TAKER_ASSET_AMOUNT": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 55,
+              "doc": "Order does not have a valid taker asset amount",
+              "value": 2
+            },
+            "FILLABLE": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 56,
+              "doc": "Order is fillable",
+              "value": 3
+            },
+            "EXPIRED": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 57,
+              "doc": "Order has already expired",
+              "value": 4
+            },
+            "FULLY_FILLED": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 58,
+              "doc": "Order is fully filled",
+              "value": 5
+            },
+            "CANCELLED": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 59,
+              "doc": "Order has been cancelled",
+              "value": 6
+            }
+          }
+        }
+      },
+      "structs": {
+        "LibOrder.Order": {
+          "contract": "LibOrder",
+          "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+          "line": 64,
+          "doc": "Canonical order structure.",
+          "fields": {
+            "makerAddress": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 65,
+              "doc": "Address that created the order.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "takerAddress": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 66,
+              "doc": "Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "feeRecipientAddress": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 67,
+              "doc": "Address that will recieve fees when order is filled.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            },
+            "senderAddress": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 68,
+              "doc": "Address that is allowed to call Exchange contract methods that affect this order. If set to 0, any address is allowed to call these methods.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 3
+            },
+            "makerAssetAmount": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 69,
+              "doc": "Amount of makerAsset being offered by maker. Must be greater than 0.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 4
+            },
+            "takerAssetAmount": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 70,
+              "doc": "Amount of takerAsset being bid on by maker. Must be greater than 0.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 5
+            },
+            "makerFee": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 71,
+              "doc": "Fee paid to feeRecipient by maker when order is filled.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 6
+            },
+            "takerFee": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 72,
+              "doc": "Fee paid to feeRecipient by taker when order is filled.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 7
+            },
+            "expirationTimeSeconds": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 73,
+              "doc": "Timestamp in seconds at which order expires.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 8
+            },
+            "salt": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 74,
+              "doc": "Arbitrary number to facilitate uniqueness of the order's hash.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 9
+            },
+            "makerAssetData": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 75,
+              "doc": "Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The leading bytes4 references the id of the asset proxy.",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 10
+            },
+            "takerAssetData": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 76,
+              "doc": "Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The leading bytes4 references the id of the asset proxy.",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 11
+            },
+            "makerFeeAssetData": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 77,
+              "doc": "Encoded data that can be decoded by a specified proxy contract when transferring makerFeeAsset. The leading bytes4 references the id of the asset proxy.",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 12
+            },
+            "takerFeeAssetData": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 78,
+              "doc": "Encoded data that can be decoded by a specified proxy contract when transferring takerFeeAsset. The leading bytes4 references the id of the asset proxy.",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 13
+            }
+          }
+        },
+        "LibOrder.OrderInfo": {
+          "contract": "LibOrder",
+          "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+          "line": 83,
+          "doc": "Order information returned by `getOrderInfo()`.",
+          "fields": {
+            "orderStatus": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 84,
+              "doc": "Status that describes order's validity and fillability.",
+              "type": "LibOrder.OrderStatus",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "orderHash": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 85,
+              "doc": "EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).",
+              "type": "bytes32",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "orderTakerAssetFilledAmount": {
+              "file": "contracts/exchange-libs/contracts/src/LibOrder.sol",
+              "line": 86,
+              "doc": "Amount of order that has already been filled.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            }
+          }
+        }
+      }
+    },
+    "LibZeroExTransaction": {
+      "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+      "line": 24,
+      "doc": "",
+      "kind": "library",
+      "inherits": [],
+      "methods": [],
+      "events": [],
+      "enums": {},
+      "structs": {
+        "LibZeroExTransaction.ZeroExTransaction": {
+          "contract": "LibZeroExTransaction",
+          "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+          "line": 41,
+          "doc": "",
+          "fields": {
+            "salt": {
+              "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+              "line": 42,
+              "doc": "Arbitrary number to ensure uniqueness of transaction hash.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 0
+            },
+            "expirationTimeSeconds": {
+              "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+              "line": 43,
+              "doc": "Timestamp in seconds at which transaction expires.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 1
+            },
+            "gasPrice": {
+              "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+              "line": 44,
+              "doc": "gasPrice that transaction is required to be executed with.",
+              "type": "uint256",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 2
+            },
+            "signerAddress": {
+              "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+              "line": 45,
+              "doc": "Address of transaction signer.",
+              "type": "address",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 3
+            },
+            "data": {
+              "file": "contracts/exchange-libs/contracts/src/LibZeroExTransaction.sol",
+              "line": 46,
+              "doc": "AbiV2 encoded calldata.",
+              "type": "bytes",
+              "indexed": false,
+              "storageLocation": "default",
+              "order": 4
+            }
+          }
+        }
+      }
+    }
+  }
+}

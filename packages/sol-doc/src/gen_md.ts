@@ -1,4 +1,4 @@
-import { ContractMethodDocs, DocumentedItem, SolidityDocs } from './sol_doc';
+import { ContractMethodDocs, DocumentedItem, EventDocs, SolidityDocs } from './sol_doc';
 
 export interface MarkdownOpts {
     urlPrefix: string;
@@ -8,28 +8,18 @@ export interface MarkdownOpts {
  * Convert JSON docs to markdown.
  */
 export function generateMarkdownFromDocs(docs: SolidityDocs, opts: Partial<MarkdownOpts> = {}): string {
-    const lines = [
-        ...generateTocContent(docs),
-    ];
-    for (const contractName of Object.keys(docs.contracts)) {
+    const lines: string[] = [];
+    const sortedContracts = Object.keys(docs.contracts).sort();
+    for (const contractName of sortedContracts) {
         lines.push(...generateContractsContent(contractName, docs, opts));
     }
     return lines.join('\n');
 }
 
-function generateTocContent(docs: SolidityDocs): string[] {
-    return [];
-}
-
-function generateContractsContent(
-    name: string,
-    docs: SolidityDocs,
-    opts: Partial<MarkdownOpts>,
-): string[] {
+function generateContractsContent(name: string, docs: SolidityDocs, opts: Partial<MarkdownOpts>): string[] {
     const contract = docs.contracts[name];
     const enums = [];
-    const sortedEnums = Object.entries(contract.enums)
-        .sort(([a], [b]) => a.localeCompare(b));
+    const sortedEnums = Object.entries(contract.enums).sort(([a], [b]) => a.localeCompare(b));
     for (const [enumName, enumDocs] of sortedEnums) {
         enums.push([
             `### ${toCode(enumName)}`,
@@ -41,14 +31,15 @@ function generateContractsContent(
             ...createTableContent(
                 ['Name', 'Value', 'Description'],
                 Object.entries(enumDocs.values).map(([n, d]) => [
-                    toSourceLink(toCode(n), d, opts), toCode(d.value), d.doc,
+                    toSourceLink(toCode(n), d, opts),
+                    toCode(d.value),
+                    d.doc,
                 ]),
             ),
         ]);
     }
     const structSections = [];
-    const sortedStructs = Object.entries(contract.structs)
-        .sort(([a], [b]) => a.localeCompare(b));
+    const sortedStructs = Object.entries(contract.structs).sort(([a], [b]) => a.localeCompare(b));
     for (const [structName, structDocs] of sortedStructs) {
         structSections.push([
             `### ${toCode(structName)}`,
@@ -60,18 +51,21 @@ function generateContractsContent(
             ...createTableContent(
                 ['Name', 'Type', 'Description'],
                 Object.entries(structDocs.fields).map(([n, d]) => [
-                    toSourceLink(toCode(n), d, opts), toCode(d.type), d.doc,
+                    toSourceLink(toCode(n), d, opts),
+                    toCode(d.type),
+                    d.doc,
                 ]),
             ),
         ]);
     }
     const eventSections = [];
-    const sortedEvents = contract.events
-        .sort((a, b) => a.name.localeCompare(b.name));
+    const sortedEvents = contract.events.sort((a, b) => a.name.localeCompare(b.name));
     for (const event of sortedEvents) {
         eventSections.push([
             `### ${toCode(event.name)}`,
             event.doc,
+            '',
+            `• ${toCode(getEventSignature(event))}`,
             '',
             toSourceAttributionLink(event, opts),
             '',
@@ -79,67 +73,63 @@ function generateContractsContent(
             ...createTableContent(
                 ['Name', 'Type', 'Indexed', 'Description'],
                 Object.entries(event.parameters).map(([n, d]) => [
-                    toSourceLink(toCode(n), d, opts), toCode(d.type), toCode(d.indexed), d.doc,
+                    toSourceLink(toCode(n), d, opts),
+                    toCode(d.type),
+                    toCode(d.indexed),
+                    d.doc,
                 ]),
             ),
         ]);
     }
     const methodSections = [];
-    const sortedMethods = contract.methods
-        .sort((a, b) => a.name.localeCompare(b.name));
+    const sortedMethods = contract.methods.sort((a, b) => a.name.localeCompare(b.name));
     for (const method of sortedMethods) {
         methodSections.push([
-            method.kind === 'constructor' ?
-                `### ${toCode('constructor')}` :
-                `### ${toCode(method.name)}`,
+            method.kind === 'constructor' ? `### ${toCode('constructor')}` : `### ${toCode(method.name)}`,
             method.doc,
             '',
-            `• ${toCode(getMethodSignature(method))}`,
+            `• ${toCode(getMethodSignature(method))}${method.isAccessor ? ' *(generated)*' : ''}`,
             '',
             toSourceAttributionLink(method, opts),
             '',
-            ...(Object.keys(method.parameters).length !== 0 ?
-                [
-                    `***Parameters***`,
-                    ...createTableContent(
-                        ['Name', 'Type', 'Description'],
-                        Object.entries(method.parameters).map(([n, d]) => [
-                            toSourceLink(toCode(n), d, opts), toCode(d.type), d.doc,
-                        ]),
-                    ),
-                ] : []
-            ),
-            ...(Object.keys(method.returns).length !== 0 ?
-                [
-                    `***Returns***`,
-                    ...createTableContent(
-                        ['Name', 'Type', 'Description'],
-                        Object.entries(method.returns).map(([n, d]) => [
-                            toSourceLink(toCode(n), d, opts), toCode(d.type), d.doc,
-                        ]),
-                    ),
-                ] : []
-            ),
+            ...(Object.keys(method.parameters).length !== 0
+                ? [
+                      `***Parameters***`,
+                      ...createTableContent(
+                          ['Name', 'Type', 'Description'],
+                          Object.entries(method.parameters).map(([n, d]) => [
+                              toSourceLink(toCode(n), d, opts),
+                              toCode(d.type),
+                              d.doc,
+                          ]),
+                      ),
+                  ]
+                : []),
+            ...(Object.keys(method.returns).length !== 0
+                ? [
+                      `***Returns***`,
+                      ...createTableContent(
+                          ['Name', 'Type', 'Description'],
+                          Object.entries(method.returns).map(([n, d]) => [
+                              toSourceLink(toCode(n), d, opts),
+                              toCode(d.type),
+                              d.doc,
+                          ]),
+                      ),
+                  ]
+                : []),
         ]);
     }
     return [
         `# ${contract.kind} ${toCode(name)}`,
-        ...(enums.length > 0 ? [
-            '## Enums',
-            ...joinSections(enums),
-        ] : []),
-        ...(structSections.length > 0 ? [
-            '## Structs',
-            ...joinSections(structSections),
-        ] : []),
-        ...(eventSections.length > 0 ? [
-            '## Events',
-            ...joinSections(eventSections),
-        ] : []),
-        ...(methodSections.length > 0 ? [
-            '## Methods',
-            ...joinSections(methodSections),
-        ] : []),
+        contract.doc,
+        '',
+        toSourceAttributionLink(contract, opts),
+        '',
+        ...(enums.length > 0 ? ['## Enums', ...joinSections(enums)] : []),
+        ...(structSections.length > 0 ? ['## Structs', ...joinSections(structSections)] : []),
+        ...(eventSections.length > 0 ? ['## Events', ...joinSections(eventSections)] : []),
+        ...(methodSections.length > 0 ? ['## Methods', ...joinSections(methodSections)] : []),
     ];
 }
 
@@ -159,7 +149,7 @@ function joinSections(sections: string[][]): string[] {
 }
 
 function toCode(v: Stringable | boolean): string {
-    if (typeof(v) === 'boolean') {
+    if (typeof v === 'boolean') {
         return `\`${v ? true : false}\``;
     }
     return `\`${v}\``;
@@ -177,26 +167,51 @@ function toSourceURL(file: string, line: number, prefix?: string): string {
     if (file.startsWith('/')) {
         return `${file}#L${line}`;
     }
-    const _prefix = !prefix || prefix.endsWith('/') ? (prefix || '') : `${prefix}/`;
+    const _prefix = !prefix || prefix.endsWith('/') ? prefix || '' : `${prefix}/`;
     return `${_prefix}${file}#L${line}`;
 }
 
 function getMethodSignature(method: ContractMethodDocs): string {
-    const args = Object.entries(method.parameters).map(([name, param]) => {
-        return /^\d+$/.test(name) ? param.type : `${param.type} ${name}`;
+    const args = Object.entries(method.parameters).map(([_name, param]) => {
+        return /^\d+$/.test(_name) ? param.type : `${param.type} ${_name}`;
     });
-    const returns = Object.entries(method.returns).map(([name, param]) => {
-        return /^\d+$/.test(name) ? param.type : `${param.type} ${name}`;
+    const returns = Object.entries(method.returns).map(([_name, param]) => {
+        return /^\d+$/.test(_name) ? param.type : `${param.type} ${_name}`;
     });
     const _returns = returns.length !== 0 ? `: (${returns.join(', ')})` : '';
-    return `${method.name}(${args.join(', ')})${_returns}`;
+    const name = method.kind === 'constructor' ? 'constructor' : method.name;
+    return `${name}(${args.join(', ')})${_returns}`;
+}
+
+function getEventSignature(event: EventDocs): string {
+    const args = Object.entries(event.parameters).map(([name, param]) => {
+        return /^\d+$/.test(name) ? param.type : `${param.type} ${name}`;
+    });
+    return `${event.name}(${args.join(', ')})`;
 }
 
 function createTableContent(headers: string[], rows: Stringable[][]): string[] {
+    const [_headers, _rows] = filterTableEmptyColumns(headers, rows);
     const lines = [
-        headers.join(' | '),
-        headers.map(h => h.replace(/./g, '-')).join(' | '),
-        ...rows.map(r => r.join(' | ')),
+        _headers.join(' | '),
+        _headers.map(h => h.replace(/./g, '-')).join(' | '),
+        ..._rows.map(r => r.join(' | ')),
     ].map(line => `| ${line} |`);
     return ['', ...lines, ''];
+}
+
+function filterTableEmptyColumns(headers: string[], rows: Stringable[][]): [string[], Stringable[][]] {
+    const emptyColumnIndicesByRow = rows.map(r => r.map((c, i) => i).filter(i => r[i] === ''));
+    const emptyColumnIndices = emptyColumnIndicesByRow.reduce((acc, row) => {
+        for (const i of row) {
+            if (!acc.includes(i)) {
+                acc.push(i);
+            }
+        }
+        return acc;
+    }, []);
+    return [
+        headers.filter((v, i) => !emptyColumnIndices.includes(i)),
+        rows.filter((v, i) => !emptyColumnIndices.includes(i)),
+    ];
 }
