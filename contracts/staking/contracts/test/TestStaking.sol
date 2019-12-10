@@ -58,6 +58,7 @@ contract TestStaking is
         testZrxVaultAddress = zrxVaultAddress;
     }
 
+    // @dev Gets the most recent cumulative reward for a pool, and the epoch it was stored.
     function getMostRecentCumulativeReward(bytes32 poolId)
         external
         view

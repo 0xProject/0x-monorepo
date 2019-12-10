@@ -132,9 +132,8 @@ export const LibFractions = {
         maxValue: BigNumber = new BigNumber(2 ** 127),
     ): [BigNumber, BigNumber] => {
         if (numerator.isGreaterThan(maxValue) || denominator.isGreaterThan(maxValue)) {
-            const rescaleBase = numerator.isGreaterThanOrEqualTo(denominator)
-                ? safeDiv(numerator, maxValue)
-                : safeDiv(denominator, maxValue);
+            let rescaleBase = numerator.isGreaterThanOrEqualTo(denominator) ? numerator : denominator;
+            rescaleBase = safeDiv(rescaleBase, maxValue);
             return [safeDiv(numerator, rescaleBase), safeDiv(denominator, rescaleBase)];
         } else {
             return [numerator, denominator];

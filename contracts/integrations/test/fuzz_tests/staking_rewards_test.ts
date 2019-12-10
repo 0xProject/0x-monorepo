@@ -58,12 +58,15 @@ blockchainTests('Staking rewards fuzz test', env => {
     });
 
     it('fuzz', async () => {
+        // Deploy contracts
         const deployment = await DeploymentManager.deployAsync(env, {
             numErc20TokensToDeploy: 4,
             numErc721TokensToDeploy: 0,
             numErc1155TokensToDeploy: 0,
         });
         const [ERC20TokenA, ERC20TokenB, ERC20TokenC, ERC20TokenD] = deployment.tokens.erc20;
+
+        // Set up balance store
         const balanceStore = new BlockchainBalanceStore(
             {
                 StakingProxy: deployment.staking.stakingProxy.address,
@@ -80,8 +83,11 @@ blockchainTests('Staking rewards fuzz test', env => {
                 },
             },
         );
+
+        // Set up simulation environment
         const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
 
+        // Spin up actors
         const actors = [
             new Maker({ deployment, simulationEnvironment, name: 'Maker 1' }),
             new Maker({ deployment, simulationEnvironment, name: 'Maker 2' }),
@@ -98,14 +104,17 @@ blockchainTests('Staking rewards fuzz test', env => {
             new OperatorStakerMaker({ deployment, simulationEnvironment, name: 'Operator/Staker/Maker' }),
         ];
 
+        // Takers need to set a WETH allowance for the staking proxy in case they pay the protocol fee in WETH
         const takers = filterActorsByRole(actors, Taker);
         for (const taker of takers) {
             await taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
         }
+        // Stakers need to set a ZRX allowance to deposit their ZRX into the zrxVault
         const stakers = filterActorsByRole(actors, Staker);
         for (const staker of stakers) {
             await staker.configureERC20TokenAsync(deployment.tokens.zrx);
         }
+        // Register each actor in the balance store
         for (const actor of actors) {
             balanceStore.registerTokenOwner(actor.address, actor.name);
         }

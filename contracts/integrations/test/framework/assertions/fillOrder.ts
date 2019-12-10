@@ -155,6 +155,7 @@ export function validFillOrderAssertion(
                 // Ensure that the correct events were emitted.
                 verifyFillEvents(txData, order, result.receipt!, deployment, fillAmount);
 
+                // If the maker is not in a staking pool, there's nothing to check
                 if (beforeInfo === undefined) {
                     return;
                 }
@@ -163,6 +164,7 @@ export function validFillOrderAssertion(
                 const expectedAggregatedStats = { ...beforeInfo.aggregatedStats };
                 const expectedEvents = [];
 
+                // Refer to `payProtocolFee`
                 if (beforeInfo.poolStake.isGreaterThanOrEqualTo(stakingConstants.DEFAULT_PARAMS.minimumPoolStake)) {
                     if (beforeInfo.poolStats.feesCollected.isZero()) {
                         const membersStakeInPool = beforeInfo.poolStake.minus(beforeInfo.operatorStake);
@@ -181,20 +183,23 @@ export function validFillOrderAssertion(
                         expectedAggregatedStats.numPoolsToFinalize = beforeInfo.aggregatedStats.numPoolsToFinalize.plus(
                             1,
                         );
+                        // StakingPoolEarnedRewardsInEpoch event emitted
                         expectedEvents.push({
                             epoch: currentEpoch,
                             poolId: beforeInfo.poolId,
                         });
                     }
-
+                    // Credit a protocol fee to the maker's staking pool
                     expectedPoolStats.feesCollected = beforeInfo.poolStats.feesCollected.plus(
                         DeploymentManager.protocolFee,
                     );
+                    // Update aggregated stats
                     expectedAggregatedStats.totalFeesCollected = beforeInfo.aggregatedStats.totalFeesCollected.plus(
                         DeploymentManager.protocolFee,
                     );
                 }
 
+                // Check for updated stats and event
                 const poolStats = PoolStats.fromArray(
                     await stakingWrapper.poolStatsByEpoch(beforeInfo.poolId, currentEpoch).callAsync(),
                 );

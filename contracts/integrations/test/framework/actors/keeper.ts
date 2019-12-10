@@ -89,6 +89,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             const { stakingPools } = this.actor.simulationEnvironment!;
             const assertion = validFinalizePoolAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
+                // Finalize a random pool, or do nothing if there are no pools in the simulation yet.
                 const poolId = Pseudorandom.sample(Object.keys(stakingPools));
                 if (poolId === undefined) {
                     yield;

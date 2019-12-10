@@ -107,22 +107,29 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
 
             while (true) {
                 const { currentEpoch } = this.actor.simulationEnvironment!;
+                // Pick a random pool that this staker has delegated to (undefined if no such pools exist)
                 const fromPoolId = Pseudorandom.sample(
                     Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])),
                 );
+                // The `from` status must be Undelegated if the staker isn't delegated to any pools
+                // at the moment, or if the chosen pool is unfinalized
                 const fromStatus =
                     fromPoolId === undefined || stakingPools[fromPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
                         : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
+                // Pick a random pool to move the stake to
                 const toPoolId = Pseudorandom.sample(Object.keys(stakingPools));
+                // The `from` status must be Undelegated if no pools exist in the simulation yet,
+                // or if the chosen pool is unfinalized
                 const toStatus =
                     toPoolId === undefined || stakingPools[toPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
                         : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const to = new StakeInfo(toStatus, toPoolId);
 
+                // The next epoch balance of the `from` stake is the amount that can be moved
                 const moveableStake =
                     from.status === StakeStatus.Undelegated
                         ? this.stake[StakeStatus.Undelegated].nextEpochBalance
@@ -141,6 +148,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             );
             while (true) {
                 const prevEpoch = this.actor.simulationEnvironment!.currentEpoch.minus(1);
+                // Pick a finalized pool
                 const poolId = Pseudorandom.sample(
                     Object.keys(stakingPools).filter(id =>
                         stakingPools[id].lastFinalized.isGreaterThanOrEqualTo(prevEpoch),

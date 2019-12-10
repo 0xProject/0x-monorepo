@@ -67,6 +67,10 @@ export class StoredBalance {
     ) {}
 }
 
+/**
+ * Simulates _loadCurrentBalance. `shouldMutate` flag specifies whether or not to update the given
+ * StoredBalance instance.
+ */
 export function loadCurrentBalance(
     balance: StoredBalance,
     epoch: BigNumber,
@@ -85,11 +89,17 @@ export function loadCurrentBalance(
     return loadedBalance;
 }
 
+/**
+ * Simulates _incrementNextEpochBalance
+ */
 export function incrementNextEpochBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
     loadCurrentBalance(balance, epoch, true);
     balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
 }
 
+/**
+ * Simulates _decrementNextEpochBalance
+ */
 export function decrementNextEpochBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
     loadCurrentBalance(balance, epoch, true);
     balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);

@@ -11,16 +11,17 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
  */
 /* tslint:disable:no-unnecessary-type-assertion */
 /* tslint:disable:no-non-null-assertion */
-export function validJoinStakingPoolAssertion(deployment: DeploymentManager): FunctionAssertion<[string], {}, void> {
+export function validJoinStakingPoolAssertion(deployment: DeploymentManager): FunctionAssertion<[string], void, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<[string], {}, void>(stakingWrapper, 'joinStakingPoolAsMaker', {
-        after: async (_beforeInfo, result: FunctionResult, args: [string], txData: Partial<TxData>) => {
+    return new FunctionAssertion<[string], void, void>(stakingWrapper, 'joinStakingPoolAsMaker', {
+        after: async (_beforeInfo: void, result: FunctionResult, args: [string], txData: Partial<TxData>) => {
             // Ensure that the tx succeeded.
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
             const [poolId] = args;
 
+            // Verify a MakerStakingPoolSet event was emitted
             const logs = result.receipt!.logs;
             const logArgs = filterLogsToArguments<StakingMakerStakingPoolSetEventArgs>(
                 logs,
@@ -32,6 +33,7 @@ export function validJoinStakingPoolAssertion(deployment: DeploymentManager): Fu
                     poolId,
                 },
             ]);
+            // Verify that the maker's pool id has been updated in storage
             const joinedPoolId = await deployment.staking.stakingWrapper.poolIdByMaker(txData.from!).callAsync();
             expect(joinedPoolId).to.be.eq(poolId);
         },

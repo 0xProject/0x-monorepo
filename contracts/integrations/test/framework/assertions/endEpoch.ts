@@ -21,11 +21,10 @@ interface EndEpochBeforeInfo {
 }
 
 /**
- * Returns a FunctionAssertion for `stake` which assumes valid input is provided. The
- * FunctionAssertion checks that the staker and zrxVault's balances of ZRX decrease and increase,
- * respectively, by the input amount.
+ * Returns a FunctionAssertion for `endEpoch` which assumes valid input is provided. It checks
+ * that the staking proxy contract wrapped its ETH balance, aggregated stats were updated, and
+ * EpochFinalized/EpochEnded events were emitted.
  */
-/* tslint:disable:no-unnecessary-type-assertion */
 export function validEndEpochAssertion(
     deployment: DeploymentManager,
     simulationEnvironment: SimulationEnvironment,
@@ -47,7 +46,7 @@ export function validEndEpochAssertion(
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
             const { currentEpoch } = simulationEnvironment;
-            const logs = result.receipt!.logs; // tslint:disable-line:no-non-null-assertion
+            const logs = result.receipt!.logs; // tslint:disable-line
 
             // Check WETH deposit event
             const previousEthBalance = balanceStore.balances.eth[stakingWrapper.address] || constants.ZERO_AMOUNT;
@@ -61,6 +60,7 @@ export function validEndEpochAssertion(
                 : [];
             verifyEventsFromLogs<WETH9DepositEventArgs>(logs, expectedDepositEvents, WETH9Events.Deposit);
 
+            // Check that the aggregated stats were updated
             await balanceStore.updateErc20BalancesAsync();
             const { wethReservedForPoolRewards, aggregatedStatsBefore } = beforeInfo;
             const expectedAggregatedStats = {
@@ -71,12 +71,12 @@ export function validEndEpochAssertion(
                     constants.ZERO_AMOUNT,
                 ).minus(wethReservedForPoolRewards),
             };
-
             const aggregatedStatsAfter = AggregatedStats.fromArray(
                 await stakingWrapper.aggregatedStatsByEpoch(currentEpoch).callAsync(),
             );
             expect(aggregatedStatsAfter).to.deep.equal(expectedAggregatedStats);
 
+            // Check that an EpochEnded event was emitted
             verifyEventsFromLogs<StakingEpochEndedEventArgs>(
                 logs,
                 [
@@ -91,6 +91,7 @@ export function validEndEpochAssertion(
                 StakingEvents.EpochEnded,
             );
 
+            // If there are no more pools to finalize, an EpochFinalized event should've been emitted
             const expectedEpochFinalizedEvents = aggregatedStatsAfter.numPoolsToFinalize.isZero()
                 ? [
                       {
@@ -106,12 +107,13 @@ export function validEndEpochAssertion(
                 StakingEvents.EpochFinalized,
             );
 
+            // The function returns the remaining number of unfinalized pools for the epoch
             expect(result.data, 'endEpoch should return the number of unfinalized pools').to.bignumber.equal(
                 aggregatedStatsAfter.numPoolsToFinalize,
             );
 
+            // Update currentEpoch locally
             simulationEnvironment.currentEpoch = currentEpoch.plus(1);
         },
     });
 }
-/* tslint:enable:no-unnecessary-type-assertion */

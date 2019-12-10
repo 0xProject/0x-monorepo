@@ -68,37 +68,36 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             const { actors, balanceStore } = this.actor.simulationEnvironment!;
             const assertion = validFillOrderAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
+                // Choose a maker to be the other side of the order
                 const maker = Pseudorandom.sample(filterActorsByRole(actors, Maker));
                 if (maker === undefined) {
                     yield;
                 } else {
                     await balanceStore.updateErc20BalancesAsync();
+                    // Choose the assets for the order
                     const [makerToken, makerFeeToken, takerToken, takerFeeToken] = Pseudorandom.sampleSize(
                         this.actor.deployment.tokens.erc20,
                         4, // tslint:disable-line:custom-no-magic-numbers
                     );
 
-                    const configureOrderAssetAsync = async (
-                        owner: Actor,
-                        token: DummyERC20TokenContract,
-                    ): Promise<BigNumber> => {
-                        let balance = balanceStore.balances.erc20[owner.address][token.address];
-                        await owner.configureERC20TokenAsync(token);
-                        balance = balanceStore.balances.erc20[owner.address][token.address] =
-                            constants.INITIAL_ERC20_BALANCE;
-                        return Pseudorandom.integer(balance.dividedToIntegerBy(2));
-                    };
-
+                    // Maker and taker set balances/allowances to guarantee that the fill succeeds.
+                    // Amounts are chosen to be within each actor's balance (divided by 2, in case
+                    // e.g. makerAsset = makerFeeAsset)
                     const [makerAssetAmount, makerFee, takerAssetAmount, takerFee] = await Promise.all(
                         [
                             [maker, makerToken],
                             [maker, makerFeeToken],
                             [this.actor, takerToken],
                             [this.actor, takerFeeToken],
-                        ].map(async ([owner, token]) =>
-                            configureOrderAssetAsync(owner as Actor, token as DummyERC20TokenContract),
-                        ),
+                        ].map(async ([owner, token]) => {
+                            let balance = balanceStore.balances.erc20[owner.address][token.address];
+                            await (owner as Actor).configureERC20TokenAsync(token as DummyERC20TokenContract);
+                            balance = balanceStore.balances.erc20[owner.address][token.address] =
+                                constants.INITIAL_ERC20_BALANCE;
+                            return Pseudorandom.integer(balance.dividedToIntegerBy(2));
+                        }),
                     );
+                    // Encode asset data
                     const [makerAssetData, makerFeeAssetData, takerAssetData, takerFeeAssetData] = [
                         makerToken,
                         makerFeeToken,
@@ -108,6 +107,7 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                         this.actor.deployment.assetDataEncoder.ERC20Token(token.address).getABIEncodedTransactionData(),
                     );
 
+                    // Maker signs the order
                     const order = await maker.signOrderAsync({
                         makerAssetData,
                         takerAssetData,
@@ -120,7 +120,10 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                         feeRecipientAddress: Pseudorandom.sample(actors)!.address,
                     });
 
+                    // Taker fills the order by a random amount (up to the order's takerAssetAmount)
                     const fillAmount = Pseudorandom.integer(order.takerAssetAmount);
+                    // Taker executes the fill with a random msg.value, so that sometimes the
+                    // protocol fee is paid in ETH and other times it's paid in WETH.
                     yield assertion.executeAsync([order, fillAmount, order.signature], {
                         from: this.actor.address,
                         value: Pseudorandom.integer(DeploymentManager.protocolFee.times(2)),

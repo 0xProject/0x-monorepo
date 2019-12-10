@@ -53,10 +53,7 @@ export function validStakeAssertion(
             await balanceStore.updateErc20BalancesAsync();
             balanceStore.assertEquals(expectedBalances);
 
-            // Checks that the owner's undelegated stake has increased by the stake amount
-            const ownerUndelegatedStake = await stakingWrapper
-                .getOwnerStakeByStatus(txData.from as string, StakeStatus.Undelegated)
-                .callAsync();
+            // _increaseCurrentAndNextBalance
             loadCurrentBalance(ownerStake[StakeStatus.Undelegated], currentEpoch, true);
             ownerStake[StakeStatus.Undelegated].currentEpochBalance = ownerStake[
                 StakeStatus.Undelegated
@@ -64,6 +61,11 @@ export function validStakeAssertion(
             ownerStake[StakeStatus.Undelegated].nextEpochBalance = ownerStake[
                 StakeStatus.Undelegated
             ].nextEpochBalance.plus(amount);
+
+            // Checks that the owner's undelegated stake has increased by the stake amount
+            const ownerUndelegatedStake = await stakingWrapper
+                .getOwnerStakeByStatus(txData.from as string, StakeStatus.Undelegated)
+                .callAsync();
             expect(ownerUndelegatedStake, 'Owner undelegated stake').to.deep.equal(ownerStake[StakeStatus.Undelegated]);
         },
     });

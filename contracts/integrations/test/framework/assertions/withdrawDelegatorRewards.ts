@@ -16,9 +16,9 @@ interface WithdrawDelegatorRewardsBeforeInfo {
 }
 
 /**
- * Returns a FunctionAssertion for `stake` which assumes valid input is provided. The
- * FunctionAssertion checks that the staker and zrxVault's balances of ZRX decrease and increase,
- * respectively, by the input amount.
+ * Returns a FunctionAssertion for `withdrawDelegatorRewards` which assumes valid input is provided.
+ * It checks that the delegator's stake gets synced and pool rewards are updated to reflect the
+ * amount withdrawn.
  */
 /* tslint:disable:no-unnecessary-type-assertion */
 export function validWithdrawDelegatorRewardsAssertion(
@@ -50,12 +50,14 @@ export function validWithdrawDelegatorRewardsAssertion(
             const [poolId] = args;
             const { currentEpoch } = simulationEnvironment;
 
+            // Check that delegator stake has been synced
             const expectedDelegatorStake = loadCurrentBalance(beforeInfo.delegatorStake, currentEpoch);
             const delegatorStake = await stakingWrapper
                 .getStakeDelegatedToPoolByOwner(txData.from as string, poolId)
                 .callAsync();
             expect(delegatorStake).to.deep.equal(expectedDelegatorStake);
 
+            // Check that pool rewards have been updated to reflect the amount withdrawn.
             const transferEvents = filterLogsToArguments<WETH9TransferEventArgs>(
                 result.receipt!.logs, // tslint:disable-line:no-non-null-assertion
                 WETH9Events.Transfer,

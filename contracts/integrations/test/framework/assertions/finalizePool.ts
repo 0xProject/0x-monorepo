@@ -60,7 +60,7 @@ interface FinalizePoolBeforeInfo {
  * Returns a FunctionAssertion for `finalizePool` which assumes valid input is provided. The `after`
  * callback below is annotated with the solidity source of `finalizePool`.
  */
- /* tslint:disable:no-unnecessary-type-assertion */
+/* tslint:disable:no-unnecessary-type-assertion */
 export function validFinalizePoolAssertion(
     deployment: DeploymentManager,
     simulationEnvironment: SimulationEnvironment,

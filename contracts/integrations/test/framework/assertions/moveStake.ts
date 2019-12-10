@@ -75,8 +75,8 @@ function updateNextEpochBalances(
     return updatedPools;
 }
 /**
- * Returns a FunctionAssertion for `moveStake` which assumes valid input is provided. The
- * FunctionAssertion checks that the staker's
+ * Returns a FunctionAssertion for `moveStake` which assumes valid input is provided. Checks that
+ * the owner's stake and global stake by status get updated correctly.
  */
 /* tslint:disable:no-unnecessary-type-assertion */
 export function validMoveStakeAssertion(
