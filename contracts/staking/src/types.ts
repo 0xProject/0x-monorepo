@@ -231,3 +231,5 @@ export class AggregatedStats {
 export interface AggregatedStatsByEpoch {
     [epoch: string]: AggregatedStats;
 }
+
+export type Numberish = Numberish;

@@ -45,7 +45,6 @@ export { StakingRevertErrors, FixedMathRevertErrors } from '@0x/utils';
 export { constants } from './constants';
 export {
     AggregatedStats,
-    AggregatedStatsByEpoch,
     StakeInfo,
     StakeStatus,
     StoredBalance,
@@ -57,6 +56,7 @@ export {
     GlobalStakeByStatus,
     StakingPool,
     PoolStats,
+    Numberish,
 } from './types';
 export {
     ContractArtifact,
