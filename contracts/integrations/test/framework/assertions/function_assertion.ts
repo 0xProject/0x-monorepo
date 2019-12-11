@@ -1,6 +1,8 @@
-import { ContractFunctionObj, ContractTxFunctionObj } from '@0x/base-contract';
+import { BaseContract, ContractFunctionObj, ContractTxFunctionObj } from '@0x/base-contract';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import { logger } from '../utils/logger';
 
 // tslint:disable:max-classes-per-file
 export type GenericContractFunction<T> = (...args: any[]) => ContractFunctionObj<T>;
@@ -48,29 +50,22 @@ export interface AssertionResult<TBefore = unknown> {
  */
 export class FunctionAssertion<TArgs extends any[], TBefore, ReturnDataType> implements Assertion<TArgs> {
     // A condition that will be applied to `wrapperFunction`.
-    public condition: Condition<TArgs, TBefore>;
-
-    // The wrapper function that will be wrapped in assertions.
-    public wrapperFunction: (
-        ...args: TArgs // tslint:disable-line:trailing-comma
-    ) => ContractTxFunctionObj<ReturnDataType> | ContractFunctionObj<ReturnDataType>;
+    public readonly condition: Condition<TArgs, TBefore>;
 
     constructor(
-        wrapperFunction: (
-            ...args: TArgs // tslint:disable-line:trailing-comma
-        ) => ContractTxFunctionObj<ReturnDataType> | ContractFunctionObj<ReturnDataType>,
+        private readonly _contractWrapper: BaseContract,
+        private readonly _functionName: string,
         condition: Partial<Condition<TArgs, TBefore>> = {},
     ) {
         this.condition = {
-            before: async (args: TArgs, txData: Partial<TxData>) => {
+            before: async (_args: TArgs, _txData: Partial<TxData>) => {
                 return ({} as any) as TBefore;
             },
-            after: async (beforeInfo: TBefore, result: FunctionResult, args: TArgs, txData: Partial<TxData>) => {
+            after: async (_beforeInfo: TBefore, _result: FunctionResult, _args: TArgs, _txData: Partial<TxData>) => {
                 return ({} as any) as TBefore;
             },
             ...condition,
         };
-        this.wrapperFunction = wrapperFunction;
     }
 
     /**
@@ -87,7 +82,10 @@ export class FunctionAssertion<TArgs extends any[], TBefore, ReturnDataType> imp
         // Try to make the call to the function. If it is successful, pass the
         // result and receipt to the after condition.
         try {
-            const functionWithArgs = this.wrapperFunction(...args) as ContractTxFunctionObj<ReturnDataType>;
+            const functionWithArgs = (this._contractWrapper as any)[this._functionName](
+                ...args,
+            ) as ContractTxFunctionObj<ReturnDataType>;
+            logger.logFunctionAssertion(this._functionName, args, txData);
             callResult.data = await functionWithArgs.callAsync(txData);
             callResult.receipt =
                 functionWithArgs.awaitTransactionSuccessAsync !== undefined

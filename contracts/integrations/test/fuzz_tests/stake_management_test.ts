@@ -1,5 +1,4 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
-import * as _ from 'lodash';
 
 import { Actor } from '../framework/actors/base';
 import { Staker } from '../framework/actors/staker';
@@ -7,6 +6,7 @@ import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 import { Simulation, SimulationEnvironment } from '../framework/simulation';
+import { Pseudorandom } from '../framework/utils/pseudorandom';
 
 import { PoolManagementSimulation } from './pool_management_test';
 
@@ -26,13 +26,19 @@ export class StakeManagementSimulation extends Simulation {
             poolManagement.generator,
         ];
         while (true) {
-            const action = _.sample(actions);
+            const action = Pseudorandom.sample(actions);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }
 }
 
-blockchainTests.skip('Stake management fuzz test', env => {
+blockchainTests('Stake management fuzz test', env => {
+    before(function(): void {
+        if (process.env.FUZZ_TEST !== 'stake_management') {
+            this.skip();
+        }
+    });
+
     after(async () => {
         Actor.reset();
     });

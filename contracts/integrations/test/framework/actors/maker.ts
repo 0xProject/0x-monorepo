@@ -1,10 +1,10 @@
 import { constants, OrderFactory } from '@0x/contracts-test-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import { AssertionResult } from '../assertions/function_assertion';
 import { validJoinStakingPoolAssertion } from '../assertions/joinStakingPool';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, ActorConfig, Constructor } from './base';
 
@@ -88,7 +88,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             const { stakingPools } = this.actor.simulationEnvironment!;
             const assertion = validJoinStakingPoolAssertion(this.actor.deployment);
             while (true) {
-                const poolId = _.sample(Object.keys(stakingPools));
+                const poolId = Pseudorandom.sample(Object.keys(stakingPools));
                 if (poolId === undefined) {
                     yield undefined;
                 } else {

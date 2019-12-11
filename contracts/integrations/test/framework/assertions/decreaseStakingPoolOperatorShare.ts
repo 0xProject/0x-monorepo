@@ -1,6 +1,5 @@
 import { StakingPoolById } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
-import { logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
 import { DeploymentManager } from '../deployment_manager';
@@ -17,21 +16,16 @@ export function validDecreaseStakingPoolOperatorShareAssertion(
 ): FunctionAssertion<[string, number], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<[string, number], {}, void>(
-        stakingWrapper.decreaseStakingPoolOperatorShare.bind(stakingWrapper),
-        {
-            after: async (_beforeInfo, _result: FunctionResult, args: [string, number], txData: Partial<TxData>) => {
-                const [poolId, expectedOperatorShare] = args;
+    return new FunctionAssertion<[string, number], {}, void>(stakingWrapper, 'decreaseStakingPoolOperatorShare', {
+        after: async (_beforeInfo, _result: FunctionResult, args: [string, number], _txData: Partial<TxData>) => {
+            const [poolId, expectedOperatorShare] = args;
 
-                logUtils.log(`decreaseStakingPoolOperatorShare(${poolId}, ${expectedOperatorShare})`);
+            // Checks that the on-chain pool's operator share has been updated.
+            const { operatorShare } = await stakingWrapper.getStakingPool(poolId).callAsync();
+            expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
 
-                // Checks that the on-chain pool's operator share has been updated.
-                const { operatorShare } = await stakingWrapper.getStakingPool(poolId).callAsync();
-                expect(operatorShare).to.bignumber.equal(expectedOperatorShare);
-
-                // Updates the pool in local state.
-                pools[poolId].operatorShare = operatorShare;
-            },
+            // Updates the pool in local state.
+            pools[poolId].operatorShare = operatorShare;
         },
-    );
+    });
 }

@@ -1,6 +1,6 @@
 import { GlobalStakeByStatus, OwnerStakeByStatus, StakeStatus, StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
 import { BlockchainBalanceStore } from '../balances/blockchain_balance_store';
@@ -34,7 +34,7 @@ export function validStakeAssertion(
 ): FunctionAssertion<[BigNumber], LocalBalanceStore, void> {
     const { stakingWrapper, zrxVault } = deployment.staking;
 
-    return new FunctionAssertion(stakingWrapper.stake.bind(stakingWrapper), {
+    return new FunctionAssertion(stakingWrapper, 'stake', {
         before: async (args: [BigNumber], txData: Partial<TxData>) => {
             const [amount] = args;
 
@@ -55,8 +55,6 @@ export function validStakeAssertion(
             txData: Partial<TxData>,
         ) => {
             const [amount] = args;
-
-            logUtils.log(`stake(${amount})`);
 
             // Checks that the ZRX transfer updated balances as expected.
             await balanceStore.updateErc20BalancesAsync();

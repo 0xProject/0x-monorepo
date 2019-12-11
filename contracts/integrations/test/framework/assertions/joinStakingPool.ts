@@ -1,6 +1,5 @@
 import { StakingEvents, StakingMakerStakingPoolSetEventArgs } from '@0x/contracts-staking';
 import { expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { logUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
 import { DeploymentManager } from '../deployment_manager';
@@ -15,7 +14,7 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
 export function validJoinStakingPoolAssertion(deployment: DeploymentManager): FunctionAssertion<[string], {}, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<[string], {}, void>(stakingWrapper.joinStakingPoolAsMaker.bind(stakingWrapper), {
+    return new FunctionAssertion<[string], {}, void>(stakingWrapper, 'joinStakingPoolAsMaker', {
         after: async (_beforeInfo, _result: FunctionResult, args: [string], txData: Partial<TxData>) => {
             const [poolId] = args;
 
@@ -34,8 +33,6 @@ export function validJoinStakingPoolAssertion(deployment: DeploymentManager): Fu
             ]);
             const joinedPoolId = await deployment.staking.stakingWrapper.poolIdByMaker(txData.from!).callAsync();
             expect(joinedPoolId).to.be.eq(poolId);
-
-            logUtils.log(`Pool ${poolId} joined by ${txData.from}`);
         },
     });
 }

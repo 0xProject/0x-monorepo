@@ -1,5 +1,4 @@
 import { OwnerStakeByStatus, StakeInfo, StakeStatus, StoredBalance } from '@0x/contracts-staking';
-import { getRandomInteger } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import '@azure/core-asynciterator-polyfill';
 import * as _ from 'lodash';
@@ -8,6 +7,7 @@ import { AssertionResult } from '../assertions/function_assertion';
 import { validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { validUnstakeAssertion } from '../assertions/unstake';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
 
@@ -75,7 +75,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
                 const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
-                const amount = getRandomInteger(0, zrxBalance);
+                const amount = Pseudorandom.integer(zrxBalance);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -94,7 +94,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.currentEpochBalance,
                     undelegatedStake.nextEpochBalance,
                 );
-                const amount = getRandomInteger(0, withdrawableStake);
+                const amount = Pseudorandom.integer(withdrawableStake);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -104,25 +104,27 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             const assertion = validMoveStakeAssertion(deployment, globalStake, this.stake, stakingPools);
 
             while (true) {
-                const fromPoolId = _.sample(Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])));
+                const fromPoolId = Pseudorandom.sample(
+                    Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])),
+                );
                 const fromStatus =
                     fromPoolId === undefined
                         ? StakeStatus.Undelegated
-                        : (_.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                        : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
-                const toPoolId = _.sample(Object.keys(stakingPools));
+                const toPoolId = Pseudorandom.sample(Object.keys(stakingPools));
                 const toStatus =
                     toPoolId === undefined
                         ? StakeStatus.Undelegated
-                        : (_.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                        : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
                 const to = new StakeInfo(toStatus, toPoolId);
 
                 const moveableStake =
                     from.status === StakeStatus.Undelegated
                         ? this.stake[StakeStatus.Undelegated].nextEpochBalance
                         : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
-                const amount = getRandomInteger(0, moveableStake);
+                const amount = Pseudorandom.integer(moveableStake);
 
                 yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
             }

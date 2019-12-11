@@ -1,5 +1,4 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
-import * as _ from 'lodash';
 
 import { Actor } from '../framework/actors/base';
 import { PoolOperator } from '../framework/actors/pool_operator';
@@ -7,6 +6,7 @@ import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 import { Simulation, SimulationEnvironment } from '../framework/simulation';
+import { Pseudorandom } from '../framework/utils/pseudorandom';
 
 export class PoolManagementSimulation extends Simulation {
     protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
@@ -22,13 +22,18 @@ export class PoolManagementSimulation extends Simulation {
             operator.simulationActions.validDecreaseStakingPoolOperatorShare,
         ];
         while (true) {
-            const action = _.sample(actions);
+            const action = Pseudorandom.sample(actions);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }
 }
 
-blockchainTests.skip('Pool management fuzz test', env => {
+blockchainTests('Pool management fuzz test', env => {
+    before(function(): void {
+        if (process.env.FUZZ_TEST !== 'pool_management') {
+            this.skip();
+        }
+    });
     after(async () => {
         Actor.reset();
     });

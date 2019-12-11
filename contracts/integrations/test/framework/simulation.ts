@@ -1,10 +1,10 @@
 import { GlobalStakeByStatus, StakeStatus, StakingPoolById, StoredBalance } from '@0x/contracts-staking';
-import * as _ from 'lodash';
 
 import { Maker } from './actors/maker';
 import { AssertionResult } from './assertions/function_assertion';
 import { BlockchainBalanceStore } from './balances/blockchain_balance_store';
 import { DeploymentManager } from './deployment_manager';
+import { logger } from './utils/logger';
 
 // tslint:disable:max-classes-per-file
 
@@ -20,6 +20,14 @@ export class SimulationEnvironment {
         public balanceStore: BlockchainBalanceStore,
         public marketMakers: Maker[] = [],
     ) {}
+
+    public state(): any {
+        return {
+            globalStake: this.globalStake,
+            stakingPools: this.stakingPools,
+            balanceStore: this.balanceStore.toReadable(),
+        };
+    }
 }
 
 export abstract class Simulation {
@@ -30,14 +38,23 @@ export abstract class Simulation {
     public async fuzzAsync(steps?: number): Promise<void> {
         if (steps !== undefined) {
             for (let i = 0; i < steps; i++) {
-                await this.generator.next();
+                await this._stepAsync();
             }
         } else {
             while (true) {
-                await this.generator.next();
+                await this._stepAsync();
             }
         }
     }
 
     protected abstract _assertionGenerator(): AsyncIterableIterator<AssertionResult | void>;
+
+    private async _stepAsync(): Promise<void> {
+        try {
+            await this.generator.next();
+        } catch (error) {
+            logger.logFailure(error, this.environment.state());
+            throw error;
+        }
+    }
 }
