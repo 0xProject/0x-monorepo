@@ -180,7 +180,12 @@ function getMethodSignature(method: ContractMethodDocs): string {
         return /^\d+$/.test(_name) ? param.type : `${param.type} ${_name}`;
     });
     const _returns = returns.length !== 0 ? `: (${returns.join(', ')})` : '';
-    return `function ${getNormalizedMethodName(method)}(${args.join(', ')})${_returns}`;
+    const mutabilityPrefix = ['view', 'pure'].includes(method.stateMutability)
+        ? 'constant '
+        : method.stateMutability === 'payable'
+        ? 'payable '
+        : '';
+    return `${mutabilityPrefix}function ${getNormalizedMethodName(method)}(${args.join(', ')})${_returns}`;
 }
 
 function getNormalizedMethodName(method: ContractMethodDocs): string {
