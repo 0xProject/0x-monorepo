@@ -84,11 +84,12 @@ function generateContractsContent(name: string, docs: SolidityDocs, opts: Partia
     const methodSections = [];
     const sortedMethods = contract.methods.sort((a, b) => a.name.localeCompare(b.name));
     for (const method of sortedMethods) {
+        const annotation = method.isAccessor ? ' *(generated)*' : method.kind === 'fallback' ? ' *(fallback)*' : '';
         methodSections.push([
             `### ${toCode(getNormalizedMethodName(method))}`,
             method.doc,
             '',
-            `• ${toCode(getMethodSignature(method))}${method.isAccessor ? ' *(generated)*' : ''}`,
+            `• ${toCode(getMethodSignature(method))}${annotation}`,
             '',
             toSourceAttributionLink(method, opts),
             '',
@@ -179,7 +180,7 @@ function getMethodSignature(method: ContractMethodDocs): string {
         return /^\d+$/.test(_name) ? param.type : `${param.type} ${_name}`;
     });
     const _returns = returns.length !== 0 ? `: (${returns.join(', ')})` : '';
-    return `${getNormalizedMethodName(method)}(${args.join(', ')})${_returns}`;
+    return `function ${getNormalizedMethodName(method)}(${args.join(', ')})${_returns}`;
 }
 
 function getNormalizedMethodName(method: ContractMethodDocs): string {
@@ -196,7 +197,7 @@ function getEventSignature(event: EventDocs): string {
     const args = Object.entries(event.parameters).map(([name, param]) => {
         return /^\d+$/.test(name) ? param.type : `${param.type} ${name}`;
     });
-    return `${event.name}(${args.join(', ')})`;
+    return `event ${event.name}(${args.join(', ')})`;
 }
 
 function createTableContent(headers: string[], rows: Stringable[][]): string[] {
