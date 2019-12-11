@@ -12,7 +12,7 @@ packages/instant/  @BMillman19 @fragosti @dave4506
 .circleci/ @LogvinovLeon
 packages/abi-gen/ @feuGeneA
 packages/base-contract/ @xianny
-packages/connect/ @fragosti 
+packages/connect/ @fragosti
 packages/abi-gen-templates/ @feuGeneA @xianny
 packages/contract-addresses/ @abandeali1
 packages/contract-artifacts/ @abandeali1
@@ -20,7 +20,7 @@ packages/dev-utils/ @LogvinovLeon @fabioberger
 packages/devnet/ @albrow
 packages/ethereum-types/ @LogvinovLeon
 packages/monorepo-scripts/ @fabioberger
-packages/order-utils/ @fabioberger @LogvinovLeon 
+packages/order-utils/ @fabioberger @LogvinovLeon
 packages/python-contract-wrappers/ @feuGeneA
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-coverage/ @LogvinovLeon
@@ -28,6 +28,7 @@ packages/sol-profiler/ @LogvinovLeon
 packages/sol-trace/ @LogvinovLeon
 packages/sol-tracing-utils/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
+packages/sol-doc/ @dorothy-zbornak
 packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
 packages/web3-wrapper/ @LogvinovLeon @fabioberger
@@ -36,3 +37,4 @@ packages/utils/ @hysz
 
 # Protocol/smart contracts
 contracts/ @abandeali1 @hysz
+contracts/erc20-bridge-sampler @dorothy-zbornak
