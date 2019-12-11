@@ -113,13 +113,17 @@ function getMethodId(name: string, params: ParamDocsMap): string {
 }
 
 function filterTypes(docs: SolidityDocs, contracts: string[], onlyExposed: boolean = false): SolidityDocs {
-    const contractsWithInheritance = [...contracts, ...getAllInheritedContracts(contracts, docs)];
+    const inheritedContracts = getAllInheritedContracts(contracts, docs);
+    const contractsWithInheritance = [...inheritedContracts, ...contracts];
     const filteredDocs: SolidityDocs = {
         ...docs,
         contracts: {},
     };
     const usages = getTypeUsage(docs);
     for (const [contractName, contract] of Object.entries(docs.contracts)) {
+        if (inheritedContracts.includes(contractName) && !contracts.includes(contractName)) {
+            continue;
+        }
         const filteredContract: ContractDocs = {
             ...contract,
             methods: contract.methods.filter(m => !onlyExposed || isMethodVisible(m)),
