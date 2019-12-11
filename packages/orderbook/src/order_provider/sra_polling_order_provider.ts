@@ -69,7 +69,7 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         const pollingIntervalId = intervalUtils.setAsyncExcludingInterval(
             async () => {
-                const previousOrderSet = this._orderStore.getOrderSetForAssetPair(assetPairKey);
+                const previousOrderSet = await this._orderStore.getOrderSetForAssetPairAsync(assetPairKey);
                 const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
                 const orderSet = new OrderSet();
                 await orderSet.addManyAsync(orders);

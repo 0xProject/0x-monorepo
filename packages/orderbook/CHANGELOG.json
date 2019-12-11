@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Change OrderStore functions to be async, allowing for Database adapters",
+                "pr": 2393
+            }
+        ]
+    },
+    {
         "timestamp": 1575931811,
         "version": "1.0.1",
         "changes": [

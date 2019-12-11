@@ -142,7 +142,7 @@ describe('MeshOrderProvider', () => {
             );
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
         test('stores the orders from a subscription update', async () => {
@@ -152,7 +152,7 @@ describe('MeshOrderProvider', () => {
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             connection.sendUTF(eventResponse);
             await utils.delayAsync(100);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
         test('removes orders on a subscription update', async () => {
@@ -163,7 +163,7 @@ describe('MeshOrderProvider', () => {
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             connection.sendUTF(added);
             await utils.delayAsync(100);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
             connection.sendUTF(removed);
             await utils.delayAsync(100);
@@ -224,7 +224,7 @@ describe('MeshOrderProvider', () => {
                 orderStore,
             );
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(getOrdersStub.callCount).toBe(1);
             // Orders are not added on a subscription, only during reconnnect
             expect(addOrdersStub.callCount).toBe(0);

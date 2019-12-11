@@ -87,7 +87,7 @@ describe('SRAWebsocketOrderProvider', () => {
             expect(stub.callCount).toBe(2);
             expect(wsStub.callCount).toBe(1);
             await utils.delayAsync(5);
-            const storedOrders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const storedOrders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(storedOrders.size()).toBe(1);
         });
         test('stores the orders', async () => {
@@ -108,7 +108,7 @@ describe('SRAWebsocketOrderProvider', () => {
             );
             provider = new SRAWebsocketOrderProvider({ httpEndpoint, websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
         test('reconnects on channel close', async () => {
@@ -134,6 +134,7 @@ describe('SRAWebsocketOrderProvider', () => {
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             expect(handler).not.toBe(undefined);
             (handler as OrdersChannelHandler).onClose(undefined as any);
+            await utils.delayAsync(5);
             // Creates the new connection
             expect(wsStub.callCount).toBe(2);
         });

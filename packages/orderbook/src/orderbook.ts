@@ -76,10 +76,10 @@ export class Orderbook {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
-        if (!this._orderStore.has(assetPairKey)) {
+        if (!(await this._orderStore.hasAsync(assetPairKey))) {
             await this._orderProvider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
         }
-        const orders = this._orderStore.values(assetPairKey);
+        const orders = await this._orderStore.valuesAsync(assetPairKey);
         return orders.filter(
             o => o.order.makerAssetData === makerAssetData && o.order.takerAssetData === takerAssetData,
         );

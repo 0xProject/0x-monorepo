@@ -71,7 +71,7 @@ describe('SRAPollingOrderProvider', () => {
             );
             provider = new SRAPollingOrderProvider({ httpEndpoint, pollingIntervalMs: 30000 }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
         test('removes the order from the set when the API response no longer returns the order', async () => {
@@ -88,7 +88,7 @@ describe('SRAPollingOrderProvider', () => {
             );
             provider = new SRAPollingOrderProvider({ httpEndpoint, pollingIntervalMs: 1 }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
-            const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
+            const orders = await orderStore.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
             // Delete the record from the API response
             records.splice(0, 1);

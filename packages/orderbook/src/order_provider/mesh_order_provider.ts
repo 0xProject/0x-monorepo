@@ -65,7 +65,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
         const minAmount = new BigNumber(0);
         const maxAmount = new BigNumber(2).pow(256).minus(1);
         const precision = DEFAULT_TOKEN_PRECISION;
-        for (const assetPairKey of this._orderStore.keys()) {
+        for (const assetPairKey of await this._orderStore.keysAsync()) {
             const [assetA, assetB] = OrderStore.assetPairKeyToAssets(assetPairKey);
             const assetDataA: Asset = { assetData: assetA, minAmount, maxAmount, precision };
             const assetDataB: Asset = { assetData: assetB, minAmount, maxAmount, precision };
@@ -127,8 +127,8 @@ export class MeshOrderProvider extends BaseOrderProvider {
      * for every known asset pair.
      */
     private async _syncOrdersInOrderStoreAsync(): Promise<void> {
-        for (const assetPairKey of this._orderStore.keys()) {
-            const currentOrders = this._orderStore.getOrderSetForAssetPair(assetPairKey);
+        for (const assetPairKey of await this._orderStore.keysAsync()) {
+            const currentOrders = await this._orderStore.getOrderSetForAssetPairAsync(assetPairKey);
             const { rejected } = await utils.attemptAsync(() =>
                 this._wsClient.addOrdersAsync(Array.from(currentOrders.values()).map(o => o.order)),
             );

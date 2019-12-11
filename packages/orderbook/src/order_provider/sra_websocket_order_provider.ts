@@ -101,7 +101,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
         // first time we have had this request, preload the local storage
         const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
-        const currentOrders = this._orderStore.getOrderSetForAssetPair(assetPairKey);
+        const currentOrders = await this._orderStore.getOrderSetForAssetPairAsync(assetPairKey);
         const newOrders = new OrderSet();
         await newOrders.addManyAsync(orders);
         const diff = await currentOrders.diffAsync(newOrders);
@@ -113,7 +113,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
     }
 
     private async _syncOrdersInOrderStoreAsync(): Promise<void> {
-        for (const assetPairKey of this._orderStore.keys()) {
+        for (const assetPairKey of await this._orderStore.keysAsync()) {
             const [assetDataA, assetDataB] = OrderStore.assetPairKeyToAssets(assetPairKey);
             await this._fetchAndCreateSubscriptionAsync(assetDataA, assetDataB);
         }

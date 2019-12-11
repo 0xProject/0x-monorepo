@@ -12,11 +12,11 @@ export class OrderStore {
     public static assetPairKeyToAssets(assetPairKey: string): string[] {
         return assetPairKey.split('-');
     }
-    public getOrderSetForAssets(makerAssetData: string, takerAssetData: string): OrderSet {
+    public async getOrderSetForAssetsAsync(makerAssetData: string, takerAssetData: string): Promise<OrderSet> {
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
-        return this.getOrderSetForAssetPair(assetPairKey);
+        return this.getOrderSetForAssetPairAsync(assetPairKey);
     }
-    public getOrderSetForAssetPair(assetPairKey: string): OrderSet {
+    public async getOrderSetForAssetPairAsync(assetPairKey: string): Promise<OrderSet> {
         const orderSet = this._orders.get(assetPairKey);
         if (!orderSet) {
             const newOrderSet = new OrderSet();
@@ -27,17 +27,17 @@ export class OrderStore {
     }
     public async updateAsync(addedRemoved: AddedRemovedOrders): Promise<void> {
         const { added, removed, assetPairKey } = addedRemoved;
-        const orders = this.getOrderSetForAssetPair(assetPairKey);
+        const orders = await this.getOrderSetForAssetPairAsync(assetPairKey);
         await orders.addManyAsync(added);
         await orders.deleteManyAsync(removed);
     }
-    public has(assetPairKey: string): boolean {
+    public async hasAsync(assetPairKey: string): Promise<boolean> {
         return this._orders.has(assetPairKey);
     }
-    public values(assetPairKey: string): APIOrder[] {
-        return Array.from(this.getOrderSetForAssetPair(assetPairKey).values());
+    public async valuesAsync(assetPairKey: string): Promise<APIOrder[]> {
+        return Array.from((await this.getOrderSetForAssetPairAsync(assetPairKey)).values());
     }
-    public keys(): IterableIterator<string> {
+    public async keysAsync(): Promise<IterableIterator<string>> {
         return this._orders.keys();
     }
 }
