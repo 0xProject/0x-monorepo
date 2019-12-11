@@ -4,7 +4,7 @@ import * as seedrandom from 'seedrandom';
 
 class PRNGWrapper {
     public readonly seed = process.env.SEED || Math.random().toString();
-    private readonly _rng = seedrandom(this.seed);
+    public readonly rng = seedrandom(this.seed);
 
     /*
      * Pseudorandom version of _.sample. Picks an element of the given array with uniform probability.
@@ -14,7 +14,7 @@ class PRNGWrapper {
         if (arr.length === 0) {
             return undefined;
         }
-        const index = Math.abs(this._rng.int32()) % arr.length;
+        const index = Math.abs(this.rng.int32()) % arr.length;
         return arr[index];
     }
 
@@ -33,22 +33,39 @@ class PRNGWrapper {
         return samples;
     }
 
-    // tslint:disable:unified-signatures
     /*
-     * Pseudorandom version of getRandomPortion/getRandomInteger. If two arguments are provided,
-     * treats those arguments as the min and max (inclusive) of the desired range. If only one
-     * argument is provided, picks an integer between 0 and the argument.
+     * Pseudorandom version of getRandomPortion/getRandomInteger. If no distribution is provided,
+     * samples an integer between the min and max uniformly at random. If a distribution is
+     * provided, samples an integer from the given distribution (assumed to be defined on the
+     * interval [0, 1]) scaled to [min, max].
      */
-    public integer(max: Numberish): BigNumber;
-    public integer(min: Numberish, max: Numberish): BigNumber;
-    public integer(a: Numberish, b?: Numberish): BigNumber {
-        if (b === undefined) {
-            return new BigNumber(this._rng()).times(a).integerValue(BigNumber.ROUND_HALF_UP);
-        } else {
-            const range = new BigNumber(b).minus(a);
-            return this.integer(range).plus(a);
-        }
+    public integer(min: Numberish, max: Numberish, distribution: () => Numberish = this.rng): BigNumber {
+        const range = new BigNumber(max).minus(min);
+        return new BigNumber(distribution())
+            .times(range)
+            .integerValue(BigNumber.ROUND_HALF_UP)
+            .plus(min);
+    }
+
+    /*
+     * Returns a function that produces samples from the Kumaraswamy distribution parameterized by
+     * the given alpha and beta. The Kumaraswamy distribution is like the beta distribution, but
+     * with a nice closed form.
+     * https://en.wikipedia.org/wiki/Kumaraswamy_distribution
+     * https://www.johndcook.com/blog/2009/11/24/kumaraswamy-distribution/
+     */
+    public kumaraswamy(this: PRNGWrapper, alpha: Numberish, beta: Numberish): () => BigNumber {
+        const ONE = new BigNumber(1);
+        return () => {
+            const u = new BigNumber(this.rng()).modulo(ONE); // u ~ Uniform(0, 1)
+            // Evaluate the inverse CDF at `u` to obtain a sample from Kumaraswamy(alpha, beta)
+            return ONE.minus(ONE.minus(u).exponentiatedBy(ONE.dividedBy(beta))).exponentiatedBy(ONE.dividedBy(alpha));
+        };
     }
 }
 
 export const Pseudorandom = new PRNGWrapper();
+export const Distributions = {
+    Uniform: Pseudorandom.rng,
+    Kumaraswamy: Pseudorandom.kumaraswamy.bind(Pseudorandom),
+};

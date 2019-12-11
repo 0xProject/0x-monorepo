@@ -79,7 +79,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
                 const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
-                const amount = Pseudorandom.integer(zrxBalance);
+                const amount = Pseudorandom.integer(0, zrxBalance);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -98,7 +98,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.currentEpochBalance,
                     undelegatedStake.nextEpochBalance,
                 );
-                const amount = Pseudorandom.integer(withdrawableStake);
+                const amount = Pseudorandom.integer(0, withdrawableStake);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -136,7 +136,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     from.status === StakeStatus.Undelegated
                         ? this.stake[StakeStatus.Undelegated].nextEpochBalance
                         : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
-                const amount = Pseudorandom.integer(moveableStake);
+                const amount = Pseudorandom.integer(0, moveableStake);
 
                 yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
             }
