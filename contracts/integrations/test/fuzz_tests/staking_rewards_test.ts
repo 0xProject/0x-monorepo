@@ -1,4 +1,5 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
+import * as _ from 'lodash';
 
 import { Actor } from '../framework/actors/base';
 import {
@@ -32,15 +33,15 @@ export class StakingRewardsSimulation extends Simulation {
         const poolMembership = new PoolMembershipSimulation(this.environment);
         const stakeManagement = new StakeManagementSimulation(this.environment);
 
-        const actions = [
-            ...stakers.map(staker => staker.simulationActions.validWithdrawDelegatorRewards),
-            ...keepers.map(keeper => keeper.simulationActions.validFinalizePool),
-            ...keepers.map(keeper => keeper.simulationActions.validEndEpoch),
-            poolMembership.generator,
-            stakeManagement.generator,
-        ];
+        const [actions, weights] = _.unzip([
+            ...stakers.map(staker => [staker.simulationActions.validWithdrawDelegatorRewards, 0.1 / stakers.length]),
+            ...keepers.map(keeper => [keeper.simulationActions.validFinalizePool, 0.1 / keepers.length]),
+            ...keepers.map(keeper => [keeper.simulationActions.validEndEpoch, 0.1 / keepers.length]),
+            [poolMembership.generator, 0.5],
+            [stakeManagement.generator, 0.2],
+        ]) as [AsyncIterableIterator<AssertionResult | void>[], number[]];
         while (true) {
-            const action = Pseudorandom.sample(actions);
+            const action = Pseudorandom.sample(actions, weights);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }

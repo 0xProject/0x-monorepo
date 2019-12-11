@@ -1,5 +1,6 @@
 import { Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 import * as seedrandom from 'seedrandom';
 
 class PRNGWrapper {
@@ -10,11 +11,19 @@ class PRNGWrapper {
      * Pseudorandom version of _.sample. Picks an element of the given array with uniform probability.
      * Return undefined if the array is empty.
      */
-    public sample<T>(arr: T[]): T | undefined {
+    public sample<T>(arr: T[], weights?: number[]): T | undefined {
         if (arr.length === 0) {
             return undefined;
         }
-        const index = Math.abs(this.rng.int32()) % arr.length;
+
+        let index: number;
+        if (weights !== undefined) {
+            const cdf = weights.map((_weight, i) => _.sum(weights.slice(0, i + 1)) / _.sum(weights));
+            const x = this.rng();
+            index = cdf.findIndex(value => value > x);
+        } else {
+            index = Math.abs(this.rng.int32()) % arr.length;
+        }
         return arr[index];
     }
 
@@ -22,13 +31,13 @@ class PRNGWrapper {
      * Pseudorandom version of _.sampleSize. Returns an array of `n` samples from the given array
      * (with replacement), chosen with uniform probability. Return undefined if the array is empty.
      */
-    public sampleSize<T>(arr: T[], n: number): T[] | undefined {
+    public sampleSize<T>(arr: T[], n: number, weights?: number[]): T[] | undefined {
         if (arr.length === 0) {
             return undefined;
         }
         const samples = [];
         for (let i = 0; i < n; i++) {
-            samples.push(this.sample(arr) as T);
+            samples.push(this.sample(arr, weights) as T);
         }
         return samples;
     }

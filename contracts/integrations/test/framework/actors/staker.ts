@@ -118,7 +118,10 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 const fromStatus =
                     fromPoolId === undefined || stakingPools[fromPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
-                        : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                        : (Pseudorandom.sample(
+                              [StakeStatus.Undelegated, StakeStatus.Delegated],
+                              [0.2, 0.8],
+                          ) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
                 // Pick a random pool to move the stake to
@@ -128,7 +131,10 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 const toStatus =
                     toPoolId === undefined || stakingPools[toPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
-                        : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                        : (Pseudorandom.sample(
+                              [StakeStatus.Undelegated, StakeStatus.Delegated],
+                              [0.2, 0.8],
+                          ) as StakeStatus);
                 const to = new StakeInfo(toStatus, toPoolId);
 
                 // The next epoch balance of the `from` stake is the amount that can be moved
