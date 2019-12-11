@@ -85,7 +85,7 @@ function generateContractsContent(name: string, docs: SolidityDocs, opts: Partia
     const sortedMethods = contract.methods.sort((a, b) => a.name.localeCompare(b.name));
     for (const method of sortedMethods) {
         methodSections.push([
-            method.kind === 'constructor' ? `### ${toCode('constructor')}` : `### ${toCode(method.name)}`,
+            `### ${toCode(getNormalizedMethodName(method))}`,
             method.doc,
             '',
             `• ${toCode(getMethodSignature(method))}${method.isAccessor ? ' *(generated)*' : ''}`,
@@ -179,8 +179,17 @@ function getMethodSignature(method: ContractMethodDocs): string {
         return /^\d+$/.test(_name) ? param.type : `${param.type} ${_name}`;
     });
     const _returns = returns.length !== 0 ? `: (${returns.join(', ')})` : '';
-    const name = method.kind === 'constructor' ? 'constructor' : method.name;
-    return `${name}(${args.join(', ')})${_returns}`;
+    return `${getNormalizedMethodName(method)}(${args.join(', ')})${_returns}`;
+}
+
+function getNormalizedMethodName(method: ContractMethodDocs): string {
+    let name = method.name;
+    if (method.kind === 'constructor') {
+        name = 'constructor';
+    } else if (method.kind === 'fallback') {
+        name = '<fallback>';
+    }
+    return name;
 }
 
 function getEventSignature(event: EventDocs): string {

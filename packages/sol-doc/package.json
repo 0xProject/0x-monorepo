@@ -14,14 +14,16 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
-        "clean": "shx rm -rf lib",
-        "generate-protocol-docs": "COMMIT=`git rev-parse --short HEAD`; mkdir -p ${npm_package_config_outputDir}; yarn start `echo ${npm_package_config_sources} | sed -r 's/(\\S+?)\\b/--source \\1/g'` --root ../../ --root ../../node_modules/@0x/contracts-=contracts/ `echo ${npm_package_config_contracts} | sed -r 's/(\\w+?)\\b/--contract \\1/g'` --json ${npm_package_config_outputDir}/docs.json --md ${npm_package_config_outputDir}/docs.md --md-url-prefix \"${npm_package_config_repoBlobRoot}/${COMMIT}\""
+        "clean": "shx rm -rf lib docs",
+        "generate-protocol-docs": "COMMIT=`git rev-parse --short HEAD`; mkdir -p ${npm_package_config_outputDir}; yarn start `echo ${npm_package_config_sources} | sed -r 's/(\\S+?)\\b/--source \\1/g'` --root ../../ --root ../../node_modules/@0x/contracts-=contracts/ `echo ${npm_package_config_contracts} | sed -r 's/(\\w+?)\\b/--contract \\1/g'` --md ${npm_package_config_outputDir}/reference.mdx --md-url-prefix \"${npm_package_config_repoBlobRoot}/${COMMIT}\"",
+        "s3:sync_md_docs": "aws s3 sync ${npm_package_config_outputDir} s3://docs-markdown/${npm_package_config_s3DocsPath} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
     },
     "config": {
         "outputDir": "./docs",
         "repoBlobRoot": "https://github.com/0xProject/0x-monorepo/blob",
-        "sources": "../../contracts/exchange/contracts/src/Exchange.sol ../../contracts/exchange-forwarder/contracts/src/Forwarder.sol ../../contracts/staking/contracts/src/Staking.sol",
-        "contracts": "Exchange Forwarder Staking"
+        "sources": "../../contracts/exchange/contracts/src/Exchange.sol ../../contracts/exchange-forwarder/contracts/src/Forwarder.sol ../../contracts/staking/contracts/src/Staking.sol ../../contracts/coordinator/contracts/src/Coordinator.sol",
+        "contracts": "Exchange Forwarder Staking Coordinator",
+        "s3DocsPath": "@0x/contracts-docs/v3.0.0"
     },
     "bin": {
         "sol-doc": "bin/sol-doc.js"
@@ -40,6 +42,7 @@
     },
     "devDependencies": {
         "@0x/tslint-config": "^4.0.0",
+        "@0x/dev-utils": "^3.0.1",
         "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
