@@ -13,6 +13,9 @@ declare module 'ganache-core' {
         vmErrorsOnRPCResponse?: boolean;
         db_path?: string;
         total_accounts?: number;
+        fork?: string;
+        blockTime?: number;
+        unlocked_accounts?: string[];
     }
     export function provider(opts: GanacheOpts): EthereumTypes.Provider;
 }

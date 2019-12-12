@@ -21,6 +21,9 @@ export interface Web3Config {
     shouldUseFakeGasEstimate?: boolean; // default: true
     ganacheDatabasePath?: string; // default: undefined, creates a tmp dir
     shouldAllowUnlimitedContractSize?: boolean;
+    fork?: string;
+    blockTime?: number;
+    unlocked_accounts?: string[];
 }
 
 export const web3Factory = {
@@ -73,6 +76,9 @@ export const web3Factory = {
                     port: 8545,
                     network_id: 50,
                     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
+                    fork: config.fork,
+                    blockTime: config.blockTime,
+                    unlocked_accounts: config.unlocked_accounts,
                 } as any), // TODO remove any once types are merged in DefinitelyTyped
             );
         } else {

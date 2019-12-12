@@ -669,7 +669,8 @@
 
 "@0x/assert@^2.2.0-beta.2", "@0x/assert@^2.2.0-beta.3":
   version "2.2.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@0x/assert/-/assert-2.2.0-beta.3.tgz#8fb95c265000532cd8dced44d44d29ca544b2bfc"
+  resolved "https://registry.npmjs.org/@0x/assert/-/assert-2.2.0-beta.3.tgz#8fb95c265000532cd8dced44d44d29ca544b2bfc"
+  integrity sha512-ShENc8QJU4ur/5TkRl3l7J3Yt7WaxHAbuoTRm/djcA0iwYyUVlP5yN9Ab9ua+VLizQQTNw1n+kF1mJWg5lQXuA==
   dependencies:
     "@0x/json-schemas" "^4.1.0-beta.3"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -723,7 +724,8 @@
 
 "@0x/contract-wrappers@^12.2.0-beta.4":
   version "12.2.0-beta.4"
-  resolved "https://registry.yarnpkg.com/@0x/contract-wrappers/-/contract-wrappers-12.2.0-beta.4.tgz#7a7301dd50c28887879df4d385e80a49e040748d"
+  resolved "https://registry.npmjs.org/@0x/contract-wrappers/-/contract-wrappers-12.2.0-beta.4.tgz#7a7301dd50c28887879df4d385e80a49e040748d"
+  integrity sha512-JVoYG3Rd430fZw9ogBSqeLOaJXkqp9N7g614X5/bzzuG/dSDdwXl48X02m66aGFWcNofx/iMsT4tpOZrJ2bDBg==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/base-contract" "^5.5.0-beta.4"
@@ -790,7 +792,8 @@
 
 "@0x/json-schemas@^4.1.0-beta.2", "@0x/json-schemas@^4.1.0-beta.3":
   version "4.1.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-4.1.0-beta.3.tgz#af70a35691108ea162140640bae93a7fc84ca6ee"
+  resolved "https://registry.npmjs.org/@0x/json-schemas/-/json-schemas-4.1.0-beta.3.tgz#af70a35691108ea162140640bae93a7fc84ca6ee"
+  integrity sha512-vcgzSeaOXiUQ4KjqdLTTBHbkWnp4IE7cXbUblRy8Y0XYPQsPywhs9mtjY4lBVNmm1DDpLhreo1mwrvPS3HW5YA==
   dependencies:
     "@0x/typescript-typings" "^4.4.0-beta.2"
     "@types/node" "*"
@@ -903,7 +906,8 @@
 
 "@0x/types@^2.5.0-beta.2", "@0x/types@^2.5.0-beta.3":
   version "2.5.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@0x/types/-/types-2.5.0-beta.3.tgz#e010e9dbf62e37e59177c1d6df8d1acf3a9ea1b4"
+  resolved "https://registry.npmjs.org/@0x/types/-/types-2.5.0-beta.3.tgz#e010e9dbf62e37e59177c1d6df8d1acf3a9ea1b4"
+  integrity sha512-5wJs4/EZGPcU6W5IZ87zuya9vQUPD4DchyP29bXyguGHg9dOxuUOF4WauJZExWlPCS7eivviiUHpZD9DZhni+w==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
@@ -911,7 +915,8 @@
 
 "@0x/typescript-typings@4.4.0-beta.2", "@0x/typescript-typings@^4.4.0-beta.2":
   version "4.4.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@0x/typescript-typings/-/typescript-typings-4.4.0-beta.2.tgz#67c621252f162914186b8f684ac5e306206c1cf2"
+  resolved "https://registry.npmjs.org/@0x/typescript-typings/-/typescript-typings-4.4.0-beta.2.tgz#67c621252f162914186b8f684ac5e306206c1cf2"
+  integrity sha512-Fq2nOKvopdLMEjuPiKqomGog06bxAXGjqnodCwv9OKr11V5W1twFTUM3c1TENfHeGvcqf1aMl1hsH3fuVP61jg==
   dependencies:
     "@types/bn.js" "^4.11.0"
     "@types/react" "*"
@@ -967,7 +972,8 @@
 
 "@0x/utils@^4.6.0-beta.2", "@0x/utils@^4.6.0-beta.3":
   version "4.6.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@0x/utils/-/utils-4.6.0-beta.3.tgz#d40278916d98c48ea05821ae4987c88f032c7bff"
+  resolved "https://registry.npmjs.org/@0x/utils/-/utils-4.6.0-beta.3.tgz#d40278916d98c48ea05821ae4987c88f032c7bff"
+  integrity sha512-aPIUgfhaDhwgddJAlIQJ2Ki87A60ovatBLCjareLUbsQSvFS5i3iujUBQHgFxZAv9tgl35fyg2ISEJ1YkQyubA==
   dependencies:
     "@0x/types" "^2.5.0-beta.3"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -1014,7 +1020,8 @@
 
 "@0x/web3-wrapper@^6.1.0-beta.2", "@0x/web3-wrapper@^6.1.0-beta.3":
   version "6.1.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-6.1.0-beta.3.tgz#82161147e9283391e0c7cd6027c971749c5a2f77"
+  resolved "https://registry.npmjs.org/@0x/web3-wrapper/-/web3-wrapper-6.1.0-beta.3.tgz#82161147e9283391e0c7cd6027c971749c5a2f77"
+  integrity sha512-mc8120n8w88gICbDm8pkmC83Ul3RgE4BGsjY5BRBFefmKbv/XLeBZiWdhsaWYmkk8v4f+ZxAQ+HHTBDsRH87Og==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/json-schemas" "^4.1.0-beta.3"
@@ -6754,7 +6761,8 @@ ethereum-types@^2.1.6:
 
 ethereum-types@^2.2.0-beta.2:
   version "2.2.0-beta.2"
-  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-2.2.0-beta.2.tgz#0b446842474c2afacd351258ed4a2d0841f2608f"
+  resolved "https://registry.npmjs.org/ethereum-types/-/ethereum-types-2.2.0-beta.2.tgz#0b446842474c2afacd351258ed4a2d0841f2608f"
+  integrity sha512-5ANYHI/InHqf4Nt8oYrpvcph9/D6gi3sbM7Rlr8r0QjXb2mqocqEvOH460Zkf1robc7WDqurp9baeMy+um8kww==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
