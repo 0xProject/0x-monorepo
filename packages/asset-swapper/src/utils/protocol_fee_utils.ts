@@ -18,7 +18,11 @@ export class ProtocolFeeUtils {
             const gasInfo = await res.json();
             // Eth Gas Station result is gwei * 10
             // tslint:disable-next-line:custom-no-magic-numbers
-            return new BigNumber(gasInfo.fast / 10);
+            const BASE_TEN = 10;
+            const gasPriceGwei = new BigNumber(gasInfo.fast / BASE_TEN);
+            const unit = new BigNumber(BASE_TEN).pow(BASE_TEN);
+            const gasPriceWei = unit.times(gasPriceGwei);
+            return gasPriceWei;
         } catch (e) {
             throw new Error(SwapQuoterError.NoGasPriceProvidedOrEstimated);
         }

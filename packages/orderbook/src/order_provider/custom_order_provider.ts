@@ -23,7 +23,7 @@ export class CustomOrderProvider extends BaseOrderProvider {
         const minAmount = new BigNumber(0);
         const maxAmount = new BigNumber(2).pow(256).minus(1);
         const precision = DEFAULT_TOKEN_PRECISION;
-        for (const assetPairKey of this._orderStore.keys()) {
+        for (const assetPairKey of await this._orderStore.keysAsync()) {
             const [assetA, assetB] = OrderStore.assetPairKeyToAssets(assetPairKey);
             const assetDataA: Asset = { assetData: assetA, minAmount, maxAmount, precision };
             const assetDataB: Asset = { assetData: assetB, minAmount, maxAmount, precision };
@@ -40,13 +40,19 @@ export class CustomOrderProvider extends BaseOrderProvider {
 
     public async addOrdersAsync(orders: SignedOrder[]): Promise<AcceptedRejectedOrders> {
         for (const order of orders) {
-            const orderSet = this._orderStore.getOrderSetForAssets(order.makerAssetData, order.takerAssetData);
-            await orderSet.addAsync({
-                order,
-                metaData: {
-                    remainingFillableTakerAssetAmount: order.takerAssetAmount,
-                    orderHash: await utils.getOrderHashAsync(order),
-                },
+            const assetPairKey = OrderStore.getKeyForAssetPair(order.makerAssetData, order.takerAssetData);
+            await this._orderStore.updateAsync({
+                added: [
+                    {
+                        order,
+                        metaData: {
+                            remainingFillableTakerAssetAmount: order.takerAssetAmount,
+                            orderHash: await utils.getOrderHashAsync(order),
+                        },
+                    },
+                ],
+                removed: [],
+                assetPairKey,
             });
         }
         return { accepted: orders, rejected: [] };
