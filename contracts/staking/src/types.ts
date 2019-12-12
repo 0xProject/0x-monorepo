@@ -71,56 +71,62 @@ export class StoredBalance {
  * Simulates _loadCurrentBalance. `shouldMutate` flag specifies whether or not to update the given
  * StoredBalance instance.
  */
-export function loadCurrentBalance(
-    balance: StoredBalance,
-    epoch: BigNumber,
-    shouldMutate: boolean = false,
-): StoredBalance {
-    const loadedBalance = new StoredBalance(
+export function loadCurrentBalance(balance: StoredBalance, epoch: BigNumber): StoredBalance {
+    return new StoredBalance(
         epoch,
         epoch.isGreaterThan(balance.currentEpoch) ? balance.nextEpochBalance : balance.currentEpochBalance,
         balance.nextEpochBalance,
     );
-    if (shouldMutate) {
-        balance.currentEpoch = loadedBalance.currentEpoch;
-        balance.currentEpochBalance = loadedBalance.currentEpochBalance;
-        balance.nextEpochBalance = loadedBalance.nextEpochBalance;
-    }
-    return loadedBalance;
 }
 
 /**
  * Simulates _increaseNextBalance
  */
-export function increaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
-    loadCurrentBalance(balance, epoch, true);
-    balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
+export function increaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        nextEpochBalance: balance.nextEpochBalance.plus(amount),
+    };
 }
 
 /**
  * Simulates _decreaseNextBalance
  */
-export function decreaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
-    loadCurrentBalance(balance, epoch, true);
-    balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
+export function decreaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        nextEpochBalance: balance.nextEpochBalance.minus(amount),
+    };
 }
 
 /**
  * Simulates _increaseCurrentAndNextBalance
  */
-export function increaseCurrentAndNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
-    loadCurrentBalance(balance, epoch, true);
-    balance.currentEpochBalance = balance.currentEpochBalance.plus(amount);
-    balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
+export function increaseCurrentAndNextBalance(
+    balance: StoredBalance,
+    amount: Numberish,
+    epoch: BigNumber,
+): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        currentEpochBalance: balance.currentEpochBalance.plus(amount),
+        nextEpochBalance: balance.nextEpochBalance.plus(amount),
+    };
 }
 
 /**
  * Simulates _decreaseCurrentAndNextBalance
  */
-export function decreaseCurrentAndNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
-    loadCurrentBalance(balance, epoch, true);
-    balance.currentEpochBalance = balance.currentEpochBalance.minus(amount);
-    balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
+export function decreaseCurrentAndNextBalance(
+    balance: StoredBalance,
+    amount: Numberish,
+    epoch: BigNumber,
+): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        currentEpochBalance: balance.currentEpochBalance.minus(amount),
+        nextEpochBalance: balance.nextEpochBalance.minus(amount),
+    };
 }
 
 export interface StakeBalanceByPool {

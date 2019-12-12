@@ -54,8 +54,16 @@ export function validUnstakeAssertion(
             balanceStore.assertEquals(expectedBalances);
 
             // _decreaseCurrentAndNextBalance
-            decreaseCurrentAndNextBalance(ownerStake[StakeStatus.Undelegated], amount, currentEpoch);
-            decreaseCurrentAndNextBalance(globalStake[StakeStatus.Undelegated], amount, currentEpoch);
+            ownerStake[StakeStatus.Undelegated] = decreaseCurrentAndNextBalance(
+                ownerStake[StakeStatus.Undelegated],
+                amount,
+                currentEpoch,
+            );
+            globalStake[StakeStatus.Undelegated] = decreaseCurrentAndNextBalance(
+                globalStake[StakeStatus.Undelegated],
+                amount,
+                currentEpoch,
+            );
 
             // Checks that the owner's undelegated stake has decreased by the stake amount
             const ownerUndelegatedStake = await stakingWrapper

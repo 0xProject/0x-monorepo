@@ -54,8 +54,16 @@ export function validStakeAssertion(
             balanceStore.assertEquals(expectedBalances);
 
             // _increaseCurrentAndNextBalance
-            increaseCurrentAndNextBalance(ownerStake[StakeStatus.Undelegated], amount, currentEpoch);
-            increaseCurrentAndNextBalance(globalStake[StakeStatus.Undelegated], amount, currentEpoch);
+            ownerStake[StakeStatus.Undelegated] = increaseCurrentAndNextBalance(
+                ownerStake[StakeStatus.Undelegated],
+                amount,
+                currentEpoch,
+            );
+            globalStake[StakeStatus.Undelegated] = increaseCurrentAndNextBalance(
+                globalStake[StakeStatus.Undelegated],
+                amount,
+                currentEpoch,
+            );
 
             // Checks that the owner's undelegated stake has increased by the stake amount
             const ownerUndelegatedStake = await stakingWrapper
