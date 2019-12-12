@@ -22,6 +22,7 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
+import { dummyOrderUtils } from './utils/market_operation_utils/dummy_order_utils';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -440,13 +441,11 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
-        const prunedOrders = await this.getSignedOrdersAsync(makerAssetData, takerAssetData);
+        let prunedOrders = await this.getSignedOrdersAsync(makerAssetData, takerAssetData);
+
+        // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (prunedOrders.length === 0) {
-            throw new Error(
-                `${
-                    SwapQuoterError.AssetUnavailable
-                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
-            );
+            prunedOrders = [dummyOrderUtils.createDummyOrderForSampler(makerAssetData, takerAssetData)];
         }
 
         let swapQuote: SwapQuote;
