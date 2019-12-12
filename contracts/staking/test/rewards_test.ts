@@ -1,5 +1,5 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { blockchainTests, constants, describe, expect, shortZip } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, shortZip, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber, StakingRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -9,7 +9,6 @@ import { FinalizerActor } from './actors/finalizer_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { toBaseUnitAmount } from './utils/number_utils';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count

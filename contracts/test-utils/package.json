@@ -65,6 +65,7 @@
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
+        "decimal.js": "^10.2.0",
         "dirty-chai": "^2.0.1",
         "ethereum-types": "^3.0.0",
         "ethereumjs-util": "^5.1.1",

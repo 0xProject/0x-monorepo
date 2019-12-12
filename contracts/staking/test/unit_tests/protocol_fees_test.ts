@@ -3,6 +3,7 @@ import {
     constants,
     expect,
     filterLogsToArguments,
+    getRandomInteger,
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
@@ -18,8 +19,6 @@ import {
     TestProtocolFeesERC20ProxyTransferFromEventArgs,
     TestProtocolFeesEvents,
 } from '../wrappers';
-
-import { getRandomInteger } from '../utils/number_utils';
 
 blockchainTests('Protocol Fees unit tests', env => {
     let ownerAddress: string;

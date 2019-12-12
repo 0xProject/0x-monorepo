@@ -67,6 +67,68 @@ export class StoredBalance {
     ) {}
 }
 
+/**
+ * Simulates _loadCurrentBalance. `shouldMutate` flag specifies whether or not to update the given
+ * StoredBalance instance.
+ */
+export function loadCurrentBalance(balance: StoredBalance, epoch: BigNumber): StoredBalance {
+    return new StoredBalance(
+        epoch,
+        epoch.isGreaterThan(balance.currentEpoch) ? balance.nextEpochBalance : balance.currentEpochBalance,
+        balance.nextEpochBalance,
+    );
+}
+
+/**
+ * Simulates _increaseNextBalance
+ */
+export function increaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        nextEpochBalance: balance.nextEpochBalance.plus(amount),
+    };
+}
+
+/**
+ * Simulates _decreaseNextBalance
+ */
+export function decreaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        nextEpochBalance: balance.nextEpochBalance.minus(amount),
+    };
+}
+
+/**
+ * Simulates _increaseCurrentAndNextBalance
+ */
+export function increaseCurrentAndNextBalance(
+    balance: StoredBalance,
+    amount: Numberish,
+    epoch: BigNumber,
+): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        currentEpochBalance: balance.currentEpochBalance.plus(amount),
+        nextEpochBalance: balance.nextEpochBalance.plus(amount),
+    };
+}
+
+/**
+ * Simulates _decreaseCurrentAndNextBalance
+ */
+export function decreaseCurrentAndNextBalance(
+    balance: StoredBalance,
+    amount: Numberish,
+    epoch: BigNumber,
+): StoredBalance {
+    return {
+        ...loadCurrentBalance(balance, epoch),
+        currentEpochBalance: balance.currentEpochBalance.minus(amount),
+        nextEpochBalance: balance.nextEpochBalance.minus(amount),
+    };
+}
+
 export interface StakeBalanceByPool {
     [key: string]: StoredBalance;
 }
@@ -151,8 +213,47 @@ export interface StakingPool {
     operator: string;
     operatorShare: number;
     delegatedStake: StoredBalance;
+    lastFinalized: BigNumber; // Epoch during which the pool was most recently finalized
 }
 
 export interface StakingPoolById {
     [poolId: string]: StakingPool;
 }
+
+export class PoolStats {
+    public feesCollected: BigNumber = constants.ZERO_AMOUNT;
+    public weightedStake: BigNumber = constants.ZERO_AMOUNT;
+    public membersStake: BigNumber = constants.ZERO_AMOUNT;
+
+    public static fromArray(arr: [BigNumber, BigNumber, BigNumber]): PoolStats {
+        const poolStats = new PoolStats();
+        [poolStats.feesCollected, poolStats.weightedStake, poolStats.membersStake] = arr;
+        return poolStats;
+    }
+}
+
+export class AggregatedStats {
+    public rewardsAvailable: BigNumber = constants.ZERO_AMOUNT;
+    public numPoolsToFinalize: BigNumber = constants.ZERO_AMOUNT;
+    public totalFeesCollected: BigNumber = constants.ZERO_AMOUNT;
+    public totalWeightedStake: BigNumber = constants.ZERO_AMOUNT;
+    public totalRewardsFinalized: BigNumber = constants.ZERO_AMOUNT;
+
+    public static fromArray(arr: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]): AggregatedStats {
+        const aggregatedStats = new AggregatedStats();
+        [
+            aggregatedStats.rewardsAvailable,
+            aggregatedStats.numPoolsToFinalize,
+            aggregatedStats.totalFeesCollected,
+            aggregatedStats.totalWeightedStake,
+            aggregatedStats.totalRewardsFinalized,
+        ] = arr;
+        return aggregatedStats;
+    }
+}
+
+export interface AggregatedStatsByEpoch {
+    [epoch: string]: AggregatedStats;
+}
+
+export type Numberish = Numberish;

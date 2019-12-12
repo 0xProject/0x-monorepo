@@ -21,7 +21,9 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "../src/Staking.sol";
+import "../src/interfaces/IStructs.sol";
 
 
 contract TestStaking is
@@ -54,6 +56,16 @@ contract TestStaking is
         external
     {
         testZrxVaultAddress = zrxVaultAddress;
+    }
+
+    // @dev Gets the most recent cumulative reward for a pool, and the epoch it was stored.
+    function getMostRecentCumulativeReward(bytes32 poolId)
+        external
+        view
+        returns (IStructs.Fraction memory cumulativeRewards, uint256 lastStoredEpoch)
+    {
+        lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        cumulativeRewards = _cumulativeRewardsByPool[poolId][lastStoredEpoch];
     }
 
     /// @dev Overridden to use testWethAddress;

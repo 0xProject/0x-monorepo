@@ -1,14 +1,15 @@
-import { constants } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 
-import { validFillOrderCompleteFillAssertion } from '../assertions/fillOrder';
+import { validFillOrderAssertion } from '../assertions/fillOrder';
 import { AssertionResult } from '../assertions/function_assertion';
 import { DeploymentManager } from '../deployment_manager';
 import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
+import { Maker } from './maker';
+import { filterActorsByRole } from './utils';
 
 export interface TakerInterface {
     fillOrderAsync: (
@@ -19,7 +20,7 @@ export interface TakerInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with takers within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with takers within the 0x ecosystem.
  * As of writing, the only extra functionality provided is a utility wrapper around `fillOrder`,
  */
 export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<TakerInterface> {
@@ -35,11 +36,12 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('Taker');
 
             // Register this mixin's assertion generators
             this.actor.simulationActions = {
                 ...this.actor.simulationActions,
-                validFillOrderCompleteFill: this._validFillOrderCompleteFill(),
+                validFillOrder: this._validFillOrder(),
             };
         }
 
@@ -61,32 +63,24 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 });
         }
 
-        private async *_validFillOrderCompleteFill(): AsyncIterableIterator<AssertionResult | void> {
-            const { marketMakers } = this.actor.simulationEnvironment!;
-            const assertion = validFillOrderCompleteFillAssertion(this.actor.deployment);
+        private async *_validFillOrder(): AsyncIterableIterator<AssertionResult | void> {
+            const { actors } = this.actor.simulationEnvironment!;
+            const assertion = validFillOrderAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
-                const maker = Pseudorandom.sample(marketMakers);
+                // Choose a maker to be the other side of the order
+                const maker = Pseudorandom.sample(filterActorsByRole(actors, Maker));
                 if (maker === undefined) {
-                    yield undefined;
+                    yield;
                 } else {
-                    // Configure the maker's token balances so that the order will definitely be fillable.
-                    await Promise.all([
-                        ...this.actor.deployment.tokens.erc20.map(async token => maker.configureERC20TokenAsync(token)),
-                        ...this.actor.deployment.tokens.erc20.map(async token =>
-                            this.actor.configureERC20TokenAsync(token),
-                        ),
-                        this.actor.configureERC20TokenAsync(
-                            this.actor.deployment.tokens.weth,
-                            this.actor.deployment.staking.stakingProxy.address,
-                        ),
-                    ]);
-
-                    const order = await maker.signOrderAsync({
-                        makerAssetAmount: Pseudorandom.integer(constants.INITIAL_ERC20_BALANCE),
-                        takerAssetAmount: Pseudorandom.integer(constants.INITIAL_ERC20_BALANCE),
-                    });
-                    yield assertion.executeAsync([order, order.takerAssetAmount, order.signature], {
+                    // Maker creates and signs a fillable order
+                    const order = await maker.createFillableOrderAsync(this.actor);
+                    // Taker fills the order by a random amount (up to the order's takerAssetAmount)
+                    const fillAmount = Pseudorandom.integer(order.takerAssetAmount);
+                    // Taker executes the fill with a random msg.value, so that sometimes the
+                    // protocol fee is paid in ETH and other times it's paid in WETH.
+                    yield assertion.executeAsync([order, fillAmount, order.signature], {
                         from: this.actor.address,
+                        value: Pseudorandom.integer(DeploymentManager.protocolFee.times(2)),
                     });
                 }
             }

@@ -1,10 +1,23 @@
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
+import { Decimal } from 'decimal.js';
 
 import { expect } from './chai_setup';
 import { constants } from './constants';
 import { Numberish } from './types';
+
+Decimal.set({ precision: 80 });
+
+/**
+ * Convert `x` to a `Decimal` type.
+ */
+export function toDecimal(x: Numberish): Decimal {
+    if (BigNumber.isBigNumber(x)) {
+        return new Decimal(x.toString(10));
+    }
+    return new Decimal(x);
+}
 
 /**
  * Generate a random integer between `min` and `max`, inclusive.
@@ -31,6 +44,22 @@ export function getRandomFloat(min: Numberish, max: Numberish): BigNumber {
         .minus(min)
         .times(r)
         .plus(min);
+}
+
+export const FIXED_POINT_BASE = new BigNumber(2).pow(127);
+
+/**
+ * Convert `n` to fixed-point integer represenatation.
+ */
+export function toFixed(n: Numberish): BigNumber {
+    return new BigNumber(n).times(FIXED_POINT_BASE).integerValue();
+}
+
+/**
+ * Convert `n` from fixed-point integer represenatation.
+ */
+export function fromFixed(n: Numberish): BigNumber {
+    return new BigNumber(n).dividedBy(FIXED_POINT_BASE);
 }
 
 /**

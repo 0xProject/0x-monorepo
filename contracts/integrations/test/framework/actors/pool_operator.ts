@@ -19,7 +19,7 @@ export interface PoolOperatorInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with pool operators within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with pool operators within the 0x ecosystem.
  * This includes creating staking pools and decreasing the operator share of a pool.
  */
 export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<PoolOperatorInterface> {
@@ -35,6 +35,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('PoolOperator');
 
             // Register this mixin's assertion generators
             this.actor.simulationActions = {
@@ -80,8 +81,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
         }
 
         private async *_validCreateStakingPool(): AsyncIterableIterator<AssertionResult> {
-            const { stakingPools } = this.actor.simulationEnvironment!;
-            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, stakingPools);
+            const assertion = validCreateStakingPoolAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
                 const operatorShare = Pseudorandom.integer(constants.PPM).toNumber();
                 yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });

@@ -1,10 +1,13 @@
 import {
+    assertIntegerRoughlyEquals,
     blockchainTests,
     constants,
     expect,
     filterLogsToArguments,
+    getRandomInteger,
     Numberish,
     shortZip,
+    toBaseUnitAmount,
 } from '@0x/contracts-test-utils';
 import { BigNumber, hexUtils, StakingRevertErrors } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
@@ -13,7 +16,6 @@ import * as _ from 'lodash';
 import { constants as stakingConstants } from '../../src/constants';
 
 import { artifacts } from '../artifacts';
-import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
 import {
     IStakingEventsEpochEndedEventArgs,

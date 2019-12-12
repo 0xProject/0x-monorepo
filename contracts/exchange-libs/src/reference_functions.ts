@@ -103,7 +103,7 @@ export function calculateFillResults(
         order.takerAssetAmount,
         order.makerAssetAmount,
     );
-    const makerFeePaid = safeGetPartialAmountFloor(makerAssetFilledAmount, order.makerAssetAmount, order.makerFee);
+    const makerFeePaid = safeGetPartialAmountFloor(takerAssetFilledAmount, order.takerAssetAmount, order.makerFee);
     const takerFeePaid = safeGetPartialAmountFloor(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
     return {
         makerAssetFilledAmount,
@@ -113,3 +113,30 @@ export function calculateFillResults(
         protocolFeePaid: safeMul(protocolFeeMultiplier, gasPrice),
     };
 }
+
+export const LibFractions = {
+    add: (n1: BigNumber, d1: BigNumber, n2: BigNumber, d2: BigNumber): [BigNumber, BigNumber] => {
+        if (n1.isZero()) {
+            return [n2, d2];
+        }
+        if (n2.isZero()) {
+            return [n1, d1];
+        }
+        const numerator = safeAdd(safeMul(n1, d2), safeMul(n2, d1));
+        const denominator = safeMul(d1, d2);
+        return [numerator, denominator];
+    },
+    normalize: (
+        numerator: BigNumber,
+        denominator: BigNumber,
+        maxValue: BigNumber = new BigNumber(2).exponentiatedBy(127),
+    ): [BigNumber, BigNumber] => {
+        if (numerator.isGreaterThan(maxValue) || denominator.isGreaterThan(maxValue)) {
+            let rescaleBase = numerator.isGreaterThanOrEqualTo(denominator) ? numerator : denominator;
+            rescaleBase = safeDiv(rescaleBase, maxValue);
+            return [safeDiv(numerator, rescaleBase), safeDiv(denominator, rescaleBase)];
+        } else {
+            return [numerator, denominator];
+        }
+    },
+};

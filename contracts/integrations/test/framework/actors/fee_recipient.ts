@@ -18,7 +18,7 @@ export interface FeeRecipientInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with fee recipients within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with fee recipients within the 0x ecosystem.
  * As of writing, the only extra functionality provided is signing Coordinator approvals.
  */
 export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<FeeRecipientInterface> {
@@ -35,6 +35,7 @@ export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('FeeRecipient');
 
             const { verifyingContract } = args[0] as FeeRecipientConfig;
             if (verifyingContract !== undefined) {

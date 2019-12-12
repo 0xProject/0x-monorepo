@@ -1,7 +1,16 @@
-import { IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs, TestStakingEvents } from '@0x/contracts-staking';
+import {
+    AggregatedStats,
+    IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
+    TestStakingEvents,
+} from '@0x/contracts-staking';
 import { filterLogsToArguments, web3Wrapper } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+
+import { validEndEpochAssertion } from '../assertions/endEpoch';
+import { validFinalizePoolAssertion } from '../assertions/finalizePool';
+import { AssertionResult } from '../assertions/function_assertion';
+import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
 
@@ -11,7 +20,7 @@ export interface KeeperInterface {
 }
 
 /**
- * This mixin encapsulates functionaltiy associated with keepers within the 0x ecosystem.
+ * This mixin encapsulates functionality associated with keepers within the 0x ecosystem.
  * This includes ending epochs sand finalizing pools in the staking system.
  */
 export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<KeeperInterface> {
@@ -27,6 +36,14 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('Keeper');
+
+            // Register this mixin's assertion generators
+            this.actor.simulationActions = {
+                ...this.actor.simulationActions,
+                validFinalizePool: this._validFinalizePool(),
+                validEndEpoch: this._validEndEpoch(),
+            };
         }
 
         /**
@@ -35,14 +52,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
         public async endEpochAsync(shouldFastForward: boolean = true): Promise<TransactionReceiptWithDecodedLogs> {
             const { stakingWrapper } = this.actor.deployment.staking;
             if (shouldFastForward) {
-                // increase timestamp of next block by how many seconds we need to
-                // get to the next epoch.
-                const epochEndTime = await stakingWrapper.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
-                const lastBlockTime = await web3Wrapper.getBlockTimestampAsync('latest');
-                const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
-                await web3Wrapper.increaseTimeAsync(dt);
-                // mine next block
-                await web3Wrapper.mineBlockAsync();
+                await this._fastForwardToNextEpochAsync();
             }
             return stakingWrapper.endEpoch().awaitTransactionSuccessAsync({ from: this.actor.address });
         }
@@ -74,6 +84,51 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     }),
                 ),
             );
+        }
+
+        private async *_validFinalizePool(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = validFinalizePoolAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
+            while (true) {
+                // Finalize a random pool, or do nothing if there are no pools in the simulation yet.
+                const poolId = Pseudorandom.sample(Object.keys(stakingPools));
+                if (poolId === undefined) {
+                    yield;
+                } else {
+                    yield assertion.executeAsync([poolId], { from: this.actor.address });
+                }
+            }
+        }
+
+        private async *_validEndEpoch(): AsyncIterableIterator<AssertionResult | void> {
+            const assertion = validEndEpochAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
+            const { stakingWrapper } = this.actor.deployment.staking;
+            while (true) {
+                const { currentEpoch } = this.actor.simulationEnvironment!;
+                const aggregatedStats = AggregatedStats.fromArray(
+                    await stakingWrapper.aggregatedStatsByEpoch(currentEpoch.minus(1)).callAsync(),
+                );
+                if (aggregatedStats.numPoolsToFinalize.isGreaterThan(0)) {
+                    // Can't end the epoch if the previous epoch is not fully finalized.
+                    yield;
+                } else {
+                    await this._fastForwardToNextEpochAsync();
+                    yield assertion.executeAsync([], { from: this.actor.address });
+                }
+            }
+        }
+
+        private async _fastForwardToNextEpochAsync(): Promise<void> {
+            const { stakingWrapper } = this.actor.deployment.staking;
+
+            // increase timestamp of next block by how many seconds we need to
+            // get to the next epoch.
+            const epochEndTime = await stakingWrapper.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
+            const lastBlockTime = await web3Wrapper.getBlockTimestampAsync('latest');
+            const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
+            await web3Wrapper.increaseTimeAsync(dt);
+            // mine next block
+            await web3Wrapper.mineBlockAsync();
         }
     };
 }

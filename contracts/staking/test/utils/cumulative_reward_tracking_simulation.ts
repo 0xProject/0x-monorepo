@@ -1,4 +1,4 @@
-import { BlockchainTestsEnvironment, expect, txDefaults } from '@0x/contracts-test-utils';
+import { BlockchainTestsEnvironment, expect, toBaseUnitAmount, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { DecodedLogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -8,7 +8,6 @@ import { artifacts } from '../artifacts';
 import { TestCumulativeRewardTrackingContract, TestCumulativeRewardTrackingEvents } from '../wrappers';
 
 import { StakingApiWrapper } from './api_wrapper';
-import { toBaseUnitAmount } from './number_utils';
 
 export enum TestAction {
     Finalize,

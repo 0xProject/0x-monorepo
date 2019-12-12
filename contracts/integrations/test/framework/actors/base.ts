@@ -15,7 +15,6 @@ export type Constructor<T = {}> = new (...args: any[]) => T;
 export interface ActorConfig {
     name?: string;
     deployment: DeploymentManager;
-    simulationEnvironment?: SimulationEnvironment;
     [mixinProperty: string]: any;
 }
 
@@ -25,10 +24,11 @@ export class Actor {
     public readonly name: string;
     public readonly privateKey: Buffer;
     public readonly deployment: DeploymentManager;
-    public readonly simulationEnvironment?: SimulationEnvironment;
+    public simulationEnvironment?: SimulationEnvironment;
     public simulationActions: {
         [action: string]: AsyncIterableIterator<AssertionResult | void>;
     } = {};
+    public mixins: string[] = [];
     protected readonly _transactionFactory: TransactionFactory;
 
     public static reset(): void {
@@ -47,7 +47,6 @@ export class Actor {
         this.name = config.name || this.address;
         this.deployment = config.deployment;
         this.privateKey = constants.TESTRPC_PRIVATE_KEYS[config.deployment.accounts.indexOf(this.address)];
-        this.simulationEnvironment = config.simulationEnvironment;
         this._transactionFactory = new TransactionFactory(
             this.privateKey,
             config.deployment.exchange.address,
@@ -123,7 +122,6 @@ export class Actor {
         if (logs.length !== 1) {
             throw new Error('Invalid number of `TransferSingle` logs');
         }
-
         const { id } = logs[0];
 
         // Mint the token

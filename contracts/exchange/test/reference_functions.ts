@@ -107,23 +107,6 @@ describe('Reference functions', () => {
             ).to.throw(expectedError.message);
         });
 
-        it('reverts if `order.makerAssetAmount` is 0', () => {
-            const order = makeOrder({
-                makerAssetAmount: constants.ZERO_AMOUNT,
-                takerAssetAmount: ONE_ETHER,
-            });
-            const takerAssetFilledAmount = ONE_ETHER;
-            const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() =>
-                LibReferenceFunctions.calculateFillResults(
-                    order,
-                    takerAssetFilledAmount,
-                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                    DEFAULT_GAS_PRICE,
-                ),
-            ).to.throw(expectedError.message);
-        });
-
         it('reverts if `order.takerAssetAmount` is 0', () => {
             const order = makeOrder({
                 makerAssetAmount: ONE_ETHER,

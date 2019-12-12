@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import * as seedrandom from 'seedrandom';
 
 class PRNGWrapper {
-    public readonly seed = process.env.UUID || Math.random().toString();
+    public readonly seed = process.env.SEED || Math.random().toString();
     private readonly _rng = seedrandom(this.seed);
 
     /*
@@ -16,6 +16,21 @@ class PRNGWrapper {
         }
         const index = Math.abs(this._rng.int32()) % arr.length;
         return arr[index];
+    }
+
+    /*
+     * Pseudorandom version of _.sampleSize. Returns an array of `n` samples from the given array
+     * (with replacement), chosen with uniform probability. Return undefined if the array is empty.
+     */
+    public sampleSize<T>(arr: T[], n: number): T[] | undefined {
+        if (arr.length === 0) {
+            return undefined;
+        }
+        const samples = [];
+        for (let i = 0; i < n; i++) {
+            samples.push(this.sample(arr) as T);
+        }
+        return samples;
     }
 
     // tslint:disable:unified-signatures

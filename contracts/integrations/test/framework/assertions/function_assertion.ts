@@ -79,13 +79,15 @@ export class FunctionAssertion<TArgs extends any[], TBefore, ReturnDataType> imp
         // Initialize the callResult so that the default success value is true.
         const callResult: FunctionResult = { success: true };
 
+        // Log function name, arguments, and txData
+        logger.logFunctionAssertion(this._functionName, args, txData);
+
         // Try to make the call to the function. If it is successful, pass the
         // result and receipt to the after condition.
         try {
             const functionWithArgs = (this._contractWrapper as any)[this._functionName](
                 ...args,
             ) as ContractTxFunctionObj<ReturnDataType>;
-            logger.logFunctionAssertion(this._functionName, args, txData);
             callResult.data = await functionWithArgs.callAsync(txData);
             callResult.receipt =
                 functionWithArgs.awaitTransactionSuccessAsync !== undefined
