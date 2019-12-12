@@ -205,7 +205,7 @@ function createCommonOrderFields(
         takerFee: ZERO_AMOUNT,
         makerAssetAmount: makerAssetAmountAdjustedWithSlippage,
         fillableMakerAssetAmount: makerAssetAmountAdjustedWithSlippage,
-        takerAssetAmount: makerAssetAmountAdjustedWithSlippage,
+        takerAssetAmount: takerAssetAmountAdjustedWithSlippage,
         fillableTakerAssetAmount: takerAssetAmountAdjustedWithSlippage,
         fillableTakerFeeAmount: ZERO_AMOUNT,
         signature: '0x04',
