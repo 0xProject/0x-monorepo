@@ -1,3 +1,4 @@
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -9,10 +10,10 @@ import { utils } from './utils';
 
 export const marketUtils = {
     findOrdersThatCoverTakerAssetFillAmount(
-        sortedOrders: SignedOrderWithFillableAmounts[],
+        sortedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
-    ): { resultOrders: SignedOrderWithFillableAmounts[]; remainingFillAmount: BigNumber } {
+    ): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
         return findOrdersThatCoverAssetFillAmount(
             sortedOrders,
             takerAssetFillAmount,
@@ -21,10 +22,10 @@ export const marketUtils = {
         );
     },
     findOrdersThatCoverMakerAssetFillAmount(
-        sortedOrders: SignedOrderWithFillableAmounts[],
+        sortedOrders: SignedOrder[],
         makerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
-    ): { resultOrders: SignedOrderWithFillableAmounts[]; remainingFillAmount: BigNumber } {
+    ): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
         return findOrdersThatCoverAssetFillAmount(
             sortedOrders,
             makerAssetFillAmount,
@@ -50,15 +51,15 @@ export const marketUtils = {
 };
 
 function findOrdersThatCoverAssetFillAmount(
-    sortedOrders: SignedOrderWithFillableAmounts[],
+    sortedOrders: SignedOrder[],
     assetFillAmount: BigNumber,
     operation: MarketOperation,
     slippageBufferAmount: BigNumber,
-): { resultOrders: SignedOrderWithFillableAmounts[]; remainingFillAmount: BigNumber } {
+): { resultOrders: SignedOrder[]; remainingFillAmount: BigNumber } {
     assert.isValidBaseUnitAmount('slippageBufferAmount', slippageBufferAmount);
     // calculate total amount of asset needed to be filled
-    const totalFillAmount = assetFillAmount.plus(slippageBufferAmount);
-    // iterate through the orders input from left to right until we have enough makerAsset to fill totalFillAmount
+    const totalFillAmount = assetFillAmount.plus(slippageBufferAmount)
+    ;
     const result = _.reduce(
         sortedOrders,
         ({ resultOrders, remainingFillAmount }, order) => {
@@ -68,7 +69,7 @@ function findOrdersThatCoverAssetFillAmount(
                     remainingFillAmount: constants.ZERO_AMOUNT,
                 };
             } else {
-                const assetAmountAvailable = marketUtils.getAssetAmountAvailable(order, operation);
+                const assetAmountAvailable = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
                 const shouldIncludeOrder = assetAmountAvailable.gt(constants.ZERO_AMOUNT);
                 // if there is no assetAmountAvailable do not append order to resultOrders
                 // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
@@ -82,7 +83,7 @@ function findOrdersThatCoverAssetFillAmount(
             }
         },
         {
-            resultOrders: [] as SignedOrderWithFillableAmounts[],
+            resultOrders: [] as SignedOrder[],
             remainingFillAmount: totalFillAmount,
         },
     );

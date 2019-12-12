@@ -1,5 +1,5 @@
-import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { orderCalculationUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -20,7 +20,6 @@ import { marketUtils } from './market_utils';
 import { ProtocolFeeUtils } from './protocol_fee_utils';
 import { utils } from './utils';
 
-// TODO(dave4506) there is some redundant work in here and improveUtils, worth streamlining
 export class SwapQuoteCalculator {
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _improveSwapQuoteUtils: ImproveSwapQuoteUtils;
@@ -31,7 +30,7 @@ export class SwapQuoteCalculator {
     }
 
     public async calculateMarketSellSwapQuoteAsync(
-        prunedOrders: SignedOrderWithFillableAmounts[],
+        prunedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         gasPrice: BigNumber,
@@ -48,7 +47,7 @@ export class SwapQuoteCalculator {
     }
 
     public async calculateMarketBuySwapQuoteAsync(
-        prunedOrders: SignedOrderWithFillableAmounts[],
+        prunedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         gasPrice: BigNumber,
@@ -65,85 +64,88 @@ export class SwapQuoteCalculator {
     }
 
     private async _calculateSwapQuoteAsync(
-        prunedOrders: SignedOrderWithFillableAmounts[],
+        prunedOrders: SignedOrder[],
         assetFillAmount: BigNumber,
         slippagePercentage: number,
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
     ): Promise<SwapQuote> {
-        const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
+        // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
+        const marketUtilsBufferAmount = assetFillAmount.multipliedBy(constants.MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE).integerValue();
 
-        let resultOrders: SignedOrderWithFillableAmounts[];
+        let nativeOrders: SignedOrder[];
         let remainingFillAmount: BigNumber;
 
         if (operation === MarketOperation.Buy) {
             // find the orders that cover the desired assetBuyAmount (with slippage)
-            ({ resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
+            ({ resultOrders: nativeOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
                 prunedOrders,
                 assetFillAmount,
-                slippageBufferAmount,
+                marketUtilsBufferAmount,
             ));
         } else {
             // find the orders that cover the desired assetBuyAmount (with slippage)
-            ({ resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverTakerAssetFillAmount(
+            ({ resultOrders: nativeOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverTakerAssetFillAmount(
                 prunedOrders,
                 assetFillAmount,
-                slippageBufferAmount,
+                marketUtilsBufferAmount,
             ));
         }
 
-        // TODO(dave4506) remove this error handling or refactor it now that we can tap into other sources
-        // if we do not have enough orders to cover the desired assetBuyAmount, throw
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            // We needed the amount they requested to buy, plus the amount for slippage
-            const totalAmountRequested = assetFillAmount.plus(slippageBufferAmount);
-            const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
-            // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
-            // in order to get the total amount needed considering slippage
-            // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
-            const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
-            // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
-            // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
-            const amountAvailableToFillConsideringSlippage = amountAbleToFill
-                .div(multiplierNeededWithSlippage)
-                .integerValue(BigNumber.ROUND_FLOOR);
+            // TODO(dave4506) should provide analytic insights here instead of throwing error because other order sources can cover the remainingFillAmount
 
-            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
+            // // We needed the amount they requested to buy, plus the amount for slippage
+            // const totalAmountRequested = assetFillAmount.plus(slippageBufferAmount);
+            // const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
+            // // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
+            // // in order to get the total amount needed considering slippage
+            // // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
+            // const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
+            // // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
+            // // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
+            // const amountAvailableToFillConsideringSlippage = amountAbleToFill
+            //     .div(multiplierNeededWithSlippage)
+            //     .integerValue(BigNumber.ROUND_FLOOR);
+
+            // throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
         }
 
+        const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
+
+        let improvedOrders: SignedOrderWithFillableAmounts[] = [];
+
         if (opts.shouldImproveSwapQuoteWithOtherSources) {
-            let improvedResultOrders: SignedOrderWithFillableAmounts[];
             if (operation === MarketOperation.Buy) {
-                improvedResultOrders = await this._improveSwapQuoteUtils.improveMarketBuyAsync(
-                    resultOrders,
+                improvedOrders = await this._improveSwapQuoteUtils.improveMarketBuyAsync(
+                    nativeOrders,
                     assetFillAmount.plus(slippageBufferAmount),
                     opts.improveOrderOpts,
                 );
 
             } else {
-                improvedResultOrders = await this._improveSwapQuoteUtils.improveMarketBuyAsync(
-                    resultOrders,
+                improvedOrders = await this._improveSwapQuoteUtils.improveMarketBuyAsync(
+                    nativeOrders,
                     assetFillAmount.plus(slippageBufferAmount),
                     opts.improveOrderOpts,
                 );
             }
-            resultOrders = improvedResultOrders;
         }
 
         // assetData information for the result
-        const takerAssetData = resultOrders[0].takerAssetData;
-        const makerAssetData = resultOrders[0].makerAssetData;
+        const takerAssetData = improvedOrders[0].takerAssetData;
+        const makerAssetData = improvedOrders[0].makerAssetData;
 
         const bestCaseQuoteInfo = this._calculateQuoteInfo(
-            resultOrders,
+            improvedOrders,
             assetFillAmount,
             gasPrice,
             operation,
         );
         // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
         const worstCaseQuoteInfo = this._calculateQuoteInfo(
-            _.reverse(_.clone(resultOrders)),
+            _.reverse(_.clone(improvedOrders)),
             assetFillAmount,
             gasPrice,
             operation,
@@ -152,7 +154,7 @@ export class SwapQuoteCalculator {
         const quoteBase = {
             takerAssetData,
             makerAssetData,
-            orders: resultOrders,
+            orders: improvedOrders,
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
             gasPrice,

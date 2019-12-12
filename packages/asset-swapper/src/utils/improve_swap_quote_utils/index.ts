@@ -1,6 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
-import { SignedOrderWithoutDomain } from '@0x/types';
+import { orderCalculationUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { ZeroExProvider } from 'ethereum-types';
 
@@ -39,7 +40,7 @@ export class ImproveSwapQuoteUtils {
      * @return Improved orders.
      */
     public async improveMarketSellAsync(
-        nativeOrders: SignedOrderWithFillableAmounts[],
+        nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
         opts?: Partial<ImproveOrdersOpts>,
     ): Promise<SignedOrderWithFillableAmounts[]> {
@@ -50,14 +51,16 @@ export class ImproveSwapQuoteUtils {
             ...DEFAULT_IMPROVE_ORDERS_OPTS,
             ...opts,
         };
-        const [_fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketSellAsync(
+        const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketSellAsync(
             nativeOrders,
             DexOrderSampler.getSampleAmounts(takerAmount, _opts.numSamples),
             difference(SELL_SOURCES, _opts.excludedSources),
         );
-        // TODO(dave4506) replace with order pruning logic (unify logic with OrderPruner)
+
+        const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(nativeOrders, fillableAmounts, MarketOperation.Sell);
+
         const nativePath = pruneDustFillsFromNativePath(
-            createSellPathFromNativeOrders(nativeOrders),
+            createSellPathFromNativeOrders(nativeOrdersWithFillableAmounts),
             takerAmount,
             _opts.dustFractionThreshold,
         );
@@ -94,7 +97,7 @@ export class ImproveSwapQuoteUtils {
      * @return Improved orders.
      */
     public async improveMarketBuyAsync(
-        nativeOrders: SignedOrderWithFillableAmounts[],
+        nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
         opts?: Partial<ImproveOrdersOpts>,
     ): Promise<SignedOrderWithFillableAmounts[]> {
@@ -106,15 +109,16 @@ export class ImproveSwapQuoteUtils {
             ...opts,
         };
 
-        // TODO(dave4506) we have already fetched fillable amounts, this is redundant work
-        const [_fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketBuyAsync(
+        const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketBuyAsync(
             nativeOrders,
             DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples),
             difference(BUY_SOURCES, _opts.excludedSources),
         );
-        // TODO(dave4506) replace with order pruning logic (unify logic with OrderPruner)
+
+        const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(nativeOrders, fillableAmounts, MarketOperation.Buy);
+
         const nativePath = pruneDustFillsFromNativePath(
-            createBuyPathFromNativeOrders(nativeOrders),
+            createBuyPathFromNativeOrders(nativeOrdersWithFillableAmounts),
             makerAmount,
             _opts.dustFractionThreshold,
         );
@@ -142,6 +146,23 @@ export class ImproveSwapQuoteUtils {
         const [inputToken, outputToken] = getOrderTokens(nativeOrders[0]);
         return this._createOrderUtils.createBuyOrdersFromPath(this._orderDomain, inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
     }
+}
+
+function createSignedOrdersWithFillableAmounts(signedOrders: SignedOrder[], fillableAmounts: BigNumber[], operation: MarketOperation): SignedOrderWithFillableAmounts[] {
+    return signedOrders.map((order: SignedOrder, i: number): SignedOrderWithFillableAmounts => {
+        const fillableAmount = fillableAmounts[i];
+        const fillableMakerAssetAmount = operation === MarketOperation.Buy ? fillableAmount : orderCalculationUtils.getMakerFillAmount(order, fillableAmount);
+        const fillableTakerAssetAmount = operation === MarketOperation.Sell ? fillableAmount : orderCalculationUtils.getTakerFillAmount(order, fillableAmount);
+        const fillableTakerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, fillableTakerAssetAmount);
+        return {
+            fillableMakerAssetAmount,
+            fillableTakerAssetAmount,
+            fillableTakerFeeAmount,
+            ...order,
+        };
+    }).filter(order => {
+        return !order.fillableMakerAssetAmount.isZero() && !order.fillableTakerAssetAmount.isZero();
+    });
 }
 
 // Gets the difference between two sets.
@@ -314,7 +335,7 @@ function sortFillsByPrice(fills: Fill[]): Fill[] {
     });
 }
 
-function getOrderTokens(order: SignedOrderWithoutDomain): [string, string] {
+function getOrderTokens(order: SignedOrder): [string, string] {
     const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
     return [encoder.strictDecode(order.makerAssetData), encoder.strictDecode(order.takerAssetData)];
 }

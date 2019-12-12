@@ -14,7 +14,6 @@ import {
     MarketOperation,
     MarketSellSwapQuote,
     OrderPrunerPermittedFeeTypes,
-    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteRequestOpts,
     SwapQuoterError,
@@ -23,7 +22,8 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { ImproveSwapQuoteUtils } from './utils/improve_swap_quote_utils';
-import { OrderPruner } from './utils/order_prune_utils';
+import { orderPrunerUtils } from './utils/order_prune_utils';
+import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
@@ -37,9 +37,10 @@ export class SwapQuoter {
     private readonly _contractAddresses: ContractAddresses;
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _swapQuoteCalculator: SwapQuoteCalculator;
-    private readonly _orderPruner: OrderPruner;
     private readonly _devUtilsContract: DevUtilsContract;
     private readonly _improveSwapQuoteUtils: ImproveSwapQuoteUtils;
+    private readonly _orderStateUtils: OrderStateUtils;
+
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
      * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
@@ -159,6 +160,7 @@ export class SwapQuoter {
         this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
+        this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         this._improveSwapQuoteUtils = new ImproveSwapQuoteUtils(
             this.provider,
             this._contractAddresses,
@@ -168,10 +170,6 @@ export class SwapQuoter {
             },
         );
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._improveSwapQuoteUtils);
-        this._orderPruner = new OrderPruner(this._devUtilsContract, {
-            expiryBufferMs: this.expiryBufferMs,
-            permittedOrderFeeTypes: this.permittedOrderFeeTypes,
-        });
     }
 
     /**
@@ -309,8 +307,9 @@ export class SwapQuoter {
             };
         }
 
-        const prunedOrders = await this.getSignedOrderWithFillableAmountsAsync(makerAssetData, takerAssetData);
-        return calculateLiquidity(prunedOrders);
+        const orders = await this.getSignedOrdersAsync(makerAssetData, takerAssetData);
+        const ordersWithFillableAmounts = await this._orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+        return calculateLiquidity(ordersWithFillableAmounts);
     }
 
     /**
@@ -367,10 +366,10 @@ export class SwapQuoter {
      * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      */
-    public async getSignedOrderWithFillableAmountsAsync(
+    public async getSignedOrdersAsync(
         makerAssetData: string,
         takerAssetData: string,
-    ): Promise<SignedOrderWithFillableAmounts[]> {
+    ): Promise<SignedOrder[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
@@ -378,7 +377,11 @@ export class SwapQuoter {
         // get orders
         const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const orders = _.map(apiOrders, o => o.order);
-        const prunedOrders = await this._orderPruner.pruneSignedOrdersAsync(orders);
+        const prunedOrders = orderPrunerUtils.prunedForUsableSignedOrders(
+            orders,
+            this.permittedOrderFeeTypes,
+            this.expiryBufferMs,
+        );
         const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
         return sortedPrunedOrders;
     }
@@ -437,7 +440,7 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
-        const prunedOrders = await this.getSignedOrderWithFillableAmountsAsync(makerAssetData, takerAssetData);
+        const prunedOrders = await this.getSignedOrdersAsync(makerAssetData, takerAssetData);
         if (prunedOrders.length === 0) {
             throw new Error(
                 `${

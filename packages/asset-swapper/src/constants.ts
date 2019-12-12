@@ -30,6 +30,9 @@ const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
 // 15 seconds polling interval
 const PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS = 15000;
 
+// default 50% buffer for selecting native orders to be aggregated with other sources
+const MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE = 0.5;
+
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     ...{
         chainId: MAINNET_CHAIN_ID,
@@ -73,4 +76,5 @@ export const constants = {
     DEFAULT_PER_PAGE,
     NULL_ERC20_ASSET_DATA,
     PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
+    MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE,
 };
