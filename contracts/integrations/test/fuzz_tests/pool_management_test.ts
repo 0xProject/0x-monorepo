@@ -43,11 +43,10 @@ blockchainTests('Pool management fuzz test', env => {
         });
         const balanceStore = new BlockchainBalanceStore({}, {});
 
-        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
-        // tslint:disable:no-unused-expression
-        new PoolOperator({ deployment, simulationEnvironment, name: 'Operator 1' });
-        new PoolOperator({ deployment, simulationEnvironment, name: 'Operator 2' });
-        // tslint:enable:no-unused-expression
+        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore, [
+            new PoolOperator({ deployment, name: 'Operator 1' }),
+            new PoolOperator({ deployment, name: 'Operator 2' }),
+        ]);
 
         const simulation = new PoolManagementSimulation(simulationEnvironment);
         return simulation.fuzzAsync();

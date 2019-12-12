@@ -84,25 +84,25 @@ blockchainTests('Staking rewards fuzz test', env => {
             },
         );
 
-        // Set up simulation environment
-        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
-
         // Spin up actors
         const actors = [
-            new Maker({ deployment, simulationEnvironment, name: 'Maker 1' }),
-            new Maker({ deployment, simulationEnvironment, name: 'Maker 2' }),
-            new Taker({ deployment, simulationEnvironment, name: 'Taker 1' }),
-            new Taker({ deployment, simulationEnvironment, name: 'Taker 2' }),
-            new MakerTaker({ deployment, simulationEnvironment, name: 'Maker/Taker' }),
-            new Staker({ deployment, simulationEnvironment, name: 'Staker 1' }),
-            new Staker({ deployment, simulationEnvironment, name: 'Staker 2' }),
-            new Keeper({ deployment, simulationEnvironment, name: 'Keeper' }),
-            new StakerKeeper({ deployment, simulationEnvironment, name: 'Staker/Keeper' }),
-            new StakerMaker({ deployment, simulationEnvironment, name: 'Staker/Maker' }),
-            new PoolOperator({ deployment, simulationEnvironment, name: 'Pool Operator' }),
-            new StakerOperator({ deployment, simulationEnvironment, name: 'Staker/Operator' }),
-            new OperatorStakerMaker({ deployment, simulationEnvironment, name: 'Operator/Staker/Maker' }),
+            new Maker({ deployment, name: 'Maker 1' }),
+            new Maker({ deployment, name: 'Maker 2' }),
+            new Taker({ deployment, name: 'Taker 1' }),
+            new Taker({ deployment, name: 'Taker 2' }),
+            new MakerTaker({ deployment, name: 'Maker/Taker' }),
+            new Staker({ deployment, name: 'Staker 1' }),
+            new Staker({ deployment, name: 'Staker 2' }),
+            new Keeper({ deployment, name: 'Keeper' }),
+            new StakerKeeper({ deployment, name: 'Staker/Keeper' }),
+            new StakerMaker({ deployment, name: 'Staker/Maker' }),
+            new PoolOperator({ deployment, name: 'Pool Operator' }),
+            new StakerOperator({ deployment, name: 'Staker/Operator' }),
+            new OperatorStakerMaker({ deployment, name: 'Operator/Staker/Maker' }),
         ];
+
+        // Set up simulation environment
+        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore, actors);
 
         // Takers need to set a WETH allowance for the staking proxy in case they pay the protocol fee in WETH
         const takers = filterActorsByRole(actors, Taker);
@@ -114,11 +114,6 @@ blockchainTests('Staking rewards fuzz test', env => {
         for (const staker of stakers) {
             await staker.configureERC20TokenAsync(deployment.tokens.zrx);
         }
-        // Register each actor in the balance store
-        for (const actor of actors) {
-            balanceStore.registerTokenOwner(actor.address, actor.name);
-        }
-
         const simulation = new StakingRewardsSimulation(simulationEnvironment);
         return simulation.fuzzAsync();
     });

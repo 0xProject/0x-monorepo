@@ -60,24 +60,22 @@ blockchainTests('pool membership fuzz test', env => {
             },
             { erc20: { ZRX: deployment.tokens.zrx } },
         );
-        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
 
         const actors = [
-            new Maker({ deployment, simulationEnvironment, name: 'Maker 1' }),
-            new Maker({ deployment, simulationEnvironment, name: 'Maker 2' }),
-            new Taker({ deployment, simulationEnvironment, name: 'Taker 1' }),
-            new Taker({ deployment, simulationEnvironment, name: 'Taker 2' }),
-            new MakerTaker({ deployment, simulationEnvironment, name: 'Maker/Taker' }),
-            new PoolOperator({ deployment, simulationEnvironment, name: 'Operator 1' }),
-            new PoolOperator({ deployment, simulationEnvironment, name: 'Operator 2' }),
+            new Maker({ deployment, name: 'Maker 1' }),
+            new Maker({ deployment, name: 'Maker 2' }),
+            new Taker({ deployment, name: 'Taker 1' }),
+            new Taker({ deployment, name: 'Taker 2' }),
+            new MakerTaker({ deployment, name: 'Maker/Taker' }),
+            new PoolOperator({ deployment, name: 'Operator 1' }),
+            new PoolOperator({ deployment, name: 'Operator 2' }),
         ];
+
+        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore, actors);
 
         const takers = filterActorsByRole(actors, Taker);
         for (const taker of takers) {
             await taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
-        }
-        for (const actor of actors) {
-            balanceStore.registerTokenOwner(actor.address, actor.name);
         }
 
         const simulation = new PoolMembershipSimulation(simulationEnvironment);

@@ -15,7 +15,6 @@ export type Constructor<T = {}> = new (...args: any[]) => T;
 export interface ActorConfig {
     name?: string;
     deployment: DeploymentManager;
-    simulationEnvironment?: SimulationEnvironment;
     [mixinProperty: string]: any;
 }
 
@@ -25,7 +24,7 @@ export class Actor {
     public readonly name: string;
     public readonly privateKey: Buffer;
     public readonly deployment: DeploymentManager;
-    public readonly simulationEnvironment?: SimulationEnvironment;
+    public simulationEnvironment?: SimulationEnvironment;
     public simulationActions: {
         [action: string]: AsyncIterableIterator<AssertionResult | void>;
     } = {};
@@ -48,10 +47,6 @@ export class Actor {
         this.name = config.name || this.address;
         this.deployment = config.deployment;
         this.privateKey = constants.TESTRPC_PRIVATE_KEYS[config.deployment.accounts.indexOf(this.address)];
-        if (config.simulationEnvironment !== undefined) {
-            this.simulationEnvironment = config.simulationEnvironment;
-            this.simulationEnvironment.actors.push(this);
-        }
         this._transactionFactory = new TransactionFactory(
             this.privateKey,
             config.deployment.exchange.address,

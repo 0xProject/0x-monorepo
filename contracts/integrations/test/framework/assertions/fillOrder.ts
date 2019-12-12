@@ -77,7 +77,7 @@ function verifyFillEvents(
             _to: order.feeRecipientAddress,
             _value: fillResults.makerFeePaid,
         },
-    ];
+    ].filter(event => event._value.isGreaterThan(0));
 
     // If not enough wei is sent to cover the protocol fee, there will be an additional WETH transfer event
     if (value.isLessThan(DeploymentManager.protocolFee)) {

@@ -58,20 +58,18 @@ blockchainTests('Stake management fuzz test', env => {
             { erc20: { ZRX: deployment.tokens.zrx } },
         );
 
-        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore);
         const actors = [
-            new Staker({ name: 'Staker 1', deployment, simulationEnvironment }),
-            new Staker({ name: 'Staker 2', deployment, simulationEnvironment }),
-            new StakerOperator({ name: 'Staker/Operator', deployment, simulationEnvironment }),
-            new PoolOperator({ deployment, simulationEnvironment, name: 'Operator' }),
+            new Staker({ name: 'Staker 1', deployment }),
+            new Staker({ name: 'Staker 2', deployment }),
+            new StakerOperator({ name: 'Staker/Operator', deployment }),
+            new PoolOperator({ name: 'Operator', deployment }),
         ];
+
+        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore, actors);
 
         const stakers = filterActorsByRole(actors, Staker);
         for (const staker of stakers) {
             await staker.configureERC20TokenAsync(deployment.tokens.zrx);
-        }
-        for (const actor of actors) {
-            balanceStore.registerTokenOwner(actor.address, actor.name);
         }
 
         const simulation = new StakeManagementSimulation(simulationEnvironment);

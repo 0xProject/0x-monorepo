@@ -26,8 +26,15 @@ export class SimulationEnvironment {
     public constructor(
         public readonly deployment: DeploymentManager,
         public balanceStore: BlockchainBalanceStore,
-        public actors: Actor[] = [],
-    ) {}
+        public readonly actors: Actor[] = [],
+    ) {
+        for (const actor of actors) {
+            // Set the actor's simulation environment
+            actor.simulationEnvironment = this;
+            // Register each actor in the balance store
+            this.balanceStore.registerTokenOwner(actor.address, actor.name);
+        }
+    }
 
     public state(): any {
         return {
