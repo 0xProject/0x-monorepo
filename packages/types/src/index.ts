@@ -29,13 +29,9 @@ export interface Order {
     takerFeeAssetData: string;
 }
 
-export type OrderWithoutDomain = Pick<Order, Exclude<keyof Order, 'chainId' | 'exchangeAddress'>>;
-
 export interface SignedOrder extends Order {
     signature: string;
 }
-
-export type SignedOrderWithoutDomain = Pick<SignedOrder, Exclude<keyof SignedOrder, 'chainId' | 'exchangeAddress'>>;
 
 export enum MarketOperation {
     Sell = 'Sell',

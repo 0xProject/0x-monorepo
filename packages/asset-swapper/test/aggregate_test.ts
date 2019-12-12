@@ -28,7 +28,9 @@ import {
     SOURCE_TO_ADDRESS,
     UNISWAP_BRIDGE_ADDRESS,
 } from '../src/utils/improve_swap_quote_utils';
+import {
 
+} from '../src/utils/'
 import { MockSamplerContract, QueryAndSampleResult } from './utils/mock_sampler_contract';
 
 // tslint:disable: custom-no-magic-numbers

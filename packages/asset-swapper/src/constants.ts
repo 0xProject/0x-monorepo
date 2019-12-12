@@ -27,6 +27,9 @@ const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
     ]), // Default asset-swapper for CFL oriented fee types
 };
 
+// 15 seconds polling interval
+const PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS = 15000;
+
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     ...{
         chainId: MAINNET_CHAIN_ID,
@@ -69,4 +72,5 @@ export const constants = {
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     DEFAULT_PER_PAGE,
     NULL_ERC20_ASSET_DATA,
+    PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
 };

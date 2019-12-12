@@ -6,13 +6,20 @@ import { SignedOrderWithFillableAmounts } from '../../types';
 
 import { constants as improveSwapQuoteConstants } from './constants';
 import { ERC20BridgeSource, Fill, FillData, NativeFillData, OrderDomain } from './types';
+import { ContractAddresses } from '@0x/migrations';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
-const { BRIDGE_ADDRESSES, INFINITE_TIMESTAMP_SEC } = improveSwapQuoteConstants;
+const { INFINITE_TIMESTAMP_SEC } = improveSwapQuoteConstants;
 
-export const createOrdersUtils = {
+export class CreateOrderUtils {
+    private readonly _contractAddress: ContractAddresses;
+
+    constructor(contractAddress: ContractAddresses) {
+        this._contractAddress = contractAddress;
+    }
+
     // Convert sell fills into orders.
-    createSellOrdersFromPath(
+    public createSellOrdersFromPath(
         orderDomain: OrderDomain,
         inputToken: string,
         outputToken: string,
@@ -25,20 +32,20 @@ export const createOrdersUtils = {
             if (source === ERC20BridgeSource.Native) {
                 orders.push((fill.fillData as NativeFillData).order);
             } else if (source === ERC20BridgeSource.Kyber) {
-                orders.push(createKyberOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
+                orders.push(this._createKyberOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
             } else if (source === ERC20BridgeSource.Eth2Dai) {
-                orders.push(createEth2DaiOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
+                orders.push(this._createEth2DaiOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
             } else if (source === ERC20BridgeSource.Uniswap) {
-                orders.push(createUniswapOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
+                orders.push(this._createUniswapOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
             } else {
                 throw new Error(`invalid sell fill source: ${source}`);
             }
         }
         return orders;
-    },
+    }
 
     // Convert buy fills into orders.
-    createBuyOrdersFromPath(
+    public createBuyOrdersFromPath(
         orderDomain: OrderDomain,
         inputToken: string,
         outputToken: string,
@@ -51,78 +58,78 @@ export const createOrdersUtils = {
             if (source === ERC20BridgeSource.Native) {
                 orders.push((fill.fillData as NativeFillData).order);
             } else if (source === ERC20BridgeSource.Eth2Dai) {
-                orders.push(createEth2DaiOrder(orderDomain, inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
+                orders.push(this._createEth2DaiOrder(orderDomain, inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
             } else if (source === ERC20BridgeSource.Uniswap) {
-                orders.push(createUniswapOrder(orderDomain, inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
+                orders.push(this._createUniswapOrder(orderDomain, inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
             } else {
                 throw new Error(`invalid buy fill source: ${source}`);
             }
         }
         return orders;
-    },
-};
+    }
 
-function createKyberOrder(
-    orderDomain: OrderDomain,
-    makerToken: string,
-    takerToken: string,
-    makerAssetAmount: BigNumber,
-    takerAssetAmount: BigNumber,
-    slippage: number,
-    isBuy: boolean = false,
-): SignedOrderWithFillableAmounts {
-    return createBridgeOrder(
-        orderDomain,
-        BRIDGE_ADDRESSES[ERC20BridgeSource.Kyber],
-        makerToken,
-        takerToken,
-        makerAssetAmount,
-        takerAssetAmount,
-        slippage,
-        isBuy,
-    );
-}
+    private _createKyberOrder(
+        orderDomain: OrderDomain,
+        makerToken: string,
+        takerToken: string,
+        makerAssetAmount: BigNumber,
+        takerAssetAmount: BigNumber,
+        slippage: number,
+        isBuy: boolean = false,
+    ): SignedOrderWithFillableAmounts {
+        return createBridgeOrder(
+            orderDomain,
+            this._contractAddress.kyberBridge,
+            makerToken,
+            takerToken,
+            makerAssetAmount,
+            takerAssetAmount,
+            slippage,
+            isBuy,
+        );
+    }
 
-function createEth2DaiOrder(
-    orderDomain: OrderDomain,
-    makerToken: string,
-    takerToken: string,
-    makerAssetAmount: BigNumber,
-    takerAssetAmount: BigNumber,
-    slippage: number,
-    isBuy: boolean = false,
-): SignedOrderWithFillableAmounts {
-    return createBridgeOrder(
-        orderDomain,
-        BRIDGE_ADDRESSES[ERC20BridgeSource.Eth2Dai],
-        makerToken,
-        takerToken,
-        makerAssetAmount,
-        takerAssetAmount,
-        slippage,
-        isBuy,
-    );
-}
+    private _createEth2DaiOrder(
+        orderDomain: OrderDomain,
+        makerToken: string,
+        takerToken: string,
+        makerAssetAmount: BigNumber,
+        takerAssetAmount: BigNumber,
+        slippage: number,
+        isBuy: boolean = false,
+    ): SignedOrderWithFillableAmounts {
+        return createBridgeOrder(
+            orderDomain,
+            this._contractAddress.eth2DaiBridge,
+            makerToken,
+            takerToken,
+            makerAssetAmount,
+            takerAssetAmount,
+            slippage,
+            isBuy,
+        );
+    }
 
-function createUniswapOrder(
-    orderDomain: OrderDomain,
-    makerToken: string,
-    takerToken: string,
-    makerAssetAmount: BigNumber,
-    takerAssetAmount: BigNumber,
-    slippage: number,
-    isBuy: boolean = false,
-): SignedOrderWithFillableAmounts {
-    return createBridgeOrder(
-        orderDomain,
-        BRIDGE_ADDRESSES[ERC20BridgeSource.Uniswap],
-        makerToken,
-        takerToken,
-        makerAssetAmount,
-        takerAssetAmount,
-        slippage,
-        isBuy,
-    );
+    private _createUniswapOrder(
+        orderDomain: OrderDomain,
+        makerToken: string,
+        takerToken: string,
+        makerAssetAmount: BigNumber,
+        takerAssetAmount: BigNumber,
+        slippage: number,
+        isBuy: boolean = false,
+    ): SignedOrderWithFillableAmounts {
+        return createBridgeOrder(
+            orderDomain,
+            this._contractAddress.uniswapBridge,
+            makerToken,
+            takerToken,
+            makerAssetAmount,
+            takerAssetAmount,
+            slippage,
+            isBuy,
+        );
+    }
 }
 
 function createBridgeOrder(

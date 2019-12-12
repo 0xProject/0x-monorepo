@@ -128,7 +128,6 @@ export class SwapQuoteCalculator {
                     opts.improveOrderOpts,
                 );
             }
-            // TODO(dave4506) add analytics?
             resultOrders = improvedResultOrders;
         }
 

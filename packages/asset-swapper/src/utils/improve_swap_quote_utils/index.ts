@@ -1,16 +1,18 @@
+import { ContractAddresses } from '@0x/contract-addresses';
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { SignedOrderWithoutDomain } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
+import { ZeroExProvider } from 'ethereum-types';
 
 import { constants } from '../../constants';
-import { SignedOrderWithFillableAmounts, MarketOperation } from '../../types';
+import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
+import { marketUtils } from '../market_utils';
 
 import { constants as improveSwapQuoteConstants } from './constants';
-import { createOrdersUtils } from './create_orders';
+import { CreateOrderUtils } from './create_order';
 import { comparePathOutputs, FillsOptimizer, getPathOutput } from './fill_optimizer';
 import { DexOrderSampler } from './sampler';
 import { AggregationError, DexSample, ERC20BridgeSource, Fill, FillData, FillFlags, ImproveOrdersOpts, OrderDomain } from './types';
-import { marketUtils } from '../market_utils';
 
 const { ZERO_AMOUNT } = constants;
 const { BUY_SOURCES, DEFAULT_IMPROVE_ORDERS_OPTS, SELL_SOURCES } = improveSwapQuoteConstants;
@@ -18,9 +20,13 @@ const { BUY_SOURCES, DEFAULT_IMPROVE_ORDERS_OPTS, SELL_SOURCES } = improveSwapQu
 export class ImproveSwapQuoteUtils {
 
     private readonly _dexSampler: DexOrderSampler;
+    private readonly _createOrderUtils: CreateOrderUtils;
     private readonly _orderDomain: OrderDomain;
-    constructor(samplerContract: IERC20BridgeSamplerContract, orderDomain: OrderDomain) {
+
+    constructor(provider: ZeroExProvider, contractAddresses: ContractAddresses, orderDomain: OrderDomain) {
+        const samplerContract = new IERC20BridgeSamplerContract(contractAddresses.erc20BridgeSampler, provider);
         this._dexSampler = new DexOrderSampler(samplerContract);
+        this._createOrderUtils = new CreateOrderUtils(contractAddresses);
         this._orderDomain = orderDomain;
     }
 
@@ -76,7 +82,7 @@ export class ImproveSwapQuoteUtils {
             throw new Error(AggregationError.NoOptimalPath);
         }
         const [outputToken, inputToken] = getOrderTokens(nativeOrders[0]);
-        return createOrdersUtils.createSellOrdersFromPath(this._orderDomain, inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
+        return this._createOrderUtils.createSellOrdersFromPath(this._orderDomain, inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
     }
 
     /**
@@ -92,7 +98,6 @@ export class ImproveSwapQuoteUtils {
         makerAmount: BigNumber,
         opts?: Partial<ImproveOrdersOpts>,
     ): Promise<SignedOrderWithFillableAmounts[]> {
-        // TODO(dave4506) remove this error catch?
         if (nativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
@@ -135,7 +140,7 @@ export class ImproveSwapQuoteUtils {
             throw new Error(AggregationError.NoOptimalPath);
         }
         const [inputToken, outputToken] = getOrderTokens(nativeOrders[0]);
-        return createOrdersUtils.createBuyOrdersFromPath(this._orderDomain, inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
+        return this._createOrderUtils.createBuyOrdersFromPath(this._orderDomain, inputToken, outputToken, simplifyPath(optimalPath), _opts.bridgeSlippage);
     }
 }
 

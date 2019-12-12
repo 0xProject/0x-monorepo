@@ -8497,6 +8497,11 @@ heap@0.2.6:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
 
+heartbeats@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/heartbeats/-/heartbeats-5.0.1.tgz#c0d476151982e707faac49345143b9582de40cae"
+  integrity sha1-wNR2FRmC5wf6rEk0UUO5WC3kDK4=
+
 highlight.js@^9.15.8, highlight.js@^9.6.0:
   version "9.15.9"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.15.9.tgz#865257da1dbb4a58c4552d46c4b3854f77f0e6d5"

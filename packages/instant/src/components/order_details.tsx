@@ -37,7 +37,6 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
         );
     }
 
-    // TODO(dave4506) currently instant has affiliate fees disabled, until we resolve that, this displays only takerFees + protocolFees
     private _renderRows(): React.ReactNode {
         const { swapQuoteInfo } = this.props;
         return (

@@ -1,5 +1,5 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -158,14 +158,10 @@ export class SwapQuoter {
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
         this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
-        this._protocolFeeUtils = new ProtocolFeeUtils();
-        const erc20BridgeSamplerContract = new IERC20BridgeSamplerContract(
-            // TODO(dave4506) address of ERC20BridgeSampler
-            '',
-            provider,
-        );
+        this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._improveSwapQuoteUtils = new ImproveSwapQuoteUtils(
-            erc20BridgeSamplerContract,
+            this.provider,
+            this._contractAddresses,
             {
                 chainId,
                 exchangeAddress: this._contractAddresses.exchange,
@@ -429,7 +425,6 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        // TODO(dave4506) enable should feature boolean flag
         const { slippagePercentage, shouldImproveSwapQuoteWithOtherSources, improveOrderOpts } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);

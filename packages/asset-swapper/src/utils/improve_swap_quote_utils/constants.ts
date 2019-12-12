@@ -2,13 +2,6 @@ import { BigNumber } from '@0x/utils';
 
 import { ERC20BridgeSource, ImproveOrdersOpts } from './types';
 
-// TODO(dave4506+dorothy-zbornak) Update or remove in favor of contract-addresses
-const BRIDGE_ADDRESSES = {
-    [ERC20BridgeSource.Kyber]: '0xa0cdca934847556eaf431d909fb3cf4aca01df66',
-    [ERC20BridgeSource.Eth2Dai]: '0x27b8c4473c6b885d0b060d722cf614dbc3f9adfb',
-    [ERC20BridgeSource.Uniswap]: '0x9b81c8beee5d0ff8b128adc04db71f33022c5163',
-};
-
 const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
 
 /**
@@ -40,7 +33,6 @@ export const DEFAULT_IMPROVE_ORDERS_OPTS: ImproveOrdersOpts = {
 };
 
 export const constants = {
-    BRIDGE_ADDRESSES,
     INFINITE_TIMESTAMP_SEC,
     SOURCE_TO_ADDRESS,
     SELL_SOURCES,
