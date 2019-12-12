@@ -129,7 +129,7 @@ export const LibFractions = {
     normalize: (
         numerator: BigNumber,
         denominator: BigNumber,
-        maxValue: BigNumber = new BigNumber(2 ** 127),
+        maxValue: BigNumber = new BigNumber(2).exponentiatedBy(127),
     ): [BigNumber, BigNumber] => {
         if (numerator.isGreaterThan(maxValue) || denominator.isGreaterThan(maxValue)) {
             let rescaleBase = numerator.isGreaterThanOrEqualTo(denominator) ? numerator : denominator;

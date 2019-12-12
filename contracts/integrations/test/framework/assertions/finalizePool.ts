@@ -179,13 +179,7 @@ export function validFinalizePoolAssertion(
                 beforeInfo.poolStats.membersStake,
             );
             [numerator, denominator] = ReferenceFunctions.LibFractions.normalize(numerator, denominator);
-            // There's a bug in our reference functions, probably due to the fact that safeDiv in
-            // Solidity truncates in bits, whereas the safeDiv reference function truncates in base 10.
-            assertRoughlyEquals(
-                mostRecentCumulativeRewards.numerator.dividedBy(mostRecentCumulativeRewards.denominator),
-                numerator.dividedBy(denominator),
-                PRECISION,
-            );
+            expect(mostRecentCumulativeRewards).to.deep.equal({ numerator, denominator });
 
             // Check that aggregated stats have been updated
             const aggregatedStats = AggregatedStats.fromArray(
