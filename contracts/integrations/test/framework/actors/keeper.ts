@@ -36,6 +36,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('Keeper');
 
             // Register this mixin's assertion generators
             this.actor.simulationActions = {

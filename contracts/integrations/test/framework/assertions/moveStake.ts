@@ -1,6 +1,6 @@
 import {
-    decrementNextEpochBalance,
-    incrementNextEpochBalance,
+    decreaseNextBalance,
+    increaseNextBalance,
     loadCurrentBalance,
     OwnerStakeByStatus,
     StakeInfo,
@@ -32,18 +32,18 @@ function updateNextEpochBalances(
     // Decrement next epoch balances associated with the `from` stake
     if (from.status === StakeStatus.Undelegated) {
         // Decrement owner undelegated stake
-        decrementNextEpochBalance(ownerStake[StakeStatus.Undelegated], amount, currentEpoch);
+        decreaseNextBalance(ownerStake[StakeStatus.Undelegated], amount, currentEpoch);
         // Decrement global undelegated stake
-        decrementNextEpochBalance(globalStake[StakeStatus.Undelegated], amount, currentEpoch);
+        decreaseNextBalance(globalStake[StakeStatus.Undelegated], amount, currentEpoch);
     } else if (from.status === StakeStatus.Delegated) {
         // Decrement owner's delegated stake to this pool
-        decrementNextEpochBalance(ownerStake[StakeStatus.Delegated][from.poolId], amount, currentEpoch);
+        decreaseNextBalance(ownerStake[StakeStatus.Delegated][from.poolId], amount, currentEpoch);
         // Decrement owner's total delegated stake
-        decrementNextEpochBalance(ownerStake[StakeStatus.Delegated].total, amount, currentEpoch);
+        decreaseNextBalance(ownerStake[StakeStatus.Delegated].total, amount, currentEpoch);
         // Decrement global delegated stake
-        decrementNextEpochBalance(globalStake[StakeStatus.Delegated], amount, currentEpoch);
+        decreaseNextBalance(globalStake[StakeStatus.Delegated], amount, currentEpoch);
         // Decrement pool's delegated stake
-        decrementNextEpochBalance(stakingPools[from.poolId].delegatedStake, amount, currentEpoch);
+        decreaseNextBalance(stakingPools[from.poolId].delegatedStake, amount, currentEpoch);
         updatedPools.push(from.poolId);
 
         // TODO: Check that delegator rewards have been withdrawn/synced
@@ -52,22 +52,22 @@ function updateNextEpochBalances(
     // Increment next epoch balances associated with the `to` stake
     if (to.status === StakeStatus.Undelegated) {
         // Increment owner undelegated stake
-        incrementNextEpochBalance(ownerStake[StakeStatus.Undelegated], amount, currentEpoch);
+        increaseNextBalance(ownerStake[StakeStatus.Undelegated], amount, currentEpoch);
         // Increment global undelegated stake
-        incrementNextEpochBalance(globalStake[StakeStatus.Undelegated], amount, currentEpoch);
+        increaseNextBalance(globalStake[StakeStatus.Undelegated], amount, currentEpoch);
     } else if (to.status === StakeStatus.Delegated) {
         // Initializes the balance for this pool if the user has not previously delegated to it
         _.defaults(ownerStake[StakeStatus.Delegated], {
             [to.poolId]: new StoredBalance(),
         });
         // Increment owner's delegated stake to this pool
-        incrementNextEpochBalance(ownerStake[StakeStatus.Delegated][to.poolId], amount, currentEpoch);
+        increaseNextBalance(ownerStake[StakeStatus.Delegated][to.poolId], amount, currentEpoch);
         // Increment owner's total delegated stake
-        incrementNextEpochBalance(ownerStake[StakeStatus.Delegated].total, amount, currentEpoch);
+        increaseNextBalance(ownerStake[StakeStatus.Delegated].total, amount, currentEpoch);
         // Increment global delegated stake
-        incrementNextEpochBalance(globalStake[StakeStatus.Delegated], amount, currentEpoch);
+        increaseNextBalance(globalStake[StakeStatus.Delegated], amount, currentEpoch);
         // Increment pool's delegated stake
-        incrementNextEpochBalance(stakingPools[to.poolId].delegatedStake, amount, currentEpoch);
+        increaseNextBalance(stakingPools[to.poolId].delegatedStake, amount, currentEpoch);
         updatedPools.push(to.poolId);
 
         // TODO: Check that delegator rewards have been withdrawn/synced
@@ -84,7 +84,7 @@ export function validMoveStakeAssertion(
     simulationEnvironment: SimulationEnvironment,
     ownerStake: OwnerStakeByStatus,
 ): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void> {
-    const { stakingWrapper, zrxVault } = deployment.staking;
+    const { stakingWrapper } = deployment.staking;
 
     return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void>(stakingWrapper, 'moveStake', {
         after: async (
@@ -125,15 +125,12 @@ export function validMoveStakeAssertion(
             const globalUndelegatedStake = await stakingWrapper
                 .getGlobalStakeByStatus(StakeStatus.Undelegated)
                 .callAsync();
-            const totalStake = await zrxVault.balanceOfZrxVault().callAsync();
             expect(globalDelegatedStake).to.deep.equal(
                 loadCurrentBalance(globalStake[StakeStatus.Delegated], currentEpoch),
             );
-            expect(globalUndelegatedStake).to.deep.equal({
-                currentEpochBalance: totalStake.minus(globalDelegatedStake.currentEpochBalance),
-                nextEpochBalance: totalStake.minus(globalDelegatedStake.nextEpochBalance),
-                currentEpoch,
-            });
+            expect(globalUndelegatedStake).to.deep.equal(
+                loadCurrentBalance(globalStake[StakeStatus.Undelegated], currentEpoch),
+            );
 
             // Fetches on-chain pool stake balances and checks against local balances
             for (const poolId of updatedPools) {

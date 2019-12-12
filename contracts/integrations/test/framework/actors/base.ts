@@ -29,6 +29,7 @@ export class Actor {
     public simulationActions: {
         [action: string]: AsyncIterableIterator<AssertionResult | void>;
     } = {};
+    public mixins: string[] = [];
     protected readonly _transactionFactory: TransactionFactory;
 
     public static reset(): void {

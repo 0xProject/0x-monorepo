@@ -35,6 +35,7 @@ export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('FeeRecipient');
 
             const { verifyingContract } = args[0] as FeeRecipientConfig;
             if (verifyingContract !== undefined) {

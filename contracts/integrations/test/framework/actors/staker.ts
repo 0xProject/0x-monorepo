@@ -34,6 +34,8 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('Staker');
+
             this.stake = {
                 [StakeStatus.Undelegated]: new StoredBalance(),
                 [StakeStatus.Delegated]: { total: new StoredBalance() },

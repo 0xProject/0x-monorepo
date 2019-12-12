@@ -90,18 +90,36 @@ export function loadCurrentBalance(
 }
 
 /**
- * Simulates _incrementNextEpochBalance
+ * Simulates _increaseNextBalance
  */
-export function incrementNextEpochBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
+export function increaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
     loadCurrentBalance(balance, epoch, true);
     balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
 }
 
 /**
- * Simulates _decrementNextEpochBalance
+ * Simulates _decreaseNextBalance
  */
-export function decrementNextEpochBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
+export function decreaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
     loadCurrentBalance(balance, epoch, true);
+    balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
+}
+
+/**
+ * Simulates _increaseCurrentAndNextBalance
+ */
+export function increaseCurrentAndNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
+    loadCurrentBalance(balance, epoch, true);
+    balance.currentEpochBalance = balance.currentEpochBalance.plus(amount);
+    balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
+}
+
+/**
+ * Simulates _decreaseCurrentAndNextBalance
+ */
+export function decreaseCurrentAndNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): void {
+    loadCurrentBalance(balance, epoch, true);
+    balance.currentEpochBalance = balance.currentEpochBalance.minus(amount);
     balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
 }
 

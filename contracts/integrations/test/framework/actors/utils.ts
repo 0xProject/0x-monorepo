@@ -12,11 +12,12 @@ export function actorAddressesByName(actors: Actor[]): ObjectMap<string> {
 }
 
 /**
- * Filters the given actors by class.
+ * Filters the given actors by role, specified by the class exported by an actor mixin file,
+ * e.g, 'Maker', 'Taker', etc.
  */
 export function filterActorsByRole<TClass extends Constructor>(
     actors: Actor[],
     role: TClass,
 ): Array<InstanceType<typeof role>> {
-    return actors.filter(actor => actor instanceof role) as InstanceType<typeof role>;
+    return actors.filter(actor => actor.mixins.includes(role.name)) as InstanceType<typeof role>;
 }

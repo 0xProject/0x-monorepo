@@ -35,6 +35,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('PoolOperator');
 
             // Register this mixin's assertion generators
             this.actor.simulationActions = {

@@ -24,9 +24,9 @@ import { SimulationEnvironment } from '../simulation';
 import { FunctionAssertion, FunctionResult } from './function_assertion';
 
 const PRECISION = 15;
-const ALPHA_NUMERATOR = 1;
-const ALPHA_DENOMINATOR = 3;
-const COBB_DOUGLAS_ALPHA = toDecimal(ALPHA_NUMERATOR).dividedBy(toDecimal(ALPHA_DENOMINATOR));
+const COBB_DOUGLAS_ALPHA = toDecimal(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator).dividedBy(
+    toDecimal(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator),
+);
 
 // Reference function for Cobb-Douglas
 function cobbDouglas(poolStats: PoolStats, aggregatedStats: AggregatedStats): BigNumber {
@@ -95,34 +95,19 @@ export function validFinalizePoolAssertion(
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
             const logs = result.receipt!.logs; // tslint:disable-line:no-non-null-assertion
-
-            // // Compute relevant epochs
-            // uint256 currentEpoch_ = currentEpoch;
-            // uint256 prevEpoch = currentEpoch_.safeSub(1);
             const { stakingPools, currentEpoch } = simulationEnvironment;
             const prevEpoch = currentEpoch.minus(1);
             const [poolId] = args;
             const pool = stakingPools[poolId];
 
-            // // Load the aggregated stats into memory; noop if no pools to finalize.
-            // IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[prevEpoch];
-            // if (aggregatedStats.numPoolsToFinalize == 0) {
-            //     return;
-            // }
-            //
-            // // Noop if the pool did not earn rewards or already finalized (has no fees).
-            // IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][prevEpoch];
-            // if (poolStats.feesCollected == 0) {
-            //     return;
-            // }
+            // finalizePool noops if there are no pools to finalize or
+            // the pool did not earn rewards or already finalized (has no fees).
             if (beforeInfo.aggregatedStats.numPoolsToFinalize.isZero() || beforeInfo.poolStats.feesCollected.isZero()) {
                 expect(logs.length, 'Expect no events to be emitted').to.equal(0);
                 return;
             }
 
-            // // Clear the pool stats so we don't finalize it again, and to recoup
-            // // some gas.
-            // delete poolStatsByEpoch[poolId][prevEpoch];
+            // It should have cleared the pool stats for prevEpoch
             const poolStats = PoolStats.fromArray(await stakingWrapper.poolStatsByEpoch(poolId, prevEpoch).callAsync());
             expect(poolStats).to.deep.equal({
                 feesCollected: constants.ZERO_AMOUNT,
@@ -130,43 +115,26 @@ export function validFinalizePoolAssertion(
                 membersStake: constants.ZERO_AMOUNT,
             });
 
-            // // Compute the rewards.
             // uint256 rewards = _getUnfinalizedPoolRewardsFromPoolStats(poolStats, aggregatedStats);
             const rewards = BigNumber.min(
                 cobbDouglas(beforeInfo.poolStats, beforeInfo.aggregatedStats),
                 beforeInfo.aggregatedStats.rewardsAvailable.minus(beforeInfo.aggregatedStats.totalRewardsFinalized),
             );
 
-            // // Pay the operator and update rewards for the pool.
-            // // Note that we credit at the CURRENT epoch even though these rewards
-            // // were earned in the previous epoch.
-            // (uint256 operatorReward, uint256 membersReward) = _syncPoolRewards(
-            //     poolId,
-            //     rewards,
-            //     poolStats.membersStake
-            // );
-            //
-            // // Emit an event.
-            // emit RewardsPaid(
-            //     currentEpoch_,
-            //     poolId,
-            //     operatorReward,
-            //     membersReward
-            // );
-            //
-            // uint256 totalReward = operatorReward.safeAdd(membersReward);
+            // Check that a RewardsPaid event was emitted
             const events = filterLogsToArguments<StakingRewardsPaidEventArgs>(logs, StakingEvents.RewardsPaid);
             expect(events.length, 'Number of RewardsPaid events emitted').to.equal(1);
             const [rewardsPaidEvent] = events;
-
             expect(rewardsPaidEvent.poolId, 'RewardsPaid event: poolId').to.equal(poolId);
             expect(rewardsPaidEvent.epoch, 'RewardsPaid event: currentEpoch_').to.bignumber.equal(currentEpoch);
 
+            // Pull the operator and members' reward from the event
             const { operatorReward, membersReward } = rewardsPaidEvent;
             const totalReward = operatorReward.plus(membersReward);
+            // Should be approximately equal to the rewards compute using the Cobb-Douglas reference function
             assertRoughlyEquals(totalReward, rewards, PRECISION);
 
-            // See _computePoolRewardsSplit
+            // Operator takes their share of the rewards
             if (beforeInfo.poolStats.membersStake.isZero()) {
                 expect(
                     operatorReward,
@@ -182,7 +150,7 @@ export function validFinalizePoolAssertion(
                 );
             }
 
-            // See _syncPoolRewards
+            // Pays the operator in WETH if the operator's reward is non-zero
             const expectedTransferEvents = operatorReward.isGreaterThan(0)
                 ? [
                       {
@@ -211,22 +179,15 @@ export function validFinalizePoolAssertion(
                 beforeInfo.poolStats.membersStake,
             );
             [numerator, denominator] = ReferenceFunctions.LibFractions.normalize(numerator, denominator);
-            // There's a bug in our reference functions, but I can't figure it out :/
+            // There's a bug in our reference functions, probably due to the fact that safeDiv in
+            // Solidity truncates in bits, whereas the safeDiv reference function truncates in base 10.
             assertRoughlyEquals(
                 mostRecentCumulativeRewards.numerator.dividedBy(mostRecentCumulativeRewards.denominator),
                 numerator.dividedBy(denominator),
                 PRECISION,
             );
 
-            // // Increase `totalRewardsFinalized`.
-            // aggregatedStatsByEpoch[prevEpoch].totalRewardsFinalized =
-            //     aggregatedStats.totalRewardsFinalized =
-            //     aggregatedStats.totalRewardsFinalized.safeAdd(totalReward);
-            //
-            // // Decrease the number of unfinalized pools left.
-            // aggregatedStatsByEpoch[prevEpoch].numPoolsToFinalize =
-            //     aggregatedStats.numPoolsToFinalize =
-            //     aggregatedStats.numPoolsToFinalize.safeSub(1);
+            // Check that aggregated stats have been updated
             const aggregatedStats = AggregatedStats.fromArray(
                 await stakingWrapper.aggregatedStatsByEpoch(prevEpoch).callAsync(),
             );
@@ -236,15 +197,7 @@ export function validFinalizePoolAssertion(
                 numPoolsToFinalize: beforeInfo.aggregatedStats.numPoolsToFinalize.minus(1),
             });
 
-            // // If there are no more unfinalized pools remaining, the epoch is
-            // // finalized.
-            // if (aggregatedStats.numPoolsToFinalize == 0) {
-            //     emit EpochFinalized(
-            //         prevEpoch,
-            //         aggregatedStats.totalRewardsFinalized,
-            //         aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized)
-            //     );
-            // }
+            // If there are no more unfinalized pools remaining, the epoch is finalized.
             const expectedEpochFinalizedEvents = aggregatedStats.numPoolsToFinalize.isZero()
                 ? [
                       {
@@ -262,6 +215,7 @@ export function validFinalizePoolAssertion(
                 StakingEvents.EpochFinalized,
             );
 
+            // Update local state
             pool.lastFinalized = prevEpoch;
         },
     });

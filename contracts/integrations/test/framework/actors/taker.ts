@@ -1,5 +1,3 @@
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { constants } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
@@ -38,6 +36,7 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
+            this.actor.mixins.push('Taker');
 
             // Register this mixin's assertion generators
             this.actor.simulationActions = {
@@ -65,7 +64,7 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
         }
 
         private async *_validFillOrder(): AsyncIterableIterator<AssertionResult | void> {
-            const { actors, balanceStore } = this.actor.simulationEnvironment!;
+            const { actors } = this.actor.simulationEnvironment!;
             const assertion = validFillOrderAssertion(this.actor.deployment, this.actor.simulationEnvironment!);
             while (true) {
                 // Choose a maker to be the other side of the order
@@ -73,53 +72,8 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 if (maker === undefined) {
                     yield;
                 } else {
-                    await balanceStore.updateErc20BalancesAsync();
-                    // Choose the assets for the order
-                    const [makerToken, makerFeeToken, takerToken, takerFeeToken] = Pseudorandom.sampleSize(
-                        this.actor.deployment.tokens.erc20,
-                        4, // tslint:disable-line:custom-no-magic-numbers
-                    );
-
-                    // Maker and taker set balances/allowances to guarantee that the fill succeeds.
-                    // Amounts are chosen to be within each actor's balance (divided by 2, in case
-                    // e.g. makerAsset = makerFeeAsset)
-                    const [makerAssetAmount, makerFee, takerAssetAmount, takerFee] = await Promise.all(
-                        [
-                            [maker, makerToken],
-                            [maker, makerFeeToken],
-                            [this.actor, takerToken],
-                            [this.actor, takerFeeToken],
-                        ].map(async ([owner, token]) => {
-                            let balance = balanceStore.balances.erc20[owner.address][token.address];
-                            await (owner as Actor).configureERC20TokenAsync(token as DummyERC20TokenContract);
-                            balance = balanceStore.balances.erc20[owner.address][token.address] =
-                                constants.INITIAL_ERC20_BALANCE;
-                            return Pseudorandom.integer(balance.dividedToIntegerBy(2));
-                        }),
-                    );
-                    // Encode asset data
-                    const [makerAssetData, makerFeeAssetData, takerAssetData, takerFeeAssetData] = [
-                        makerToken,
-                        makerFeeToken,
-                        takerToken,
-                        takerFeeToken,
-                    ].map(token =>
-                        this.actor.deployment.assetDataEncoder.ERC20Token(token.address).getABIEncodedTransactionData(),
-                    );
-
-                    // Maker signs the order
-                    const order = await maker.signOrderAsync({
-                        makerAssetData,
-                        takerAssetData,
-                        makerFeeAssetData,
-                        takerFeeAssetData,
-                        makerAssetAmount,
-                        takerAssetAmount,
-                        makerFee,
-                        takerFee,
-                        feeRecipientAddress: Pseudorandom.sample(actors)!.address,
-                    });
-
+                    // Maker creates and signs a fillable order
+                    const order = await maker.createFillableOrderAsync(this.actor);
                     // Taker fills the order by a random amount (up to the order's takerAssetAmount)
                     const fillAmount = Pseudorandom.integer(order.takerAssetAmount);
                     // Taker executes the fill with a random msg.value, so that sometimes the
