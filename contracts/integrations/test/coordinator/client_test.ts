@@ -19,7 +19,7 @@ const coordinatorEndpoint = 'http://localhost:';
 const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
 
 // tslint:disable:custom-no-magic-numbers
-blockchainTests.skip('Coordinator Client', env => {
+blockchainTests('Coordinator Client', env => {
     const takerTokenFillAmount = new BigNumber(0);
     const chainId = 1337;
     const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
