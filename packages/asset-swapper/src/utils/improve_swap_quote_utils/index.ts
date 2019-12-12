@@ -59,10 +59,14 @@ export class ImproveSwapQuoteUtils {
 
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(nativeOrders, fillableAmounts, MarketOperation.Sell);
 
-        const nativePath = pruneDustFillsFromNativePath(
-            createSellPathFromNativeOrders(nativeOrdersWithFillableAmounts),
+        const nativePath = clipPathToInput(
+            pruneDustFillsFromNativePath(
+                createSellPathFromNativeOrders(nativeOrdersWithFillableAmounts),
+                takerAmount,
+                _opts.dustFractionThreshold,
+            ),
             takerAmount,
-            _opts.dustFractionThreshold,
+            MarketOperation.Sell,
         );
         const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
@@ -117,10 +121,14 @@ export class ImproveSwapQuoteUtils {
 
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(nativeOrders, fillableAmounts, MarketOperation.Buy);
 
-        const nativePath = pruneDustFillsFromNativePath(
-            createBuyPathFromNativeOrders(nativeOrdersWithFillableAmounts),
+        const nativePath = clipPathToInput(
+            pruneDustFillsFromNativePath(
+                createBuyPathFromNativeOrders(nativeOrdersWithFillableAmounts),
+                makerAmount,
+                _opts.dustFractionThreshold,
+            ),
             makerAmount,
-            _opts.dustFractionThreshold,
+            MarketOperation.Buy,
         );
 
         const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
@@ -338,4 +346,17 @@ function sortFillsByPrice(fills: Fill[]): Fill[] {
 function getOrderTokens(order: SignedOrder): [string, string] {
     const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
     return [encoder.strictDecode(order.makerAssetData), encoder.strictDecode(order.takerAssetData)];
+}
+
+function clipPathToInput(path: Fill[], assetAmount: BigNumber, operation: MarketOperation): Fill[] {
+    const clipped = [];
+    let totalInput = ZERO_AMOUNT;
+    for (const fill of path) {
+        if (totalInput.gte(assetAmount)) {
+            break;
+        }
+        clipped.push(fill);
+        totalInput = totalInput.plus(operation === MarketOperation.Buy ? fill.output : fill.input);
+    }
+    return clipped;
 }

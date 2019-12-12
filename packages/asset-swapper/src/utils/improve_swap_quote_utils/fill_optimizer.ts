@@ -112,6 +112,7 @@ export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
             const partialInput = maxInput.minus(currentInput);
             currentOutput = currentOutput.plus(getPartialFillOutput(fill, partialInput));
             currentInput = partialInput;
+            break;
         } else {
             currentInput = currentInput.plus(fill.input);
             currentOutput = currentOutput.plus(fill.output);
