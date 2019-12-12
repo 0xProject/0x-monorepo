@@ -21,7 +21,7 @@ import {
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
-import { ImproveSwapQuoteUtils } from './utils/improve_swap_quote_utils';
+import { MarketOperationUtils } from './utils/market_operation_utils';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -38,7 +38,7 @@ export class SwapQuoter {
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _swapQuoteCalculator: SwapQuoteCalculator;
     private readonly _devUtilsContract: DevUtilsContract;
-    private readonly _improveSwapQuoteUtils: ImproveSwapQuoteUtils;
+    private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
 
     /**
@@ -161,7 +161,7 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._improveSwapQuoteUtils = new ImproveSwapQuoteUtils(
+        this._marketOperationUtils = new MarketOperationUtils(
             this.provider,
             this._contractAddresses,
             {
@@ -169,7 +169,7 @@ export class SwapQuoter {
                 exchangeAddress: this._contractAddresses.exchange,
             },
         );
-        this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._improveSwapQuoteUtils);
+        this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 
     /**
@@ -428,7 +428,7 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { slippagePercentage, shouldImproveSwapQuoteWithOtherSources, improveOrderOpts } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
+        const { slippagePercentage, ...calculateSwapQuoteOpts } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
@@ -457,10 +457,7 @@ export class SwapQuoter {
                 assetFillAmount,
                 slippagePercentage,
                 gasPrice,
-                {
-                    shouldImproveSwapQuoteWithOtherSources,
-                    improveOrderOpts,
-                },
+                calculateSwapQuoteOpts,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
@@ -468,10 +465,7 @@ export class SwapQuoter {
                 assetFillAmount,
                 slippagePercentage,
                 gasPrice,
-                {
-                    shouldImproveSwapQuoteWithOtherSources,
-                    improveOrderOpts,
-                },
+                calculateSwapQuoteOpts,
             );
         }
 

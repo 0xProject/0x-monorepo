@@ -2,7 +2,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
-import { ImproveOrdersOpts } from './utils/improve_swap_quote_utils/types';
+import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -262,12 +262,9 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 }
 
 /**
- * shouldImproveSwapQuoteWithOtherSources: After fetching from provided source, optionally rely on on DEX aggregated with bridge contracts to improve quoted price 
- * improveOrderOpts: options for the improveOpts optimizer
+ * Opts required to generate a SwapQuote with SwapQuoteCalculator
  */
-export interface CalculateSwapQuoteOpts {
-    shouldImproveSwapQuoteWithOtherSources: boolean;
-    improveOrderOpts?: ImproveOrdersOpts;
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {
 }
 
 /**

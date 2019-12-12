@@ -7,18 +7,18 @@ import { ZeroExProvider } from 'ethereum-types';
 
 import { constants } from '../../constants';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
-import { marketUtils } from '../market_utils';
+import { fillableAmountsUtils } from '../fillable_amounts_utils';
 
-import { constants as improveSwapQuoteConstants } from './constants';
+import { constants as marketOperationUtilConstants } from './constants';
 import { CreateOrderUtils } from './create_order';
 import { comparePathOutputs, FillsOptimizer, getPathOutput } from './fill_optimizer';
 import { DexOrderSampler } from './sampler';
-import { AggregationError, DexSample, ERC20BridgeSource, Fill, FillData, FillFlags, ImproveOrdersOpts, OrderDomain } from './types';
+import { AggregationError, DexSample, ERC20BridgeSource, Fill, FillData, FillFlags, GetMarketOrdersOpts, OrderDomain } from './types';
 
 const { ZERO_AMOUNT } = constants;
-const { BUY_SOURCES, DEFAULT_IMPROVE_ORDERS_OPTS, SELL_SOURCES } = improveSwapQuoteConstants;
+const { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_SOURCES } = marketOperationUtilConstants;
 
-export class ImproveSwapQuoteUtils {
+export class MarketOperationUtils {
 
     private readonly _dexSampler: DexOrderSampler;
     private readonly _createOrderUtils: CreateOrderUtils;
@@ -32,23 +32,23 @@ export class ImproveSwapQuoteUtils {
     }
 
     /**
-     * Improve a market sell operation by (potentially) merging native orders with
+     * gets the orders required for a market sell operation by (potentially) merging native orders with
      * generated bridge orders.
      * @param nativeOrders Native orders.
      * @param takerAmount Amount of taker asset to sell.
      * @param opts Options object.
-     * @return Improved orders.
+     * @return orders.
      */
-    public async improveMarketSellAsync(
+    public async getMarketSellOrdersAsync(
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
-        opts?: Partial<ImproveOrdersOpts>,
+        opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<SignedOrderWithFillableAmounts[]> {
         if (nativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
         const _opts = {
-            ...DEFAULT_IMPROVE_ORDERS_OPTS,
+            ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
         const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketSellAsync(
@@ -93,23 +93,23 @@ export class ImproveSwapQuoteUtils {
     }
 
     /**
-     * Improve a market buy operation by (potentially) merging native orders with
+     * gets the orders required for a market buy operation by (potentially) merging native orders with
      * generated bridge orders.
      * @param nativeOrders Native orders.
      * @param makerAmount Amount of maker asset to buy.
      * @param opts Options object.
-     * @return Improved orders.
+     * @return orders.
      */
-    public async improveMarketBuyAsync(
+    public async getMarketBuyOrdersAsync(
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
-        opts?: Partial<ImproveOrdersOpts>,
+        opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<SignedOrderWithFillableAmounts[]> {
         if (nativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
         const _opts = {
-            ...DEFAULT_IMPROVE_ORDERS_OPTS,
+            ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
 
@@ -184,7 +184,7 @@ function createSellPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[]
     for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
         const takerAmount = order.fillableTakerAssetAmount;
-        const makerAmount = marketUtils.getAssetAmountAvailable(order, MarketOperation.Sell);
+        const makerAmount = fillableAmountsUtils.getAssetAmountAvailable(order, MarketOperation.Sell);
         // Native orders can be filled in any order, so they're all root nodes.
         path.push({
             flags: FillFlags.SourceNative,
@@ -206,7 +206,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
     for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
         const makerAmount = order.fillableMakerAssetAmount;
-        const takerAmount = marketUtils.getAssetAmountAvailable(order, MarketOperation.Buy);
+        const takerAmount = fillableAmountsUtils.getAssetAmountAvailable(order, MarketOperation.Buy);
         // Native orders can be filled in any order, so they're all root nodes.
         path.push({
             flags: FillFlags.SourceNative,

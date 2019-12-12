@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { ERC20BridgeSource, ImproveOrdersOpts } from './types';
+import { ERC20BridgeSource, GetMarketOrdersOpts } from './types';
 
 const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
 
@@ -23,7 +23,7 @@ export const SELL_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Da
  */
 export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
 
-export const DEFAULT_IMPROVE_ORDERS_OPTS: ImproveOrdersOpts = {
+export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     runLimit: 1024,
     excludedSources: [],
     bridgeSlippage: 0.0005,
@@ -37,5 +37,5 @@ export const constants = {
     SOURCE_TO_ADDRESS,
     SELL_SOURCES,
     BUY_SOURCES,
-    DEFAULT_IMPROVE_ORDERS_OPTS,
+    DEFAULT_GET_MARKET_ORDERS_OPTS,
 };

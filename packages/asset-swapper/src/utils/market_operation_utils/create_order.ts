@@ -1,15 +1,15 @@
+import { ContractAddresses } from '@0x/contract-addresses';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 import { SignedOrderWithFillableAmounts } from '../../types';
 
-import { constants as improveSwapQuoteConstants } from './constants';
+import { constants as marketOperationUtilConstants } from './constants';
 import { ERC20BridgeSource, Fill, FillData, NativeFillData, OrderDomain } from './types';
-import { ContractAddresses } from '@0x/migrations';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
-const { INFINITE_TIMESTAMP_SEC } = improveSwapQuoteConstants;
+const { INFINITE_TIMESTAMP_SEC } = marketOperationUtilConstants;
 
 export class CreateOrderUtils {
     private readonly _contractAddress: ContractAddresses;

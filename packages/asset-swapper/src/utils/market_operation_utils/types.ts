@@ -79,9 +79,9 @@ export interface Fill {
 }
 
 /**
- * Options for `improveMarketBuyAsync()` and `improveMarketSellAsync()`.
+ * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
  */
-export interface ImproveOrdersOpts {
+export interface GetMarketOrdersOpts {
     /**
      * Liquidity sources to exclude. Default is none.
      */

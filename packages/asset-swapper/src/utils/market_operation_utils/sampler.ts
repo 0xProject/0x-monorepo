@@ -2,10 +2,10 @@ import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { constants as improveSwapQuoteConstants } from './constants';
+import { constants as marketOperationUtilConstants } from './constants';
 import { DexSample, ERC20BridgeSource } from './types';
 
-const { SOURCE_TO_ADDRESS } = improveSwapQuoteConstants;
+const { SOURCE_TO_ADDRESS } = marketOperationUtilConstants;
 
 export class DexOrderSampler {
     private readonly _samplerContract: IERC20BridgeSamplerContract;

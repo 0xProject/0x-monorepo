@@ -11,6 +11,8 @@ import {
     SwapQuoterOpts,
 } from './types';
 
+import { constants as marketOperationUtilConstants } from './utils/market_operation_utils/constants';
+
 const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 const NULL_BYTES = '0x';
 const NULL_ERC20_ASSET_DATA = '0xf47261b00000000000000000000000000000000000000000000000000000000000000000';
@@ -54,8 +56,10 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
 const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
+    ...{
     slippagePercentage: 0.2, // 20% slippage protection,
-    shouldImproveSwapQuoteWithOtherSources: true,
+    },
+    ...marketOperationUtilConstants.DEFAULT_GET_MARKET_ORDERS_OPTS,
 };
 
 export const constants = {
