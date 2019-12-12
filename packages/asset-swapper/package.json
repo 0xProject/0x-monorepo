@@ -48,6 +48,7 @@
         "@0x/orderbook": "^1.0.1",
         "@0x/utils": "^5.1.0",
         "@0x/web3-wrapper": "^7.0.1",
+        "heartbeats": "^5.0.1",
         "lodash": "^4.17.11"
     },
     "devDependencies": {
