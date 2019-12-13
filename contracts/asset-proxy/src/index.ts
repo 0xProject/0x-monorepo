@@ -5,6 +5,7 @@ export {
     ERC20ProxyContract,
     ERC721ProxyContract,
     Eth2DaiBridgeContract,
+    DydxBridgeContract,
     IAssetDataContract,
     IAssetProxyContract,
     MultiAssetProxyContract,

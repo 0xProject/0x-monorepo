@@ -352,6 +352,8 @@ export enum RevertReason {
     OnlyCallableByWallet = 'ONLY_CALLABLE_BY_WALLET',
     ChaiBridgeOnlyCallableByErc20BridgeProxy = 'ChaiBridge/ONLY_CALLABLE_BY_ERC20_BRIDGE_PROXY',
     ChaiBridgeDrawDaiFailed = 'ChaiBridge/DRAW_DAI_FAILED',
+    DydxBridgeOnlyCallableByErc20BridgeProxy = 'DydxBridge/ONLY_CALLABLE_BY_ERC20_BRIDGE_PROXY',
+    DydxBridgeUnrecognizedBridgeAction = 'DydxBridge/UNRECOGNIZED_BRIDGE_ACTION',
 }
 
 export enum StatusCodes {

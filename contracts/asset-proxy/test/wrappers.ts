@@ -4,6 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../test/generated-wrappers/chai_bridge';
+export * from '../test/generated-wrappers/dydx_bridge';
 export * from '../test/generated-wrappers/erc1155_proxy';
 export * from '../test/generated-wrappers/erc20_bridge_proxy';
 export * from '../test/generated-wrappers/erc20_proxy';
@@ -14,6 +15,8 @@ export * from '../test/generated-wrappers/i_asset_proxy';
 export * from '../test/generated-wrappers/i_asset_proxy_dispatcher';
 export * from '../test/generated-wrappers/i_authorizable';
 export * from '../test/generated-wrappers/i_chai';
+export * from '../test/generated-wrappers/i_dydx';
+export * from '../test/generated-wrappers/i_dydx_bridge';
 export * from '../test/generated-wrappers/i_erc20_bridge';
 export * from '../test/generated-wrappers/i_eth2_dai';
 export * from '../test/generated-wrappers/i_kyber_network_proxy';
@@ -26,6 +29,7 @@ export * from '../test/generated-wrappers/multi_asset_proxy';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/static_call_proxy';
 export * from '../test/generated-wrappers/test_chai_bridge';
+export * from '../test/generated-wrappers/test_dydx_bridge';
 export * from '../test/generated-wrappers/test_erc20_bridge';
 export * from '../test/generated-wrappers/test_eth2_dai_bridge';
 export * from '../test/generated-wrappers/test_kyber_bridge';
