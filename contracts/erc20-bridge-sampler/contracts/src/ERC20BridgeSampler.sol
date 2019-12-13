@@ -24,7 +24,7 @@ import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "./DeploymentConstants.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "./IDevUtils.sol";
 import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
@@ -153,7 +153,8 @@ contract ERC20BridgeSampler is
         }
     }
 
-    /// @dev Queries the fillable maker asset amounts of native orders.
+    /// @dev Queries the fillable taker asset amounts of native orders.
+    ///      Effectively ignores orders that have empty signatures or
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
     /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
@@ -174,7 +175,7 @@ contract ERC20BridgeSampler is
         // convert them to maker asset amounts.
         for (uint256 i = 0; i < orders.length; ++i) {
             if (orderFillableMakerAssetAmounts[i] != 0) {
-                orderFillableMakerAssetAmounts[i] = LibMath.getPartialAmountFloor(
+                orderFillableMakerAssetAmounts[i] = LibMath.getPartialAmountCeil(
                     orderFillableMakerAssetAmounts[i],
                     orders[i].takerAssetAmount,
                     orders[i].makerAssetAmount
@@ -259,15 +260,15 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory makerTokenAmounts)
     {
         _assertValidPair(makerToken, takerToken);
-        address _takerToken = takerToken == _getWETHAddress() ? KYBER_ETH_ADDRESS : takerToken;
-        address _makerToken = makerToken == _getWETHAddress() ? KYBER_ETH_ADDRESS : makerToken;
+        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
+        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
         uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
         uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
-                _getKyberNetworkAddress().staticcall(abi.encodeWithSelector(
+                _getKyberNetworkProxyAddress().staticcall(abi.encodeWithSelector(
                     IKyberNetwork(0).getExpectedRate.selector,
                     _takerToken,
                     _makerToken,
@@ -275,7 +276,7 @@ contract ERC20BridgeSampler is
                 ));
             uint256 rate = 0;
             if (didSucceed) {
-                (rate,) = abi.decode(resultData, (uint256, uint256));
+                rate = abi.decode(resultData, (uint256));
             }
             makerTokenAmounts[i] =
                 rate *
@@ -372,18 +373,18 @@ contract ERC20BridgeSampler is
         _assertValidPair(makerToken, takerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
-        IUniswapExchangeQuotes takerTokenExchange = takerToken == _getWETHAddress() ?
+        IUniswapExchangeQuotes takerTokenExchange = takerToken == _getWethAddress() ?
             IUniswapExchangeQuotes(0) : _getUniswapExchange(takerToken);
-        IUniswapExchangeQuotes makerTokenExchange = makerToken == _getWETHAddress() ?
+        IUniswapExchangeQuotes makerTokenExchange = makerToken == _getWethAddress() ?
             IUniswapExchangeQuotes(0) : _getUniswapExchange(makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
-            if (makerToken == _getWETHAddress()) {
+            if (makerToken == _getWethAddress()) {
                 makerTokenAmounts[i] = _callUniswapExchangePriceFunction(
                     address(takerTokenExchange),
                     takerTokenExchange.getTokenToEthInputPrice.selector,
                     takerTokenAmounts[i]
                 );
-            } else if (takerToken == _getWETHAddress()) {
+            } else if (takerToken == _getWethAddress()) {
                 makerTokenAmounts[i] = _callUniswapExchangePriceFunction(
                     address(makerTokenExchange),
                     makerTokenExchange.getEthToTokenInputPrice.selector,
@@ -426,18 +427,18 @@ contract ERC20BridgeSampler is
         _assertValidPair(makerToken, takerToken);
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
-        IUniswapExchangeQuotes takerTokenExchange = takerToken == _getWETHAddress() ?
+        IUniswapExchangeQuotes takerTokenExchange = takerToken == _getWethAddress() ?
             IUniswapExchangeQuotes(0) : _getUniswapExchange(takerToken);
-        IUniswapExchangeQuotes makerTokenExchange = makerToken == _getWETHAddress() ?
+        IUniswapExchangeQuotes makerTokenExchange = makerToken == _getWethAddress() ?
             IUniswapExchangeQuotes(0) : _getUniswapExchange(makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
-            if (makerToken == _getWETHAddress()) {
+            if (makerToken == _getWethAddress()) {
                 takerTokenAmounts[i] = _callUniswapExchangePriceFunction(
                     address(takerTokenExchange),
                     takerTokenExchange.getTokenToEthOutputPrice.selector,
                     makerTokenAmounts[i]
                 );
-            } else if (takerToken == _getWETHAddress()) {
+            } else if (takerToken == _getWethAddress()) {
                 takerTokenAmounts[i] = _callUniswapExchangePriceFunction(
                     address(makerTokenExchange),
                     makerTokenExchange.getEthToTokenOutputPrice.selector,
@@ -523,7 +524,7 @@ contract ERC20BridgeSampler is
         if (source == _getUniswapExchangeFactoryAddress()) {
             return sampleSellsFromUniswap(takerToken, makerToken, takerTokenAmounts);
         }
-        if (source == _getKyberNetworkAddress()) {
+        if (source == _getKyberNetworkProxyAddress()) {
             return sampleSellsFromKyberNetwork(takerToken, makerToken, takerTokenAmounts);
         }
         revert("ERC20BridgeSampler/UNSUPPORTED_SOURCE");

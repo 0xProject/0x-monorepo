@@ -136,7 +136,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         return LibDeterministicQuotes.getDeterministicSellQuote(
             salt,
             tokenAddress,
-            WETH_ADDRESS,
+            _getWethAddress(),
             ethSold
         );
     }
@@ -152,7 +152,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             salt,
-            WETH_ADDRESS,
+            _getWethAddress(),
             tokenAddress,
             tokensBought
         );
@@ -170,7 +170,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         return LibDeterministicQuotes.getDeterministicSellQuote(
             salt,
             tokenAddress,
-            WETH_ADDRESS,
+            _getWethAddress(),
             tokensSold
         );
     }
@@ -186,7 +186,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             salt,
-            WETH_ADDRESS,
+            _getWethAddress(),
             tokenAddress,
             ethBought
         );
@@ -213,8 +213,8 @@ contract TestERC20BridgeSamplerKyberNetwork is
         returns (uint256 expectedRate, uint256)
     {
         _revertIfShouldFail();
-        fromToken = fromToken == ETH_ADDRESS ? WETH_ADDRESS : fromToken;
-        toToken = toToken == ETH_ADDRESS ? WETH_ADDRESS : toToken;
+        fromToken = fromToken == ETH_ADDRESS ? _getWethAddress() : fromToken;
+        toToken = toToken == ETH_ADDRESS ? _getWethAddress() : toToken;
         expectedRate = LibDeterministicQuotes.getDeterministicRate(
             SALT,
             fromToken,
@@ -381,7 +381,7 @@ contract TestERC20BridgeSampler is
     }
 
     // Overriden to point to a custom contract.
-    function _getKyberNetworkAddress()
+    function _getKyberNetworkProxyAddress()
         internal
         view
         returns (address kyberAddress)

@@ -39,9 +39,9 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the `Chai` contract
     address constant private CHAI_ADDRESS = 0x06AF07097C9Eeb7fD685c692751D5C66dB49c215;
     /// @dev Address of the 0x DevUtils contract.
-    address constant public DEV_UTILS_ADDRESS = 0xcCc2431a7335F21d9268bA62F0B32B0f2EFC463f;
+    address constant private DEV_UTILS_ADDRESS = 0xcCc2431a7335F21d9268bA62F0B32B0f2EFC463f;
     /// @dev Kyber ETH pseudo-address.
-    address constant public KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.

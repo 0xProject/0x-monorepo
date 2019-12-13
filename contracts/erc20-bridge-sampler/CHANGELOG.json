@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Do not query empty/unsigned orders. Swallow revets on DEX quotes.",
-                "pr": 2395
+                "pr": 2365
             }
         ]
     },
