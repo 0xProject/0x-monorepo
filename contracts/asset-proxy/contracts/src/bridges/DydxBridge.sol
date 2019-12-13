@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IDydxBridge.sol";
 import "../interfaces/IDydx.sol";
@@ -127,9 +128,11 @@ contract DydxBridge is
             // Scale amount, if conversion rate is set.
             uint256 scaledAmount;
             if (bridgeAction.conversionRateDenominator > 0) {
-                scaledAmount = amount
-                    .safeMul(bridgeAction.conversionRateNumerator)
-                    .safeDiv(bridgeAction.conversionRateDenominator);
+                scaledAmount = LibMath.safeGetPartialAmountFloor(
+                    bridgeAction.conversionRateNumerator,
+                    bridgeAction.conversionRateDenominator,
+                    amount
+                );
             } else {
                 scaledAmount = amount;
             }

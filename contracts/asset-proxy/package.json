@@ -84,6 +84,7 @@
         "@0x/contracts-erc1155": "^2.0.1",
         "@0x/contracts-erc20": "^3.0.1",
         "@0x/contracts-erc721": "^3.0.1",
+        "@0x/contracts-exchange-libs": "^4.0.1",
         "@0x/order-utils": "^10.0.0",
         "@0x/typescript-typings": "^5.0.0",
         "@0x/utils": "^5.1.0",
