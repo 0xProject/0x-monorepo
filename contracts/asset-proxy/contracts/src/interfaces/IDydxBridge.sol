@@ -21,14 +21,22 @@ pragma solidity ^0.5.9;
 
 interface IDydxBridge {
 
-    enum BridgeAction {
+    /// @dev This is the subset of `IDydx.ActionType` that are supported by the bridge.
+    enum BridgeActionType {
         Deposit,                    // Deposit tokens into dydx account.
         Withdraw                    // Withdraw tokens from dydx account.
     }
 
+    struct BridgeAction {
+        BridgeActionType actionType;            // Action to run on dydx account.
+        uint256 accountId;                      // Index in `BridgeData.accountNumbers` for this action.
+        uint256 marketId;                       // Market to operate on.
+        uint256 conversionRateNumerator;        // Optional. If set, transfer amount is scaled by (conversionRateNumerator/conversionRateDenominator).
+        uint256 conversionRateDenominator;      // Optional. If set, transfer amount is scaled by (conversionRateNumerator/conversionRateDenominator).
+    }
+
     struct BridgeData {
-        BridgeAction action;        // Action to run on dydx account.
-        uint256 accountNumber;      // Account number used to identify the owner's specific account.
-        uint256 marketId;           // Market to operate on.
+        uint256[] accountNumbers;               // Account number used to identify the owner's specific account.
+        BridgeAction[] actions;                 // Actions to carry out on the owner's accounts.
     }
 }
