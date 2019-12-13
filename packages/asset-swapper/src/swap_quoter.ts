@@ -162,14 +162,10 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._marketOperationUtils = new MarketOperationUtils(
-            this.provider,
-            this._contractAddresses,
-            {
-                chainId,
-                exchangeAddress: this._contractAddresses.exchange,
-            },
-        );
+        this._marketOperationUtils = new MarketOperationUtils(this.provider, this._contractAddresses, {
+            chainId,
+            exchangeAddress: this._contractAddresses.exchange,
+        });
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 
@@ -367,10 +363,7 @@ export class SwapQuoter {
      * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      */
-    public async getSignedOrdersAsync(
-        makerAssetData: string,
-        takerAssetData: string,
-    ): Promise<SignedOrder[]> {
+    public async getSignedOrdersAsync(makerAssetData: string, takerAssetData: string): Promise<SignedOrder[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
@@ -429,7 +422,11 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { slippagePercentage, ...calculateSwapQuoteOpts } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
+        const { slippagePercentage, ...calculateSwapQuoteOpts } = _.merge(
+            {},
+            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
+            options,
+        );
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
@@ -445,7 +442,14 @@ export class SwapQuoter {
 
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (prunedOrders.length === 0) {
-            prunedOrders = [dummyOrderUtils.createDummyOrderForSampler(makerAssetData, takerAssetData)];
+            prunedOrders = [
+                dummyOrderUtils.createDummyOrderForSampler(
+                    makerAssetData,
+                    takerAssetData,
+                    this._contractAddresses.uniswapBridge,
+                    '0x04',
+                ),
+            ];
         }
 
         let swapQuote: SwapQuote;

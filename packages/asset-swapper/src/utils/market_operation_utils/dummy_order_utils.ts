@@ -1,5 +1,6 @@
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 
@@ -9,9 +10,14 @@ const { NULL_ADDRESS, NULL_BYTES, ZERO_AMOUNT } = constants;
 const { INFINITE_TIMESTAMP_SEC } = marketOperationUtilConstants;
 
 export const dummyOrderUtils = {
-    createDummyOrderForSampler(makerAssetData: string, takerAssetData: string): SignedOrder {
+    createDummyOrderForSampler(
+        makerAssetData: string,
+        takerAssetData: string,
+        makerAddress: string,
+        signature: string,
+    ): SignedOrder {
         return {
-            makerAddress: NULL_ADDRESS,
+            makerAddress,
             takerAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
             feeRecipientAddress: NULL_ADDRESS,
@@ -23,10 +29,10 @@ export const dummyOrderUtils = {
             takerFeeAssetData: NULL_BYTES,
             makerFee: ZERO_AMOUNT,
             takerFee: ZERO_AMOUNT,
-            makerAssetAmount: ZERO_AMOUNT,
-            takerAssetAmount: ZERO_AMOUNT,
-            signature: NULL_BYTES,
-            chainId: 0,
+            makerAssetAmount: new BigNumber(1),
+            takerAssetAmount: new BigNumber(1),
+            signature,
+            chainId: 1,
             exchangeAddress: NULL_ADDRESS,
         };
     },
