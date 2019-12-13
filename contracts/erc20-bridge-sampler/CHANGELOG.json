@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Do not query empty/unsigned orders. Swallow revets on DEX quotes.",
+                "pr": 2395
+            }
+        ]
+    },
+    {
         "timestamp": 1575931811,
         "version": "1.0.1",
         "changes": [

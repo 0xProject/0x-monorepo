@@ -23,6 +23,7 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
 import "../src/IEth2Dai.sol";
+import "../src/IDevUtils.sol";
 import "../src/IKyberNetwork.sol";
 
 
@@ -90,9 +91,28 @@ library LibDeterministicQuotes {
 }
 
 
+contract FailTrigger {
+
+    // Give this address a balance to force operations to fail.
+    address payable constant public FAILURE_ADDRESS = 0xe9dB8717BC5DFB20aaf538b4a5a02B7791FF430C;
+
+    // Funds `FAILURE_ADDRESS`.
+    function enableFailTrigger() external payable {
+        FAILURE_ADDRESS.transfer(msg.value);
+    }
+
+    function _revertIfShouldFail() internal view {
+        if (FAILURE_ADDRESS.balance != 0) {
+            revert("FAIL_TRIGGERED");
+        }
+    }
+}
+
+
 contract TestERC20BridgeSamplerUniswapExchange is
     IUniswapExchangeQuotes,
-    DeploymentConstants
+    DeploymentConstants,
+    FailTrigger
 {
     bytes32 constant private BASE_SALT = 0x1d6a6a0506b0b4a554b907a4c29d9f4674e461989d9c1921feb17b26716385ab;
 
@@ -112,6 +132,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         view
         returns (uint256 tokensBought)
     {
+        _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicSellQuote(
             salt,
             tokenAddress,
@@ -128,6 +149,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         view
         returns (uint256 ethSold)
     {
+        _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             salt,
             WETH_ADDRESS,
@@ -144,6 +166,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         view
         returns (uint256 ethBought)
     {
+        _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicSellQuote(
             salt,
             tokenAddress,
@@ -160,6 +183,7 @@ contract TestERC20BridgeSamplerUniswapExchange is
         view
         returns (uint256 tokensSold)
     {
+        _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             salt,
             WETH_ADDRESS,
@@ -172,7 +196,8 @@ contract TestERC20BridgeSamplerUniswapExchange is
 
 contract TestERC20BridgeSamplerKyberNetwork is
     IKyberNetwork,
-    DeploymentConstants
+    DeploymentConstants,
+    FailTrigger
 {
     bytes32 constant private SALT = 0x0ff3ca9d46195c39f9a12afb74207b4970349fb3cfb1e459bbf170298d326bc7;
     address constant public ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -187,6 +212,7 @@ contract TestERC20BridgeSamplerKyberNetwork is
         view
         returns (uint256 expectedRate, uint256)
     {
+        _revertIfShouldFail();
         fromToken = fromToken == ETH_ADDRESS ? WETH_ADDRESS : fromToken;
         toToken = toToken == ETH_ADDRESS ? WETH_ADDRESS : toToken;
         expectedRate = LibDeterministicQuotes.getDeterministicRate(
@@ -199,7 +225,8 @@ contract TestERC20BridgeSamplerKyberNetwork is
 
 
 contract TestERC20BridgeSamplerEth2Dai is
-    IEth2Dai
+    IEth2Dai,
+    FailTrigger
 {
     bytes32 constant private SALT = 0xb713b61bb9bb2958a0f5d1534b21e94fc68c4c0c034b0902ed844f2f6cd1b4f7;
 
@@ -213,6 +240,7 @@ contract TestERC20BridgeSamplerEth2Dai is
         view
         returns (uint256 buyAmount)
     {
+        _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicSellQuote(
             SALT,
             payToken,
@@ -231,6 +259,7 @@ contract TestERC20BridgeSamplerEth2Dai is
         view
         returns (uint256 payAmount)
     {
+        _revertIfShouldFail();
         return LibDeterministicQuotes.getDeterministicBuyQuote(
             SALT,
             payToken,
@@ -269,7 +298,8 @@ contract TestERC20BridgeSamplerUniswapExchangeFactory is
 
 
 contract TestERC20BridgeSampler is
-    ERC20BridgeSampler
+    ERC20BridgeSampler,
+    FailTrigger
 {
     TestERC20BridgeSamplerUniswapExchangeFactory public uniswap;
     TestERC20BridgeSamplerEth2Dai public eth2Dai;
@@ -288,18 +318,30 @@ contract TestERC20BridgeSampler is
         uniswap.createTokenExchanges(tokenAddresses);
     }
 
-    // `IExchange.getOrderInfo()`, overridden to return deterministic order infos.
-    function getOrderInfo(LibOrder.Order memory order)
+    // `IDevUtils.getOrderRelevantState()`, overridden to return deterministic
+    // states.
+    function getOrderRelevantState(
+        LibOrder.Order memory order,
+        bytes memory
+    )
         public
-        pure
-        returns (LibOrder.OrderInfo memory orderInfo)
+        view
+        returns (
+            LibOrder.OrderInfo memory orderInfo,
+            uint256 fillableTakerAssetAmount,
+            bool isValidSignature
+        )
     {
         // The order hash is just the hash of the salt.
         bytes32 orderHash = keccak256(abi.encode(order.salt));
         // Everything else is derived from the hash.
         orderInfo.orderHash = orderHash;
         orderInfo.orderStatus = uint8(uint256(orderHash) % uint8(-1));
-        orderInfo.orderTakerAssetFilledAmount = uint256(orderHash) % order.takerAssetAmount;
+        orderInfo.orderTakerAssetFilledAmount =
+            uint256(orderHash) % order.takerAssetAmount;
+        fillableTakerAssetAmount =
+            order.takerAssetAmount - orderInfo.orderTakerAssetFilledAmount;
+        isValidSignature = uint256(orderHash) % 2 == 1;
     }
 
     // Overriden to return deterministic decimals.
@@ -312,38 +354,38 @@ contract TestERC20BridgeSampler is
     }
 
     // Overriden to point to a this contract.
-    function _getExchangeContract()
+    function _getDevUtilsAddress()
         internal
         view
-        returns (IExchange zeroex)
+        returns (address devUtilAddress)
     {
-        return IExchange(address(this));
+        return address(this);
     }
 
     // Overriden to point to a custom contract.
-    function _getEth2DaiContract()
+    function _getEth2DaiAddress()
         internal
         view
-        returns (IEth2Dai eth2dai_)
+        returns (address eth2daiAddress)
     {
-        return eth2Dai;
+        return address(eth2Dai);
     }
 
     // Overriden to point to a custom contract.
-    function _getUniswapExchangeFactoryContract()
+    function _getUniswapExchangeFactoryAddress()
         internal
         view
-        returns (IUniswapExchangeFactory uniswap_)
+        returns (address uniswapAddress)
     {
-        return uniswap;
+        return address(uniswap);
     }
 
     // Overriden to point to a custom contract.
-    function _getKyberNetworkContract()
+    function _getKyberNetworkAddress()
         internal
         view
-        returns (IKyberNetwork kyber_)
+        returns (address kyberAddress)
     {
-        return kyber;
+        return address(kyber);
     }
 }

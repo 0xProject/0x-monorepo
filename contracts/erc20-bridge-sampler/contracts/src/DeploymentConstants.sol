@@ -21,14 +21,15 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IUniswapExchangeFactory.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import "./IDevUtils.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
 
 
 contract DeploymentConstants {
 
-    /// @dev Address of the 0x Exchange contract.
-    address constant public EXCHANGE_ADDRESS = 0x080bf510FCbF18b91105470639e9561022937712;
+    /// @dev Address of the 0x DevUtils contract.
+    address constant public DEVUTILS_ADDRESS = 0xcCc2431a7335F21d9268bA62F0B32B0f2EFC463f;
     /// @dev Address of the Eth2Dai MatchingMarket contract.
     address constant public ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
     /// @dev Address of the UniswapExchangeFactory contract.
@@ -40,44 +41,44 @@ contract DeploymentConstants {
     /// @dev Kyber ETH pseudo-address.
     address constant public KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-    /// @dev An overridable way to retrieve the 0x Exchange contract.
-    /// @return zeroex The 0x Exchange contract.
-    function _getExchangeContract()
+    /// @dev An overridable way to retrieve the 0x DevUtils contract address.
+    /// @return devUtils The 0x DevUtils contract address.
+    function _getDevUtilsAddress()
         internal
         view
-        returns (IExchange zeroex)
+        returns (address devUtils)
     {
-        return IExchange(EXCHANGE_ADDRESS);
+        return DEVUTILS_ADDRESS;
     }
 
-    /// @dev An overridable way to retrieve the Eth2Dai exchange contract.
-    /// @return eth2dai The Eth2Dai exchange contract.
-    function _getEth2DaiContract()
+    /// @dev An overridable way to retrieve the Eth2Dai exchange contract address.
+    /// @return eth2dai The Eth2Dai exchange contract address.
+    function _getEth2DaiAddress()
         internal
         view
-        returns (IEth2Dai eth2dai)
+        returns (address eth2dai)
     {
-        return IEth2Dai(ETH2DAI_ADDRESS);
+        return ETH2DAI_ADDRESS;
     }
 
-    /// @dev An overridable way to retrieve the Uniswap exchange factory contract.
-    /// @return uniswap The UniswapExchangeFactory contract.
-    function _getUniswapExchangeFactoryContract()
+    /// @dev An overridable way to retrieve the Uniswap exchange factory contract address.
+    /// @return uniswap The UniswapExchangeFactory contract address.
+    function _getUniswapExchangeFactoryAddress()
         internal
         view
-        returns (IUniswapExchangeFactory uniswap)
+        returns (address uniswap)
     {
-        return IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS);
+        return UNISWAP_EXCHANGE_FACTORY_ADDRESS;
     }
 
-    /// @dev An overridable way to retrieve the Kyber network proxy contract.
-    /// @return kyber The KyberNeworkProxy contract.
-    function _getKyberNetworkContract()
+    /// @dev An overridable way to retrieve the Kyber network proxy contract address.
+    /// @return kyber The KyberNeworkProxy contract address.
+    function _getKyberNetworkAddress()
         internal
         view
-        returns (IKyberNetwork kyber)
+        returns (address kyber)
     {
-        return IKyberNetwork(KYBER_NETWORK_PROXY_ADDRESS);
+        return KYBER_NETWORK_PROXY_ADDRESS;
     }
 
     /// @dev An overridable way to retrieve the WETH contract address.

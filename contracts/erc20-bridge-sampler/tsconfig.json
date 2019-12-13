@@ -7,6 +7,7 @@
         "generated-artifacts/IERC20BridgeSampler.json",
         "test/generated-artifacts/DeploymentConstants.json",
         "test/generated-artifacts/ERC20BridgeSampler.json",
+        "test/generated-artifacts/IDevUtils.json",
         "test/generated-artifacts/IERC20BridgeSampler.json",
         "test/generated-artifacts/IEth2Dai.json",
         "test/generated-artifacts/IKyberNetwork.json",
