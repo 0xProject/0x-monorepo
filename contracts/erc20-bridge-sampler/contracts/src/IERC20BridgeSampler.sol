@@ -19,59 +19,82 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 interface IERC20BridgeSampler {
 
-    /// @dev Query native orders and sample sell orders on multiple DEXes at once.
+    /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
-    /// @param sources Address of each DEX. Passing in an unknown DEX will throw.
-    /// @param takerTokenAmounts Taker sell amount for each sample.
-    /// @return orderInfos `OrderInfo`s for each order in `orders`.
+    /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return orderFillableTakerAssetAmounts How much taker asset can be filled
+    ///         by each order in `orders`.
     /// @return makerTokenAmountsBySource Maker amounts bought for each source at
     ///         each taker token amount. First indexed by source index, then sample
     ///         index.
     function queryOrdersAndSampleSells(
         LibOrder.Order[] calldata orders,
+        bytes[] calldata orderSignatures,
         address[] calldata sources,
         uint256[] calldata takerTokenAmounts
     )
         external
         view
         returns (
-            LibOrder.OrderInfo[] memory orderInfos,
+            uint256[] memory orderFillableTakerAssetAmounts,
             uint256[][] memory makerTokenAmountsBySource
         );
 
-    /// @dev Query native orders and sample buy orders on multiple DEXes at once.
+    /// @dev Query native orders and sample buy quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
-    /// @param sources Address of each DEX. Passing in an unknown DEX will throw.
-    /// @param makerTokenAmounts Maker sell amount for each sample.
-    /// @return orderInfos `OrderInfo`s for each order in `orders`.
+    /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
+    ///         by each order in `orders`.
     /// @return takerTokenAmountsBySource Taker amounts sold for each source at
     ///         each maker token amount. First indexed by source index, then sample
     ///         index.
     function queryOrdersAndSampleBuys(
         LibOrder.Order[] calldata orders,
+        bytes[] calldata orderSignatures,
         address[] calldata sources,
         uint256[] calldata makerTokenAmounts
     )
         external
         view
         returns (
-            LibOrder.OrderInfo[] memory orderInfos,
+            uint256[] memory orderFillableMakerAssetAmounts,
             uint256[][] memory makerTokenAmountsBySource
         );
 
-    /// @dev Queries the status of several native orders.
+    /// @dev Queries the fillable taker asset amounts of native orders.
     /// @param orders Native orders to query.
-    /// @return orderInfos Order info for each respective order.
-    function queryOrders(LibOrder.Order[] calldata orders)
+    /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @return orderFillableTakerAssetAmounts How much taker asset can be filled
+    ///         by each order in `orders`.
+    function getOrderFillableTakerAssetAmounts(
+        LibOrder.Order[] calldata orders,
+        bytes[] calldata orderSignatures
+    )
         external
         view
-        returns (LibOrder.OrderInfo[] memory orderInfos);
+        returns (uint256[] memory orderFillableTakerAssetAmounts);
+
+    /// @dev Queries the fillable maker asset amounts of native orders.
+    /// @param orders Native orders to query.
+    /// @param orderSignatures Signatures for each respective order in `orders`.
+    /// @return orderFillableMakerAssetAmounts How much maker asset can be filled
+    ///         by each order in `orders`.
+    function getOrderFillableMakerAssetAmounts(
+        LibOrder.Order[] calldata orders,
+        bytes[] calldata orderSignatures
+    )
+        external
+        view
+        returns (uint256[] memory orderFillableMakerAssetAmounts);
 
     /// @dev Sample sell quotes on multiple DEXes at once.
     /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
