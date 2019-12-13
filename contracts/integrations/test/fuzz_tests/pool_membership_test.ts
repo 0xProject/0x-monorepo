@@ -27,7 +27,7 @@ export class PoolMembershipSimulation extends Simulation {
             ...makers.map(maker => [maker.simulationActions.validJoinStakingPool, 0.2 / makers.length]),
             ...takers.map(taker => [taker.simulationActions.validFillOrder, 0.6 / takers.length]),
             [poolManagement.generator, 0.2],
-        ]) as [AsyncIterableIterator<AssertionResult | void>[], number[]];
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
 
         while (true) {
             const action = Pseudorandom.sample(actions, weights);

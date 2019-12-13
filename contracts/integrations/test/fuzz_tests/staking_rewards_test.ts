@@ -39,7 +39,7 @@ export class StakingRewardsSimulation extends Simulation {
             ...keepers.map(keeper => [keeper.simulationActions.validEndEpoch, 0.1 / keepers.length]),
             [poolMembership.generator, 0.5],
             [stakeManagement.generator, 0.2],
-        ]) as [AsyncIterableIterator<AssertionResult | void>[], number[]];
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
         while (true) {
             const action = Pseudorandom.sample(actions, weights);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion

@@ -22,11 +22,11 @@ export class StakeManagementSimulation extends Simulation {
         const poolManagement = new PoolManagementSimulation(this.environment);
 
         const [actions, weights] = _.unzip([
-            ...stakers.map(staker => [staker.simulationActions.validStake, 0.3]),
-            ...stakers.map(staker => [staker.simulationActions.validUnstake, 0.2]),
-            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.3]),
+            ...stakers.map(staker => [staker.simulationActions.validStake, 0.3 / stakers.length]),
+            ...stakers.map(staker => [staker.simulationActions.validUnstake, 0.2 / stakers.length]),
+            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.3 / stakers.length]),
             [poolManagement.generator, 0.2],
-        ]) as [AsyncIterableIterator<AssertionResult | void>[], number[]];
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
 
         while (true) {
             const action = Pseudorandom.sample(actions, weights);

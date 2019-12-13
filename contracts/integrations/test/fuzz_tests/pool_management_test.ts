@@ -18,7 +18,7 @@ export class PoolManagementSimulation extends Simulation {
         const [actions, weights] = _.unzip([
             ...operators.map(operator => [operator.simulationActions.validCreateStakingPool, 0.4]),
             ...operators.map(operator => [operator.simulationActions.validDecreaseStakingPoolOperatorShare, 0.6]),
-        ]) as [AsyncIterableIterator<AssertionResult | void>[], number[]];
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
         while (true) {
             const action = Pseudorandom.sample(actions, weights);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
