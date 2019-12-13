@@ -115,17 +115,16 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             verifyEventsFromLogs(txReceipt.logs, expectedOperateAccountEvents, TestDydxBridgeEvents.OperateAccount);
 
             // Verify `OperateAction` event.
-            const positiveAmountSign = true;
             const weiDenomination = 0;
-            const absoluteAmountRef = 1;
+            const deltaAmountRef = 0;
             const expectedOperateActionEvents = [];
             for (const action of bridgeData.actions) {
                 expectedOperateActionEvents.push({
                     actionType: action.actionType as number,
                     accountId: action.accountId,
-                    amountSign: positiveAmountSign,
+                    amountSign: action.actionType === BridgeActionType.Deposit ? true : false,
                     amountDenomination: weiDenomination,
-                    amountRef: absoluteAmountRef,
+                    amountRef: deltaAmountRef,
                     amountValue: action.conversionRateDenominator.gt(0)
                         ? amount.times(action.conversionRateNumerator).div(action.conversionRateDenominator)
                         : amount,

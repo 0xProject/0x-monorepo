@@ -42,6 +42,8 @@ contract DydxBridge is
     ///         3. The maker or taker of the 0x order must be the dydx account owner.
     ///         4. Deposits into dydx are made from the `from` address.
     ///         5. Withdrawals from dydx are made to the `to` address.
+    ///         6. Calling this function must always withdraw at least `amount`,
+    ///            otherwise the `ERC20Bridge` will revert.
     /// @param from The sender of the tokens and owner of the dydx account.
     /// @param to The recipient of the tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to deposit or withdraw.
@@ -181,7 +183,7 @@ contract DydxBridge is
         IDydx.AssetAmount memory dydxAmount = IDydx.AssetAmount({
             sign: true,                                 // true if positive.
             denomination: IDydx.AssetDenomination.Wei,  // Wei => actual token amount held in account.
-            ref: IDydx.AssetReference.Target,           // Target => an absolute amount.
+            ref: IDydx.AssetReference.Delta,                // Delta => a relative amount.
             value: amount                               // amount to deposit.
         });
 
@@ -217,9 +219,9 @@ contract DydxBridge is
     {
         // Create dydx amount.
         IDydx.AssetAmount memory amountToWithdraw = IDydx.AssetAmount({
-            sign: true,                                     // true if positive.
+            sign: false,                                    // false if negative.
             denomination: IDydx.AssetDenomination.Wei,      // Wei => actual token amount held in account.
-            ref: IDydx.AssetReference.Target,               // Target => an absolute amount.
+            ref: IDydx.AssetReference.Delta,                // Delta => a relative amount.
             value: amount                                   // amount to withdraw.
         });
 
