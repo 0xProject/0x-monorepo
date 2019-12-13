@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Add `DEV_UTILS_ADDRESS` and `KYBER_ETH_ADDRESS` to `DeploymentConstants`.",
+                "pr": 2365
+            }
+        ]
+    },
+    {
         "timestamp": 1575931811,
         "version": "4.0.1",
         "changes": [

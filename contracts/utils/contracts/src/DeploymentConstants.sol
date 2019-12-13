@@ -38,6 +38,10 @@ contract DeploymentConstants {
     address constant private DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     /// @dev Mainnet address of the `Chai` contract
     address constant private CHAI_ADDRESS = 0x06AF07097C9Eeb7fD685c692751D5C66dB49c215;
+    /// @dev Address of the 0x DevUtils contract.
+    address constant public DEV_UTILS_ADDRESS = 0xcCc2431a7335F21d9268bA62F0B32B0f2EFC463f;
+    /// @dev Kyber ETH pseudo-address.
+    address constant public KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
@@ -107,5 +111,15 @@ contract DeploymentConstants {
         returns (address chaiAddress)
     {
         return CHAI_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the 0x `DevUtils` contract address.
+    /// @return devUtils The 0x `DevUtils` contract address.
+    function _getDevUtilsAddress()
+        internal
+        view
+        returns (address devUtils)
+    {
+        return DEV_UTILS_ADDRESS;
     }
 }
