@@ -56,7 +56,8 @@ export class ProtocolFeeUtils {
             // tslint:disable-next-line:custom-no-magic-numbers
             const BASE_TEN = 10;
             const gasPriceGwei = new BigNumber(gasInfo.fast / BASE_TEN);
-            const unit = new BigNumber(BASE_TEN).pow(BASE_TEN);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            const unit = new BigNumber(BASE_TEN).pow(9);
             const gasPriceWei = unit.times(gasPriceGwei);
             return gasPriceWei;
         } catch (e) {
