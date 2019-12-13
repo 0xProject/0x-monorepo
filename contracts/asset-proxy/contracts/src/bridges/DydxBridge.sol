@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IDydxBridge.sol";
 import "../interfaces/IDydx.sol";
@@ -30,6 +31,8 @@ contract DydxBridge is
     IDydxBridge,
     DeploymentConstants
 {
+
+    using LibSafeMath for uint256;
 
     /// @dev Callback for `IERC20Bridge`. Deposits or withdraws tokens from a dydx account.
     ///      Notes:
@@ -67,56 +70,99 @@ contract DydxBridge is
         // Cache dydx contract.
         IDydx dydx = IDydx(_getDydxAddress());
 
-        // Create dydx action.
-        IDydx.AccountInfo[] memory accounts = new IDydx.AccountInfo[](1);
-        IDydx.ActionArgs[] memory actions = new IDydx.ActionArgs[](1);
-        if (bridgeData.action == BridgeAction.Deposit) {
-            // We interpret `to` as the 0x order maker and `from` as the taker.
-            accounts[0] = IDydx.AccountInfo({
-                owner: to,
-                number: bridgeData.accountNumber
-            });
+        // The dydx account is owned by the `from` address.
+        IDydx.AccountInfo[] memory accounts = _constructDydxAccounts(from, bridgeData);
 
-            // Deposit tokens from the `to` address into their dydx account.
-            actions[0] = _createDepositAction(
-                to,
-                amount,
-                bridgeData
-            );
-        } else if (bridgeData.action == BridgeAction.Withdraw) {
-            // We interpret `from` as the 0x order maker and `to` as the taker.
-            accounts[0] = IDydx.AccountInfo({
-                owner: from,
-                number: bridgeData.accountNumber
-            });
-
-            // Withdraw tokens from dydx account owned by `from` into the `to` address.
-            actions[0] = _createWithdrawAction(
-                to,
-                amount,
-                bridgeData
-            );
-        } else {
-            // If all values in the `Action` enum are handled then this
-            // revert is unreachable: Solidity will revert when casting
-            // from `uint8` to `Action`.
-            revert("DydxBridge/UNRECOGNIZED_BRIDGE_ACTION");
-        }
+        // Create dydx actions to run on the dydx account owned by `from`.
+        IDydx.ActionArgs[] memory actions = _constructDydxActions(
+            from,
+            to,
+            amount,
+            bridgeData
+        );
 
         // Run operation. This will revert on failure.
         dydx.operate(accounts, actions);
         return BRIDGE_SUCCESS;
     }
 
+    function _constructDydxAccounts(
+        address accountOwner,
+        BridgeData memory bridgeData
+    )
+        internal
+        returns (IDydx.AccountInfo[] memory accounts)
+    {
+        uint256[] memory accountNumbers = bridgeData.accountNumbers;
+        uint256 nAccounts = accountNumbers.length;
+        accounts = new IDydx.AccountInfo[](nAccounts);
+        for (uint256 i = 0; i < nAccounts; ++i) {
+            accounts[i] = IDydx.AccountInfo({
+                owner: accountOwner,
+                number: accountNumbers[i]
+            });
+        }
+    }
+
+    function _constructDydxActions(
+        address accountOwner,
+        address otherAccount,
+        uint256 amount,
+        BridgeData memory bridgeData
+    )
+        internal
+        returns (IDydx.ActionArgs[] memory actions)
+    {
+        BridgeAction[] memory bridgeActions = bridgeData.actions;
+        uint256 nActions = actions.length;
+        actions = new IDydx.ActionArgs[](nActions);
+        for (uint256 i = 0; i < nActions; ++i) {
+            // Cache current bridge action.
+            BridgeAction memory bridgeAction = bridgeActions[i];
+
+            // Scale amount, if conversion rate is set.
+            uint256 scaledAmount;
+            if (bridgeAction.conversionRateDenominator > 0) {
+                scaledAmount = amount
+                    .safeMul(bridgeAction.conversionRateNumerator)
+                    .safeDiv(bridgeAction.conversionRateDenominator);
+            } else {
+                scaledAmount = amount;
+            }
+
+            // Construct dydx action.
+            if (bridgeAction.actionType == BridgeActionType.Deposit) {
+                // Deposit tokens from the account owner into their dydx account.
+                actions[i] = _createDepositAction(
+                    accountOwner,
+                    scaledAmount,
+                    bridgeAction
+                );
+            } else if (bridgeAction.actionType == BridgeActionType.Withdraw) {
+                // Withdraw tokens from dydx to the `otherAccount`.
+                actions[i] = _createWithdrawAction(
+                    otherAccount,
+                    scaledAmount,
+                    bridgeAction
+                );
+            } else {
+                // If all values in the `Action` enum are handled then this
+                // revert is unreachable: Solidity will revert when casting
+                // from `uint8` to `Action`.
+                revert("DydxBridge/UNRECOGNIZED_BRIDGE_ACTION");
+            }
+        }
+    }
+
     /// @dev Returns a dydx `DepositAction`.
     /// @param depositFrom Deposit tokens from this address who is also the account owner.
     /// @param amount of tokens to deposit.
-    /// @param bridgeData A `BridgeData` struct.
+    /// @param bridgeAction A `BridgeAction` struct.
     /// @return depositAction The encoded dydx action.
     function _createDepositAction(
         address depositFrom,
         uint256 amount,
-        BridgeData memory bridgeData
+        BridgeAction memory bridgeAction
     )
         internal
         pure
@@ -136,8 +182,8 @@ contract DydxBridge is
         depositAction = IDydx.ActionArgs({
             actionType: IDydx.ActionType.Deposit,           // deposit tokens.
             amount: dydxAmount,                             // amount to deposit.
-            accountId: 0,                                   // index in the `accounts` when calling `operate`.
-            primaryMarketId: bridgeData.marketId,           // indicates which token to deposit.
+            accountId: bridgeAction.accountId,              // index in the `accounts` when calling `operate`.
+            primaryMarketId: bridgeAction.marketId,         // indicates which token to deposit.
             otherAddress: depositFrom,                      // deposit from the account owner.
             // unused parameters
             secondaryMarketId: 0,
@@ -149,12 +195,12 @@ contract DydxBridge is
     /// @dev Returns a dydx `WithdrawAction`.
     /// @param withdrawTo Withdraw tokens to this address.
     /// @param amount of tokens to withdraw.
-    /// @param bridgeData A `BridgeData` struct.
+    /// @param bridgeAction A `BridgeAction` struct.
     /// @return withdrawAction The encoded dydx action.
     function _createWithdrawAction(
         address withdrawTo,
         uint256 amount,
-        BridgeData memory bridgeData
+        BridgeAction memory bridgeAction
     )
         internal
         pure
@@ -174,8 +220,8 @@ contract DydxBridge is
         withdrawAction = IDydx.ActionArgs({
             actionType: IDydx.ActionType.Withdraw,          // withdraw tokens.
             amount: amountToWithdraw,                       // amount to withdraw.
-            accountId: 0,                                   // index in the `accounts` when calling `operate`.
-            primaryMarketId: bridgeData.marketId,           // indicates which token to withdraw.
+            accountId: bridgeAction.accountId,              // index in the `accounts` when calling `operate`.
+            primaryMarketId: bridgeAction.marketId,         // indicates which token to withdraw.
             otherAddress: withdrawTo,                       // withdraw tokens to this address.
             // unused parameters
             secondaryMarketId: 0,
