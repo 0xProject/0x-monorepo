@@ -7,7 +7,7 @@ import { OrderPrunerPermittedFeeTypes } from '../types';
 import { utils } from '../utils/utils';
 
 export const orderPrunerUtils = {
-    prunedForUsableSignedOrders(
+    pruneForUsableSignedOrders(
         signedOrders: SignedOrder[],
         permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>,
         expiryBufferMs: number,
@@ -17,11 +17,11 @@ export const orderPrunerUtils = {
                 orderCalculationUtils.isOpenOrder(order) &&
                 !orderCalculationUtils.willOrderExpire(order, expiryBufferMs / constants.ONE_SECOND_MS) &&
                 ((permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.NoFees) &&
-                order.takerFee.eq(constants.ZERO_AMOUNT)) ||
-                (permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.TakerDenominatedTakerFee) &&
-                    utils.isOrderTakerFeePayableWithTakerAsset(order)) ||
-                (permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee) &&
-                    utils.isOrderTakerFeePayableWithMakerAsset(order)))
+                    order.takerFee.eq(constants.ZERO_AMOUNT)) ||
+                    (permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.TakerDenominatedTakerFee) &&
+                        utils.isOrderTakerFeePayableWithTakerAsset(order)) ||
+                    (permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee) &&
+                        utils.isOrderTakerFeePayableWithMakerAsset(order)))
             );
         });
         return result;

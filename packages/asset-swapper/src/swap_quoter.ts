@@ -1,5 +1,5 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract } from '@0x/contract-wrappers';
+import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -14,9 +14,9 @@ import {
     MarketOperation,
     MarketSellSwapQuote,
     OrderPrunerPermittedFeeTypes,
+    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteRequestOpts,
-    SwapQuoterError,
     SwapQuoterOpts,
 } from './types';
 import { assert } from './utils/assert';
@@ -162,7 +162,11 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._marketOperationUtils = new MarketOperationUtils(this.provider, this._contractAddresses, {
+        const samplerContract = new IERC20BridgeSamplerContract(
+            this._contractAddresses.erc20BridgeSampler,
+            this.provider,
+        );
+        this._marketOperationUtils = new MarketOperationUtils(samplerContract, this._contractAddresses, {
             chainId,
             exchangeAddress: this._contractAddresses.exchange,
         });
@@ -304,8 +308,10 @@ export class SwapQuoter {
             };
         }
 
-        const orders = await this.getSignedOrdersAsync(makerAssetData, takerAssetData);
-        const ordersWithFillableAmounts = await this._orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+        const ordersWithFillableAmounts = await this.getSignedOrdersWithFillableAmountsAsync(
+            makerAssetData,
+            takerAssetData,
+        );
         return calculateLiquidity(ordersWithFillableAmounts);
     }
 
@@ -363,7 +369,10 @@ export class SwapQuoter {
      * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      */
-    public async getSignedOrdersAsync(makerAssetData: string, takerAssetData: string): Promise<SignedOrder[]> {
+    public async getSignedOrdersWithFillableAmountsAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+    ): Promise<SignedOrderWithFillableAmounts[]> {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
@@ -371,13 +380,16 @@ export class SwapQuoter {
         // get orders
         const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const orders = _.map(apiOrders, o => o.order);
-        const prunedOrders = orderPrunerUtils.prunedForUsableSignedOrders(
+        const prunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
             orders,
             this.permittedOrderFeeTypes,
             this.expiryBufferMs,
         );
         const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
-        return sortedPrunedOrders;
+        const ordersWithFillableAmounts = await this._orderStateUtils.getSignedOrdersWithFillableAmountsAsync(
+            sortedPrunedOrders,
+        );
+        return ordersWithFillableAmounts;
     }
 
     /**
@@ -413,6 +425,28 @@ export class SwapQuoter {
     }
 
     /**
+     * Grab orders from the order provider, prunes for valid orders with provided OrderPruner options
+     * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     */
+    private async _getSignedOrdersAsync(makerAssetData: string, takerAssetData: string): Promise<SignedOrder[]> {
+        assert.isString('makerAssetData', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        await this._devUtilsContract.revertIfInvalidAssetData(takerAssetData).callAsync();
+        await this._devUtilsContract.revertIfInvalidAssetData(makerAssetData).callAsync();
+        // get orders
+        const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
+        const orders = _.map(apiOrders, o => o.order);
+        const prunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
+            orders,
+            this.permittedOrderFeeTypes,
+            this.expiryBufferMs,
+        );
+        const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
+        return sortedPrunedOrders;
+    }
+
+    /**
      * General function for getting swap quote, conditionally uses different logic per specified marketOperation
      */
     private async _getSwapQuoteAsync(
@@ -438,8 +472,7 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
-        let prunedOrders = await this.getSignedOrdersAsync(makerAssetData, takerAssetData);
-
+        let prunedOrders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (prunedOrders.length === 0) {
             prunedOrders = [
@@ -475,3 +508,4 @@ export class SwapQuoter {
         return swapQuote;
     }
 }
+// tslint:disable-next-line: max-file-line-count

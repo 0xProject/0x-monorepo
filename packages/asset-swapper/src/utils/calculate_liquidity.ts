@@ -4,7 +4,9 @@ import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } f
 
 import { utils } from './utils';
 
-export const calculateLiquidity = (prunedOrders: SignedOrderWithFillableAmounts[]): LiquidityForTakerMakerAssetDataPair => {
+export const calculateLiquidity = (
+    prunedOrders: SignedOrderWithFillableAmounts[],
+): LiquidityForTakerMakerAssetDataPair => {
     const liquidityInBigNumbers = prunedOrders.reduce(
         (acc, order) => {
             const fillableMakerAssetAmount = utils.isOrderTakerFeePayableWithMakerAsset(order)

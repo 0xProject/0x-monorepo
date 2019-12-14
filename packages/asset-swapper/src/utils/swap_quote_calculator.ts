@@ -14,6 +14,7 @@ import {
     SwapQuoteInfo,
 } from '../types';
 
+import { fillableAmountsUtils } from './fillable_amounts_utils';
 import { MarketOperationUtils } from './market_operation_utils';
 import { ProtocolFeeUtils } from './protocol_fee_utils';
 import { utils } from './utils';
@@ -73,7 +74,6 @@ export class SwapQuoteCalculator {
         // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
 
         const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
-
         let resultOrders: SignedOrderWithFillableAmounts[] = [];
 
         if (operation === MarketOperation.Buy) {
@@ -82,7 +82,6 @@ export class SwapQuoteCalculator {
                 assetFillAmount.plus(slippageBufferAmount),
                 opts,
             );
-
         } else {
             resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                 prunedOrders,
@@ -95,12 +94,7 @@ export class SwapQuoteCalculator {
         const takerAssetData = resultOrders[0].takerAssetData;
         const makerAssetData = resultOrders[0].makerAssetData;
 
-        const bestCaseQuoteInfo = this._calculateQuoteInfo(
-            resultOrders,
-            assetFillAmount,
-            gasPrice,
-            operation,
-        );
+        const bestCaseQuoteInfo = this._calculateQuoteInfo(resultOrders, assetFillAmount, gasPrice, operation);
         // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
         const worstCaseQuoteInfo = this._calculateQuoteInfo(
             _.reverse(_.clone(resultOrders)),
@@ -161,10 +155,12 @@ export class SwapQuoteCalculator {
                     totalFeeTakerAssetAmount,
                     remainingTakerAssetFillAmount,
                 } = acc;
-                const [
-                    adjustedFillableMakerAssetAmount,
-                    adjustedFillableTakerAssetAmount,
-                ] = utils.getAdjustedFillableMakerAndTakerAmountsFromTakerFees(order);
+                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+                    order,
+                );
+                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+                    order,
+                );
                 const takerAssetAmountWithFees = BigNumber.min(
                     remainingTakerAssetFillAmount,
                     adjustedFillableTakerAssetAmount,
@@ -218,15 +214,18 @@ export class SwapQuoteCalculator {
                     totalFeeTakerAssetAmount,
                     remainingMakerAssetFillAmount,
                 } = acc;
-                const [
-                    adjustedFillableMakerAssetAmount,
-                    adjustedFillableTakerAssetAmount,
-                ] = utils.getAdjustedFillableMakerAndTakerAmountsFromTakerFees(order);
+                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+                    order,
+                );
+                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+                    order,
+                );
                 const makerFillAmount = BigNumber.min(remainingMakerAssetFillAmount, adjustedFillableMakerAssetAmount);
                 const takerAssetAmountWithFees = makerFillAmount
                     .div(adjustedFillableMakerAssetAmount)
                     .multipliedBy(adjustedFillableTakerAssetAmount)
                     .integerValue(BigNumber.ROUND_CEIL);
+
                 const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(
                     order,
                     takerAssetAmountWithFees,

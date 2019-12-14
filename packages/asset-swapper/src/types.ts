@@ -264,8 +264,7 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 /**
  * Opts required to generate a SwapQuote with SwapQuoteCalculator
  */
-export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {
-}
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
 
 /**
  * chainId: The ethereum chain id. Defaults to 1 (mainnet).

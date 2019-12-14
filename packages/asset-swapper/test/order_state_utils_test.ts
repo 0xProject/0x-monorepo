@@ -9,8 +9,8 @@ import * as chai from 'chai';
 import 'mocha';
 
 import { constants } from '../src/constants';
-import { OrderPrunerPermittedFeeTypes } from '../src/types';
-import { orderPrunerUtils } from '../src/utils/order_prune_utils';
+import { SignedOrderWithFillableAmounts } from '../src/types';
+import { OrderStateUtils } from '../src/utils/order_state_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
@@ -25,11 +25,18 @@ const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
 const PROTOCOL_FEE_MULTIPLIER = 150000;
 const PROTOCOL_FEE_PER_FILL = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
-const EXPIRY_BUFFER_MS = 120000;
+
+const isSignedOrdersWithFillableAmountsNotFillable = (signedOrders: SignedOrderWithFillableAmounts[]) => {
+    signedOrders.forEach(order => {
+        expect(order.fillableMakerAssetAmount).to.bignumber.eq(constants.ZERO_AMOUNT);
+        expect(order.fillableTakerAssetAmount).to.bignumber.eq(constants.ZERO_AMOUNT);
+        expect(order.fillableTakerFeeAmount).to.bignumber.eq(constants.ZERO_AMOUNT);
+    });
+};
 
 // tslint:disable: no-unused-expression
 // tslint:disable: custom-no-magic-numbers
-describe('orderPrunerUtils', () => {
+describe('OrderStateUtils', () => {
     let erc20MakerTokenContract: ERC20TokenContract;
     let erc20TakerTokenContract: ERC20TokenContract;
     let exchangeContract: ExchangeContract;
@@ -46,12 +53,15 @@ describe('orderPrunerUtils', () => {
     let orderFactory: OrderFactory;
     let wethAssetData: string;
     let contractAddresses: ContractAddresses;
+    let orderStateUtils: OrderStateUtils;
 
-    let nonOpenSignedOrder: SignedOrder;
     let expiredOpenSignedOrder: SignedOrder;
+    let invalidSignatureOpenSignedOrder: SignedOrder;
+    let fullyFillableOpenSignedOrder: SignedOrder;
     let partiallyFilledOpenSignedOrderFeeless: SignedOrder;
     let partiallyFilledOpenSignedOrderFeeInTakerAsset: SignedOrder;
     let partiallyFilledOpenSignedOrderFeeInMakerAsset: SignedOrder;
+    let filledOpenSignedOrder: SignedOrder;
 
     const chainId = TESTRPC_CHAIN_ID;
     const fillableAmount = new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI);
@@ -99,12 +109,18 @@ describe('orderPrunerUtils', () => {
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
 
-        nonOpenSignedOrder = await orderFactory.newSignedOrderAsync({
-            takerAddress,
+        expiredOpenSignedOrder = await orderFactory.newSignedOrderAsync({
+            expirationTimeSeconds: new BigNumber(await getLatestBlockTimestampAsync()).minus(10),
         });
 
-        expiredOpenSignedOrder = await orderFactory.newSignedOrderAsync({
-            expirationTimeSeconds: new BigNumber(await getLatestBlockTimestampAsync()).plus(60000),
+        invalidSignatureOpenSignedOrder = await orderFactory.newSignedOrderAsync({
+            takerAddress,
+        });
+        invalidSignatureOpenSignedOrder.signature = expiredOpenSignedOrder.signature;
+
+        fullyFillableOpenSignedOrder = await orderFactory.newSignedOrderAsync({
+            takerAssetAmount: fillableAmount,
+            makerAssetAmount: fillableAmount,
         });
 
         // give double fillableAmount to maker and taker as buffer
@@ -181,94 +197,80 @@ describe('orderPrunerUtils', () => {
                 gas: 4000000,
                 value: PROTOCOL_FEE_PER_FILL,
             });
+
+        filledOpenSignedOrder = await orderFactory.newSignedOrderAsync({
+            takerAssetAmount: fillableAmount,
+            makerAssetAmount: fillableAmount,
+        });
+
+        await exchangeContract
+            .fillOrKillOrder(filledOpenSignedOrder, fillableAmount, filledOpenSignedOrder.signature)
+            .sendTransactionAsync({
+                from: takerAddress,
+                gasPrice: GAS_PRICE,
+                gas: 4000000,
+                value: PROTOCOL_FEE_PER_FILL,
+            });
+
+        orderStateUtils = new OrderStateUtils(devUtilsContract);
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('prunedForUsableSignedOrders', () => {
-        it('should filter for only feeless orders if options permit only feeless orders', async () => {
-            const permittedOrderFeeTypes = new Set<OrderPrunerPermittedFeeTypes>([OrderPrunerPermittedFeeTypes.NoFees]);
-            const orders = [
-                partiallyFilledOpenSignedOrderFeeInMakerAsset,
-                partiallyFilledOpenSignedOrderFeeInTakerAsset,
-                partiallyFilledOpenSignedOrderFeeless,
-            ];
-            const resultPrunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
-                orders,
-                permittedOrderFeeTypes,
-                EXPIRY_BUFFER_MS,
-            );
-            // checks for one order in results and check for signature of orders
-            expect(resultPrunedOrders.length).to.be.equal(1);
-            expect(resultPrunedOrders[0].signature).to.be.deep.equal(partiallyFilledOpenSignedOrderFeeless.signature);
-        });
-        it('should filter for only takerFee in takerAsset orders if options permit only takerFee in takerAsset orders', async () => {
-            const permittedOrderFeeTypes = new Set<OrderPrunerPermittedFeeTypes>([
-                OrderPrunerPermittedFeeTypes.TakerDenominatedTakerFee,
-            ]);
-            const orders = [
-                partiallyFilledOpenSignedOrderFeeInMakerAsset,
-                partiallyFilledOpenSignedOrderFeeInTakerAsset,
-                partiallyFilledOpenSignedOrderFeeless,
-            ];
-            const resultPrunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
-                orders,
-                permittedOrderFeeTypes,
-                EXPIRY_BUFFER_MS,
-            );
-            // checks for one order in results and check for signature of orders
-            expect(resultPrunedOrders.length).to.be.equal(1);
-            expect(resultPrunedOrders[0].signature).to.be.deep.equal(
-                partiallyFilledOpenSignedOrderFeeInTakerAsset.signature,
-            );
-        });
-        it('should filter for only makerFee in takerAsset orders if options permit only makerFee orders', async () => {
-            const permittedOrderFeeTypes = new Set<OrderPrunerPermittedFeeTypes>([
-                OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee,
-            ]);
-            const orders = [
-                partiallyFilledOpenSignedOrderFeeInMakerAsset,
-                partiallyFilledOpenSignedOrderFeeInTakerAsset,
-                partiallyFilledOpenSignedOrderFeeless,
-            ];
-            const resultPrunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
-                orders,
-                permittedOrderFeeTypes,
-                EXPIRY_BUFFER_MS,
-            );
-            // checks for one order in results and check for signature of orders
-            expect(resultPrunedOrders.length).to.be.equal(1);
-            expect(resultPrunedOrders[0].signature).to.be.deep.equal(
-                partiallyFilledOpenSignedOrderFeeInMakerAsset.signature,
-            );
-        });
-        it('should filter out non open orders', async () => {
-            const permittedOrderFeeTypes = new Set<OrderPrunerPermittedFeeTypes>([
-                OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee,
-                OrderPrunerPermittedFeeTypes.NoFees,
-                OrderPrunerPermittedFeeTypes.TakerDenominatedTakerFee,
-            ]);
-            const orders = [nonOpenSignedOrder];
-            const resultPrunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
-                orders,
-                permittedOrderFeeTypes,
-                EXPIRY_BUFFER_MS,
-            );
-            expect(resultPrunedOrders).to.be.empty;
-        });
-        it('should filter out expired orders', async () => {
-            const permittedOrderFeeTypes = new Set<OrderPrunerPermittedFeeTypes>([
-                OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee,
-                OrderPrunerPermittedFeeTypes.NoFees,
-                OrderPrunerPermittedFeeTypes.TakerDenominatedTakerFee,
-            ]);
+    describe('#getSignedOrdersWithFillableAmountsAsync', () => {
+        it('should 0 fillableTakerAssetAmount for expired orders', async () => {
             const orders = [expiredOpenSignedOrder];
-            const resultPrunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
-                orders,
-                permittedOrderFeeTypes,
-                EXPIRY_BUFFER_MS,
+            const resultOrders = await orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+            isSignedOrdersWithFillableAmountsNotFillable(resultOrders);
+        });
+        it('should filter out invalid signature orders', async () => {
+            const orders = [invalidSignatureOpenSignedOrder];
+            const resultOrders = await orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+            isSignedOrdersWithFillableAmountsNotFillable(resultOrders);
+        });
+        it('should return 0 fillableTakerAssetAmount for fully filled orders', async () => {
+            const orders = [filledOpenSignedOrder];
+            const resultOrders = await orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+            isSignedOrdersWithFillableAmountsNotFillable(resultOrders);
+        });
+        it('should provide correct pruned signed orders for fully fillable orders', async () => {
+            const orders = [fullyFillableOpenSignedOrder];
+            const resultOrders = await orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+            const order = resultOrders[0];
+            expect(order.fillableMakerAssetAmount).to.bignumber.equal(fillableAmount);
+            expect(order.fillableTakerAssetAmount).to.bignumber.equal(fillableAmount);
+        });
+        it('should provide correct pruned signed orders for partially fillable orders', async () => {
+            const orders = [
+                partiallyFilledOpenSignedOrderFeeless,
+                partiallyFilledOpenSignedOrderFeeInTakerAsset,
+                partiallyFilledOpenSignedOrderFeeInMakerAsset,
+            ];
+            const resultOrders = await orderStateUtils.getSignedOrdersWithFillableAmountsAsync(orders);
+            expect(resultOrders[0].fillableMakerAssetAmount).to.bignumber.equal(
+                fillableAmount.minus(partialFillAmount),
             );
-            expect(resultPrunedOrders).to.be.empty;
+            expect(resultOrders[0].fillableTakerAssetAmount).to.bignumber.equal(
+                fillableAmount.minus(partialFillAmount),
+            );
+            expect(resultOrders[1].fillableMakerAssetAmount).to.bignumber.equal(
+                fillableAmount.minus(partialFillAmount),
+            );
+            expect(resultOrders[1].fillableTakerAssetAmount).to.bignumber.equal(
+                fillableAmount.minus(partialFillAmount),
+            );
+            expect(resultOrders[1].fillableTakerFeeAmount).to.bignumber.equal(
+                new BigNumber(1.6).multipliedBy(ONE_ETH_IN_WEI),
+            );
+            expect(resultOrders[2].fillableMakerAssetAmount).to.bignumber.equal(
+                fillableAmount.minus(partialFillAmount),
+            );
+            expect(resultOrders[2].fillableTakerAssetAmount).to.bignumber.equal(
+                fillableAmount.minus(partialFillAmount),
+            );
+            expect(resultOrders[2].fillableTakerFeeAmount).to.bignumber.equal(
+                new BigNumber(1.6).multipliedBy(ONE_ETH_IN_WEI),
+            );
         });
     });
 });

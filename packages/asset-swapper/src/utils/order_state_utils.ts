@@ -3,8 +3,12 @@ import { orderCalculationUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
+import { constants } from '../constants';
 import { OrderPrunerOnChainMetadata, SignedOrderWithFillableAmounts } from '../types';
 
+/**
+ * Utility class to retrieve order state if needed outside of using the ERC20BridgeSampler
+ */
 export class OrderStateUtils {
     private readonly _devUtils: DevUtilsContract;
 
@@ -12,7 +16,9 @@ export class OrderStateUtils {
         this._devUtils = devUtils;
     }
 
-    public async getSignedOrdersWithFillableAmountsAsync(signedOrders: SignedOrder[]): Promise<SignedOrderWithFillableAmounts[]> {
+    public async getSignedOrdersWithFillableAmountsAsync(
+        signedOrders: SignedOrder[],
+    ): Promise<SignedOrderWithFillableAmounts[]> {
         const signatures = _.map(signedOrders, o => o.signature);
         const [ordersInfo, fillableTakerAssetAmounts, isValidSignatures] = await this._devUtils
             .getOrderRelevantStates(signedOrders, signatures)
@@ -25,42 +31,20 @@ export class OrderStateUtils {
             };
         });
         // take orders + on chain information and find the valid orders and fillable makerAsset or takerAsset amounts
-        return this._filterForFillableOrders(signedOrders, ordersOnChainMetadata);
-    }
-
-    // tslint:disable-next-line: prefer-function-over-method
-    private _filterForFillableOrders(
-        orders: SignedOrder[],
-        ordersOnChainMetadata: OrderPrunerOnChainMetadata[],
-    ): SignedOrderWithFillableAmounts[] {
-        const result = _.chain(orders)
-            .filter(
-                (order: SignedOrder, index: number): boolean => {
-                    const { isValidSignature, orderStatus } = ordersOnChainMetadata[index];
-                    return (
-                        isValidSignature &&
-                        orderStatus === OrderStatus.Fillable
-                    );
-                },
-            )
-            .map(
-                (order: SignedOrder, index: number): SignedOrderWithFillableAmounts => {
-                    const { fillableTakerAssetAmount } = ordersOnChainMetadata[index];
-                    return {
-                        ...order,
-                        fillableTakerAssetAmount,
-                        fillableMakerAssetAmount: orderCalculationUtils.getMakerFillAmount(
-                            order,
-                            fillableTakerAssetAmount,
-                        ),
-                        fillableTakerFeeAmount: orderCalculationUtils.getTakerFeeAmount(
-                            order,
-                            fillableTakerAssetAmount,
-                        ),
-                    };
-                },
-            )
-            .value();
-        return result;
+        return signedOrders.map(
+            (order: SignedOrder, index: number): SignedOrderWithFillableAmounts => {
+                const orderMetadata = ordersOnChainMetadata[index];
+                const fillableTakerAssetAmount =
+                    orderMetadata.isValidSignature && orderMetadata.orderStatus === OrderStatus.Fillable
+                        ? orderMetadata.fillableTakerAssetAmount
+                        : constants.ZERO_AMOUNT;
+                return {
+                    ...order,
+                    fillableTakerAssetAmount,
+                    fillableMakerAssetAmount: orderCalculationUtils.getMakerFillAmount(order, fillableTakerAssetAmount),
+                    fillableTakerFeeAmount: orderCalculationUtils.getTakerFeeAmount(order, fillableTakerAssetAmount),
+                };
+            },
+        );
     }
 }

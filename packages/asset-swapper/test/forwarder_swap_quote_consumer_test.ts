@@ -15,12 +15,12 @@ import {
     ForwarderMarketSellSmartContractParams,
     MarketBuySwapQuote,
     MarketOperation,
-    PrunedSignedOrder,
+    SignedOrderWithFillableAmounts,
 } from '../src/types';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -33,7 +33,7 @@ const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 
 const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 const FEE_PERCENTAGE = 0.05;
-const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         takerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
         makerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
@@ -83,8 +83,8 @@ describe('ForwarderSwapQuoteConsumer', () => {
     let erc20TokenContract: ERC20TokenContract;
     let forwarderContract: ForwarderContract;
 
-    let orders: PrunedSignedOrder[];
-    let invalidOrders: PrunedSignedOrder[];
+    let orders: SignedOrderWithFillableAmounts[];
+    let invalidOrders: SignedOrderWithFillableAmounts[];
     let marketSellSwapQuote: SwapQuote;
     let marketBuySwapQuote: SwapQuote;
     let invalidMarketBuySwapQuote: SwapQuote;
@@ -132,7 +132,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils();
+        protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         expectMakerAndTakerBalancesAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TokenContract,
             makerAddress,
@@ -166,7 +166,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 ...order,
                 ...partialOrder,
             };
-            orders.push(prunedOrder as PrunedSignedOrder);
+            orders.push(prunedOrder as SignedOrderWithFillableAmounts);
         }
 
         invalidOrders = [];
@@ -176,10 +176,10 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 ...order,
                 ...partialOrder,
             };
-            invalidOrders.push(prunedOrder as PrunedSignedOrder);
+            invalidOrders.push(prunedOrder as SignedOrderWithFillableAmounts);
         }
 
-        marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
+        marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
             makerAssetData,
             wethAssetData,
             orders,
@@ -188,7 +188,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
             protocolFeeUtils,
         );
 
-        marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
+        marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
             makerAssetData,
             wethAssetData,
             orders,
@@ -197,7 +197,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
             protocolFeeUtils,
         );
 
-        invalidMarketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
+        invalidMarketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
             makerAssetData,
             takerAssetData,
             invalidOrders,

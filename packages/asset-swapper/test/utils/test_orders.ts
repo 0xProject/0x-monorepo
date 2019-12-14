@@ -1,33 +1,33 @@
-import { PrunedSignedOrder } from '../../src/types';
+import { SignedOrderWithFillableAmounts } from '../../src/types';
 
 import { testOrderFactory } from './test_order_factory';
 import { baseUnitAmount } from './utils';
 
 // tslint:disable:custom-no-magic-numbers
 
-const FAKE_ERC20_TAKER_ASSET_DATA = '0xf47261b22222222222222222222222222222222222222222222222222222222222222222';
-const FAKE_ERC20_MAKER_ASSET_DATA = '0xf47261b11111111111111111111111111111111111111111111111111111111111111111';
+const FAKE_ERC20_TAKER_ASSET_DATA = '0xf47261b02222222222222222222222222222222222222222222222222222222222222222';
+const FAKE_ERC20_MAKER_ASSET_DATA = '0xf47261b01111111111111111111111111111111111111111111111111111111111111111';
 
-const PARTIAL_ORDER: Partial<PrunedSignedOrder> = {
+const PARTIAL_ORDER: Partial<SignedOrderWithFillableAmounts> = {
     takerAssetData: FAKE_ERC20_TAKER_ASSET_DATA,
     makerAssetData: FAKE_ERC20_MAKER_ASSET_DATA,
 };
 
-const PARTIAL_ORDER_FEE_IN_TAKER_ASSET: Partial<PrunedSignedOrder> = {
+const PARTIAL_ORDER_FEE_IN_TAKER_ASSET: Partial<SignedOrderWithFillableAmounts> = {
     ...{
         takerFeeAssetData: FAKE_ERC20_TAKER_ASSET_DATA,
     },
     ...PARTIAL_ORDER,
 };
 
-const PARTIAL_ORDER_FEE_IN_MAKER_ASSET: Partial<PrunedSignedOrder> = {
+const PARTIAL_ORDER_FEE_IN_MAKER_ASSET: Partial<SignedOrderWithFillableAmounts> = {
     ...{
         takerFeeAssetData: FAKE_ERC20_MAKER_ASSET_DATA,
     },
     ...PARTIAL_ORDER,
 };
 
-const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         ...{
             takerAssetAmount: baseUnitAmount(1),
@@ -57,7 +57,7 @@ const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = 
     },
 ];
 
-const PARTIAL_PRUNED_SIGNED_FEE_IN_TAKER_ASSET: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         ...{
             takerAssetAmount: baseUnitAmount(1),
@@ -93,7 +93,7 @@ const PARTIAL_PRUNED_SIGNED_FEE_IN_TAKER_ASSET: Array<Partial<PrunedSignedOrder>
     },
 ];
 
-const PARTIAL_PRUNED_SIGNED_FEE_IN_MAKER_ASSET: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         ...{
             takerAssetAmount: baseUnitAmount(5),
@@ -129,18 +129,18 @@ const PARTIAL_PRUNED_SIGNED_FEE_IN_MAKER_ASSET: Array<Partial<PrunedSignedOrder>
     },
 ];
 
-const PRUNED_SIGNED_ORDERS_FEELESS = testOrderFactory.generateTestPrunedSignedOrders(
-    PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS,
+const SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS = testOrderFactory.generateTestSignedOrdersWithFillableAmounts(
+    PARTIAL_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS,
 );
-const PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET = testOrderFactory.generateTestPrunedSignedOrders(
-    PARTIAL_PRUNED_SIGNED_FEE_IN_TAKER_ASSET,
+const SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET = testOrderFactory.generateTestSignedOrdersWithFillableAmounts(
+    PARTIAL_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
 );
-const PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET = testOrderFactory.generateTestPrunedSignedOrders(
-    PARTIAL_PRUNED_SIGNED_FEE_IN_MAKER_ASSET,
+const SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET = testOrderFactory.generateTestSignedOrdersWithFillableAmounts(
+    PARTIAL_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET,
 );
 
 export const testOrders = {
-    PRUNED_SIGNED_ORDERS_FEELESS,
-    PRUNED_SIGNED_ORDERS_FEE_IN_TAKER_ASSET,
-    PRUNED_SIGNED_ORDERS_FEE_IN_MAKER_ASSET,
+    SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS,
+    SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
+    SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET,
 };

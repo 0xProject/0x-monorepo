@@ -32,11 +32,38 @@ export class CreateOrderUtils {
             if (source === ERC20BridgeSource.Native) {
                 orders.push((fill.fillData as NativeFillData).order);
             } else if (source === ERC20BridgeSource.Kyber) {
-                orders.push(this._createKyberOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
+                orders.push(
+                    this._createKyberOrder(
+                        orderDomain,
+                        outputToken,
+                        inputToken,
+                        fill.output,
+                        fill.input,
+                        bridgeSlippage,
+                    ),
+                );
             } else if (source === ERC20BridgeSource.Eth2Dai) {
-                orders.push(this._createEth2DaiOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
+                orders.push(
+                    this._createEth2DaiOrder(
+                        orderDomain,
+                        outputToken,
+                        inputToken,
+                        fill.output,
+                        fill.input,
+                        bridgeSlippage,
+                    ),
+                );
             } else if (source === ERC20BridgeSource.Uniswap) {
-                orders.push(this._createUniswapOrder(orderDomain, outputToken, inputToken, fill.output, fill.input, bridgeSlippage));
+                orders.push(
+                    this._createUniswapOrder(
+                        orderDomain,
+                        outputToken,
+                        inputToken,
+                        fill.output,
+                        fill.input,
+                        bridgeSlippage,
+                    ),
+                );
             } else {
                 throw new Error(`invalid sell fill source: ${source}`);
             }
@@ -58,9 +85,29 @@ export class CreateOrderUtils {
             if (source === ERC20BridgeSource.Native) {
                 orders.push((fill.fillData as NativeFillData).order);
             } else if (source === ERC20BridgeSource.Eth2Dai) {
-                orders.push(this._createEth2DaiOrder(orderDomain, inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
+                orders.push(
+                    this._createEth2DaiOrder(
+                        orderDomain,
+                        inputToken,
+                        outputToken,
+                        fill.input,
+                        fill.output,
+                        bridgeSlippage,
+                        true,
+                    ),
+                );
             } else if (source === ERC20BridgeSource.Uniswap) {
-                orders.push(this._createUniswapOrder(orderDomain, inputToken, outputToken, fill.input, fill.output, bridgeSlippage, true));
+                orders.push(
+                    this._createUniswapOrder(
+                        orderDomain,
+                        inputToken,
+                        outputToken,
+                        fill.input,
+                        fill.output,
+                        bridgeSlippage,
+                        true,
+                    ),
+                );
             } else {
                 throw new Error(`invalid buy fill source: ${source}`);
             }
@@ -176,7 +223,7 @@ function createBridgeData(tokenAddress: string): string {
 }
 
 type CommonOrderFields = Pick<
-SignedOrderWithFillableAmounts,
+    SignedOrderWithFillableAmounts,
     Exclude<keyof SignedOrderWithFillableAmounts, 'makerAddress' | 'makerAssetData' | 'takerAssetData'>
 >;
 
@@ -188,11 +235,11 @@ function createCommonOrderFields(
     isBuy: boolean = false,
 ): CommonOrderFields {
     const makerAssetAmountAdjustedWithSlippage = isBuy
-    ? makerAssetAmount
-    : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_UP);
+        ? makerAssetAmount
+        : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_UP);
     const takerAssetAmountAdjustedWithSlippage = isBuy
-    ? takerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
-    : takerAssetAmount;
+        ? takerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
+        : takerAssetAmount;
     return {
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,

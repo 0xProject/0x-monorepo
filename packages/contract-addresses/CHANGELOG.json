@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Addition of ERC20BridgeSampler + Kyber Erc20Bridge Contract in contract-addresses",
-                "pr": 2353 
+                "pr": 2353
             }
         ]
     },

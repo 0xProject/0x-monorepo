@@ -5,7 +5,6 @@ import { AbiDefinition, ContractAbi, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { SignedOrderWithFillableAmounts } from '../types';
 
 // tslint:disable:no-unnecessary-type-assertion
 export const utils = {
@@ -41,16 +40,5 @@ export const utils = {
             ? order.takerAssetAmount.plus(order.takerFee)
             : order.takerAssetAmount;
         return [adjustedMakerAssetAmount, adjustedTakerAssetAmount];
-    },
-    getAdjustedFillableMakerAndTakerAmountsFromTakerFees<T extends SignedOrderWithFillableAmounts>(
-        order: T,
-    ): [BigNumber, BigNumber] {
-        const adjustedFillableMakerAssetAmount = utils.isOrderTakerFeePayableWithMakerAsset(order)
-            ? order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount)
-            : order.fillableMakerAssetAmount;
-        const adjustedFillableTakerAssetAmount = utils.isOrderTakerFeePayableWithTakerAsset(order)
-            ? order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount)
-            : order.fillableTakerAssetAmount;
-        return [adjustedFillableMakerAssetAmount, adjustedFillableTakerAssetAmount];
     },
 };

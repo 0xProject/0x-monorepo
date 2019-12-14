@@ -1,12 +1,12 @@
 import { ContractFunctionObj } from '@0x/base-contract';
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { constants } from '@0x/contracts-test-utils';
-import { OrderWithoutDomain } from '@0x/types';
+import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 export type QueryAndSampleResult = [BigNumber[], BigNumber[][]];
 export type QueryAndSampleHandler = (
-    orders: OrderWithoutDomain[],
+    orders: Order[],
     signatures: string[],
     sources: string[],
     fillAmounts: BigNumber[],
@@ -39,7 +39,7 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
     }
 
     public queryOrdersAndSampleSells(
-        orders: OrderWithoutDomain[],
+        orders: Order[],
         signatures: string[],
         sources: string[],
         fillAmounts: BigNumber[],
@@ -56,7 +56,7 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
     }
 
     public queryOrdersAndSampleBuys(
-        orders: OrderWithoutDomain[],
+        orders: Order[],
         signatures: string[],
         sources: string[],
         fillAmounts: BigNumber[],

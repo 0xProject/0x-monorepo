@@ -7,7 +7,6 @@ import { constants } from '../constants';
 import { SwapQuoterError } from '../types';
 
 export class ProtocolFeeUtils {
-
     public gasPriceEstimation: BigNumber;
     private readonly _gasPriceHeart: any;
 
@@ -42,10 +41,7 @@ export class ProtocolFeeUtils {
     /**
      * Calculates protocol fee with protofol fee multiplier for each fill.
      */
-    public calculateWorstCaseProtocolFee<T extends Order>(
-        orders: T[],
-        gasPrice: BigNumber,
-    ): BigNumber {
+    public calculateWorstCaseProtocolFee<T extends Order>(orders: T[], gasPrice: BigNumber): BigNumber {
         const protocolFeeMultiplier = this.getProtocolFeeMultiplier();
         const protocolFee = new BigNumber(orders.length).times(protocolFeeMultiplier).times(gasPrice);
         return protocolFee;

@@ -16,12 +16,12 @@ import {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
-    PrunedSignedOrder,
+    SignedOrderWithFillableAmounts,
 } from '../src/types';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -33,7 +33,7 @@ const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 const UNLIMITED_ALLOWANCE = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
-const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         takerAssetAmount: new BigNumber(5).multipliedBy(ONE_ETH_IN_WEI),
         makerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
@@ -85,7 +85,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
 
     const chainId = TESTRPC_CHAIN_ID;
 
-    let orders: PrunedSignedOrder[];
+    let orders: SignedOrderWithFillableAmounts[];
     let marketSellSwapQuote: SwapQuote;
     let marketBuySwapQuote: SwapQuote;
     let swapQuoteConsumer: ExchangeSwapQuoteConsumer;
@@ -130,7 +130,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils();
+        protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TakerTokenContract,
             makerAddress,
@@ -154,10 +154,10 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 ...order,
                 ...partialOrder,
             };
-            orders.push(prunedOrder as PrunedSignedOrder);
+            orders.push(prunedOrder as SignedOrderWithFillableAmounts);
         }
 
-        marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
+        marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
             makerAssetData,
             takerAssetData,
             orders,
@@ -166,7 +166,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
             protocolFeeUtils,
         );
 
-        marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
+        marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
             makerAssetData,
             takerAssetData,
             orders,
