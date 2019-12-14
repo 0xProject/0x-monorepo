@@ -268,6 +268,8 @@ export async function runMigrationsAsync(
         stakingProxy: stakingProxy.address,
         uniswapBridge: constants.NULL_ADDRESS,
         eth2DaiBridge: constants.NULL_ADDRESS,
+        kyberBridge: constants.NULL_ADDRESS,
+        erc20BridgeSampler: constants.NULL_ADDRESS,
     };
     return contractAddresses;
 }
