@@ -243,6 +243,7 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
+        constants.NULL_ADDRESS,
         etherToken.address,
     );
 

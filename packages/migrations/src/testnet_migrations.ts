@@ -238,15 +238,15 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         chainId,
     );
 
-    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+    await ForwarderContract.deployFrom0xArtifactAsync(
         forwarderArtifacts.Forwarder,
         provider,
         txDefaults,
         forwarderArtifacts,
         exchange.address,
+        deployedAddresses.exchangeV2,
         deployedAddresses.etherToken,
     );
-    await forwarder.approveMakerAssetProxy(deployedAddresses.etherToken).awaitTransactionSuccessAsync();
 }
 
 (async () => {
