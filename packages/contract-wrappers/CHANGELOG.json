@@ -1,14 +1,19 @@
 [
     {
+        "version": "13.2.0",
+        "changes": [
+            {
+                "note": "Add `IERC20BridgeSampler` wrapper",
+                "pr": 2353
+            }
+        ]
+    },
+    {
         "version": "13.1.0",
         "changes": [
             {
                 "note": "Add wrapper for `IAssetDataContract`",
                 "pr": 2373
-            },
-            {
-                "note": "Add `IERC20BridgeSampler` wrapper",
-                "pr": 2353
             }
         ],
         "timestamp": 1575931811
