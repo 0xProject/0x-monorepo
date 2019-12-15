@@ -89,6 +89,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
+        "@0x/asset-swapper": "^3.0.1",
         "@0x/base-contract": "^6.0.2",
         "@0x/contracts-asset-proxy": "^3.0.2",
         "@0x/contracts-erc1155": "^2.0.2",

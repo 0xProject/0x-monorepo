@@ -5,6 +5,14 @@
             {
                 "note": "Added ERC20BridgeProxy to list of unlocked accounts on mainnet fork",
                 "pr": 2401
+            },
+            {
+                "note": "Add `blockchainTests.live()` for live network tests.",
+                "pr": 2407
+            },
+            {
+                "note": "Add modifiers to `blockchainTests.fork()`.",
+                "pr": 2407
             }
         ]
     },

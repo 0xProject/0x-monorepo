@@ -6,7 +6,7 @@ import { BigNumber } from '@0x/utils';
 
 import { contractAddresses, contractWrappers } from './mainnet_fork_utils';
 
-blockchainTests.resets.fork('Mainnet configs tests', env => {
+blockchainTests.fork.resets('Mainnet configs tests', env => {
     describe('Exchange', () => {
         it('should be owned by the ZeroExGovernor ', async () => {
             const owner = await contractWrappers.exchange.owner().callAsync();
