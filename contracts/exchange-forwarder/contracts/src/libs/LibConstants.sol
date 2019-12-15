@@ -27,7 +27,7 @@ contract LibConstants {
 
     uint256 constant internal MAX_UINT = uint256(-1);
 
-    // The v2 order id is the first 4 bytes of the ExchangeV2 order shema hash.
+    // The v2 order id is the first 4 bytes of the ExchangeV2 order schema hash.
     // bytes4(keccak256(abi.encodePacked(
     //     "Order(",
     //     "address makerAddress,",
