@@ -8,10 +8,10 @@ import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../src';
 import { constants } from '../src/constants';
-import { LiquidityForTakerMakerAssetDataPair, PrunedSignedOrder } from '../src/types';
+import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { mockAvailableAssetDatas, mockedSwapQuoterWithPrunedSignedOrders, orderbookMock } from './utils/mocks';
+import { mockAvailableAssetDatas, mockedSwapQuoterWithFillableAmounts, orderbookMock } from './utils/mocks';
 import { testOrderFactory } from './utils/test_order_factory';
 import { baseUnitAmount } from './utils/utils';
 
@@ -60,15 +60,15 @@ const assetsToAssetPairItems = (makerAssetData: string, takerAssetData: string):
 const expectLiquidityResult = async (
     web3Provider: Web3ProviderEngine,
     orderbook: Orderbook,
-    prunedOrders: PrunedSignedOrder[],
+    orders: SignedOrderWithFillableAmounts[],
     expectedLiquidityResult: LiquidityForTakerMakerAssetDataPair,
 ) => {
-    const mockedSwapQuoter = mockedSwapQuoterWithPrunedSignedOrders(
+    const mockedSwapQuoter = mockedSwapQuoterWithFillableAmounts(
         web3Provider,
         orderbook,
         FAKE_MAKER_ASSET_DATA,
         WETH_ASSET_DATA,
-        prunedOrders,
+        orders,
     );
     const liquidityResult = await mockedSwapQuoter.object.getLiquidityForMakerTakerAssetDataPairAsync(
         FAKE_MAKER_ASSET_DATA,
@@ -159,21 +159,16 @@ describe('SwapQuoter', () => {
             });
 
             it('should return 0s when no orders available', async () => {
-                const prunedOrders: PrunedSignedOrder[] = [];
+                const orders: SignedOrderWithFillableAmounts[] = [];
                 const expectedResult = {
                     makerAssetAvailableInBaseUnits: new BigNumber(0),
                     takerAssetAvailableInBaseUnits: new BigNumber(0),
                 };
-                await expectLiquidityResult(
-                    mockWeb3Provider.object,
-                    mockOrderbook.object,
-                    prunedOrders,
-                    expectedResult,
-                );
+                await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
 
             it('should return correct computed value when orders provided with full fillableAmounts', async () => {
-                const prunedOrders: PrunedSignedOrder[] = [
+                const orders: SignedOrderWithFillableAmounts[] = [
                     {
                         ...sellTenTokensFor10Weth,
                         ...{
@@ -191,28 +186,19 @@ describe('SwapQuoter', () => {
                         },
                     },
                 ];
-                const expectedMakerAssetAvailable = prunedOrders[0].makerAssetAmount.plus(
-                    prunedOrders[1].makerAssetAmount,
-                );
-                const expectedTakerAssetAvailable = prunedOrders[0].takerAssetAmount.plus(
-                    prunedOrders[1].takerAssetAmount,
-                );
+                const expectedMakerAssetAvailable = orders[0].makerAssetAmount.plus(orders[1].makerAssetAmount);
+                const expectedTakerAssetAvailable = orders[0].takerAssetAmount.plus(orders[1].takerAssetAmount);
 
                 const expectedResult = {
                     makerAssetAvailableInBaseUnits: expectedMakerAssetAvailable,
                     takerAssetAvailableInBaseUnits: expectedTakerAssetAvailable,
                 };
 
-                await expectLiquidityResult(
-                    mockWeb3Provider.object,
-                    mockOrderbook.object,
-                    prunedOrders,
-                    expectedResult,
-                );
+                await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
 
             it('should return correct computed value with one partial fillableAmounts', async () => {
-                const prunedOrders: PrunedSignedOrder[] = [
+                const orders: SignedOrderWithFillableAmounts[] = [
                     {
                         ...sellTenTokensFor10Weth,
                         ...{
@@ -228,16 +214,11 @@ describe('SwapQuoter', () => {
                     takerAssetAvailableInBaseUnits: baseUnitAmount(0.5, WETH_DECIMALS),
                 };
 
-                await expectLiquidityResult(
-                    mockWeb3Provider.object,
-                    mockOrderbook.object,
-                    prunedOrders,
-                    expectedResult,
-                );
+                await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
 
             it('should return correct computed value with multiple orders and fillable amounts', async () => {
-                const prunedOrders: PrunedSignedOrder[] = [
+                const orders: SignedOrderWithFillableAmounts[] = [
                     {
                         ...sellTenTokensFor10Weth,
                         ...{
@@ -261,16 +242,11 @@ describe('SwapQuoter', () => {
                     takerAssetAvailableInBaseUnits: baseUnitAmount(3.5, WETH_DECIMALS),
                 };
 
-                await expectLiquidityResult(
-                    mockWeb3Provider.object,
-                    mockOrderbook.object,
-                    prunedOrders,
-                    expectedResult,
-                );
+                await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
 
             it('should return 0s when no amounts fillable', async () => {
-                const prunedOrders: PrunedSignedOrder[] = [
+                const orders: SignedOrderWithFillableAmounts[] = [
                     {
                         ...sellTenTokensFor10Weth,
                         ...{
@@ -294,12 +270,7 @@ describe('SwapQuoter', () => {
                     takerAssetAvailableInBaseUnits: constants.ZERO_AMOUNT,
                 };
 
-                await expectLiquidityResult(
-                    mockWeb3Provider.object,
-                    mockOrderbook.object,
-                    prunedOrders,
-                    expectedResult,
-                );
+                await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
         });
     });

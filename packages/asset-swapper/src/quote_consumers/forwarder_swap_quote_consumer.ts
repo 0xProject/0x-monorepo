@@ -1,5 +1,6 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract, ForwarderContract } from '@0x/contract-wrappers';
+import { ForwarderContract } from '@0x/contract-wrappers';
+import { assetDataUtils } from '@0x/order-utils';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -28,7 +29,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
     private readonly _contractAddresses: ContractAddresses;
     private readonly _forwarder: ForwarderContract;
-    private readonly _devUtils: DevUtilsContract;
 
     constructor(
         supportedProvider: SupportedProvider,
@@ -42,7 +42,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         this.chainId = chainId;
         this._contractAddresses = contractAddresses;
         this._forwarder = new ForwarderContract(contractAddresses.forwarder, supportedProvider);
-        this._devUtils = new DevUtilsContract(contractAddresses.devUtils, supportedProvider);
     }
 
     /**
@@ -54,7 +53,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
-        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
+        assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
@@ -86,7 +85,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
-        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
+        assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { extensionContractOpts } = _.merge({}, constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS, opts);
 
@@ -152,7 +151,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
-        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
+        assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { ethAmount: providedEthAmount, takerAddress, gasLimit, extensionContractOpts } = _.merge(
             {},
@@ -217,7 +216,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         return txHash;
     }
 
-    private async _getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
-        return this._devUtils.encodeERC20AssetData(this._contractAddresses.etherToken).callAsync();
+    private _getEtherTokenAssetDataOrThrow(): string {
+        return assetDataUtils.encodeERC20AssetData(this._contractAddresses.etherToken);
     }
 }

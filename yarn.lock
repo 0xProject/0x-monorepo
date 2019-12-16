@@ -8497,6 +8497,11 @@ heap@0.2.6:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
 
+heartbeats@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/heartbeats/-/heartbeats-5.0.1.tgz#c0d476151982e707faac49345143b9582de40cae"
+  integrity sha1-wNR2FRmC5wf6rEk0UUO5WC3kDK4=
+
 highlight.js@^9.15.8, highlight.js@^9.6.0:
   version "9.15.9"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.15.9.tgz#865257da1dbb4a58c4552d46c4b3854f77f0e6d5"
@@ -11333,7 +11338,21 @@ merge@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/merge/-/merge-1.2.0.tgz#7531e39d4949c281a66b8c5a6e0265e8b05894da"
 
-merkle-patricia-tree@2.3.1, merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2.3.2:
+merkle-patricia-tree@2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/merkle-patricia-tree/-/merkle-patricia-tree-2.3.1.tgz#7d4e7263a9c85c1679187cad4a6d71f48d524c71"
+  integrity sha512-Qp9Mpb3xazznXzzGQBqHbqCpT2AR9joUOHYYPiQjYCarrdCPCnLWXo4BFv77y4xN26KR224xoU1n/qYY7RYYgw==
+  dependencies:
+    async "^1.4.2"
+    ethereumjs-util "^5.0.0"
+    level-ws "0.0.0"
+    levelup "^1.2.1"
+    memdown "^1.0.0"
+    readable-stream "^2.0.0"
+    rlp "^2.0.0"
+    semaphore ">=1.0.1"
+
+merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/merkle-patricia-tree/-/merkle-patricia-tree-2.3.2.tgz#982ca1b5a0fde00eed2f6aeed1f9152860b8208a"
   dependencies:

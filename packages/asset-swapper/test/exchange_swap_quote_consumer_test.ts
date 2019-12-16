@@ -1,8 +1,9 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract, ERC20TokenContract, ExchangeContract } from '@0x/contract-wrappers';
+import { ERC20TokenContract, ExchangeContract } from '@0x/contract-wrappers';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
+import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
@@ -16,7 +17,7 @@ import {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
-    PrunedSignedOrder,
+    SignedOrderWithFillableAmounts,
 } from '../src/types';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
@@ -33,7 +34,7 @@ const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 const UNLIMITED_ALLOWANCE = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
-const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_PRUNED_SIGNED_ORDERS_FEELESS: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         takerAssetAmount: new BigNumber(5).multipliedBy(ONE_ETH_IN_WEI),
         makerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
@@ -85,7 +86,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
 
     const chainId = TESTRPC_CHAIN_ID;
 
-    let orders: PrunedSignedOrder[];
+    let orders: SignedOrderWithFillableAmounts[];
     let marketSellSwapQuote: SwapQuote;
     let marketBuySwapQuote: SwapQuote;
     let swapQuoteConsumer: ExchangeSwapQuoteConsumer;
@@ -104,12 +105,11 @@ describe('ExchangeSwapQuoteConsumer', () => {
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
-        const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
-        [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
-            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
-        ]);
+        [makerAssetData, takerAssetData, wethAssetData] = [
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
+        ];
         erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
@@ -130,7 +130,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils();
+        protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TakerTokenContract,
             makerAddress,
@@ -154,7 +154,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 ...order,
                 ...partialOrder,
             };
-            orders.push(prunedOrder as PrunedSignedOrder);
+            orders.push(prunedOrder as SignedOrderWithFillableAmounts);
         }
 
         marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(

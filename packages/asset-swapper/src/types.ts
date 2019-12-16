@@ -2,6 +2,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
+import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
+
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  * permittedOrderFeeTypes: A set of all the takerFee types that OrderPruner will filter for
@@ -36,7 +38,7 @@ export interface OrderProviderRequest {
  * fillableTakerAssetAmount: Amount of takerAsset that is fillable
  * fillableTakerFeeAmount: Amount of takerFee paid to fill fillableTakerAssetAmount
  */
-export interface PrunedSignedOrder extends SignedOrder {
+export interface SignedOrderWithFillableAmounts extends SignedOrder {
     fillableMakerAssetAmount: BigNumber;
     fillableTakerAssetAmount: BigNumber;
     fillableTakerFeeAmount: BigNumber;
@@ -254,10 +256,15 @@ export interface SwapQuoteInfo {
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
-export interface SwapQuoteRequestOpts {
+export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
     slippagePercentage: number;
     gasPrice?: BigNumber;
 }
+
+/**
+ * Opts required to generate a SwapQuote with SwapQuoteCalculator
+ */
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
 
 /**
  * chainId: The ethereum chain id. Defaults to 1 (mainnet).

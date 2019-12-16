@@ -6,7 +6,7 @@ import { BigNumber } from '@0x/utils';
 import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../../src/swap_quoter';
-import { PrunedSignedOrder } from '../../src/types';
+import { SignedOrderWithFillableAmounts } from '../../src/types';
 import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
 
 const PROTOCOL_FEE_MULTIPLIER = 150000;
@@ -16,15 +16,15 @@ const PROTOCOL_FEE_MULTIPLIER = 150000;
 class OrderbookClass extends Orderbook {
     // tslint:disable-next-line:prefer-function-over-method
     public async getOrdersAsync(_makerAssetData: string, _takerAssetData: string): Promise<APIOrder[]> {
-        return Promise.resolve([]);
+        return [];
     }
     // tslint:disable-next-line:prefer-function-over-method
     public async getAvailableAssetDatasAsync(): Promise<AssetPairsItem[]> {
-        return Promise.resolve([]);
+        return [];
     }
     // tslint:disable-next-line:prefer-function-over-method
     public async addOrdersAsync(_orders: SignedOrder[]): Promise<AcceptedRejectedOrders> {
-        return Promise.resolve({ accepted: [], rejected: [] });
+        return { accepted: [], rejected: [] };
     }
 }
 export const orderbookMock = () => {
@@ -37,7 +37,7 @@ export const mockAvailableAssetDatas = (
 ) => {
     mockOrderbook
         .setup(async op => op.getAvailableAssetDatasAsync())
-        .returns(async () => Promise.resolve(availableAssetDatas))
+        .returns(async () => availableAssetDatas)
         .verifiable(TypeMoq.Times.once());
     mockOrderbook
         .setup(o => (o as any)._orderProvider)
@@ -59,11 +59,11 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
 class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
     // tslint:disable-next-line:prefer-function-over-method
     public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        return Promise.resolve(new BigNumber(PROTOCOL_FEE_MULTIPLIER));
+        return new BigNumber(PROTOCOL_FEE_MULTIPLIER);
     }
     // tslint:disable-next-line:prefer-function-over-method
-    public async getGasPriceEstimationOrThrowAsync(): Promise<BigNumber> {
-        return Promise.resolve(new BigNumber(devConstants.DEFAULT_GAS_PRICE));
+    public async getGasPriceEstimationOrThrowAsync(_shouldHardRefresh?: boolean): Promise<BigNumber> {
+        return new BigNumber(devConstants.DEFAULT_GAS_PRICE);
     }
 }
 
@@ -73,26 +73,26 @@ export const protocolFeeUtilsMock = (): TypeMoq.IMock<ProtocolFeeUtils> => {
     return mockProtocolFeeUtils;
 };
 
-const mockGetPrunedSignedOrdersAsync = (
+const mockGetSignedOrdersWithFillableAmountsAsyncAsync = (
     mockedSwapQuoter: TypeMoq.IMock<SwapQuoter>,
     makerAssetData: string,
     takerAssetData: string,
-    prunedOrders: PrunedSignedOrder[],
+    signedOrders: SignedOrderWithFillableAmounts[],
 ): void => {
     mockedSwapQuoter
-        .setup(async a => a.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData))
-        .returns(async () => Promise.resolve(prunedOrders))
+        .setup(async a => a.getSignedOrdersWithFillableAmountsAsync(makerAssetData, takerAssetData))
+        .returns(async () => signedOrders)
         .verifiable(TypeMoq.Times.once());
 };
 
-export const mockedSwapQuoterWithPrunedSignedOrders = (
+export const mockedSwapQuoterWithFillableAmounts = (
     provider: Web3ProviderEngine,
     orderbook: Orderbook,
     makerAssetData: string,
     takerAssetData: string,
-    prunedOrders: PrunedSignedOrder[],
+    signedOrders: SignedOrderWithFillableAmounts[],
 ): TypeMoq.IMock<SwapQuoter> => {
     const mockedAssetQuoter = partiallyMockedSwapQuoter(provider, orderbook);
-    mockGetPrunedSignedOrdersAsync(mockedAssetQuoter, makerAssetData, takerAssetData, prunedOrders);
+    mockGetSignedOrdersWithFillableAmountsAsyncAsync(mockedAssetQuoter, makerAssetData, takerAssetData, signedOrders);
     return mockedAssetQuoter;
 };

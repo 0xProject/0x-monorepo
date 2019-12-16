@@ -33,6 +33,7 @@
         "./artifacts/Staking.json",
         "./artifacts/StakingProxy.json",
         "./artifacts/ZrxVault.json",
-        "./artifacts/ERC20BridgeProxy.json"
+        "./artifacts/ERC20BridgeProxy.json",
+        "./artifacts/IERC20BridgeSampler.json"
     ]
 }

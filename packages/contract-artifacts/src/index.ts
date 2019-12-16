@@ -23,6 +23,7 @@ import * as WETH9 from '../artifacts/WETH9.json';
 import * as ZRXToken from '../artifacts/ZRXToken.json';
 import * as ERC20BridgeProxy from '../artifacts/ERC20BridgeProxy.json';
 import * as ZrxVault from '../artifacts/ZrxVault.json';
+import * as IERC20BridgeSampler from '../artifacts/IERC20BridgeSampler.json';
 
 export {
     AssetProxyOwner,
@@ -50,4 +51,5 @@ export {
     Staking,
     StakingProxy,
     ZrxVault,
+    IERC20BridgeSampler,
 };

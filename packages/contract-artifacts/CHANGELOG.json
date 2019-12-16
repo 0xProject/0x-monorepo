@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Add `IERC20BridgeSampler` artifact.",
+                "pr": 2353
+            }
+        ]
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {

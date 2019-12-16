@@ -11,6 +11,8 @@ import {
     SwapQuoterOpts,
 } from './types';
 
+import { constants as marketOperationUtilConstants } from './utils/market_operation_utils/constants';
+
 const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 const NULL_BYTES = '0x';
 const NULL_ERC20_ASSET_DATA = '0xf47261b00000000000000000000000000000000000000000000000000000000000000000';
@@ -26,6 +28,13 @@ const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
         OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee,
     ]), // Default asset-swapper for CFL oriented fee types
 };
+
+// 15 seconds polling interval
+const PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS = 15000;
+const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
+
+// default 50% buffer for selecting native orders to be aggregated with other sources
+const MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE = 0.5;
 
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     ...{
@@ -48,11 +57,15 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
 const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
-    slippagePercentage: 0.2, // 20% slippage protection,
+    ...{
+        slippagePercentage: 0.2, // 20% slippage protection,
+    },
+    ...marketOperationUtilConstants.DEFAULT_GET_MARKET_ORDERS_OPTS,
 };
 
 export const constants = {
     ETH_GAS_STATION_API_BASE_URL,
+    PROTOCOL_FEE_MULTIPLIER,
     NULL_BYTES,
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
@@ -68,4 +81,6 @@ export const constants = {
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     DEFAULT_PER_PAGE,
     NULL_ERC20_ASSET_DATA,
+    PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
+    MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE,
 };
