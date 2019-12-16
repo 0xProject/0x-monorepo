@@ -61,4 +61,17 @@ contract TestForwarder is
             amount
         );
     }
+
+    function noTakerFee(
+        uint256 takerFee,
+        bytes memory takerFeeAssetData
+    )
+        public
+        returns (bool)
+    {
+        return _noTakerFee(
+            takerFee,
+            takerFeeAssetData
+        );
+    }
 }

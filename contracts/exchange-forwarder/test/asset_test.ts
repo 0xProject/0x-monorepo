@@ -20,11 +20,12 @@ import {
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { BigNumber, ExchangeForwarderRevertErrors, hexUtils } from '@0x/utils';
+import { LogWithDecodedArgs } from 'ethereum-types';
 
 import { artifacts } from './artifacts';
 import { TestForwarderContract } from './wrappers';
 
-blockchainTests('Supported asset type unit tests', env => {
+blockchainTests.resets('Supported asset type unit tests', env => {
     let forwarder: TestForwarderContract;
     let assetDataEncoder: IAssetDataContract;
     let bridgeAddress: string;
@@ -38,6 +39,8 @@ blockchainTests('Supported asset type unit tests', env => {
     let erc20AssetData: string;
     let erc721AssetData: string;
     let erc20BridgeAssetData: string;
+    let staticCallAssetData: string;
+    let multiAssetData: string;
 
     before(async () => {
         [receiver] = await env.getAccountAddressesAsync();
@@ -70,13 +73,21 @@ blockchainTests('Supported asset type unit tests', env => {
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
         );
-        nftId = getRandomInteger(constants.ZERO_AMOUNT, constants.MAX_UINT256);
+        nftId = getRandomInteger(0, constants.MAX_UINT256);
         erc721AssetData = assetDataEncoder.ERC721Token(erc721Token.address, nftId).getABIEncodedTransactionData();
 
         bridgeAddress = randomAddress();
         bridgeData = hexUtils.random();
         erc20BridgeAssetData = assetDataEncoder
             .ERC20Bridge(erc20Token.address, bridgeAddress, bridgeData)
+            .getABIEncodedTransactionData();
+
+        staticCallAssetData = assetDataEncoder
+            .StaticCall(randomAddress(), hexUtils.random(), constants.KECCAK256_NULL)
+            .getABIEncodedTransactionData();
+
+        multiAssetData = assetDataEncoder
+            .MultiAsset([new BigNumber(1)], [erc20AssetData])
             .getABIEncodedTransactionData();
     });
 
@@ -115,8 +126,49 @@ blockchainTests('Supported asset type unit tests', env => {
                 .callAsync();
             expect(result).to.be.false();
         });
-        it('returns false if assetData1 == assetData2 are ERC721', async () => {
+        it('returns true if assetData1 == assetData2 are ERC721', async () => {
             const result = await forwarder.areUnderlyingAssetsEqual(erc721AssetData, erc721AssetData).callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns false if assetData1 != assetData2 are ERC721', async () => {
+            const differentErc721AssetData = assetDataEncoder
+                .ERC721Token(randomAddress(), getRandomInteger(0, constants.MAX_UINT256))
+                .getABIEncodedTransactionData();
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(erc721AssetData, differentErc721AssetData)
+                .callAsync();
+            expect(result).to.be.false();
+        });
+        it('returns true if assetData1 == assetData2 are StaticCall', async () => {
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(staticCallAssetData, staticCallAssetData)
+                .callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns false if assetData1 != assetData2 are StaticCall', async () => {
+            const differentStaticCallAssetData = assetDataEncoder
+                .StaticCall(randomAddress(), hexUtils.random(), constants.KECCAK256_NULL)
+                .getABIEncodedTransactionData();
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(staticCallAssetData, differentStaticCallAssetData)
+                .callAsync();
+            expect(result).to.be.false();
+        });
+        it('returns false if assetData1 is ERC20 and assetData2 is MultiAsset', async () => {
+            const result = await forwarder.areUnderlyingAssetsEqual(erc20AssetData, multiAssetData).callAsync();
+            expect(result).to.be.false();
+        });
+        it('returns true if assetData1 == assetData2 are MultiAsset', async () => {
+            const result = await forwarder.areUnderlyingAssetsEqual(multiAssetData, multiAssetData).callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns false if assetData1 != assetData2 are MultiAsset', async () => {
+            const differentMultiAssetData = assetDataEncoder
+                .MultiAsset([getRandomInteger(0, constants.MAX_UINT256)], [erc721AssetData])
+                .getABIEncodedTransactionData();
+            const result = await forwarder
+                .areUnderlyingAssetsEqual(multiAssetData, differentMultiAssetData)
+                .callAsync();
             expect(result).to.be.false();
         });
     });
@@ -158,6 +210,57 @@ blockchainTests('Supported asset type unit tests', env => {
             const expectedError = new ExchangeForwarderRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
             return expect(tx).to.revertWith(expectedError);
         });
+        it('transfers a single ERC20 token wrapped as MultiAsset', async () => {
+            const nestedAmount = new BigNumber(1337);
+            const erc20MultiAssetData = assetDataEncoder
+                .MultiAsset([nestedAmount], [erc20AssetData])
+                .getABIEncodedTransactionData();
+            const multiAssetAmount = new BigNumber(2);
+            const txReceipt = await forwarder
+                .transferAssetToSender(erc20MultiAssetData, multiAssetAmount)
+                .awaitTransactionSuccessAsync({ from: receiver });
+            verifyEventsFromLogs<ERC20TokenTransferEventArgs>(
+                txReceipt.logs,
+                [{ _from: forwarder.address, _to: receiver, _value: multiAssetAmount.times(nestedAmount) }],
+                ERC20TokenEvents.Transfer,
+            );
+        });
+        it('transfers ERC20, ERC721, and StaticCall assets wrapped as MultiAsset', async () => {
+            const nestedAmounts = [new BigNumber(1337), TRANSFER_AMOUNT, TRANSFER_AMOUNT];
+            const assortedMultiAssetData = assetDataEncoder
+                .MultiAsset(nestedAmounts, [erc20AssetData, erc721AssetData, staticCallAssetData])
+                .getABIEncodedTransactionData();
+            const txReceipt = await forwarder
+                .transferAssetToSender(assortedMultiAssetData, TRANSFER_AMOUNT)
+                .awaitTransactionSuccessAsync({ from: receiver });
+            expect(txReceipt.logs.length).to.equal(2);
+            const erc20TransferEvent = (txReceipt.logs[0] as LogWithDecodedArgs<ERC20TokenTransferEventArgs>).args;
+            const erc721TransferEvent = (txReceipt.logs[1] as LogWithDecodedArgs<ERC721TokenTransferEventArgs>).args;
+            expect(erc20TransferEvent).to.deep.equal({
+                _from: forwarder.address,
+                _to: receiver,
+                _value: nestedAmounts[0],
+            });
+            expect(erc721TransferEvent).to.deep.equal({ _from: forwarder.address, _to: receiver, _tokenId: nftId });
+        });
+        it('performs nested MultiAsset transfers', async () => {
+            const nestedAmounts = [TRANSFER_AMOUNT, TRANSFER_AMOUNT, TRANSFER_AMOUNT];
+            const assortedMultiAssetData = assetDataEncoder
+                .MultiAsset(nestedAmounts, [multiAssetData, erc721AssetData, staticCallAssetData])
+                .getABIEncodedTransactionData();
+            const txReceipt = await forwarder
+                .transferAssetToSender(assortedMultiAssetData, TRANSFER_AMOUNT)
+                .awaitTransactionSuccessAsync({ from: receiver });
+            expect(txReceipt.logs.length).to.equal(2);
+            const erc20TransferEvent = (txReceipt.logs[0] as LogWithDecodedArgs<ERC20TokenTransferEventArgs>).args;
+            const erc721TransferEvent = (txReceipt.logs[1] as LogWithDecodedArgs<ERC721TokenTransferEventArgs>).args;
+            expect(erc20TransferEvent).to.deep.equal({
+                _from: forwarder.address,
+                _to: receiver,
+                _value: TRANSFER_AMOUNT,
+            });
+            expect(erc721TransferEvent).to.deep.equal({ _from: forwarder.address, _to: receiver, _tokenId: nftId });
+        });
         it('transfers an ERC20 token given ERC20Bridge assetData', async () => {
             const txReceipt = await forwarder
                 .transferAssetToSender(erc20BridgeAssetData, TRANSFER_AMOUNT)
@@ -168,6 +271,12 @@ blockchainTests('Supported asset type unit tests', env => {
                 ERC20TokenEvents.Transfer,
             );
         });
+        it('noops (emits no events) for StaticCall assetData', async () => {
+            const txReceipt = await forwarder
+                .transferAssetToSender(staticCallAssetData, TRANSFER_AMOUNT)
+                .awaitTransactionSuccessAsync({ from: receiver });
+            expect(txReceipt.logs.length).to.equal(0);
+        });
         it('reverts if assetData is unsupported', async () => {
             const randomBytes = hexUtils.random();
             const tx = forwarder
@@ -177,6 +286,29 @@ blockchainTests('Supported asset type unit tests', env => {
                 hexUtils.slice(randomBytes, 0, 4),
             );
             return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('_noTakerFee', () => {
+        it('returns true if takerFee == 0 and takerFeeAssetData != StaticCall', async () => {
+            const result = await forwarder.noTakerFee(constants.ZERO_AMOUNT, erc20AssetData).callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns false if takerFee != 0 and takerFeeAssetData != StaticCall', async () => {
+            const result = await forwarder
+                .noTakerFee(getRandomInteger(1, constants.MAX_UINT256), erc20AssetData)
+                .callAsync();
+            expect(result).to.be.false();
+        });
+        it('returns true if takerFee == 0 and takerFeeAssetData == StaticCall', async () => {
+            const result = await forwarder.noTakerFee(constants.ZERO_AMOUNT, staticCallAssetData).callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns true if takerFee != 0 and takerFeeAssetData == StaticCall', async () => {
+            const result = await forwarder
+                .noTakerFee(getRandomInteger(1, constants.MAX_UINT256), staticCallAssetData)
+                .callAsync();
+            expect(result).to.be.true();
         });
     });
 });
