@@ -1,14 +1,10 @@
 [
     {
-        "version": "3.2.0",
+        "version": "3.1.1",
         "changes": [
             {
                 "note": "Added `DydxBridgeOnlyCallableByErc20BridgeProxy` and `DydxBridgeUnrecognizedBridgeAction`",
                 "pr": 2378
-            },
-            {
-                "note": "Add `ERC20BridgeAssetData`",
-                "pr": 2373
             }
         ]
     },
@@ -16,8 +12,8 @@
         "version": "3.1.0",
         "changes": [
             {
-                "note": "Add `OrderWithoutDomain` and `SignedOrderWithoutDomain` type",
-                "pr": 2353
+                "note": "Add `ERC20BridgeAssetData`",
+                "pr": 2373
             }
         ],
         "timestamp": 1575931811
