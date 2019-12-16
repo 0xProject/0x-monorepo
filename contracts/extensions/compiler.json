@@ -4,7 +4,7 @@
     "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {
-        "evmVersion": "constantinople",
+        "evmVersion": "istanbul",
         "optimizer": {
             "enabled": true,
             "runs": 1000000,
