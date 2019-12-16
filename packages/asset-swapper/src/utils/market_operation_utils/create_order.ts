@@ -106,22 +106,14 @@ function createBridgeOrder(
 ): SignedOrderWithFillableAmounts {
     return {
         makerAddress: bridgeAddress,
-        makerAssetData: createBridgeAssetData(makerToken, bridgeAddress, createBridgeData(takerToken)),
+        makerAssetData: assetDataUtils.encodeERC20BridgeAssetData(
+            makerToken,
+            bridgeAddress,
+            createBridgeData(takerToken),
+        ),
         takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
         ...createCommonOrderFields(orderDomain, makerAssetAmount, takerAssetAmount, slippage, isBuy),
     };
-}
-
-/**
- * Create ERC20Bridge asset data.
- */
-export function createBridgeAssetData(tokenAddress: string, bridgeAddress: string, bridgeData: string): string {
-    const encoder = AbiEncoder.createMethod('ERC20Bridge', [
-        { name: 'tokenAddress', type: 'address' },
-        { name: 'bridgeAddress', type: 'address' },
-        { name: 'bridgeData', type: 'bytes' },
-    ]);
-    return encoder.encode({ tokenAddress, bridgeAddress, bridgeData });
 }
 
 function createBridgeData(tokenAddress: string): string {

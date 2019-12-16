@@ -1,8 +1,9 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract, ERC20TokenContract, ForwarderContract } from '@0x/contract-wrappers';
+import { ERC20TokenContract, ForwarderContract } from '@0x/contract-wrappers';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
+import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
@@ -103,12 +104,11 @@ describe('ForwarderSwapQuoteConsumer', () => {
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         forwarderContract = new ForwarderContract(contractAddresses.forwarder, provider);
-        const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
-        [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
-            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
-        ]);
+        [makerAssetData, takerAssetData, wethAssetData] = [
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
+        ];
         // Configure order defaults
         const defaultOrderParams = {
             ...devConstants.STATIC_ORDER_PARAMS,

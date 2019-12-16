@@ -1,8 +1,9 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract, ERC20TokenContract, ExchangeContract } from '@0x/contract-wrappers';
+import { ERC20TokenContract, ExchangeContract } from '@0x/contract-wrappers';
 import { constants as devConstants, getLatestBlockTimestampAsync, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
+import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -33,7 +34,6 @@ describe('orderPrunerUtils', () => {
     let erc20MakerTokenContract: ERC20TokenContract;
     let erc20TakerTokenContract: ERC20TokenContract;
     let exchangeContract: ExchangeContract;
-    let devUtilsContract: DevUtilsContract;
     let userAddresses: string[];
     let coinbaseAddress: string;
     let makerAddress: string;
@@ -67,12 +67,11 @@ describe('orderPrunerUtils', () => {
         erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
-        devUtilsContract = new DevUtilsContract(contractAddresses.devUtils, provider);
 
         [makerAssetData, takerAssetData, wethAssetData] = [
-            await devUtilsContract.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            await devUtilsContract.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            await devUtilsContract.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
 
         // Configure order defaults

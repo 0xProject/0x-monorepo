@@ -1,8 +1,9 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract, ERC20TokenContract, ExchangeContract } from '@0x/contract-wrappers';
+import { ERC20TokenContract, ExchangeContract } from '@0x/contract-wrappers';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
+import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
@@ -104,12 +105,11 @@ describe('ExchangeSwapQuoteConsumer', () => {
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
-        const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
-        [makerAssetData, takerAssetData, wethAssetData] = await Promise.all([
-            devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
-        ]);
+        [makerAssetData, takerAssetData, wethAssetData] = [
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
+        ];
         erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);

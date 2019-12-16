@@ -3,6 +3,7 @@ import { DevUtilsContract, ERC20TokenContract, ExchangeContract } from '@0x/cont
 import { constants as devConstants, getLatestBlockTimestampAsync, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
+import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -40,7 +41,6 @@ describe('OrderStateUtils', () => {
     let erc20MakerTokenContract: ERC20TokenContract;
     let erc20TakerTokenContract: ERC20TokenContract;
     let exchangeContract: ExchangeContract;
-    let devUtilsContract: DevUtilsContract;
     let userAddresses: string[];
     let coinbaseAddress: string;
     let makerAddress: string;
@@ -77,12 +77,11 @@ describe('OrderStateUtils', () => {
         erc20MakerTokenContract = new ERC20TokenContract(makerTokenAddress, provider);
         erc20TakerTokenContract = new ERC20TokenContract(takerTokenAddress, provider);
         exchangeContract = new ExchangeContract(contractAddresses.exchange, provider);
-        devUtilsContract = new DevUtilsContract(contractAddresses.devUtils, provider);
 
         [makerAssetData, takerAssetData, wethAssetData] = [
-            await devUtilsContract.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            await devUtilsContract.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            await devUtilsContract.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
 
         // Configure order defaults
@@ -212,7 +211,7 @@ describe('OrderStateUtils', () => {
                 value: PROTOCOL_FEE_PER_FILL,
             });
 
-        orderStateUtils = new OrderStateUtils(devUtilsContract);
+        orderStateUtils = new OrderStateUtils(new DevUtilsContract(contractAddresses.devUtils, provider));
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();

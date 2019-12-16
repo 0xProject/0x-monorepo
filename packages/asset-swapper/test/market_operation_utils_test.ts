@@ -16,7 +16,6 @@ import * as _ from 'lodash';
 
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
-import { createBridgeAssetData } from '../src/utils/market_operation_utils/create_order';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
@@ -401,7 +400,11 @@ describe('MarketOperationUtils tests', () => {
                 for (const order of improvedOrders) {
                     expect(getSourceFromAssetData(order.makerAssetData)).to.exist('');
                     const makerAssetDataPrefix = hexUtils.slice(
-                        createBridgeAssetData(MAKER_TOKEN, constants.NULL_ADDRESS, constants.NULL_BYTES),
+                        assetDataUtils.encodeERC20BridgeAssetData(
+                            MAKER_TOKEN,
+                            constants.NULL_ADDRESS,
+                            constants.NULL_BYTES,
+                        ),
                         0,
                         36,
                     );
@@ -646,7 +649,11 @@ describe('MarketOperationUtils tests', () => {
                 for (const order of improvedOrders) {
                     expect(getSourceFromAssetData(order.makerAssetData)).to.exist('');
                     const makerAssetDataPrefix = hexUtils.slice(
-                        createBridgeAssetData(MAKER_TOKEN, constants.NULL_ADDRESS, constants.NULL_BYTES),
+                        assetDataUtils.encodeERC20BridgeAssetData(
+                            MAKER_TOKEN,
+                            constants.NULL_ADDRESS,
+                            constants.NULL_BYTES,
+                        ),
                         0,
                         36,
                     );
