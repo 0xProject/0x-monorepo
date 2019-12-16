@@ -38,7 +38,7 @@
         "prettier_contract_wrappers": "prettier --write ./test-cli/output/typescript/* --config ../../.prettierrc",
         "generate_contract_wrappers": "run-p gen_typescript gen_python",
         "gen_typescript": "abi-gen --abis ${npm_package_config_abis} --debug --output ./test-cli/output/typescript --backend ethers",
-        "gen_python": "pip install black && abi-gen --abis  ${npm_package_config_abis} --output ./test-cli/output/python --language Python",
+        "gen_python": "pip install regex==2019.11.1 && pip install black && abi-gen --abis  ${npm_package_config_abis} --output ./test-cli/output/python --language Python",
         "diff_contract_wrappers": "git diff --exit-code ./test-cli/output",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
