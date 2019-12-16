@@ -13,7 +13,7 @@ import { ExtensionContractType, MarketOperation, SignedOrderWithFillableAmounts 
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -176,7 +176,7 @@ describe('swapQuoteConsumerUtils', () => {
                 largeForwarderOrders.push(prunedOrder as SignedOrderWithFillableAmounts);
             }
 
-            forwarderSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+            forwarderSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
                 makerAssetData,
                 wethAssetData,
                 forwarderOrders,
@@ -185,7 +185,7 @@ describe('swapQuoteConsumerUtils', () => {
                 protocolFeeUtils,
             );
 
-            largeForwarderSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+            largeForwarderSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
                 makerAssetData,
                 wethAssetData,
                 largeForwarderOrders,
@@ -194,7 +194,7 @@ describe('swapQuoteConsumerUtils', () => {
                 protocolFeeUtils,
             );
 
-            exchangeSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+            exchangeSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
                 makerAssetData,
                 takerAssetData,
                 exchangeOrders,

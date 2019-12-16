@@ -20,7 +20,7 @@ import {
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -179,7 +179,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
             invalidOrders.push(prunedOrder as SignedOrderWithFillableAmounts);
         }
 
-        marketSellSwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketSellSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             wethAssetData,
             orders,
@@ -188,7 +188,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
             protocolFeeUtils,
         );
 
-        marketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             wethAssetData,
             orders,
@@ -197,7 +197,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
             protocolFeeUtils,
         );
 
-        invalidMarketBuySwapQuote = getFullyFillableSwapQuoteWithNoFees(
+        invalidMarketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
             makerAssetData,
             takerAssetData,
             invalidOrders,

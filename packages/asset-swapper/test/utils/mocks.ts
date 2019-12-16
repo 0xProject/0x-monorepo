@@ -16,15 +16,15 @@ const PROTOCOL_FEE_MULTIPLIER = 150000;
 class OrderbookClass extends Orderbook {
     // tslint:disable-next-line:prefer-function-over-method
     public async getOrdersAsync(_makerAssetData: string, _takerAssetData: string): Promise<APIOrder[]> {
-        return Promise.resolve([]);
+        return [];
     }
     // tslint:disable-next-line:prefer-function-over-method
     public async getAvailableAssetDatasAsync(): Promise<AssetPairsItem[]> {
-        return Promise.resolve([]);
+        return [];
     }
     // tslint:disable-next-line:prefer-function-over-method
     public async addOrdersAsync(_orders: SignedOrder[]): Promise<AcceptedRejectedOrders> {
-        return Promise.resolve({ accepted: [], rejected: [] });
+        return { accepted: [], rejected: [] };
     }
 }
 export const orderbookMock = () => {
@@ -37,7 +37,7 @@ export const mockAvailableAssetDatas = (
 ) => {
     mockOrderbook
         .setup(async op => op.getAvailableAssetDatasAsync())
-        .returns(async () => Promise.resolve(availableAssetDatas))
+        .returns(async () => availableAssetDatas)
         .verifiable(TypeMoq.Times.once());
     mockOrderbook
         .setup(o => (o as any)._orderProvider)
@@ -58,12 +58,12 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
 
 class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
     // tslint:disable-next-line:prefer-function-over-method
-    public getProtocolFeeMultiplier(): BigNumber {
+    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
         return new BigNumber(PROTOCOL_FEE_MULTIPLIER);
     }
     // tslint:disable-next-line:prefer-function-over-method
     public async getGasPriceEstimationOrThrowAsync(_shouldHardRefresh?: boolean): Promise<BigNumber> {
-        return Promise.resolve(new BigNumber(devConstants.DEFAULT_GAS_PRICE));
+        return new BigNumber(devConstants.DEFAULT_GAS_PRICE);
     }
 }
 
@@ -81,7 +81,7 @@ const mockGetSignedOrdersWithFillableAmountsAsyncAsync = (
 ): void => {
     mockedSwapQuoter
         .setup(async a => a.getSignedOrdersWithFillableAmountsAsync(makerAssetData, takerAssetData))
-        .returns(async () => Promise.resolve(signedOrders))
+        .returns(async () => signedOrders)
         .verifiable(TypeMoq.Times.once());
 };
 

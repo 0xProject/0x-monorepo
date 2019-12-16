@@ -94,10 +94,15 @@ export class SwapQuoteCalculator {
         const takerAssetData = resultOrders[0].takerAssetData;
         const makerAssetData = resultOrders[0].makerAssetData;
 
-        const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(resultOrders, assetFillAmount, gasPrice, operation);
+        const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
+            resultOrders,
+            assetFillAmount,
+            gasPrice,
+            operation,
+        );
         // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
         const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
-            _.reverse(_.clone(resultOrders)),
+            _.reverse(resultOrders.slice()),
             assetFillAmount,
             gasPrice,
             operation,
@@ -146,8 +151,7 @@ export class SwapQuoteCalculator {
         takerAssetSellAmount: BigNumber,
         gasPrice: BigNumber,
     ): Promise<SwapQuoteInfo> {
-        const result = _.reduce(
-            prunedOrders,
+        const result = prunedOrders.reduce(
             (acc, order) => {
                 const {
                     totalMakerAssetAmount,
@@ -190,7 +194,10 @@ export class SwapQuoteCalculator {
                 remainingTakerAssetFillAmount: takerAssetSellAmount,
             },
         );
-        const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
+        const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(
+            prunedOrders,
+            gasPrice,
+        );
         return {
             feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
             takerAssetAmount: result.totalTakerAssetAmount,
@@ -205,8 +212,7 @@ export class SwapQuoteCalculator {
         makerAssetBuyAmount: BigNumber,
         gasPrice: BigNumber,
     ): Promise<SwapQuoteInfo> {
-        const result = _.reduce(
-            prunedOrders,
+        const result = prunedOrders.reduce(
             (acc, order) => {
                 const {
                     totalMakerAssetAmount,
@@ -247,7 +253,10 @@ export class SwapQuoteCalculator {
                 remainingMakerAssetFillAmount: makerAssetBuyAmount,
             },
         );
-        const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
+        const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(
+            prunedOrders,
+            gasPrice,
+        );
         return {
             feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
             takerAssetAmount: result.totalTakerAssetAmount,

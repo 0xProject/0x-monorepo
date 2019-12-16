@@ -18,7 +18,7 @@ export class ProtocolFeeUtils {
     // TODO(dave4506) at some point, we should add a heart beat to the multiplier, or some RPC call to fetch latest multiplier.
     // tslint:disable-next-line:prefer-function-over-method
     public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        return Promise.resolve(constants.PROTOCOL_FEE_MULTIPLIER);
+        return constants.PROTOCOL_FEE_MULTIPLIER;
     }
 
     // tslint:disable-next-line: prefer-function-over-method
@@ -26,7 +26,7 @@ export class ProtocolFeeUtils {
         if (shouldHardRefresh) {
             return this._getGasPriceFromGasStationOrThrowAsync();
         } else {
-            return Promise.resolve(this.gasPriceEstimation);
+            return this.gasPriceEstimation;
         }
     }
 
@@ -35,13 +35,15 @@ export class ProtocolFeeUtils {
      */
     public async destroyAsync(): Promise<void> {
         this._gasPriceHeart.kill();
-        return Promise.resolve();
     }
 
     /**
      * Calculates protocol fee with protofol fee multiplier for each fill.
      */
-    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(orders: T[], gasPrice: BigNumber): Promise<BigNumber> {
+    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(
+        orders: T[],
+        gasPrice: BigNumber,
+    ): Promise<BigNumber> {
         const protocolFeeMultiplier = await this.getProtocolFeeMultiplierAsync();
         const protocolFee = new BigNumber(orders.length).times(protocolFeeMultiplier).times(gasPrice);
         return protocolFee;
