@@ -11,7 +11,7 @@ import {
 import { CoordinatorContract, CoordinatorRegistryContract } from '@0x/contracts-coordinator';
 import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155MintableContract } from '@0x/contracts-erc1155';
-import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
+import { artifacts as ERC20Artifacts, DummyERC20TokenContract, MintableNonCompliantERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
@@ -244,6 +244,14 @@ export async function runMigrationsAsync(
         artifacts,
         exchange.address,
         etherToken.address,
+    );
+
+    // tslint:disable-next-line:no-unused-variable
+    const mintableNonCompliantErc20Token = await MintableNonCompliantERC20TokenContract.deployFrom0xArtifactAsync(
+        ERC20Artifacts.MintableNonCompliantERC20Token,
+        provider,
+        txDefaults,
+        {},
     );
 
     const contractAddresses = {

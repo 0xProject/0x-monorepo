@@ -13,6 +13,7 @@ export {
     ERC20TokenTransferEventArgs,
     ERC20TokenApprovalEventArgs,
     ERC20TokenContract,
+    MintableNonCompliantERC20TokenContract,
 } from './wrappers';
 export { artifacts } from './artifacts';
 export {

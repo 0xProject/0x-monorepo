@@ -18,17 +18,40 @@
 
 pragma solidity ^0.5.9;
 
-import "./interfaces/INonCompliantERC20Token.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "./interfaces/IMintableNonCompliantERC20Token.sol";
 
 
-contract NonCompliantERC20Token is
-    INonCompliantERC20Token
+contract MintableNonCompliantERC20Token is
+    IMintableNonCompliantERC20Token
 {
+    using LibSafeMath for uint256;
+
     mapping (address => uint256) internal balances;
     mapping (address => mapping (address => uint256)) internal allowed;
 
     uint256 internal _totalSupply;
 
+    /// @dev Mints new tokens
+    /// @param _to Address of the beneficiary that will own the minted token
+    /// @param _value Amount of tokens to mint
+    function _mint(address _to, uint256 _value)
+        internal
+    {
+        balances[_to] = _value.safeAdd(balances[_to]);
+        _totalSupply = _totalSupply.safeAdd(_value);
+    }
+
+    /// @dev Mints new tokens
+    /// @param _owner Owner of tokens that will be burned
+    /// @param _value Amount of tokens to burn
+    function _burn(address _owner, uint256 _value)
+        internal
+    {
+        balances[_owner] = balances[_owner].safeSub(_value);
+        _totalSupply = _totalSupply.safeSub(_value);
+    }
+    
     /// @dev send `value` token to `to` from `msg.sender`
     /// @param _to The address of the recipient
     /// @param _value The amount of token to be transferred

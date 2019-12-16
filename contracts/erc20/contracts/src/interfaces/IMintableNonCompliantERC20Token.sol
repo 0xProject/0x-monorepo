@@ -19,7 +19,19 @@
 pragma solidity ^0.5.9;
 
 
-contract INonCompliantERC20Token {
+contract IMintableNonCompliantERC20Token {
+
+    /// @dev Mints new tokens
+    /// @param _to Address of the beneficiary that will own the minted token
+    /// @param _value Amount of tokens to mint
+    function _mint(address _to, uint256 _value)
+        internal;
+
+    /// @dev Mints new tokens
+    /// @param _owner Owner of tokens that will be burned
+    /// @param _value Amount of tokens to burn
+    function _burn(address _owner, uint256 _value)
+        internal;
 
     /// @dev send `value` token to `to` from `msg.sender`
     /// @param _to The address of the recipient

@@ -11,10 +11,10 @@ import * as DummyNoReturnERC20Token from '../test/generated-artifacts/DummyNoRet
 import * as ERC20Token from '../test/generated-artifacts/ERC20Token.json';
 import * as IERC20Token from '../test/generated-artifacts/IERC20Token.json';
 import * as IEtherToken from '../test/generated-artifacts/IEtherToken.json';
-import * as INonCompliantERC20Token from '../test/generated-artifacts/INonCompliantERC20Token.json';
+import * as IMintableNonCompliantERC20Token from '../test/generated-artifacts/IMintableNonCompliantERC20Token.json';
 import * as LibERC20Token from '../test/generated-artifacts/LibERC20Token.json';
 import * as MintableERC20Token from '../test/generated-artifacts/MintableERC20Token.json';
-import * as NonCompliantERC20Token from '../test/generated-artifacts/NonCompliantERC20Token.json';
+import * as MintableNonCompliantERC20Token from '../test/generated-artifacts/MintableNonCompliantERC20Token.json';
 import * as TestLibERC20Token from '../test/generated-artifacts/TestLibERC20Token.json';
 import * as TestLibERC20TokenTarget from '../test/generated-artifacts/TestLibERC20TokenTarget.json';
 import * as UnlimitedAllowanceERC20Token from '../test/generated-artifacts/UnlimitedAllowanceERC20Token.json';
@@ -25,13 +25,13 @@ export const artifacts = {
     ERC20Token: ERC20Token as ContractArtifact,
     LibERC20Token: LibERC20Token as ContractArtifact,
     MintableERC20Token: MintableERC20Token as ContractArtifact,
-    NonCompliantERC20Token: NonCompliantERC20Token as ContractArtifact,
+    MintableNonCompliantERC20Token: MintableNonCompliantERC20Token as ContractArtifact,
     UnlimitedAllowanceERC20Token: UnlimitedAllowanceERC20Token as ContractArtifact,
     WETH9: WETH9 as ContractArtifact,
     ZRXToken: (ZRXToken as any) as ContractArtifact,
     IERC20Token: IERC20Token as ContractArtifact,
     IEtherToken: IEtherToken as ContractArtifact,
-    INonCompliantERC20Token: INonCompliantERC20Token as ContractArtifact,
+    IMintableNonCompliantERC20Token: IMintableNonCompliantERC20Token as ContractArtifact,
     DummyERC20Token: DummyERC20Token as ContractArtifact,
     DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,
     DummyNoReturnERC20Token: DummyNoReturnERC20Token as ContractArtifact,
