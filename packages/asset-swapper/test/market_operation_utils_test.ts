@@ -7,23 +7,18 @@ import {
     getRandomInteger,
     Numberish,
     randomAddress,
-    shortZip,
 } from '@0x/contracts-test-utils';
 
-import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
-
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
-
-import { createBridgeAssetData, createERC20AssetData } from '../src/utils/market_operation_utils/create_order';
-
-import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
-
+import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
+import { createBridgeAssetData } from '../src/utils/market_operation_utils/create_order';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
+import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
 import { MockSamplerContract, QueryAndSampleResult } from './utils/mock_sampler_contract';
 
@@ -40,8 +35,12 @@ describe('MarketOperationUtils tests', () => {
 
     const MAKER_TOKEN = randomAddress();
     const TAKER_TOKEN = randomAddress();
-    const MAKER_ASSET_DATA = createERC20AssetData(MAKER_TOKEN);
-    const TAKER_ASSET_DATA = createERC20AssetData(TAKER_TOKEN);
+    const MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
+    const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
+
+    interface RatesBySource {
+        [source: string]: Numberish[];
+    }
 
     function createOrder(overrides?: Partial<SignedOrder>): SignedOrder {
         return {
@@ -55,8 +54,8 @@ describe('MarketOperationUtils tests', () => {
             expirationTimeSeconds: getRandomInteger(0, 2 ** 64),
             makerAssetData: MAKER_ASSET_DATA,
             takerAssetData: TAKER_ASSET_DATA,
-            makerFeeAssetData: createERC20AssetData(randomAddress()),
-            takerFeeAssetData: createERC20AssetData(randomAddress()),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
             makerAssetAmount: getRandomInteger(1, 1e18),
             takerAssetAmount: getRandomInteger(1, 1e18),
             makerFee: getRandomInteger(1, 1e17),
@@ -87,7 +86,7 @@ describe('MarketOperationUtils tests', () => {
     function getSourceFromAddress(sourceAddress: string): ERC20BridgeSource {
         for (const k of Object.keys(SOURCE_TO_ADDRESS)) {
             if (SOURCE_TO_ADDRESS[k].toLowerCase() === sourceAddress.toLowerCase()) {
-                return parseInt(k, 10) as ERC20BridgeSource;
+                return k as ERC20BridgeSource;
             }
         }
         throw new Error(`Unknown source address: ${sourceAddress}`);
@@ -117,29 +116,31 @@ describe('MarketOperationUtils tests', () => {
         );
     }
 
-    function createSamplerFromSellRates(rates: Numberish[][]): MockSamplerContract {
+    function createSamplerFromSellRates(rates: RatesBySource): MockSamplerContract {
         return new MockSamplerContract({
-            queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => [
-                orders.map(o => o.takerAssetAmount),
-                sources.map(s =>
-                    shortZip(fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
-                        f.times(r).integerValue(BigNumber.ROUND_UP),
+            queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => {
+                const fillableTakerAssetAmounts = orders.map(o => o.takerAssetAmount);
+                const samplesBySourceIndex = sources.map(s =>
+                    fillAmounts.map((fillAmount, idx) =>
+                        fillAmount.times(rates[getSourceFromAddress(s)][idx]).integerValue(BigNumber.ROUND_UP),
                     ),
-                ),
-            ],
+                );
+                return [fillableTakerAssetAmounts, samplesBySourceIndex];
+            },
         });
     }
 
-    function createSamplerFromBuyRates(rates: Numberish[][]): MockSamplerContract {
+    function createSamplerFromBuyRates(rates: RatesBySource): MockSamplerContract {
         return new MockSamplerContract({
-            queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => [
-                orders.map(o => o.makerAssetAmount),
-                sources.map(s =>
-                    shortZip(fillAmounts, rates[getSourceFromAddress(s)]).map(([f, r]) =>
-                        f.div(r).integerValue(BigNumber.ROUND_UP),
+            queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => {
+                const fillableMakerAssetAmounts = orders.map(o => o.makerAssetAmount);
+                const samplesBySourceIndex = sources.map(s =>
+                    fillAmounts.map((fillAmount, idx) =>
+                        fillAmount.div(rates[getSourceFromAddress(s)][idx]).integerValue(BigNumber.ROUND_UP),
                     ),
-                ),
-            ],
+                );
+                return [fillableMakerAssetAmounts, samplesBySourceIndex];
+            },
         });
     }
 
@@ -284,15 +285,28 @@ describe('MarketOperationUtils tests', () => {
         });
     });
 
+    function createRandomRates(numSamples: number = 32): RatesBySource {
+        const ALL_SOURCES = [
+            ERC20BridgeSource.Native,
+            ERC20BridgeSource.Eth2Dai,
+            ERC20BridgeSource.Kyber,
+            ERC20BridgeSource.Uniswap,
+        ];
+        return _.zipObject(
+            ALL_SOURCES,
+            _.times(ALL_SOURCES.length, () => _.fill(new Array(numSamples), getRandomFloat(1e-3, 2))),
+        );
+    }
+
     describe('MarketOperationUtils', () => {
         describe('getMarketSellOrdersAsync()', () => {
             const FILL_AMOUNT = getRandomInteger(1, 1e18);
-            const SOURCE_RATES = _.times(ERC20BridgeSource.NumSources, () => getRandomFloat(1e-3, 2));
+            const SOURCE_RATES = createRandomRates();
             const ORDERS = createOrdersFromSellRates(
                 FILL_AMOUNT,
-                _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native]),
+                _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native][0]),
             );
-            const DEFAULT_SAMPLER = createSamplerFromSellRates(SOURCE_RATES.map(r => _.times(32, () => r)));
+            const DEFAULT_SAMPLER = createSamplerFromSellRates(SOURCE_RATES);
             const DEFAULT_OPTS = { numSamples: 3, runLimit: 0 };
             const defaultMarketOperationUtils = new MarketOperationUtils(
                 DEFAULT_SAMPLER,
@@ -364,8 +378,8 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {
-                const bestRate = BigNumber.max(...SOURCE_RATES);
-                const bestSource = _.findIndex(SOURCE_RATES, n => n.eq(bestRate)) as ERC20BridgeSource;
+                const bestRate = BigNumber.max(..._.flatten(Object.values(SOURCE_RATES)));
+                const bestSource = _.findKey(SOURCE_RATES, ([r]) => new BigNumber(r).eq(bestRate));
                 expect(bestSource).to.exist('');
                 const improvedOrders = await defaultMarketOperationUtils.getMarketSellOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -418,7 +432,7 @@ describe('MarketOperationUtils tests', () => {
                 expect(improvedOrders).to.not.be.length(0);
                 for (const order of improvedOrders) {
                     const source = getSourceFromAssetData(order.makerAssetData);
-                    const expectedMakerAmount = FILL_AMOUNT.times(SOURCE_RATES[source]);
+                    const expectedMakerAmount = FILL_AMOUNT.times(SOURCE_RATES[source][0]);
                     const slippage = 1 - order.makerAssetAmount.div(expectedMakerAmount.plus(1)).toNumber();
                     assertRoughlyEquals(slippage, bridgeSlippage, 8);
                 }
@@ -446,7 +460,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('can mix convex sources', async () => {
-                const rates: number[][] = [];
+                const rates: RatesBySource = {};
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
@@ -459,7 +473,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512 },
+                    { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512, noConflicts: false },
                 );
                 expect(improvedOrders).to.be.length(4);
                 const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData)).sort();
@@ -473,7 +487,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('excludes Kyber when `noConflicts` enabled and Uniswap or Eth2Dai are used first', async () => {
-                const rates: number[][] = [];
+                const rates: RatesBySource = {};
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
@@ -500,7 +514,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('excludes Uniswap and Eth2Dai when `noConflicts` enabled and Kyber is used first', async () => {
-                const rates: number[][] = [];
+                const rates: RatesBySource = {};
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.15, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.15, 0.05, 0.05, 0.05];
@@ -529,12 +543,12 @@ describe('MarketOperationUtils tests', () => {
 
         describe('getMarketBuyOrdersAsync()', () => {
             const FILL_AMOUNT = getRandomInteger(1, 1e18);
-            const SOURCE_RATES = _.times(ERC20BridgeSource.NumSources, () => getRandomFloat(1e-3, 2));
+            const SOURCE_RATES = _.omit(createRandomRates(), [ERC20BridgeSource.Kyber]);
             const ORDERS = createOrdersFromBuyRates(
                 FILL_AMOUNT,
-                _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native]),
+                _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native][0]),
             );
-            const DEFAULT_SAMPLER = createSamplerFromBuyRates(SOURCE_RATES.map(r => _.times(32, () => r)));
+            const DEFAULT_SAMPLER = createSamplerFromBuyRates(SOURCE_RATES);
             const DEFAULT_OPTS = { numSamples: 3, runLimit: 0 };
             const defaultMarketOperationUtils = new MarketOperationUtils(
                 DEFAULT_SAMPLER,
@@ -610,9 +624,8 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {
-                const validSources = [ERC20BridgeSource.Native, ...BUY_SOURCES];
-                const bestRate = BigNumber.max(...SOURCE_RATES.filter((r, i) => validSources.includes(i)));
-                const bestSource = _.findIndex(SOURCE_RATES, n => n.eq(bestRate)) as ERC20BridgeSource;
+                const bestRate = BigNumber.max(..._.flatten(Object.values(SOURCE_RATES)));
+                const bestSource = _.findKey(SOURCE_RATES, ([r]) => new BigNumber(r).eq(bestRate));
                 expect(bestSource).to.exist('');
                 const improvedOrders = await defaultMarketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -664,7 +677,9 @@ describe('MarketOperationUtils tests', () => {
                 expect(improvedOrders).to.not.be.length(0);
                 for (const order of improvedOrders) {
                     const source = getSourceFromAssetData(order.makerAssetData);
-                    const expectedTakerAmount = FILL_AMOUNT.div(SOURCE_RATES[source]).integerValue(BigNumber.ROUND_UP);
+                    const expectedTakerAmount = FILL_AMOUNT.div(SOURCE_RATES[source][0]).integerValue(
+                        BigNumber.ROUND_UP,
+                    );
                     const slippage = order.takerAssetAmount.div(expectedTakerAmount.plus(1)).toNumber() - 1;
                     assertRoughlyEquals(slippage, bridgeSlippage, 8);
                 }
@@ -692,7 +707,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('can mix convex sources', async () => {
-                const rates: number[][] = [];
+                const rates: RatesBySource = {};
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];

@@ -1,8 +1,8 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
-import { orderCalculationUtils } from '@0x/order-utils';
+import { assetDataUtils, ERC20AssetData, orderCalculationUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { AbiEncoder, BigNumber } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
@@ -24,7 +24,7 @@ import {
 } from './types';
 
 const { ZERO_AMOUNT } = constants;
-const { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_SOURCES } = marketOperationUtilConstants;
+const { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_SOURCES } = marketOperationUtilConstants;
 
 export class MarketOperationUtils {
     private readonly _dexSampler: DexOrderSampler;
@@ -383,8 +383,14 @@ function sortFillsByPrice(fills: Fill[]): Fill[] {
 }
 
 function getOrderTokens(order: SignedOrder): [string, string] {
-    const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
-    return [encoder.strictDecode(order.makerAssetData), encoder.strictDecode(order.takerAssetData)];
+    const assets = [order.makerAssetData, order.takerAssetData].map(a => assetDataUtils.decodeAssetDataOrThrow(a)) as [
+        ERC20AssetData,
+        ERC20AssetData
+    ];
+    if (assets.some(a => a.assetProxyId !== ERC20_PROXY_ID)) {
+        throw new Error(AggregationError.NotERC20AssetData);
+    }
+    return assets.map(a => a.tokenAddress) as [string, string];
 }
 
 function clipPathToInput(path: Fill[], assetAmount: BigNumber): Fill[] {

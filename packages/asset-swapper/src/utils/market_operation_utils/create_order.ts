@@ -1,15 +1,15 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 import { SignedOrderWithFillableAmounts } from '../../types';
 
 import { constants as marketOperationUtilConstants } from './constants';
-import { ERC20BridgeSource, Fill, FillData, NativeFillData, OrderDomain } from './types';
+import { AggregationError, ERC20BridgeSource, Fill, FillData, NativeFillData, OrderDomain } from './types';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
-const { INFINITE_TIMESTAMP_SEC } = marketOperationUtilConstants;
+const { INFINITE_TIMESTAMP_SEC, WALLET_SIGNATURE } = marketOperationUtilConstants;
 
 export class CreateOrderUtils {
     private readonly _contractAddress: ContractAddresses;
@@ -31,41 +31,18 @@ export class CreateOrderUtils {
             const source = (fill.fillData as FillData).source;
             if (source === ERC20BridgeSource.Native) {
                 orders.push((fill.fillData as NativeFillData).order);
-            } else if (source === ERC20BridgeSource.Kyber) {
-                orders.push(
-                    this._createKyberOrder(
-                        orderDomain,
-                        outputToken,
-                        inputToken,
-                        fill.output,
-                        fill.input,
-                        bridgeSlippage,
-                    ),
-                );
-            } else if (source === ERC20BridgeSource.Eth2Dai) {
-                orders.push(
-                    this._createEth2DaiOrder(
-                        orderDomain,
-                        outputToken,
-                        inputToken,
-                        fill.output,
-                        fill.input,
-                        bridgeSlippage,
-                    ),
-                );
-            } else if (source === ERC20BridgeSource.Uniswap) {
-                orders.push(
-                    this._createUniswapOrder(
-                        orderDomain,
-                        outputToken,
-                        inputToken,
-                        fill.output,
-                        fill.input,
-                        bridgeSlippage,
-                    ),
-                );
             } else {
-                throw new Error(`invalid sell fill source: ${source}`);
+                orders.push(
+                    createBridgeOrder(
+                        orderDomain,
+                        this._getBridgeAddressFromSource(source),
+                        outputToken,
+                        inputToken,
+                        fill.output,
+                        fill.input,
+                        bridgeSlippage,
+                    ),
+                );
             }
         }
         return orders;
@@ -84,98 +61,36 @@ export class CreateOrderUtils {
             const source = (fill.fillData as FillData).source;
             if (source === ERC20BridgeSource.Native) {
                 orders.push((fill.fillData as NativeFillData).order);
-            } else if (source === ERC20BridgeSource.Eth2Dai) {
-                orders.push(
-                    this._createEth2DaiOrder(
-                        orderDomain,
-                        inputToken,
-                        outputToken,
-                        fill.input,
-                        fill.output,
-                        bridgeSlippage,
-                        true,
-                    ),
-                );
-            } else if (source === ERC20BridgeSource.Uniswap) {
-                orders.push(
-                    this._createUniswapOrder(
-                        orderDomain,
-                        inputToken,
-                        outputToken,
-                        fill.input,
-                        fill.output,
-                        bridgeSlippage,
-                        true,
-                    ),
-                );
             } else {
-                throw new Error(`invalid buy fill source: ${source}`);
+                orders.push(
+                    createBridgeOrder(
+                        orderDomain,
+                        this._getBridgeAddressFromSource(source),
+                        inputToken,
+                        outputToken,
+                        fill.input,
+                        fill.output,
+                        bridgeSlippage,
+                        true,
+                    ),
+                );
             }
         }
         return orders;
     }
 
-    private _createKyberOrder(
-        orderDomain: OrderDomain,
-        makerToken: string,
-        takerToken: string,
-        makerAssetAmount: BigNumber,
-        takerAssetAmount: BigNumber,
-        slippage: number,
-        isBuy: boolean = false,
-    ): SignedOrderWithFillableAmounts {
-        return createBridgeOrder(
-            orderDomain,
-            this._contractAddress.kyberBridge,
-            makerToken,
-            takerToken,
-            makerAssetAmount,
-            takerAssetAmount,
-            slippage,
-            isBuy,
-        );
-    }
-
-    private _createEth2DaiOrder(
-        orderDomain: OrderDomain,
-        makerToken: string,
-        takerToken: string,
-        makerAssetAmount: BigNumber,
-        takerAssetAmount: BigNumber,
-        slippage: number,
-        isBuy: boolean = false,
-    ): SignedOrderWithFillableAmounts {
-        return createBridgeOrder(
-            orderDomain,
-            this._contractAddress.eth2DaiBridge,
-            makerToken,
-            takerToken,
-            makerAssetAmount,
-            takerAssetAmount,
-            slippage,
-            isBuy,
-        );
-    }
-
-    private _createUniswapOrder(
-        orderDomain: OrderDomain,
-        makerToken: string,
-        takerToken: string,
-        makerAssetAmount: BigNumber,
-        takerAssetAmount: BigNumber,
-        slippage: number,
-        isBuy: boolean = false,
-    ): SignedOrderWithFillableAmounts {
-        return createBridgeOrder(
-            orderDomain,
-            this._contractAddress.uniswapBridge,
-            makerToken,
-            takerToken,
-            makerAssetAmount,
-            takerAssetAmount,
-            slippage,
-            isBuy,
-        );
+    private _getBridgeAddressFromSource(source: ERC20BridgeSource): string {
+        switch (source) {
+            case ERC20BridgeSource.Eth2Dai:
+                return this._contractAddress.eth2DaiBridge;
+            case ERC20BridgeSource.Kyber:
+                return this._contractAddress.kyberBridge;
+            case ERC20BridgeSource.Uniswap:
+                return this._contractAddress.uniswapBridge;
+            default:
+                break;
+        }
+        throw new Error(AggregationError.NoBridgeForSource);
     }
 }
 
@@ -192,7 +107,7 @@ function createBridgeOrder(
     return {
         makerAddress: bridgeAddress,
         makerAssetData: createBridgeAssetData(makerToken, bridgeAddress, createBridgeData(takerToken)),
-        takerAssetData: createERC20AssetData(takerToken),
+        takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
         ...createCommonOrderFields(orderDomain, makerAssetAmount, takerAssetAmount, slippage, isBuy),
     };
 }
@@ -207,14 +122,6 @@ export function createBridgeAssetData(tokenAddress: string, bridgeAddress: strin
         { name: 'bridgeData', type: 'bytes' },
     ]);
     return encoder.encode({ tokenAddress, bridgeAddress, bridgeData });
-}
-
-/**
- * Create ERC20Proxy asset data.
- */
-export function createERC20AssetData(tokenAddress: string): string {
-    const encoder = AbiEncoder.createMethod('ERC20Token', [{ name: 'tokenAddress', type: 'address' }]);
-    return encoder.encode({ tokenAddress });
 }
 
 function createBridgeData(tokenAddress: string): string {
@@ -255,7 +162,7 @@ function createCommonOrderFields(
         takerAssetAmount: takerAssetAmountAdjustedWithSlippage,
         fillableTakerAssetAmount: takerAssetAmountAdjustedWithSlippage,
         fillableTakerFeeAmount: ZERO_AMOUNT,
-        signature: '0x04',
+        signature: WALLET_SIGNATURE,
         ...orderDomain,
     };
 }

@@ -14,19 +14,20 @@ export interface OrderDomain {
  * Common exception messages thrown by aggregation logic.
  */
 export enum AggregationError {
-    NoOptimalPath = 'no optimal path',
-    EmptyOrders = 'empty orders',
+    NoOptimalPath = 'NO_OPTIMAL_PATH',
+    EmptyOrders = 'EMPTY_ORDERS',
+    NotERC20AssetData = 'NOT_ERC20ASSET_DATA',
+    NoBridgeForSource = 'NO_BRIDGE_FOR_SOURCE',
 }
 
 /**
  * DEX sources to aggregate.
  */
 export enum ERC20BridgeSource {
-    Native,
-    Uniswap,
-    Eth2Dai,
-    Kyber,
-    NumSources,
+    Native = 'Native',
+    Uniswap = 'Uniswap',
+    Eth2Dai = 'Eth2Dai',
+    Kyber = 'Kyber',
 }
 
 // Internal `fillData` field for `Fill` objects.

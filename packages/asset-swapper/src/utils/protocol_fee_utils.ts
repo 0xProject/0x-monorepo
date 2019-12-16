@@ -1,7 +1,6 @@
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as heartbeats from 'heartbeats';
-import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { SwapQuoterError } from '../types';

@@ -1,7 +1,6 @@
 import { DevUtilsContract } from '@0x/contract-wrappers';
 import { orderCalculationUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
-import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { OrderPrunerOnChainMetadata, SignedOrderWithFillableAmounts } from '../types';
@@ -19,7 +18,7 @@ export class OrderStateUtils {
     public async getSignedOrdersWithFillableAmountsAsync(
         signedOrders: SignedOrder[],
     ): Promise<SignedOrderWithFillableAmounts[]> {
-        const signatures = _.map(signedOrders, o => o.signature);
+        const signatures = signedOrders.map(o => o.signature);
         const [ordersInfo, fillableTakerAssetAmounts, isValidSignatures] = await this._devUtils
             .getOrderRelevantStates(signedOrders, signatures)
             .callAsync();

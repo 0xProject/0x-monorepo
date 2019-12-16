@@ -480,7 +480,6 @@ export class SwapQuoter {
                     makerAssetData,
                     takerAssetData,
                     this._contractAddresses.uniswapBridge,
-                    '0x04',
                 ),
             ];
         }
