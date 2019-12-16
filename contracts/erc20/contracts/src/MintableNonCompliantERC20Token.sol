@@ -42,7 +42,7 @@ contract MintableNonCompliantERC20Token is
         _totalSupply = _totalSupply.safeAdd(_value);
     }
 
-    /// @dev Mints new tokens
+    /// @dev Burns existing tokens
     /// @param _owner Owner of tokens that will be burned
     /// @param _value Amount of tokens to burn
     function burn(address _owner, uint256 _value)

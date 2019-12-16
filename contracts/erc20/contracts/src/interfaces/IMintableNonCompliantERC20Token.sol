@@ -27,7 +27,7 @@ contract IMintableNonCompliantERC20Token {
     function mint(address _to, uint256 _value)
         external;
 
-    /// @dev Mints new tokens
+    /// @dev Burn existing tokens
     /// @param _owner Owner of tokens that will be burned
     /// @param _value Amount of tokens to burn
     function burn(address _owner, uint256 _value)
