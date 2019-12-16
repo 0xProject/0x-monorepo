@@ -94,9 +94,9 @@ export class SwapQuoteCalculator {
         const takerAssetData = resultOrders[0].takerAssetData;
         const makerAssetData = resultOrders[0].makerAssetData;
 
-        const bestCaseQuoteInfo = this._calculateQuoteInfo(resultOrders, assetFillAmount, gasPrice, operation);
+        const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(resultOrders, assetFillAmount, gasPrice, operation);
         // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
-        const worstCaseQuoteInfo = this._calculateQuoteInfo(
+        const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             _.reverse(_.clone(resultOrders)),
             assetFillAmount,
             gasPrice,
@@ -128,24 +128,24 @@ export class SwapQuoteCalculator {
     }
 
     // tslint:disable-next-line: prefer-function-over-method
-    private _calculateQuoteInfo(
+    private async _calculateQuoteInfoAsync(
         prunedOrders: SignedOrderWithFillableAmounts[],
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
         operation: MarketOperation,
-    ): SwapQuoteInfo {
+    ): Promise<SwapQuoteInfo> {
         if (operation === MarketOperation.Buy) {
-            return this._calculateMarketBuyQuoteInfo(prunedOrders, assetFillAmount, gasPrice);
+            return this._calculateMarketBuyQuoteInfoAsync(prunedOrders, assetFillAmount, gasPrice);
         } else {
-            return this._calculateMarketSellQuoteInfo(prunedOrders, assetFillAmount, gasPrice);
+            return this._calculateMarketSellQuoteInfoAsync(prunedOrders, assetFillAmount, gasPrice);
         }
     }
 
-    private _calculateMarketSellQuoteInfo(
+    private async _calculateMarketSellQuoteInfoAsync(
         prunedOrders: SignedOrderWithFillableAmounts[],
         takerAssetSellAmount: BigNumber,
         gasPrice: BigNumber,
-    ): SwapQuoteInfo {
+    ): Promise<SwapQuoteInfo> {
         const result = _.reduce(
             prunedOrders,
             (acc, order) => {
@@ -190,7 +190,7 @@ export class SwapQuoteCalculator {
                 remainingTakerAssetFillAmount: takerAssetSellAmount,
             },
         );
-        const protocolFeeInWeiAmount = this._protocolFeeUtils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice);
+        const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
         return {
             feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
             takerAssetAmount: result.totalTakerAssetAmount,
@@ -200,11 +200,11 @@ export class SwapQuoteCalculator {
         };
     }
 
-    private _calculateMarketBuyQuoteInfo(
+    private async _calculateMarketBuyQuoteInfoAsync(
         prunedOrders: SignedOrderWithFillableAmounts[],
         makerAssetBuyAmount: BigNumber,
         gasPrice: BigNumber,
-    ): SwapQuoteInfo {
+    ): Promise<SwapQuoteInfo> {
         const result = _.reduce(
             prunedOrders,
             (acc, order) => {
@@ -247,7 +247,7 @@ export class SwapQuoteCalculator {
                 remainingMakerAssetFillAmount: makerAssetBuyAmount,
             },
         );
-        const protocolFeeInWeiAmount = this._protocolFeeUtils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice);
+        const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(prunedOrders, gasPrice);
         return {
             feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
             takerAssetAmount: result.totalTakerAssetAmount,

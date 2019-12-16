@@ -31,6 +31,7 @@ const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
 
 // 15 seconds polling interval
 const PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS = 15000;
+const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
 
 // default 50% buffer for selecting native orders to be aggregated with other sources
 const MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE = 0.5;
@@ -64,6 +65,7 @@ const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
 
 export const constants = {
     ETH_GAS_STATION_API_BASE_URL,
+    PROTOCOL_FEE_MULTIPLIER,
     NULL_BYTES,
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
