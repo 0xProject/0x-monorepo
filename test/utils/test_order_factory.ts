@@ -3,7 +3,7 @@ import { Order, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { constants } from '../../src/constants';
-import { PrunedSignedOrder } from '../../src/types';
+import { SignedOrderWithFillableAmounts } from '../../src/types';
 
 const CHAIN_ID = 1337;
 const BASE_TEST_ORDER: Order = orderFactory.createOrder(
@@ -21,7 +21,7 @@ const BASE_TEST_SIGNED_ORDER: SignedOrder = {
     signature: constants.NULL_BYTES,
 };
 
-const BASE_TEST_PRUNED_SIGNED_ORDER: PrunedSignedOrder = {
+const BASE_TEST_PRUNED_SIGNED_ORDER: SignedOrderWithFillableAmounts = {
     ...BASE_TEST_SIGNED_ORDER,
     fillableMakerAssetAmount: constants.ZERO_AMOUNT,
     fillableTakerAssetAmount: constants.ZERO_AMOUNT,
@@ -39,20 +39,28 @@ export const testOrderFactory = {
     generateTestSignedOrders(partialOrders: Array<Partial<SignedOrder>>): SignedOrder[] {
         return _.map(partialOrders, partialOrder => transformObject(BASE_TEST_SIGNED_ORDER, partialOrder));
     },
-    generateTestPrunedSignedOrder(partialOrder: Partial<PrunedSignedOrder>): PrunedSignedOrder {
+    generateTestSignedOrderWithFillableAmounts(
+        partialOrder: Partial<SignedOrderWithFillableAmounts>,
+    ): SignedOrderWithFillableAmounts {
         return transformObject(BASE_TEST_PRUNED_SIGNED_ORDER, partialOrder);
     },
-    generateIdenticalTestPrunedSignedOrders(
-        partialOrder: Partial<PrunedSignedOrder>,
+    generateIdenticalTestSignedOrdersWithFillableAmounts(
+        partialOrder: Partial<SignedOrderWithFillableAmounts>,
         numOrders: number,
-    ): PrunedSignedOrder[] {
+    ): SignedOrderWithFillableAmounts[] {
         const baseTestOrders = _.map(_.range(numOrders), () => BASE_TEST_PRUNED_SIGNED_ORDER);
-        return _.map(baseTestOrders, (baseOrder): PrunedSignedOrder => transformObject(baseOrder, partialOrder));
+        return _.map(
+            baseTestOrders,
+            (baseOrder): SignedOrderWithFillableAmounts => transformObject(baseOrder, partialOrder),
+        );
     },
-    generateTestPrunedSignedOrders(partialOrders: Array<Partial<PrunedSignedOrder>>): PrunedSignedOrder[] {
+    generateTestSignedOrdersWithFillableAmounts(
+        partialOrders: Array<Partial<SignedOrderWithFillableAmounts>>,
+    ): SignedOrderWithFillableAmounts[] {
         return _.map(
             partialOrders,
-            (partialOrder): PrunedSignedOrder => transformObject(BASE_TEST_PRUNED_SIGNED_ORDER, partialOrder),
+            (partialOrder): SignedOrderWithFillableAmounts =>
+                transformObject(BASE_TEST_PRUNED_SIGNED_ORDER, partialOrder),
         );
     },
 };

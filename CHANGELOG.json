@@ -5,6 +5,10 @@
             {
                 "note": "Fix gasPrice from `ethgasstation` to be in WEI instead of GWEI",
                 "pr": 2393
+            },
+            {
+                "note": "Add aggregator utils",
+                "pr": 2353
             }
         ]
     },

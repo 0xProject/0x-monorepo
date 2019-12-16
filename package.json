@@ -48,9 +48,11 @@
         "@0x/orderbook": "^1.0.1",
         "@0x/utils": "^5.1.0",
         "@0x/web3-wrapper": "^7.0.1",
+        "heartbeats": "^5.0.1",
         "lodash": "^4.17.11"
     },
     "devDependencies": {
+        "@0x/base-contract": "^6.0.1",
         "@0x/contracts-test-utils": "^5.0.0",
         "@0x/dev-utils": "^3.0.1",
         "@0x/mesh-rpc-client": "^7.0.4-beta-0xv3",

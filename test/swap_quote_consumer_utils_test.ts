@@ -1,15 +1,16 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { DevUtilsContract, WETH9Contract } from '@0x/contract-wrappers';
+import { WETH9Contract } from '@0x/contract-wrappers';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { migrateOnceAsync } from '@0x/migrations';
+import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
 import { SwapQuote, SwapQuoteConsumer } from '../src';
 import { constants } from '../src/constants';
-import { ExtensionContractType, MarketOperation, PrunedSignedOrder } from '../src/types';
+import { ExtensionContractType, MarketOperation, SignedOrderWithFillableAmounts } from '../src/types';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -24,7 +25,7 @@ const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_CHAIN_ID = 1337;
 const GAS_PRICE = new BigNumber(devConstants.DEFAULT_GAS_PRICE);
 
-const PARTIAL_PRUNED_SIGNED_ORDERS: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_PRUNED_SIGNED_ORDERS: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         takerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
         makerAssetAmount: new BigNumber(2).multipliedBy(ONE_ETH_IN_WEI),
@@ -45,7 +46,7 @@ const PARTIAL_PRUNED_SIGNED_ORDERS: Array<Partial<PrunedSignedOrder>> = [
     },
 ];
 
-const PARTIAL_LARGE_PRUNED_SIGNED_ORDERS: Array<Partial<PrunedSignedOrder>> = [
+const PARTIAL_LARGE_PRUNED_SIGNED_ORDERS: Array<Partial<SignedOrderWithFillableAmounts>> = [
     {
         takerAssetAmount: new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI),
         makerAssetAmount: new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI),
@@ -87,14 +88,13 @@ describe('swapQuoteConsumerUtils', () => {
         contractAddresses = await migrateOnceAsync(provider);
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        const devUtils = new DevUtilsContract(contractAddresses.devUtils, provider);
         wethContract = new WETH9Contract(contractAddresses.etherToken, provider);
         [takerAddress, makerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
-            await devUtils.encodeERC20AssetData(makerTokenAddress).callAsync(),
-            await devUtils.encodeERC20AssetData(takerTokenAddress).callAsync(),
-            await devUtils.encodeERC20AssetData(contractAddresses.etherToken).callAsync(),
+            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
+            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
 
         const defaultOrderParams = {
@@ -119,7 +119,7 @@ describe('swapQuoteConsumerUtils', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils();
+        protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         forwarderOrderFactory = new OrderFactory(privateKey, defaultForwarderOrderParams);
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {
@@ -128,6 +128,7 @@ describe('swapQuoteConsumerUtils', () => {
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
+        await protocolFeeUtils.destroyAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -137,9 +138,9 @@ describe('swapQuoteConsumerUtils', () => {
     });
 
     describe('getConsumerTypeForSwapQuoteAsync', () => {
-        let forwarderOrders: PrunedSignedOrder[];
-        let exchangeOrders: PrunedSignedOrder[];
-        let largeForwarderOrders: PrunedSignedOrder[];
+        let forwarderOrders: SignedOrderWithFillableAmounts[];
+        let exchangeOrders: SignedOrderWithFillableAmounts[];
+        let largeForwarderOrders: SignedOrderWithFillableAmounts[];
         let forwarderSwapQuote: SwapQuote;
         let exchangeSwapQuote: SwapQuote;
         let largeForwarderSwapQuote: SwapQuote;
@@ -152,7 +153,7 @@ describe('swapQuoteConsumerUtils', () => {
                     ...order,
                     ...partialOrder,
                 };
-                exchangeOrders.push(prunedOrder as PrunedSignedOrder);
+                exchangeOrders.push(prunedOrder as SignedOrderWithFillableAmounts);
             }
 
             forwarderOrders = [];
@@ -162,7 +163,7 @@ describe('swapQuoteConsumerUtils', () => {
                     ...order,
                     ...partialOrder,
                 };
-                forwarderOrders.push(prunedOrder as PrunedSignedOrder);
+                forwarderOrders.push(prunedOrder as SignedOrderWithFillableAmounts);
             }
 
             largeForwarderOrders = [];
@@ -172,7 +173,7 @@ describe('swapQuoteConsumerUtils', () => {
                     ...order,
                     ...partialOrder,
                 };
-                largeForwarderOrders.push(prunedOrder as PrunedSignedOrder);
+                largeForwarderOrders.push(prunedOrder as SignedOrderWithFillableAmounts);
             }
 
             forwarderSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
