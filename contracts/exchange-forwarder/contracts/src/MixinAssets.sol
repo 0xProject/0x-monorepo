@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
@@ -35,6 +36,7 @@ contract MixinAssets is
     IAssets
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     /// @dev Withdraws assets from this contract. It may be used by the owner to withdraw assets
     ///      that were accidentally sent to this contract.
@@ -95,7 +97,9 @@ contract MixinAssets is
             _transferERC20Token(assetData, amount);
         } else if (proxyId == IAssetData(address(0)).ERC721Token.selector) {
             _transferERC721Token(assetData, amount);
-        } else {
+        } else if (proxyId == IAssetData(address(0)).MultiAsset.selector) {
+            _transferMultiAsset(assetData, amount);
+        } else if (proxyId != IAssetData(address(0)).StaticCall.selector) {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
                 proxyId
             ));
@@ -140,5 +144,24 @@ contract MixinAssets is
             msg.sender,
             tokenId
         );
+    }
+
+    function _transferMultiAsset(
+        bytes memory assetData,
+        uint256 amount
+    )
+        internal
+    {
+        // solhint-disable indent
+        (uint256[] memory nestedAmounts, bytes[] memory nestedAssetData) = abi.decode(
+            assetData.slice(4, assetData.length),
+            (uint256[], bytes[])
+        );
+        // solhint-enable indent
+
+        uint256 numNestedAssets = nestedAssetData.length;
+        for (uint256 i = 0; i != numNestedAssets; i++) {
+            _transferAssetToSender(nestedAssetData[i], amount.safeMul(nestedAmounts[i]));
+        }
     }
 }
