@@ -3,7 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": false,
     "compilerSettings": {
-        "evmVersion": "constantinople",
+        "evmVersion": "istanbul",
         "optimizer": {
             "enabled": true,
             "runs": 1000000,
