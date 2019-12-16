@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _December 15, 2019_
+
+    * Add NonCompliantERC20Token contract which implements the ERC20 specification but does not emit any events.
+
 ## v3.0.1 - _December 9, 2019_
 
     * Dependencies updated
