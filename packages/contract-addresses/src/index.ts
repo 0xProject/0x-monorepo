@@ -26,6 +26,7 @@ export interface ContractAddresses {
     uniswapBridge: string;
     eth2DaiBridge: string;
     kyberBridge: string;
+    chaiBridge: string;
     dydxBridge: string;
 }
 

@@ -13,6 +13,8 @@ export {
     StaticCallProxyContract,
     TestStaticCallTargetContract,
     UniswapBridgeContract,
+    KyberBridgeContract,
+    ChaiBridgeContract,
 } from './wrappers';
 
 export { ERC20Wrapper } from './erc20_wrapper';
