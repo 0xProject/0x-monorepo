@@ -35,8 +35,8 @@ contract MintableNonCompliantERC20Token is
     /// @dev Mints new tokens
     /// @param _to Address of the beneficiary that will own the minted token
     /// @param _value Amount of tokens to mint
-    function _mint(address _to, uint256 _value)
-        internal
+    function mint(address _to, uint256 _value)
+        external
     {
         balances[_to] = _value.safeAdd(balances[_to]);
         _totalSupply = _totalSupply.safeAdd(_value);
@@ -45,8 +45,8 @@ contract MintableNonCompliantERC20Token is
     /// @dev Mints new tokens
     /// @param _owner Owner of tokens that will be burned
     /// @param _value Amount of tokens to burn
-    function _burn(address _owner, uint256 _value)
-        internal
+    function burn(address _owner, uint256 _value)
+        external
     {
         balances[_owner] = balances[_owner].safeSub(_value);
         _totalSupply = _totalSupply.safeSub(_value);
