@@ -2,7 +2,7 @@
     "artifactsDir": "./test/generated-artifacts",
     "contractsDir": "./contracts",
     "useDockerisedSolc": false,
-    "isOfflineMode": false,
+    "isOfflineMode": true,
     "compilerSettings": {
         "evmVersion": "constantinople",
         "optimizer": {

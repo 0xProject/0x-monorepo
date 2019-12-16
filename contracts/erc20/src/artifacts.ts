@@ -9,6 +9,7 @@ import * as DummyERC20Token from '../generated-artifacts/DummyERC20Token.json';
 import * as DummyMultipleReturnERC20Token from '../generated-artifacts/DummyMultipleReturnERC20Token.json';
 import * as DummyNoReturnERC20Token from '../generated-artifacts/DummyNoReturnERC20Token.json';
 import * as ERC20Token from '../generated-artifacts/ERC20Token.json';
+import * as NonCompliantERC20Token from '../generated-artifacts/NonCompliantERC20Token.json';
 import * as WETH9 from '../generated-artifacts/WETH9.json';
 import * as ZRXToken from '../generated-artifacts/ZRXToken.json';
 export const artifacts = {
@@ -18,4 +19,5 @@ export const artifacts = {
     ZRXToken: (ZRXToken as any) as ContractArtifact,
     DummyNoReturnERC20Token: DummyNoReturnERC20Token as ContractArtifact,
     DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,
+    NonCompliantERC20Token: NonCompliantERC20Token as ContractArtifact,
 };
