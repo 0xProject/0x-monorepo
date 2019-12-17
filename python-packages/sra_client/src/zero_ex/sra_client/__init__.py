@@ -42,10 +42,8 @@ replicate this environment yourself by using `this docker-compose.yml file
 Configure and create an API client instance
 -------------------------------------------
 
->>> from zero_ex.sra_client import ApiClient, Configuration, RelayerApi
->>> config = Configuration()
->>> config.host = "http://localhost:3000"
->>> relayer = RelayerApi(ApiClient(config))
+>>> from zero_ex.sra_client import RelayerApi
+>>> relayer = RelayerApi("http://localhost:3000")
 
 Preparing to trade
 ------------------
