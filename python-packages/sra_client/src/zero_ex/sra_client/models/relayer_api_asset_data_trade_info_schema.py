@@ -104,10 +104,10 @@ class RelayerApiAssetDataTradeInfoSchema(object):
         :type: str
         """
         if min_amount is not None and not re.search(
-            r"^\\d+$", min_amount
+            r"^\d+$", min_amount
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `min_amount`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `min_amount`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._min_amount = min_amount
@@ -131,10 +131,10 @@ class RelayerApiAssetDataTradeInfoSchema(object):
         :type: str
         """
         if max_amount is not None and not re.search(
-            r"^\\d+$", max_amount
+            r"^\d+$", max_amount
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `max_amount`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `max_amount`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._max_amount = max_amount

@@ -160,10 +160,10 @@ class RelayerApiOrderConfigPayloadSchema(object):
                 "Invalid value for `maker_asset_amount`, must not be `None`"
             )  # noqa: E501
         if maker_asset_amount is not None and not re.search(
-            r"^\\d+$", maker_asset_amount
+            r"^\d+$", maker_asset_amount
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `maker_asset_amount`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `maker_asset_amount`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._maker_asset_amount = maker_asset_amount
@@ -191,10 +191,10 @@ class RelayerApiOrderConfigPayloadSchema(object):
                 "Invalid value for `taker_asset_amount`, must not be `None`"
             )  # noqa: E501
         if taker_asset_amount is not None and not re.search(
-            r"^\\d+$", taker_asset_amount
+            r"^\d+$", taker_asset_amount
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `taker_asset_amount`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `taker_asset_amount`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._taker_asset_amount = taker_asset_amount
@@ -315,10 +315,10 @@ class RelayerApiOrderConfigPayloadSchema(object):
                 "Invalid value for `expiration_time_seconds`, must not be `None`"
             )  # noqa: E501
         if expiration_time_seconds is not None and not re.search(
-            r"^\\d+$", expiration_time_seconds
+            r"^\d+$", expiration_time_seconds
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `expiration_time_seconds`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `expiration_time_seconds`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._expiration_time_seconds = expiration_time_seconds

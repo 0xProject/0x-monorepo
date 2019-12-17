@@ -78,10 +78,10 @@ class RelayerApiOrderConfigResponseSchema(object):
                 "Invalid value for `maker_fee`, must not be `None`"
             )  # noqa: E501
         if maker_fee is not None and not re.search(
-            r"^\\d+$", maker_fee
+            r"^\d+$", maker_fee
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `maker_fee`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `maker_fee`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._maker_fee = maker_fee
@@ -109,10 +109,10 @@ class RelayerApiOrderConfigResponseSchema(object):
                 "Invalid value for `taker_fee`, must not be `None`"
             )  # noqa: E501
         if taker_fee is not None and not re.search(
-            r"^\\d+$", taker_fee
+            r"^\d+$", taker_fee
         ):  # noqa: E501
             raise ValueError(
-                r"Invalid value for `taker_fee`, must be a follow pattern or equal to `/^\\d+$/`"
+                r"Invalid value for `taker_fee`, must be a follow pattern or equal to `/^\d+$/`"
             )  # noqa: E501
 
         self._taker_fee = taker_fee
