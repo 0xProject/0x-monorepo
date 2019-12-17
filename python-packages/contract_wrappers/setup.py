@@ -105,7 +105,10 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/0x_contract_wrappers.egg-info", ignore_errors=True)
+        rmtree(
+            path.join("src", "0x_contract_wrappers.egg-info"),
+            ignore_errors=True,
+        )
         # generated files:
         print("Removing src/zero_ex/contract_wrappers/*/__init__.py...")
         for contract in glob(
@@ -114,7 +117,15 @@ class CleanCommandExtension(clean):
             )
         ):
             try:
-                remove(f"src/zero_ex/contract_wrappers/{contract}/__init__.py")
+                remove(
+                    path.join(
+                        "src",
+                        "zero_ex",
+                        "contract_wrappers",
+                        f"{contract}",
+                        "__init__.py",
+                    )
+                )
             except FileNotFoundError:
                 pass
 
