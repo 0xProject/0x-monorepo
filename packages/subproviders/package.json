@@ -1,6 +1,6 @@
 {
     "name": "@0x/subproviders",
-    "version": "6.0.1",
+    "version": "6.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -33,11 +33,11 @@
         }
     },
     "dependencies": {
-        "@0x/assert": "^3.0.1",
-        "@0x/types": "^3.1.0",
-        "@0x/typescript-typings": "^5.0.0",
-        "@0x/utils": "^5.1.0",
-        "@0x/web3-wrapper": "^7.0.1",
+        "@0x/assert": "^3.0.2",
+        "@0x/types": "^3.1.1",
+        "@0x/typescript-typings": "^5.0.1",
+        "@0x/utils": "^5.1.1",
+        "@0x/web3-wrapper": "^7.0.2",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "4.24.0",
         "@types/hdkey": "^0.7.0",
