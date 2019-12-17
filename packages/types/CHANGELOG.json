@@ -6,7 +6,8 @@
                 "note": "Added `DydxBridgeOnlyCallableByErc20BridgeProxy` and `DydxBridgeUnrecognizedBridgeAction`",
                 "pr": 2378
             }
-        ]
+        ],
+        "timestamp": 1576540892
     },
     {
         "version": "3.1.0",

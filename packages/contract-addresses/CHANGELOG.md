@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _December 17, 2019_
+
+    * Addition of ERC20BridgeSampler + Kyber Erc20Bridge Contract in contract-addresses (#2353)
+
 ## v4.0.0 - _December 2, 2019_
 
     * `1337` addresses updated with Forwarder deployed after Exchange is configured (#2368)

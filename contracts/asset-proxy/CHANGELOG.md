@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _December 17, 2019_
+
+    * Dependencies updated
+
 ## v3.0.1 - _December 9, 2019_
 
     * Dependencies updated
@@ -26,6 +30,7 @@ CHANGELOG
 ## v2.3.0-beta.4 - _December 2, 2019_
 
     * Implement `KyberBridge`. (#2352)
+    * Implement `DydxBridge`. (#2365)
 
 ## v2.3.0-beta.3 - _November 20, 2019_
 

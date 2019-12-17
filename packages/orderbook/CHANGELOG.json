@@ -6,7 +6,8 @@
                 "note": "Change OrderStore functions to be async, allowing for Database adapters",
                 "pr": 2393
             }
-        ]
+        ],
+        "timestamp": 1576540892
     },
     {
         "timestamp": 1575931811,

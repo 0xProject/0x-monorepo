@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _December 17, 2019_
+
+    * Fix gasPrice from `ethgasstation` to be in WEI instead of GWEI (#2393)
+    * Add aggregator utils (#2353)
+
 ## v3.0.1 - _December 9, 2019_
 
     * Dependencies updated

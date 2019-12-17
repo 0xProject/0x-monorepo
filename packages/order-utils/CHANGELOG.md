@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.0.1 - _December 17, 2019_
+
+    * Dependencies updated
+
 ## v10.0.0 - _December 9, 2019_
 
     * Removed from assetDataUtils: individual decoding functions and assert functions (#2388)

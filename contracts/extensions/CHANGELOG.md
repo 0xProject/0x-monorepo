@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.1.1 - _December 17, 2019_
+
+    * Dependencies updated
+
 ## v5.1.0 - _December 9, 2019_
 
     * Export function `encodeDutchAuctionAssetData` (#2373)

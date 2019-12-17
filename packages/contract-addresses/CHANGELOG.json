@@ -6,7 +6,8 @@
                 "note": "Addition of ERC20BridgeSampler + Kyber Erc20Bridge Contract in contract-addresses",
                 "pr": 2353
             }
-        ]
+        ],
+        "timestamp": 1576540892
     },
     {
         "version": "4.0.0",

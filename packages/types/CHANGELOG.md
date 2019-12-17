@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _December 17, 2019_
+
+    * Added `DydxBridgeOnlyCallableByErc20BridgeProxy` and `DydxBridgeUnrecognizedBridgeAction` (#2378)
+
 ## v3.1.0 - _December 9, 2019_
 
     * Add `ERC20BridgeAssetData` (#2373)

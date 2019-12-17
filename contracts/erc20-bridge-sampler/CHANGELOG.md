@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.2 - _December 17, 2019_
+
+    * Do not query empty/unsigned orders. Swallow revets on DEX quotes. (#2365)
+
 ## v1.0.1 - _December 9, 2019_
 
     * Dependencies updated

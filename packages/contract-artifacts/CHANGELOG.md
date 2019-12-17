@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _December 17, 2019_
+
+    * Add `IERC20BridgeSampler` artifact. (#2353)
+
 ## v3.1.0 - _December 9, 2019_
 
     * Add `IAssetData` artifact (#2373)

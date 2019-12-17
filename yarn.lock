@@ -670,7 +670,6 @@
 "@0x/assert@^2.2.0-beta.2", "@0x/assert@^2.2.0-beta.3":
   version "2.2.0-beta.3"
   resolved "https://registry.npmjs.org/@0x/assert/-/assert-2.2.0-beta.3.tgz#8fb95c265000532cd8dced44d44d29ca544b2bfc"
-  integrity sha512-ShENc8QJU4ur/5TkRl3l7J3Yt7WaxHAbuoTRm/djcA0iwYyUVlP5yN9Ab9ua+VLizQQTNw1n+kF1mJWg5lQXuA==
   dependencies:
     "@0x/json-schemas" "^4.1.0-beta.3"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -703,7 +702,6 @@
 "@0x/coordinator-server@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@0x/coordinator-server/-/coordinator-server-1.0.5.tgz#3fda0d5f2af45f0baa7663ad0a5e8465b4161081"
-  integrity sha512-tR9OHa5QPejezSfjO++CorNF72jTKROGxqjSJ+7/Yk3w/RJFItUcAEJKgSQLMJpjJPKG7vbLkl53lzd9xuN+yw==
   dependencies:
     "@0x/assert" "^3.0.1"
     "@0x/contract-addresses" "^4.0.0"
@@ -731,7 +729,6 @@
 "@0x/json-schemas@^4.1.0-beta.2", "@0x/json-schemas@^4.1.0-beta.3":
   version "4.1.0-beta.3"
   resolved "https://registry.npmjs.org/@0x/json-schemas/-/json-schemas-4.1.0-beta.3.tgz#af70a35691108ea162140640bae93a7fc84ca6ee"
-  integrity sha512-vcgzSeaOXiUQ4KjqdLTTBHbkWnp4IE7cXbUblRy8Y0XYPQsPywhs9mtjY4lBVNmm1DDpLhreo1mwrvPS3HW5YA==
   dependencies:
     "@0x/typescript-typings" "^4.4.0-beta.2"
     "@types/node" "*"
@@ -783,7 +780,6 @@
 "@0x/types@^2.5.0-beta.2", "@0x/types@^2.5.0-beta.3":
   version "2.5.0-beta.3"
   resolved "https://registry.npmjs.org/@0x/types/-/types-2.5.0-beta.3.tgz#e010e9dbf62e37e59177c1d6df8d1acf3a9ea1b4"
-  integrity sha512-5wJs4/EZGPcU6W5IZ87zuya9vQUPD4DchyP29bXyguGHg9dOxuUOF4WauJZExWlPCS7eivviiUHpZD9DZhni+w==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
@@ -792,7 +788,6 @@
 "@0x/typescript-typings@4.4.0-beta.2", "@0x/typescript-typings@^4.4.0-beta.2":
   version "4.4.0-beta.2"
   resolved "https://registry.npmjs.org/@0x/typescript-typings/-/typescript-typings-4.4.0-beta.2.tgz#67c621252f162914186b8f684ac5e306206c1cf2"
-  integrity sha512-Fq2nOKvopdLMEjuPiKqomGog06bxAXGjqnodCwv9OKr11V5W1twFTUM3c1TENfHeGvcqf1aMl1hsH3fuVP61jg==
   dependencies:
     "@types/bn.js" "^4.11.0"
     "@types/react" "*"
@@ -831,7 +826,6 @@
 "@0x/utils@^4.6.0-beta.2", "@0x/utils@^4.6.0-beta.3":
   version "4.6.0-beta.3"
   resolved "https://registry.npmjs.org/@0x/utils/-/utils-4.6.0-beta.3.tgz#d40278916d98c48ea05821ae4987c88f032c7bff"
-  integrity sha512-aPIUgfhaDhwgddJAlIQJ2Ki87A60ovatBLCjareLUbsQSvFS5i3iujUBQHgFxZAv9tgl35fyg2ISEJ1YkQyubA==
   dependencies:
     "@0x/types" "^2.5.0-beta.3"
     "@0x/typescript-typings" "^4.4.0-beta.2"
@@ -866,7 +860,6 @@
 "@0x/web3-wrapper@^6.1.0-beta.2", "@0x/web3-wrapper@^6.1.0-beta.3":
   version "6.1.0-beta.3"
   resolved "https://registry.npmjs.org/@0x/web3-wrapper/-/web3-wrapper-6.1.0-beta.3.tgz#82161147e9283391e0c7cd6027c971749c5a2f77"
-  integrity sha512-mc8120n8w88gICbDm8pkmC83Ul3RgE4BGsjY5BRBFefmKbv/XLeBZiWdhsaWYmkk8v4f+ZxAQ+HHTBDsRH87Og==
   dependencies:
     "@0x/assert" "^2.2.0-beta.3"
     "@0x/json-schemas" "^4.1.0-beta.3"
@@ -2202,7 +2195,6 @@
 "@types/seedrandom@^2.4.28":
   version "2.4.28"
   resolved "https://registry.yarnpkg.com/@types/seedrandom/-/seedrandom-2.4.28.tgz#9ce8fa048c1e8c85cb71d7fe4d704e000226036f"
-  integrity sha512-SMA+fUwULwK7sd/ZJicUztiPs8F1yCPwF3O23Z9uQ32ME5Ha0NmDK9+QTsYE4O2tHXChzXomSWWeIhCnoN1LqA==
 
 "@types/semver@5.5.0":
   version "5.5.0"
@@ -6607,7 +6599,6 @@ ethereum-types@^2.1.6:
 ethereum-types@^2.2.0-beta.2:
   version "2.2.0-beta.2"
   resolved "https://registry.npmjs.org/ethereum-types/-/ethereum-types-2.2.0-beta.2.tgz#0b446842474c2afacd351258ed4a2d0841f2608f"
-  integrity sha512-5ANYHI/InHqf4Nt8oYrpvcph9/D6gi3sbM7Rlr8r0QjXb2mqocqEvOH460Zkf1robc7WDqurp9baeMy+um8kww==
   dependencies:
     "@types/node" "*"
     bignumber.js "~9.0.0"
@@ -8500,7 +8491,6 @@ heap@0.2.6:
 heartbeats@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/heartbeats/-/heartbeats-5.0.1.tgz#c0d476151982e707faac49345143b9582de40cae"
-  integrity sha1-wNR2FRmC5wf6rEk0UUO5WC3kDK4=
 
 highlight.js@^9.15.8, highlight.js@^9.6.0:
   version "9.15.9"
@@ -11338,21 +11328,7 @@ merge@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/merge/-/merge-1.2.0.tgz#7531e39d4949c281a66b8c5a6e0265e8b05894da"
 
-merkle-patricia-tree@2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/merkle-patricia-tree/-/merkle-patricia-tree-2.3.1.tgz#7d4e7263a9c85c1679187cad4a6d71f48d524c71"
-  integrity sha512-Qp9Mpb3xazznXzzGQBqHbqCpT2AR9joUOHYYPiQjYCarrdCPCnLWXo4BFv77y4xN26KR224xoU1n/qYY7RYYgw==
-  dependencies:
-    async "^1.4.2"
-    ethereumjs-util "^5.0.0"
-    level-ws "0.0.0"
-    levelup "^1.2.1"
-    memdown "^1.0.0"
-    readable-stream "^2.0.0"
-    rlp "^2.0.0"
-    semaphore ">=1.0.1"
-
-merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2.3.2:
+merkle-patricia-tree@2.3.1, merkle-patricia-tree@^2.1.2, merkle-patricia-tree@^2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/merkle-patricia-tree/-/merkle-patricia-tree-2.3.2.tgz#982ca1b5a0fde00eed2f6aeed1f9152860b8208a"
   dependencies:
@@ -14552,7 +14528,6 @@ seedrandom@2.4.4:
 seedrandom@^3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/seedrandom/-/seedrandom-3.0.5.tgz#54edc85c95222525b0c7a6f6b3543d8e0b3aa0a7"
-  integrity sha512-8OwmbklUNzwezjGInmZ+2clQmExQPvomqjL7LFqOYqtmuxRgQYqOD3mHaU+MvZn5FLUeVxVfQjwLZW/n/JFuqg==
 
 seek-bzip@^1.0.5:
   version "1.0.5"

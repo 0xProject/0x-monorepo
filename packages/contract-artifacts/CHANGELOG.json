@@ -6,7 +6,8 @@
                 "note": "Add `IERC20BridgeSampler` artifact.",
                 "pr": 2353
             }
-        ]
+        ],
+        "timestamp": 1576540892
     },
     {
         "version": "3.1.0",

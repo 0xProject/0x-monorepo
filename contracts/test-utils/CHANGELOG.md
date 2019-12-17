@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.1 - _December 17, 2019_
+
+    * Dependencies updated
+
 ## v5.0.0 - _December 9, 2019_
 
     * Removed `hex_utils.ts`. Moved to @0x/utils (#2373)

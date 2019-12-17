@@ -6,7 +6,8 @@
                 "note": "Add `IERC20BridgeSampler` wrapper",
                 "pr": 2353
             }
-        ]
+        ],
+        "timestamp": 1576540892
     },
     {
         "version": "13.1.0",

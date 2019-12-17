@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.2 - _December 17, 2019_
+
+    * Add `DEV_UTILS_ADDRESS` and `KYBER_ETH_ADDRESS` to `DeploymentConstants`. (#2395)
+    * Add `DydxBridge` to `DeploymentConstants`. (#2365)
+
 ## v4.0.1 - _December 9, 2019_
 
     * Dependencies updated
