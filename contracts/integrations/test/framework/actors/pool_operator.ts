@@ -1,9 +1,10 @@
-import { constants, StakingPoolById } from '@0x/contracts-staking';
+import { constants as stakingConstants, StakingPoolById } from '@0x/contracts-staking';
+import { constants } from '@0x/contracts-test-utils';
 import '@azure/core-asynciterator-polyfill';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { validCreateStakingPoolAssertion } from '../assertions/createStakingPool';
+import { invalidCreateStakingPoolAssertion, validCreateStakingPoolAssertion } from '../assertions/createStakingPool';
 import { validDecreaseStakingPoolOperatorShareAssertion } from '../assertions/decreaseStakingPoolOperatorShare';
 import { AssertionResult } from '../assertions/function_assertion';
 import { Distributions, Pseudorandom } from '../utils/pseudorandom';
@@ -41,6 +42,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             this.actor.simulationActions = {
                 ...this.actor.simulationActions,
                 validCreateStakingPool: this._validCreateStakingPool(),
+                invalidCreateStakingPool: this._invalidCreateStakingPool(),
                 validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare(),
             };
         }
@@ -85,7 +87,19 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             while (true) {
                 const operatorShare = Pseudorandom.integer(
                     0,
-                    constants.PPM,
+                    stakingConstants.PPM,
+                    Distributions.Kumaraswamy(0.2, 0.2),
+                ).toNumber();
+                yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
+            }
+        }
+
+        private async *_invalidCreateStakingPool(): AsyncIterableIterator<AssertionResult> {
+            const assertion = invalidCreateStakingPoolAssertion(this.actor.deployment);
+            while (true) {
+                const operatorShare = Pseudorandom.integer(
+                    stakingConstants.PPM + 1,
+                    constants.MAX_UINT32,
                     Distributions.Kumaraswamy(0.2, 0.2),
                 ).toNumber();
                 yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
