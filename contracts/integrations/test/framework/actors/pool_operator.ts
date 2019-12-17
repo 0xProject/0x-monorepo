@@ -5,7 +5,10 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { invalidCreateStakingPoolAssertion, validCreateStakingPoolAssertion } from '../assertions/createStakingPool';
-import { validDecreaseStakingPoolOperatorShareAssertion } from '../assertions/decreaseStakingPoolOperatorShare';
+import {
+    invalidDecreaseStakingPoolOperatorShareAssertion,
+    validDecreaseStakingPoolOperatorShareAssertion,
+} from '../assertions/decreaseStakingPoolOperatorShare';
 import { AssertionResult } from '../assertions/function_assertion';
 import { Distributions, Pseudorandom } from '../utils/pseudorandom';
 
@@ -44,6 +47,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                 validCreateStakingPool: this._validCreateStakingPool(),
                 invalidCreateStakingPool: this._invalidCreateStakingPool(),
                 validDecreaseStakingPoolOperatorShare: this._validDecreaseStakingPoolOperatorShare(),
+                invalidDecreaseStakingPoolOperatorShare: this._invalidDecreaseStakingPoolOperatorShare(),
             };
         }
 
@@ -117,6 +121,24 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                     const operatorShare = Pseudorandom.integer(
                         0,
                         stakingPools[poolId].operatorShare,
+                        Distributions.Kumaraswamy(0.2, 0.2),
+                    ).toNumber();
+                    yield assertion.executeAsync([poolId, operatorShare], { from: this.actor.address });
+                }
+            }
+        }
+
+        private async *_invalidDecreaseStakingPoolOperatorShare(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = invalidDecreaseStakingPoolOperatorShareAssertion(this.actor.deployment);
+            while (true) {
+                const poolId = Pseudorandom.sample(this._getOperatorPoolIds(stakingPools));
+                if (poolId === undefined) {
+                    yield undefined;
+                } else {
+                    const operatorShare = Pseudorandom.integer(
+                        stakingPools[poolId].operatorShare + 1,
+                        constants.MAX_UINT32,
                         Distributions.Kumaraswamy(0.2, 0.2),
                     ).toNumber();
                     yield assertion.executeAsync([poolId, operatorShare], { from: this.actor.address });

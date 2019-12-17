@@ -20,8 +20,10 @@ export class PoolManagementSimulation extends Simulation {
             ...operators.map(operator => [operator.simulationActions.validCreateStakingPool, 0.38]),
             // 2% chance of executing invalidCreateStakingPool assertion for a random operator
             ...operators.map(operator => [operator.simulationActions.invalidCreateStakingPool, 0.02]),
-            // 60% chance of executing validDecreaseStakingPoolOperatorShare for a random operator
-            ...operators.map(operator => [operator.simulationActions.validDecreaseStakingPoolOperatorShare, 0.6]),
+            // 58% chance of executing validDecreaseStakingPoolOperatorShare for a random operator
+            ...operators.map(operator => [operator.simulationActions.validDecreaseStakingPoolOperatorShare, 0.58]),
+            // 2% chance of executing invalidDecreaseStakingPoolOperatorShare for a random operator
+            ...operators.map(operator => [operator.simulationActions.invalidDecreaseStakingPoolOperatorShare, 0.02]),
         ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
         while (true) {
             const action = Pseudorandom.sample(actions, weights);
