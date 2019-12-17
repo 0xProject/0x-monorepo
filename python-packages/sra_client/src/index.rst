@@ -9,10 +9,10 @@ Python zero_ex.sra_client
 
 .. automodule:: zero_ex.sra_client
 
-zero_ex.sra_client.DefaultApi
+zero_ex.sra_client.RelayerApi
 =============================
 
-.. autoclass:: zero_ex.sra_client.DefaultApi
+.. autoclass:: zero_ex.sra_client.RelayerApi
    :members:
 
 Indices and tables

@@ -42,10 +42,10 @@ replicate this environment yourself by using `this docker-compose.yml file
 Configure and create an API client instance
 -------------------------------------------
 
->>> from zero_ex.sra_client import ApiClient, Configuration, DefaultApi
+>>> from zero_ex.sra_client import ApiClient, Configuration, RelayerApi
 >>> config = Configuration()
 >>> config.host = "http://localhost:3000"
->>> relayer = DefaultApi(ApiClient(config))
+>>> relayer = RelayerApi(ApiClient(config))
 
 Preparing to trade
 ------------------
@@ -432,7 +432,7 @@ from __future__ import absolute_import
 __version__ = "1.0.0"
 
 # import apis into sdk package
-from .api.default_api import DefaultApi
+from .api.relayer_api import RelayerApi
 
 # import ApiClient
 from .api_client import ApiClient
