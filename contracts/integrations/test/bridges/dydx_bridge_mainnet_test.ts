@@ -27,6 +27,7 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
     const erc20BridgeProxyAddress = '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0';
     const defaultAccountNumber = new BigNumber(0);
     const daiMarketId = new BigNumber(3);
+    const defaultAmount = toBaseUnitAmount(1);
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit as number,
         accountId: constants.ZERO_AMOUNT,
@@ -54,11 +55,10 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             to: string,
             amount: BigNumber,
             bridgeData: DydxBridgeData,
-            sender: string,
         ): Promise<void> => {
             const txReceipt = await testContract
                 .bridgeTransferFrom(constants.NULL_ADDRESS, from, to, amount, dydxBridgeDataEncoder.encode({ bridgeData }))
-                .awaitTransactionSuccessAsync({ from: sender, gasPrice: 0 });
+                .awaitTransactionSuccessAsync({ from: erc20BridgeProxyAddress, gasPrice: 0 });
 
             console.log(JSON.stringify(txReceipt.logs, null, 4));
 
@@ -128,71 +128,47 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             }
         };
 
-
-
-
-        it('should successfully deposit value', async () => {
-            const bridgeData = {
-                accountNumbers: [defaultAccountNumber],
-                actions: [defaultDepositAction, defaultWithdrawAction],
-            };
-            const returnValue = await callAndVerifyDydxEvents(
-                accountOwner,
-                receiver,
-                toBaseUnitAmount(1),
-                bridgeData,
-                erc20BridgeProxyAddress
-            );
-            console.log(JSON.stringify(returnValue, null, 4));
-        });
-
-
-        /*
         it('succeeds when calling `operate` with the `deposit` action and a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await callAndVerifyDydxEvents(accountOwner, receiver, defaultAmount, bridgeData);
         });
         it('succeeds when calling `operate` with the `deposit` action and multiple accounts', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber, defaultAccountNumber.plus(1)],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await callAndVerifyDydxEvents(accountOwner, receiver, defaultAmount, bridgeData);
         });
-        it('succeeds when calling `operate` with the `withdraw` action and a single accuont', async () => {
+        it('succeeds when calling `operate` with the `withdraw` action and a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultWithdrawAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await callAndVerifyDydxEvents(accountOwner, receiver, defaultAmount, bridgeData);
         });
         it('succeeds when calling `operate` with the `withdraw` action and multiple accounts', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber, defaultAccountNumber.plus(1)],
                 actions: [defaultWithdrawAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await callAndVerifyDydxEvents(accountOwner, receiver, defaultAmount, bridgeData);
         });
         it('succeeds when calling `operate` with the `deposit` action and multiple accounts', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber, defaultAccountNumber.plus(1)],
                 actions: [defaultWithdrawAction, defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await callAndVerifyDydxEvents(accountOwner, receiver, defaultAmount, bridgeData);
         });
         it('succeeds when calling `operate` with multiple actions under a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultWithdrawAction, defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await callAndVerifyDydxEvents(accountOwner, receiver, defaultAmount, bridgeData);
         });
-        */
-
-
-
     });
 });

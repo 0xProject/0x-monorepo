@@ -111,7 +111,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                     amountDenomination: weiDenomination,
                     amountRef: deltaAmountRef,
                     amountValue: action.conversionRateDenominator.gt(0)
-                        ? amount.times(action.conversionRateNumerator).div(action.conversionRateDenominator)
+                        ? amount.times(action.conversionRateNumerator).dividedToIntegerBy(action.conversionRateDenominator)
                         : amount,
                     primaryMarketId: marketId,
                     secondaryMarketId: constants.ZERO_AMOUNT,
@@ -157,7 +157,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             };
             await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
         });
-        it('succeeds when calling `operate` with the `withdraw` action and a single accuont', async () => {
+        it('succeeds when calling `operate` with the `withdraw` action and a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultWithdrawAction],
