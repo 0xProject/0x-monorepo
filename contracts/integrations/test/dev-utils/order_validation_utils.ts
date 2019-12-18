@@ -22,6 +22,7 @@ blockchainTests.resets.only('OrderValidationUtils/OrderTransferSimulatorUtils', 
     let feeErc20Token: DummyERC20TokenContract;
     let erc20Proxy: ERC20ProxyContract;
     let exchange: ExchangeContract;
+    let deployment: DeploymentManager;
 
     let erc20AssetData: string;
     let erc20AssetData2: string;
@@ -33,7 +34,7 @@ blockchainTests.resets.only('OrderValidationUtils/OrderTransferSimulatorUtils', 
     before(async () => {
         [takerAddress, owner] = await env.getAccountAddressesAsync();
 
-        const deployment = await DeploymentManager.deployAsync(env, {
+        deployment = await DeploymentManager.deployAsync(env, {
             numErc20TokensToDeploy: 3,
             numErc721TokensToDeploy: 1,
             owner,
@@ -60,9 +61,6 @@ blockchainTests.resets.only('OrderValidationUtils/OrderTransferSimulatorUtils', 
                 feeRecipientAddress: constants.NULL_ADDRESS,
             },
         });
-        /*
-        await Promise.all(deployment.tokens.erc20.map(async token => maker.configureERC20TokenAsync(token)));
-        */
         const [tokenID] = await maker.configureERC721TokenAsync(deployment.tokens.erc721[0]);
         erc721AssetData = assetDataUtils.encodeERC721AssetData(deployment.tokens.erc721[0].address, tokenID);
     });
@@ -165,11 +163,35 @@ blockchainTests.resets.only('OrderValidationUtils/OrderTransferSimulatorUtils', 
                 .callAsync();
             expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
-        it('should return a fillableTakerAssetAmount of 0 when an erc721 asset is duplicated in a multi-asset proxy order', async () => {
+        it('should return a fillableTakerAssetAmount of 0 when an erc721 asset is duplicated in the maker side of a multi-asset proxy order', async () => {
             const multiAssetData = await devUtils
                 .encodeMultiAssetData([new BigNumber(1), new BigNumber(1)], [erc721AssetData, erc721AssetData])
                 .callAsync();
-            signedOrder = await maker.signOrderAsync({ makerAssetData: multiAssetData });
+            signedOrder = await maker.signOrderAsync({
+                makerAssetData: multiAssetData,
+                makerAssetAmount: new BigNumber(1),
+                takerAssetData: erc721AssetData,
+                takerAssetAmount: new BigNumber(1),
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            const [, fillableTakerAssetAmount] = await devUtils
+                .getOrderRelevantState(signedOrder, signedOrder.signature)
+                .callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('should return a fillableTakerAssetAmount of 0 when an erc721 asset is duplicated in the taker side of a multi-asset proxy order', async () => {
+            const multiAssetData = await devUtils
+                .encodeMultiAssetData([new BigNumber(1), new BigNumber(1)], [erc721AssetData, erc721AssetData])
+                .callAsync();
+            signedOrder = await maker.signOrderAsync({
+                makerAssetData: erc721AssetData,
+                makerAssetAmount: new BigNumber(1),
+                takerAssetData: multiAssetData,
+                takerAssetAmount: new BigNumber(1),
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
             const [, fillableTakerAssetAmount] = await devUtils
                 .getOrderRelevantState(signedOrder, signedOrder.signature)
                 .callAsync();

@@ -49,51 +49,6 @@ library LibFillResults {
         uint256 profitInRightMakerAsset; // Profit taken from the right maker
     }
 
-    event TestEvent(string file_name, string value_name, uint256 value);
-
-    /// FIXME: Remove this function after investigation
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @param protocolFeeMultiplier The current protocol fee of the exchange contract.
-    /// @param gasPrice The gasprice of the transaction. This is provided so that the function call can continue
-    ///        to be pure rather than view.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function calculateFillResultsTrace(
-        LibOrder.Order memory order,
-        uint256 takerAssetFilledAmount,
-        uint256 protocolFeeMultiplier,
-        uint256 gasPrice,
-        bool shouldTrace
-    )
-        internal
-        pure
-        returns (FillResults memory fillResults)
-    {
-        // Compute proportional transfer amounts
-        fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = LibMath.safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount
-        );
-        fillResults.makerFeePaid = LibMath.safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerFee
-        );
-        fillResults.takerFeePaid = LibMath.safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.takerFee
-        );
-
-        // Compute the protocol fee that should be paid for a single fill.
-        fillResults.protocolFeePaid = gasPrice.safeMul(protocolFeeMultiplier);
-
-        return fillResults;
-    }
-
     /// @dev Calculates amounts filled and fees paid by maker and taker.
     /// @param order to be filled.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.

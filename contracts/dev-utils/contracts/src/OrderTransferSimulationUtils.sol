@@ -31,8 +31,6 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 contract OrderTransferSimulationUtils is
     LibExchangeRichErrorDecoder
 {
-    bool second;
-
     using LibBytes for bytes;
 
     enum OrderTransferResults {
@@ -69,12 +67,11 @@ contract OrderTransferSimulationUtils is
         public
         returns (OrderTransferResults orderTransferResults)
     {
-        LibFillResults.FillResults memory fillResults = LibFillResults.calculateFillResultsTrace(
+        LibFillResults.FillResults memory fillResults = LibFillResults.calculateFillResults(
             order,
             takerAssetFillAmount,
             _EXCHANGE.protocolFeeMultiplier(),
-            tx.gasprice,
-            second
+            tx.gasprice
         );
 
         bytes[] memory assetData = new bytes[](2);
