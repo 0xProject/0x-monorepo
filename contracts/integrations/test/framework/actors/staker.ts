@@ -79,7 +79,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
                 const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
-                const amount = Pseudorandom.integer(zrxBalance);
+                const amount = Pseudorandom.integer(0, zrxBalance);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -98,7 +98,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.currentEpochBalance,
                     undelegatedStake.nextEpochBalance,
                 );
-                const amount = Pseudorandom.integer(withdrawableStake);
+                const amount = Pseudorandom.integer(0, withdrawableStake);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -118,7 +118,10 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 const fromStatus =
                     fromPoolId === undefined || stakingPools[fromPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
-                        : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                        : (Pseudorandom.sample(
+                              [StakeStatus.Undelegated, StakeStatus.Delegated],
+                              [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
+                          ) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
                 // Pick a random pool to move the stake to
@@ -128,7 +131,10 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 const toStatus =
                     toPoolId === undefined || stakingPools[toPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
                         ? StakeStatus.Undelegated
-                        : (Pseudorandom.sample([StakeStatus.Undelegated, StakeStatus.Delegated]) as StakeStatus);
+                        : (Pseudorandom.sample(
+                              [StakeStatus.Undelegated, StakeStatus.Delegated],
+                              [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
+                          ) as StakeStatus);
                 const to = new StakeInfo(toStatus, toPoolId);
 
                 // The next epoch balance of the `from` stake is the amount that can be moved
@@ -136,7 +142,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     from.status === StakeStatus.Undelegated
                         ? this.stake[StakeStatus.Undelegated].nextEpochBalance
                         : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
-                const amount = Pseudorandom.integer(moveableStake);
+                const amount = Pseudorandom.integer(0, moveableStake);
 
                 yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
             }

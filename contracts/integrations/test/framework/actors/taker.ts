@@ -75,12 +75,12 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                     // Maker creates and signs a fillable order
                     const order = await maker.createFillableOrderAsync(this.actor);
                     // Taker fills the order by a random amount (up to the order's takerAssetAmount)
-                    const fillAmount = Pseudorandom.integer(order.takerAssetAmount);
+                    const fillAmount = Pseudorandom.integer(0, order.takerAssetAmount);
                     // Taker executes the fill with a random msg.value, so that sometimes the
                     // protocol fee is paid in ETH and other times it's paid in WETH.
                     yield assertion.executeAsync([order, fillAmount, order.signature], {
                         from: this.actor.address,
-                        value: Pseudorandom.integer(DeploymentManager.protocolFee.times(2)),
+                        value: Pseudorandom.integer(0, DeploymentManager.protocolFee.times(2)),
                     });
                 }
             }

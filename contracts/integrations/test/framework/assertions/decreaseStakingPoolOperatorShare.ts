@@ -13,11 +13,11 @@ import { FunctionAssertion, FunctionResult } from './function_assertion';
 export function validDecreaseStakingPoolOperatorShareAssertion(
     deployment: DeploymentManager,
     pools: StakingPoolById,
-): FunctionAssertion<[string, number], {}, void> {
+): FunctionAssertion<[string, number], void, void> {
     const { stakingWrapper } = deployment.staking;
 
-    return new FunctionAssertion<[string, number], {}, void>(stakingWrapper, 'decreaseStakingPoolOperatorShare', {
-        after: async (_beforeInfo, result: FunctionResult, args: [string, number], _txData: Partial<TxData>) => {
+    return new FunctionAssertion<[string, number], void, void>(stakingWrapper, 'decreaseStakingPoolOperatorShare', {
+        after: async (_beforeInfo: void, result: FunctionResult, args: [string, number], _txData: Partial<TxData>) => {
             // Ensure that the tx succeeded.
             expect(result.success, `Error: ${result.data}`).to.be.true();
 
