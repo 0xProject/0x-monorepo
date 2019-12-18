@@ -147,7 +147,7 @@ contract LibAssetData {
                     balance = scaledBalance;
                 }
             }
-        } 
+        }
 
         // Balance will be 0 if assetProxyId is unknown
         return balance;
@@ -316,7 +316,7 @@ contract LibAssetData {
         return (balances, allowances);
     }
 
-    /// @dev Decode AssetProxy identifier 
+    /// @dev Decode AssetProxy identifier
     /// @param assetData AssetProxy-compliant asset data describing an ERC-20, ERC-721, ERC1155, or MultiAsset asset.
     /// @return The AssetProxy identifier
     function decodeAssetProxyId(bytes memory assetData)
@@ -353,7 +353,7 @@ contract LibAssetData {
 
     /// @dev Decode ERC-20 asset data from the format described in the AssetProxy contract specification.
     /// @param assetData AssetProxy-compliant asset data describing an ERC-20 asset.
-    /// @return The AssetProxy identifier, and the address of the ERC-20 
+    /// @return The AssetProxy identifier, and the address of the ERC-20
     /// contract hosting this asset.
     function decodeERC20AssetData(bytes memory assetData)
         public
@@ -591,7 +591,7 @@ contract LibAssetData {
 
     function revertIfInvalidAssetData(bytes memory assetData)
         public
-        pure 
+        pure
     {
         bytes4 assetProxyId = assetData.readBytes4(0);
 
