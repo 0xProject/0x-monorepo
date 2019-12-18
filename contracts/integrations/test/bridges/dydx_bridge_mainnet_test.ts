@@ -16,7 +16,7 @@ import { dydxEvents } from './abi/dydxEvents';
 
 blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
     let testContract: DydxBridgeContract;
-    const accountOwner = '0xBd67Dce6348dc5949A8aF5888D6a2bd5dc3cb86d';
+    const accountOwner = '0xbd67dce6348dc5949a8af5888d6a2bd5dc3cb86d';
     const receiver = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';
     const dydxBridgeAddress = '0x96ddba19b69d6ea2549f6a12d005595167414744';
     const erc20BridgeProxyAddress = '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0';

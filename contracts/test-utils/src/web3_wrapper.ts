@@ -32,7 +32,7 @@ if (process.env.FORK_RPC_URL !== undefined) {
             '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2',
             '0x894d623e0e0e8ed12c4a73dada999e275684a37d',
             // Test dYdX user account (can trade DAI on dydx bridge)
-            '0xBd67Dce6348dc5949A8aF5888D6a2bd5dc3cb86d',
+            '0xbd67dce6348dc5949a8af5888d6a2bd5dc3cb86d',
             // ERC20BridgeProxy
             '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0',
         ],

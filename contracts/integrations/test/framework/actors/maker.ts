@@ -53,8 +53,6 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             };
             this.orderFactory = new OrderFactory(this.actor.privateKey, defaultOrderParams);
 
-            console.log('************ Exchange address -> ', this.actor.deployment.exchange.address);
-
             // Register this mixin's assertion generators
             this.actor.simulationActions = {
                 ...this.actor.simulationActions,
@@ -90,8 +88,6 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
         }
 
         public async createFillableOrderAsync(taker: Actor): Promise<SignedOrder> {
-            console.log(this.actor.simulationEnvironment);
-
             const { actors, balanceStore } = this.actor.simulationEnvironment!;
             await balanceStore.updateErc20BalancesAsync();
 

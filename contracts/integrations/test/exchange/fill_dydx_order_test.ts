@@ -1,18 +1,16 @@
 import { DydxBridgeActionType, TestDydxBridgeContract } from '@0x/contracts-asset-proxy';
-import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
-import { LogWithDecodedArgs, DecodedLogArgs, LogEntry } from 'ethereum-types';
-import { BigNumber } from '@0x/utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
+import { assetDataUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
+import { DecodedLogArgs, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import * as _ from 'lodash';
 
-import { DeploymentManager } from '../framework/deployment_manager';
-
+import { deployDydxBridgeAsync } from '../bridges/deploy_dydx_bridge';
+import { Actor } from '../framework/actors/base';
 import { Maker } from '../framework/actors/maker';
 import { Taker } from '../framework/actors/taker';
-import { Actor } from '../framework/actors/base';
-import { deployDydxBridgeAsync } from '../bridges/deploy_dydx_bridge';
-
-import * as _ from 'lodash';
+import { DeploymentManager } from '../framework/deployment_manager';
 
 blockchainTests.resets('Exchange fills dydx orders', env => {
     let testContract: TestDydxBridgeContract;
@@ -91,8 +89,9 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
     });
 
     describe('fillOrder', () => {
-        const verifyEvents = (logs: (LogWithDecodedArgs<DecodedLogArgs> | LogEntry)[]): void => {
+        const verifyEvents = (logs: Array<(LogWithDecodedArgs<DecodedLogArgs> | LogEntry)>): void => {
             // Extract values from fill event.
+            // tslint:disable no-unnecessary-type-assertion
             const fillEvent = _.find(logs, log => {
                 return (log as any).event === 'Fill';
             }) as LogWithDecodedArgs<DecodedLogArgs>;
@@ -103,7 +102,7 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
             const dydxDepositEvent = _.find(logs, log => {
                 return (
                     (log as any).event === 'OperateAction' &&
-                    (log as any).args.actionType == DydxBridgeActionType.Deposit
+                    (log as any).args.actionType === DydxBridgeActionType.Deposit
                 );
             }) as LogWithDecodedArgs<DecodedLogArgs>;
             const amountDepositedIntoDydx = dydxDepositEvent.args.amountValue;
@@ -112,7 +111,7 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
             const dydxWithdrawEvent = _.find(logs, log => {
                 return (
                     (log as any).event === 'OperateAction' &&
-                    (log as any).args.actionType == DydxBridgeActionType.Withdraw
+                    (log as any).args.actionType === DydxBridgeActionType.Withdraw
                 );
             }) as LogWithDecodedArgs<DecodedLogArgs>;
             const amountWithdrawnFromDydx = dydxWithdrawEvent.args.amountValue;
