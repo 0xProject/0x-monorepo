@@ -1,3 +1,4 @@
+import { DydxBridgeData, dydxBridgeDataEncoder } from '@0x/contracts-asset-proxy';
 import { IAssetDataContract } from '@0x/contract-wrappers';
 import {
     AssetData,
@@ -43,6 +44,12 @@ export const assetDataUtils = {
         return assetDataEncoder
             .StaticCall(staticCallTargetAddress, staticCallData, expectedReturnDataHash)
             .getABIEncodedTransactionData();
+    },
+    encodeDydxBridgeData(bridgeData: DydxBridgeData): string {
+        return dydxBridgeDataEncoder.encode({bridgeData});
+    },
+    decodeDydxBridgeData(bridgeData: string): DydxBridgeData {
+        return dydxBridgeDataEncoder.decode(bridgeData);
     },
     /**
      * Decode any assetData into its corresponding assetData object

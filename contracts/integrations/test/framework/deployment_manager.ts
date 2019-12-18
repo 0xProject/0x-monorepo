@@ -1,3 +1,4 @@
+import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import {
     artifacts as assetProxyArtifacts,
     ERC1155ProxyContract,
@@ -19,11 +20,13 @@ import {
     StakingProxyContract,
     TestStakingContract,
     ZrxVaultContract,
+    StakingContract,
 } from '@0x/contracts-staking';
 import { BlockchainTestsEnvironment, constants } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
+import { SimpleContractArtifact } from '@0x/types';
 
 import { AssetProxyDispatcher, Authorizable, Ownable } from './utils/wrapper_interfaces';
 
@@ -118,6 +121,78 @@ export class DeploymentManager {
     public static readonly protocolFeeMultiplier = new BigNumber(150000);
     public static readonly gasPrice = new BigNumber(1e9); // 1 Gwei
     public static readonly protocolFee = DeploymentManager.gasPrice.times(DeploymentManager.protocolFeeMultiplier);
+
+    public static createFromChainId(
+        chainId: number,
+        environment: BlockchainTestsEnvironment,
+        accounts: string[] = [],
+    ): DeploymentManager {
+        const contractAddresses = getContractAddressesForChainOrThrow(chainId);
+        const txDefaults = {
+            ...environment.txDefaults,
+            gasPrice: DeploymentManager.gasPrice,
+        };
+
+        // Construct asset proxies.
+        const assetProxyAbis = _.mapValues(assetProxyArtifacts, (artifact: SimpleContractArtifact) => artifact.compilerOutput.abi);
+        const assetProxies = {
+            erc20Proxy: new ERC20ProxyContract(contractAddresses.erc20Proxy, environment.provider, txDefaults, assetProxyAbis),
+            erc721Proxy: new ERC721ProxyContract(contractAddresses.erc721Proxy, environment.provider, txDefaults, assetProxyAbis),
+            erc1155Proxy: new ERC1155ProxyContract(contractAddresses.erc1155Proxy, environment.provider, txDefaults, assetProxyAbis),
+            multiAssetProxy: new MultiAssetProxyContract(contractAddresses.multiAssetProxy, environment.provider, txDefaults, assetProxyAbis),
+            staticCallProxy: new StaticCallProxyContract(contractAddresses.staticCallProxy, environment.provider, txDefaults, assetProxyAbis),
+            erc20BridgeProxy: new ERC20BridgeProxyContract(contractAddresses.erc20BridgeProxy, environment.provider, txDefaults, assetProxyAbis),
+        };
+
+        // Exchange.
+        const exchangeArtifactDeps = {...ERC20Artifacts, ...exchangeArtifacts, ...stakingArtifacts };
+        const exchangeAbiDeps = _.mapValues(exchangeArtifactDeps, (artifact: SimpleContractArtifact) => artifact.compilerOutput.abi);
+        const exchange = new ExchangeContract(contractAddresses.exchange, environment.provider, txDefaults, exchangeAbiDeps);
+
+        // Governor
+        const governorAbiDeps = _.mapValues(multisigArtifacts, (artifact: SimpleContractArtifact) => artifact.compilerOutput.abi);
+        const governor = new ZeroExGovernorContract(contractAddresses.zeroExGovernor, environment.provider, txDefaults, governorAbiDeps);
+
+        // Tokens
+        const tokens = {
+            erc20: [],
+            erc721: [],
+            erc1155: [],
+            weth: new WETH9Contract("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", environment.provider, txDefaults, assetProxyAbis),
+            zrx: new DummyERC20TokenContract(contractAddresses.zrxToken, environment.provider, txDefaults, assetProxyAbis),
+        }
+
+        // Staking
+        const stakingAbis = _.mapValues({...stakingArtifacts, ...ERC20Artifacts }, (artifact: SimpleContractArtifact) => artifact.compilerOutput.abi);
+        const zrxVault = new ZrxVaultContract(contractAddresses.zrxVault, environment.provider, txDefaults, stakingAbis);
+        const stakingLogic = new TestStakingContract(contractAddresses.staking, environment.provider, txDefaults, stakingAbis);
+        const stakingProxy = new StakingProxyContract(contractAddresses.stakingProxy, environment.provider, txDefaults, stakingAbis);
+        const stakingWrapper = new TestStakingContract(contractAddresses.stakingProxy, environment.provider, txDefaults, stakingAbis);
+        const staking = {
+            zrxVault,
+            stakingLogic,
+            stakingProxy,
+            stakingWrapper
+        };
+
+        // DevUtils
+        const devUtils = new DevUtilsContract(contractAddresses.devUtils, environment.provider, txDefaults);
+        const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
+
+        // Construct the new instance and return it.
+        return new DeploymentManager(
+            assetProxies,
+            governor,
+            exchange,
+            staking,
+            tokens,
+            chainId,
+            accounts,
+            txDefaults,
+            devUtils,
+            assetDataEncoder,
+        );
+    }
 
     /**
      * Fully deploy the 0x exchange and staking contracts and configure the system with the

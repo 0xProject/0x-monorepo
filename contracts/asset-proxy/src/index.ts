@@ -63,3 +63,4 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+export * from './dydx_bridge_encoder';
