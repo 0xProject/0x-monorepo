@@ -8,7 +8,7 @@ import {
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as ERC1155Artifacts, ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { artifacts as ERC20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { artifacts as ERC721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
@@ -196,7 +196,13 @@ export class DeploymentManager {
             staking.stakingProxy,
         ]);
 
-        const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, environment.provider);
+        const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+            devUtilsArtifacts.DevUtils,
+            environment.provider,
+            environment.txDefaults,
+            devUtilsArtifacts,
+            exchange.address,
+        );
         const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
 
         // Construct the new instance and return it.
