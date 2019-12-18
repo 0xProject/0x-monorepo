@@ -106,16 +106,16 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
                     log.event === 'LogDeposit'
                         ? expectedDepositEvents[nextExpectedDepositEventIdx++]
                         : expectedWithdrawEvents[nextExpectedWithdrawEventIdx++];
-                expect(expectedEvent.accountOwner, 'accountOwner').to.equal(log.args.accountOwner);
-                expect(expectedEvent.accountNumber, 'accountNumber').to.bignumber.equal(log.args.accountNumber);
-                expect(expectedEvent.market, 'market').to.bignumber.equal(log.args.market);
-                expect(expectedEvent.from, 'from').to.equal(log.args.from);
+                expect(log.args.accountOwner, 'accountOwner').to.equal(expectedEvent.accountOwner);
+                expect(log.args.accountNumber, 'accountNumber').to.bignumber.equal(expectedEvent.accountNumber);
+                expect(log.args.market, 'market').to.bignumber.equal(expectedEvent.market);
+                expect(log.args.from, 'from').to.equal(expectedEvent.from);
                 // We only check the first update field because it's the delta balance (amount deposited).
                 // The next field is the new total, which depends on interest rates at the time of execution.
-                expect(expectedEvent.update[0][0], 'update sign').to.equal(log.args.update[0][0]);
+                expect(log.args.update[0][0], 'update sign').to.equal(expectedEvent.update[0][0]);
                 const updateValueHex = log.args.update[0][1]._hex;
                 const updateValueBn = new BigNumber(updateValueHex, 16);
-                expect(expectedEvent.update[0][1], 'update value').to.bignumber.equal(updateValueBn);
+                expect(updateValueBn, 'update value').to.bignumber.equal(expectedEvent.update[0][1]);
             }
         };
 

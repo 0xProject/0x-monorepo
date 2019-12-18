@@ -10,11 +10,13 @@ export async function deployDydxBridgeAsync(
     deployment: DeploymentManager,
     environment: BlockchainTestsEnvironment,
 ): Promise<TestDydxBridgeContract> {
+    const tokenHolders = deployment.accounts;
     const dydxBridge = await TestDydxBridgeContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.TestDydxBridge,
         environment.provider,
         deployment.txDefaults,
         assetProxyArtifacts,
+        tokenHolders,
     );
     return dydxBridge;
 }

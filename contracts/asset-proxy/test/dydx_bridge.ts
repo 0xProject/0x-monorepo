@@ -12,18 +12,17 @@ import { TestDydxBridgeContract, TestDydxBridgeEvents } from './wrappers';
 blockchainTests.resets('DydxBridge unit tests', env => {
     const defaultAccountNumber = new BigNumber(1);
     const marketId = new BigNumber(2);
-    let tokenAddress: string;
     const defaultAmount = new BigNumber(4);
     const notAuthorized = '0x0000000000000000000000000000000000000001';
     const defaultDepositAction = {
-        actionType: DydxBridgeActionType.Deposit as number,
+        actionType: DydxBridgeActionType.Deposit,
         accountId: constants.ZERO_AMOUNT,
         marketId,
         conversionRateNumerator: constants.ZERO_AMOUNT,
         conversionRateDenominator: constants.ZERO_AMOUNT,
     };
     const defaultWithdrawAction = {
-        actionType: DydxBridgeActionType.Withdraw as number,
+        actionType: DydxBridgeActionType.Withdraw,
         accountId: constants.ZERO_AMOUNT,
         marketId,
         conversionRateNumerator: constants.ZERO_AMOUNT,
@@ -48,6 +47,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             env.provider,
             env.txDefaults,
             artifacts,
+            [accountOwner, receiver],
         );
 
         // Deploy test erc20 bridge proxy
@@ -61,7 +61,6 @@ blockchainTests.resets('DydxBridge unit tests', env => {
 
         // Setup asset data encoder
         assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
-        tokenAddress = testContract.address;
     });
 
     describe('bridgeTransferFrom()', () => {
@@ -289,8 +288,9 @@ blockchainTests.resets('DydxBridge unit tests', env => {
         let assetData: string;
 
         before(async () => {
+            const testTokenAddress = await testContract.getTestToken().callAsync();
             assetData = assetDataEncoder
-                .ERC20Bridge(tokenAddress, testContract.address, dydxBridgeDataEncoder.encode({ bridgeData }))
+                .ERC20Bridge(testTokenAddress, testContract.address, dydxBridgeDataEncoder.encode({ bridgeData }))
                 .getABIEncodedTransactionData();
         });
 

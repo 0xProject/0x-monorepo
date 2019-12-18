@@ -1,8 +1,9 @@
 import { DydxBridgeActionType, dydxBridgeDataEncoder, TestDydxBridgeContract } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
+import { SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { DecodedLogArgs, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { deployDydxBridgeAsync } from '../bridges/deploy_dydx_bridge';
@@ -16,19 +17,18 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
     let makerToken: DummyERC20TokenContract;
     let takerToken: DummyERC20TokenContract;
     const marketId = new BigNumber(3);
-    const makerAssetAmount = toBaseUnitAmount(6);
-    const takerAssetAmount = toBaseUnitAmount(1);
+    const dydxConversionRateNumerator = toBaseUnitAmount(6);
+    const dydxConversionRateDenominator = toBaseUnitAmount(1);
     let maker: Maker;
     let taker: Taker;
+    let orderConfig: Partial<SignedOrder>;
+    let dydxBridgeProxyAssetData: string;
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit as number,
         accountId: constants.ZERO_AMOUNT,
         marketId,
-        // The bridge is passed the `makerAssetFillAmount` and we
-        // want to compute the input `takerAssetFillAmount`
-        //   => multiply by `takerAssetAmount` / `makerAssetAmount`.
-        conversionRateNumerator: takerAssetAmount,
-        conversionRateDenominator: makerAssetAmount,
+        conversionRateNumerator: dydxConversionRateNumerator,
+        conversionRateDenominator: dydxConversionRateDenominator,
     };
     const defaultWithdrawAction = {
         actionType: DydxBridgeActionType.Withdraw as number,
@@ -49,16 +49,17 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
         });
         testContract = await deployDydxBridgeAsync(deployment, env);
         const encodedBridgeData = dydxBridgeDataEncoder.encode({ bridgeData });
-        const bridgeProxyAssetData = deployment.assetDataEncoder
-            .ERC20Bridge(testContract.address, testContract.address, encodedBridgeData)
+        const testTokenAddress = await testContract.getTestToken().callAsync();
+        dydxBridgeProxyAssetData = deployment.assetDataEncoder
+            .ERC20Bridge(testTokenAddress, testContract.address, encodedBridgeData)
             .getABIEncodedTransactionData();
         [makerToken, takerToken] = deployment.tokens.erc20;
 
-        // Configure Maker & Taker.
-        const orderConfig = {
-            makerAssetAmount,
-            takerAssetAmount,
-            makerAssetData: bridgeProxyAssetData,
+        // Configure default order parameters.
+        orderConfig = {
+            makerAssetAmount: toBaseUnitAmount(1),
+            takerAssetAmount: toBaseUnitAmount(1),
+            makerAssetData: deployment.assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData(),
             takerAssetData: deployment.assetDataEncoder.ERC20Token(takerToken.address).getABIEncodedTransactionData(),
             // Not important for this test.
             feeRecipientAddress: constants.NULL_ADDRESS,
@@ -68,14 +69,19 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
             takerFeeAssetData: deployment.assetDataEncoder
                 .ERC20Token(takerToken.address)
                 .getABIEncodedTransactionData(),
-            makerFee: constants.ZERO_AMOUNT,
-            takerFee: constants.ZERO_AMOUNT,
+            makerFee: toBaseUnitAmount(1),
+            takerFee: toBaseUnitAmount(1),
         };
+
+        // Configure maker.
         maker = new Maker({
             name: 'Maker',
             deployment,
             orderConfig,
         });
+        await maker.configureERC20TokenAsync(makerToken, deployment.assetProxies.erc20Proxy.address);
+
+        // Configure taker.
         taker = new Taker({
             name: 'Taker',
             deployment,
@@ -88,46 +94,139 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
     });
 
     describe('fillOrder', () => {
-        const verifyEvents = (logs: Array<LogWithDecodedArgs<DecodedLogArgs> | LogEntry>): void => {
+        interface DydxFillResults {
+            makerAssetFilledAmount: BigNumber;
+            takerAssetFilledAmount: BigNumber;
+            makerFeePaid: BigNumber;
+            takerFeePaid: BigNumber;
+            amountDepositedIntoDydx: BigNumber;
+            amountWithdrawnFromDydx: BigNumber;
+        }
+        const fillOrder = async (
+            signedOrder: SignedOrder,
+            customTakerAssetFillAmount?: BigNumber,
+        ): Promise<DydxFillResults> => {
+            // Fill order
+            const takerAssetFillAmount =
+                customTakerAssetFillAmount !== undefined ? customTakerAssetFillAmount : signedOrder.takerAssetAmount;
+            const tx = await taker.fillOrderAsync(signedOrder, takerAssetFillAmount);
+
             // Extract values from fill event.
             // tslint:disable no-unnecessary-type-assertion
-            const fillEvent = _.find(logs, log => {
+            const fillEvent = _.find(tx.logs, log => {
                 return (log as any).event === 'Fill';
             }) as LogWithDecodedArgs<DecodedLogArgs>;
-            const makerAssetFilledAmount = fillEvent.args.makerAssetFilledAmount;
-            const takerAssetFilledAmount = fillEvent.args.takerAssetFilledAmount;
 
             // Extract amount deposited into dydx from maker.
-            const dydxDepositEvent = _.find(logs, log => {
+            const dydxDepositEvent = _.find(tx.logs, log => {
                 return (
                     (log as any).event === 'OperateAction' &&
                     (log as any).args.actionType === DydxBridgeActionType.Deposit
                 );
             }) as LogWithDecodedArgs<DecodedLogArgs>;
-            const amountDepositedIntoDydx = dydxDepositEvent.args.amountValue;
 
             // Extract amount withdrawn from dydx to taker.
-            const dydxWithdrawEvent = _.find(logs, log => {
+            const dydxWithdrawEvent = _.find(tx.logs, log => {
                 return (
                     (log as any).event === 'OperateAction' &&
                     (log as any).args.actionType === DydxBridgeActionType.Withdraw
                 );
             }) as LogWithDecodedArgs<DecodedLogArgs>;
-            const amountWithdrawnFromDydx = dydxWithdrawEvent.args.amountValue;
 
-            // Assert fill amounts match amounts deposited/withdrawn from dydx.
-            expect(makerAssetFilledAmount).to.bignumber.equal(amountWithdrawnFromDydx);
-            expect(takerAssetFilledAmount).to.bignumber.equal(amountDepositedIntoDydx);
+            // Return values of interest for assertions.
+            return {
+                makerAssetFilledAmount: fillEvent.args.makerAssetFilledAmount,
+                takerAssetFilledAmount: fillEvent.args.takerAssetFilledAmount,
+                makerFeePaid: fillEvent.args.makerFeePaid,
+                takerFeePaid: fillEvent.args.takerFeePaid,
+                amountDepositedIntoDydx: dydxDepositEvent.args.amountValue,
+                amountWithdrawnFromDydx: dydxWithdrawEvent.args.amountValue,
+            };
         };
-        it('should successfully fill a dydx order', async () => {
-            const signedOrder = await maker.signOrderAsync();
-            const tx = await taker.fillOrderAsync(signedOrder, signedOrder.takerAssetAmount);
-            verifyEvents(tx.logs);
+        it('should successfully fill a dydx order (DydxBridge used in makerAssetData)', async () => {
+            const signedOrder = await maker.signOrderAsync({
+                // Invert the dydx conversion rate when using the bridge in the makerAssetData.
+                makerAssetData: dydxBridgeProxyAssetData,
+                makerAssetAmount: dydxConversionRateDenominator,
+                takerAssetAmount: dydxConversionRateNumerator,
+            });
+            const dydxFillResults = await fillOrder(signedOrder);
+            expect(
+                dydxFillResults.makerAssetFilledAmount,
+                'makerAssetFilledAmount should equal amountWithdrawnFromDydx',
+            ).to.bignumber.equal(dydxFillResults.amountWithdrawnFromDydx);
+            expect(
+                dydxFillResults.takerAssetFilledAmount,
+                'takerAssetFilledAmount should equal amountDepositedIntoDydx',
+            ).to.bignumber.equal(dydxFillResults.amountDepositedIntoDydx);
         });
-        it('should partially fill a dydx order', async () => {
-            const signedOrder = await maker.signOrderAsync();
-            const tx = await taker.fillOrderAsync(signedOrder, signedOrder.takerAssetAmount.div(2));
-            verifyEvents(tx.logs);
+        it('should successfully fill a dydx order (DydxBridge used in takerAssetData)', async () => {
+            const signedOrder = await maker.signOrderAsync({
+                // Match the dydx conversion rate when using the bridge in the takerAssetData.
+                takerAssetData: dydxBridgeProxyAssetData,
+                makerAssetAmount: dydxConversionRateNumerator,
+                takerAssetAmount: dydxConversionRateDenominator,
+            });
+            const dydxFillResults = await fillOrder(signedOrder);
+            expect(
+                dydxFillResults.makerAssetFilledAmount,
+                'makerAssetFilledAmount should equal amountDepositedIntoDydx',
+            ).to.bignumber.equal(dydxFillResults.amountDepositedIntoDydx);
+            expect(
+                dydxFillResults.takerAssetFilledAmount,
+                'takerAssetFilledAmount should equal amountWithdrawnFromDydx',
+            ).to.bignumber.equal(dydxFillResults.amountWithdrawnFromDydx);
+        });
+        it('should successfully fill a dydx order (DydxBridge used in makerFeeAssetData)', async () => {
+            const signedOrder = await maker.signOrderAsync({
+                // Invert the dydx conversion rate when using the bridge in the makerFeeAssetData.
+                makerFeeAssetData: dydxBridgeProxyAssetData,
+                makerFee: dydxConversionRateDenominator,
+                takerFee: dydxConversionRateNumerator,
+            });
+            const dydxFillResults = await fillOrder(signedOrder);
+            expect(
+                dydxFillResults.makerFeePaid,
+                'makerFeePaid should equal amountWithdrawnFromDydx',
+            ).to.bignumber.equal(dydxFillResults.amountWithdrawnFromDydx);
+            expect(
+                dydxFillResults.takerFeePaid,
+                'takerFeePaid should equal amountDepositedIntoDydx',
+            ).to.bignumber.equal(dydxFillResults.amountDepositedIntoDydx);
+        });
+        it('should successfully fill a dydx order (DydxBridge used in takerFeeAssetData)', async () => {
+            const signedOrder = await maker.signOrderAsync({
+                // Match the dydx conversion rate when using the bridge in the takerFeeAssetData.
+                takerFeeAssetData: dydxBridgeProxyAssetData,
+                makerFee: dydxConversionRateNumerator,
+                takerFee: dydxConversionRateDenominator,
+            });
+            const dydxFillResults = await fillOrder(signedOrder);
+            expect(
+                dydxFillResults.makerFeePaid,
+                'makerFeePaid should equal amountDepositedIntoDydx',
+            ).to.bignumber.equal(dydxFillResults.amountDepositedIntoDydx);
+            expect(
+                dydxFillResults.takerFeePaid,
+                'takerFeePaid should equal amountWithdrawnFromDydx',
+            ).to.bignumber.equal(dydxFillResults.amountWithdrawnFromDydx);
+        });
+        it('should partially fill a dydx order (DydxBridge used in makerAssetData)', async () => {
+            const signedOrder = await maker.signOrderAsync({
+                // Invert the dydx conversion rate when using the bridge in the makerAssetData.
+                makerAssetData: dydxBridgeProxyAssetData,
+                makerAssetAmount: dydxConversionRateDenominator,
+                takerAssetAmount: dydxConversionRateNumerator,
+            });
+            const dydxFillResults = await fillOrder(signedOrder, signedOrder.takerAssetAmount.div(2));
+            expect(
+                dydxFillResults.makerAssetFilledAmount,
+                'makerAssetFilledAmount should equal amountWithdrawnFromDydx',
+            ).to.bignumber.equal(dydxFillResults.amountWithdrawnFromDydx);
+            expect(
+                dydxFillResults.takerAssetFilledAmount,
+                'takerAssetFilledAmount should equal amountDepositedIntoDydx',
+            ).to.bignumber.equal(dydxFillResults.amountDepositedIntoDydx);
         });
     });
 });
