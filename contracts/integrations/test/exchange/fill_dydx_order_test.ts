@@ -37,7 +37,7 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
         conversionRateNumerator: constants.ZERO_AMOUNT,
         conversionRateDenominator: constants.ZERO_AMOUNT,
     };
-    const defaultBridgeData = {
+    const bridgeData = {
         accountNumbers: [new BigNumber(0)],
         actions: [defaultDepositAction, defaultWithdrawAction],
     };
@@ -48,9 +48,9 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
             numErc20TokensToDeploy: 2,
         });
         testContract = await deployDydxBridgeAsync(deployment, env);
-        const bridgeData = dydxBridgeDataEncoder.encode({defaultBridgeData});
+        const encodedBridgeData = dydxBridgeDataEncoder.encode({ bridgeData });
         const bridgeProxyAssetData = deployment.assetDataEncoder
-            .ERC20Bridge(testContract.address, testContract.address, bridgeData)
+            .ERC20Bridge(testContract.address, testContract.address, encodedBridgeData)
             .getABIEncodedTransactionData();
         [makerToken, takerToken] = deployment.tokens.erc20;
 
