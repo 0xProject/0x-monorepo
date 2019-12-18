@@ -89,7 +89,7 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
     });
 
     describe('fillOrder', () => {
-        const verifyEvents = (logs: Array<(LogWithDecodedArgs<DecodedLogArgs> | LogEntry)>): void => {
+        const verifyEvents = (logs: Array<LogWithDecodedArgs<DecodedLogArgs> | LogEntry>): void => {
             // Extract values from fill event.
             // tslint:disable no-unnecessary-type-assertion
             const fillEvent = _.find(logs, log => {

@@ -1,3 +1,4 @@
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { devConstants, env, EnvVars, Web3Config, web3Factory } from '@0x/dev-utils';
 import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
@@ -34,7 +35,7 @@ if (process.env.FORK_RPC_URL !== undefined) {
             // Test dYdX user account (can trade DAI on dydx bridge)
             '0xbd67dce6348dc5949a8af5888d6a2bd5dc3cb86d',
             // ERC20BridgeProxy
-            '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0',
+            getContractAddressesForChainOrThrow(1).erc20BridgeProxy,
         ],
     };
 }
