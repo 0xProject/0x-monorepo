@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Integration tests for DydxBridge with ERC20BridgeProxy.",
+                "pr": 2401
+            }
+        ]
+    },
+    {
         "timestamp": 1576540892,
         "version": "3.0.2",
         "changes": [
