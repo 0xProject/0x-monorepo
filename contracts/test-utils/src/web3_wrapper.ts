@@ -35,6 +35,7 @@ if (process.env.FORK_RPC_URL !== undefined) {
             '0x1916a90bafe25771485e182a96132e200daffdd1', // My account with DAI and unlocked bridge.
             '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0', // erc20 bridge proxy
             '0x61935cbdd02287b511119ddb11aeb42f1593b7ef', // 0x exchange v3
+            '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308', // some random taker for dydx testing. Should have some tokens up in here.
         ],
     };
 }

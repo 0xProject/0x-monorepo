@@ -13,6 +13,7 @@ import { DeploymentManager } from '../framework/deployment_manager';
 
 import { Maker } from '../framework/actors/maker';
 import { Taker } from '../framework/actors/taker';
+import { Actor } from '../framework/actors/base';
 
 import { dydxEvents }  from './abi/dydxEvents';
 
@@ -29,7 +30,6 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
     const daiMarketId = new BigNumber(3);
     let maker: Maker;
     let taker: Taker;
-
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit as number,
         accountId: constants.ZERO_AMOUNT,
@@ -68,6 +68,9 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             orderConfig: {
                 makerAssetData: assetDataUtils.encodeDydxBridgeData(defaultBridgeData),
                 takerAssetData: deployment.assetDataEncoder.ERC20Token(daiToken).getABIEncodedTransactionData(),
+                makerFeeAssetData: constants.NULL_ADDRESS,
+                takerFeeAssetData: constants.NULL_ADDRESS,
+                feeRecipientAddress: constants.NULL_ADDRESS,
             },
         });
 
@@ -77,9 +80,11 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
         });
     });
 
+    after(async () => {
+        Actor.reset();
+    });
 
-
-    describe('ERC20BridgeProxy.transferFrom', () => {
+    describe('Mainnet tests', () => {
         const callTransferFrom = async (
             /*from: string,
             to: string,
@@ -180,35 +185,18 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             */
         };
 
-        /* WORKS
-        it.only('should successfully deposit value', async () => {
-            console.log('begin depositing value');
-            const bridgeData = {
-                accountNumbers: [new BigNumber(0)],
-                actions: [defaultDepositAction, defaultWithdrawAction],
-            };
-            const assetData = assetDataUtils.encodeERC20BridgeAssetData(
-                daiToken,
-                dydxBridge,
-                bridgeDataEncoder.encode({ bridgeData })
-            );
 
-            console.log(JSON.stringify(assetData));
-            console.log('***\n',toBaseUnitAmount(1),'\n***');
-
-            const returnValue = await callBridgeTransferFrom(
-                accountOwner,
-                receiver,
-                toBaseUnitAmount(1),
-                bridgeData,
-                '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0'
-            );
-            //console.log(JSON.stringify(returnValue, null, 4));
+        it.only('should work via 0x Exchange', async () => {
+           // throw new Error(`maker Address: ${maker.address}`);
+            const signedOrder = await maker.signOrderAsync();
+            console.log(JSON.stringify(signedOrder));
+            //console.log(JSON.stringify(signedOrder));
+            const tx = await taker.fillOrderAsync(signedOrder, signedOrder.takerAssetAmount);
+            console.log(JSON.stringify(tx));
         });
-        */
 
 
-        it.only('should successfully deposit value', async () => {
+        it.skip('should successfully deposit value', async () => {
             const order = {
 
             }
@@ -237,17 +225,8 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             //console.log(JSON.stringify(returnValue, null, 4));
         });
 
-        it('should successfully deposit value', async () => {
-            console.log('begin asdasasdadaasda value');
-            const bridgeData = {
-                accountNumbers: [new BigNumber(0)],
-                actions: [defaultDepositAction],
-            };
-            const returnValue = await callTransferFrom(
-                bridgeData,
-                accountOwner,
-            );
-            console.log(JSON.stringify(returnValue, null, 4));
-        });
+
+
+
     });
 });
