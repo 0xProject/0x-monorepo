@@ -60,7 +60,7 @@ contract TestDydxBridge is
         external
     {
         if (shouldRevertOnOperate) {
-            revert('TestDydxBridge/SHOULD_REVERT_ON_OPERATE');
+            revert("TestDydxBridge/SHOULD_REVERT_ON_OPERATE");
         }
 
         for (uint i = 0; i < accounts.length; ++i) {
@@ -90,9 +90,25 @@ contract TestDydxBridge is
             } else if (actions[i].actionType == IDydx.ActionType.Deposit) {
                 balances[actions[i].otherAddress] -= actions[i].amount.value;
             } else {
-                revert('TestDydxBridge/UNSUPPORTED_ACTION');
+                revert("TestDydxBridge/UNSUPPORTED_ACTION");
             }
         }
+    }
+
+    /// @dev If set then will revert.
+    function setRevertOnOperate(bool shouldRevert)
+        external
+    {
+        shouldRevertOnOperate = shouldRevert;
+    }
+
+    /// @dev Returns balance of this contract.
+    function balanceOf(address holder)
+        external
+        view
+        returns (uint256)
+    {
+        return balances[holder];
     }
 
     /// @dev overrides `_getDydxAddress()` from `DeploymentConstants` to return this address.
@@ -111,19 +127,5 @@ contract TestDydxBridge is
         returns (address)
     {
         return msg.sender == ALWAYS_REVERT_ADDRESS ? address(0) : msg.sender;
-    }
-
-    function setRevertOnOperate(bool shouldRevert)
-        external
-    {
-        shouldRevertOnOperate = shouldRevert;
-    }
-
-    function balanceOf(address holder)
-        external
-        view
-        returns (uint256)
-    {
-        return balances[holder];
     }
 }

@@ -1,23 +1,16 @@
 import {
-    dydxBridgeDataEncoder,
+    artifacts as assetProxyArtifacts,
     DydxBridgeActionType,
     DydxBridgeContract,
     DydxBridgeData,
-    artifacts as assetProxyArtifacts,
+    dydxBridgeDataEncoder,
 } from '@0x/contracts-asset-proxy';
+import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { LogWithDecodedArgs, DecodedLogArgs } from 'ethereum-types';
+import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
-import { contractAddresses, contractWrappers } from '../mainnet_fork_utils';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-protocol';
-
-import { DeploymentManager } from '../framework/deployment_manager';
-
-import { Maker } from '../framework/actors/maker';
-import { Taker } from '../framework/actors/taker';
-import { Actor } from '../framework/actors/base';
+import { contractAddresses } from '../mainnet_fork_utils';
 
 import { dydxEvents } from './abi/dydxEvents';
 
@@ -111,6 +104,7 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             let nextExpectedDepositEventIdx = 0;
             let nextExpectedWithdrawEventIdx = 0;
             for (const rawLog of txReceipt.logs) {
+                // tslint:disable-next-line no-unnecessary-type-assertion
                 const log = rawLog as LogWithDecodedArgs<DecodedLogArgs>;
                 if (log.event !== 'LogDeposit' && log.event !== 'LogWithdraw') {
                     continue;

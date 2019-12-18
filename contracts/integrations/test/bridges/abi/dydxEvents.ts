@@ -1,3 +1,4 @@
+// tslint:disable max-file-line-count
 export const dydxEvents = {
     contractName: 'Events',
     abi: [

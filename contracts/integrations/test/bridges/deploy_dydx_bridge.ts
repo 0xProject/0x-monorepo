@@ -1,5 +1,4 @@
 import { artifacts as assetProxyArtifacts, TestDydxBridgeContract } from '@0x/contracts-asset-proxy';
-import { artifacts as ERC20Artifacts } from '@0x/contracts-erc20';
 import { BlockchainTestsEnvironment } from '@0x/contracts-test-utils';
 
 import { DeploymentManager } from '../framework/deployment_manager';

@@ -3,11 +3,11 @@ import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts } from './artifacts';
-import { TestDydxBridgeContract, TestDydxBridgeEvents } from './wrappers';
-
 import { DydxBridgeActionType, DydxBridgeData, dydxBridgeDataEncoder } from '../src/dydx_bridge_encoder';
 import { ERC20BridgeProxyContract, IAssetDataContract } from '../src/wrappers';
+
+import { artifacts } from './artifacts';
+import { TestDydxBridgeContract, TestDydxBridgeEvents } from './wrappers';
 
 blockchainTests.resets('DydxBridge unit tests', env => {
     const defaultAccountNumber = new BigNumber(1);
