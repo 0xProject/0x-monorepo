@@ -4,7 +4,6 @@ import { BlockchainTestsEnvironment } from '@0x/contracts-test-utils';
 
 import { DeploymentManager } from '../framework/deployment_manager';
 
-
 /**
  * Deploys test DydxBridge contract configured to work alongside the provided `deployment`.
  */

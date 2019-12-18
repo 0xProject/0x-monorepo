@@ -57,7 +57,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             env.txDefaults,
             artifacts,
         );
-        await testProxyContract.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({from: owner});
+        await testProxyContract.addAuthorizedAddress(authorized).awaitTransactionSuccessAsync({ from: owner });
 
         // Setup asset data encoder
         assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
@@ -73,7 +73,13 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             sender: string,
         ): Promise<string> => {
             const returnValue = await testContract
-                .bridgeTransferFrom(constants.NULL_ADDRESS, from, to, amount, dydxBridgeDataEncoder.encode({ bridgeData }))
+                .bridgeTransferFrom(
+                    constants.NULL_ADDRESS,
+                    from,
+                    to,
+                    amount,
+                    dydxBridgeDataEncoder.encode({ bridgeData }),
+                )
                 .callAsync({ from: sender });
             return returnValue;
         };
@@ -86,7 +92,13 @@ blockchainTests.resets('DydxBridge unit tests', env => {
         ): Promise<void> => {
             // Execute transaction.
             const txReceipt = await testContract
-                .bridgeTransferFrom(constants.NULL_ADDRESS, from, to, amount, dydxBridgeDataEncoder.encode({ bridgeData }))
+                .bridgeTransferFrom(
+                    constants.NULL_ADDRESS,
+                    from,
+                    to,
+                    amount,
+                    dydxBridgeDataEncoder.encode({ bridgeData }),
+                )
                 .awaitTransactionSuccessAsync({ from: sender });
 
             // Verify `OperateAccount` event.
@@ -111,7 +123,9 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                     amountDenomination: weiDenomination,
                     amountRef: deltaAmountRef,
                     amountValue: action.conversionRateDenominator.gt(0)
-                        ? amount.times(action.conversionRateNumerator).dividedToIntegerBy(action.conversionRateDenominator)
+                        ? amount
+                              .times(action.conversionRateNumerator)
+                              .dividedToIntegerBy(action.conversionRateDenominator)
                         : amount,
                     primaryMarketId: marketId,
                     secondaryMarketId: constants.ZERO_AMOUNT,
@@ -127,7 +141,13 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, constants.ZERO_AMOUNT, bridgeData, authorized);
+            await callBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                constants.ZERO_AMOUNT,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling with no accounts', async () => {
             const bridgeData = {
@@ -255,13 +275,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultDepositAction],
             };
-            const tx = callBridgeTransferFrom(
-                accountOwner,
-                receiver,
-                defaultAmount,
-                bridgeData,
-                authorized,
-            );
+            const tx = callBridgeTransferFrom(accountOwner, receiver, defaultAmount, bridgeData, authorized);
             const expectedError = 'TestDydxBridge/SHOULD_REVERT_ON_OPERATE';
             return expect(tx).to.revertWith(expectedError);
         });
@@ -274,12 +288,10 @@ blockchainTests.resets('DydxBridge unit tests', env => {
         };
         let assetData: string;
 
-        before(async() => {
-            assetData = assetDataEncoder.ERC20Bridge(
-                tokenAddress,
-                testContract.address,
-                dydxBridgeDataEncoder.encode({bridgeData})
-            ).getABIEncodedTransactionData();
+        before(async () => {
+            assetData = assetDataEncoder
+                .ERC20Bridge(tokenAddress, testContract.address, dydxBridgeDataEncoder.encode({ bridgeData }))
+                .getABIEncodedTransactionData();
         });
 
         it('should succeed if `bridgeTransferFrom` succeeds', async () => {

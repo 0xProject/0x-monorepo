@@ -46,7 +46,7 @@ export const assetDataUtils = {
             .getABIEncodedTransactionData();
     },
     encodeDydxBridgeData(bridgeData: DydxBridgeData): string {
-        return dydxBridgeDataEncoder.encode({bridgeData});
+        return dydxBridgeDataEncoder.encode({ bridgeData });
     },
     decodeDydxBridgeData(bridgeData: string): DydxBridgeData {
         return dydxBridgeDataEncoder.decode(bridgeData);

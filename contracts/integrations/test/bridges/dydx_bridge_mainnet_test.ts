@@ -1,4 +1,10 @@
-import { dydxBridgeDataEncoder, DydxBridgeActionType, DydxBridgeContract, DydxBridgeData, artifacts as assetProxyArtifacts } from '@0x/contracts-asset-proxy';
+import {
+    dydxBridgeDataEncoder,
+    DydxBridgeActionType,
+    DydxBridgeContract,
+    DydxBridgeData,
+    artifacts as assetProxyArtifacts,
+} from '@0x/contracts-asset-proxy';
 import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
@@ -13,7 +19,7 @@ import { Maker } from '../framework/actors/maker';
 import { Taker } from '../framework/actors/taker';
 import { Actor } from '../framework/actors/base';
 
-import { dydxEvents }  from './abi/dydxEvents';
+import { dydxEvents } from './abi/dydxEvents';
 
 blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
     let testContract: DydxBridgeContract;
@@ -42,7 +48,11 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
         conversionRateDenominator: new BigNumber(2),
     };
     before(async () => {
-        testContract = new DydxBridgeContract(dydxBridgeAddress, env.provider, env.txDefaults, {"DydxBridge" : assetProxyArtifacts.DydxBridge.compilerOutput.abi, "ERC20": erc20Artifacts.ERC20Token.compilerOutput.abi, "Dydx": dydxEvents.abi});
+        testContract = new DydxBridgeContract(dydxBridgeAddress, env.provider, env.txDefaults, {
+            DydxBridge: assetProxyArtifacts.DydxBridge.compilerOutput.abi,
+            ERC20: erc20Artifacts.ERC20Token.compilerOutput.abi,
+            Dydx: dydxEvents.abi,
+        });
     });
 
     describe('bridgeTransferFrom()', () => {
@@ -53,7 +63,13 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
             bridgeData: DydxBridgeData,
         ): Promise<void> => {
             const txReceipt = await testContract
-                .bridgeTransferFrom(constants.NULL_ADDRESS, from, to, amount, dydxBridgeDataEncoder.encode({ bridgeData }))
+                .bridgeTransferFrom(
+                    constants.NULL_ADDRESS,
+                    from,
+                    to,
+                    amount,
+                    dydxBridgeDataEncoder.encode({ bridgeData }),
+                )
                 .awaitTransactionSuccessAsync({ from: erc20BridgeProxyAddress, gasPrice: 0 });
 
             console.log(JSON.stringify(txReceipt.logs, null, 4));
@@ -67,34 +83,23 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
                     : amount;
                 switch (action.actionType) {
                     case DydxBridgeActionType.Deposit:
-
                         expectedDepositEvents.push({
                             accountOwner,
                             accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
                             market: action.marketId,
-                            update: [
-                                [
-                                    true,
-                                    scaledAmount,
-                                ]
-                            ],
+                            update: [[true, scaledAmount]],
                             from: accountOwner,
                         });
                         break;
 
                     case DydxBridgeActionType.Withdraw:
-                            expectedWithdrawEvents.push({
-                                accountOwner,
-                                accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
-                                market: action.marketId,
-                                update: [
-                                    [
-                                        false,
-                                        scaledAmount,
-                                    ]
-                                ],
-                                to: receiver,
-                            });
+                        expectedWithdrawEvents.push({
+                            accountOwner,
+                            accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
+                            market: action.marketId,
+                            update: [[false, scaledAmount]],
+                            to: receiver,
+                        });
                         break;
 
                     default:
@@ -110,7 +115,10 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
                 if (log.event !== 'LogDeposit' && log.event !== 'LogWithdraw') {
                     continue;
                 }
-                const expectedEvent = (log.event === 'LogDeposit') ? expectedDepositEvents[nextExpectedDepositEventIdx++] : expectedWithdrawEvents[nextExpectedWithdrawEventIdx++];
+                const expectedEvent =
+                    log.event === 'LogDeposit'
+                        ? expectedDepositEvents[nextExpectedDepositEventIdx++]
+                        : expectedWithdrawEvents[nextExpectedWithdrawEventIdx++];
                 expect(expectedEvent.accountOwner, 'accountOwner').to.equal(log.args.accountOwner);
                 expect(expectedEvent.accountNumber, 'accountNumber').to.bignumber.equal(log.args.accountNumber);
                 expect(expectedEvent.market, 'market').to.bignumber.equal(log.args.market);
