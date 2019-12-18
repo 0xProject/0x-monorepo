@@ -1,3 +1,4 @@
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { devConstants, env, EnvVars, Web3Config, web3Factory } from '@0x/dev-utils';
 import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
@@ -26,11 +27,15 @@ if (process.env.FORK_RPC_URL !== undefined) {
         ...providerConfigs,
         fork: process.env.FORK_RPC_URL,
         blockTime: 0,
-        // ZeroExGovernor signer addresses
         unlocked_accounts: [
+            // ZeroExGovernor signer addresses
             '0x257619b7155d247e43c8b6d90c8c17278ae481f0',
             '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2',
             '0x894d623e0e0e8ed12c4a73dada999e275684a37d',
+            // Test dYdX user account (can trade DAI on dydx bridge)
+            '0xbd67dce6348dc5949a8af5888d6a2bd5dc3cb86d',
+            // ERC20BridgeProxy
+            getContractAddressesForChainOrThrow(1).erc20BridgeProxy,
         ],
     };
 }
