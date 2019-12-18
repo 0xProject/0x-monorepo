@@ -29,6 +29,8 @@ contract TestDydxBridge is
 {
 
     address private constant ALWAYS_REVERT_ADDRESS = address(1);
+    mapping (address => uint256) private balances;
+    bool private shouldRevertOnOperate;
 
     event OperateAccount(
         address owner,
@@ -57,6 +59,10 @@ contract TestDydxBridge is
     )
         external
     {
+        if (shouldRevertOnOperate) {
+            revert('TestDydxBridge/SHOULD_REVERT_ON_OPERATE');
+        }
+
         for (uint i = 0; i < accounts.length; ++i) {
             emit OperateAccount(
                 accounts[i].owner,
@@ -78,6 +84,14 @@ contract TestDydxBridge is
                 actions[i].otherAccountId,
                 actions[i].data
             );
+
+            if (actions[i].actionType == IDydx.ActionType.Withdraw) {
+                balances[actions[i].otherAddress] -= actions[i].amount.value;
+            } else if (actions[i].actionType == IDydx.ActionType.Deposit) {
+                balances[actions[i].otherAddress] += actions[i].amount.value;
+            } else {
+                revert('TestDydxBridge/UNSUPPORTED_ACTION');
+            }
         }
     }
 
@@ -97,5 +111,19 @@ contract TestDydxBridge is
         returns (address)
     {
         return msg.sender == ALWAYS_REVERT_ADDRESS ? address(0) : msg.sender;
+    }
+
+    function setRevertOnOperate(bool shouldRevert)
+        external
+    {
+        shouldRevertOnOperate = shouldRevert;
+    }
+
+    function balanceOf(address holder)
+        external
+        view
+        returns (uint256)
+    {
+        return balances[holder];
     }
 }
