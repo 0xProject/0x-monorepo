@@ -1,11 +1,8 @@
-import { dydxBridgeDataEncoder, DydxBridgeActionType, DydxBridgeContract, DydxBridgeData, artifacts as assetProxyArtifacts, ERC20BridgeProxyContract } from '@0x/contracts-asset-proxy';
-import { StakingProxyContract, ZrxVaultContract, artifacts as stakingArtifacts } from '@0x/contracts-staking';
-import { blockchainTests, constants, describe, expect, toBaseUnitAmount, verifyEventsFromLogs } from '@0x/contracts-test-utils';
-import { AssetProxyId } from '@0x/types';
-import { AbiEncoder, BigNumber } from '@0x/utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { dydxBridgeDataEncoder, DydxBridgeActionType, DydxBridgeContract, DydxBridgeData, artifacts as assetProxyArtifacts } from '@0x/contracts-asset-proxy';
+import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
+import { BigNumber } from '@0x/utils';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { LogWithDecodedArgs, DecodedLogArgs, LogEntry } from 'ethereum-types';
+import { LogWithDecodedArgs, DecodedLogArgs } from 'ethereum-types';
 
 import { contractAddresses, contractWrappers } from '../mainnet_fork_utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-protocol';
@@ -20,8 +17,7 @@ import { dydxEvents }  from './abi/dydxEvents';
 
 blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
     let testContract: DydxBridgeContract;
-    let testProxyContract: ERC20BridgeProxyContract;
-    const accountOwner = '0x1916a90bafe25771485e182a96132e200daffdd1'; // me
+    const accountOwner = '0xBd67Dce6348dc5949A8aF5888D6a2bd5dc3cb86d';
     const receiver = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';
     const dydxBridgeAddress = '0x96ddba19b69d6ea2549f6a12d005595167414744';
     const erc20BridgeProxyAddress = '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0';
