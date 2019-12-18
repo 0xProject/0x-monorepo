@@ -86,9 +86,9 @@ contract TestDydxBridge is
             );
 
             if (actions[i].actionType == IDydx.ActionType.Withdraw) {
-                balances[actions[i].otherAddress] -= actions[i].amount.value;
-            } else if (actions[i].actionType == IDydx.ActionType.Deposit) {
                 balances[actions[i].otherAddress] += actions[i].amount.value;
+            } else if (actions[i].actionType == IDydx.ActionType.Deposit) {
+                balances[actions[i].otherAddress] -= actions[i].amount.value;
             } else {
                 revert('TestDydxBridge/UNSUPPORTED_ACTION');
             }
