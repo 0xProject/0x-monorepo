@@ -16,7 +16,9 @@ export class PoolManagementSimulation extends Simulation {
         const operators = filterActorsByRole(actors, PoolOperator);
 
         const [actions, weights] = _.unzip([
+            // 40% chance of executing validCreateStakingPool assertion for a random operator
             ...operators.map(operator => [operator.simulationActions.validCreateStakingPool, 0.4]),
+            // 60% chance of executing validDecreaseStakingPoolOperatorShare for a random operator
             ...operators.map(operator => [operator.simulationActions.validDecreaseStakingPoolOperatorShare, 0.6]),
         ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
         while (true) {

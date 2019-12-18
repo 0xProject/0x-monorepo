@@ -120,7 +120,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                         ? StakeStatus.Undelegated
                         : (Pseudorandom.sample(
                               [StakeStatus.Undelegated, StakeStatus.Delegated],
-                              [0.2, 0.8],
+                              [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
                           ) as StakeStatus);
                 const from = new StakeInfo(fromStatus, fromPoolId);
 
@@ -133,7 +133,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                         ? StakeStatus.Undelegated
                         : (Pseudorandom.sample(
                               [StakeStatus.Undelegated, StakeStatus.Delegated],
-                              [0.2, 0.8],
+                              [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
                           ) as StakeStatus);
                 const to = new StakeInfo(toStatus, toPoolId);
 

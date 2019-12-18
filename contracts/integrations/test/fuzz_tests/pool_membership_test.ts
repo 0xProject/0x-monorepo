@@ -24,8 +24,11 @@ export class PoolMembershipSimulation extends Simulation {
         const poolManagement = new PoolManagementSimulation(this.environment);
 
         const [actions, weights] = _.unzip([
+            // 20% chance of executing validJoinStakingPool for a random maker
             ...makers.map(maker => [maker.simulationActions.validJoinStakingPool, 0.2 / makers.length]),
+            // 60% chance of executing validFillOrder for a random taker
             ...takers.map(taker => [taker.simulationActions.validFillOrder, 0.6 / takers.length]),
+            // 20% chance of executing an assertion generated from the pool management simulation
             [poolManagement.generator, 0.2],
         ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
 

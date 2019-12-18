@@ -34,10 +34,15 @@ export class StakingRewardsSimulation extends Simulation {
         const stakeManagement = new StakeManagementSimulation(this.environment);
 
         const [actions, weights] = _.unzip([
+            // 10% chance of executing validWithdrawDelegatorRewards for a random staker
             ...stakers.map(staker => [staker.simulationActions.validWithdrawDelegatorRewards, 0.1 / stakers.length]),
+            // 10% chance of executing validFinalizePool for a random keeper
             ...keepers.map(keeper => [keeper.simulationActions.validFinalizePool, 0.1 / keepers.length]),
+            // 10% chance of executing validEndEpoch for a random keeper
             ...keepers.map(keeper => [keeper.simulationActions.validEndEpoch, 0.1 / keepers.length]),
+            // 50% chance of executing an assertion generated from the pool membership simulation
             [poolMembership.generator, 0.5],
+            // 20% chance of executing an assertion generated from the stake management simulation
             [stakeManagement.generator, 0.2],
         ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
         while (true) {
