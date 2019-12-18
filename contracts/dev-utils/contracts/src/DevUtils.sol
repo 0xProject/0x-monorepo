@@ -36,7 +36,6 @@ contract DevUtils is
     LibTransactionDecoder,
     LibEIP712ExchangeDomain,
     EthBalanceChecker
-    // OrderTransferSimulationUtils
 {
     constructor (address _exchange)
         public

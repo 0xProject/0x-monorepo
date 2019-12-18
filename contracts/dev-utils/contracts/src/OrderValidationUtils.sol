@@ -127,11 +127,6 @@ contract OrderValidationUtils is
             fillableTakerAssetAmount
         ) == OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
 
-        /*
-        // Perform taker asset validation
-        fillableTakerAssetAmount = _isTakerAssetDataValid(order) ? fillableTakerAssetAmount : 0;
-        */
-
         return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
 
@@ -184,50 +179,5 @@ contract OrderValidationUtils is
         (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);
         transferableAssetAmount = LibSafeMath.min256(balance, allowance);
         return transferableAssetAmount;
-    }
-
-    /// @dev This function handles the edge cases around taker validation. This function
-    ///      currently attempts to find duplicate ERC721 token's in the taker
-    ///      multiAssetData.
-    /// @param order The order that should be validated.
-    /// @return Whether or not the order should be considered valid.
-    function _isTakerAssetDataValid(LibOrder.Order memory order)
-        internal
-        pure
-        returns (bool)
-    {
-        bytes memory takerAssetData = order.takerAssetData;
-
-        // Only process the taker asset data if it is multiAssetData.
-        bytes4 assetProxyId = takerAssetData.readBytes4(0);
-        if (assetProxyId != IAssetData(address(0)).MultiAsset.selector) {
-            return true;
-        }
-
-        // Get array of values and array of assetDatas
-        (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(takerAssetData);
-
-        uint256 length = nestedAssetData.length;
-        for (uint256 i = 0; i != length; i++) {
-            // NOTE(jalextowle): As an optimization, we will break out of this function
-            // as soon as it is determined that there are no possible ERC721 duplicates.
-            bool hasSeenERC721 = false;
-
-            bytes4 nestedAssetProxyId = nestedAssetData[i].readBytes4(0);
-            if (nestedAssetProxyId == IAssetData(address(0)).ERC721Token.selector) {
-                hasSeenERC721 = true;
-                for (uint256 j = i; j != length; j++) {
-                    if (nestedAssetData[i].equals(nestedAssetData[j])) {
-                        return false;
-                    }
-                }
-            }
-
-            if (!hasSeenERC721) {
-                break;
-            }
-        }
-
-        return true;
     }
 }
