@@ -114,4 +114,10 @@ export interface GetMarketOrdersOpts {
      * Default is 0.01 (100 basis points).
      */
     dustFractionThreshold: number;
+    /**
+     * Filter out Uniswap quotes that have inputs and outputs smaller
+     * than `10 ** minUniswapDecimals`, because Uniswap can be unstable at low-
+     * precision amounts.
+     */
+    minUniswapDecimals: number;
 }

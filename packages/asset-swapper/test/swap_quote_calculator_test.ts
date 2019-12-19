@@ -450,20 +450,20 @@ describe('swapQuoteCalculator', () => {
             );
             // test if orders are correct
             expect(swapQuote.orders).to.deep.equal([
-                testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET[0],
                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET[1],
+                testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET[0],
             ]);
             expect(swapQuote.takerAssetFillAmount).to.bignumber.equal(assetSellAmount);
             // test if rates are correct
             // 50 takerAsset units to fill the first order + 100 takerAsset units for fees
-            expect(swapQuote.bestCaseQuoteInfo).to.deep.equal({
+            expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(2),
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(0.8),
                 protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
-            expect(swapQuote.worstCaseQuoteInfo).to.deep.equal({
+            expect(swapQuote.bestCaseQuoteInfo).to.deep.equal({
                 feeTakerAssetAmount: baseUnitAmount(2),
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,

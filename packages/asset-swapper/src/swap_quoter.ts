@@ -165,6 +165,7 @@ export class SwapQuoter {
         const samplerContract = new IERC20BridgeSamplerContract(
             this._contractAddresses.erc20BridgeSampler,
             this.provider,
+            { gas: constants.SAMPLER_CONTRACT_GAS_LIMIT },
         );
         this._marketOperationUtils = new MarketOperationUtils(samplerContract, this._contractAddresses, {
             chainId,
