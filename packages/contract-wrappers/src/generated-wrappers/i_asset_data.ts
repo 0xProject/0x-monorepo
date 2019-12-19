@@ -40,6 +40,7 @@ export class IAssetDataContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode: string | undefined;
+    public static contractName = 'IAssetData';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

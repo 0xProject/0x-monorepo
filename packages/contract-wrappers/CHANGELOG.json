@@ -1,5 +1,15 @@
 [
     {
+        "version": "13.3.0",
+        "changes": [
+            {
+                "note": "Added updated `DevUtils` wrapper",
+                "pr": 2402
+            }
+        ],
+        "timestamp": 1576706957
+    },
+    {
         "version": "13.2.0",
         "changes": [
             {
