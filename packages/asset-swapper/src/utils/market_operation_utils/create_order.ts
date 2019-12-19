@@ -4,6 +4,7 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 import { SignedOrderWithFillableAmounts } from '../../types';
+import { sortingUtils } from '../../utils/sorting_utils';
 
 import { constants as marketOperationUtilConstants } from './constants';
 import { AggregationError, ERC20BridgeSource, Fill, FillData, NativeFillData, OrderDomain } from './types';
@@ -45,7 +46,7 @@ export class CreateOrderUtils {
                 );
             }
         }
-        return orders;
+        return sortingUtils.sortOrders(orders);
     }
 
     // Convert buy fills into orders.
@@ -76,7 +77,7 @@ export class CreateOrderUtils {
                 );
             }
         }
-        return orders;
+        return sortingUtils.sortOrders(orders);
     }
 
     private _getBridgeAddressFromSource(source: ERC20BridgeSource): string {
@@ -135,7 +136,7 @@ function createCommonOrderFields(
 ): CommonOrderFields {
     const makerAssetAmountAdjustedWithSlippage = isBuy
         ? makerAssetAmount
-        : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_UP);
+        : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_DOWN);
     const takerAssetAmountAdjustedWithSlippage = isBuy
         ? takerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
         : takerAssetAmount;

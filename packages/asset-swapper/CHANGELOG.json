@@ -1,5 +1,38 @@
 [
     {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Ignore zero sample results from the sampler contract.",
+                "pr": 2406
+            },
+            {
+                "note": "Allow skipping Uniswap when dealing with low precision amounts with `minUniswapDecimals` option.",
+                "pr": 2406
+            },
+            {
+                "note": "Increase default `runLimit` from `1024` to `4096`.",
+                "pr": 2406
+            },
+            {
+                "note": "Increase default `numSamples` from `8` to `10`",
+                "pr": 2406
+            },
+            {
+                "note": "Fix ordering of optimized orders.",
+                "pr": 2406
+            },
+            {
+                "note": "Fix best and worst quotes being reversed sometimes.",
+                "pr": 2406
+            },
+            {
+                "note": "Fix rounding of quoted asset amounts.",
+                "pr": 2406
+            }
+        ],
+    },
+    {
         "version": "3.0.2",
         "changes": [
             {

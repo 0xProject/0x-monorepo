@@ -79,7 +79,7 @@ export class MarketOperationUtils {
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, takerAmount);
 
-        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
+        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts, _opts.minUniswapDecimals);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
         // If native orders are allowed, splice them in.
@@ -137,7 +137,6 @@ export class MarketOperationUtils {
             DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples),
             difference(BUY_SOURCES, _opts.excludedSources),
         );
-
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
             fillableAmounts,
@@ -149,7 +148,7 @@ export class MarketOperationUtils {
             _opts.dustFractionThreshold,
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, makerAmount);
-        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
+        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts, _opts.minUniswapDecimals);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
         // If native orders are allowed, splice them in.
@@ -261,25 +260,44 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
     return path;
 }
 
-function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean): Fill[][] {
+function createPathsFromDexQuotes(
+    dexQuotes: DexSample[][],
+    noConflicts: boolean,
+    minUniswapDecimals: number,
+): Fill[][] {
+    const minUniswapAmount = new BigNumber(`1e${minUniswapDecimals}`);
     const paths: Fill[][] = [];
     for (const quote of dexQuotes) {
         // Native orders can be filled in any order, so they're all root nodes.
         const path: Fill[] = [];
-        paths.push(path);
+        let prevSample: DexSample | undefined;
         // tslint:disable-next-line: prefer-for-of
         for (let i = 0; i < quote.length; i++) {
             const sample = quote[i];
-            const prev = i !== 0 ? quote[i - 1] : undefined;
-            const parent = i !== 0 ? path[path.length - 1] : undefined;
+            if (sample.output.eq(0) || (prevSample && prevSample.output.gte(sample.output))) {
+                // Stop if the output is zero or does not increase.
+                break;
+            }
+            if (sample.source === ERC20BridgeSource.Uniswap) {
+                // Uniswap quotes are unstable with low precision amounts,
+                // so skip over them.
+                if (sample.input.lt(minUniswapAmount) || sample.output.lt(minUniswapAmount)) {
+                    continue;
+                }
+            }
             path.push({
-                parent,
+                parent: path.length !== 0 ? path[path.length - 1] : undefined,
                 flags: sourceToFillFlags(sample.source),
                 exclusionMask: noConflicts ? sourceToExclusionMask(sample.source) : 0,
-                input: sample.input.minus(prev ? prev.input : 0),
-                output: sample.output.minus(prev ? prev.output : 0),
+                input: sample.input.minus(prevSample ? prevSample.input : 0),
+                output: sample.output.minus(prevSample ? prevSample.output : 0),
                 fillData: { source: sample.source },
             });
+            prevSample = quote[i];
+        }
+        if (path.length > 0) {
+            // Don't push empty paths.
+            paths.push(path);
         }
     }
     return paths;

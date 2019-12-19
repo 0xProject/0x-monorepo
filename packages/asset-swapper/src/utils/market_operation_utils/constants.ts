@@ -24,12 +24,13 @@ export const SELL_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Da
 export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
-    runLimit: 1024,
+    runLimit: 4096,
     excludedSources: [],
     bridgeSlippage: 0.0005,
     dustFractionThreshold: 0.01,
-    numSamples: 8,
+    numSamples: 10,
     noConflicts: true,
+    minUniswapDecimals: 8,
 };
 
 export const constants = {

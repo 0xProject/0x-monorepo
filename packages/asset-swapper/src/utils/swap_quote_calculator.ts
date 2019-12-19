@@ -176,7 +176,7 @@ export class SwapQuoteCalculator {
                 const makerAssetAmount = takerAssetAmountWithFees
                     .div(adjustedFillableTakerAssetAmount)
                     .multipliedBy(adjustedFillableMakerAssetAmount)
-                    .integerValue(BigNumber.ROUND_CEIL);
+                    .integerValue(BigNumber.ROUND_DOWN);
                 return {
                     totalMakerAssetAmount: totalMakerAssetAmount.plus(makerAssetAmount),
                     totalTakerAssetAmount: totalTakerAssetAmount.plus(takerAssetAmount),
@@ -230,7 +230,7 @@ export class SwapQuoteCalculator {
                 const takerAssetAmountWithFees = makerFillAmount
                     .div(adjustedFillableMakerAssetAmount)
                     .multipliedBy(adjustedFillableTakerAssetAmount)
-                    .integerValue(BigNumber.ROUND_CEIL);
+                    .integerValue(BigNumber.ROUND_UP);
 
                 const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(
                     order,
@@ -291,7 +291,7 @@ function getTakerAssetAmountBreakDown(
         const takerAssetAmount = takerFeeAmount
             .div(makerAssetFillAmount)
             .multipliedBy(takerAssetAmountWithFees)
-            .integerValue(BigNumber.ROUND_CEIL);
+            .integerValue(BigNumber.ROUND_UP);
         return {
             takerAssetAmount,
             feeTakerAssetAmount: takerAssetAmountWithFees.minus(takerAssetAmount),
