@@ -4,7 +4,11 @@
         "changes": [
             {
                 "note": "Do not query empty/unsigned orders. Swallow revets on DEX quotes.",
-                "pr": 2365
+                "pr": 2395
+            },
+            {
+                "note": "Add gas limits to external quote calls.",
+                "pr": 2405
             }
         ],
         "timestamp": 1576540892
