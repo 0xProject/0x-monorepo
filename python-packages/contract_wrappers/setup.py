@@ -122,7 +122,7 @@ class CleanCommandExtension(clean):
                         "src",
                         "zero_ex",
                         "contract_wrappers",
-                        f"{contract}",
+                        contract,
                         "__init__.py",
                     )
                 )
