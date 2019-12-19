@@ -3,7 +3,7 @@
         "version": "5.1.0",
         "changes": [
             {
-                "note": "Added dYdX Test User and ERC20BridgeProxy to list of unlocked accounts on mainnet fork",
+                "note": "Added ERC20BridgeProxy to list of unlocked accounts on mainnet fork",
                 "pr": 2401
             }
         ]

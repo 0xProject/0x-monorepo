@@ -20,7 +20,7 @@ blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
     const receiver = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';
     const defaultAccountNumber = new BigNumber(0);
     const daiMarketId = new BigNumber(3);
-    const defaultAmount = toBaseUnitAmount(1);
+    const defaultAmount = toBaseUnitAmount(0.01);
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit as number,
         accountId: constants.ZERO_AMOUNT,
