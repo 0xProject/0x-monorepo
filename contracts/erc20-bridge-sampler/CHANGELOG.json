@@ -5,6 +5,10 @@
             {
                 "note": "Add gas limits to external quote calls.",
                 "pr": 2405
+            },
+            {
+                "note": "Add gas limits to external quote calls.",
+                "pr": 2405
             }
         ]
     },
