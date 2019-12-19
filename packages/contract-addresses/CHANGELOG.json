@@ -6,8 +6,7 @@
                 "note": "Added new `DevUtils` addresses",
                 "pr": 2402
             }
-        ],
-        "timestamp": 1576718515
+        ]
     },
     {
         "version": "4.1.0",
