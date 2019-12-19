@@ -1,3 +1,4 @@
+import { LibMathRevertErrors } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -82,7 +83,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 .callAsync({ from: sender });
             return returnValue;
         };
-        const callBridgeTransferFromAndVerifyEvents = async (
+        const executeBridgeTransferFromAndVerifyEvents = async (
             from: string,
             to: string,
             amount: BigNumber,
@@ -140,7 +141,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(
+            await executeBridgeTransferFromAndVerifyEvents(
                 accountOwner,
                 receiver,
                 constants.ZERO_AMOUNT,
@@ -153,56 +154,104 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                 accountNumbers: [],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling with no actions', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling `operate` with the `deposit` action and a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling `operate` with the `deposit` action and multiple accounts', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber, defaultAccountNumber.plus(1)],
                 actions: [defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling `operate` with the `withdraw` action and a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultWithdrawAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling `operate` with the `withdraw` action and multiple accounts', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber, defaultAccountNumber.plus(1)],
                 actions: [defaultWithdrawAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling `operate` with the `deposit` action and multiple accounts', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber, defaultAccountNumber.plus(1)],
                 actions: [defaultWithdrawAction, defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when calling `operate` with multiple actions under a single account', async () => {
             const bridgeData = {
                 accountNumbers: [defaultAccountNumber],
                 actions: [defaultWithdrawAction, defaultDepositAction],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when scaling the `amount` to deposit', async () => {
             const conversionRateNumerator = new BigNumber(1);
@@ -218,7 +267,13 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                     },
                 ],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('succeeds when scaling the `amount` to withdraw', async () => {
             const conversionRateNumerator = new BigNumber(1);
@@ -234,7 +289,13 @@ blockchainTests.resets('DydxBridge unit tests', env => {
                     },
                 ],
             };
-            await callBridgeTransferFromAndVerifyEvents(accountOwner, receiver, defaultAmount, bridgeData, authorized);
+            await executeBridgeTransferFromAndVerifyEvents(
+                accountOwner,
+                receiver,
+                defaultAmount,
+                bridgeData,
+                authorized,
+            );
         });
         it('reverts if not called by the ERC20 Bridge Proxy', async () => {
             const bridgeData = {
@@ -276,6 +337,32 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             };
             const tx = callBridgeTransferFrom(accountOwner, receiver, defaultAmount, bridgeData, authorized);
             const expectedError = 'TestDydxBridge/SHOULD_REVERT_ON_OPERATE';
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('should revert when there is a rounding error', async () => {
+            // Setup a rounding error
+            const conversionRateNumerator = new BigNumber(5318);
+            const conversionRateDenominator = new BigNumber(47958);
+            const amount = new BigNumber(9000);
+            const bridgeData = {
+                accountNumbers: [defaultAccountNumber],
+                actions: [
+                    defaultDepositAction,
+                    {
+                        ...defaultWithdrawAction,
+                        conversionRateNumerator,
+                        conversionRateDenominator,
+                    },
+                ],
+            };
+
+            // Execute transfer and assert error.
+            const tx = callBridgeTransferFrom(accountOwner, receiver, amount, bridgeData, authorized);
+            const expectedError = new LibMathRevertErrors.RoundingError(
+                conversionRateNumerator,
+                conversionRateDenominator,
+                amount,
+            );
             return expect(tx).to.revertWith(expectedError);
         });
     });
