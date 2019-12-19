@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Added new `DevUtils` addresses",
+                "pr": 2402
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

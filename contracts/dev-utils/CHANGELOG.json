@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Fixed ERC721 duplicate token ID bug",
+                "pr": 2400
+            }
+        ]
+    },
+    {
         "timestamp": 1576540892,
         "version": "1.0.2",
         "changes": [
