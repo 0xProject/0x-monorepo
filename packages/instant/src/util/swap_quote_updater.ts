@@ -69,6 +69,7 @@ export const swapQuoteUpdater = {
         // We have a successful new swap quote
         errorFlasher.clearError(dispatch);
         // invalidate the last swap quote.
+        console.log('newSwapQuote', newSwapQuote);
         dispatch(actions.updateLatestSwapQuote(newSwapQuote));
         analytics.trackQuoteFetched(newSwapQuote, fetchOrigin);
     },

@@ -45,6 +45,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
 
     private _renderRows(): React.ReactNode {
         const { swapQuoteInfo } = this.props;
+        console.log(swapQuoteInfo);
         return (
             <React.Fragment>
                 <OrderDetailsRow

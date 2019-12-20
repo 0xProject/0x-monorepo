@@ -119,6 +119,7 @@ export const createReducer = (initialState: State) => {
                 const newSwapQuoteIfExists = action.data;
                 const shouldUpdate =
                     newSwapQuoteIfExists === undefined || doesSwapQuoteMatchState(newSwapQuoteIfExists, state);
+                console.log('shouldUpdate', newSwapQuoteIfExists, shouldUpdate);
                 if (shouldUpdate) {
                     return {
                         ...state,
@@ -280,9 +281,13 @@ const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): b
     const selectedAssetIfExists = state.selectedAsset;
     const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false
+    console.log('hmmmm?');
     if (selectedAssetIfExists === undefined || selectedAssetUnitAmountIfExists === undefined) {
         return false;
     }
+    console.log('lol wut', selectedAssetIfExists.assetData);
+    console.log(selectedAssetIfExists.assetData);
+    console.log(swapQuote.makerAssetData);
     // if swapQuote's assetData does not match that of the current selected asset, return false
     if (selectedAssetIfExists.assetData !== swapQuote.makerAssetData) {
         return false;
@@ -290,13 +295,14 @@ const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): b
     // if ERC20 and swapQuote's makerAssetFillAmount does not match selectedAssetAmount, return false
     // if ERC721, return true
     const selectedAssetMetaData = selectedAssetIfExists.metaData;
+    console.log('here then');
     if (selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20) {
         const selectedAssetAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
             selectedAssetUnitAmountIfExists,
             selectedAssetMetaData.decimals,
         );
         const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(swapQuote.makerAssetFillAmount);
-
+        console.log('doesAssetAmountMatch', doesAssetAmountMatch);
         return doesAssetAmountMatch;
     } else {
         return true;
