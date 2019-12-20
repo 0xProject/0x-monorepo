@@ -37,6 +37,9 @@ contract ERC20BridgeSampler is
     DeploymentConstants
 {
     bytes4 constant internal ERC20_PROXY_ID = 0xf47261b0; // bytes4(keccak256("ERC20Token(address)"));
+    uint256 constant internal KYBER_SAMPLE_CALL_GAS = 600e3;
+    uint256 constant internal UNISWAP_SAMPLE_CALL_GAS = 150e3;
+    uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 250e3;
 
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
@@ -268,12 +271,13 @@ contract ERC20BridgeSampler is
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
-                _getKyberNetworkProxyAddress().staticcall(abi.encodeWithSelector(
-                    IKyberNetwork(0).getExpectedRate.selector,
-                    _takerToken,
-                    _makerToken,
-                    takerTokenAmounts[i]
-                ));
+                _getKyberNetworkProxyAddress().staticcall.gas(KYBER_SAMPLE_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IKyberNetwork(0).getExpectedRate.selector,
+                        _takerToken,
+                        _makerToken,
+                        takerTokenAmounts[i]
+                    ));
             uint256 rate = 0;
             if (didSucceed) {
                 rate = abi.decode(resultData, (uint256));
@@ -307,12 +311,13 @@ contract ERC20BridgeSampler is
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
-                _getEth2DaiAddress().staticcall(abi.encodeWithSelector(
-                    IEth2Dai(0).getBuyAmount.selector,
-                    makerToken,
-                    takerToken,
-                    takerTokenAmounts[i]
-                ));
+                _getEth2DaiAddress().staticcall.gas(ETH2DAI_SAMPLE_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IEth2Dai(0).getBuyAmount.selector,
+                        makerToken,
+                        takerToken,
+                        takerTokenAmounts[i]
+                    ));
             uint256 buyAmount = 0;
             if (didSucceed) {
                 buyAmount = abi.decode(resultData, (uint256));
@@ -341,12 +346,13 @@ contract ERC20BridgeSampler is
         takerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
-                _getEth2DaiAddress().staticcall(abi.encodeWithSelector(
-                    IEth2Dai(0).getPayAmount.selector,
-                    takerToken,
-                    makerToken,
-                    makerTokenAmounts[i]
-                ));
+                _getEth2DaiAddress().staticcall.gas(ETH2DAI_SAMPLE_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IEth2Dai(0).getPayAmount.selector,
+                        takerToken,
+                        makerToken,
+                        makerTokenAmounts[i]
+                    ));
             uint256 sellAmount = 0;
             if (didSucceed) {
                 sellAmount = abi.decode(resultData, (uint256));
@@ -493,10 +499,11 @@ contract ERC20BridgeSampler is
             return 0;
         }
         (bool didSucceed, bytes memory resultData) =
-            uniswapExchangeAddress.staticcall(abi.encodeWithSelector(
-                functionSelector,
-                inputAmount
-            ));
+            uniswapExchangeAddress.staticcall.gas(UNISWAP_SAMPLE_CALL_GAS)(
+                abi.encodeWithSelector(
+                    functionSelector,
+                    inputAmount
+                ));
         if (didSucceed) {
             outputAmount = abi.decode(resultData, (uint256));
         }

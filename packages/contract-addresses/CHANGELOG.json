@@ -5,6 +5,10 @@
             {
                 "note": "Added new `DevUtils` addresses",
                 "pr": 2402
+            },
+            {
+                "note": "Update ERC20BridgeSampler address on Kovan and mainnet.",
+                "pr": 2405
             }
         ]
     },

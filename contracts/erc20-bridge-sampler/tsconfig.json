@@ -5,6 +5,7 @@
     "files": [
         "generated-artifacts/ERC20BridgeSampler.json",
         "generated-artifacts/IERC20BridgeSampler.json",
+        "generated-artifacts/IKyberNetwork.json",
         "test/generated-artifacts/ERC20BridgeSampler.json",
         "test/generated-artifacts/IDevUtils.json",
         "test/generated-artifacts/IERC20BridgeSampler.json",
