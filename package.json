@@ -64,7 +64,7 @@
                 "maxSize": "1300kB"
             },
             {
-                "path": "packages/instant/umd/instant.js",
+                "path": "packages/instant/umd/v3/instant.js",
                 "maxSize": "2100kB"
             }
         ],
