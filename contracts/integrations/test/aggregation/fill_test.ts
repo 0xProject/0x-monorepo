@@ -13,6 +13,7 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
     // Mainnet address of the `TestMainnetAggregatorFills` contract.
     const TEST_CONTRACT_ADDRESS = '0x37Ca306F42748b7fe105F89FCBb2CD03D27c8146';
     const TAKER_ADDRESS = '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'; // Vitalik
+    const ORDERBOOK_POLLING_MS = 1000;
     const GAS_PRICE = new BigNumber(1);
     const TAKER_ASSET_ETH_VALUE = 500e18;
     const MIN_BALANCE = 500.1e18;
@@ -23,7 +24,7 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
     let testContract: TestMainnetAggregatorFillsContract;
     let swapQuoter: SwapQuoter;
     let takerEthBalance: BigNumber;
-    const orderbooks: Orderbook[] = [];
+    const orderbooks: { [name: string]: Orderbook } = {};
 
     async function getTakerOrdersAsync(takerAssetSymbol: string): Promise<SignedOrder[]> {
         if (takerAssetSymbol === 'ETH') {
@@ -39,8 +40,10 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
         const orders = _.flatten(
-            await Promise.all(orderbooks.map(book => book.getOrdersAsync(makerAssetData, takerAssetData))),
-        ).map(o => o.order);
+            await Promise.all(
+                Object.keys(orderbooks).map(name => getOrdersFromOrderBookAsync(name, makerAssetData, takerAssetData)),
+            ),
+        );
         const uniqueOrders: SignedOrder[] = [];
         for (const order of orders) {
             if (!order.makerFee.eq(0) || !order.takerFee.eq(0)) {
@@ -51,6 +54,19 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
             }
         }
         return uniqueOrders;
+    }
+
+    async function getOrdersFromOrderBookAsync(
+        name: string,
+        makerAssetData: string,
+        takerAssetData: string,
+    ): Promise<SignedOrder[]> {
+        try {
+            return (await orderbooks[name].getOrdersAsync(makerAssetData, takerAssetData)).map(r => r.order);
+        } catch (err) {
+            logUtils.warn(`Failed to retrieve orders from orderbook "${name}".`);
+        }
+        return [];
     }
 
     function isSameOrder(a: SignedOrder, b: SignedOrder): boolean {
@@ -114,13 +130,16 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
         });
         swapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(env.provider, 'https://api.0x.org/sra');
         // Pool orderbooks because we're desperate for liquidity.
-        orderbooks.push(
-            swapQuoter.orderbook,
-            Orderbook.getOrderbookForPollingProvider({
-                httpEndpoint: 'https://sra.bamboorelay.com/0x/v3',
-                pollingIntervalMs: 1000,
-            }),
-        );
+        orderbooks.swapQuoter = swapQuoter.orderbook;
+        orderbooks.bamboo = Orderbook.getOrderbookForPollingProvider({
+            httpEndpoint: 'https://sra.bamboorelay.com/0x/v3',
+            pollingIntervalMs: ORDERBOOK_POLLING_MS,
+        });
+        // TODO(dorothy-zbornak): Uncomment when radar's SRA is up.
+        // orderbooks.radar = Orderbook.getOrderbookForPollingProvider({
+        //     httpEndpoint: 'https://api-v3.radarrelay.com/v3',
+        //     pollingIntervalMs: ORDERBOOK_POLLING_MS,
+        // });
         takerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(TAKER_ADDRESS);
     });
 
