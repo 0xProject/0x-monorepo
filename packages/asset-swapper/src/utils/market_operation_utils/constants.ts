@@ -30,7 +30,6 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     dustFractionThreshold: 0.01,
     numSamples: 10,
     noConflicts: true,
-    minUniswapDecimals: 7,
 };
 
 export const constants = {

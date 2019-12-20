@@ -79,7 +79,7 @@ export class MarketOperationUtils {
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, takerAmount);
 
-        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts, _opts.minUniswapDecimals);
+        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
         // If native orders are allowed, splice them in.
@@ -148,7 +148,7 @@ export class MarketOperationUtils {
             _opts.dustFractionThreshold,
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, makerAmount);
-        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts, _opts.minUniswapDecimals);
+        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
         // If native orders are allowed, splice them in.
@@ -260,12 +260,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
     return path;
 }
 
-function createPathsFromDexQuotes(
-    dexQuotes: DexSample[][],
-    noConflicts: boolean,
-    minUniswapDecimals: number,
-): Fill[][] {
-    const minUniswapAmount = new BigNumber(`1e${minUniswapDecimals}`);
+function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean): Fill[][] {
     const paths: Fill[][] = [];
     for (const quote of dexQuotes) {
         // Native orders can be filled in any order, so they're all root nodes.
@@ -277,13 +272,6 @@ function createPathsFromDexQuotes(
             if (sample.output.eq(0) || (prevSample && prevSample.output.gte(sample.output))) {
                 // Stop if the output is zero or does not increase.
                 break;
-            }
-            if (sample.source === ERC20BridgeSource.Uniswap) {
-                // Uniswap quotes are unstable with low precision amounts,
-                // so skip over them.
-                if (sample.input.lt(minUniswapAmount) || sample.output.lt(minUniswapAmount)) {
-                    continue;
-                }
             }
             path.push({
                 parent: path.length !== 0 ? path[path.length - 1] : undefined,

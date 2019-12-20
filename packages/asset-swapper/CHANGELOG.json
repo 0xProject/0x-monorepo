@@ -7,10 +7,6 @@
                 "pr": 2406
             },
             {
-                "note": "Allow skipping Uniswap when dealing with low precision amounts with `minUniswapDecimals` option.",
-                "pr": 2406
-            },
-            {
                 "note": "Increase default `runLimit` from `1024` to `4096`.",
                 "pr": 2406
             },

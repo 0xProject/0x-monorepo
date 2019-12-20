@@ -542,34 +542,6 @@ describe('MarketOperationUtils tests', () => {
                 ];
                 expect(orderSources).to.deep.eq(expectedSources);
             });
-
-            it('excludes low-precision Uniswap quotes', async () => {
-                const rates: RatesBySource = {};
-                const fillAmount = new BigNumber(100);
-                rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
-                rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
-                const marketOperationUtils = new MarketOperationUtils(
-                    createSamplerFromSellRates(rates),
-                    contractAddresses,
-                    ORDER_DOMAIN,
-                );
-                const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
-                    createOrdersFromSellRates(fillAmount, rates[ERC20BridgeSource.Native]),
-                    fillAmount,
-                    { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512, noConflicts: false, minUniswapDecimals: 2 },
-                );
-                expect(improvedOrders).to.be.length(4);
-                const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData));
-                const expectedSources = [
-                    ERC20BridgeSource.Kyber,
-                    ERC20BridgeSource.Eth2Dai,
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Native,
-                ];
-                expect(orderSources).to.deep.eq(expectedSources);
-            });
         });
 
         describe('getMarketBuyOrdersAsync()', () => {
@@ -761,33 +733,6 @@ describe('MarketOperationUtils tests', () => {
                 const expectedSources = [
                     ERC20BridgeSource.Eth2Dai,
                     ERC20BridgeSource.Uniswap,
-                    ERC20BridgeSource.Native,
-                    ERC20BridgeSource.Native,
-                ];
-                expect(orderSources).to.deep.eq(expectedSources);
-            });
-
-            it('excludes low-precision Uniswap quotes', async () => {
-                const rates: RatesBySource = {};
-                const fillAmount = new BigNumber(100);
-                rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
-                rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
-                const marketOperationUtils = new MarketOperationUtils(
-                    createSamplerFromBuyRates(rates),
-                    contractAddresses,
-                    ORDER_DOMAIN,
-                );
-                const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
-                    createOrdersFromBuyRates(fillAmount, rates[ERC20BridgeSource.Native]),
-                    fillAmount,
-                    { ...DEFAULT_OPTS, numSamples: 4, runLimit: 512, noConflicts: false, minUniswapDecimals: 2 },
-                );
-                expect(improvedOrders).to.be.length(4);
-                const orderSources = improvedOrders.map(o => getSourceFromAssetData(o.makerAssetData));
-                const expectedSources = [
-                    ERC20BridgeSource.Eth2Dai,
-                    ERC20BridgeSource.Native,
                     ERC20BridgeSource.Native,
                     ERC20BridgeSource.Native,
                 ];
