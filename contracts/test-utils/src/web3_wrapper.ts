@@ -1,4 +1,3 @@
-import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { devConstants, env, EnvVars, Web3Config, web3Factory } from '@0x/dev-utils';
 import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
@@ -33,7 +32,7 @@ if (process.env.FORK_RPC_URL !== undefined) {
             '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2',
             '0x894d623e0e0e8ed12c4a73dada999e275684a37d',
             // ERC20BridgeProxy
-            getContractAddressesForChainOrThrow(1).erc20BridgeProxy,
+            '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0',
         ],
     };
 }
