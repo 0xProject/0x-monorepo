@@ -10,5 +10,5 @@
     "aws_region": "us-east-1",
     "cdn": false,
     "dns_configured": true,
-    "should_keep_files_in_s3": true 
+    "should_keep_files_in_s3": true
 }
