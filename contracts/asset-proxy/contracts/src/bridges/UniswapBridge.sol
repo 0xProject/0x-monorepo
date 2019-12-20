@@ -134,8 +134,8 @@ contract UniswapBridge is
                 state.fromTokenBalance,
                 // Minimum buy amount.
                 amount,
-                // No minimum intermediate ETH buy amount.
-                0,
+                // Must buy at least 1 intermediate ETH.
+                1,
                 // Expires after this block.
                 block.timestamp,
                 // Recipient is `to`.

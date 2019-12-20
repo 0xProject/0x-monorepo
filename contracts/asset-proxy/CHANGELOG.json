@@ -5,6 +5,10 @@
             {
                 "note": "Integration tests for DydxBridge with ERC20BridgeProxy.",
                 "pr": 2401
+            },
+            {
+                "note": "Fix `UniswapBridge` token -> token transfer call.",
+                "pr": "TODO"
             }
         ]
     },

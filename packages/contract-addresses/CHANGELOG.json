@@ -13,6 +13,10 @@
             {
                 "note": "Added DydxBridge Contract to contract-addresses",
                 "pr": 2401
+            },
+            {
+                "note": "Update Uniswap mainnet address.",
+                "pr": "TODO"
             }
         ]
     },
