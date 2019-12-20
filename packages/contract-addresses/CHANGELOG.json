@@ -15,8 +15,12 @@
                 "pr": 2401
             },
             {
-                "note": "Update Uniswap mainnet address.",
-                "pr": "TODO"
+                "note": "Update `UniswapBridge` mainnet address.",
+                "pr": 2412
+            },
+            {
+                "note": "Update `KyberBridge` mainnet address.",
+                "pr": 2412
             }
         ]
     },

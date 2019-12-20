@@ -8,11 +8,11 @@
             },
             {
                 "note": "Fix `UniswapBridge` token -> token transfer call.",
-                "pr": "TODO"
+                "pr": 2412
             },
             {
                 "note": "Fix `KyberBridge` incorrect `minConversionRate` calculation.",
-                "pr": "TODO"
+                "pr": 2412
             }
         ]
     },
