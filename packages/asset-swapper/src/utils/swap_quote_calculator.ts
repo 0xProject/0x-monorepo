@@ -91,8 +91,8 @@ export class SwapQuoteCalculator {
         }
 
         // assetData information for the result
-        const takerAssetData = resultOrders[0].takerAssetData;
-        const makerAssetData = resultOrders[0].makerAssetData;
+        const takerAssetData = prunedOrders[0].takerAssetData;
+        const makerAssetData = prunedOrders[0].makerAssetData;
 
         const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             createBestCaseOrders(resultOrders, operation, opts.bridgeSlippage),
