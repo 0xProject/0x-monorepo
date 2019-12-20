@@ -95,12 +95,13 @@ export class SwapQuoteCalculator {
         const makerAssetData = resultOrders[0].makerAssetData;
 
         const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
-            resultOrders,
+            createBestCaseOrders(resultOrders, operation, opts.bridgeSlippage),
             assetFillAmount,
             gasPrice,
             operation,
         );
-        // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
+        // in order to calculate the maxRate, reverse the ordersAndFillableAmounts
+        // such that they are sorted from worst rate to best rate
         const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             _.reverse(resultOrders.slice()),
             assetFillAmount,
@@ -301,4 +302,36 @@ function getTakerAssetAmountBreakDown(
         feeTakerAssetAmount: constants.ZERO_AMOUNT,
         takerAssetAmount: takerAssetAmountWithFees,
     };
+}
+
+function createBestCaseOrders(
+    orders: SignedOrderWithFillableAmounts[],
+    operation: MarketOperation,
+    bridgeSlippage: number,
+): SignedOrderWithFillableAmounts[] {
+    // Scale the asset amounts to undo the bridge slippage applied to
+    // bridge orders.
+    const bestCaseOrders: SignedOrderWithFillableAmounts[] = [];
+    for (const order of orders) {
+        if (!order.makerAssetData.startsWith(constants.BRIDGE_ASSET_DATA_PREFIX)) {
+            bestCaseOrders.push(order);
+            continue;
+        }
+        bestCaseOrders.push({
+            ...order,
+            ...(operation === MarketOperation.Sell
+                ? {
+                      makerAssetAmount: order.makerAssetAmount
+                          .dividedBy(1 - bridgeSlippage)
+                          .integerValue(BigNumber.ROUND_DOWN),
+                  }
+                : // Buy operation
+                  {
+                      takerAssetAmount: order.takerAssetAmount
+                          .dividedBy(bridgeSlippage + 1)
+                          .integerValue(BigNumber.ROUND_UP),
+                  }),
+        });
+    }
+    return bestCaseOrders;
 }
