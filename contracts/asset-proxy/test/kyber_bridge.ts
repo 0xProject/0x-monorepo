@@ -3,6 +3,7 @@ import {
     constants,
     expect,
     getRandomInteger,
+    getRandomPortion,
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
@@ -17,6 +18,12 @@ import { TestKyberBridgeContract, TestKyberBridgeEvents } from './wrappers';
 
 blockchainTests.resets('KyberBridge unit tests', env => {
     const KYBER_ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+    const FROM_TOKEN_DECIMALS = 6;
+    const TO_TOKEN_DECIMALS = 18;
+    const FROM_TOKEN_BASE = new BigNumber(10).pow(FROM_TOKEN_DECIMALS);
+    const TO_TOKEN_BASE = new BigNumber(10).pow(TO_TOKEN_DECIMALS);
+    const WETH_BASE = new BigNumber(10).pow(18);
+    const KYBER_RATE_BASE = WETH_BASE;
     let testContract: TestKyberBridgeContract;
 
     before(async () => {
@@ -45,10 +52,10 @@ blockchainTests.resets('KyberBridge unit tests', env => {
 
         before(async () => {
             wethAddress = await testContract.weth().callAsync();
-            fromTokenAddress = await testContract.createToken().callAsync();
-            await testContract.createToken().awaitTransactionSuccessAsync();
-            toTokenAddress = await testContract.createToken().callAsync();
-            await testContract.createToken().awaitTransactionSuccessAsync();
+            fromTokenAddress = await testContract.createToken(FROM_TOKEN_DECIMALS).callAsync();
+            await testContract.createToken(FROM_TOKEN_DECIMALS).awaitTransactionSuccessAsync();
+            toTokenAddress = await testContract.createToken(TO_TOKEN_DECIMALS).callAsync();
+            await testContract.createToken(TO_TOKEN_DECIMALS).awaitTransactionSuccessAsync();
         });
 
         const STATIC_KYBER_TRADE_ARGS = {
@@ -75,13 +82,14 @@ blockchainTests.resets('KyberBridge unit tests', env => {
         }
 
         function createTransferFromOpts(opts?: Partial<TransferFromOpts>): TransferFromOpts {
+            const amount = getRandomInteger(1, TO_TOKEN_BASE.times(100));
             return {
                 fromTokenAddress,
                 toTokenAddress,
+                amount,
                 toAddress: randomAddress(),
-                amount: getRandomInteger(1, 10e18),
-                fillAmount: getRandomInteger(1, 10e18),
-                fromTokenBalance: getRandomInteger(1, 10e18),
+                fillAmount: getRandomPortion(amount),
+                fromTokenBalance: getRandomInteger(1, FROM_TOKEN_BASE.times(100)),
                 ...opts,
             };
         }
@@ -119,9 +127,12 @@ blockchainTests.resets('KyberBridge unit tests', env => {
         }
 
         function getMinimumConversionRate(opts: TransferFromOpts): BigNumber {
+            const fromBase = opts.fromTokenAddress === wethAddress ? WETH_BASE : FROM_TOKEN_BASE;
+            const toBase = opts.toTokenAddress === wethAddress ? WETH_BASE : TO_TOKEN_BASE;
             return opts.amount
-                .times(constants.ONE_ETHER)
-                .div(opts.fromTokenBalance)
+                .div(toBase)
+                .div(opts.fromTokenBalance.div(fromBase))
+                .times(KYBER_RATE_BASE)
                 .integerValue(BigNumber.ROUND_DOWN);
         }
 

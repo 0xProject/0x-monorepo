@@ -176,7 +176,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 expect(calls[0].exchange).to.eq(exchangeAddress);
                 expect(calls[0].tokensSold).to.bignumber.eq(opts.fromTokenBalance);
                 expect(calls[0].minTokensBought).to.bignumber.eq(opts.amount);
-                expect(calls[0].minEthBought).to.bignumber.eq(0);
+                expect(calls[0].minEthBought).to.bignumber.eq(1);
                 expect(calls[0].deadline).to.bignumber.eq(blockTime);
                 expect(calls[0].recipient).to.eq(opts.toAddress);
                 expect(calls[0].toTokenAddress).to.eq(opts.toTokenAddress);

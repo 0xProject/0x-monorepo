@@ -21,10 +21,10 @@
         "stakingProxy": "0xa26e80e7dea86279c6d778d702cc413e6cffa777",
         "devUtils": "0xc7612135356ba8f75dbf517b55d88a91977492dc",
         "erc20BridgeProxy": "0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0",
-        "uniswapBridge": "0xa6baaed2053058a3c8f11e0c7a9716304454b09e",
+        "uniswapBridge": "0xb0dc61047847732a013ce27341228228a38655a0",
         "eth2DaiBridge": "0x0ac2d6f5f5afc669d3ca38f830dad2b4f238ad3f",
         "erc20BridgeSampler": "0x1b402fdb5ee87f989c11e3963557e89cc313b6c0",
-        "kyberBridge": "0xe64660275c40c16c491c2dabf50afaded20f858f",
+        "kyberBridge": "0x7253a80c1d3a3175283bad9ed04b2cecad0fe0d3",
         "dydxBridge": "0x96ddba19b69d6ea2549f6a12d005595167414744"
     },
     "3": {

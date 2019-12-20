@@ -67,9 +67,11 @@ interface ITestContract {
 /// @dev A minimalist ERC20/WETH token.
 contract TestToken {
 
+    uint8 public decimals;
     ITestContract private _testContract;
 
-    constructor() public {
+    constructor(uint8 decimals_) public {
+        decimals = decimals_;
         _testContract = ITestContract(msg.sender);
     }
 
@@ -165,7 +167,7 @@ contract TestKyberBridge is
     uint256 private _nextFillAmount;
 
     constructor() public {
-        weth = IEtherToken(address(new TestToken()));
+        weth = IEtherToken(address(new TestToken(18)));
     }
 
     /// @dev Implementation of `IKyberNetworkProxy.trade()`
@@ -195,11 +197,11 @@ contract TestKyberBridge is
         return _nextFillAmount;
     }
 
-    function createToken()
+    function createToken(uint8 decimals)
         external
         returns (address tokenAddress)
     {
-        return address(new TestToken());
+        return address(new TestToken(decimals));
     }
 
     function setNextFillAmount(uint256 amount)

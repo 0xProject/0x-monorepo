@@ -13,6 +13,14 @@
             {
                 "note": "Added DydxBridge Contract to contract-addresses",
                 "pr": 2401
+            },
+            {
+                "note": "Update `UniswapBridge` mainnet address.",
+                "pr": 2412
+            },
+            {
+                "note": "Update `KyberBridge` mainnet address.",
+                "pr": 2412
             }
         ]
     },
