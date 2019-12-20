@@ -192,7 +192,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
         symbol: 'ast',
         name: 'AirSwap',
     },
-    '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359': {
+    '0xf47261b00000000000000000000000006b175474e89094c44da98b954eedeac495271d0f': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
         primaryColor: '#DEA349',
