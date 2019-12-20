@@ -7665,9 +7665,10 @@ format-util@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/format-util/-/format-util-1.0.3.tgz#032dca4a116262a12c43f4c3ec8566416c5b2d95"
 
-fortmatic@^0.8.2:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/fortmatic/-/fortmatic-0.8.2.tgz#a93fc97d1a1808faf82210d6554e1ebdcb6c5379"
+fortmatic@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/fortmatic/-/fortmatic-1.0.1.tgz#ecb2c6777cd25658befe5e86c5eeddcb6c4db472"
+  integrity sha512-D48g0talOofK6AdwppO2VL/rRjLZb69Qf6fBR1lYUZ2rqMCM8WbBqoEDgFgJyjO1YV7XCJGbm+mW0/y2RxxbEg==
   dependencies:
     "@babel/runtime" "7.3.4"
 
