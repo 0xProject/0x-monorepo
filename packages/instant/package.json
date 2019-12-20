@@ -8,7 +8,7 @@
     "description": "0x Instant React Component",
     "main": "umd/instant.js",
     "scripts": {
-        "build": "NODE_ENV=production WEBPACK_OUTPUT_PATH=umd/v3 node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
+        "build": "NODE_ENV=production node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
         "build:dev": "webpack --mode development",
         "build:ci": "yarn build",
         "dev": "dotenv webpack-dev-server -- --mode development",
