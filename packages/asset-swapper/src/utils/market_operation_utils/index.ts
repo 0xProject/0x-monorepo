@@ -79,7 +79,7 @@ export class MarketOperationUtils {
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, takerAmount);
 
-        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts, _opts.minUniswapDecimals);
+        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
         // If native orders are allowed, splice them in.
@@ -148,7 +148,7 @@ export class MarketOperationUtils {
             _opts.dustFractionThreshold,
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, makerAmount);
-        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts, _opts.minUniswapDecimals);
+        const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
         // If native orders are allowed, splice them in.
@@ -260,12 +260,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
     return path;
 }
 
-function createPathsFromDexQuotes(
-    dexQuotes: DexSample[][],
-    noConflicts: boolean,
-    minUniswapDecimals: number,
-): Fill[][] {
-    const minUniswapAmount = new BigNumber(`1e${minUniswapDecimals}`);
+function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean): Fill[][] {
     const paths: Fill[][] = [];
     for (const quote of dexQuotes) {
         // Native orders can be filled in any order, so they're all root nodes.
