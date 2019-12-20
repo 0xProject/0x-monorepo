@@ -9,6 +9,10 @@
             {
                 "note": "Fix `UniswapBridge` token -> token transfer call.",
                 "pr": "TODO"
+            },
+            {
+                "note": "Fix `KyberBridge` incorrect `minConversionRate` calculation.",
+                "pr": "TODO"
             }
         ]
     },

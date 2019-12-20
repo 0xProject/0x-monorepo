@@ -24,6 +24,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IKyberNetworkProxy.sol";
 
@@ -34,6 +35,8 @@ contract KyberBridge is
     IWallet,
     DeploymentConstants
 {
+    using LibSafeMath for uint256;
+
     // @dev Structure used internally to get around stack limits.
     struct TradeState {
         IKyberNetworkProxy kyber;
@@ -41,6 +44,7 @@ contract KyberBridge is
         address fromTokenAddress;
         uint256 fromTokenBalance;
         uint256 payableAmount;
+        uint256 conversionRate;
     }
 
     /// @dev Kyber ETH pseudo-address.
@@ -81,11 +85,23 @@ contract KyberBridge is
         state.weth = IEtherToken(_getWethAddress());
         // Decode the bridge data to get the `fromTokenAddress`.
         (state.fromTokenAddress) = abi.decode(bridgeData, (address));
+        // Query the balance of "from" tokens.
         state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
         if (state.fromTokenBalance == 0) {
             // Return failure if no input tokens.
             return BRIDGE_FAILED;
         }
+        // Compute the conversion rate, expressed in 18 decimals.
+        // The sequential notation is to get around stack limits.
+        state.conversionRate = KYBER_RATE_BASE;
+        state.conversionRate = state.conversionRate.safeMul(amount);
+        state.conversionRate = state.conversionRate.safeMul(
+            10 ** uint256(LibERC20Token.decimals(state.fromTokenAddress))
+        );
+        state.conversionRate = state.conversionRate.safeDiv(state.fromTokenBalance);
+        state.conversionRate = state.conversionRate.safeDiv(
+            10 ** uint256(LibERC20Token.decimals(toTokenAddress))
+        );
         if (state.fromTokenAddress == toTokenAddress) {
             // Just transfer the tokens if they're the same.
             LibERC20Token.transfer(state.fromTokenAddress, to, state.fromTokenBalance);
@@ -118,7 +134,7 @@ contract KyberBridge is
             uint256(-1),
             // Compute the minimum conversion rate, which is expressed in units with
             // 18 decimal places.
-            (KYBER_RATE_BASE * amount) / state.fromTokenBalance,
+            state.conversionRate,
             // No affiliate address.
             address(0)
         );
