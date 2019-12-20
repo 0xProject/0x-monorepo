@@ -5,6 +5,10 @@
             {
                 "note": "Added new `DevUtils` addresses",
                 "pr": 2402
+            },
+            {
+                "note": "Update ERC20BridgeSampler address on Kovan and mainnet.",
+                "pr": 2405
             }
         ]
     },
@@ -14,10 +18,6 @@
             {
                 "note": "Addition of ERC20BridgeSampler + Kyber Erc20Bridge Contract in contract-addresses",
                 "pr": 2353
-            },
-            {
-                "note": "Update ERC20BridgeSampler address.",
-                "pr": 2405
             }
         ],
         "timestamp": 1576540892
