@@ -6,7 +6,7 @@ services:
         ports:
             - "8545:8545"
     mesh:
-        image: 0xorg/mesh:0xV3
+        image: 0xorg/mesh:7.2.1-beta-0xv3
         depends_on:
             - ganache
         environment:
