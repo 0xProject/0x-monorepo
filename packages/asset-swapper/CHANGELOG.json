@@ -30,7 +30,7 @@
                 "note": "Fix rounding of quoted asset amounts.",
                 "pr": 2406
             }
-        ],
+        ]
     },
     {
         "version": "3.0.2",
