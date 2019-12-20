@@ -270,6 +270,7 @@ export async function runMigrationsAsync(
         eth2DaiBridge: constants.NULL_ADDRESS,
         kyberBridge: constants.NULL_ADDRESS,
         erc20BridgeSampler: constants.NULL_ADDRESS,
+        dydxBridge: constants.NULL_ADDRESS,
     };
     return contractAddresses;
 }

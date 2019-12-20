@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Integration tests for DydxBridge with (i) Exchange v3 and (ii) Mainnet dYdX SoloMargin contract.",
+                "pr": 2401
+            }
+        ]
+    },
+    {
         "timestamp": 1576540892,
         "version": "2.0.2",
         "changes": [

@@ -6,6 +6,7 @@ export {
     ERC721ProxyContract,
     Eth2DaiBridgeContract,
     DydxBridgeContract,
+    TestDydxBridgeContract,
     IAssetDataContract,
     IAssetProxyContract,
     MultiAssetProxyContract,
@@ -63,3 +64,4 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+export * from './dydx_bridge_encoder';

@@ -9,6 +9,10 @@
             {
                 "note": "Update ERC20BridgeSampler address on Kovan and mainnet.",
                 "pr": 2405
+            },
+            {
+                "note": "Added DydxBridge Contract to contract-addresses",
+                "pr": 2401
             }
         ]
     },
