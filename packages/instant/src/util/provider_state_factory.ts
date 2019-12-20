@@ -82,42 +82,26 @@ export const providerStateFactory = {
         network: Network,
         walletDisplayName?: string,
     ): ProviderState => {
-        // Uses fortmatic as default provider
-        const fm = new Fortmatic(FORTMATIC_API_KEY);
-        if (fm) {
-            const fmProvider = fm.getProvider();
-            const providerState: ProviderState = {
-                displayName: envUtil.getProviderDisplayName(fmProvider),
-                name: envUtil.getProviderName(fmProvider),
-                provider: fmProvider,
-                web3Wrapper: new Web3Wrapper(fmProvider),
-                swapQuoter: assetSwapperFactory.getSwapQuoter(fm, orderSource, network),
-                swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(fm, network),
-                account: NO_ACCOUNT,
-                orderSource,
-            };
-            return providerState;
-        } else {
-            const provider = providerFactory.getFallbackNoSigningProvider(network);
-            const providerState: ProviderState = {
-                name: 'Fallback',
-                displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
-                provider,
-                web3Wrapper: new Web3Wrapper(provider),
-                swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, network),
-                swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
-                account: NO_ACCOUNT,
-                orderSource,
-            };
-            return providerState;
-        }
+        const provider = providerFactory.getFallbackNoSigningProvider(network);
+        const providerState: ProviderState = {
+            name: 'Fallback',
+            displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
+            provider,
+            web3Wrapper: new Web3Wrapper(provider),
+            swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, network),
+            swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
+            account: NO_ACCOUNT,
+            orderSource,
+        };
+        return providerState;
     },
     getProviderStateBasedOnProviderType: (
         currentProviderState: ProviderState,
         providerType: ProviderType,
     ): ProviderState => {
         let providerState = currentProviderState;
-        const network = currentProviderState.swapQuoter.networkId;
+        console.log('lets see', providerState, providerType);
+        const chainId = currentProviderState.swapQuoter.chainId;
         const orderSource = currentProviderState.orderSource;
         // Returns current provider if the provider type selected is not found
         if (providerType === ProviderType.MetaMask) {
@@ -128,8 +112,8 @@ export const providerStateFactory = {
                     name: envUtil.getProviderName(provider),
                     provider,
                     web3Wrapper: new Web3Wrapper(provider),
-                    swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, network),
-                    swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
+                    swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, chainId),
+                    swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, chainId),
                     account: LOADING_ACCOUNT,
                     orderSource,
                 };
@@ -143,8 +127,8 @@ export const providerStateFactory = {
                 name: envUtil.getProviderName(fmProvider),
                 provider: fmProvider,
                 web3Wrapper: new Web3Wrapper(fmProvider),
-                swapQuoter: assetSwapperFactory.getSwapQuoter(fmProvider, orderSource, network),
-                swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(fmProvider, network),
+                swapQuoter: assetSwapperFactory.getSwapQuoter(fmProvider, orderSource, chainId),
+                swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(fmProvider, chainId),
                 account: LOADING_ACCOUNT,
                 orderSource,
             };

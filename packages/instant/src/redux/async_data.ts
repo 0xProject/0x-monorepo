@@ -66,10 +66,7 @@ export const asyncData = {
                         ? await (provider as any).enable()
                         : await web3Wrapper.getAvailableAddressesAsync();
             } else {
-                // If the provider is fortmatic don't try to get available addresses or it will prompt the user all the time on the heartbeat
-                if (shouldAttemptUnlock) {
-                    availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
-                }
+                availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
             }
         } catch (e) {
             analytics.trackAccountUnlockDenied();
