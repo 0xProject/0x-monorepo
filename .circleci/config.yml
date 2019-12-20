@@ -202,7 +202,8 @@ jobs:
                   USE_BOOTSTRAP_LIST: 'true'
                   VERBOSITY: 3
                   PRIVATE_KEY_PATH: ''
-                  BLOCK_POLLING_INTERVAL: '5s'
+                  BLOCK_POLLING_INTERVAL: '50ms'
+                  ETHEREUM_RPC_MAX_REQUESTS_PER_24_HR_UTC: '1778000'
                   P2P_LISTEN_PORT: '60557'
               command: |
                   sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && ./mesh"
