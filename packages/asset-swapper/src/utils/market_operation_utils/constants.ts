@@ -40,4 +40,5 @@ export const constants = {
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     ERC20_PROXY_ID: '0xf47261b0',
     WALLET_SIGNATURE: '0x04',
+    SAMPLER_CONTRACT_GAS_LIMIT: 10e6,
 };
