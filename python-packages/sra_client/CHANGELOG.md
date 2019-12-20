@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.0 - TBD
+
+-   Renamed class DefaultApi to RelayerApi, and changed its construction parameters.
+-   Updated documentation to include schemas for request payloads and responses, and to demonstrate the RelayerApi.get_order_config() method.
+-   Fixed bug with numeric types not being handled properly for asset data trade info and order config methods.
+
 ## 4.0.0 - 2019-12-03
 
 -   Migrated from v2 to v3 of the 0x protocol.

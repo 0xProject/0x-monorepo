@@ -42,10 +42,8 @@ replicate this environment yourself by using `this docker-compose.yml file
 Configure and create an API client instance
 -------------------------------------------
 
->>> from zero_ex.sra_client import ApiClient, Configuration, DefaultApi
->>> config = Configuration()
->>> config.host = "http://localhost:3000"
->>> relayer = DefaultApi(ApiClient(config))
+>>> from zero_ex.sra_client import RelayerApi
+>>> relayer = RelayerApi("http://localhost:3000")
 
 Preparing to trade
 ------------------
@@ -121,10 +119,39 @@ Post an order for our Maker to trade ZRX for WETH:
 ...     )
 ... )
 
+Before hashing and submitting our order, it's a good idea to ask the relayer
+how to configure the order, so that the submission won't be rejected:
+
+>>> order_config = relayer.get_order_config(
+...     relayer_api_order_config_payload_schema={
+...         "makerAddress": order["makerAddress"],
+...         "takerAddress": order["takerAddress"],
+...         "makerAssetAmount": order["makerAssetAmount"],
+...         "takerAssetAmount": order["takerAssetAmount"],
+...         "expirationTimeSeconds": order["expirationTimeSeconds"],
+...         "makerAssetData": '0x' + order["makerAssetData"].hex(),
+...         "takerAssetData": '0x' + order["takerAssetData"].hex(),
+...         "exchangeAddress": contract_addresses.exchange,
+...     }
+... )
+>>> order_config
+{'fee_recipient_address': '0x0000000000000000000000000000000000000001',
+ 'maker_fee': '0',
+ 'sender_address': '0x0000000000000000000000000000000000000000',
+ 'taker_fee': '0'}
+
+Now we'll apply that configuration to our order before proceeding:
+
+>>> order["feeRecipientAddress"] = order_config.fee_recipient_address
+>>> order["makerFee"] = int(order_config.maker_fee)
+>>> order["takerFee"] = int(order_config.taker_fee)
+>>> order["senderAddress"] = order_config.sender_address
+
 >>> from zero_ex.order_utils import generate_order_hash_hex
 >>> order_hash_hex = generate_order_hash_hex(
 ...     order, contract_addresses.exchange, Web3(eth_node).eth.chainId
 ... )
+
 >>> relayer.post_order_with_http_info(
 ...     signed_order_schema=order_to_jsdict(
 ...         order=order,
@@ -155,7 +182,7 @@ Retrieve the order we just posted:
  'order': {'chainId': 1337,
            'exchangeAddress': '0x...',
            'expirationTimeSeconds': '...',
-           'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+           'feeRecipientAddress': '0x0000000000000000000000000000000000000001',
            'makerAddress': '0x...',
            'makerAssetAmount': '2',
            'makerAssetData': '0xf47261b0000000000000000000000000...',
@@ -182,7 +209,7 @@ of the one we just posted:
               'order': {'chainId': 1337,
                         'exchangeAddress': '0x...',
                         'expirationTimeSeconds': '...',
-                        'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+                        'feeRecipientAddress': '0x0000000000000000000000000000000000000001',
                         'makerAddress': '0x...',
                         'makerAssetAmount': '2',
                         'makerAssetData': '0xf47261b000000000000000000000000...',
@@ -242,7 +269,7 @@ consists just of our order):
                        'order': {'chainId': 1337,
                                  'exchangeAddress': '0x...',
                                  'expirationTimeSeconds': '...',
-                                 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+                                 'feeRecipientAddress': '0x0000000000000000000000000000000000000001',
                                  'makerAddress': '0x...',
                                  'makerAssetAmount': '2',
                                  'makerAssetData': '0xf47261b0000000000000000000000000...',
@@ -278,7 +305,7 @@ hash.  To calculate an order hash, we'll use the Exchange contract:
 >>> pprint(order)
 {'chainId': 1337,
  'expirationTimeSeconds': ...,
- 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
+ 'feeRecipientAddress': '0x0000000000000000000000000000000000000001',
  'makerAddress': '0x...',
  'makerAssetAmount': 2,
  'makerAssetData': b...
@@ -403,7 +430,7 @@ from __future__ import absolute_import
 __version__ = "1.0.0"
 
 # import apis into sdk package
-from .api.default_api import DefaultApi
+from .api.relayer_api import RelayerApi
 
 # import ApiClient
 from .api_client import ApiClient

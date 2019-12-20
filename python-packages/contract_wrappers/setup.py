@@ -6,6 +6,7 @@
 # we import things outside of top-level because 3rd party libs may not yet be
 # installed when you invoke this script
 
+from glob import glob
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path, remove
@@ -16,30 +17,6 @@ from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
-
-
-CONTRACTS_TO_BE_WRAPPED = [
-    "asset_proxy_owner",
-    "coordinator",
-    "coordinator_registry",
-    "dev_utils",
-    "dummy_erc20_token",
-    "dummy_erc721_token",
-    "dutch_auction",
-    "erc20_proxy",
-    "erc20_token",
-    "erc721_proxy",
-    "erc721_token",
-    "exchange",
-    "forwarder",
-    "i_asset_proxy",
-    "i_validator",
-    "i_wallet",
-    "multi_asset_proxy",
-    "order_validator",
-    "weth9",
-    "zrx_token",
-]
 
 
 class PreInstallCommand(distutils.command.build_py.build_py):
@@ -128,11 +105,27 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/0x_contract_wrappers.egg-info", ignore_errors=True)
+        rmtree(
+            path.join("src", "0x_contract_wrappers.egg-info"),
+            ignore_errors=True,
+        )
         # generated files:
-        for contract in CONTRACTS_TO_BE_WRAPPED:
+        print("Removing src/zero_ex/contract_wrappers/*/__init__.py...")
+        for contract in glob(
+            path.join(
+                ".", "src", "zero_ex", "contract_wrappers", "*", "__init__.py"
+            )
+        ):
             try:
-                remove(f"src/zero_ex/contract_wrappers/{contract}/__init__.py")
+                remove(
+                    path.join(
+                        "src",
+                        "zero_ex",
+                        "contract_wrappers",
+                        contract,
+                        "__init__.py",
+                    )
+                )
             except FileNotFoundError:
                 pass
 
