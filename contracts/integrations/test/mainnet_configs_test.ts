@@ -1,12 +1,19 @@
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { ERC20ProxyContract, MultiAssetProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingProxyContract, ZrxVaultContract } from '@0x/contracts-staking';
 import { blockchainTests, describe, expect } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { contractAddresses, contractWrappers } from './mainnet_fork_utils';
+import { contractAddresses, getContractwrappers } from './mainnet_fork_utils';
 
 blockchainTests.fork.resets('Mainnet configs tests', env => {
+    let contractWrappers: ContractWrappers;
+
+    before(async () => {
+        contractWrappers = getContractwrappers(env.provider);
+    });
+
     describe('Exchange', () => {
         it('should be owned by the ZeroExGovernor ', async () => {
             const owner = await contractWrappers.exchange.owner().callAsync();

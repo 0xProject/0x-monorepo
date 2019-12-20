@@ -119,20 +119,12 @@ export class ForkedBlockchainTestsEnvironmentSingleton extends BlockchainTestsEn
         return ForkedBlockchainTestsEnvironmentSingleton._instance;
     }
 
-    protected static _createWeb3Provider(rpcHost: string): Web3ProviderEngine {
+    protected static _createWeb3Provider(forkHost: string): Web3ProviderEngine {
         return web3Factory.getRpcProvider({
             ...providerConfigs,
-            fork: rpcHost,
+            fork: forkHost,
             blockTime: 0,
             locked: false,
-            // unlocked_accounts: [
-            //     // ZeroExGovernor signer addresses
-            //     '0x257619b7155d247e43c8b6d90c8c17278ae481f0',
-            //     '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2',
-            //     '0x894d623e0e0e8ed12c4a73dada999e275684a37d',
-            //     // ERC20BridgeProxy
-            //     '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0',
-            // ],
         });
     }
 
@@ -147,7 +139,7 @@ export class ForkedBlockchainTestsEnvironmentSingleton extends BlockchainTestsEn
         this.provider = process.env.FORK_RPC_URL
             ? ForkedBlockchainTestsEnvironmentSingleton._createWeb3Provider(process.env.FORK_RPC_URL)
             : // Create a dummy provider if no RPC backend supplied.
-              (this.provider = createDummyProvider());
+              createDummyProvider();
         this.web3Wrapper = new Web3Wrapper(this.provider);
         this.blockchainLifecycle = new BlockchainLifecycle(this.web3Wrapper);
     }
@@ -185,7 +177,7 @@ export class LiveBlockchainTestsEnvironmentSingleton extends BlockchainTestsEnvi
         this.provider = process.env.LIVE_RPC_URL
             ? LiveBlockchainTestsEnvironmentSingleton._createWeb3Provider(process.env.LIVE_RPC_URL)
             : // Create a dummy provider if no RPC backend supplied.
-              (this.provider = createDummyProvider());
+              createDummyProvider();
         this.web3Wrapper = new Web3Wrapper(this.provider);
         const snapshotHandlerAsync = async (): Promise<void> => {
             throw new Error('Snapshots are not supported with a live provider.');
@@ -248,7 +240,7 @@ export const blockchainTests: BlockchainContextDefinition = _.assign(
                     ForkedBlockchainTestsEnvironmentSingleton,
                     description,
                     callback,
-                    process.env.FORK_RPC_URL ? describe.only : describe.skip,
+                    process.env.FORK_RPC_URL ? describe : describe.skip,
                 );
             },
             {
@@ -281,7 +273,7 @@ export const blockchainTests: BlockchainContextDefinition = _.assign(
                         ForkedBlockchainTestsEnvironmentSingleton,
                         description,
                         callback,
-                        process.env.FORK_RPC_URL ? describe.optional : describe.skip,
+                        process.env.FORK_RPC_URL ? describe : describe.skip,
                     );
                 },
             },
