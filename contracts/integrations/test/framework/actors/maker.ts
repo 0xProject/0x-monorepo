@@ -111,7 +111,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                     await (owner as Actor).configureERC20TokenAsync(token as DummyERC20TokenContract);
                     balance = balanceStore.balances.erc20[owner.address][token.address] =
                         constants.INITIAL_ERC20_BALANCE;
-                    return Pseudorandom.integer(balance.dividedToIntegerBy(2));
+                    return Pseudorandom.integer(0, balance.dividedToIntegerBy(2));
                 }),
             );
             // Encode asset data

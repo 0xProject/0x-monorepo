@@ -54,6 +54,51 @@ contract OrderTransferSimulationUtils is
         _EXCHANGE = IExchange(_exchange);
     }
 
+    /// @dev Simulates the maker transfers within an order and returns the index of the first failed transfer.
+    /// @param order The order to simulate transfers for.
+    /// @param takerAddress The address of the taker that will fill the order.
+    /// @param takerAssetFillAmount The amount of takerAsset that the taker wished to fill.
+    /// @return The index of the first failed transfer (or 4 if all transfers are successful).
+    function getSimulatedOrderMakerTransferResults(
+        LibOrder.Order memory order,
+        address takerAddress,
+        uint256 takerAssetFillAmount
+    )
+        public
+        returns (OrderTransferResults orderTransferResults)
+    {
+        LibFillResults.FillResults memory fillResults = LibFillResults.calculateFillResults(
+            order,
+            takerAssetFillAmount,
+            _EXCHANGE.protocolFeeMultiplier(),
+            tx.gasprice
+        );
+
+        bytes[] memory assetData = new bytes[](2);
+        address[] memory fromAddresses = new address[](2);
+        address[] memory toAddresses = new address[](2);
+        uint256[] memory amounts = new uint256[](2);
+
+        // Transfer `makerAsset` from maker to taker
+        assetData[0] = order.makerAssetData;
+        fromAddresses[0] = order.makerAddress;
+        toAddresses[0] = takerAddress;
+        amounts[0] = fillResults.makerAssetFilledAmount;
+
+        // Transfer `makerFeeAsset` from maker to feeRecipient
+        assetData[1] = order.makerFeeAssetData;
+        fromAddresses[1] = order.makerAddress;
+        toAddresses[1] = order.feeRecipientAddress;
+        amounts[1] = fillResults.makerFeePaid;
+
+        return _simulateTransferFromCalls(
+            assetData,
+            fromAddresses,
+            toAddresses,
+            amounts
+        );
+    }
+
     /// @dev Simulates all of the transfers within an order and returns the index of the first failed transfer.
     /// @param order The order to simulate transfers for.
     /// @param takerAddress The address of the taker that will fill the order.
@@ -104,6 +149,54 @@ contract OrderTransferSimulationUtils is
         toAddresses[3] = order.feeRecipientAddress;
         amounts[3] = fillResults.makerFeePaid;
 
+        return _simulateTransferFromCalls(
+            assetData,
+            fromAddresses,
+            toAddresses,
+            amounts
+        );
+    }
+
+    /// @dev Simulates all of the transfers for each given order and returns the indices of each first failed transfer.
+    /// @param orders Array of orders to individually simulate transfers for.
+    /// @param takerAddresses Array of addresses of takers that will fill each order.
+    /// @param takerAssetFillAmounts Array of amounts of takerAsset that will be filled for each order.
+    /// @return The indices of the first failed transfer (or 4 if all transfers are successful) for each order.
+    function getSimulatedOrdersTransferResults(
+        LibOrder.Order[] memory orders,
+        address[] memory takerAddresses,
+        uint256[] memory takerAssetFillAmounts
+    )
+        public
+        returns (OrderTransferResults[] memory orderTransferResults)
+    {
+        uint256 length = orders.length;
+        orderTransferResults = new OrderTransferResults[](length);
+        for (uint256 i = 0; i != length; i++) {
+            orderTransferResults[i] = getSimulatedOrderTransferResults(
+                orders[i],
+                takerAddresses[i],
+                takerAssetFillAmounts[i]
+            );
+        }
+        return orderTransferResults;
+    }
+
+    /// @dev Makes the simulation call with information about the transfers and processes
+    ///      the returndata.
+    /// @param assetData The assetdata to use to make transfers.
+    /// @param fromAddresses The addresses to transfer funds.
+    /// @param toAddresses The addresses that will receive funds
+    /// @param amounts The amounts involved in the transfer.
+    function _simulateTransferFromCalls(
+        bytes[] memory assetData,
+        address[] memory fromAddresses,
+        address[] memory toAddresses,
+        uint256[] memory amounts
+    )
+        internal
+        returns (OrderTransferResults orderTransferResults)
+    {
         // Encode data for `simulateDispatchTransferFromCalls(assetData, fromAddresses, toAddresses, amounts)`
         bytes memory simulateDispatchTransferFromCallsData = abi.encodeWithSelector(
             IExchange(address(0)).simulateDispatchTransferFromCalls.selector,
@@ -131,30 +224,5 @@ contract OrderTransferSimulationUtils is
         } else {
             revert("UNKNOWN_RETURN_DATA");
         }
-    }
-
-    /// @dev Simulates all of the transfers for each given order and returns the indices of each first failed transfer.
-    /// @param orders Array of orders to individually simulate transfers for.
-    /// @param takerAddresses Array of addresses of takers that will fill each order.
-    /// @param takerAssetFillAmounts Array of amounts of takerAsset that will be filled for each order.
-    /// @return The indices of the first failed transfer (or 4 if all transfers are successful) for each order.
-    function getSimulatedOrdersTransferResults(
-        LibOrder.Order[] memory orders,
-        address[] memory takerAddresses,
-        uint256[] memory takerAssetFillAmounts
-    )
-        public
-        returns (OrderTransferResults[] memory orderTransferResults)
-    {
-        uint256 length = orders.length;
-        orderTransferResults = new OrderTransferResults[](length);
-        for (uint256 i = 0; i != length; i++) {
-            orderTransferResults[i] = getSimulatedOrderTransferResults(
-                orders[i],
-                takerAddresses[i],
-                takerAssetFillAmounts[i]
-            );
-        }
-        return orderTransferResults;
     }
 }

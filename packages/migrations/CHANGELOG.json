@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Added DydxBridge Contract to ContractAddresses",
+                "pr": 2401
+            }
+        ]
+    },
+    {
         "timestamp": 1576540892,
         "version": "5.0.2",
         "changes": [

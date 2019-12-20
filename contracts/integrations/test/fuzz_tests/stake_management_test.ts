@@ -1,4 +1,5 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
+import * as _ from 'lodash';
 
 import { Actor } from '../framework/actors/base';
 import { StakerOperator } from '../framework/actors/hybrids';
@@ -20,14 +21,19 @@ export class StakeManagementSimulation extends Simulation {
 
         const poolManagement = new PoolManagementSimulation(this.environment);
 
-        const actions = [
-            ...stakers.map(staker => staker.simulationActions.validStake),
-            ...stakers.map(staker => staker.simulationActions.validUnstake),
-            ...stakers.map(staker => staker.simulationActions.validMoveStake),
-            poolManagement.generator,
-        ];
+        const [actions, weights] = _.unzip([
+            // 30% chance of executing validStake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validStake, 0.3 / stakers.length]),
+            // 20% chance of executing validUnstake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validUnstake, 0.2 / stakers.length]),
+            // 30% chance of executing validMoveStake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.3 / stakers.length]),
+            // 20% chance of executing an assertion generated from the pool management simulation
+            [poolManagement.generator, 0.2],
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
+
         while (true) {
-            const action = Pseudorandom.sample(actions);
+            const action = Pseudorandom.sample(actions, weights);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }

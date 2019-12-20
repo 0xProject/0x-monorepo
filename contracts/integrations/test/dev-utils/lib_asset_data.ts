@@ -1,6 +1,5 @@
-import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
 import * as crypto from 'crypto';
+import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
     artifacts as proxyArtifacts,
@@ -19,18 +18,12 @@ import {
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
-import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { blockchainTests, constants, expect, LogDecoder } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, providerUtils, StringRevertError, LibBytesRevertErrors } from '@0x/utils';
+import { BigNumber, LibBytesRevertErrors, StringRevertError } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, LibAssetDataContract } from '@0x/contracts-dev-utils';
-
-chaiSetup.configure();
-const expect = chai.expect;
-
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const KNOWN_ERC20_ENCODING = {
     address: '0x1dc4c1cefef38a777b15aa20260a54e584b16c48',
@@ -69,7 +62,8 @@ const KNOWN_STATIC_CALL_ENCODING = {
         '0xc339d10a0000000000000000000000006dfff22588be9b3ef8cf0ad6dc9b84796f9fb45f0000000000000000000000000000000000000000000000000000000000000060b10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf60000000000000000000000000000000000000000000000000000000000000024ed2cfc9c000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000',
 };
 
-describe('LibAssetData', () => {
+// TODO(jalextowle): This file could really be cleaned up by using the DeploymentManager tool.
+blockchainTests('LibAssetData', env => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -93,44 +87,43 @@ describe('LibAssetData', () => {
     let erc1155TokenId: BigNumber;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-        const chainId = await providerUtils.getChainIdAsync(provider);
+        const chainId = await env.getChainIdAsync();
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             {},
             new BigNumber(chainId),
         );
 
         erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.ERC20Proxy,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
         erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.ERC721Proxy,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
         erc1155Proxy = await ERC1155ProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.ERC1155Proxy,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
         multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.MultiAssetProxy,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
         staticCallProxy = await StaticCallProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.StaticCallProxy,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
 
@@ -142,25 +135,25 @@ describe('LibAssetData', () => {
 
         libAssetData = await LibAssetDataContract.deployFrom0xArtifactAsync(
             artifacts.LibAssetData,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
             exchange.address,
         );
 
         staticCallTarget = await TestStaticCallTargetContract.deployFrom0xArtifactAsync(
             proxyArtifacts.TestStaticCallTarget,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
 
-        [tokenOwnerAddress] = await web3Wrapper.getAvailableAddressesAsync();
+        [tokenOwnerAddress] = await env.getAccountAddressesAsync();
 
         erc20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             erc20Artifacts.DummyERC20Token,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
             'Dummy',
             'DUM',
@@ -170,8 +163,8 @@ describe('LibAssetData', () => {
 
         erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
             erc721Artifacts.DummyERC721Token,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
             'Dummy',
             'DUM',
@@ -187,12 +180,12 @@ describe('LibAssetData', () => {
 
         erc1155Token = await ERC1155MintableContract.deployFrom0xArtifactAsync(
             erc1155Artifacts.ERC1155Mintable,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
         );
 
-        const logDecoder = new LogDecoder(web3Wrapper, erc1155Artifacts);
+        const logDecoder = new LogDecoder(env.web3Wrapper, erc1155Artifacts);
         const transactionReceipt = await logDecoder.getTxWithDecodedLogsAsync(
             await erc1155Token.create('uri:Dummy', /*isNonFungible:*/ false).sendTransactionAsync(),
         );
@@ -202,17 +195,6 @@ describe('LibAssetData', () => {
         await erc1155Token
             .mintFungible(erc1155TokenId, [tokenOwnerAddress], [new BigNumber(1)])
             .awaitTransactionSuccessAsync();
-    });
-
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
     });
 
     it('should have a deployed-to address', () => {
@@ -345,7 +327,7 @@ describe('LibAssetData', () => {
         });
 
         it('should revert for invalid assetProxyId', async () => {
-            const badAssetData = '0x' + crypto.randomBytes(4).toString('hex') + constants.NULL_ADDRESS;
+            const badAssetData = `0x${crypto.randomBytes(4).toString('hex')}${constants.NULL_ADDRESS}`;
             await expect(libAssetData.revertIfInvalidAssetData(badAssetData).callAsync()).to.eventually.be.rejectedWith(
                 StringRevertError,
             );

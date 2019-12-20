@@ -1,4 +1,5 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
+import * as _ from 'lodash';
 
 import { Actor } from '../framework/actors/base';
 import { MakerTaker } from '../framework/actors/hybrids';
@@ -22,14 +23,17 @@ export class PoolMembershipSimulation extends Simulation {
 
         const poolManagement = new PoolManagementSimulation(this.environment);
 
-        const actions = [
-            ...makers.map(maker => maker.simulationActions.validJoinStakingPool),
-            ...takers.map(taker => taker.simulationActions.validFillOrder),
-            poolManagement.generator,
-        ];
+        const [actions, weights] = _.unzip([
+            // 20% chance of executing validJoinStakingPool for a random maker
+            ...makers.map(maker => [maker.simulationActions.validJoinStakingPool, 0.2 / makers.length]),
+            // 60% chance of executing validFillOrder for a random taker
+            ...takers.map(taker => [taker.simulationActions.validFillOrder, 0.6 / takers.length]),
+            // 20% chance of executing an assertion generated from the pool management simulation
+            [poolManagement.generator, 0.2],
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
 
         while (true) {
-            const action = Pseudorandom.sample(actions);
+            const action = Pseudorandom.sample(actions, weights);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }

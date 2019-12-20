@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
@@ -25,10 +25,12 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./LibAssetData.sol";
+import "./OrderTransferSimulationUtils.sol";
 
 
 contract OrderValidationUtils is
-    LibAssetData
+    LibAssetData,
+    OrderTransferSimulationUtils
 {
     using LibBytes for bytes;
     using LibSafeMath for uint256;
@@ -50,7 +52,6 @@ contract OrderValidationUtils is
     /// amount of each asset that can be filled.
     function getOrderRelevantState(LibOrder.Order memory order, bytes memory signature)
         public
-        view
         returns (
             LibOrder.OrderInfo memory orderInfo,
             uint256 fillableTakerAssetAmount,
@@ -99,7 +100,6 @@ contract OrderValidationUtils is
             } else {
                 // Get the transferable amount of the `makerFeeAsset`
                 uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, order.makerFeeAssetData);
-
                 uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
@@ -120,6 +120,13 @@ contract OrderValidationUtils is
             transferableTakerAssetAmount
         );
 
+        // Execute the maker transfers.
+        fillableTakerAssetAmount = getSimulatedOrderMakerTransferResults(
+            order,
+            order.takerAddress,
+            fillableTakerAssetAmount
+        ) == OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
+
         return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
 
@@ -135,7 +142,6 @@ contract OrderValidationUtils is
     /// the `takerAssetData` to get the final amount of each asset that can be filled.
     function getOrderRelevantStates(LibOrder.Order[] memory orders, bytes[] memory signatures)
         public
-        view
         returns (
             LibOrder.OrderInfo[] memory ordersInfo,
             uint256[] memory fillableTakerAssetAmounts,

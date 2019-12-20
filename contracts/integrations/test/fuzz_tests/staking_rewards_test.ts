@@ -1,4 +1,5 @@
 import { blockchainTests } from '@0x/contracts-test-utils';
+import * as _ from 'lodash';
 
 import { Actor } from '../framework/actors/base';
 import {
@@ -32,15 +33,20 @@ export class StakingRewardsSimulation extends Simulation {
         const poolMembership = new PoolMembershipSimulation(this.environment);
         const stakeManagement = new StakeManagementSimulation(this.environment);
 
-        const actions = [
-            ...stakers.map(staker => staker.simulationActions.validWithdrawDelegatorRewards),
-            ...keepers.map(keeper => keeper.simulationActions.validFinalizePool),
-            ...keepers.map(keeper => keeper.simulationActions.validEndEpoch),
-            poolMembership.generator,
-            stakeManagement.generator,
-        ];
+        const [actions, weights] = _.unzip([
+            // 10% chance of executing validWithdrawDelegatorRewards for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validWithdrawDelegatorRewards, 0.1 / stakers.length]),
+            // 10% chance of executing validFinalizePool for a random keeper
+            ...keepers.map(keeper => [keeper.simulationActions.validFinalizePool, 0.1 / keepers.length]),
+            // 10% chance of executing validEndEpoch for a random keeper
+            ...keepers.map(keeper => [keeper.simulationActions.validEndEpoch, 0.1 / keepers.length]),
+            // 50% chance of executing an assertion generated from the pool membership simulation
+            [poolMembership.generator, 0.5],
+            // 20% chance of executing an assertion generated from the stake management simulation
+            [stakeManagement.generator, 0.2],
+        ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
         while (true) {
-            const action = Pseudorandom.sample(actions);
+            const action = Pseudorandom.sample(actions, weights);
             yield (await action!.next()).value; // tslint:disable-line:no-non-null-assertion
         }
     }

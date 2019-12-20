@@ -19,12 +19,13 @@
         "zrxVault": "0xba7f8b5fb1b19c1211c5d49550fcd149177a5eaf",
         "staking": "0x2a17c35ff147b32f13f19f2e311446eeb02503f3",
         "stakingProxy": "0xa26e80e7dea86279c6d778d702cc413e6cffa777",
-        "devUtils": "0xccc2431a7335f21d9268ba62f0b32b0f2efc463f",
+        "devUtils": "0xc7612135356ba8f75dbf517b55d88a91977492dc",
         "erc20BridgeProxy": "0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0",
         "uniswapBridge": "0xa6baaed2053058a3c8f11e0c7a9716304454b09e",
         "eth2DaiBridge": "0x0ac2d6f5f5afc669d3ca38f830dad2b4f238ad3f",
-        "erc20BridgeSampler": "0x0937aca3f6e8bed40b560c3abf255ed40e6c7c9e",
-        "kyberBridge": "0xe64660275c40c16c491c2dabf50afaded20f858f"
+        "erc20BridgeSampler": "0x1b402fdb5ee87f989c11e3963557e89cc313b6c0",
+        "kyberBridge": "0xe64660275c40c16c491c2dabf50afaded20f858f",
+        "dydxBridge": "0x96ddba19b69d6ea2549f6a12d005595167414744"
     },
     "3": {
         "erc20Proxy": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
@@ -43,7 +44,7 @@
         "multiAssetProxy": "0xab8fbd189c569ccdee3a4d929bb7f557be4028f6",
         "staticCallProxy": "0xe1b97e47aa3796276033a5341e884d2ba46b6ac1",
         "erc1155Proxy": "0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d",
-        "devUtils": "0xa3858baf73430c2fa2339c731e3ffb04ea5e359c",
+        "devUtils": "0x4eacd0af335451709e1e7b570b8ea68edec8bc97",
         "zrxVault": "0xffd161026865ad8b4ab28a76840474935eec4dfa",
         "staking": "0x986b588e472b712385579d172494fe2685669504",
         "stakingProxy": "0xfaabcee42ab6b9c649794ac6c133711071897ee9",
@@ -51,7 +52,8 @@
         "uniswapBridge": "0x0000000000000000000000000000000000000000",
         "eth2DaiBridge": "0x0000000000000000000000000000000000000000",
         "erc20BridgeSampler": "0x0000000000000000000000000000000000000000",
-        "kyberBridge": "0x0000000000000000000000000000000000000000"
+        "kyberBridge": "0x0000000000000000000000000000000000000000",
+        "dydxBridge": "0x0000000000000000000000000000000000000000"
     },
     "4": {
         "exchangeV2": "0xbff9493f92a3df4b0429b6d00743b3cfb4c85831",
@@ -78,7 +80,8 @@
         "uniswapBridge": "0x0000000000000000000000000000000000000000",
         "eth2DaiBridge": "0x0000000000000000000000000000000000000000",
         "erc20BridgeSampler": "0x0000000000000000000000000000000000000000",
-        "kyberBridge": "0x0000000000000000000000000000000000000000"
+        "kyberBridge": "0x0000000000000000000000000000000000000000",
+        "dydxBridge": "0x0000000000000000000000000000000000000000"
     },
     "42": {
         "erc20Proxy": "0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
@@ -97,15 +100,16 @@
         "multiAssetProxy": "0xf6313a772c222f51c28f2304c0703b8cf5428fd8",
         "staticCallProxy": "0x48e94bdb9033640d45ea7c721e25f380f8bffa43",
         "erc1155Proxy": "0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f",
-        "devUtils": "0x80101f90446d9e19a80109ac2767c8c957debb29",
+        "devUtils": "0x56a8da16fd8a65768c97913402212eab60531bae",
         "zrxVault": "0xf36eabdfe986b35b62c8fd5a98a7f2aebb79b291",
         "staking": "0x32b06d5611a03737a5f1834a24ccd641033fd89c",
         "stakingProxy": "0xbab9145f1d57cd4bb0c9aa2d1ece0a5b6e734d34",
         "erc20BridgeProxy": "0xfb2dd2a1366de37f7241c83d47da58fd503e2c64",
         "uniswapBridge": "0x0000000000000000000000000000000000000000",
         "eth2DaiBridge": "0x0000000000000000000000000000000000000000",
-        "erc20BridgeSampler": "0x0000000000000000000000000000000000000000",
-        "kyberBridge": "0x0000000000000000000000000000000000000000"
+        "erc20BridgeSampler": "0x551f0e213dcb71f676558d8b0ab559d1cdd103f2",
+        "kyberBridge": "0x0000000000000000000000000000000000000000",
+        "dydxBridge": "0x0000000000000000000000000000000000000000"
     },
     "1337": {
         "erc20Proxy": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
@@ -132,6 +136,7 @@
         "uniswapBridge": "0x0000000000000000000000000000000000000000",
         "eth2DaiBridge": "0x0000000000000000000000000000000000000000",
         "erc20BridgeSampler": "0x0000000000000000000000000000000000000000",
-        "kyberBridge": "0x0000000000000000000000000000000000000000"
+        "kyberBridge": "0x0000000000000000000000000000000000000000",
+        "dydxBridge": "0x0000000000000000000000000000000000000000"
     }
 }

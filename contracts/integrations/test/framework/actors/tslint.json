@@ -2,6 +2,7 @@
     "extends": ["@0x/tslint-config"],
     "rules": {
         "max-classes-per-file": false,
-        "no-non-null-assertion": false
+        "no-non-null-assertion": false,
+        "custom-no-magic-numbers": false
     }
 }

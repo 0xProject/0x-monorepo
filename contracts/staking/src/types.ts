@@ -83,9 +83,10 @@ export function loadCurrentBalance(balance: StoredBalance, epoch: BigNumber): St
  * Simulates _increaseNextBalance
  */
 export function increaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): StoredBalance {
+    const newBalance = loadCurrentBalance(balance, epoch);
     return {
-        ...loadCurrentBalance(balance, epoch),
-        nextEpochBalance: balance.nextEpochBalance.plus(amount),
+        ...newBalance,
+        nextEpochBalance: newBalance.nextEpochBalance.plus(amount),
     };
 }
 
@@ -93,9 +94,10 @@ export function increaseNextBalance(balance: StoredBalance, amount: Numberish, e
  * Simulates _decreaseNextBalance
  */
 export function decreaseNextBalance(balance: StoredBalance, amount: Numberish, epoch: BigNumber): StoredBalance {
+    const newBalance = loadCurrentBalance(balance, epoch);
     return {
-        ...loadCurrentBalance(balance, epoch),
-        nextEpochBalance: balance.nextEpochBalance.minus(amount),
+        ...newBalance,
+        nextEpochBalance: newBalance.nextEpochBalance.minus(amount),
     };
 }
 
@@ -107,10 +109,11 @@ export function increaseCurrentAndNextBalance(
     amount: Numberish,
     epoch: BigNumber,
 ): StoredBalance {
+    const newBalance = loadCurrentBalance(balance, epoch);
     return {
-        ...loadCurrentBalance(balance, epoch),
-        currentEpochBalance: balance.currentEpochBalance.plus(amount),
-        nextEpochBalance: balance.nextEpochBalance.plus(amount),
+        ...newBalance,
+        currentEpochBalance: newBalance.currentEpochBalance.plus(amount),
+        nextEpochBalance: newBalance.nextEpochBalance.plus(amount),
     };
 }
 
@@ -122,10 +125,11 @@ export function decreaseCurrentAndNextBalance(
     amount: Numberish,
     epoch: BigNumber,
 ): StoredBalance {
+    const newBalance = loadCurrentBalance(balance, epoch);
     return {
-        ...loadCurrentBalance(balance, epoch),
-        currentEpochBalance: balance.currentEpochBalance.minus(amount),
-        nextEpochBalance: balance.nextEpochBalance.minus(amount),
+        ...newBalance,
+        currentEpochBalance: newBalance.currentEpochBalance.minus(amount),
+        nextEpochBalance: newBalance.nextEpochBalance.minus(amount),
     };
 }
 
