@@ -24,7 +24,7 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
     let testContract: TestMainnetAggregatorFillsContract;
     let swapQuoter: SwapQuoter;
     let takerEthBalance: BigNumber;
-    const orderbooks: { [name: string]: Orderbook} = {};
+    const orderbooks: { [name: string]: Orderbook } = {};
 
     async function getTakerOrdersAsync(takerAssetSymbol: string): Promise<SignedOrder[]> {
         if (takerAssetSymbol === 'ETH') {
@@ -40,9 +40,11 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
         const orders = _.flatten(
-            await Promise.all(Object.keys(orderbooks).map(
-                async name => getOrdersFromOrderBookAsync(name, makerAssetData, takerAssetData),
-            )),
+            await Promise.all(
+                Object.keys(orderbooks).map(async name =>
+                    getOrdersFromOrderBookAsync(name, makerAssetData, takerAssetData),
+                ),
+            ),
         );
         const uniqueOrders: SignedOrder[] = [];
         for (const order of orders) {
@@ -56,7 +58,11 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
         return uniqueOrders;
     }
 
-    async function getOrdersFromOrderBookAsync(name: string, makerAssetData: string, takerAssetData: string): Promise<SignedOrder[]> {
+    async function getOrdersFromOrderBookAsync(
+        name: string,
+        makerAssetData: string,
+        takerAssetData: string,
+    ): Promise<SignedOrder[]> {
         try {
             return (await orderbooks[name].getOrdersAsync(makerAssetData, takerAssetData)).map(r => r.order);
         } catch (err) {
