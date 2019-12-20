@@ -107,14 +107,9 @@
         "erc20BridgeProxy": "0xfb2dd2a1366de37f7241c83d47da58fd503e2c64",
         "uniswapBridge": "0x0000000000000000000000000000000000000000",
         "eth2DaiBridge": "0x0000000000000000000000000000000000000000",
-<<<<<<< HEAD
         "erc20BridgeSampler": "0x551f0e213dcb71f676558d8b0ab559d1cdd103f2",
-        "kyberBridge": "0x0000000000000000000000000000000000000000"
-=======
-        "erc20BridgeSampler": "0x0000000000000000000000000000000000000000",
         "kyberBridge": "0x0000000000000000000000000000000000000000",
         "dydxBridge": "0x0000000000000000000000000000000000000000"
->>>>>>> Added dydx bridge to contract-addresses package
     },
     "1337": {
         "erc20Proxy": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
