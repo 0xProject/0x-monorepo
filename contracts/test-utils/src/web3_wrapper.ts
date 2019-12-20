@@ -15,27 +15,11 @@ export const txDefaults = {
     gasPrice: constants.DEFAULT_GAS_PRICE,
 };
 
-let providerConfigs: Web3Config = {
+export let providerConfigs: Web3Config = {
     total_accounts: constants.NUM_TEST_ACCOUNTS,
     shouldUseInProcessGanache: true,
     shouldAllowUnlimitedContractSize: true,
 };
-
-if (process.env.FORK_RPC_URL !== undefined) {
-    providerConfigs = {
-        ...providerConfigs,
-        fork: process.env.FORK_RPC_URL,
-        blockTime: 0,
-        unlocked_accounts: [
-            // ZeroExGovernor signer addresses
-            '0x257619b7155d247e43c8b6d90c8c17278ae481f0',
-            '0x5ee2a00f8f01d099451844af7f894f26a57fcbf2',
-            '0x894d623e0e0e8ed12c4a73dada999e275684a37d',
-            // ERC20BridgeProxy
-            '0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0',
-        ],
-    };
-}
 
 export const provider: Web3ProviderEngine = web3Factory.getRpcProvider(providerConfigs);
 provider.stop();
