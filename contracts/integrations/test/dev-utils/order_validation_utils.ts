@@ -11,7 +11,7 @@ import { Maker } from '../framework/actors/maker';
 import { DeploymentManager } from '../framework/deployment_manager';
 
 // TODO(jalextowle): This can be cleaned up by using the actors more.
-blockchainTests.resets.only('OrderValidationUtils/OrderTransferSimulatorUtils', env => {
+blockchainTests.resets('OrderValidationUtils/OrderTransferSimulatorUtils', env => {
     let takerAddress: string;
     let owner: string;
 
