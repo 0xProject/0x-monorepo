@@ -25,6 +25,10 @@
             {
                 "note": "Fix rounding of quoted asset amounts.",
                 "pr": 2406
+            },
+            {
+                "note": "Undo bridge slippage in best case quote calculation.",
+                "pr": 2406
             }
         ]
     },
