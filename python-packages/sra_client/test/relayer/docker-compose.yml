@@ -11,13 +11,9 @@ services:
             - ganache
         environment:
             ETHEREUM_RPC_URL: 'http://localhost:8545'
-            ETHEREUM_NETWORK_ID: '50'
             ETHEREUM_CHAIN_ID: '1337'
-            USE_BOOTSTRAP_LIST: 'true'
-            VERBOSITY: 3
-            PRIVATE_KEY_PATH: ''
+            VERBOSITY: 5
             BLOCK_POLLING_INTERVAL: '5s'
-            P2P_LISTEN_PORT: '60557'
         ports:
             - '60557:60557'
         network_mode: "host" # to connect to ganache
