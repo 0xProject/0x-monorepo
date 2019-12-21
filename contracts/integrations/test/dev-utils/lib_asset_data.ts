@@ -422,8 +422,7 @@ blockchainTests.resets('LibAssetData', env => {
 
         it('should return a balance of MAX_UINT256 if the the StaticCallProxy assetData contains data for a successful staticcall', async () => {
             const staticCallData = staticCallTarget.isOddNumber(new BigNumber(1)).getABIEncodedTransactionData();
-            const trueAsString = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            const expectedResultHash = hexUtils.hash(trueAsString);
+            const expectedResultHash = hexUtils.hash(hexUtils.leftPad(1));
             const assetData = await libAssetData
                 .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
                 .callAsync();
@@ -433,8 +432,7 @@ blockchainTests.resets('LibAssetData', env => {
 
         it('should return a balance of 0 if the the StaticCallProxy assetData contains data for an unsuccessful staticcall', async () => {
             const staticCallData = staticCallTarget.isOddNumber(new BigNumber(0)).getABIEncodedTransactionData();
-            const trueAsString = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            const expectedResultHash = hexUtils.hash(trueAsString);
+            const expectedResultHash = hexUtils.hash(hexUtils.leftPad(1));
             const assetData = await libAssetData
                 .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
                 .callAsync();
