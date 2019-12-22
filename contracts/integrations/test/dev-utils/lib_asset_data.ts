@@ -20,8 +20,7 @@ import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/cont
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { blockchainTests, constants, expect, LogDecoder } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, LibBytesRevertErrors, StringRevertError } from '@0x/utils';
-import * as ethUtil from 'ethereumjs-util';
+import { BigNumber, hexUtils, LibBytesRevertErrors, StringRevertError } from '@0x/utils';
 
 import { artifacts, LibAssetDataContract } from '@0x/contracts-dev-utils';
 
@@ -63,7 +62,7 @@ const KNOWN_STATIC_CALL_ENCODING = {
 };
 
 // TODO(jalextowle): This file could really be cleaned up by using the DeploymentManager tool.
-blockchainTests('LibAssetData', env => {
+blockchainTests.resets('LibAssetData', env => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -423,8 +422,7 @@ blockchainTests('LibAssetData', env => {
 
         it('should return a balance of MAX_UINT256 if the the StaticCallProxy assetData contains data for a successful staticcall', async () => {
             const staticCallData = staticCallTarget.isOddNumber(new BigNumber(1)).getABIEncodedTransactionData();
-            const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
-            const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
+            const expectedResultHash = hexUtils.hash(hexUtils.leftPad(1));
             const assetData = await libAssetData
                 .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
                 .callAsync();
@@ -434,8 +432,7 @@ blockchainTests('LibAssetData', env => {
 
         it('should return a balance of 0 if the the StaticCallProxy assetData contains data for an unsuccessful staticcall', async () => {
             const staticCallData = staticCallTarget.isOddNumber(new BigNumber(0)).getABIEncodedTransactionData();
-            const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
-            const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
+            const expectedResultHash = hexUtils.hash(hexUtils.leftPad(1));
             const assetData = await libAssetData
                 .encodeStaticCallAssetData(staticCallTarget.address, staticCallData, expectedResultHash)
                 .callAsync();

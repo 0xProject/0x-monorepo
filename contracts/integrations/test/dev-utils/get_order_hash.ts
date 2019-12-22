@@ -1,25 +1,34 @@
 import { artifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
+import { blockchainTests, constants, expect, orderHashUtils } from '@0x/contracts-test-utils';
 import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 blockchainTests('DevUtils.getOrderHash', env => {
     let devUtils: DevUtilsContract;
+    let exchange: ExchangeContract;
+    let chainId: number;
 
     before(async () => {
+        chainId = await env.getChainIdAsync();
+
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.Exchange,
+            env.provider,
+            env.txDefaults,
+            exchangeArtifacts,
+            new BigNumber(chainId),
+        );
         devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
             artifacts.DevUtils,
             env.provider,
             env.txDefaults,
             artifacts,
-            constants.NULL_ADDRESS,
+            exchange.address,
         );
     });
 
     it('should return the order hash', async () => {
-        const expectedOrderHash = '0x331cb7e07a757bae130702da6646c26531798c92bcfaf671817268fd2c188531';
-        const exchangeAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
-        const chainId = 50;
         const order: Order = {
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,
@@ -35,11 +44,11 @@ blockchainTests('DevUtils.getOrderHash', env => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
-            exchangeAddress,
+            exchangeAddress: exchange.address,
             chainId,
         };
-        expect(await devUtils.getOrderHash(order, new BigNumber(chainId), exchangeAddress).callAsync()).to.be.equal(
-            expectedOrderHash,
+        expect(await devUtils.getOrderHash(order, new BigNumber(chainId), exchange.address).callAsync()).to.be.equal(
+            orderHashUtils.getOrderHashHex(order),
         );
     });
 });
