@@ -46,6 +46,12 @@ contract IExchangeV2 {
         uint256 takerFeePaid;            // Total amount of ZRX paid by taker to feeRecipients(s).
     }
 
+    struct OrderInfo {
+        uint8 orderStatus;                    // Status that describes order's validity and fillability.
+        bytes32 orderHash;                    // EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).
+        uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.
+    }
+
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -56,5 +62,14 @@ contract IExchangeV2 {
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
-        public;
+        public
+        returns (FillResults memory fillResults);
+
+    /// @dev Gets information about an order: status, hash, and amount filled.
+    /// @param order Order to gather information on.
+    /// @return OrderInfo Information about the order and its state.
+    ///         See LibOrder.OrderInfo for a complete description.
+    function getOrderInfo(Order memory order)
+        public
+        returns (OrderInfo memory orderInfo);
 }

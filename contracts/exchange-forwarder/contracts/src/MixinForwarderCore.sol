@@ -85,7 +85,6 @@ contract MixinForwarderCore is
             ethFeeAmounts,
             feeRecipients
         );
-
         // Spends up to wethRemaining to fill orders, transfers purchased assets to msg.sender,
         // and pays WETH order fees.
         (

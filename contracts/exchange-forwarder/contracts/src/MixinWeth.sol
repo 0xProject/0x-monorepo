@@ -109,7 +109,6 @@ contract MixinWeth is
         if (wethRemaining > 0) {
             // Convert remaining WETH to ETH
             ETHER_TOKEN.withdraw(wethRemaining);
-
             // Transfer remaining ETH to sender
             msg.sender.transfer(wethRemaining);
         }

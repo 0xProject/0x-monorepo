@@ -55,7 +55,7 @@ contract MixinExchangeWrapper is
         internal
         returns (LibFillResults.FillResults memory fillResults)
     {
-        if (order.makerFeeAssetData.readBytes4(0) == EXCHANGE_V2_ORDER_ID) {
+        if (_isV2Order(order)) {
             return _fillV2OrderNoThrow(
                 order,
                 takerAssetFillAmount,
@@ -169,7 +169,7 @@ contract MixinExchangeWrapper is
             // The remaining amount of WETH to sell
             uint256 remainingTakerAssetFillAmount = wethSellAmount
                 .safeSub(totalWethSpentAmount)
-                .safeSub(protocolFee);
+                .safeSub(_isV2Order(orders[i]) ? 0 : protocolFee);
 
             // If the maker asset is ERC20Bridge, take a snapshot of the Forwarder contract's balance.
             bytes4 makerAssetProxyId = orders[i].makerAssetData.readBytes4(0);
@@ -390,8 +390,9 @@ contract MixinExchangeWrapper is
             senderAddress: order.senderAddress,
             makerAssetAmount: order.makerAssetAmount,
             takerAssetAmount: order.takerAssetAmount,
-            makerFee: order.makerFee,
-            takerFee: order.makerFee,
+            // NOTE: We assume fees are 0 for all v2 orders. Orders with non-zero fees will fail to be filled.
+            makerFee: 0,
+            takerFee: 0,
             expirationTimeSeconds: order.expirationTimeSeconds,
             salt: order.salt,
             makerAssetData: order.makerAssetData,
@@ -410,16 +411,8 @@ contract MixinExchangeWrapper is
         (bool didSucceed, bytes memory returnData) = exchange.call(fillOrderCalldata);
         if (didSucceed) {
             assert(returnData.length == 128);
-            IExchangeV2.FillResults memory v2FillResults = abi.decode(returnData, (IExchangeV2.FillResults));
-
-            // Add `protocolFeePaid` field to v2 fill results
-            fillResults = LibFillResults.FillResults({
-                makerAssetFilledAmount: v2FillResults.makerAssetFilledAmount,
-                takerAssetFilledAmount: v2FillResults.takerAssetFilledAmount,
-                makerFeePaid: v2FillResults.makerFeePaid,
-                takerFeePaid: v2FillResults.takerFeePaid,
-                protocolFeePaid: 0
-            });
+            // NOTE: makerFeePaid, takerFeePaid, and protocolFeePaid will always be 0 for v2 orders
+            (fillResults.makerAssetFilledAmount, fillResults.takerAssetFilledAmount) = abi.decode(returnData, (uint256, uint256));
         }
 
         // fillResults values will be 0 by default if call was unsuccessful
@@ -489,5 +482,16 @@ contract MixinExchangeWrapper is
         } else {
             return false;
         }
+    }
+
+    /// @dev Checks whether an order is a v2 order.
+    /// @param order Order struct containing order specifications.
+    /// @return True if the order's `makerFeeAssetData` is set to the v2 order id.
+    function _isV2Order(LibOrder.Order memory order)
+        internal
+        pure
+        returns (bool)
+    {
+        return order.makerFeeAssetData.readBytes4(0) == EXCHANGE_V2_ORDER_ID;
     }
 }
