@@ -124,7 +124,6 @@ export class ForkedBlockchainTestsEnvironmentSingleton extends BlockchainTestsEn
             ...providerConfigs,
             fork: forkHost,
             blockTime: 0,
-            locked: false,
         });
     }
 
