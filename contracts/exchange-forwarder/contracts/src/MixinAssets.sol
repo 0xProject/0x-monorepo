@@ -82,6 +82,10 @@ contract MixinAssets is
     )
         internal
     {
+        if (amount == 0) {
+            return;
+        }
+
         bytes4 proxyId = assetData.readBytes4(0);
 
         if (
