@@ -37,7 +37,7 @@ export enum FunctionKind {
 
 export enum ContractKind {
     Contract = 'contract',
-    Interface = 'export interface',
+    Interface = 'interface',
     Library = 'library',
 }
 

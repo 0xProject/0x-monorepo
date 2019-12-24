@@ -41,6 +41,7 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
+        "lodash": "^4.17.11",
         "@0x/tslint-config": "^4.0.0",
         "@0x/dev-utils": "^3.0.1",
         "@types/mocha": "^5.2.7",

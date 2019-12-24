@@ -5,6 +5,7 @@ import * as path from 'path';
 import {
     ArrayTypeNameNode,
     AstNode,
+    ContractKind,
     EnumValueNode,
     FunctionKind,
     isArrayTypeNameNode,
@@ -28,6 +29,8 @@ import {
     Visibility,
 } from './sol_ast';
 
+export { ContractKind, FunctionKind, StateMutability, StorageLocation, Visibility } from './sol_ast';
+
 export interface DocumentedItem {
     doc: string;
     line: number;
@@ -41,7 +44,7 @@ export interface EnumValueDocs extends DocumentedItem {
 export interface ParamDocs extends DocumentedItem {
     type: string;
     indexed: boolean;
-    storageLocation: string;
+    storageLocation: StorageLocation;
     order: number;
 }
 
@@ -57,9 +60,9 @@ export interface ContractMethodDocs extends DocumentedItem {
     name: string;
     contract: string;
     stateMutability: string;
-    visibility: string;
+    visibility: Visibility;
     isAccessor: boolean;
-    kind: string;
+    kind: FunctionKind;
     parameters: ParamDocsMap;
     returns: ParamDocsMap;
 }
@@ -81,7 +84,7 @@ export interface EventDocs extends DocumentedItem {
 }
 
 export interface ContractDocs extends DocumentedItem {
-    kind: string;
+    kind: ContractKind;
     inherits: string[];
     methods: ContractMethodDocs[];
     events: EventDocs[];

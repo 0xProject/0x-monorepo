@@ -1,4 +1,11 @@
-import { ContractDocs, ContractMethodDocs, EventDocs, ParamDocsMap, SolidityDocs } from './sol_doc';
+import {
+    ContractDocs,
+    ContractMethodDocs,
+    EventDocs,
+    ParamDocsMap,
+    SolidityDocs,
+    Visibility,
+} from './sol_doc';
 
 export interface TransformOpts {
     onlyExposed: boolean;
@@ -15,13 +22,14 @@ interface TypesUsage {
 }
 
 /**
- * Apply some nice transformations to extracted JSON docs.
+ * Apply some nice transformations to extracted JSON docs, such as flattening
+ * inherited contracts and filtering out unexposed or unused types.
  */
 export function transformDocs(docs: SolidityDocs, opts: Partial<TransformOpts> = {}): SolidityDocs {
     const _opts = {
         onlyExposed: false,
         flatten: false,
-        contracts: [],
+        contracts: undefined,
         ...opts,
     };
     const _docs = {
@@ -69,6 +77,9 @@ function mergeMethods(methods: ContractMethodDocs[]): ContractMethodDocs[] {
     const ids: string[] = [];
     const merged: ContractMethodDocs[] = [];
     for (const method of methods) {
+        if (method.visibility === Visibility.Private) {
+            continue;
+        }
         const id = getMethodId(method.name, method.parameters);
         if (method.kind === 'constructor') {
             const constructorIndex = merged.findIndex(m => m.kind === 'constructor');
@@ -228,6 +239,6 @@ function isTypeUsedByContracts(
 }
 
 function isMethodVisible(method: ContractMethodDocs): boolean {
-    const VISIBLES = ['external', 'public'];
+    const VISIBLES = [Visibility.External, Visibility.Public];
     return VISIBLES.includes(method.visibility);
 }
