@@ -7897,7 +7897,7 @@ ganache-cli@6.8.0-istanbul.0:
     source-map-support "0.5.12"
     yargs "13.2.4"
 
-ganache-core@2.9.0-istanbul.0:
+ganache-core@2.9.0-istanbul.0, ganache-core@^2.9.0-istanbul.0:
   version "2.9.0-istanbul.0"
   resolved "https://registry.npmjs.org/ganache-core/-/ganache-core-2.9.0-istanbul.0.tgz#bc336c770775a2b9fb06f5cae827088ecc194283"
   integrity sha512-wqNWyxrfZe4QPxzaR/n4hGxIfa1iZAkymPg17wET0iWZ9uurMywGgpG4ZvxjVU9q7WCjIobOSzE1m9OT0dIYcQ==
