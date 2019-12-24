@@ -1,5 +1,6 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
+import { ForwarderContract } from '@0x/contract-wrappers';
 import {
     ERC1155ProxyContract,
     ERC20BridgeProxyContract,
@@ -14,7 +15,6 @@ import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeContract } from '@0x/contracts-exchange';
-import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { StakingProxyContract, TestStakingContract, ZrxVaultContract } from '@0x/contracts-staking';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber, providerUtils } from '@0x/utils';
@@ -243,7 +243,6 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
-        constants.NULL_ADDRESS,
         etherToken.address,
     );
 
