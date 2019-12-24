@@ -4,7 +4,7 @@
         "exchange": "0x61935cbdd02287b511119ddb11aeb42f1593b7ef",
         "erc20Proxy": "0x95e6f48254609a6ee006f7d493c8e5fb97094cef",
         "erc721Proxy": "0xefc70a1b18c432bdc64b596838b4d138f6bc6cad",
-        "forwarder": "0xbf1e3a8405906904b3692446e0fb4e309628a9fe",
+        "forwarder": "0x9ea309d4f96d6433c75a6b9c5a596cf19a87edb8",
         "orderValidator": "0x0000000000000000000000000000000000000000",
         "zrxToken": "0xe41d2489571d322189246dafa5ebde1f4699f498",
         "etherToken": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
