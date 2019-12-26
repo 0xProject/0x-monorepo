@@ -2,7 +2,7 @@ import { chaiSetup } from '@0x/dev-utils';
 import { expect } from 'chai';
 import * as _ from 'lodash';
 
-import { ContractKind, MethodDocs, EventDocs, FunctionKind, SolidityDocs, Visibility } from '../src/extract_docs';
+import { ContractKind, EventDocs, FunctionKind, MethodDocs, SolidityDocs, Visibility } from '../src/extract_docs';
 import { transformDocs } from '../src/transform_docs';
 
 import {
@@ -27,15 +27,12 @@ describe('transformDocs()', () => {
     const LIBRARY_EVENT = 'LibraryContract.LibraryEvent';
     const INTERFACE_EVENT = 'InterfaceContract.InterfaceEvent';
     const BASE_CONTRACT_EVENT = 'BaseContract.BaseContractEvent';
-    const TEST_CONTRACT_EVENT = 'TestContract.TestContractEvent';
     const LIBRARY_ENUM = 'LibraryContract.LibraryEnum';
     const INTERFACE_ENUM = 'InterfaceContract.InterfaceEnum';
     const BASE_CONTRACT_ENUM = 'BaseContract.BaseContractEnum';
-    const TEST_CONTRACT_ENUM = 'TestContract.TestContractEnum';
     const LIBRARY_STRUCT = 'LibraryContract.LibraryStruct';
     const INTERFACE_STRUCT = 'InterfaceContract.InterfaceStruct';
     const BASE_CONTRACT_STRUCT = 'BaseContract.BaseContractStruct';
-    const TEST_CONTRACT_STRUCT = 'TestContract.TestContractStruct';
     const OTHER_CONTRACT_STRUCT = 'OtherContract.OtherContractStruct';
     const INPUT_DOCS: SolidityDocs = {
         contracts: {

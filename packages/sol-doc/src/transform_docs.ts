@@ -1,4 +1,4 @@
-import { ContractDocs, MethodDocs, EventDocs, ParamDocsMap, SolidityDocs, Visibility } from './extract_docs';
+import { ContractDocs, EventDocs, MethodDocs, ParamDocsMap, SolidityDocs, Visibility } from './extract_docs';
 
 export interface TransformOpts {
     onlyExposed: boolean;

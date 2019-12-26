@@ -81,7 +81,7 @@ describe('extractDocsAsync()', () => {
 
         function assertMethodDocs(fullMethodName: string, props: ExpectedMethodProps): void {
             const [contractName, methodName] = fullMethodName.split('.');
-            let m = docs.contracts[contractName].methods.find(m => m.name === methodName) as MethodDocs;
+            const m = docs.contracts[contractName].methods.find(_m => _m.name === methodName) as MethodDocs;
             {
                 const doc = props.noDoc ? '' : createDocString(methodName);
                 expect(m).to.exist('');
@@ -306,7 +306,7 @@ describe('extractDocsAsync()', () => {
 
         function assertEventDocs(fullEventName: string, props: ExpectedEventProps): void {
             const [contractName, eventName] = fullEventName.split('.');
-            let e = docs.contracts[contractName].events.find(e => e.name === eventName) as MethodDocs;
+            const e = docs.contracts[contractName].events.find(_e => _e.name === eventName) as MethodDocs;
             {
                 const doc = props.noDoc ? '' : createDocString(eventName);
                 expect(e).to.exist('');
@@ -318,11 +318,11 @@ describe('extractDocsAsync()', () => {
             for (const [paramName, paramDoc] of Object.entries(params)) {
                 const actualParam = e.parameters[paramName];
                 const doc = paramDoc.noDoc ? '' : createDocString(paramName);
-                const indexed = paramDoc.indexed === undefined ? false : paramDoc.indexed;
+                const isIndexed = paramDoc.indexed === undefined ? false : paramDoc.indexed;
                 expect(actualParam).to.exist('');
                 expect(actualParam.doc).to.eq(doc);
                 expect(actualParam.line).to.eq(paramDoc.line);
-                expect(actualParam.indexed).to.eq(indexed);
+                expect(actualParam.indexed).to.eq(isIndexed);
                 expect(actualParam.type).to.eq(paramDoc.type);
             }
         }
@@ -381,7 +381,7 @@ describe('extractDocsAsync()', () => {
 
         function assertEnumDocs(fullEnumName: string, props: ExpectedEnumProps): void {
             const [contractName, enumName] = fullEnumName.split('.');
-            let e = docs.contracts[contractName].enums[`${contractName}.${enumName}`] as EnumDocs;
+            const e = docs.contracts[contractName].enums[`${contractName}.${enumName}`];
             {
                 const doc = props.noDoc ? '' : createDocString(enumName);
                 expect(e).to.exist('');
@@ -444,7 +444,7 @@ describe('extractDocsAsync()', () => {
 
         function assertStructDocs(fullStructName: string, props: ExpectedStructProps): void {
             const [contractName, structName] = fullStructName.split('.');
-            let s = docs.contracts[contractName].structs[`${contractName}.${structName}`] as StructDocs;
+            const s = docs.contracts[contractName].structs[`${contractName}.${structName}`];
             {
                 const doc = props.noDoc ? '' : createDocString(structName);
                 expect(s).to.exist('');
@@ -506,3 +506,4 @@ describe('extractDocsAsync()', () => {
         });
     });
 });
+// tslint:disable: max-file-line-count

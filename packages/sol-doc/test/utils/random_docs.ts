@@ -3,12 +3,12 @@ import * as _ from 'lodash';
 import {
     ContractDocs,
     ContractKind,
-    MethodDocs,
     DocumentedItem,
     EnumDocs,
     EnumValueDocs,
     EventDocs,
     FunctionKind,
+    MethodDocs,
     ParamDocs,
     ParamDocsMap,
     StateMutability,
@@ -17,7 +17,7 @@ import {
     Visibility,
 } from '../../src/extract_docs';
 
-// tslint:disable: custom-no-magic-numbers
+// tslint:disable: custom-no-magic-numbers completed-docs
 const LETTERS = _.times(26, n => String.fromCharCode('a'.charCodeAt(0) + n));
 
 export function randomWord(maxLength: number = 13): string {

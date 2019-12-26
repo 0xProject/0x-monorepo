@@ -1,4 +1,4 @@
-import { MethodDocs, DocumentedItem, EventDocs, SolidityDocs } from './extract_docs';
+import { DocumentedItem, EventDocs, MethodDocs, SolidityDocs } from './extract_docs';
 
 export interface MarkdownOpts {
     urlPrefix: string;
