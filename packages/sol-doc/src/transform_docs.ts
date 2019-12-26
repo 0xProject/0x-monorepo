@@ -1,11 +1,4 @@
-import {
-    ContractDocs,
-    ContractMethodDocs,
-    EventDocs,
-    ParamDocsMap,
-    SolidityDocs,
-    Visibility,
-} from './sol_doc';
+import { ContractDocs, MethodDocs, EventDocs, ParamDocsMap, SolidityDocs, Visibility } from './extract_docs';
 
 export interface TransformOpts {
     onlyExposed: boolean;
@@ -15,7 +8,7 @@ export interface TransformOpts {
 
 interface TypesUsage {
     [type: string]: {
-        methods: ContractMethodDocs[];
+        methods: MethodDocs[];
         events: EventDocs[];
         structs: string[];
     };
@@ -61,8 +54,6 @@ function mergeContracts(contracts: ContractDocs[]): ContractDocs {
         ...contracts[contracts.length - 1],
         methods: mergeMethods(concat(...contracts.map(c => c.methods))),
         events: mergeEvents(concat(...contracts.map(c => c.events))),
-        enums: Object.assign({}, ...contracts.map(c => c.enums)),
-        structs: Object.assign({}, ...contracts.map(c => c.structs)),
     };
 }
 
@@ -73,9 +64,9 @@ function concat<T>(...arrs: T[][]): T[] {
     }, []);
 }
 
-function mergeMethods(methods: ContractMethodDocs[]): ContractMethodDocs[] {
+function mergeMethods(methods: MethodDocs[]): MethodDocs[] {
     const ids: string[] = [];
-    const merged: ContractMethodDocs[] = [];
+    const merged: MethodDocs[] = [];
     for (const method of methods) {
         if (method.visibility === Visibility.Private) {
             continue;
@@ -177,7 +168,7 @@ function getAllInheritedContracts(contracts: string[], docs: SolidityDocs): stri
 
 function getTypeUsage(docs: SolidityDocs): TypesUsage {
     const types: TypesUsage = {};
-    const addTypeUser = (type: string, user: { method?: ContractMethodDocs; event?: EventDocs; struct?: string }) => {
+    const addTypeUser = (type: string, user: { method?: MethodDocs; event?: EventDocs; struct?: string }) => {
         if (types[type] === undefined) {
             types[type] = { methods: [], events: [], structs: [] };
         }
@@ -238,7 +229,7 @@ function isTypeUsedByContracts(
     return false;
 }
 
-function isMethodVisible(method: ContractMethodDocs): boolean {
+function isMethodVisible(method: MethodDocs): boolean {
     const VISIBLES = [Visibility.External, Visibility.Public];
     return VISIBLES.includes(method.visibility);
 }

@@ -1,4 +1,4 @@
-import { ContractMethodDocs, DocumentedItem, EventDocs, SolidityDocs } from './sol_doc';
+import { MethodDocs, DocumentedItem, EventDocs, SolidityDocs } from './extract_docs';
 
 export interface MarkdownOpts {
     urlPrefix: string;
@@ -172,7 +172,7 @@ function toSourceURL(file: string, line: number, prefix?: string): string {
     return `${_prefix}${file}#L${line}`;
 }
 
-function getMethodSignature(method: ContractMethodDocs): string {
+function getMethodSignature(method: MethodDocs): string {
     const args = Object.entries(method.parameters).map(([_name, param]) => {
         return /^\d+$/.test(_name) ? param.type : `${param.type} ${_name}`;
     });
@@ -188,7 +188,7 @@ function getMethodSignature(method: ContractMethodDocs): string {
     return `${mutabilityPrefix}function ${getNormalizedMethodName(method)}(${args.join(', ')})${_returns}`;
 }
 
-function getNormalizedMethodName(method: ContractMethodDocs): string {
+function getNormalizedMethodName(method: MethodDocs): string {
     let name = method.name;
     if (method.kind === 'constructor') {
         name = 'constructor';

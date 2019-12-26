@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import {
     ContractDocs,
     ContractKind,
-    ContractMethodDocs,
+    MethodDocs,
     DocumentedItem,
     EnumDocs,
     EnumValueDocs,
@@ -15,7 +15,7 @@ import {
     StorageLocation,
     StructDocs,
     Visibility,
-} from '../../src/sol_doc';
+} from '../../src/extract_docs';
 
 // tslint:disable: custom-no-magic-numbers
 const LETTERS = _.times(26, n => String.fromCharCode('a'.charCodeAt(0) + n));
@@ -26,7 +26,11 @@ export function randomWord(maxLength: number = 13): string {
 
 export function randomSentence(): string {
     const numWords = _.random(3, 64);
-    return _.capitalize(_.times(numWords, () => randomWord()).join(' ').concat('.'));
+    return _.capitalize(
+        _.times(numWords, () => randomWord())
+            .join(' ')
+            .concat('.'),
+    );
 }
 
 export function randomDocs(): DocumentedItem {
@@ -42,33 +46,15 @@ export function randomBoolean(): boolean {
 }
 
 export function randomType(): string {
-    return _.sampleSize([
-            'uint256',
-            'bytes32',
-            'bool',
-            'uint32',
-            'int256',
-            'int64',
-            'uint8',
-        ],
-        1,
-    )[0];
+    return _.sampleSize(['uint256', 'bytes32', 'bool', 'uint32', 'int256', 'int64', 'uint8'], 1)[0];
 }
 
 export function randomStorageLocation(): StorageLocation {
-    return _.sampleSize([
-        StorageLocation.Default,
-        StorageLocation.Memory,
-        StorageLocation.Storage,
-    ])[0];
+    return _.sampleSize([StorageLocation.Default, StorageLocation.Memory, StorageLocation.Storage])[0];
 }
 
 export function randomContractKind(): ContractKind {
-    return _.sampleSize([
-        ContractKind.Contract,
-        ContractKind.Interface,
-        ContractKind.Library,
-    ])[0];
+    return _.sampleSize([ContractKind.Contract, ContractKind.Interface, ContractKind.Library])[0];
 }
 
 export function randomMutability(): StateMutability {
@@ -81,28 +67,16 @@ export function randomMutability(): StateMutability {
 }
 
 export function randomVisibility(): Visibility {
-    return _.sampleSize([
-        Visibility.External,
-        Visibility.Internal,
-        Visibility.Public,
-        Visibility.Private,
-    ])[0];
+    return _.sampleSize([Visibility.External, Visibility.Internal, Visibility.Public, Visibility.Private])[0];
 }
 
 export function randomFunctionKind(): FunctionKind {
-    return _.sampleSize([
-        FunctionKind.Constructor,
-        FunctionKind.Fallback,
-        FunctionKind.Function,
-    ])[0];
+    return _.sampleSize([FunctionKind.Constructor, FunctionKind.Fallback, FunctionKind.Function])[0];
 }
 
 export function randomParameters(): ParamDocsMap {
     const numParams = _.random(0, 7);
-    return _.zipObject(
-        _.times(numParams, () => randomWord()),
-        _.times(numParams, idx => randomParameter(idx)),
-    );
+    return _.zipObject(_.times(numParams, () => randomWord()), _.times(numParams, idx => randomParameter(idx)));
 }
 
 export function randomParameter(order: number, fields?: Partial<ParamDocs>): ParamDocs {
@@ -126,7 +100,7 @@ export function randomEvent(fields?: Partial<EventDocs>): EventDocs {
     };
 }
 
-export function randomMethod(fields?: Partial<ContractMethodDocs>): ContractMethodDocs {
+export function randomMethod(fields?: Partial<MethodDocs>): MethodDocs {
     return {
         ...randomDocs(),
         contract: `${randomWord()}Contract`,
@@ -154,15 +128,16 @@ export function randomEnum(fields?: Partial<EnumDocs>): EnumDocs {
     return {
         ...randomDocs(),
         contract: `${randomWord()}Contract`,
-        values: _.mapValues(_.groupBy(_.times(_.random(1, 8), i =>
-                ({
+        values: _.mapValues(
+            _.groupBy(
+                _.times(_.random(1, 8), i => ({
                     ...randomDocs(),
                     value: i,
                     name: randomWord(),
                 })),
                 'name',
             ),
-            v => _.omit(v[0], 'name') as any as EnumValueDocs,
+            v => (_.omit(v[0], 'name') as any) as EnumValueDocs,
         ),
         ...fields,
     };
@@ -175,23 +150,25 @@ export function randomContract(contractName: string, fields?: Partial<ContractDo
         inherits: [],
         events: _.times(_.random(1, 4), () => randomEvent({ contract: contractName })),
         methods: _.times(_.random(1, 4), () => randomMethod({ contract: contractName })),
-        structs: _.mapValues(_.groupBy(_.times(_.random(1, 4), () =>
-                ({
+        structs: _.mapValues(
+            _.groupBy(
+                _.times(_.random(1, 4), () => ({
                     ...randomStruct({ contract: contractName }),
                     name: `${randomWord()}Struct`,
                 })),
                 'name',
             ),
-            v => _.omit(v[0], 'name') as any as StructDocs,
+            v => (_.omit(v[0], 'name') as any) as StructDocs,
         ),
-        enums: _.mapValues(_.groupBy(_.times(_.random(1, 4), () =>
-                ({
+        enums: _.mapValues(
+            _.groupBy(
+                _.times(_.random(1, 4), () => ({
                     ...randomEnum({ contract: contractName }),
                     name: `${randomWord()}Struct`,
                 })),
                 'name',
             ),
-            v => _.omit(v[0], 'name') as any as EnumDocs,
+            v => (_.omit(v[0], 'name') as any) as EnumDocs,
         ),
         ...fields,
     };

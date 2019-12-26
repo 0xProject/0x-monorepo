@@ -56,7 +56,7 @@ export interface EnumValueDocsMap {
     [name: string]: EnumValueDocs;
 }
 
-export interface ContractMethodDocs extends DocumentedItem {
+export interface MethodDocs extends DocumentedItem {
     name: string;
     contract: string;
     stateMutability: string;
@@ -86,7 +86,7 @@ export interface EventDocs extends DocumentedItem {
 export interface ContractDocs extends DocumentedItem {
     kind: ContractKind;
     inherits: string[];
-    methods: ContractMethodDocs[];
+    methods: MethodDocs[];
     events: EventDocs[];
     enums: {
         [typeName: string]: EnumDocs;
@@ -291,7 +291,7 @@ function extractDocsFromFile(ast: SourceUnitNode, source: SourceData): SolidityD
             docs.contracts[currentContractName].methods.push({
                 file: source.path,
                 line: getAstNodeLineNumber(node, source.content),
-                doc: natspec.dev || natspec.comment,
+                doc: natspec.dev || natspec.comment || getCommentsBefore(source.content, offset),
                 name: node.name,
                 contract: currentContractName,
                 kind: node.kind,
@@ -325,7 +325,7 @@ function extractDocsFromFile(ast: SourceUnitNode, source: SourceData): SolidityD
                 contract: currentContractName,
                 file: source.path,
                 line: getAstNodeLineNumber(node, source.content),
-                doc: natspec.dev || natspec.comment,
+                doc: natspec.dev || natspec.comment || getCommentsBefore(source.content, offset),
                 name: node.name,
                 parameters: extractFunctionParameterDocs(node.parameters, natspec, source),
             });
@@ -386,11 +386,11 @@ function extractAccesorReturnDocs(typeNameNode: TypeNameNode, natspec: Natspec, 
             node = node.valueType;
         }
         type = node.valueType.typeDescriptions.typeString;
-        storageLocation = StorageLocation.Storage;
+        storageLocation = type.startsWith('struct') ? StorageLocation.Memory : StorageLocation.Default;
     } else if (isArrayTypeNameNode(typeNameNode)) {
         // Handle arrays.
         type = typeNameNode.baseType.typeDescriptions.typeString;
-        storageLocation = StorageLocation.Memory;
+        storageLocation = type.startsWith('struct') ? StorageLocation.Memory : StorageLocation.Default;
     } else if (isUserDefinedTypeNameNode(typeNameNode)) {
         storageLocation = typeNameNode.typeDescriptions.typeString.startsWith('struct')
             ? StorageLocation.Memory
@@ -398,8 +398,8 @@ function extractAccesorReturnDocs(typeNameNode: TypeNameNode, natspec: Natspec, 
     }
     return {
         '0': {
-            type,
             storageLocation,
+            type: normalizeType(type),
             file: source.path,
             line: getAstNodeLineNumber(typeNameNode, source.content),
             doc: natspec.returns['0'] || '',
@@ -440,7 +440,7 @@ function extractFunctionReturnDocs(
         returns[param.name || idx] = {
             file: source.path,
             line: getAstNodeLineNumber(param, source.content),
-            doc: natspec.returns[param.name] || '',
+            doc: natspec.returns[param.name || idx] || '',
             type: normalizeType(param.typeName.typeDescriptions.typeString),
             indexed: false,
             storageLocation: param.storageLocation,
@@ -489,7 +489,7 @@ function extractEnumValueDocs(valuesNodes: EnumValueNode[], natspec: Natspec, so
 function offsetToLineIndex(code: string, offset: number): number {
     let currentOffset = 0;
     let lineIdx = 0;
-    while (currentOffset < offset) {
+    while (currentOffset <= offset) {
         const lineEnd = code.indexOf('\n', currentOffset);
         if (lineEnd === -1) {
             return lineIdx;
@@ -629,7 +629,7 @@ function getDocStringAround(code: string, offset: number): string {
 function normalizeType(type: string): string {
     const m = /^(?:\w+ )?(.*)$/.exec(type);
     if (!m) {
-        return '';
+        return type;
     }
     return m[1];
 }

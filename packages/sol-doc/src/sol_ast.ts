@@ -45,6 +45,7 @@ export enum StorageLocation {
     Default = 'default',
     Storage = 'storage',
     Memory = 'memory',
+    CallData = 'calldata',
 }
 
 export interface AstNode {

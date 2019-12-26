@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import * as yargs from 'yargs';
 
 import { generateMarkdownFromDocs } from './gen_md';
-import { extractDocsAsync } from './sol_doc';
+import { extractDocsAsync } from './extract_docs';
 import { transformDocs } from './transform_docs';
 
 const JSON_TAB_WIDTH = 2;
