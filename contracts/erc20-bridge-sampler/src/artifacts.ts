@@ -7,9 +7,7 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as ERC20BridgeSampler from '../generated-artifacts/ERC20BridgeSampler.json';
 import * as IERC20BridgeSampler from '../generated-artifacts/IERC20BridgeSampler.json';
-import * as IKyberNetwork from '../generated-artifacts/IKyberNetwork.json';
 export const artifacts = {
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     IERC20BridgeSampler: IERC20BridgeSampler as ContractArtifact,
-    IKyberNetwork: IKyberNetwork as ContractArtifact,
 };
