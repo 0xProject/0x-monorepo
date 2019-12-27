@@ -164,7 +164,7 @@ export function randomContract(contractName: string, fields?: Partial<ContractDo
             _.groupBy(
                 _.times(_.random(1, 4), () => ({
                     ...randomEnum({ contract: contractName }),
-                    name: `${randomWord()}Struct`,
+                    name: `${randomWord()}Enum`,
                 })),
                 'name',
             ),

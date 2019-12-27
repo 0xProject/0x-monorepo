@@ -3,15 +3,7 @@ import { expect } from 'chai';
 import * as _ from 'lodash';
 import * as path from 'path';
 
-import {
-    EnumDocs,
-    extractDocsAsync,
-    MethodDocs,
-    SolidityDocs,
-    StorageLocation,
-    StructDocs,
-    Visibility,
-} from '../src/extract_docs';
+import { extractDocsAsync, MethodDocs, SolidityDocs, StorageLocation, Visibility } from '../src/extract_docs';
 
 chaiSetup.configure();
 
@@ -52,6 +44,19 @@ describe('extractDocsAsync()', () => {
                     expect(cd.doc).to.eq(createDocString(contract));
                 }
                 expect(cd.line, `${contract}.line`).to.eq(contractLines[contract]);
+            }
+        });
+
+        it('extracts contract inheritance', async () => {
+            const contractInherits: { [name: string]: string[] } = {
+                [TEST_CONTRACT]: [BASE_CONTRACT, INTERFACE_CONTRACT],
+                [BASE_CONTRACT]: [],
+                [INTERFACE_CONTRACT]: [],
+                [LIBRARY_CONTRACT]: [],
+            };
+            for (const contract of INPUT_CONTRACTS) {
+                const cd = docs.contracts[contract];
+                expect(cd.inherits).to.deep.eq(contractInherits[contract]);
             }
         });
     });
