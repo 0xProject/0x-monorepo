@@ -1,3 +1,4 @@
+import { promisify } from 'util';
 import { Compiler } from '@0x/sol-compiler';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -191,7 +192,7 @@ async function getSourceContentsFromCompilerOutputAsync(output: SolcOutput): Pro
                 filePath = filePath.slice(longestPrefix.length);
                 filePath = path.join(longestPrefixReplacement, filePath);
             }
-            const content = (await fs.promises.readFile(filePath, { encoding: 'utf-8' })) as string;
+            const content = (await promisify(fs.readFile)(filePath, { encoding: 'utf-8' })) as string;
             sources[output.sources[importFile].id] = {
                 path: path.relative('.', filePath),
                 content,

@@ -79,5 +79,5 @@ async function getContractsAsync(contractsGlobs: string[]): Promise<string[]> {
 }
 
 async function writeTextFileAsync(file: string, content: string): Promise<void> {
-    return fs.promises.writeFile(file, content, { encoding: 'utf-8' });
+    return promisify(fs.writeFile)(file, content, { encoding: 'utf-8' });
 }
