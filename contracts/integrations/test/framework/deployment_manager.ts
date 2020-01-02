@@ -22,6 +22,7 @@ import {
 } from '@0x/contracts-staking';
 import { BlockchainTestsEnvironment, constants } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -207,6 +208,7 @@ export class DeploymentManager {
 
         // Construct the new instance and return it.
         return new DeploymentManager(
+            environment.web3Wrapper,
             assetProxies,
             governor,
             exchange,
@@ -522,6 +524,7 @@ export class DeploymentManager {
     }
 
     protected constructor(
+        public web3Wrapper: Web3Wrapper,
         public assetProxies: AssetProxyContracts,
         public governor: ZeroExGovernorContract,
         public exchange: ExchangeContract,
