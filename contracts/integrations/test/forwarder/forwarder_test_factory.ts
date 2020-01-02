@@ -22,6 +22,7 @@ interface MarketSellOptions {
     forwarderFeeRecipientAddresses: string[];
     revertError: RevertError;
     bridgeExcessBuyAmount: BigNumber;
+    noopOrders: number[]; // Indices of orders expected to noop on _fillOrderNoThrow (e.g. cancelled orders)
 }
 
 interface MarketBuyOptions extends MarketSellOptions {
@@ -71,7 +72,7 @@ export class ForwarderTestFactory {
             orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
         );
         const expectedOrderStatuses = orderInfoBefore.map((orderInfo, i) =>
-            fractionalNumberOfOrdersToFill >= i + 1 && orderInfo.orderStatus === OrderStatus.Fillable
+            fractionalNumberOfOrdersToFill >= i + 1 && !(options.noopOrders || []).includes(i)
                 ? OrderStatus.FullyFilled
                 : orderInfo.orderStatus,
         );
@@ -112,7 +113,7 @@ export class ForwarderTestFactory {
             orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
         );
         const expectedOrderStatuses = orderInfoBefore.map((orderInfo, i) =>
-            fractionalNumberOfOrdersToFill >= i + 1 && orderInfo.orderStatus === OrderStatus.Fillable
+            fractionalNumberOfOrdersToFill >= i + 1 && !(options.noopOrders || []).includes(i)
                 ? OrderStatus.FullyFilled
                 : orderInfo.orderStatus,
         );
@@ -198,8 +199,8 @@ export class ForwarderTestFactory {
         for (const [i, order] of orders.entries()) {
             if (remainingOrdersToFill === 0) {
                 break;
-            } else if (ordersInfoBefore[i].orderStatus !== OrderStatus.Fillable) {
-                // If the order is not fillable, skip over it but still count it towards fractionalNumberOfOrdersToFill
+            } else if ((options.noopOrders || []).includes(i)) {
+                // If the order won't be filled, skip over it but still count it towards fractionalNumberOfOrdersToFill
                 remainingOrdersToFill = Math.max(remainingOrdersToFill - 1, 0);
                 continue;
             }
@@ -245,7 +246,10 @@ export class ForwarderTestFactory {
         const makerFeeFilled = takerAssetFilled.times(order.makerFee).dividedToIntegerBy(order.takerAssetAmount);
         makerFee = BigNumber.max(makerFee.minus(makerFeeFilled), 0);
         const takerFeeFilled = takerAssetFilled.times(order.takerFee).dividedToIntegerBy(order.takerAssetAmount);
-        takerFee = BigNumber.max(takerFee.minus(takerFeeFilled), 0);
+        takerFee =
+            hexUtils.slice(order.takerFeeAssetData, 0, 4) === AssetProxyId.StaticCall
+                ? constants.ZERO_AMOUNT
+                : BigNumber.max(takerFee.minus(takerFeeFilled), 0);
 
         makerAssetAmount = makerAssetAmount.plus(bridgeExcessBuyAmount);
         let wethSpentAmount = takerAssetAmount.plus(DeploymentManager.protocolFee);

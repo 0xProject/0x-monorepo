@@ -234,8 +234,10 @@ blockchainTests.resets('Supported asset type unit tests', env => {
                 .transferAssetToSender(assortedMultiAssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             expect(txReceipt.logs.length).to.equal(2);
+            // tslint:disable:no-unnecessary-type-assertion
             const erc20TransferEvent = (txReceipt.logs[0] as LogWithDecodedArgs<ERC20TokenTransferEventArgs>).args;
             const erc721TransferEvent = (txReceipt.logs[1] as LogWithDecodedArgs<ERC721TokenTransferEventArgs>).args;
+            // tslint:enable:no-unnecessary-type-assertion
             expect(erc20TransferEvent).to.deep.equal({
                 _from: forwarder.address,
                 _to: receiver,
@@ -252,8 +254,10 @@ blockchainTests.resets('Supported asset type unit tests', env => {
                 .transferAssetToSender(assortedMultiAssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             expect(txReceipt.logs.length).to.equal(2);
+            // tslint:disable:no-unnecessary-type-assertion
             const erc20TransferEvent = (txReceipt.logs[0] as LogWithDecodedArgs<ERC20TokenTransferEventArgs>).args;
             const erc721TransferEvent = (txReceipt.logs[1] as LogWithDecodedArgs<ERC721TokenTransferEventArgs>).args;
+            // tslint:enable:no-unnecessary-type-assertion
             expect(erc20TransferEvent).to.deep.equal({
                 _from: forwarder.address,
                 _to: receiver,

@@ -513,7 +513,10 @@ contract MixinExchangeWrapper is
     {
         return (
             takerFee == 0 ||
-            takerFeeAssetData.readBytes4(0) == IAssetData(address(0)).StaticCall.selector
+            (
+                takerFeeAssetData.length > 3 &&
+                takerFeeAssetData.readBytes4(0) == IAssetData(address(0)).StaticCall.selector
+            )
         );
     }
 }
