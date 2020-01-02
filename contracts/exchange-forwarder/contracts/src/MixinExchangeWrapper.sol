@@ -492,6 +492,6 @@ contract MixinExchangeWrapper is
         pure
         returns (bool)
     {
-        return order.makerFeeAssetData.readBytes4(0) == EXCHANGE_V2_ORDER_ID;
+        return order.makerFeeAssetData.length > 3 && order.makerFeeAssetData.readBytes4(0) == EXCHANGE_V2_ORDER_ID;
     }
 }
