@@ -1,9 +1,11 @@
 import { OwnerStakeByStatus, StakeInfo, StakeStatus, StoredBalance } from '@0x/contracts-staking';
+import { constants } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import '@azure/core-asynciterator-polyfill';
 import * as _ from 'lodash';
 
 import { AssertionResult } from '../assertions/function_assertion';
+import { assetProxyTransferFailedAssertion } from '../assertions/generic_assertions';
 import { validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { validUnstakeAssertion } from '../assertions/unstake';
@@ -45,6 +47,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             this.actor.simulationActions = {
                 ...this.actor.simulationActions,
                 validStake: this._validStake(),
+                invalidStake: this._invalidStake(),
                 validUnstake: this._validUnstake(),
                 validMoveStake: this._validMoveStake(),
                 validWithdrawDelegatorRewards: this._validWithdrawDelegatorRewards(),
@@ -80,6 +83,19 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 await balanceStore.updateErc20BalancesAsync();
                 const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
                 const amount = Pseudorandom.integer(0, zrxBalance);
+                yield assertion.executeAsync([amount], { from: this.actor.address });
+            }
+        }
+
+        private async *_invalidStake(): AsyncIterableIterator<AssertionResult> {
+            const { zrx } = this.actor.deployment.tokens;
+            const { deployment, balanceStore } = this.actor.simulationEnvironment!;
+            const assertion = assetProxyTransferFailedAssertion(deployment.staking.stakingWrapper, 'stake');
+
+            while (true) {
+                await balanceStore.updateErc20BalancesAsync();
+                const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
+                const amount = Pseudorandom.integer(zrxBalance, constants.MAX_UINT256);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
