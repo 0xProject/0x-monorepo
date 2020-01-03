@@ -8,7 +8,7 @@ import { AssertionResult } from '../assertions/function_assertion';
 import { assetProxyTransferFailedAssertion } from '../assertions/generic_assertions';
 import { validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
-import { validUnstakeAssertion } from '../assertions/unstake';
+import { invalidUnstakeAssertion, validUnstakeAssertion } from '../assertions/unstake';
 import { validWithdrawDelegatorRewardsAssertion } from '../assertions/withdrawDelegatorRewards';
 import { Pseudorandom } from '../utils/pseudorandom';
 
@@ -49,6 +49,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 validStake: this._validStake(),
                 invalidStake: this._invalidStake(),
                 validUnstake: this._validUnstake(),
+                invalidUnstake: this._invalidUnstake(),
                 validMoveStake: this._validMoveStake(),
                 validWithdrawDelegatorRewards: this._validWithdrawDelegatorRewards(),
             };
@@ -115,6 +116,25 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.nextEpochBalance,
                 );
                 const amount = Pseudorandom.integer(0, withdrawableStake);
+                yield assertion.executeAsync([amount], { from: this.actor.address });
+            }
+        }
+
+        private async *_invalidUnstake(): AsyncIterableIterator<AssertionResult> {
+            const { stakingWrapper } = this.actor.deployment.staking;
+            const { deployment, balanceStore } = this.actor.simulationEnvironment!;
+
+            while (true) {
+                await balanceStore.updateErc20BalancesAsync();
+                const undelegatedStake = await stakingWrapper
+                    .getOwnerStakeByStatus(this.actor.address, StakeStatus.Undelegated)
+                    .callAsync();
+                const withdrawableStake = BigNumber.min(
+                    undelegatedStake.currentEpochBalance,
+                    undelegatedStake.nextEpochBalance,
+                );
+                const assertion = invalidUnstakeAssertion(deployment, withdrawableStake);
+                const amount = Pseudorandom.integer(withdrawableStake, constants.MAX_UINT256);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
