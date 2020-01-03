@@ -2,9 +2,14 @@ import { IAssetDataContract } from '@0x/contract-wrappers';
 import {
     AssetData,
     AssetProxyId,
+    ERC1155AssetData,
+    ERC20AssetData,
+    ERC20BridgeAssetData,
+    ERC721AssetData,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
     SingleAssetData,
+    StaticCallAssetData,
 } from '@0x/types';
 import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
@@ -161,5 +166,23 @@ export const assetDataUtils = {
             // tslint:disable-next-line:no-unnecessary-type-assertion
             nestedAssetData: flattenedDecodedNestedAssetData as SingleAssetData[],
         };
+    },
+    isERC20TokenAssetData(assetData: AssetData): assetData is ERC20AssetData {
+        return assetData.assetProxyId === AssetProxyId.ERC20;
+    },
+    isERC20BridgeAssetData(assetData: AssetData): assetData is ERC20BridgeAssetData {
+        return assetData.assetProxyId === AssetProxyId.ERC20Bridge;
+    },
+    isERC1155TokenAssetData(assetData: AssetData): assetData is ERC1155AssetData {
+        return assetData.assetProxyId === AssetProxyId.ERC1155;
+    },
+    isERC721TokenAssetData(assetData: AssetData): assetData is ERC721AssetData {
+        return assetData.assetProxyId === AssetProxyId.ERC721;
+    },
+    isMultiAssetData(assetData: AssetData): assetData is MultiAssetData {
+        return assetData.assetProxyId === AssetProxyId.MultiAsset;
+    },
+    isStaticCallAssetData(assetData: AssetData): assetData is StaticCallAssetData {
+        return assetData.assetProxyId === AssetProxyId.StaticCall;
     },
 };
