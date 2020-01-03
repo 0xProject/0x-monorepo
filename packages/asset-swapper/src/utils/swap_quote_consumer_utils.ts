@@ -15,6 +15,7 @@ import {
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
 } from '../types';
+import { utils } from '../utils/utils';
 
 import { assert } from './assert';
 
@@ -65,7 +66,7 @@ export const swapQuoteConsumerUtils = {
         return _.every(orders, order => swapQuoteConsumerUtils.isValidForwarderSignedOrder(order, wethAssetData));
     },
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
-        return order.takerAssetData === wethAssetData;
+        return utils.isExactAssetData(order.takerAssetData, wethAssetData);
     },
     async getExtensionContractTypeForSwapQuoteAsync(
         quote: SwapQuote,
