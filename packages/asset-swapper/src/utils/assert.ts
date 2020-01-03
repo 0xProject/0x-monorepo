@@ -52,7 +52,9 @@ export const assert = {
     isValidOrdersForSwapQuoter<T extends Order>(variableName: string, orders: T[]): void {
         _.every(orders, (order: T, index: number) => {
             assert.assert(
-                utils.isOrderTakerFeePayableWithTakerAsset(order) || utils.isOrderTakerFeePayableWithMakerAsset(order),
+                order.takerFee.isZero() ||
+                    utils.isOrderTakerFeePayableWithTakerAsset(order) ||
+                    utils.isOrderTakerFeePayableWithMakerAsset(order),
                 `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} or ${
                     order.takerAssetData
                 } but found ${order.takerFeeAssetData}`,
