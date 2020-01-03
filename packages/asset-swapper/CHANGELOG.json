@@ -29,6 +29,10 @@
             {
                 "note": "Undo bridge slippage in best case quote calculation.",
                 "pr": 2406
+            },
+            {
+                "note": "Compare equivalent asset data when validating quotes and checking fee asset data.",
+                "pr": 2421
             }
         ]
     },
