@@ -28,10 +28,10 @@ export const utils = {
         ) as MethodAbi | undefined;
     },
     isOrderTakerFeePayableWithMakerAsset<T extends Order>(order: T): boolean {
-        return order.takerFee.isZero() || utils.isAssetDataEquivalent(order.takerFeeAssetData, order.makerAssetData);
+        return !order.takerFee.isZero() && utils.isAssetDataEquivalent(order.takerFeeAssetData, order.makerAssetData);
     },
     isOrderTakerFeePayableWithTakerAsset<T extends Order>(order: T): boolean {
-        return order.takerFee.isZero() || utils.isAssetDataEquivalent(order.takerFeeAssetData, order.takerAssetData);
+        return !order.takerFee.isZero() && utils.isAssetDataEquivalent(order.takerFeeAssetData, order.takerAssetData);
     },
     getAdjustedMakerAndTakerAmountsFromTakerFees<T extends Order>(order: T): [BigNumber, BigNumber] {
         const adjustedMakerAssetAmount = utils.isOrderTakerFeePayableWithMakerAsset(order)
