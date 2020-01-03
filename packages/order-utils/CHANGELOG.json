@@ -1,5 +1,14 @@
 [
     {
+        "version": "10.1.0",
+        "changes": [
+            {
+                "note": "Export `isERC20AssetData`, `isERC20BridgeAssetData` and other equivalents.",
+                "pr": 2421
+            }
+        ]
+    },
+    {
         "timestamp": 1576540892,
         "version": "10.0.1",
         "changes": [
