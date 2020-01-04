@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Rewrite the whole thing to use custom AST walker.",
+                "pr": 2391
+            }
+        ]
+    },
+    {
         "timestamp": 1576540892,
         "version": "3.0.2",
         "changes": [

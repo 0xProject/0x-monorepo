@@ -29,6 +29,7 @@ import "./MixinTransferSimulator.sol";
 // MixinAssetProxyDispatcher, MixinExchangeCore, MixinSignatureValidator,
 // and MixinTransactions are all inherited via the other Mixins that are
 // used.
+/// @dev The 0x Exchange contract.
 contract Exchange is
     LibEIP712ExchangeDomain,
     MixinMatchOrders,

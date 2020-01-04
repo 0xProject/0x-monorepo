@@ -147,7 +147,7 @@ contract ERC20BridgeSampler is
             );
             // The fillable amount is zero if the order is not fillable or if the
             // signature is invalid.
-            if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE) ||
+            if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE ||
                 !isValidSignature) {
                 orderFillableTakerAssetAmounts[i] = 0;
             } else {

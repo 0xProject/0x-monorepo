@@ -36,11 +36,14 @@ contract MixinTransactions is
 {
     using LibZeroExTransaction for LibZeroExTransaction.ZeroExTransaction;
 
-    // Mapping of transaction hash => executed
-    // This prevents transactions from being executed more than once.
+    /// @dev Mapping of transaction hash => executed
+    ///      This prevents transactions from being executed more than once.
+    /// @param 0 The transaction hash.
+    /// @return 0 Whether the transation was executed.
     mapping (bytes32 => bool) public transactionsExecuted;
 
-    // Address of current transaction signer
+    /// @dev Address of current transaction signer.
+    /// @return 0 The address associated with the the current transaction.
     address public currentContextAddress;
 
     /// @dev Executes an Exchange method call in the context of signer.
@@ -62,7 +65,7 @@ contract MixinTransactions is
     /// @dev Executes a batch of Exchange method calls in the context of signer(s).
     /// @param transactions Array of 0x transaction structures.
     /// @param signatures Array of proofs that transactions have been signed by signer(s).
-    /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
+    /// @return returnData Array containing ABI encoded return data for each of the underlying Exchange function calls.
     function batchExecuteTransactions(
         LibZeroExTransaction.ZeroExTransaction[] memory transactions,
         bytes[] memory signatures
@@ -70,10 +73,10 @@ contract MixinTransactions is
         public
         payable
         disableRefundUntilEnd
-        returns (bytes[] memory)
+        returns (bytes[] memory returnData)
     {
         uint256 length = transactions.length;
-        bytes[] memory returnData = new bytes[](length);
+        returnData = new bytes[](length);
         for (uint256 i = 0; i != length; i++) {
             returnData[i] = _executeTransaction(transactions[i], signatures[i]);
         }
@@ -117,7 +120,7 @@ contract MixinTransactions is
         _setCurrentContextAddressIfRequired(signerAddress, address(0));
 
         emit TransactionExecution(transactionHash);
-        
+
         return returnData;
     }
 

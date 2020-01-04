@@ -30,7 +30,7 @@ import "../src/Exchange.sol";
 contract TestWrapperFunctions is
     Exchange
 {
-    uint8 internal constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED);
+    LibOrder.OrderStatus internal constant MAX_ORDER_STATUS = LibOrder.OrderStatus.CANCELLED;
     uint256 internal constant ALWAYS_FAILING_SALT = uint256(-1);
     string internal constant ALWAYS_FAILING_SALT_REVERT_REASON = "ALWAYS_FAILING_SALT";
 
@@ -61,7 +61,7 @@ contract TestWrapperFunctions is
         // Lower uint128 of `order.salt` is the `orderTakerAssetFilledAmount`.
         orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
         // High byte of `order.salt` is the `orderStatus`.
-        orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
+        orderInfo.orderStatus = LibOrder.OrderStatus(uint8(order.salt >> 248) % (uint8(MAX_ORDER_STATUS) + 1));
         orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
     }
 

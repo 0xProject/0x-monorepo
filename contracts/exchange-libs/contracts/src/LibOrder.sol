@@ -60,6 +60,7 @@ library LibOrder {
     }
 
     // solhint-disable max-line-length
+    /// @dev Canonical order structure.
     struct Order {
         address makerAddress;           // Address that created the order.
         address takerAddress;           // Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.
@@ -78,8 +79,9 @@ library LibOrder {
     }
     // solhint-enable max-line-length
 
+    /// @dev Order information returned by `getOrderInfo()`.
     struct OrderInfo {
-        uint8 orderStatus;                    // Status that describes order's validity and fillability.
+        OrderStatus orderStatus;                    // Status that describes order's validity and fillability.
         bytes32 orderHash;                    // EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).
         uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.
     }

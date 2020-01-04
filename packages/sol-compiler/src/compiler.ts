@@ -325,20 +325,21 @@ export class Compiler {
 
             for (const contractPath of input.contractsToCompile) {
                 const contractName = contractPathToData[contractPath].contractName;
-
-                const compiledContract = compilerOutput.contracts[contractPath][contractName];
-                if (compiledContract === undefined) {
-                    throw new Error(
-                        `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
-                    );
+                if (compilerOutput.contracts[contractPath] !== undefined) {
+                    const compiledContract = compilerOutput.contracts[contractPath][contractName];
+                    if (compiledContract === undefined) {
+                        throw new Error(
+                            `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
+                        );
+                    }
+                    if (this._shouldSaveStandardInput) {
+                        await fsWrapper.writeFileAsync(
+                            `${this._artifactsDir}/${contractName}.input.json`,
+                            utils.stringifyWithFormatting(input.standardInput),
+                        );
+                    }
+                    addHexPrefixToContractBytecode(compiledContract);
                 }
-                if (this._shouldSaveStandardInput) {
-                    await fsWrapper.writeFileAsync(
-                        `${this._artifactsDir}/${contractName}.input.json`,
-                        utils.stringifyWithFormatting(input.standardInput),
-                    );
-                }
-                addHexPrefixToContractBytecode(compiledContract);
 
                 if (shouldPersist) {
                     await this._persistCompiledContractAsync(

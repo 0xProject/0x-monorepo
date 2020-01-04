@@ -5,6 +5,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.js",
     "scripts": {
+        "start": "node ./lib/src/cli.js",
         "build": "tsc",
         "build:ci": "yarn build",
         "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --timeout 6000 --exit",
@@ -13,11 +14,16 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
-        "clean": "shx rm -rf lib",
-        "generate-v1-protocol-docs": "(cd ../contracts/src/1.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange_v1.sol TokenRegistry/TokenRegistry.sol TokenTransferProxy/TokenTransferProxy_v1.sol) > v1.0.0.json",
-        "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange.sol AssetProxy/ERC20Proxy.sol AssetProxy/ERC721Proxy.sol OrderValidator/OrderValidator.sol Forwarder/Forwarder.sol  AssetProxyOwner/AssetProxyOwner.sol) > v2.0.0.json",
-        "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/",
-        "deploy-v1-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v1.0.0.json s3://staging-doc-jsons/contracts/"
+        "clean": "shx rm -rf lib docs",
+        "generate-protocol-docs": "COMMIT=`git rev-parse --short HEAD`; mkdir -p ${npm_package_config_outputDir}; yarn start `echo ${npm_package_config_sources} | sed -r 's/(\\S+?)\\b/--source \\1/g'` --root ../../ --root ../../node_modules/@0x/contracts-=contracts/ `echo ${npm_package_config_contracts} | sed -r 's/(\\w+?)\\b/--contract \\1/g'` --md ${npm_package_config_outputDir}/reference.mdx --md-url-prefix \"${npm_package_config_repoBlobRoot}/${COMMIT}\"",
+        "s3:sync_md_docs": "aws s3 sync ${npm_package_config_outputDir} s3://docs-markdown/${npm_package_config_s3DocsPath} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+    },
+    "config": {
+        "outputDir": "./docs",
+        "repoBlobRoot": "https://github.com/0xProject/0x-monorepo/blob",
+        "sources": "../../contracts/exchange/contracts/src/Exchange.sol ../../contracts/exchange-forwarder/contracts/src/Forwarder.sol ../../contracts/staking/contracts/src/Staking.sol ../../contracts/coordinator/contracts/src/Coordinator.sol",
+        "contracts": "Exchange Forwarder Staking Coordinator",
+        "s3DocsPath": "@0x/contracts-docs/v3.0.0"
     },
     "bin": {
         "sol-doc": "bin/sol-doc.js"
@@ -31,11 +37,13 @@
         "@0x/utils": "^5.1.1",
         "ethereum-types": "^3.0.0",
         "ethereumjs-util": "^5.1.1",
-        "lodash": "^4.17.11",
+        "glob": "^7.1.2",
         "yargs": "^10.0.3"
     },
     "devDependencies": {
+        "lodash": "^4.17.11",
         "@0x/tslint-config": "^4.0.0",
+        "@0x/dev-utils": "^3.0.2",
         "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
