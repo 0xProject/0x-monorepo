@@ -22,6 +22,7 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
+import { constants as marketOperationConstants } from './utils/market_operation_utils/constants';
 import { dummyOrderUtils } from './utils/market_operation_utils/dummy_order_utils';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
@@ -165,6 +166,7 @@ export class SwapQuoter {
         const samplerContract = new IERC20BridgeSamplerContract(
             this._contractAddresses.erc20BridgeSampler,
             this.provider,
+            { gas: marketOperationConstants.SAMPLER_CONTRACT_GAS_LIMIT },
         );
         this._marketOperationUtils = new MarketOperationUtils(samplerContract, this._contractAddresses, {
             chainId,
