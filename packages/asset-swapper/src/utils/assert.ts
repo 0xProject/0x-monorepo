@@ -36,13 +36,13 @@ export const assert = {
     ): void {
         _.every(orders, (order: SignedOrder, index: number) => {
             assert.assert(
-                order.takerAssetData === takerAssetData,
+                utils.isAssetDataEquivalent(takerAssetData, order.takerAssetData),
                 `Expected ${variableName}[${index}].takerAssetData to be ${takerAssetData} but found ${
                     order.takerAssetData
                 }`,
             );
             assert.assert(
-                order.makerAssetData === makerAssetData,
+                utils.isAssetDataEquivalent(makerAssetData, order.makerAssetData),
                 `Expected ${variableName}[${index}].makerAssetData to be ${makerAssetData} but found ${
                     order.makerAssetData
                 }`,
@@ -72,7 +72,7 @@ export const assert = {
     },
     isValidForwarderSignedOrder(variableName: string, order: SignedOrder, wethAssetData: string): void {
         assert.assert(
-            order.takerAssetData === wethAssetData,
+            utils.isExactAssetData(order.takerAssetData, wethAssetData),
             `Expected ${variableName} to have takerAssetData set as ${wethAssetData}, but is ${order.takerAssetData}`,
         );
     },

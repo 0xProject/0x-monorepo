@@ -1,5 +1,42 @@
 [
     {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Ignore zero sample results from the sampler contract.",
+                "pr": 2406
+            },
+            {
+                "note": "Increase default `runLimit` from `1024` to `4096`.",
+                "pr": 2406
+            },
+            {
+                "note": "Increase default `numSamples` from `8` to `10`",
+                "pr": 2406
+            },
+            {
+                "note": "Fix ordering of optimized orders.",
+                "pr": 2406
+            },
+            {
+                "note": "Fix best and worst quotes being reversed sometimes.",
+                "pr": 2406
+            },
+            {
+                "note": "Fix rounding of quoted asset amounts.",
+                "pr": 2406
+            },
+            {
+                "note": "Undo bridge slippage in best case quote calculation.",
+                "pr": 2406
+            },
+            {
+                "note": "Compare equivalent asset data when validating quotes and checking fee asset data.",
+                "pr": 2421
+            }
+        ]
+    },
+    {
         "version": "3.0.2",
         "changes": [
             {

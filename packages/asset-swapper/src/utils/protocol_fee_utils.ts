@@ -21,8 +21,10 @@ export class ProtocolFeeUtils {
         return constants.PROTOCOL_FEE_MULTIPLIER;
     }
 
-    // tslint:disable-next-line: prefer-function-over-method
     public async getGasPriceEstimationOrThrowAsync(shouldHardRefresh?: boolean): Promise<BigNumber> {
+        if (this.gasPriceEstimation.eq(constants.ZERO_AMOUNT)) {
+            return this._getGasPriceFromGasStationOrThrowAsync();
+        }
         if (shouldHardRefresh) {
             return this._getGasPriceFromGasStationOrThrowAsync();
         } else {
