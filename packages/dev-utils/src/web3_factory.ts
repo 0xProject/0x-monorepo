@@ -23,6 +23,7 @@ export interface Web3Config {
     shouldAllowUnlimitedContractSize?: boolean;
     fork?: string;
     blockTime?: number;
+    locked?: boolean;
     unlocked_accounts?: string[];
 }
 
@@ -78,6 +79,7 @@ export const web3Factory = {
                     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
                     fork: config.fork,
                     blockTime: config.blockTime,
+                    locked: config.locked,
                     unlocked_accounts: config.unlocked_accounts,
                 } as any), // TODO remove any once types are merged in DefinitelyTyped
             );

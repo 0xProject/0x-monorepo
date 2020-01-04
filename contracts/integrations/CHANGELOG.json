@@ -5,6 +5,10 @@
             {
                 "note": "Integration tests for DydxBridge with (i) Exchange v3 and (ii) Mainnet dYdX SoloMargin contract.",
                 "pr": 2401
+            },
+            {
+                "note": "Add aggregator mainnet tests.",
+                "pr": 2407
             }
         ]
     },

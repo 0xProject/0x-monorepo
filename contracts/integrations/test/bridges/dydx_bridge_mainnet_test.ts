@@ -14,7 +14,7 @@ import { contractAddresses, dydxAccountOwner } from '../mainnet_fork_utils';
 
 import { dydxEvents } from './abi/dydxEvents';
 
-blockchainTests.resets.fork('Mainnet dydx bridge tests', env => {
+blockchainTests.fork.resets('Mainnet dydx bridge tests', env => {
     let testContract: DydxBridgeContract;
     // random account to receive tokens from dydx
     const receiver = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';

@@ -8,6 +8,7 @@
         "test/generated-artifacts/TestEth2Dai.json",
         "test/generated-artifacts/TestEth2DaiBridge.json",
         "test/generated-artifacts/TestFramework.json",
+        "test/generated-artifacts/TestMainnetAggregatorFills.json",
         "test/generated-artifacts/TestUniswapBridge.json",
         "test/generated-artifacts/TestUniswapExchange.json",
         "test/generated-artifacts/TestUniswapExchangeFactory.json"
