@@ -31,7 +31,7 @@
         "wrappers:generate": "abi-gen --abis  ${npm_package_config_abis} --output src/generated-wrappers --backend ethers"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/@(DevUtils|ERC20Token|ERC721Token|Exchange|Forwarder|IAssetData|WETH9|Coordinator|Staking|StakingProxy|IERC20BridgeSampler).json"
+        "abis": "../contract-artifacts/artifacts/@(DevUtils|ERC20Token|ERC721Token|Exchange|Forwarder|IAssetData|WETH9|Coordinator|Staking|StakingProxy|IERC20BridgeSampler|ExchangeV2).json"
     },
     "repository": {
         "type": "git",

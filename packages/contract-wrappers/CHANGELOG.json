@@ -5,6 +5,10 @@
             {
                 "note": "Added updated `DevUtils` wrapper",
                 "pr": 2402
+            },
+            {
+                "note": "Add `ExchangeV2` wrapper",
+                "pr": 2390
             }
         ],
         "timestamp": 1578272714

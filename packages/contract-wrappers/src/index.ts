@@ -32,6 +32,16 @@ export {
     ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
 export {
+    ExchangeV2EventArgs,
+    ExchangeV2Events,
+    ExchangeV2SignatureValidatorApprovalEventArgs,
+    ExchangeV2FillEventArgs,
+    ExchangeV2CancelEventArgs,
+    ExchangeV2CancelUpToEventArgs,
+    ExchangeV2AssetProxyRegisteredEventArgs,
+    ExchangeV2Contract,
+} from './generated-wrappers/exchange_v2';
+export {
     ForwarderContract,
     ForwarderEventArgs,
     ForwarderEvents,

@@ -10,6 +10,7 @@ import { DevUtilsContract } from './generated-wrappers/dev_utils';
 import { ERC20TokenContract } from './generated-wrappers/erc20_token';
 import { ERC721TokenContract } from './generated-wrappers/erc721_token';
 import { ExchangeContract } from './generated-wrappers/exchange';
+import { ExchangeV2Contract } from './generated-wrappers/exchange_v2';
 import { ForwarderContract } from './generated-wrappers/forwarder';
 import { StakingContract } from './generated-wrappers/staking';
 import { WETH9Contract } from './generated-wrappers/weth9';
@@ -49,8 +50,12 @@ export class ContractWrappers {
      * An instance of the StakingContract class containing methods for interacting with the Coordinator extension contract.
      */
     public staking: StakingContract;
+    /**
+     * An instance of the ExchangeV2Contract class containing methods for interacting with the 0x Exchange 2.0 smart contract.
+     */
+    public exchangeV2: ExchangeV2Contract;
 
-    private readonly _web3Wrapper: Web3Wrapper;
+    public readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
      * @param   supportedProvider    The Provider instance you would like the contract-wrappers library to use for interacting with
@@ -87,6 +92,7 @@ export class ContractWrappers {
         this.staking = new StakingContract(contractAddresses.stakingProxy, this.getProvider());
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorContract(contractAddresses.coordinator, this.getProvider());
+        this.exchangeV2 = new ExchangeV2Contract(contractAddresses.exchangeV2, this.getProvider());
         this.contractAddresses = contractAddresses;
     }
     /**
