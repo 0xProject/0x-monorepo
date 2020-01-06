@@ -158,8 +158,18 @@ blockchainTests.resets('Supported asset type unit tests', env => {
             const result = await forwarder.areUnderlyingAssetsEqual(erc20AssetData, multiAssetData).callAsync();
             expect(result).to.be.false();
         });
-        it('returns true if assetData1 == assetData2 are MultiAsset', async () => {
+        it('returns true if assetData1 == assetData2 are MultiAsset (single nested asset)', async () => {
             const result = await forwarder.areUnderlyingAssetsEqual(multiAssetData, multiAssetData).callAsync();
+            expect(result).to.be.true();
+        });
+        it('returns true if assetData1 == assetData2 are MultiAsset (multiple nested assets)', async () => {
+            const assetData = assetDataEncoder
+                .MultiAsset(
+                    [getRandomInteger(0, constants.MAX_UINT256), new BigNumber(1)],
+                    [erc20AssetData, erc721AssetData],
+                )
+                .getABIEncodedTransactionData();
+            const result = await forwarder.areUnderlyingAssetsEqual(assetData, assetData).callAsync();
             expect(result).to.be.true();
         });
         it('returns false if assetData1 != assetData2 are MultiAsset', async () => {
