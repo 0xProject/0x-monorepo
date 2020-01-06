@@ -1,6 +1,6 @@
 {
     "name": "@0x/connect",
-    "version": "6.0.2",
+    "version": "6.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -48,11 +48,11 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0x/assert": "^3.0.2",
-        "@0x/json-schemas": "^5.0.2",
+        "@0x/assert": "^3.0.3",
+        "@0x/json-schemas": "^5.0.3",
         "@0x/types": "^3.1.1",
         "@0x/typescript-typings": "^5.0.1",
-        "@0x/utils": "^5.1.1",
+        "@0x/utils": "^5.1.2",
         "lodash": "^4.17.11",
         "query-string": "^6.0.0",
         "sinon": "^4.0.0",
