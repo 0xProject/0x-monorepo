@@ -64,7 +64,7 @@
         "@0x/base-contract": "^6.0.3",
         "@0x/contract-addresses": "^4.2.0",
         "@0x/contract-artifacts": "^3.3.0",
-        "@0x/contract-wrappers": "13.3.0",
+        "@0x/contract-wrappers": "^13.3.0",
         "@0x/contracts-asset-proxy": "^3.1.0",
         "@0x/contracts-coordinator": "^3.0.3",
         "@0x/contracts-dev-utils": "^1.0.3",
