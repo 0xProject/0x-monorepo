@@ -12,15 +12,23 @@
             },
             {
                 "note": "Added DydxBridge Contract to contract-addresses",
-                "pr": 2401
+                "pr": 2390
             },
             {
                 "note": "Update `UniswapBridge` mainnet address.",
-                "pr": 2412
+                "pr": 2390
             },
             {
                 "note": "Update `KyberBridge` mainnet address.",
-                "pr": 2412
+                "pr": 2390
+            },
+            {
+                "note": "Update `Forwarder` mainnet address.",
+                "pr": 2390
+            },
+            {
+                "note": "Added ChaiBridge Contract to contract-addresses",
+                "pr": 2390
             }
         ],
         "timestamp": 1578272714
