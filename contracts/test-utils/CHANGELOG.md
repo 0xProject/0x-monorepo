@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.1.0 - _January 6, 2020_
+
+    * Added ERC20BridgeProxy to list of unlocked accounts on mainnet fork (#2401)
+    * Add `blockchainTests.live()` for live network tests. (#2407)
+    * Add modifiers to `blockchainTests.fork()`. (#2407)
+
 ## v5.0.1 - _December 17, 2019_
 
     * Dependencies updated

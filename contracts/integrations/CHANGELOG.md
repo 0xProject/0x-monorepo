@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _January 6, 2020_
+
+    * Integration tests for DydxBridge with (i) Exchange v3 and (ii) Mainnet dYdX SoloMargin contract. (#2401)
+    * Add aggregator mainnet tests. (#2407)
+
 ## v2.0.2 - _December 17, 2019_
 
     * Dependencies updated

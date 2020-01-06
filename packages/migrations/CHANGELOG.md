@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.1.0 - _January 6, 2020_
+
+    * Added DydxBridge Contract to ContractAddresses (#2401)
+    * Changed docker image command to overwrite any existing snapshot when unzipping the image downloaded from S3. (#2420)
+
 ## v5.0.2 - _December 17, 2019_
 
     * Dependencies updated

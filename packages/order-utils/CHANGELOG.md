@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.1.0 - _January 6, 2020_
+
+    * Export `isERC20AssetData`, `isERC20BridgeAssetData` and other equivalents. (#2421)
+
 ## v10.0.1 - _December 17, 2019_
 
     * Dependencies updated

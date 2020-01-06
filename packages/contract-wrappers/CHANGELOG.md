@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.3.0 - _January 6, 2020_
+
+    * Added updated `DevUtils` wrapper (#2402)
+
 ## v13.2.0 - _December 17, 2019_
 
     * Add `IERC20BridgeSampler` wrapper (#2353)

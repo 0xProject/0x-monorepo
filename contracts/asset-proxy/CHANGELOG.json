@@ -14,7 +14,8 @@
                 "note": "Fix `KyberBridge` incorrect `minConversionRate` calculation.",
                 "pr": 2412
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "timestamp": 1576540892,

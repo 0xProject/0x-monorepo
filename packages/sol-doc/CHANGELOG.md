@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _January 6, 2020_
+
+    * Rewrite the whole thing to use custom AST walker. (#2391)
+
 ## v3.0.2 - _December 17, 2019_
 
     * Dependencies updated

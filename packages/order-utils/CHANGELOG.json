@@ -6,7 +6,8 @@
                 "note": "Export `isERC20AssetData`, `isERC20BridgeAssetData` and other equivalents.",
                 "pr": 2421
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "timestamp": 1576540892,

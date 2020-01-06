@@ -6,7 +6,8 @@
                 "note": "Rewrite the whole thing to use custom AST walker.",
                 "pr": 2391
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "timestamp": 1576540892,

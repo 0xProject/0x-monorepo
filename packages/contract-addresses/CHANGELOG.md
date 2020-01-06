@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _January 6, 2020_
+
+    * Added new `DevUtils` addresses (#2402)
+    * Update ERC20BridgeSampler address on Kovan and mainnet. (#2405)
+    * Added DydxBridge Contract to contract-addresses (#2401)
+    * Update `UniswapBridge` mainnet address. (#2412)
+    * Update `KyberBridge` mainnet address. (#2412)
+
 ## v4.1.0 - _December 17, 2019_
 
     * Addition of ERC20BridgeSampler + Kyber Erc20Bridge Contract in contract-addresses (#2353)

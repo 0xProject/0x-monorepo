@@ -10,7 +10,8 @@
                 "note": "Changed docker image command to overwrite any existing snapshot when unzipping the image downloaded from S3.",
                 "pr": 2420
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "timestamp": 1576540892,

@@ -6,7 +6,8 @@
                 "note": "Add updated `DevUtils` artifact.",
                 "pr": 2402
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "version": "3.2.0",

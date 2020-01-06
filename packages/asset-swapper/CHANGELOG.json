@@ -34,7 +34,8 @@
                 "note": "Compare equivalent asset data when validating quotes and checking fee asset data.",
                 "pr": 2421
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "version": "3.0.2",

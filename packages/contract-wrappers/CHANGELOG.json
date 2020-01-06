@@ -6,7 +6,8 @@
                 "note": "Added updated `DevUtils` wrapper",
                 "pr": 2402
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "version": "13.2.0",

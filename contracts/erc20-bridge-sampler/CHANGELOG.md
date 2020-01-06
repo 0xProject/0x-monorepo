@@ -5,9 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.3 - _January 6, 2020_
+
+    * Add gas limits to external quote calls. (#2405)
+
 ## v1.0.2 - _December 17, 2019_
 
-    * Do not query empty/unsigned orders. Swallow revets on DEX quotes. (#2365)
+    * Do not query empty/unsigned orders. Swallow revets on DEX quotes. (#2395)
 
 ## v1.0.1 - _December 9, 2019_
 

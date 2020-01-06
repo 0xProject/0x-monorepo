@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.3.0 - _January 6, 2020_
+
+    * Add updated `DevUtils` artifact. (#2402)
+
 ## v3.2.0 - _December 17, 2019_
 
     * Add `IERC20BridgeSampler` artifact. (#2353)

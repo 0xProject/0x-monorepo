@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _January 6, 2020_
+
+    * Dependencies updated
+
 ## v2.0.0 - _December 17, 2019_
 
     * Change OrderStore functions to be async, allowing for Database adapters (#2393)

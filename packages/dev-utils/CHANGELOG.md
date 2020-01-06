@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _January 6, 2020_
+
+    * Add `locked` `Web3Config` option. (#2407)
+
 ## v3.0.2 - _December 17, 2019_
 
     * Dependencies updated

@@ -22,7 +22,8 @@
                 "note": "Update `KyberBridge` mainnet address.",
                 "pr": 2412
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "version": "4.1.0",

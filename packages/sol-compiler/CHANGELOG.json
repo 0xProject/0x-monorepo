@@ -6,7 +6,8 @@
                 "note": "More tolerant of AST-only compilation targets",
                 "pr": 2391
             }
-        ]
+        ],
+        "timestamp": 1578272714
     },
     {
         "timestamp": 1576540892,

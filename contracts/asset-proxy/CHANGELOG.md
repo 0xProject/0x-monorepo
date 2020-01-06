@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _January 6, 2020_
+
+    * Integration tests for DydxBridge with ERC20BridgeProxy. (#2401)
+    * Fix `UniswapBridge` token -> token transfer call. (#2412)
+    * Fix `KyberBridge` incorrect `minConversionRate` calculation. (#2412)
+
 ## v3.0.2 - _December 17, 2019_
 
     * Dependencies updated
