@@ -66,7 +66,7 @@ blockchainTests.fork.resets('Forwarder mainnet tests', env => {
             makerFeeAssetData: makerAssetData,
             takerFeeAssetData: wethAssetData,
             makerAssetAmount: constants.INITIAL_ERC20_BALANCE.dividedToIntegerBy(2),
-            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(0.001, 18),
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
             ...orderParams,
