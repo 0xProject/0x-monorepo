@@ -88,10 +88,9 @@ contract MixinExchangeWrapper is
             uint256 makerAssetAcquiredAmount
         )
     {
-        bool noTakerFee = _noTakerFee(order.takerFee, order.takerFeeAssetData);
         // No taker fee or percentage fee
         if (
-            noTakerFee ||
+            order.takerFee == 0 ||
             _areUnderlyingAssetsEqual(order.takerFeeAssetData, order.makerAssetData)
         ) {
             // Attempt to sell the remaining amount of WETH
@@ -106,7 +105,7 @@ contract MixinExchangeWrapper is
 
             // Subtract fee from makerAssetFilledAmount for the net amount acquired.
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount
-                .safeSub(noTakerFee ? 0 : singleFillResults.takerFeePaid);
+                .safeSub(singleFillResults.takerFeePaid);
 
         // WETH fee
         } else if (_areUnderlyingAssetsEqual(order.takerFeeAssetData, order.takerAssetData)) {
@@ -231,10 +230,9 @@ contract MixinExchangeWrapper is
             uint256 makerAssetAcquiredAmount
         )
     {
-        bool noTakerFee = _noTakerFee(order.takerFee, order.takerFeeAssetData);
         // No taker fee or WETH fee
         if (
-            noTakerFee ||
+            order.takerFee == 0 ||
             _areUnderlyingAssetsEqual(order.takerFeeAssetData, order.takerAssetData)
         ) {
             // Calculate the remaining amount of takerAsset to sell
@@ -253,7 +251,7 @@ contract MixinExchangeWrapper is
 
             // WETH is also spent on the protocol and taker fees, so we add it here.
             wethSpentAmount = singleFillResults.takerAssetFilledAmount
-                .safeAdd(noTakerFee ? 0 : singleFillResults.takerFeePaid)
+                .safeAdd(singleFillResults.takerFeePaid)
                 .safeAdd(singleFillResults.protocolFeePaid);
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
@@ -495,28 +493,5 @@ contract MixinExchangeWrapper is
         returns (bool)
     {
         return order.makerFeeAssetData.length > 3 && order.makerFeeAssetData.readBytes4(0) == EXCHANGE_V2_ORDER_ID;
-    }
-
-    /// @dev Checks whether one asset is effectively equal to another asset.
-    ///      This is the case if they have the same ERC20Proxy/ERC20BridgeProxy asset data, or if
-    ///      one is the ERC20Bridge equivalent of the other.
-    /// @param takerFee Byte array encoded for the takerFee asset proxy.
-    /// @param takerFeeAssetData Byte array encoded for the maker asset proxy.
-    /// @return Whether or not the underlying assets are equal.
-    function _noTakerFee(
-        uint256 takerFee,
-        bytes memory takerFeeAssetData
-    )
-        internal
-        pure
-        returns (bool)
-    {
-        return (
-            takerFee == 0 ||
-            (
-                takerFeeAssetData.length > 3 &&
-                takerFeeAssetData.readBytes4(0) == IAssetData(address(0)).StaticCall.selector
-            )
-        );
     }
 }

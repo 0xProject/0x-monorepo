@@ -246,10 +246,7 @@ export class ForwarderTestFactory {
         const makerFeeFilled = takerAssetFilled.times(order.makerFee).dividedToIntegerBy(order.takerAssetAmount);
         makerFee = BigNumber.max(makerFee.minus(makerFeeFilled), 0);
         const takerFeeFilled = takerAssetFilled.times(order.takerFee).dividedToIntegerBy(order.takerAssetAmount);
-        takerFee =
-            hexUtils.slice(order.takerFeeAssetData, 0, 4) === AssetProxyId.StaticCall
-                ? constants.ZERO_AMOUNT
-                : BigNumber.max(takerFee.minus(takerFeeFilled), 0);
+        takerFee = BigNumber.max(takerFee.minus(takerFeeFilled), 0);
 
         makerAssetAmount = makerAssetAmount.plus(bridgeExcessBuyAmount);
         let wethSpentAmount = takerAssetAmount.plus(DeploymentManager.protocolFee);
