@@ -146,6 +146,9 @@ contract MixinAssets is
         );
     }
 
+    /// @dev Decodes MultiAsset assetData and recursively transfers assets to sender.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    /// @param amount Amount of asset to transfer to sender.
     function _transferMultiAsset(
         bytes memory assetData,
         uint256 amount
