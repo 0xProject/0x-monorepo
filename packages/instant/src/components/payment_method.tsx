@@ -1,19 +1,17 @@
 import * as React from 'react';
 
 import PhoneIconSvg from '../assets/icons/phone.svg';
-import {ColorOption} from '../style/theme';
-import {Account, AccountState, Network, ProviderType} from '../types';
-import {envUtil} from '../util/env';
+import { ColorOption } from '../style/theme';
+import { Account, AccountState, Network, ProviderType } from '../types';
+import { envUtil } from '../util/env';
 
-import {CoinbaseWalletLogo} from './coinbase_wallet_logo';
-import {MetaMaskLogo} from './meta_mask_logo';
-import {PaymentMethodDropdown} from './payment_method_dropdown';
-import {SectionHeader} from './section_header';
-import {Circle} from './ui/circle';
-import {Container} from './ui/container';
-import {Flex} from './ui/flex';
-import {Text} from './ui/text';
-import {WalletPrompt} from './wallet_prompt';
+import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
+import { MetaMaskLogo } from './meta_mask_logo';
+import { PaymentMethodDropdown } from './payment_method_dropdown';
+import { SectionHeader } from './section_header';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { WalletPrompt } from './wallet_prompt';
 
 export interface PaymentMethodProps {
     account: Account;
@@ -49,23 +47,6 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                 return 'payment method';
         }
     };
-    private readonly _renderTitleLabel = (): React.ReactNode => {
-        const { account } = this.props;
-        if (account.state === AccountState.Ready || account.state === AccountState.Locked) {
-            const circleColor: ColorOption = account.state === AccountState.Ready ? ColorOption.green : ColorOption.red;
-            return (
-                <Flex align="center">
-                    <Circle diameter={8} color={circleColor} />
-                    <Container marginLeft="5px">
-                        <Text fontColor={ColorOption.darkGrey} fontSize="12px" lineHeight="30px">
-                            {this.props.walletDisplayName}
-                        </Text>
-                    </Container>
-                </Flex>
-            );
-        }
-        return null;
-    };
     private readonly _renderMainContent = (): React.ReactNode => {
         const { account, network } = this.props;
         const isMobile = envUtil.isMobileOperatingSystem();
@@ -93,12 +74,12 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                             padding="15px 18px"
                             image={
                                 <Container position="relative" display="flex">
-                                    {metamaskLogo}
+                                    {logo}
                                 </Container>
                             }
                             {...colors}
                         >
-                            Metamask
+                            {isMobile ? 'Coinbase Wallet' : 'MetaMask'}
                         </WalletPrompt>
                         <WalletPrompt
                             onClick={onUnlockFormatic}
@@ -121,7 +102,14 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
             case AccountState.None:
                 return (
                     <Flex direction="column" justify="space-between" height="100%">
-                        <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors} fontWeight="normal" marginLeft="19px" padding="15px 18px">
+                        <WalletPrompt
+                            onClick={this.props.onInstallWalletClick}
+                            image={logo}
+                            {...colors}
+                            fontWeight="normal"
+                            marginLeft="19px"
+                            padding="15px 18px"
+                        >
                             {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                         </WalletPrompt>
                         <WalletPrompt

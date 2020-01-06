@@ -132,6 +132,14 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
                 this.props.onSignatureDenied(swapQuote);
                 return;
             }
+            // Fortmatic specific error handling
+            if (e.message && e.message.includes('Fortmatic:')) {
+                if (e.message.includes('User denied transaction.')) {
+                    analytics.trackBuySignatureDenied(swapQuote);
+                    this.props.onSignatureDenied(swapQuote);
+                    return;
+                }
+            }
             throw e;
         }
         const startTimeUnix = new Date().getTime();
