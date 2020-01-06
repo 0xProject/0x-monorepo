@@ -5,6 +5,10 @@
             {
                 "note": "Add updated `DevUtils` artifact.",
                 "pr": 2402
+            },
+            {
+                "note": "Add ExchangeV2 artifact",
+                "pr": 2390
             }
         ],
         "timestamp": 1578272714
