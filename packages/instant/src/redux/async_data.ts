@@ -35,7 +35,20 @@ export const asyncData = {
             const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
             const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);
             const deduplicatedAssetDatas = _.uniq(assetDatas);
-            const assets = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);
+            const assetsWithNativeOrders = assetUtils.createAssetsFromAssetDatas(
+                deduplicatedAssetDatas,
+                assetMetaDataMap,
+                network,
+            );
+            const assetsWithOnlyBridgeOrders = await assetUtils.createAssetsFromAssetMetadataMapsAvailableWithBridgeOrdersAsync(
+                swapQuoter,
+                assetMetaDataMap,
+                network,
+            );
+            const assets = _.uniqBy(
+                _.concat(assetsWithNativeOrders, assetsWithOnlyBridgeOrders),
+                asset => asset.assetData,
+            );
             dispatch(actions.setAvailableAssets(assets));
         } catch (e) {
             const errorMessage = 'Could not find any assets';

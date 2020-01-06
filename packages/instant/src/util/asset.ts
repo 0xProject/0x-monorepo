@@ -1,4 +1,4 @@
-import { InsufficientAssetLiquidityError, SwapQuoterError } from '@0x/asset-swapper';
+import { InsufficientAssetLiquidityError, SwapQuoter, SwapQuoterError } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -8,7 +8,35 @@ import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
+import { swapQuoterUtils } from './swap_quoter_utils';
+
 export const assetUtils = {
+    createAssetsFromAssetMetadataMapsAvailableWithBridgeOrdersAsync: async (
+        swapQuoter: SwapQuoter,
+        assetMetaDataMap: ObjectMap<AssetMetaData>,
+        network: Network,
+    ): Promise<Asset[]> => {
+        const arrayOfAssets = _.chain(assetDataNetworkMapping)
+            .map(assetDataByNetwork => {
+                return assetDataByNetwork[network];
+            })
+            .compact()
+            .map(assetData => assetUtils.createAssetFromAssetDataIfExists(assetData, assetMetaDataMap, network))
+            .compact().value();
+        const arrayOfAssetsAvailable = [];
+        // tslint:disable-next-line: forin
+        for (const index in arrayOfAssets) {
+            const asset = arrayOfAssets[index];
+            const isAvailable = await swapQuoterUtils.isAssetLiquiditySupportedWithBridgeOrdersAsync(
+                swapQuoter,
+                asset,
+            );
+            if (isAvailable) {
+                arrayOfAssetsAvailable.push(asset);
+            }
+        }
+        return arrayOfAssetsAvailable;
+    },
     createAssetsFromAssetDatas: (
         assetDatas: string[],
         assetMetaDataMap: ObjectMap<AssetMetaData>,
