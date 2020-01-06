@@ -292,27 +292,4 @@ blockchainTests.resets('Supported asset type unit tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
     });
-
-    describe('_noTakerFee', () => {
-        it('returns true if takerFee == 0 and takerFeeAssetData != StaticCall', async () => {
-            const result = await forwarder.noTakerFee(constants.ZERO_AMOUNT, erc20AssetData).callAsync();
-            expect(result).to.be.true();
-        });
-        it('returns false if takerFee != 0 and takerFeeAssetData != StaticCall', async () => {
-            const result = await forwarder
-                .noTakerFee(getRandomInteger(1, constants.MAX_UINT256), erc20AssetData)
-                .callAsync();
-            expect(result).to.be.false();
-        });
-        it('returns true if takerFee == 0 and takerFeeAssetData == StaticCall', async () => {
-            const result = await forwarder.noTakerFee(constants.ZERO_AMOUNT, staticCallAssetData).callAsync();
-            expect(result).to.be.true();
-        });
-        it('returns true if takerFee != 0 and takerFeeAssetData == StaticCall', async () => {
-            const result = await forwarder
-                .noTakerFee(getRandomInteger(1, constants.MAX_UINT256), staticCallAssetData)
-                .callAsync();
-            expect(result).to.be.true();
-        });
-    });
 });

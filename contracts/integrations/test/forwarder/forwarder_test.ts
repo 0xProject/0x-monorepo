@@ -319,7 +319,7 @@ blockchainTests('Forwarder integration tests', env => {
             const fillableOrder = await maker.signOrderAsync();
             await testFactory.marketSellTestAsync([cancelledOrder, fillableOrder], 1.5, { noopOrders: [0] });
         });
-        for (const orderAssetData of ['makerAssetData', 'makerFeeAssetData', 'takerFeeAssetData']) {
+        for (const orderAssetData of ['makerAssetData', 'makerFeeAssetData']) {
             it(`should fill an order with StaticCall ${orderAssetData} if the StaticCall succeeds`, async () => {
                 const staticCallOrder = await maker.signOrderAsync({
                     [orderAssetData]: staticCallSuccessAssetData,
