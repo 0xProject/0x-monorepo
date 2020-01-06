@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as ethUtil from 'ethereumjs-util';
 
-import { BigNumber } from './index';
+import { BigNumber } from './configured_bignumber';
 import { Numberish } from './types';
 
 // tslint:disable:custom-no-magic-numbers
