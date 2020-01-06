@@ -100,7 +100,6 @@ export const providerStateFactory = {
         providerType: ProviderType,
     ): ProviderState => {
         let providerState = currentProviderState;
-        console.log('lets see', providerState, providerType);
         const chainId = currentProviderState.swapQuoter.chainId;
         const orderSource = currentProviderState.orderSource;
         // Returns current provider if the provider type selected is not found

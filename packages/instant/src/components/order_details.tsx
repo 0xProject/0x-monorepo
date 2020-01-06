@@ -6,7 +6,7 @@ import { oc } from 'ts-optchain';
 
 import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { ColorOption } from '../style/theme';
-import {Account, AccountState, BaseCurrency} from '../types';
+import { Account, AccountState, BaseCurrency } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
@@ -45,7 +45,6 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
 
     private _renderRows(): React.ReactNode {
         const { swapQuoteInfo } = this.props;
-        console.log(swapQuoteInfo);
         return (
             <React.Fragment>
                 <OrderDetailsRow
