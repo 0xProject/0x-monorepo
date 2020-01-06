@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.3 - _January 6, 2020_
+
+    * Ignore zero sample results from the sampler contract. (#2406)
+    * Increase default `runLimit` from `1024` to `4096`. (#2406)
+    * Increase default `numSamples` from `8` to `10` (#2406)
+    * Fix ordering of optimized orders. (#2406)
+    * Fix best and worst quotes being reversed sometimes. (#2406)
+    * Fix rounding of quoted asset amounts. (#2406)
+    * Undo bridge slippage in best case quote calculation. (#2406)
+    * Compare equivalent asset data when validating quotes and checking fee asset data. (#2421)
+
 ## v3.0.2 - _December 17, 2019_
 
     * Fix gasPrice from `ethgasstation` to be in WEI instead of GWEI (#2393)
