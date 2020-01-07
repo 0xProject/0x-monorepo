@@ -78,6 +78,17 @@ class PRNGWrapper {
             return ONE.minus(ONE.minus(u).exponentiatedBy(ONE.dividedBy(beta))).exponentiatedBy(ONE.dividedBy(alpha));
         };
     }
+
+    /*
+     * Pseudorandom version of `hexRandom()`. If no distribution is provided,
+     * samples all byte values uniformly.
+     */
+    public hex(bytesLength: number = 32, distribution: () => Numberish = this.rng): string {
+        const buf = Buffer.from(_.times(bytesLength, () => this.integer(0, 255, distribution).toNumber())).toString(
+            'hex',
+        );
+        return `0x${buf}`;
+    }
 }
 
 export const Pseudorandom = new PRNGWrapper();

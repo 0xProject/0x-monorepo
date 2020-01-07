@@ -48,6 +48,7 @@ export class SimulationEnvironment {
 
 export abstract class Simulation {
     public readonly generator = this._assertionGenerator();
+    public resets = false;
 
     constructor(public environment: SimulationEnvironment) {}
 
@@ -66,11 +67,15 @@ export abstract class Simulation {
     protected abstract _assertionGenerator(): AsyncIterableIterator<AssertionResult | void>;
 
     private async _stepAsync(): Promise<void> {
+        const snapshotId = this.resets ? await this.environment.deployment.web3Wrapper.takeSnapshotAsync() : undefined;
         try {
             await this.generator.next();
         } catch (error) {
             logger.logFailure(error, this.environment.state());
             throw error;
+        }
+        if (snapshotId !== undefined) {
+            await this.environment.deployment.web3Wrapper.revertSnapshotAsync(snapshotId);
         }
     }
 }

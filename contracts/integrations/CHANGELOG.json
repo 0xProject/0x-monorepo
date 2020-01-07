@@ -9,6 +9,10 @@
             {
                 "note": "Add aggregator mainnet tests.",
                 "pr": 2407
+            },
+            {
+                "note": "Add fuzz tests for Exchange signature validation.",
+                "pr": 2425
             }
         ],
         "timestamp": 1578272714
