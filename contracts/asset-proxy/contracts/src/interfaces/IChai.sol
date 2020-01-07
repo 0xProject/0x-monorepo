@@ -18,6 +18,13 @@
 
 pragma solidity ^0.5.9;
 
+contract PotLike {
+    function chi() external returns (uint256);
+    function rho() external returns (uint256);
+    function drip() external returns (uint256);
+    function join(uint256) external;
+    function exit(uint256) external;
+}
 
 // The actual Chai contract can be found here: https://github.com/dapphub/chai
 contract IChai {
@@ -35,6 +42,11 @@ contract IChai {
     /// @param usr Address of Chai holder.
     /// @return Dai balance.
     function dai(address usr)
-      external
-      returns (uint256);
+        external
+        returns (uint256);
+
+    /// @dev Queries the Pot contract used by the Chai contract.
+    function pot()
+        external
+        returns (PotLike);
 }

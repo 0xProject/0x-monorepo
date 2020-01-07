@@ -28,6 +28,7 @@ import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IChai.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 
 
 contract LibAssetData is
@@ -152,12 +153,12 @@ contract LibAssetData is
             // Get address of ERC20 token and bridge contract
             (, address tokenAddress, address bridgeAddress,) = decodeERC20BridgeAssetData(assetData);
             if (tokenAddress == _getDaiAddress() && bridgeAddress == _CHAI_BRIDGE_ADDRESS) {
-                bytes memory chaiDaiCalldata = abi.encodeWithSelector(
+                bytes memory chaiDaiData = abi.encodeWithSelector(
                     IChai(address(0)).dai.selector,
                     ownerAddress
                 );
                 // We do not make a STATICCALL because this function can potentially alter state
-                (bool success, bytes memory returnData) = _getChaiAddress().call(chaiDaiCalldata);
+                (bool success, bytes memory returnData) = _getChaiAddress().call(chaiDaiData);
                 uint256 chaiBalance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
             }
             // Balance will be 0 if bridge is not supported
@@ -217,7 +218,6 @@ contract LibAssetData is
     /// @return Number of assets (or asset baskets) that the corresponding AssetProxy is authorized to spend.
     function getAssetProxyAllowance(address ownerAddress, bytes memory assetData)
         public
-        view
         returns (uint256 allowance)
     {
         // Get id of AssetProxy contract
@@ -305,6 +305,24 @@ contract LibAssetData is
         } else if (assetProxyId == IAssetData(address(0)).StaticCall.selector) {
             // The StaticCallProxy does not require any approvals
             allowance = _MAX_UINT256;
+        } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
+            // Get address of ERC20 token and bridge contract
+            (, address tokenAddress, address bridgeAddress,) = decodeERC20BridgeAssetData(assetData);
+            if (tokenAddress == _getDaiAddress() && bridgeAddress == _CHAI_BRIDGE_ADDRESS) {
+                bytes memory allowanceData = abi.encodeWithSelector(
+                    IERC20Token(address(0)).allowance.selector,
+                    ownerAddress,
+                    _CHAI_BRIDGE_ADDRESS
+                );
+                (bool success, bytes memory returnData) = _getChaiAddress().staticcall(allowanceData);
+                uint256 chaiAllowance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+                IChai chaiContract = IChai(_getChaiAddress());
+                uint256 chiMultiplier = (now > chaiContract.pot().rho())
+                    ? chaiContract.pot().drip()
+                    : chaiContract.pot().chi();
+                allowance = LibMath.getPartialAmountFloor(chiMultiplier, 10**27, chaiAllowance);
+            }
+            // Allowance will be 0 if bridge is not supported
         }
 
         // Allowance will be 0 if the assetProxyId is unknown
@@ -318,7 +336,6 @@ contract LibAssetData is
     /// element corresponding to the same-indexed element in the assetData input.
     function getBatchAssetProxyAllowances(address ownerAddress, bytes[] memory assetData)
         public
-        view
         returns (uint256[] memory allowances)
     {
         uint256 length = assetData.length;
