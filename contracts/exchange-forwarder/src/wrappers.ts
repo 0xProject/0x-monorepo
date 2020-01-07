@@ -4,3 +4,4 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/forwarder';
+export * from '../generated-wrappers/i_exchange_v2';

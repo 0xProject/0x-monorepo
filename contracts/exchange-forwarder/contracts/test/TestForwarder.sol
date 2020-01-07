@@ -32,6 +32,7 @@ contract TestForwarder is
         public
         LibConstants(
             address(0),
+            address(0),
             address(0)
         )
     {}

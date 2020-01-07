@@ -5,6 +5,7 @@
  */
 export * from '../test/generated-wrappers/forwarder';
 export * from '../test/generated-wrappers/i_assets';
+export * from '../test/generated-wrappers/i_exchange_v2';
 export * from '../test/generated-wrappers/i_forwarder';
 export * from '../test/generated-wrappers/i_forwarder_core';
 export * from '../test/generated-wrappers/lib_constants';

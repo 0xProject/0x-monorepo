@@ -1,8 +1,11 @@
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import {
     artifacts as assetProxyArtifacts,
+    ChaiBridgeContract,
+    DydxBridgeContract,
     ERC20BridgeProxyContract,
     Eth2DaiBridgeContract,
+    KyberBridgeContract,
     UniswapBridgeContract,
 } from '@0x/contracts-asset-proxy';
 import { artifacts as coordinatorArtifacts, CoordinatorContract } from '@0x/contracts-coordinator';
@@ -98,6 +101,27 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
 
     await Eth2DaiBridgeContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.Eth2DaiBridge,
+        provider,
+        txDefaults,
+        assetProxyArtifacts,
+    );
+
+    await KyberBridgeContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.KyberBridge,
+        provider,
+        txDefaults,
+        assetProxyArtifacts,
+    );
+
+    await ChaiBridgeContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.ChaiBridge,
+        provider,
+        txDefaults,
+        assetProxyArtifacts,
+    );
+
+    await DydxBridgeContract.deployFrom0xArtifactAsync(
+        assetProxyArtifacts.DydxBridge,
         provider,
         txDefaults,
         assetProxyArtifacts,
@@ -238,15 +262,15 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         chainId,
     );
 
-    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+    await ForwarderContract.deployFrom0xArtifactAsync(
         forwarderArtifacts.Forwarder,
         provider,
         txDefaults,
         forwarderArtifacts,
         exchange.address,
+        deployedAddresses.exchangeV2,
         deployedAddresses.etherToken,
     );
-    await forwarder.approveMakerAssetProxy(deployedAddresses.etherToken).awaitTransactionSuccessAsync();
 }
 
 (async () => {

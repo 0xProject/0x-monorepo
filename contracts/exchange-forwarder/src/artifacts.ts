@@ -6,4 +6,5 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as Forwarder from '../generated-artifacts/Forwarder.json';
-export const artifacts = { Forwarder: Forwarder as ContractArtifact };
+import * as IExchangeV2 from '../generated-artifacts/IExchangeV2.json';
+export const artifacts = { Forwarder: Forwarder as ContractArtifact, IExchangeV2: IExchangeV2 as ContractArtifact };
