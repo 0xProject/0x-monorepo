@@ -34,7 +34,6 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 contract LibAssetData is
     DeploymentConstants
 {
-
     // 2^256 - 1
     uint256 constant internal _MAX_UINT256 = uint256(-1);
 
@@ -80,16 +79,8 @@ contract LibAssetData is
         if (assetProxyId == IAssetData(address(0)).ERC20Token.selector) {
             // Get ERC20 token address
             address tokenAddress = assetData.readAddress(16);
+            balance = _erc20BalanceOf(tokenAddress, ownerAddress);
 
-            // Encode data for `balanceOf(ownerAddress)`
-            bytes memory balanceOfData = abi.encodeWithSelector(
-                IERC20Token(address(0)).balanceOf.selector,
-                ownerAddress
-            );
-
-            // Query balance
-            (bool success, bytes memory returnData) = tokenAddress.staticcall(balanceOfData);
-            balance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
         } else if (assetProxyId == IAssetData(address(0)).ERC721Token.selector) {
             // Get ERC721 token address and id
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
@@ -103,6 +94,7 @@ contract LibAssetData is
             (bool success, bytes memory returnData) = tokenAddress.staticcall(ownerOfCalldata);
             address currentOwnerAddress = (success && returnData.length == 32) ? returnData.readAddress(12) : address(0);
             balance = currentOwnerAddress == ownerAddress ? 1 : 0;
+
         } else if (assetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
             // Get ERC1155 token address, array of ids, and array of values
             (, address tokenAddress, uint256[] memory tokenIds, uint256[] memory tokenValues,) = decodeERC1155AssetData(assetData);
@@ -134,6 +126,7 @@ contract LibAssetData is
                     balance = scaledBalance;
                 }
             }
+
         } else if (assetProxyId == IAssetData(address(0)).StaticCall.selector) {
             // Encode data for `staticCallProxy.transferFrom(assetData,...)`
             bytes memory transferFromData = abi.encodeWithSelector(
@@ -149,19 +142,17 @@ contract LibAssetData is
 
             // Success means that the staticcall can be made an unlimited amount of times
             balance = success ? _MAX_UINT256 : 0;
+
         } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
             // Get address of ERC20 token and bridge contract
             (, address tokenAddress, address bridgeAddress,) = decodeERC20BridgeAssetData(assetData);
             if (tokenAddress == _getDaiAddress() && bridgeAddress == _CHAI_BRIDGE_ADDRESS) {
-                bytes memory chaiDaiData = abi.encodeWithSelector(
-                    IChai(address(0)).dai.selector,
-                    ownerAddress
-                );
-                // We do not make a STATICCALL because this function can potentially alter state
-                (bool success, bytes memory returnData) = _getChaiAddress().call(chaiDaiData);
-                uint256 chaiBalance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+                uint256 chaiBalance = _erc20BalanceOf(_getChaiAddress(), ownerAddress);
+                // Calculate Dai balance
+                balance = _convertChaiToDaiAmount(chaiBalance);
             }
             // Balance will be 0 if bridge is not supported
+
         } else if (assetProxyId == IAssetData(address(0)).MultiAsset.selector) {
             // Get array of values and array of assetDatas
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
@@ -316,11 +307,7 @@ contract LibAssetData is
                 );
                 (bool success, bytes memory returnData) = _getChaiAddress().staticcall(allowanceData);
                 uint256 chaiAllowance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
-                IChai chaiContract = IChai(_getChaiAddress());
-                uint256 chiMultiplier = (now > chaiContract.pot().rho())
-                    ? chaiContract.pot().drip()
-                    : chaiContract.pot().chi();
-                allowance = LibMath.getPartialAmountFloor(chiMultiplier, 10**27, chaiAllowance);
+                allowance = _convertChaiToDaiAmount(chaiAllowance);
             }
             // Allowance will be 0 if bridge is not supported
         }
@@ -696,5 +683,45 @@ contract LibAssetData is
         } else {
             revert("WRONG_PROXY_ID");
         }
+    }
+
+    /// @dev Queries balance of an ERC20 token. Returns 0 if call was unsuccessful.
+    /// @param tokenAddress Address of ERC20 token.
+    /// @param ownerAddress Address of owner of ERC20 token.
+    /// @return balance ERC20 token balance of owner.
+    function _erc20BalanceOf(
+        address tokenAddress,
+        address ownerAddress
+    )
+        internal
+        view
+        returns (uint256 balance)
+    {
+        // Encode data for `balanceOf(ownerAddress)`
+        bytes memory balanceOfData = abi.encodeWithSelector(
+            IERC20Token(address(0)).balanceOf.selector,
+            ownerAddress
+        );
+
+        // Query balance
+        (bool success, bytes memory returnData) = tokenAddress.staticcall(balanceOfData);
+        balance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+        return balance;
+    }
+
+    /// @dev Converts an amount of Chai into its equivalent Dai amount.
+    ///      Also accumulates Dai from DSR if called after the last time it was collected.
+    /// @param chaiAmount Amount of Chai to converts.
+    function _convertChaiToDaiAmount(uint256 chaiAmount)
+        internal
+        returns (uint256 daiAmount)
+    {
+        PotLike pot = IChai(_getChaiAddress()).pot();
+        // Accumulate savings if called after last time savings were collected
+        uint256 chiMultiplier = (now > pot.rho())
+            ? pot.drip()
+            : pot.chi();
+        daiAmount = LibMath.getPartialAmountFloor(chiMultiplier, 10**27, chaiAmount);
+        return daiAmount;
     }
 }
