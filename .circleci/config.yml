@@ -2,7 +2,7 @@ version: 2
 
 jobs:
     build:
-        resource_class: medium+
+        resource_class: medium
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
         environment:

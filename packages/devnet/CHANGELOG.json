@@ -1,0 +1,9 @@
+{
+    "version": "1.0.0",
+    "changes": [
+        {
+            "note": "Added package.json to suppress warnings.",
+            "PR": 2429
+        }
+    ]
+}

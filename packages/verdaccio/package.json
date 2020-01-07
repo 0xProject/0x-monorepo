@@ -1,0 +1,5 @@
+{
+    "private": true,
+    "comment": "Used to suppress yarn build warnings",
+    "name": "verdaccio"
+}
