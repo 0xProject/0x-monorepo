@@ -1,12 +1,12 @@
+import { ExchangeContract } from '@0x/contracts-exchange';
 import { blockchainTests, constants, expect, signingUtils, transactionHashUtils } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { EIP712DomainWithDefaultSchema, Order, SignatureType, ZeroExTransaction } from '@0x/types';
+import { Order, SignatureType, ZeroExTransaction } from '@0x/types';
 import { hexUtils, logUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { Actor, ActorConfig } from '../framework/actors/base';
 import { AssertionResult } from '../framework/assertions/function_assertion';
 import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
@@ -15,355 +15,210 @@ import { Pseudorandom } from '../framework/utils/pseudorandom';
 import { TestSignatureValidationWalletContract } from '../wrappers';
 
 // tslint:disable: max-classes-per-file no-non-null-assertion no-unnecessary-type-assertion
+const tests = process.env.FUZZ_TEST === 'exchange/signature_validation' ? blockchainTests : blockchainTests.skip;
 
-interface SignatureValidatorActorConfig extends ActorConfig {
-    walletContractAddress: string;
-    notWalletContractAddress: string;
-}
+tests('Exchange signature validation fuzz tests', env => {
+    const ALL_SIGNATURE_TYPES = [
+        SignatureType.Illegal,
+        SignatureType.Invalid,
+        SignatureType.EthSign,
+        SignatureType.EIP712,
+        SignatureType.Wallet,
+        SignatureType.Validator,
+        SignatureType.PreSigned,
+        SignatureType.EIP1271Wallet,
+    ];
+    const ALL_WORKING_SIGNATURE_TYPES = [
+        SignatureType.EthSign,
+        SignatureType.EIP712,
+        SignatureType.Wallet,
+        SignatureType.Validator,
+        SignatureType.PreSigned,
+        SignatureType.EIP1271Wallet,
+    ];
+    const HASH_COMPATIBLE_SIGNATURE_TYPES = [
+        SignatureType.EthSign,
+        SignatureType.EIP712,
+        SignatureType.Wallet,
+        SignatureType.PreSigned,
+    ];
+    const STATIC_SIGNATURE_TYPES = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.PreSigned];
+    const ALWAYS_FAILING_SIGNATURE_TYPES = [SignatureType.Illegal, SignatureType.Invalid];
+    const WALLET_SIGNATURE_TYPES = [SignatureType.Wallet, SignatureType.EIP1271Wallet];
+    const STRICT_LENGTH_SIGNATURE_TYPES = [SignatureType.EthSign, SignatureType.EIP712];
+    const CALLBACK_SIGNATURE_TYPES = [SignatureType.Wallet, SignatureType.EIP1271Wallet, SignatureType.Validator];
 
-class SignatureValidatorActor extends Actor {
-    protected readonly _accounts: { [address: string]: Buffer };
-    protected readonly _walletContractAddress: string;
-    protected readonly _notWalletContractAddress: string;
+    let walletContractAddress: string;
+    let notWalletContractAddress: string;
+    let deployment: DeploymentManager;
+    let exchange: ExchangeContract;
+    let accounts: string[];
+    let privateKeys: { [address: string]: Buffer };
+    let chainId: number;
 
-    public constructor(config: SignatureValidatorActorConfig) {
-        super(config);
-        this.mixins.push('exchange/SignatureValidator');
-        this._accounts = _.zipObject(
-            this.deployment.accounts,
-            this.deployment.accounts.map((a, i) => constants.TESTRPC_PRIVATE_KEYS[i]),
-        );
-        this._walletContractAddress = config.walletContractAddress;
-        this._notWalletContractAddress = config.notWalletContractAddress;
+    interface SignatureTestParams {
+        signatureType: SignatureType;
+        signer: string;
+        signature: string;
+        hash: string;
+        signerKey?: Buffer;
+        validator?: string;
+        payload?: string;
+        order?: Order;
+        transaction?: ZeroExTransaction;
     }
 
-    protected async _presignHashAsync(signer: string, hash: string): Promise<void> {
-        await this.deployment.exchange.preSign(hash).awaitTransactionSuccessAsync({ from: signer });
+    before(async () => {
+        chainId = await env.web3Wrapper.getChainIdAsync();
+        accounts = await env.getAccountAddressesAsync();
+        privateKeys = _.zipObject(accounts, accounts.map((a, i) => constants.TESTRPC_PRIVATE_KEYS[i]));
+        deployment = await DeploymentManager.deployAsync(env, {
+            numErc20TokensToDeploy: 0,
+            numErc721TokensToDeploy: 0,
+            numErc1155TokensToDeploy: 0,
+        });
+        exchange = deployment.exchange;
+        walletContractAddress = (await TestSignatureValidationWalletContract.deployFrom0xArtifactAsync(
+            artifacts.TestSignatureValidationWallet,
+            env.provider,
+            env.txDefaults,
+            {},
+        )).address;
+        // This just has to be a contract address that doesn't implement the
+        // wallet spec.
+        notWalletContractAddress = exchange.address;
+    });
+
+    function randomPayload(): string {
+        return Pseudorandom.hex(Pseudorandom.integer(0, 66).toNumber());
     }
 
-    protected async _approveValidatorAsync(signer: string, validator: string, approved: boolean = true): Promise<void> {
-        await this.deployment.exchange
+    async function presignHashAsync(signer: string, hash: string): Promise<void> {
+        await exchange.preSign(hash).awaitTransactionSuccessAsync({ from: signer });
+    }
+
+    async function approveValidatorAsync(signer: string, validator: string, approved: boolean = true): Promise<void> {
+        await exchange
             .setSignatureValidatorApproval(validator, approved)
             .awaitTransactionSuccessAsync({ from: signer });
     }
-}
 
-interface SignatureTestParams {
-    signatureType: SignatureType;
-    signer: string;
-    signature: string;
-    hash: string;
-    signerKey?: Buffer;
-    validator?: string;
-    payload?: string;
-    order?: Order;
-    transaction?: ZeroExTransaction;
-}
-
-const ALL_SIGNATURE_TYPES = [
-    SignatureType.Illegal,
-    SignatureType.Invalid,
-    SignatureType.EthSign,
-    SignatureType.EIP712,
-    SignatureType.Wallet,
-    SignatureType.Validator,
-    SignatureType.PreSigned,
-    SignatureType.EIP1271Wallet,
-];
-
-const ALL_WORKING_SIGNATURE_TYPES = [
-    SignatureType.EthSign,
-    SignatureType.EIP712,
-    SignatureType.Wallet,
-    SignatureType.Validator,
-    SignatureType.PreSigned,
-    SignatureType.EIP1271Wallet,
-];
-
-const HASH_COMPATIBLE_SIGNATURE_TYPES = [
-    SignatureType.EthSign,
-    SignatureType.EIP712,
-    SignatureType.Wallet,
-    SignatureType.PreSigned,
-];
-
-const STATIC_SIGNATURE_TYPES = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.PreSigned];
-
-const ALWAYS_FAILING_SIGNATURE_TYPES = [SignatureType.Illegal, SignatureType.Invalid];
-
-const WALLET_SIGNATURE_TYPES = [SignatureType.Wallet, SignatureType.EIP1271Wallet];
-
-const STRICT_LENGTH_SIGNATURE_TYPES = [SignatureType.EthSign, SignatureType.EIP712];
-
-const CALLBACK_SIGNATURE_TYPES = [SignatureType.Wallet, SignatureType.EIP1271Wallet, SignatureType.Validator];
-
-function randomPayload(): string {
-    return Pseudorandom.hex(Pseudorandom.integer(0, 66).toNumber());
-}
-
-function randomOrder(fields: Partial<Order> & { chainId: number; exchangeAddress: string }): Order {
-    return {
-        expirationTimeSeconds: Pseudorandom.integer(1, 2 ** 32),
-        salt: Pseudorandom.integer(0, constants.MAX_UINT256),
-        makerAssetData: Pseudorandom.hex(36),
-        takerAssetData: Pseudorandom.hex(36),
-        makerFeeAssetData: Pseudorandom.hex(36),
-        takerFeeAssetData: Pseudorandom.hex(36),
-        makerAssetAmount: Pseudorandom.integer(0, 100e18),
-        takerAssetAmount: Pseudorandom.integer(0, 100e18),
-        makerFee: Pseudorandom.integer(0, 100e18),
-        takerFee: Pseudorandom.integer(0, 100e18),
-        feeRecipientAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
-        makerAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
-        takerAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
-        senderAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
-        ...fields,
-    };
-}
-
-function randomTransaction(
-    fields: Partial<ZeroExTransaction> & { domain: EIP712DomainWithDefaultSchema },
-): ZeroExTransaction {
-    return {
-        gasPrice: Pseudorandom.integer(1e9, 100e9),
-        expirationTimeSeconds: Pseudorandom.integer(1, 2 ** 32),
-        salt: Pseudorandom.integer(0, constants.MAX_UINT256),
-        signerAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
-        data: Pseudorandom.hex(Pseudorandom.integer(4, 128).toNumber()),
-        ...fields,
-    };
-}
-
-function createSignature(params: {
-    signatureType: SignatureType;
-    hash?: string;
-    signerKey?: Buffer;
-    validator?: string;
-    payload?: string;
-}): string {
-    const payload = params.payload || constants.NULL_BYTES;
-    const signatureByte = hexUtils.leftPad(params.signatureType, 1);
-    switch (params.signatureType) {
-        default:
-        case SignatureType.Illegal:
-        case SignatureType.Invalid:
-        case SignatureType.PreSigned:
-            return hexUtils.concat(payload, signatureByte);
-        case SignatureType.EIP712:
-        case SignatureType.EthSign:
-            return hexUtils.concat(
-                payload,
-                ethUtil.bufferToHex(
-                    signingUtils.signMessage(ethUtil.toBuffer(params.hash), params.signerKey!, params.signatureType),
-                ),
-            );
-        case SignatureType.Wallet:
-        case SignatureType.EIP1271Wallet:
-            return hexUtils.concat(payload, params.signatureType);
-        case SignatureType.Validator:
-            return hexUtils.concat(payload, params.validator!, params.signatureType);
-    }
-}
-
-async function mangleSignatureParamsAsync(params: SignatureTestParams): Promise<SignatureTestParams> {
-    const mangled = { ...params };
-    const MANGLE_MODES = [
-        'TRUNCATE_SIGNATURE',
-        'RETYPE_SIGNATURE',
-        'RANDOM_HASH',
-        'RANDOM_ORDER',
-        'RANDOM_TRANSACTION',
-        'RANDOM_SIGNER',
-    ];
-    const invalidModes = [];
-    if (!STRICT_LENGTH_SIGNATURE_TYPES.includes(mangled.signatureType)) {
-        invalidModes.push('TRUNCATE_SIGNATURE');
-    }
-    if (CALLBACK_SIGNATURE_TYPES.includes(mangled.signatureType)) {
-        invalidModes.push('RANDOM_HASH');
-    }
-    if (params.transaction === undefined) {
-        invalidModes.push('RANDOM_TRANSACTION');
-    }
-    if (params.order === undefined) {
-        invalidModes.push('RANDOM_ORDER');
-    }
-    if (params.order !== undefined || params.hash !== undefined) {
-        invalidModes.push('RANDOM_HASH');
-    }
-    const mode = Pseudorandom.sample(_.without(MANGLE_MODES, ...invalidModes))!;
-    switch (mode) {
-        case 'TRUNCATE_SIGNATURE':
-            while (hexUtils.slice(mangled.signature, -1) === hexUtils.leftPad(mangled.signatureType, 1)) {
-                mangled.signature = hexUtils.slice(mangled.signature, 0, -1);
-            }
-            break;
-        case 'RETYPE_SIGNATURE':
-            mangled.signatureType = WALLET_SIGNATURE_TYPES.includes(mangled.signatureType)
-                ? Pseudorandom.sample(_.without(ALL_SIGNATURE_TYPES, ...WALLET_SIGNATURE_TYPES))!
-                : Pseudorandom.sample(_.without(ALL_SIGNATURE_TYPES, mangled.signatureType))!;
-            mangled.signature = hexUtils.concat(hexUtils.slice(mangled.signature, 0, -1), mangled.signatureType);
-            break;
-        case 'RANDOM_SIGNER':
-            mangled.signer = Pseudorandom.hex(constants.ADDRESS_LENGTH);
-            if (mangled.order) {
-                mangled.order.makerAddress = mangled.signer;
-            }
-            if (mangled.transaction) {
-                mangled.transaction.signerAddress = mangled.signer;
-            }
-            break;
-        case 'RANDOM_HASH':
-            mangled.hash = Pseudorandom.hex();
-            break;
-        case 'RANDOM_ORDER':
-            mangled.order = randomOrder({
-                exchangeAddress: mangled.order!.exchangeAddress,
-                chainId: mangled.order!.chainId,
-            });
-            mangled.hash = await orderHashUtils.getOrderHashAsync(mangled.order);
-            break;
-        case 'RANDOM_TRANSACTION':
-            mangled.transaction = randomTransaction({
-                domain: mangled.transaction!.domain,
-            });
-            mangled.hash = await transactionHashUtils.getTransactionHashHex(mangled.transaction);
-            break;
-        default:
-            throw new Error(`Unhandled mangle mode: ${mode}`);
-    }
-    return mangled;
-}
-
-class HashSignatureValidatorActor extends SignatureValidatorActor {
-    public constructor(config: SignatureValidatorActorConfig) {
-        super(config);
-        this.mixins.push('exchange/SignatureValidator/Hash');
-        this.simulationActions = {
-            ...this.simulationActions,
-            validTestHashStaticSignature: this._validTestHashSignature(),
-            invalidTestHashStaticSignature: this._invalidTestHashStaticSignature(),
-            invalidTestHashWalletSignature: this._invalidTestHashWalletSignature(),
-            invalidTestHashValidatorSignature: this._invalidTestHashValidatorSignature(),
-            invalidTestHashMangledSignature: this._invalidTestHashMangledSignature(),
-        };
+    function createSignature(params: {
+        signatureType: SignatureType;
+        hash?: string;
+        signerKey?: Buffer;
+        validator?: string;
+        payload?: string;
+    }): string {
+        const payload = params.payload || constants.NULL_BYTES;
+        const signatureByte = hexUtils.leftPad(params.signatureType, 1);
+        switch (params.signatureType) {
+            default:
+            case SignatureType.Illegal:
+            case SignatureType.Invalid:
+            case SignatureType.PreSigned:
+                return hexUtils.concat(payload, signatureByte);
+            case SignatureType.EIP712:
+            case SignatureType.EthSign:
+                return hexUtils.concat(
+                    payload,
+                    ethUtil.bufferToHex(
+                        signingUtils.signMessage(
+                            ethUtil.toBuffer(params.hash),
+                            params.signerKey!,
+                            params.signatureType,
+                        ),
+                    ),
+                );
+            case SignatureType.Wallet:
+            case SignatureType.EIP1271Wallet:
+                return hexUtils.concat(payload, params.signatureType);
+            case SignatureType.Validator:
+                return hexUtils.concat(payload, params.validator!, params.signatureType);
+        }
     }
 
-    private async *_validTestHashSignature(): AsyncIterableIterator<void> {
-        while (true) {
-            const { hash, signature, signatureType, signer } = this._createHashTestParams();
-            yield (async () => {
-                if (signatureType === SignatureType.PreSigned) {
-                    await this._presignHashAsync(signer, hash);
+    async function mangleSignatureParamsAsync(params: SignatureTestParams): Promise<SignatureTestParams> {
+        const mangled = { ...params };
+        const MANGLE_MODES = [
+            'TRUNCATE_SIGNATURE',
+            'RETYPE_SIGNATURE',
+            'RANDOM_HASH',
+            'RANDOM_ORDER',
+            'RANDOM_TRANSACTION',
+            'RANDOM_SIGNER',
+        ];
+        const invalidModes = [];
+        if (!STRICT_LENGTH_SIGNATURE_TYPES.includes(mangled.signatureType)) {
+            invalidModes.push('TRUNCATE_SIGNATURE');
+        }
+        if (CALLBACK_SIGNATURE_TYPES.includes(mangled.signatureType)) {
+            invalidModes.push('RANDOM_HASH');
+        }
+        if (params.transaction === undefined) {
+            invalidModes.push('RANDOM_TRANSACTION');
+        }
+        if (params.order === undefined) {
+            invalidModes.push('RANDOM_ORDER');
+        }
+        if (params.order !== undefined || params.hash !== undefined) {
+            invalidModes.push('RANDOM_HASH');
+        }
+        const mode = Pseudorandom.sample(_.without(MANGLE_MODES, ...invalidModes))!;
+        switch (mode) {
+            case 'TRUNCATE_SIGNATURE':
+                while (hexUtils.slice(mangled.signature, -1) === hexUtils.leftPad(mangled.signatureType, 1)) {
+                    mangled.signature = hexUtils.slice(mangled.signature, 0, -1);
                 }
-                await this._assertValidHashSignatureAsync({
-                    hash,
-                    signer,
-                    signature,
-                    isValid: true,
-                });
-            })();
-        }
-    }
-
-    private async *_invalidTestHashStaticSignature(): AsyncIterableIterator<void> {
-        while (true) {
-            const randomSignerKey = ethUtil.toBuffer(Pseudorandom.hex());
-            const signer = Pseudorandom.sample([
-                this._notWalletContractAddress,
-                this._walletContractAddress,
-                ...Object.keys(this._accounts),
-            ])!;
-            const { hash, signature } = this._createHashTestParams({
-                signatureType: Pseudorandom.sample([...STATIC_SIGNATURE_TYPES, ...ALWAYS_FAILING_SIGNATURE_TYPES])!,
-                signer,
-                // Always sign with a random key.
-                signerKey: randomSignerKey,
-            });
-            yield this._assertValidHashSignatureAsync({
-                hash,
-                signer,
-                signature,
-                isValid: false,
-            });
-        }
-    }
-
-    private async *_invalidTestHashWalletSignature(): AsyncIterableIterator<void> {
-        while (true) {
-            const signer = Pseudorandom.sample([this._notWalletContractAddress, ...Object.keys(this._accounts)])!;
-            const { hash, signature } = this._createHashTestParams({
-                signatureType: SignatureType.Wallet,
-                signer,
-            });
-            yield this._assertValidHashSignatureAsync({
-                hash,
-                signer,
-                signature,
-                isValid: false,
-            });
-        }
-    }
-
-    private async *_invalidTestHashValidatorSignature(): AsyncIterableIterator<void> {
-        while (true) {
-            const isNotApproved = Pseudorandom.sample([true, false])!;
-            const signer = Pseudorandom.sample([...Object.keys(this._accounts)])!;
-            const validator = isNotApproved
-                ? this._walletContractAddress
-                : Pseudorandom.sample([
-                      // All validator signatures are invalid for the hash test, so passing a valid
-                      // wallet contract should still fail.
-                      this._walletContractAddress,
-                      this._notWalletContractAddress,
-                      ...Object.keys(this._accounts),
-                  ])!;
-            const { hash, signature } = this._createHashTestParams({
-                signatureType: SignatureType.Validator,
-                validator,
-            });
-            yield (async () => {
-                if (!isNotApproved) {
-                    await this._approveValidatorAsync(signer, validator);
+                break;
+            case 'RETYPE_SIGNATURE':
+                mangled.signatureType = WALLET_SIGNATURE_TYPES.includes(mangled.signatureType)
+                    ? Pseudorandom.sample(_.without(ALL_SIGNATURE_TYPES, ...WALLET_SIGNATURE_TYPES))!
+                    : Pseudorandom.sample(_.without(ALL_SIGNATURE_TYPES, mangled.signatureType))!;
+                mangled.signature = hexUtils.concat(hexUtils.slice(mangled.signature, 0, -1), mangled.signatureType);
+                break;
+            case 'RANDOM_SIGNER':
+                mangled.signer = Pseudorandom.hex(constants.ADDRESS_LENGTH);
+                if (mangled.order) {
+                    mangled.order.makerAddress = mangled.signer;
                 }
-                await this._assertValidHashSignatureAsync({
-                    hash,
-                    signer,
-                    signature,
-                    isValid: false,
+                if (mangled.transaction) {
+                    mangled.transaction.signerAddress = mangled.signer;
+                }
+                break;
+            case 'RANDOM_HASH':
+                mangled.hash = Pseudorandom.hex();
+                break;
+            case 'RANDOM_ORDER':
+                mangled.order = randomOrder({
+                    exchangeAddress: mangled.order!.exchangeAddress,
+                    chainId: mangled.order!.chainId,
                 });
-            })();
+                mangled.hash = await orderHashUtils.getOrderHashAsync(mangled.order);
+                break;
+            case 'RANDOM_TRANSACTION':
+                mangled.transaction = randomTransaction({
+                    domain: mangled.transaction!.domain,
+                });
+                mangled.hash = await transactionHashUtils.getTransactionHashHex(mangled.transaction);
+                break;
+            default:
+                throw new Error(`Unhandled mangle mode: ${mode}`);
         }
+        return mangled;
     }
 
-    private async *_invalidTestHashMangledSignature(): AsyncIterableIterator<void> {
-        while (true) {
-            const params = this._createHashTestParams({ signatureType: Pseudorandom.sample(ALL_SIGNATURE_TYPES)! });
-            const mangled = await mangleSignatureParamsAsync(params);
-            yield (async () => {
-                await this._assertValidHashSignatureAsync({
-                    hash: mangled.hash,
-                    signer: mangled.signer,
-                    signature: mangled.signature,
-                    isValid: false,
-                });
-            })();
-        }
-    }
-
-    private _createHashTestParams(fields: Partial<SignatureTestParams> = {}): SignatureTestParams {
+    function createHashTestParams(fields: Partial<SignatureTestParams> = {}): SignatureTestParams {
         const signatureType =
             fields.signatureType === undefined
                 ? Pseudorandom.sample(HASH_COMPATIBLE_SIGNATURE_TYPES)!
                 : fields.signatureType;
         const signer =
             fields.signer ||
-            (WALLET_SIGNATURE_TYPES.includes(signatureType)
-                ? this._walletContractAddress
-                : Pseudorandom.sample(Object.keys(this._accounts))!);
+            (WALLET_SIGNATURE_TYPES.includes(signatureType) ? walletContractAddress : Pseudorandom.sample(accounts)!);
         const validator =
-            fields.validator || (signatureType === SignatureType.Validator ? this._walletContractAddress : undefined);
-        const signerKey = fields.signerKey || this._accounts[signer];
+            fields.validator || (signatureType === SignatureType.Validator ? walletContractAddress : undefined);
+        const signerKey = fields.signerKey || privateKeys[signer];
         const hash = fields.hash || Pseudorandom.hex();
         const payload =
             fields.payload ||
@@ -380,7 +235,7 @@ class HashSignatureValidatorActor extends SignatureValidatorActor {
         };
     }
 
-    private async _assertValidHashSignatureAsync(params: {
+    async function assertValidHashSignatureAsync(params: {
         hash: string;
         signer: string;
         signature: string;
@@ -389,9 +244,7 @@ class HashSignatureValidatorActor extends SignatureValidatorActor {
         try {
             let result;
             try {
-                result = await this.deployment.exchange
-                    .isValidHashSignature(params.hash, params.signer, params.signature)
-                    .callAsync();
+                result = await exchange.isValidHashSignature(params.hash, params.signer, params.signature).callAsync();
             } catch (err) {
                 if (params.isValid) {
                     throw err;
@@ -404,40 +257,17 @@ class HashSignatureValidatorActor extends SignatureValidatorActor {
             throw err;
         }
     }
-}
 
-class OrderSignatureValidatorActor extends SignatureValidatorActor {
-    public constructor(config: SignatureValidatorActorConfig) {
-        super(config);
-        this.mixins.push('exchange/SignatureValidator/Order');
-        this.simulationActions = {
-            ...this.simulationActions,
-            validTestOrderSignature: this._validTestOrderSignature(),
-            invalidTestOrderStaticSignature: this._invalidTestOrderStaticSignature(),
-            invalidTestOrderWalletSignature: this._invalidTestOrderWalletSignature(),
-            invalidTestOrderValidatorSignature: this._invalidTestOrderValidatorSignature(),
-            invalidTestOrderMangledSignature: this._invalidTestOrderMangledSignature(),
-        };
-    }
-
-    private async *_validTestOrderSignature(): AsyncIterableIterator<void> {
+    async function* validTestHashSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const {
-                hash,
-                order,
-                signature,
-                signatureType,
-                signer,
-                validator,
-            } = await this._createOrderTestParamsAsync();
+            const { hash, signature, signatureType, signer } = createHashTestParams();
             yield (async () => {
                 if (signatureType === SignatureType.PreSigned) {
-                    await this._presignHashAsync(signer, hash);
-                } else if (signatureType === SignatureType.Validator) {
-                    await this._approveValidatorAsync(signer, validator!);
+                    await presignHashAsync(signer, hash);
                 }
-                await this._assertValidOrderSignatureAsync({
-                    order,
+                await assertValidHashSignatureAsync({
+                    hash,
+                    signer,
                     signature,
                     isValid: true,
                 });
@@ -445,60 +275,65 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
         }
     }
 
-    private async *_invalidTestOrderStaticSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestHashStaticSignature(): AsyncIterableIterator<void> {
         while (true) {
             const randomSignerKey = ethUtil.toBuffer(Pseudorandom.hex());
-            const signer = Pseudorandom.sample([
-                this._notWalletContractAddress,
-                this._walletContractAddress,
-                ...Object.keys(this._accounts),
-            ])!;
-            const { order, signature } = await this._createOrderTestParamsAsync({
+            const signer = Pseudorandom.sample([notWalletContractAddress, walletContractAddress, ...accounts])!;
+            const { hash, signature } = createHashTestParams({
                 signatureType: Pseudorandom.sample([...STATIC_SIGNATURE_TYPES, ...ALWAYS_FAILING_SIGNATURE_TYPES])!,
                 signer,
                 // Always sign with a random key.
                 signerKey: randomSignerKey,
             });
-            yield this._assertValidOrderSignatureAsync({
-                order,
+            yield assertValidHashSignatureAsync({
+                hash,
+                signer,
                 signature,
                 isValid: false,
             });
         }
     }
 
-    private async *_invalidTestOrderWalletSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestHashWalletSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const signer = Pseudorandom.sample([this._notWalletContractAddress, ...Object.keys(this._accounts)])!;
-            const { order, signature } = await this._createOrderTestParamsAsync({
-                signatureType: Pseudorandom.sample(WALLET_SIGNATURE_TYPES)!,
+            const signer = Pseudorandom.sample([notWalletContractAddress, ...accounts])!;
+            const { hash, signature } = createHashTestParams({
+                signatureType: SignatureType.Wallet,
                 signer,
             });
-            yield this._assertValidOrderSignatureAsync({
-                order,
+            yield assertValidHashSignatureAsync({
+                hash,
+                signer,
                 signature,
                 isValid: false,
             });
         }
     }
 
-    private async *_invalidTestOrderValidatorSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestHashValidatorSignature(): AsyncIterableIterator<void> {
         while (true) {
             const isNotApproved = Pseudorandom.sample([true, false])!;
-            const signer = Pseudorandom.sample([...Object.keys(this._accounts)])!;
+            const signer = Pseudorandom.sample([...accounts])!;
             const validator = isNotApproved
-                ? this._walletContractAddress
-                : Pseudorandom.sample([this._notWalletContractAddress, ...Object.keys(this._accounts)])!;
-            const { order, signature } = await this._createOrderTestParamsAsync({
+                ? walletContractAddress
+                : Pseudorandom.sample([
+                      // All validator signatures are invalid for the hash test, so passing a valid
+                      // wallet contract should still fail.
+                      walletContractAddress,
+                      notWalletContractAddress,
+                      ...accounts,
+                  ])!;
+            const { hash, signature } = createHashTestParams({
                 signatureType: SignatureType.Validator,
                 validator,
             });
             yield (async () => {
                 if (!isNotApproved) {
-                    await this._approveValidatorAsync(signer, validator);
+                    await approveValidatorAsync(signer, validator);
                 }
-                await this._assertValidOrderSignatureAsync({
-                    order,
+                await assertValidHashSignatureAsync({
+                    hash,
+                    signer,
                     signature,
                     isValid: false,
                 });
@@ -506,15 +341,14 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
         }
     }
 
-    private async *_invalidTestOrderMangledSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestHashMangledSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const params = await this._createOrderTestParamsAsync({
-                signatureType: Pseudorandom.sample(ALL_SIGNATURE_TYPES)!,
-            });
+            const params = createHashTestParams({ signatureType: Pseudorandom.sample(ALL_SIGNATURE_TYPES)! });
             const mangled = await mangleSignatureParamsAsync(params);
             yield (async () => {
-                await this._assertValidOrderSignatureAsync({
-                    order: mangled.order!,
+                await assertValidHashSignatureAsync({
+                    hash: mangled.hash,
+                    signer: mangled.signer,
                     signature: mangled.signature,
                     isValid: false,
                 });
@@ -522,7 +356,29 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
         }
     }
 
-    private async _createOrderTestParamsAsync(
+    function randomOrder(fields: Partial<Order> = {}): Order {
+        return {
+            chainId,
+            exchangeAddress: exchange.address,
+            expirationTimeSeconds: Pseudorandom.integer(1, 2 ** 32),
+            salt: Pseudorandom.integer(0, constants.MAX_UINT256),
+            makerAssetData: Pseudorandom.hex(36),
+            takerAssetData: Pseudorandom.hex(36),
+            makerFeeAssetData: Pseudorandom.hex(36),
+            takerFeeAssetData: Pseudorandom.hex(36),
+            makerAssetAmount: Pseudorandom.integer(0, 100e18),
+            takerAssetAmount: Pseudorandom.integer(0, 100e18),
+            makerFee: Pseudorandom.integer(0, 100e18),
+            takerFee: Pseudorandom.integer(0, 100e18),
+            feeRecipientAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
+            makerAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
+            takerAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
+            senderAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
+            ...fields,
+        };
+    }
+
+    async function createOrderTestParamsAsync(
         fields: Partial<SignatureTestParams> = {},
     ): Promise<SignatureTestParams & { order: Order }> {
         const signatureType =
@@ -531,13 +387,11 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
                 : fields.signatureType;
         const signer =
             fields.signer ||
-            (WALLET_SIGNATURE_TYPES.includes(signatureType)
-                ? this._walletContractAddress
-                : Pseudorandom.sample(Object.keys(this._accounts))!);
+            (WALLET_SIGNATURE_TYPES.includes(signatureType) ? walletContractAddress : Pseudorandom.sample(accounts)!);
         const validator =
-            fields.validator || (signatureType === SignatureType.Validator ? this._walletContractAddress : undefined);
-        const signerKey = fields.signerKey || this._accounts[signer];
-        const order = fields.order || (await this._randomOrderAsync({ makerAddress: signer }));
+            fields.validator || (signatureType === SignatureType.Validator ? walletContractAddress : undefined);
+        const signerKey = fields.signerKey || privateKeys[signer];
+        const order = fields.order || randomOrder({ makerAddress: signer });
         const hash = fields.hash || (await orderHashUtils.getOrderHashAsync(order));
         const payload =
             fields.payload ||
@@ -555,15 +409,7 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
         };
     }
 
-    private async _randomOrderAsync(fields: Partial<Order> = {}): Promise<Order> {
-        return randomOrder({
-            exchangeAddress: this.deployment.exchange.address,
-            chainId: await this.deployment.web3Wrapper.getChainIdAsync(),
-            ...fields,
-        });
-    }
-
-    private async _assertValidOrderSignatureAsync(params: {
+    async function assertValidOrderSignatureAsync(params: {
         order: Order;
         signature: string;
         isValid: boolean;
@@ -571,9 +417,7 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
         try {
             let result;
             try {
-                result = await this.deployment.exchange
-                    .isValidOrderSignature(params.order, params.signature)
-                    .callAsync();
+                result = await exchange.isValidOrderSignature(params.order, params.signature).callAsync();
             } catch (err) {
                 if (params.isValid) {
                     throw err;
@@ -586,40 +430,18 @@ class OrderSignatureValidatorActor extends SignatureValidatorActor {
             throw err;
         }
     }
-}
 
-class TransactionSignatureValidatorActor extends SignatureValidatorActor {
-    public constructor(config: SignatureValidatorActorConfig) {
-        super(config);
-        this.mixins.push('exchange/SignatureValidator/Transaction');
-        this.simulationActions = {
-            ...this.simulationActions,
-            validTestTransactionSignature: this._validTestTransactionSignature(),
-            invalidTestTransactionStaticSignature: this._invalidTestTransactionStaticSignature(),
-            invalidTestTransactionWalletSignature: this._invalidTestTransactionWalletSignature(),
-            invalidTestTransactionValidatorSignature: this._invalidTestTransactionValidatorSignature(),
-            invalidTestTransactionMangledSignature: this._invalidTestTransactionMangledSignature(),
-        };
-    }
-
-    private async *_validTestTransactionSignature(): AsyncIterableIterator<void> {
+    async function* validTestOrderSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const {
-                hash,
-                transaction,
-                signature,
-                signatureType,
-                signer,
-                validator,
-            } = await this._createTransactionTestParamsAsync();
+            const { hash, order, signature, signatureType, signer, validator } = await createOrderTestParamsAsync();
             yield (async () => {
                 if (signatureType === SignatureType.PreSigned) {
-                    await this._presignHashAsync(signer, hash);
+                    await presignHashAsync(signer, hash);
                 } else if (signatureType === SignatureType.Validator) {
-                    await this._approveValidatorAsync(signer, validator!);
+                    await approveValidatorAsync(signer, validator!);
                 }
-                await this._assertValidTransactionSignatureAsync({
-                    transaction,
+                await assertValidOrderSignatureAsync({
+                    order,
                     signature,
                     isValid: true,
                 });
@@ -627,60 +449,56 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
         }
     }
 
-    private async *_invalidTestTransactionStaticSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestOrderStaticSignature(): AsyncIterableIterator<void> {
         while (true) {
             const randomSignerKey = ethUtil.toBuffer(Pseudorandom.hex());
-            const signer = Pseudorandom.sample([
-                this._notWalletContractAddress,
-                this._walletContractAddress,
-                ...Object.keys(this._accounts),
-            ])!;
-            const { transaction, signature } = await this._createTransactionTestParamsAsync({
+            const signer = Pseudorandom.sample([notWalletContractAddress, walletContractAddress, ...accounts])!;
+            const { order, signature } = await createOrderTestParamsAsync({
                 signatureType: Pseudorandom.sample([...STATIC_SIGNATURE_TYPES, ...ALWAYS_FAILING_SIGNATURE_TYPES])!,
                 signer,
                 // Always sign with a random key.
                 signerKey: randomSignerKey,
             });
-            yield this._assertValidTransactionSignatureAsync({
-                transaction,
+            yield assertValidOrderSignatureAsync({
+                order,
                 signature,
                 isValid: false,
             });
         }
     }
 
-    private async *_invalidTestTransactionWalletSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestOrderWalletSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const signer = Pseudorandom.sample([this._notWalletContractAddress, ...Object.keys(this._accounts)])!;
-            const { transaction, signature } = await this._createTransactionTestParamsAsync({
+            const signer = Pseudorandom.sample([notWalletContractAddress, ...accounts])!;
+            const { order, signature } = await createOrderTestParamsAsync({
                 signatureType: Pseudorandom.sample(WALLET_SIGNATURE_TYPES)!,
                 signer,
             });
-            yield this._assertValidTransactionSignatureAsync({
-                transaction,
+            yield assertValidOrderSignatureAsync({
+                order,
                 signature,
                 isValid: false,
             });
         }
     }
 
-    private async *_invalidTestTransactionValidatorSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestOrderValidatorSignature(): AsyncIterableIterator<void> {
         while (true) {
             const isNotApproved = Pseudorandom.sample([true, false])!;
-            const signer = Pseudorandom.sample([...Object.keys(this._accounts)])!;
+            const signer = Pseudorandom.sample([...accounts])!;
             const validator = isNotApproved
-                ? this._walletContractAddress
-                : Pseudorandom.sample([this._notWalletContractAddress, ...Object.keys(this._accounts)])!;
-            const { transaction, signature } = await this._createTransactionTestParamsAsync({
+                ? walletContractAddress
+                : Pseudorandom.sample([notWalletContractAddress, ...accounts])!;
+            const { order, signature } = await createOrderTestParamsAsync({
                 signatureType: SignatureType.Validator,
                 validator,
             });
             yield (async () => {
                 if (!isNotApproved) {
-                    await this._approveValidatorAsync(signer, validator);
+                    await approveValidatorAsync(signer, validator);
                 }
-                await this._assertValidTransactionSignatureAsync({
-                    transaction,
+                await assertValidOrderSignatureAsync({
+                    order,
                     signature,
                     isValid: false,
                 });
@@ -688,15 +506,15 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
         }
     }
 
-    private async *_invalidTestTransactionMangledSignature(): AsyncIterableIterator<void> {
+    async function* invalidTestOrderMangledSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const params = await this._createTransactionTestParamsAsync({
+            const params = await createOrderTestParamsAsync({
                 signatureType: Pseudorandom.sample(ALL_SIGNATURE_TYPES)!,
             });
             const mangled = await mangleSignatureParamsAsync(params);
             yield (async () => {
-                await this._assertValidTransactionSignatureAsync({
-                    transaction: mangled.transaction!,
+                await assertValidOrderSignatureAsync({
+                    order: mangled.order!,
                     signature: mangled.signature,
                     isValid: false,
                 });
@@ -704,7 +522,24 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
         }
     }
 
-    private async _createTransactionTestParamsAsync(
+    function randomTransaction(fields: Partial<ZeroExTransaction> = {}): ZeroExTransaction {
+        return {
+            domain: {
+                chainId,
+                verifyingContract: exchange.address,
+                name: '0x Protocol',
+                version: '3.0.0',
+            },
+            gasPrice: Pseudorandom.integer(1e9, 100e9),
+            expirationTimeSeconds: Pseudorandom.integer(1, 2 ** 32),
+            salt: Pseudorandom.integer(0, constants.MAX_UINT256),
+            signerAddress: Pseudorandom.hex(constants.ADDRESS_LENGTH),
+            data: Pseudorandom.hex(Pseudorandom.integer(4, 128).toNumber()),
+            ...fields,
+        };
+    }
+
+    async function createTransactionTestParamsAsync(
         fields: Partial<SignatureTestParams> = {},
     ): Promise<SignatureTestParams & { transaction: ZeroExTransaction }> {
         const signatureType =
@@ -713,13 +548,11 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
                 : fields.signatureType;
         const signer =
             fields.signer ||
-            (WALLET_SIGNATURE_TYPES.includes(signatureType)
-                ? this._walletContractAddress
-                : Pseudorandom.sample(Object.keys(this._accounts))!);
+            (WALLET_SIGNATURE_TYPES.includes(signatureType) ? walletContractAddress : Pseudorandom.sample(accounts)!);
         const validator =
-            fields.validator || (signatureType === SignatureType.Validator ? this._walletContractAddress : undefined);
-        const signerKey = fields.signerKey || this._accounts[signer];
-        const transaction = fields.transaction || (await this._randomTransactionAsync({ signerAddress: signer }));
+            fields.validator || (signatureType === SignatureType.Validator ? walletContractAddress : undefined);
+        const signerKey = fields.signerKey || privateKeys[signer];
+        const transaction = fields.transaction || randomTransaction({ signerAddress: signer });
         const hash = fields.hash || transactionHashUtils.getTransactionHashHex(transaction);
         const payload =
             fields.payload ||
@@ -737,19 +570,7 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
         };
     }
 
-    private async _randomTransactionAsync(fields: Partial<ZeroExTransaction> = {}): Promise<ZeroExTransaction> {
-        return randomTransaction({
-            domain: {
-                chainId: await this.deployment.web3Wrapper.getChainIdAsync(),
-                verifyingContract: this.deployment.exchange.address,
-                name: '0x Protocol',
-                version: '3.0.0',
-            },
-            ...fields,
-        });
-    }
-
-    private async _assertValidTransactionSignatureAsync(params: {
+    async function assertValidTransactionSignatureAsync(params: {
         transaction: ZeroExTransaction;
         signature: string;
         isValid: boolean;
@@ -757,9 +578,7 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
         try {
             let result;
             try {
-                result = await this.deployment.exchange
-                    .isValidTransactionSignature(params.transaction, params.signature)
-                    .callAsync();
+                result = await exchange.isValidTransactionSignature(params.transaction, params.signature).callAsync();
             } catch (err) {
                 if (params.isValid) {
                     throw err;
@@ -772,59 +591,133 @@ class TransactionSignatureValidatorActor extends SignatureValidatorActor {
             throw err;
         }
     }
-}
 
-export class SignatureValidationSimulation extends Simulation {
-    protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
-        const { actors } = this.environment;
-        const actions = _.flatten(actors.map(a => Object.values(a.simulationActions)));
+    async function* validTestTransactionSignature(): AsyncIterableIterator<void> {
         while (true) {
-            const action = Pseudorandom.sample(actions)!;
-            yield (await action!.next()).value;
+            const {
+                hash,
+                transaction,
+                signature,
+                signatureType,
+                signer,
+                validator,
+            } = await createTransactionTestParamsAsync();
+            yield (async () => {
+                if (signatureType === SignatureType.PreSigned) {
+                    await presignHashAsync(signer, hash);
+                } else if (signatureType === SignatureType.Validator) {
+                    await approveValidatorAsync(signer, validator!);
+                }
+                await assertValidTransactionSignatureAsync({
+                    transaction,
+                    signature,
+                    isValid: true,
+                });
+            })();
         }
     }
-}
 
-const tests = process.env.FUZZ_TEST === 'exchange/signature_validation' ? blockchainTests : blockchainTests.skip;
+    async function* invalidTestTransactionStaticSignature(): AsyncIterableIterator<void> {
+        while (true) {
+            const randomSignerKey = ethUtil.toBuffer(Pseudorandom.hex());
+            const signer = Pseudorandom.sample([notWalletContractAddress, walletContractAddress, ...accounts])!;
+            const { transaction, signature } = await createTransactionTestParamsAsync({
+                signatureType: Pseudorandom.sample([...STATIC_SIGNATURE_TYPES, ...ALWAYS_FAILING_SIGNATURE_TYPES])!,
+                signer,
+                // Always sign with a random key.
+                signerKey: randomSignerKey,
+            });
+            yield assertValidTransactionSignatureAsync({
+                transaction,
+                signature,
+                isValid: false,
+            });
+        }
+    }
 
-tests('Exchange signature validation fuzz tests', env => {
-    let walletContract: TestSignatureValidationWalletContract;
+    async function* invalidTestTransactionWalletSignature(): AsyncIterableIterator<void> {
+        while (true) {
+            const signer = Pseudorandom.sample([notWalletContractAddress, ...accounts])!;
+            const { transaction, signature } = await createTransactionTestParamsAsync({
+                signatureType: Pseudorandom.sample(WALLET_SIGNATURE_TYPES)!,
+                signer,
+            });
+            yield assertValidTransactionSignatureAsync({
+                transaction,
+                signature,
+                isValid: false,
+            });
+        }
+    }
 
-    before(async () => {
-        walletContract = await TestSignatureValidationWalletContract.deployFrom0xArtifactAsync(
-            artifacts.TestSignatureValidationWallet,
-            env.provider,
-            env.txDefaults,
-            {},
-        );
-    });
+    async function* invalidTestTransactionValidatorSignature(): AsyncIterableIterator<void> {
+        while (true) {
+            const isNotApproved = Pseudorandom.sample([true, false])!;
+            const signer = Pseudorandom.sample([...accounts])!;
+            const validator = isNotApproved
+                ? walletContractAddress
+                : Pseudorandom.sample([notWalletContractAddress, ...accounts])!;
+            const { transaction, signature } = await createTransactionTestParamsAsync({
+                signatureType: SignatureType.Validator,
+                validator,
+            });
+            yield (async () => {
+                if (!isNotApproved) {
+                    await approveValidatorAsync(signer, validator);
+                }
+                await assertValidTransactionSignatureAsync({
+                    transaction,
+                    signature,
+                    isValid: false,
+                });
+            })();
+        }
+    }
 
-    after(async () => {
-        Actor.reset();
-    });
+    async function* invalidTestTransactionMangledSignature(): AsyncIterableIterator<void> {
+        while (true) {
+            const params = await createTransactionTestParamsAsync({
+                signatureType: Pseudorandom.sample(ALL_SIGNATURE_TYPES)!,
+            });
+            const mangled = await mangleSignatureParamsAsync(params);
+            yield (async () => {
+                await assertValidTransactionSignatureAsync({
+                    transaction: mangled.transaction!,
+                    signature: mangled.signature,
+                    isValid: false,
+                });
+            })();
+        }
+    }
 
     it('fuzz', async () => {
-        const deployment = await DeploymentManager.deployAsync(env, {
-            numErc20TokensToDeploy: 0,
-            numErc721TokensToDeploy: 0,
-            numErc1155TokensToDeploy: 0,
-        });
-        const balanceStore = new BlockchainBalanceStore({}, {});
-        const actorConfig = {
-            deployment,
-            walletContractAddress: walletContract.address,
-            // This just has to be a contract address that doesn't implement the
-            // wallet spec.
-            notWalletContractAddress: deployment.exchange.address,
-        };
-
-        const simulationEnvironment = new SimulationEnvironment(deployment, balanceStore, [
-            new HashSignatureValidatorActor(actorConfig),
-            new OrderSignatureValidatorActor(actorConfig),
-            new TransactionSignatureValidatorActor(actorConfig),
-        ]);
-
-        const simulation = new SignatureValidationSimulation(simulationEnvironment);
+        const FUZZ_ACTIONS = [
+            validTestHashSignature(),
+            invalidTestHashStaticSignature(),
+            invalidTestHashWalletSignature(),
+            invalidTestHashValidatorSignature(),
+            invalidTestHashMangledSignature(),
+            validTestOrderSignature(),
+            invalidTestOrderStaticSignature(),
+            invalidTestOrderWalletSignature(),
+            invalidTestOrderValidatorSignature(),
+            invalidTestOrderMangledSignature(),
+            validTestTransactionSignature(),
+            invalidTestTransactionStaticSignature(),
+            invalidTestTransactionWalletSignature(),
+            invalidTestTransactionValidatorSignature(),
+            invalidTestTransactionMangledSignature(),
+        ];
+        const simulationEnvironment = new SimulationEnvironment(deployment, new BlockchainBalanceStore({}, {}), []);
+        const simulation = new class extends Simulation {
+            // tslint:disable-next-line: prefer-function-over-method
+            protected async *_assertionGenerator(): AsyncIterableIterator<AssertionResult | void> {
+                while (true) {
+                    const action = Pseudorandom.sample(FUZZ_ACTIONS)!;
+                    yield (await action!.next()).value;
+                }
+            }
+        }(simulationEnvironment);
         simulation.resets = true;
         return simulation.fuzzAsync();
     });
