@@ -26,9 +26,13 @@ import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IChai.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 
 
-contract LibAssetData {
+contract LibAssetData is
+    DeploymentConstants
+{
 
     // 2^256 - 1
     uint256 constant internal _MAX_UINT256 = uint256(-1);
@@ -41,9 +45,13 @@ contract LibAssetData {
     address internal _ERC721_PROXY_ADDRESS;
     address internal _ERC1155_PROXY_ADDRESS;
     address internal _STATIC_CALL_PROXY_ADDRESS;
+    address internal _CHAI_BRIDGE_ADDRESS;
     // solhint-enable var-name-mixedcase
 
-    constructor (address _exchange)
+    constructor (
+        address _exchange,
+        address _chaiBridge
+    )
         public
     {
         _EXCHANGE = IExchange(_exchange);
@@ -51,6 +59,7 @@ contract LibAssetData {
         _ERC721_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC721Token.selector);
         _ERC1155_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC1155Assets.selector);
         _STATIC_CALL_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).StaticCall.selector);
+        _CHAI_BRIDGE_ADDRESS = _chaiBridge;
     }
 
     /// @dev Returns the owner's balance of the assets(s) specified in
@@ -62,7 +71,6 @@ contract LibAssetData {
     /// @return Number of assets (or asset baskets) held by owner.
     function getBalance(address ownerAddress, bytes memory assetData)
         public
-        view
         returns (uint256 balance)
     {
         // Get id of AssetProxy contract
@@ -140,6 +148,19 @@ contract LibAssetData {
 
             // Success means that the staticcall can be made an unlimited amount of times
             balance = success ? _MAX_UINT256 : 0;
+        } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
+            // Get address of ERC20 token and bridge contract
+            (, address tokenAddress, address bridgeAddress,) = decodeERC20BridgeAssetData(assetData);
+            if (tokenAddress == _getDaiAddress() && bridgeAddress == _CHAI_BRIDGE_ADDRESS) {
+                bytes memory chaiDaiCalldata = abi.encodeWithSelector(
+                    IChai(address(0)).dai.selector,
+                    ownerAddress
+                );
+                // We do not make a STATICCALL because this function can potentially alter state
+                (bool success, bytes memory returnData) = _getChaiAddress().call(chaiDaiCalldata);
+                uint256 chaiBalance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+            }
+            // Balance will be 0 if bridge is not supported
         } else if (assetProxyId == IAssetData(address(0)).MultiAsset.selector) {
             // Get array of values and array of assetDatas
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
@@ -176,7 +197,6 @@ contract LibAssetData {
     /// corresponding to the same-indexed element in the assetData input.
     function getBatchBalances(address ownerAddress, bytes[] memory assetData)
         public
-        view
         returns (uint256[] memory balances)
     {
         uint256 length = assetData.length;
@@ -316,7 +336,6 @@ contract LibAssetData {
     /// of assets (or asset baskets) that the corresponding AssetProxy is authorized to spend.
     function getBalanceAndAssetProxyAllowance(address ownerAddress, bytes memory assetData)
         public
-        view
         returns (uint256 balance, uint256 allowance)
     {
         balance = getBalance(ownerAddress, assetData);
@@ -332,7 +351,6 @@ contract LibAssetData {
     /// corresponding to the same-indexed element in the assetData input.
     function getBatchBalancesAndAssetProxyAllowances(address ownerAddress, bytes[] memory assetData)
         public
-        view
         returns (uint256[] memory balances, uint256[] memory allowances)
     {
         balances = getBatchBalances(ownerAddress, assetData);
@@ -613,6 +631,33 @@ contract LibAssetData {
         );
     }
 
+    /// @dev Decode ERC20Bridge asset data from the format described in the AssetProxy contract specification.
+    /// @param assetData AssetProxy-compliant asset data describing an ERC20Bridge asset
+    /// @return The ERC20BridgeProxy identifier, the address of the ERC20 token to transfer, the address
+    /// of the bridge contract, and extra data to be passed to the bridge contract.
+    function decodeERC20BridgeAssetData(bytes memory assetData)
+        public
+        pure
+        returns (
+            bytes4 assetProxyId,
+            address tokenAddress,
+            address bridgeAddress,
+            bytes memory bridgeData
+        )
+    {
+        assetProxyId = assetData.readBytes4(0);
+
+        require(
+            assetProxyId == IAssetData(address(0)).ERC20Bridge.selector,
+            "WRONG_PROXY_ID"
+        );
+
+        (tokenAddress, bridgeAddress, bridgeData) = abi.decode(
+            assetData.slice(4, assetData.length),
+            (address, address, bytes)
+        );
+    }
+
     function revertIfInvalidAssetData(bytes memory assetData)
         public
         pure
@@ -629,6 +674,8 @@ contract LibAssetData {
             decodeMultiAssetData(assetData);
         } else if (assetProxyId == IAssetData(address(0)).StaticCall.selector) {
             decodeStaticCallAssetData(assetData);
+        } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
+            decodeERC20BridgeAssetData(assetData);
         } else {
             revert("WRONG_PROXY_ID");
         }

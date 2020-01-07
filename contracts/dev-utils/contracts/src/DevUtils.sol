@@ -37,9 +37,15 @@ contract DevUtils is
     LibEIP712ExchangeDomain,
     EthBalanceChecker
 {
-    constructor (address _exchange)
+    constructor (
+        address _exchange,
+        address _chaiBridge
+    )
         public
-        OrderValidationUtils(_exchange)
+        OrderValidationUtils(
+            _exchange,
+            _chaiBridge
+        )
         OrderTransferSimulationUtils(_exchange)
         LibEIP712ExchangeDomain(uint256(0), address(0)) // null args because because we only use constants
     {}

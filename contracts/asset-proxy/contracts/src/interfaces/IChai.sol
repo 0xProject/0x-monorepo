@@ -30,4 +30,11 @@ contract IChai {
         uint256 wad
     )
         external;
+
+    /// @dev Queries Dai balance of Chai holder.
+    /// @param usr Address of Chai holder.
+    /// @return Dai balance.
+    function dai(address usr)
+      external
+      returns (uint256);
 }
