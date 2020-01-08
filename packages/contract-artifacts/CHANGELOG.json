@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.4.0",
+        "changes": [
+            {
+                "note": "Add updated `Forwarder` artifact.",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "3.3.0",
         "changes": [
             {
