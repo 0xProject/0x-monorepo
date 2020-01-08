@@ -63,6 +63,87 @@ export class SwapQuoteCalculator {
         )) as MarketBuySwapQuote;
     }
 
+    public async calculateMultipleMarketBuySwapQuoteAsync(
+        prunedOrders: SignedOrder[][],
+        takerAssetFillAmount: BigNumber[],
+        slippagePercentage: number,
+        gasPrice: BigNumber,
+        opts: CalculateSwapQuoteOpts,
+    ): Promise<Array<MarketBuySwapQuote | undefined>> {
+        return (await this._calculateMultipleBuySwapQuoteAsync(
+            prunedOrders,
+            takerAssetFillAmount,
+            slippagePercentage,
+            gasPrice,
+            MarketOperation.Buy,
+            opts,
+        )) as Array<MarketBuySwapQuote | undefined>;
+    }
+
+    private async _calculateMultipleBuySwapQuoteAsync(
+        prunedOrders: SignedOrder[][],
+        assetFillAmounts: BigNumber[],
+        slippagePercentage: number,
+        gasPrice: BigNumber,
+        operation: MarketOperation,
+        opts: CalculateSwapQuoteOpts,
+    ): Promise<Array<MarketBuySwapQuote | undefined>> {
+        const assetFillAmountsWithSlippage = assetFillAmounts.map(a =>
+            a.plus(a.multipliedBy(slippagePercentage).integerValue()),
+        );
+        const resultMultipleOrders = await this._marketOperationUtils.getMultipleMarketBuyOrdersAsync(
+            prunedOrders,
+            assetFillAmountsWithSlippage,
+            opts,
+        );
+        const createSwapQuote = async (
+            makerAssetData: string,
+            takerAssetData: string,
+            resultOrders: SignedOrderWithFillableAmounts[],
+            assetFillAmount: BigNumber,
+        ) => {
+            const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
+                createBestCaseOrders(resultOrders, operation, opts.bridgeSlippage),
+                assetFillAmount,
+                gasPrice,
+                operation,
+            );
+            // in order to calculate the maxRate, reverse the ordersAndFillableAmounts
+            // such that they are sorted from worst rate to best rate
+            const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
+                _.reverse(resultOrders.slice()),
+                assetFillAmount,
+                gasPrice,
+                operation,
+            );
+
+            const quoteBase = {
+                takerAssetData,
+                makerAssetData,
+                orders: resultOrders,
+                bestCaseQuoteInfo,
+                worstCaseQuoteInfo,
+                gasPrice,
+                makerAssetFillAmount: assetFillAmount,
+                type: MarketOperation.Buy,
+            };
+            return quoteBase;
+        };
+        const swapQuotes: Array<MarketBuySwapQuote | undefined> = [];
+        for (let i = 0; i < resultMultipleOrders.length; i++) {
+            // assetData information for the result
+            const takerAssetData = prunedOrders[i][0].takerAssetData;
+            const makerAssetData = prunedOrders[i][0].makerAssetData;
+            const resultOrders = resultMultipleOrders[i];
+            if (resultOrders) {
+                const quote = await createSwapQuote(makerAssetData, takerAssetData, resultOrders, assetFillAmounts[i]);
+                swapQuotes.push(quote as MarketBuySwapQuote);
+            } else {
+                swapQuotes.push(undefined);
+            }
+        }
+        return swapQuotes;
+    }
     private async _calculateSwapQuoteAsync(
         prunedOrders: SignedOrder[],
         assetFillAmount: BigNumber,
