@@ -852,6 +852,122 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             },
         };
     }
+    public queryMultipleOrdersAndSampleBuys(
+        orders: Array<Array<{
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+            makerFeeAssetData: string;
+            takerFeeAssetData: string;
+        }>>,
+        orderSignatures: string[][],
+        sources: string[],
+        makerTokenAmounts: BigNumber[],
+    ): ContractFunctionObj<
+        Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+    > {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('orders', orders);
+        assert.isArray('orderSignatures', orderSignatures);
+        assert.isArray('sources', sources);
+        assert.isArray('makerTokenAmounts', makerTokenAmounts);
+        const functionSignature =
+            'queryMultipleOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[])';
+
+        return {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<
+                Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+            > {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
+                    Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+                >(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    sources,
+                    makerTokenAmounts,
+                ]);
+            },
+        };
+    }
+    public queryMultipleOrdersAndSampleSells(
+        orders: Array<Array<{
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+            makerFeeAssetData: string;
+            takerFeeAssetData: string;
+        }>>,
+        orderSignatures: string[][],
+        sources: string[],
+        makerTokenAmounts: BigNumber[],
+    ): ContractFunctionObj<
+        Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+    > {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('orders', orders);
+        assert.isArray('orderSignatures', orderSignatures);
+        assert.isArray('sources', sources);
+        assert.isArray('makerTokenAmounts', makerTokenAmounts);
+        const functionSignature =
+            'queryMultipleOrdersAndSampleSells((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[])';
+
+        return {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<
+                Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+            > {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
+                    Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+                >(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    sources,
+                    makerTokenAmounts,
+                ]);
+            },
+        };
+    }
     /**
      * Query batches of native orders and sample buy quotes on multiple DEXes at once.
      * @param orders Batches of Native orders to query.
