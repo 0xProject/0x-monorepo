@@ -87,7 +87,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { extensionContractOpts } = _.merge({}, constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS, opts);
+        const { extensionContractOpts } = { ...constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS, ...opts };
 
         assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
 
@@ -153,11 +153,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<string> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { ethAmount: providedEthAmount, takerAddress, gasLimit, extensionContractOpts } = _.merge(
-            {},
-            constants.DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
-            opts,
-        );
+        const { ethAmount: providedEthAmount, takerAddress, gasLimit, extensionContractOpts } = {
+            ...constants.DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
+            ...opts,
+        };
 
         assert.isValidForwarderExtensionContractOpts('extensionContractOpts', extensionContractOpts);
 
@@ -181,8 +180,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             worstCaseQuoteInfo,
             feePercentage,
         );
-        // format fee percentage
-        const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
+        const feeAmount = quote.bestCaseQuoteInfo.takerAssetAmount.times(feePercentage).integerValue();
         let txHash: string;
         if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;
@@ -191,8 +189,8 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
-                    formattedFeePercentage,
-                    feeRecipient,
+                    [feeAmount],
+                    [feeRecipient],
                 )
                 .sendTransactionAsync({
                     from: finalTakerAddress,
@@ -202,7 +200,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                 });
         } else {
             txHash = await this._forwarder
-                .marketSellOrdersWithEth(orders, orders.map(o => o.signature), formattedFeePercentage, feeRecipient)
+                .marketSellOrdersWithEth(orders, orders.map(o => o.signature), [feeAmount], [feeRecipient])
                 .sendTransactionAsync({
                     from: finalTakerAddress,
                     gas: gasLimit,

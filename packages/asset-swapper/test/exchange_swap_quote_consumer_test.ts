@@ -199,7 +199,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('#executeSwapQuoteOrThrowAsync', () => {
+    describe.only('#executeSwapQuoteOrThrowAsync', () => {
         /*
          * Testing that SwapQuoteConsumer logic correctly performs a execution (doesn't throw or revert)
          * Does not test the validity of the state change performed by the forwarder smart contract
@@ -213,6 +213,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 constants.ZERO_AMOUNT,
                 new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
             );
+            console.log('fff');
             await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, {
                 takerAddress,
                 gasLimit: 4000000,
