@@ -30,6 +30,7 @@ export enum ActionTypes {
     SetAccountStateLoading = 'SET_ACCOUNT_STATE_LOADING',
     SetAccountStateLocked = 'SET_ACCOUNT_STATE_LOCKED',
     SetAccountStateReady = 'SET_ACCOUNT_STATE_READY',
+    SetAccountStateNone = 'SET_ACCOUNT_STATE_NONE',
     UpdateAccountEthBalance = 'UPDATE_ACCOUNT_ETH_BALANCE',
     UpdateEthUsdPrice = 'UPDATE_ETH_USD_PRICE',
     UpdateSelectedAssetUnitAmount = 'UPDATE_SELECTED_ASSET_UNIT_AMOUNT',
@@ -56,6 +57,7 @@ export enum ActionTypes {
 export const actions = {
     setAccountStateLoading: () => createAction(ActionTypes.SetAccountStateLoading),
     setAccountStateLocked: () => createAction(ActionTypes.SetAccountStateLocked),
+    setAccountStateNone: () => createAction(ActionTypes.SetAccountStateNone),
     setAccountStateReady: (address: string) => createAction(ActionTypes.SetAccountStateReady, address),
     updateAccountEthBalance: (addressAndBalance: AddressAndEthBalanceInWei) =>
         createAction(ActionTypes.UpdateAccountEthBalance, addressAndBalance),

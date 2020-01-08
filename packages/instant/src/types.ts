@@ -118,7 +118,7 @@ export interface ProviderState {
 }
 
 export enum AccountState {
-    None = 'NONE,',
+    None = 'NONE',
     Loading = 'LOADING',
     Ready = 'READY',
     Locked = 'LOCKED',

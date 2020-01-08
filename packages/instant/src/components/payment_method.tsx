@@ -51,7 +51,7 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
         const { account, network } = this.props;
         const isMobile = envUtil.isMobileOperatingSystem();
         const metamaskLogo = <MetaMaskLogo width={23} height={22} />;
-        const logo = isMobile ? <CoinbaseWalletLogo width={22} /> : metamaskLogo;
+        const logo = isMobile ? <CoinbaseWalletLogo width={22} height={22} /> : metamaskLogo;
         const primaryColor = ColorOption.grey;
         const secondaryColor = ColorOption.whiteBackground;
         const colors = { primaryColor, secondaryColor };

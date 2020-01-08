@@ -2,10 +2,11 @@ import * as React from 'react';
 
 export interface CoinbaseWalletLogoProps {
     width?: number;
+    height?: number;
 }
 
-export const CoinbaseWalletLogo: React.StatelessComponent<CoinbaseWalletLogoProps> = ({ width }) => (
-    <svg width={width} viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const CoinbaseWalletLogo: React.StatelessComponent<CoinbaseWalletLogoProps> = ({ width, height }) => (
+    <svg width={width} height={height} viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="25.5" cy="25.5" r="25.5" fill="#3263E9" />
         <path
             fillRule="evenodd"
@@ -20,4 +21,5 @@ CoinbaseWalletLogo.displayName = 'CoinbaseWalletLogo';
 
 CoinbaseWalletLogo.defaultProps = {
     width: 164,
+    height: 164,
 };

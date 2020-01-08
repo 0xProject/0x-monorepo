@@ -83,6 +83,7 @@ export const providerStateFactory = {
         walletDisplayName?: string,
     ): ProviderState => {
         const provider = providerFactory.getFallbackNoSigningProvider(network);
+        console.log(walletDisplayName, envUtil.getProviderDisplayName(provider));
         const providerState: ProviderState = {
             name: 'Fallback',
             displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
@@ -99,14 +100,13 @@ export const providerStateFactory = {
         currentProviderState: ProviderState,
         providerType: ProviderType,
     ): ProviderState => {
-        let providerState = currentProviderState;
         const chainId = currentProviderState.swapQuoter.chainId;
         const orderSource = currentProviderState.orderSource;
         // Returns current provider if the provider type selected is not found
         if (providerType === ProviderType.MetaMask) {
             const provider = providerFactory.getInjectedProviderIfExists();
             if (provider) {
-                providerState = {
+                return {
                     displayName: envUtil.getProviderDisplayName(provider),
                     name: envUtil.getProviderName(provider),
                     provider,
@@ -121,7 +121,7 @@ export const providerStateFactory = {
         if (providerType === ProviderType.Fortmatic) {
             const fm = new Fortmatic(FORTMATIC_API_KEY);
             const fmProvider = fm.getProvider();
-            providerState = {
+            return {
                 displayName: envUtil.getProviderDisplayName(fmProvider),
                 name: envUtil.getProviderName(fmProvider),
                 provider: fmProvider,
@@ -132,6 +132,9 @@ export const providerStateFactory = {
                 orderSource,
             };
         }
-        return providerState;
+        return providerStateFactory.getInitialProviderState(
+            orderSource,
+            chainId,
+        );
     },
 };
