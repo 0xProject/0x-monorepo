@@ -50,6 +50,37 @@ export class DexOrderSampler {
         return [fillableAmount, quotes];
     }
 
+    public async getMultipleFillableAmountsAndSampleMarketBuyAsync(
+        nativeOrders: SignedOrder[][],
+        sampleAmounts: BigNumber[],
+        sources: ERC20BridgeSource[],
+    ): Promise<Array<[BigNumber[], DexSample[][]]>> {
+        const signatures = nativeOrders.map(o => o.map(i => i.signature));
+        const fillableAmountsAndSamples = await this._samplerContract
+            .queryMultipleOrdersAndSampleBuys(
+                nativeOrders,
+                signatures,
+                sources.map(s => SOURCE_TO_ADDRESS[s]),
+                sampleAmounts,
+            )
+            .callAsync();
+        const multipleSamples: Array<[BigNumber[], DexSample[][]]> = [];
+        fillableAmountsAndSamples.map((sampleResult, i) => {
+            const rawSamples = sampleResult.makerTokenAmountsBySource;
+            const fillableAmount = sampleResult.orderFillableTakerAssetAmounts;
+            const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
+                const source = sources[sourceIdx];
+                return rawDexSamples.map(sample => ({
+                    source,
+                    input: sampleAmounts[i],
+                    output: sample,
+                }));
+            });
+            multipleSamples.push([fillableAmount, quotes]);
+        });
+        return multipleSamples;
+    }
+
     public async getFillableAmountsAndSampleMarketSellAsync(
         nativeOrders: SignedOrder[],
         sampleAmounts: BigNumber[],

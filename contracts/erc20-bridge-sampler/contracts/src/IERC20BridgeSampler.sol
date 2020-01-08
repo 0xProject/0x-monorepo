@@ -23,6 +23,34 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 interface IERC20BridgeSampler {
+    struct OrdersAndSample {
+        uint256[] orderFillableTakerAssetAmounts;
+        uint256[][] makerTokenAmountsBySource;
+    }
+
+    function queryMultipleOrdersAndSampleBuys(
+        LibOrder.Order[][] calldata orders,
+        bytes[][] calldata orderSignatures,
+        address[] calldata sources,
+        uint256[] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (
+            OrdersAndSample[] memory ordersAndSamples
+        );
+
+    function queryMultipleOrdersAndSampleSells(
+        LibOrder.Order[][] calldata orders,
+        bytes[][] calldata orderSignatures,
+        address[] calldata sources,
+        uint256[] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (
+            OrdersAndSample[] memory ordersAndSamples
+        );
 
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
