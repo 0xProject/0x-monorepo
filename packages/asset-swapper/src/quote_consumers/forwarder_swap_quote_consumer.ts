@@ -180,7 +180,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             worstCaseQuoteInfo,
             feePercentage,
         );
-        const feeAmount = quote.bestCaseQuoteInfo.takerAssetAmount.times(feePercentage).integerValue();
+        const feeAmount = quote.worstCaseQuoteInfo.takerAssetAmount.times(feePercentage).integerValue();
         let txHash: string;
         if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;

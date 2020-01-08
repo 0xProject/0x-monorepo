@@ -261,7 +261,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
             });
 
-            it('should perform a marketBuy execution with affiliate fees', async () => {
+            it.only('should perform a marketBuy execution with affiliate fees', async () => {
                 await expectMakerAndTakerBalancesAsync(
                     new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                     constants.ZERO_AMOUNT,
@@ -280,9 +280,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 );
                 const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipient);
-                const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount.plus(
-                    marketBuySwapQuote.bestCaseQuoteInfo.protocolFeeInWeiAmount,
-                );
+                const totalEthSpent = marketBuySwapQuote.bestCaseQuoteInfo.totalTakerAssetAmount;
                 expect(feeRecipientEthBalanceAfter.minus(feeRecipientEthBalanceBefore)).to.bignumber.equal(
                     new BigNumber(FEE_PERCENTAGE).times(totalEthSpent),
                 );
