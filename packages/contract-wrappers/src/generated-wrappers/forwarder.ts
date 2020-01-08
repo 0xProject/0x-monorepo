@@ -62,6 +62,7 @@ export class ForwarderContract extends BaseContract {
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _exchange: string,
+        _exchangeV2: string,
         _weth: string,
     ): Promise<ForwarderContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -88,6 +89,7 @@ export class ForwarderContract extends BaseContract {
             txDefaults,
             logDecodeDependenciesAbiOnly,
             _exchange,
+            _exchangeV2,
             _weth,
         );
     }
@@ -98,6 +100,7 @@ export class ForwarderContract extends BaseContract {
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
         _exchange: string,
+        _exchangeV2: string,
         _weth: string,
     ): Promise<ForwarderContract> {
         assert.isHexString('bytecode', bytecode);
@@ -108,14 +111,14 @@ export class ForwarderContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_exchange, _weth] = BaseContract._formatABIDataItemList(
+        [_exchange, _exchangeV2, _weth] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_exchange, _weth],
+            [_exchange, _exchangeV2, _weth],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange, _weth]);
+        const txData = deployInfo.encode(bytecode, [_exchange, _exchangeV2, _weth]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
             {
@@ -134,7 +137,7 @@ export class ForwarderContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [_exchange, _weth];
+        contractInstance.constructorArgs = [_exchange, _exchangeV2, _weth];
         return contractInstance;
     }
 
@@ -147,6 +150,10 @@ export class ForwarderContract extends BaseContract {
                 inputs: [
                     {
                         name: '_exchange',
+                        type: 'address',
+                    },
+                    {
+                        name: '_exchangeV2',
                         type: 'address',
                     },
                     {
@@ -183,6 +190,20 @@ export class ForwarderContract extends BaseContract {
                 payable: true,
                 stateMutability: 'payable',
                 type: 'fallback',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'EXCHANGE_V2_ORDER_ID',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bytes4',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
             },
             {
                 constant: false,
@@ -272,12 +293,12 @@ export class ForwarderContract extends BaseContract {
                         type: 'bytes[]',
                     },
                     {
-                        name: 'feePercentage',
-                        type: 'uint256',
+                        name: 'ethFeeAmounts',
+                        type: 'uint256[]',
                     },
                     {
-                        name: 'feeRecipient',
-                        type: 'address',
+                        name: 'feeRecipients',
+                        type: 'address[]',
                     },
                 ],
                 name: 'marketBuyOrdersWithEth',
@@ -288,10 +309,6 @@ export class ForwarderContract extends BaseContract {
                     },
                     {
                         name: 'makerAssetAcquiredAmount',
-                        type: 'uint256',
-                    },
-                    {
-                        name: 'ethFeePaid',
                         type: 'uint256',
                     },
                 ],
@@ -369,12 +386,12 @@ export class ForwarderContract extends BaseContract {
                         type: 'bytes[]',
                     },
                     {
-                        name: 'feePercentage',
-                        type: 'uint256',
+                        name: 'ethFeeAmounts',
+                        type: 'uint256[]',
                     },
                     {
-                        name: 'feeRecipient',
-                        type: 'address',
+                        name: 'feeRecipients',
+                        type: 'address[]',
                     },
                 ],
                 name: 'marketSellOrdersWithEth',
@@ -385,10 +402,6 @@ export class ForwarderContract extends BaseContract {
                     },
                     {
                         name: 'makerAssetAcquiredAmount',
-                        type: 'uint256',
-                    },
-                    {
-                        name: 'ethFeePaid',
                         type: 'uint256',
                     },
                 ],
@@ -473,6 +486,25 @@ export class ForwarderContract extends BaseContract {
         return abiEncoder.getSelector();
     }
 
+    public EXCHANGE_V2_ORDER_ID(): ContractFunctionObj<string> {
+        const self = (this as any) as ForwarderContract;
+        const functionSignature = 'EXCHANGE_V2_ORDER_ID()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
     /**
      * Approves the respective proxy for a given asset to transfer tokens on the Forwarder contract's behalf.
      * This is necessary because an order fee denominated in the maker asset (i.e. a percentage fee) is sent by the
@@ -536,10 +568,10 @@ export class ForwarderContract extends BaseContract {
      *     makerAsset and WETH as takerAsset.
      * @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
      * @param signatures Proofs that orders have been created by makers.
-     * @param feePercentage Percentage of WETH sold that will payed as fee to
-     *     forwarding contract feeRecipient.
-     * @param feeRecipient Address that will receive ETH when orders are filled.
-     * @returns wethSpentAmount Amount of WETH spent on the given set of orders.makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.ethFeePaid Amount of ETH spent on the given forwarder fee.
+     * @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to
+     *     corresponding feeRecipients.
+     * @param feeRecipients Addresses that will receive ETH when orders are filled.
+     * @returns wethSpentAmount Amount of WETH spent on the given set of orders.makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
      */
     public marketBuyOrdersWithEth(
         orders: Array<{
@@ -560,17 +592,17 @@ export class ForwarderContract extends BaseContract {
         }>,
         makerAssetBuyAmount: BigNumber,
         signatures: string[],
-        feePercentage: BigNumber,
-        feeRecipient: string,
-    ): ContractTxFunctionObj<[BigNumber, BigNumber, BigNumber]> {
+        ethFeeAmounts: BigNumber[],
+        feeRecipients: string[],
+    ): ContractTxFunctionObj<[BigNumber, BigNumber]> {
         const self = (this as any) as ForwarderContract;
         assert.isArray('orders', orders);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         assert.isArray('signatures', signatures);
-        assert.isBigNumber('feePercentage', feePercentage);
-        assert.isString('feeRecipient', feeRecipient);
+        assert.isArray('ethFeeAmounts', ethFeeAmounts);
+        assert.isArray('feeRecipients', feeRecipients);
         const functionSignature =
-            'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[],uint256,address)';
+            'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[],uint256[],address[])';
 
         return {
             async sendTransactionAsync(
@@ -602,22 +634,22 @@ export class ForwarderContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
-            ): Promise<[BigNumber, BigNumber, BigNumber]> {
+            ): Promise<[BigNumber, BigNumber]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber, BigNumber]>(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [
                     orders,
                     makerAssetBuyAmount,
                     signatures,
-                    feePercentage,
-                    feeRecipient.toLowerCase(),
+                    ethFeeAmounts,
+                    feeRecipients,
                 ]);
             },
         };
@@ -628,10 +660,10 @@ export class ForwarderContract extends BaseContract {
      * @param orders Array of order specifications used containing desired
      *     makerAsset and WETH as takerAsset.
      * @param signatures Proofs that orders have been created by makers.
-     * @param feePercentage Percentage of WETH sold that will payed as fee to
-     *     forwarding contract feeRecipient.
-     * @param feeRecipient Address that will receive ETH when orders are filled.
-     * @returns wethSpentAmount Amount of WETH spent on the given set of orders.makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.ethFeePaid Amount of ETH spent on the given forwarder fee.
+     * @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to
+     *     corresponding feeRecipients.
+     * @param feeRecipients Addresses that will receive ETH when orders are filled.
+     * @returns wethSpentAmount Amount of WETH spent on the given set of orders.makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
      */
     public marketSellOrdersWithEth(
         orders: Array<{
@@ -651,16 +683,16 @@ export class ForwarderContract extends BaseContract {
             takerFeeAssetData: string;
         }>,
         signatures: string[],
-        feePercentage: BigNumber,
-        feeRecipient: string,
-    ): ContractTxFunctionObj<[BigNumber, BigNumber, BigNumber]> {
+        ethFeeAmounts: BigNumber[],
+        feeRecipients: string[],
+    ): ContractTxFunctionObj<[BigNumber, BigNumber]> {
         const self = (this as any) as ForwarderContract;
         assert.isArray('orders', orders);
         assert.isArray('signatures', signatures);
-        assert.isBigNumber('feePercentage', feePercentage);
-        assert.isString('feeRecipient', feeRecipient);
+        assert.isArray('ethFeeAmounts', ethFeeAmounts);
+        assert.isArray('feeRecipients', feeRecipients);
         const functionSignature =
-            'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],uint256,address)';
+            'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],uint256[],address[])';
 
         return {
             async sendTransactionAsync(
@@ -692,21 +724,21 @@ export class ForwarderContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
-            ): Promise<[BigNumber, BigNumber, BigNumber]> {
+            ): Promise<[BigNumber, BigNumber]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber, BigNumber]>(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [
                     orders,
                     signatures,
-                    feePercentage,
-                    feeRecipient.toLowerCase(),
+                    ethFeeAmounts,
+                    feeRecipients,
                 ]);
             },
         };
@@ -730,6 +762,10 @@ export class ForwarderContract extends BaseContract {
             },
         };
     }
+    /**
+     * Change the owner of this contract.
+     * @param newOwner New owner address.
+     */
     public transferOwnership(newOwner: string): ContractTxFunctionObj<void> {
         const self = (this as any) as ForwarderContract;
         assert.isString('newOwner', newOwner);

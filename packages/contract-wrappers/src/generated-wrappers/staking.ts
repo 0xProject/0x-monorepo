@@ -180,8 +180,6 @@ export class StakingContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        wethAddress: string,
-        zrxVaultAddress: string,
     ): Promise<StakingContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -200,15 +198,7 @@ export class StakingContract extends BaseContract {
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return StakingContract.deployAsync(
-            bytecode,
-            abi,
-            provider,
-            txDefaults,
-            logDecodeDependenciesAbiOnly,
-            wethAddress,
-            zrxVaultAddress,
-        );
+        return StakingContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
@@ -216,8 +206,6 @@ export class StakingContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-        wethAddress: string,
-        zrxVaultAddress: string,
     ): Promise<StakingContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -227,14 +215,10 @@ export class StakingContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [wethAddress, zrxVaultAddress] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [wethAddress, zrxVaultAddress],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [wethAddress, zrxVaultAddress]);
+        const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
             {
@@ -253,7 +237,7 @@ export class StakingContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [wethAddress, zrxVaultAddress];
+        contractInstance.constructorArgs = [];
         return contractInstance;
     }
 
@@ -262,22 +246,6 @@ export class StakingContract extends BaseContract {
      */
     public static ABI(): ContractAbi {
         const abi = [
-            {
-                inputs: [
-                    {
-                        name: 'wethAddress',
-                        type: 'address',
-                    },
-                    {
-                        name: 'zrxVaultAddress',
-                        type: 'address',
-                    },
-                ],
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'constructor',
-            },
             {
                 anonymous: false,
                 inputs: [
@@ -2480,7 +2448,8 @@ export class StakingContract extends BaseContract {
         };
     }
     /**
-     * Returns the current weth contract address
+     * An overridable way to access the deployed WETH contract.
+     * Must be view to allow overrides to access state.
      * @returns wethContract The WETH contract instance.
      */
     public getWethContract(): ContractFunctionObj<string> {
@@ -2503,7 +2472,8 @@ export class StakingContract extends BaseContract {
         };
     }
     /**
-     * Returns the current zrxVault address.
+     * An overridable way to access the deployed zrxVault.
+     * Must be view to allow overrides to access state.
      * @returns zrxVault The zrxVault contract.
      */
     public getZrxVault(): ContractFunctionObj<string> {
@@ -2667,9 +2637,9 @@ export class StakingContract extends BaseContract {
      * Moves stake between statuses: 'undelegated' or 'delegated'.
      * Delegated stake can also be moved between pools.
      * This change comes into effect next epoch.
-     * @param from status to move stake out of.
-     * @param to status to move stake into.
-     * @param amount of stake to move.
+     * @param from Status to move stake out of.
+     * @param to Status to move stake into.
+     * @param amount Amount of stake to move.
      */
     public moveStake(
         from: { status: number | BigNumber; poolId: string },
@@ -3120,7 +3090,7 @@ export class StakingContract extends BaseContract {
     /**
      * Stake ZRX tokens. Tokens are deposited into the ZRX Vault.
      * Unstake to retrieve the ZRX. Stake is in the 'Active' status.
-     * @param amount of ZRX to stake.
+     * @param amount Amount of ZRX to stake.
      */
     public stake(amount: BigNumber): ContractTxFunctionObj<void> {
         const self = (this as any) as StakingContract;
@@ -3187,6 +3157,10 @@ export class StakingContract extends BaseContract {
             },
         };
     }
+    /**
+     * Change the owner of this contract.
+     * @param newOwner New owner address.
+     */
     public transferOwnership(newOwner: string): ContractTxFunctionObj<void> {
         const self = (this as any) as StakingContract;
         assert.isString('newOwner', newOwner);
@@ -3237,7 +3211,7 @@ export class StakingContract extends BaseContract {
      * Unstake. Tokens are withdrawn from the ZRX Vault and returned to
      * the staker. Stake must be in the 'undelegated' status in both the
      * current and next epoch in order to be unstaked.
-     * @param amount of ZRX to unstake.
+     * @param amount Amount of ZRX to unstake.
      */
     public unstake(amount: BigNumber): ContractTxFunctionObj<void> {
         const self = (this as any) as StakingContract;

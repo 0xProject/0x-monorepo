@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.4.0",
+        "changes": [
+            {
+                "note": "Added updated `Forwarder` wrapper",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "13.3.0",
         "changes": [
             {

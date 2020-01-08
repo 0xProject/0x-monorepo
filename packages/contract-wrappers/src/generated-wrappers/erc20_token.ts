@@ -34,22 +34,22 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-export type ERC20TokenEventArgs = ERC20TokenTransferEventArgs | ERC20TokenApprovalEventArgs;
+export type ERC20TokenEventArgs = ERC20TokenApprovalEventArgs | ERC20TokenTransferEventArgs;
 
 export enum ERC20TokenEvents {
-    Transfer = 'Transfer',
     Approval = 'Approval',
-}
-
-export interface ERC20TokenTransferEventArgs extends DecodedLogArgs {
-    _from: string;
-    _to: string;
-    _value: BigNumber;
+    Transfer = 'Transfer',
 }
 
 export interface ERC20TokenApprovalEventArgs extends DecodedLogArgs {
     _owner: string;
     _spender: string;
+    _value: BigNumber;
+}
+
+export interface ERC20TokenTransferEventArgs extends DecodedLogArgs {
+    _from: string;
+    _to: string;
     _value: BigNumber;
 }
 
@@ -136,6 +136,75 @@ export class ERC20TokenContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_spender',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_value',
+                        type: 'uint256',
+                        indexed: false,
+                    },
+                ],
+                name: 'Approval',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_from',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_to',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_value',
+                        type: 'uint256',
+                        indexed: false,
+                    },
+                ],
+                name: 'Transfer',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                    },
+                    {
+                        name: '_spender',
+                        type: 'address',
+                    },
+                ],
+                name: 'allowance',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'uint256',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
                 constant: false,
                 inputs: [
                     {
@@ -160,8 +229,13 @@ export class ERC20TokenContract extends BaseContract {
             },
             {
                 constant: true,
-                inputs: [],
-                name: 'totalSupply',
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                    },
+                ],
+                name: 'balanceOf',
                 outputs: [
                     {
                         name: '',
@@ -173,41 +247,9 @@ export class ERC20TokenContract extends BaseContract {
                 type: 'function',
             },
             {
-                constant: false,
-                inputs: [
-                    {
-                        name: '_from',
-                        type: 'address',
-                    },
-                    {
-                        name: '_to',
-                        type: 'address',
-                    },
-                    {
-                        name: '_value',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'transferFrom',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'bool',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
                 constant: true,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                    },
-                ],
-                name: 'balanceOf',
+                inputs: [],
+                name: 'totalSupply',
                 outputs: [
                     {
                         name: '',
@@ -242,73 +284,31 @@ export class ERC20TokenContract extends BaseContract {
                 type: 'function',
             },
             {
-                constant: true,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                    },
-                    {
-                        name: '_spender',
-                        type: 'address',
-                    },
-                ],
-                name: 'allowance',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'uint256',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                anonymous: false,
+                constant: false,
                 inputs: [
                     {
                         name: '_from',
                         type: 'address',
-                        indexed: true,
                     },
                     {
                         name: '_to',
                         type: 'address',
-                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
-                        indexed: false,
                     },
                 ],
-                name: 'Transfer',
-                outputs: [],
-                type: 'event',
-            },
-            {
-                anonymous: false,
-                inputs: [
+                name: 'transferFrom',
+                outputs: [
                     {
-                        name: '_owner',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_spender',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_value',
-                        type: 'uint256',
-                        indexed: false,
+                        name: '',
+                        type: 'bool',
                     },
                 ],
-                name: 'Approval',
-                outputs: [],
-                type: 'event',
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
             },
         ] as ContractAbi;
         return abi;
@@ -341,6 +341,27 @@ export class ERC20TokenContract extends BaseContract {
         return abiEncoder.getSelector();
     }
 
+    public allowance(_owner: string, _spender: string): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as ERC20TokenContract;
+        assert.isString('_owner', _owner);
+        assert.isString('_spender', _spender);
+        const functionSignature = 'allowance(address,address)';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [_owner.toLowerCase(), _spender.toLowerCase()]);
+            },
+        };
+    }
     /**
      * `msg.sender` approves `_spender` to spend `_value` tokens
      * @param _spender The address of the account able to transfer the tokens
@@ -395,84 +416,6 @@ export class ERC20TokenContract extends BaseContract {
         };
     }
     /**
-     * Query total supply of token
-     * @returns Total supply of token
-     */
-    public totalSupply(): ContractFunctionObj<BigNumber> {
-        const self = (this as any) as ERC20TokenContract;
-        const functionSignature = 'totalSupply()';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, []);
-            },
-        };
-    }
-    /**
-     * send `value` token to `to` from `from` on the condition it is approved by `from`
-     * @param _from The address of the sender
-     * @param _to The address of the recipient
-     * @param _value The amount of token to be transferred
-     * @returns True if transfer was successful
-     */
-    public transferFrom(_from: string, _to: string, _value: BigNumber): ContractTxFunctionObj<boolean> {
-        const self = (this as any) as ERC20TokenContract;
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const functionSignature = 'transferFrom(address,address,uint256)';
-
-        return {
-            async sendTransactionAsync(
-                txData?: Partial<TxData> | undefined,
-                opts: SendTransactionOpts = { shouldValidate: true },
-            ): Promise<string> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
-                    this.estimateGasAsync.bind(this),
-                );
-                if (opts.shouldValidate !== false) {
-                    await this.callAsync(txDataWithDefaults);
-                }
-                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            },
-            awaitTransactionSuccessAsync(
-                txData?: Partial<TxData>,
-                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
-            },
-            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
-                    data: this.getABIEncodedTransactionData(),
-                });
-                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [_from.toLowerCase(), _to.toLowerCase(), _value]);
-            },
-        };
-    }
-    /**
      * Query the balance of owner
      * @param _owner The address from which the balance will be retrieved
      * @returns Balance of owner
@@ -494,6 +437,29 @@ export class ERC20TokenContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [_owner.toLowerCase()]);
+            },
+        };
+    }
+    /**
+     * Query total supply of token
+     * @returns Total supply of token
+     */
+    public totalSupply(): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as ERC20TokenContract;
+        const functionSignature = 'totalSupply()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
             },
         };
     }
@@ -550,24 +516,58 @@ export class ERC20TokenContract extends BaseContract {
             },
         };
     }
-    public allowance(_owner: string, _spender: string): ContractFunctionObj<BigNumber> {
+    /**
+     * send `value` token to `to` from `from` on the condition it is approved by `from`
+     * @param _from The address of the sender
+     * @param _to The address of the recipient
+     * @param _value The amount of token to be transferred
+     * @returns True if transfer was successful
+     */
+    public transferFrom(_from: string, _to: string, _value: BigNumber): ContractTxFunctionObj<boolean> {
         const self = (this as any) as ERC20TokenContract;
-        assert.isString('_owner', _owner);
-        assert.isString('_spender', _spender);
-        const functionSignature = 'allowance(address,address)';
+        assert.isString('_from', _from);
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const functionSignature = 'transferFrom(address,address,uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [_owner.toLowerCase(), _spender.toLowerCase()]);
+                return self._strictEncodeArguments(functionSignature, [_from.toLowerCase(), _to.toLowerCase(), _value]);
             },
         };
     }

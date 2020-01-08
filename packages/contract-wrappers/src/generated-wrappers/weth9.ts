@@ -36,14 +36,14 @@ import * as ethers from 'ethers';
 
 export type WETH9EventArgs =
     | WETH9ApprovalEventArgs
-    | WETH9TransferEventArgs
     | WETH9DepositEventArgs
+    | WETH9TransferEventArgs
     | WETH9WithdrawalEventArgs;
 
 export enum WETH9Events {
     Approval = 'Approval',
-    Transfer = 'Transfer',
     Deposit = 'Deposit',
+    Transfer = 'Transfer',
     Withdrawal = 'Withdrawal',
 }
 
@@ -53,14 +53,14 @@ export interface WETH9ApprovalEventArgs extends DecodedLogArgs {
     _value: BigNumber;
 }
 
-export interface WETH9TransferEventArgs extends DecodedLogArgs {
-    _from: string;
-    _to: string;
+export interface WETH9DepositEventArgs extends DecodedLogArgs {
+    _owner: string;
     _value: BigNumber;
 }
 
-export interface WETH9DepositEventArgs extends DecodedLogArgs {
-    _owner: string;
+export interface WETH9TransferEventArgs extends DecodedLogArgs {
+    _from: string;
+    _to: string;
     _value: BigNumber;
 }
 
@@ -152,13 +152,111 @@ export class WETH9Contract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                constant: true,
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_spender',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_value',
+                        type: 'uint256',
+                        indexed: false,
+                    },
+                ],
+                name: 'Approval',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_value',
+                        type: 'uint256',
+                        indexed: false,
+                    },
+                ],
+                name: 'Deposit',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_from',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_to',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_value',
+                        type: 'uint256',
+                        indexed: false,
+                    },
+                ],
+                name: 'Transfer',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_value',
+                        type: 'uint256',
+                        indexed: false,
+                    },
+                ],
+                name: 'Withdrawal',
+                outputs: [],
+                type: 'event',
+            },
+            {
                 inputs: [],
-                name: 'name',
+                outputs: [],
+                payable: true,
+                stateMutability: 'payable',
+                type: 'fallback',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'index_0',
+                        type: 'address',
+                    },
+                    {
+                        name: 'index_1',
+                        type: 'address',
+                    },
+                ],
+                name: 'allowance',
                 outputs: [
                     {
                         name: '',
-                        type: 'string',
+                        type: 'uint256',
                     },
                 ],
                 payable: false,
@@ -190,6 +288,76 @@ export class WETH9Contract extends BaseContract {
             },
             {
                 constant: true,
+                inputs: [
+                    {
+                        name: 'index_0',
+                        type: 'address',
+                    },
+                ],
+                name: 'balanceOf',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'uint256',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'decimals',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'uint8',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [],
+                name: 'deposit',
+                outputs: [],
+                payable: true,
+                stateMutability: 'payable',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'name',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'string',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'symbol',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'string',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
                 inputs: [],
                 name: 'totalSupply',
                 outputs: [
@@ -200,6 +368,29 @@ export class WETH9Contract extends BaseContract {
                 ],
                 payable: false,
                 stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'dst',
+                        type: 'address',
+                    },
+                    {
+                        name: 'wad',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'transfer',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bool',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'nonpayable',
                 type: 'function',
             },
             {
@@ -243,197 +434,6 @@ export class WETH9Contract extends BaseContract {
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
-                constant: true,
-                inputs: [],
-                name: 'decimals',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'uint8',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: 'index_0',
-                        type: 'address',
-                    },
-                ],
-                name: 'balanceOf',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'uint256',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [],
-                name: 'symbol',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'string',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'dst',
-                        type: 'address',
-                    },
-                    {
-                        name: 'wad',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'transfer',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'bool',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [],
-                name: 'deposit',
-                outputs: [],
-                payable: true,
-                stateMutability: 'payable',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: 'index_0',
-                        type: 'address',
-                    },
-                    {
-                        name: 'index_1',
-                        type: 'address',
-                    },
-                ],
-                name: 'allowance',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'uint256',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                inputs: [],
-                outputs: [],
-                payable: true,
-                stateMutability: 'payable',
-                type: 'fallback',
-            },
-            {
-                anonymous: false,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_spender',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_value',
-                        type: 'uint256',
-                        indexed: false,
-                    },
-                ],
-                name: 'Approval',
-                outputs: [],
-                type: 'event',
-            },
-            {
-                anonymous: false,
-                inputs: [
-                    {
-                        name: '_from',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_to',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_value',
-                        type: 'uint256',
-                        indexed: false,
-                    },
-                ],
-                name: 'Transfer',
-                outputs: [],
-                type: 'event',
-            },
-            {
-                anonymous: false,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_value',
-                        type: 'uint256',
-                        indexed: false,
-                    },
-                ],
-                name: 'Deposit',
-                outputs: [],
-                type: 'event',
-            },
-            {
-                anonymous: false,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_value',
-                        type: 'uint256',
-                        indexed: false,
-                    },
-                ],
-                name: 'Withdrawal',
-                outputs: [],
-                type: 'event',
-            },
         ] as ContractAbi;
         return abi;
     }
@@ -465,22 +465,24 @@ export class WETH9Contract extends BaseContract {
         return abiEncoder.getSelector();
     }
 
-    public name(): ContractFunctionObj<string> {
+    public allowance(index_0: string, index_1: string): ContractFunctionObj<BigNumber> {
         const self = (this as any) as WETH9Contract;
-        const functionSignature = 'name()';
+        assert.isString('index_0', index_0);
+        assert.isString('index_1', index_1);
+        const functionSignature = 'allowance(address,address)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, []);
+                return self._strictEncodeArguments(functionSignature, [index_0.toLowerCase(), index_1.toLowerCase()]);
             },
         };
     }
@@ -531,6 +533,128 @@ export class WETH9Contract extends BaseContract {
             },
         };
     }
+    public balanceOf(index_0: string): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('index_0', index_0);
+        const functionSignature = 'balanceOf(address)';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [index_0.toLowerCase()]);
+            },
+        };
+    }
+    public decimals(): ContractFunctionObj<number> {
+        const self = (this as any) as WETH9Contract;
+        const functionSignature = 'decimals()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    public deposit(): ContractTxFunctionObj<void> {
+        const self = (this as any) as WETH9Contract;
+        const functionSignature = 'deposit()';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    public name(): ContractFunctionObj<string> {
+        const self = (this as any) as WETH9Contract;
+        const functionSignature = 'name()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    public symbol(): ContractFunctionObj<string> {
+        const self = (this as any) as WETH9Contract;
+        const functionSignature = 'symbol()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
     public totalSupply(): ContractFunctionObj<BigNumber> {
         const self = (this as any) as WETH9Contract;
         const functionSignature = 'totalSupply()';
@@ -547,6 +671,53 @@ export class WETH9Contract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    public transfer(dst: string, wad: BigNumber): ContractTxFunctionObj<boolean> {
+        const self = (this as any) as WETH9Contract;
+        assert.isString('dst', dst);
+        assert.isBigNumber('wad', wad);
+        const functionSignature = 'transfer(address,uint256)';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [dst.toLowerCase(), wad]);
             },
         };
     }
@@ -641,177 +812,6 @@ export class WETH9Contract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [wad]);
-            },
-        };
-    }
-    public decimals(): ContractFunctionObj<number> {
-        const self = (this as any) as WETH9Contract;
-        const functionSignature = 'decimals()';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, []);
-            },
-        };
-    }
-    public balanceOf(index_0: string): ContractFunctionObj<BigNumber> {
-        const self = (this as any) as WETH9Contract;
-        assert.isString('index_0', index_0);
-        const functionSignature = 'balanceOf(address)';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [index_0.toLowerCase()]);
-            },
-        };
-    }
-    public symbol(): ContractFunctionObj<string> {
-        const self = (this as any) as WETH9Contract;
-        const functionSignature = 'symbol()';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, []);
-            },
-        };
-    }
-    public transfer(dst: string, wad: BigNumber): ContractTxFunctionObj<boolean> {
-        const self = (this as any) as WETH9Contract;
-        assert.isString('dst', dst);
-        assert.isBigNumber('wad', wad);
-        const functionSignature = 'transfer(address,uint256)';
-
-        return {
-            async sendTransactionAsync(
-                txData?: Partial<TxData> | undefined,
-                opts: SendTransactionOpts = { shouldValidate: true },
-            ): Promise<string> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
-                    this.estimateGasAsync.bind(this),
-                );
-                if (opts.shouldValidate !== false) {
-                    await this.callAsync(txDataWithDefaults);
-                }
-                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            },
-            awaitTransactionSuccessAsync(
-                txData?: Partial<TxData>,
-                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
-            },
-            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
-                    data: this.getABIEncodedTransactionData(),
-                });
-                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<boolean> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [dst.toLowerCase(), wad]);
-            },
-        };
-    }
-    public deposit(): ContractTxFunctionObj<void> {
-        const self = (this as any) as WETH9Contract;
-        const functionSignature = 'deposit()';
-
-        return {
-            async sendTransactionAsync(
-                txData?: Partial<TxData> | undefined,
-                opts: SendTransactionOpts = { shouldValidate: true },
-            ): Promise<string> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() },
-                    this.estimateGasAsync.bind(this),
-                );
-                if (opts.shouldValidate !== false) {
-                    await this.callAsync(txDataWithDefaults);
-                }
-                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            },
-            awaitTransactionSuccessAsync(
-                txData?: Partial<TxData>,
-                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
-            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
-            },
-            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
-                    ...txData,
-                    data: this.getABIEncodedTransactionData(),
-                });
-                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, []);
-            },
-        };
-    }
-    public allowance(index_0: string, index_1: string): ContractFunctionObj<BigNumber> {
-        const self = (this as any) as WETH9Contract;
-        assert.isString('index_0', index_0);
-        assert.isString('index_1', index_1);
-        const functionSignature = 'allowance(address,address)';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [index_0.toLowerCase(), index_1.toLowerCase()]);
             },
         };
     }
