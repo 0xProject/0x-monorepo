@@ -1,5 +1,5 @@
 import { WETH9Events, WETH9TransferEventArgs } from '@0x/contracts-erc20';
-import { loadCurrentBalance, StoredBalance } from '@0x/contracts-staking';
+import { loadCurrentBalance, StakingRevertErrors, StoredBalance } from '@0x/contracts-staking';
 import { expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
@@ -70,6 +70,27 @@ export function validWithdrawDelegatorRewardsAssertion(
             expect(poolRewards).to.bignumber.equal(expectedPoolRewards);
 
             // TODO: Check CR
+        },
+    });
+}
+
+/**
+ * Returns a FunctionAssertion for `withdrawDelegatorRewards` which assumes the given pool hasn't
+ * been finalized for the previous epoch. It checks that the call reverts with a PoolNotFinalizedError.
+ */
+export function invalidWithdrawDelegatorRewardsAssertion(
+    deployment: DeploymentManager,
+    simulationEnvironment: SimulationEnvironment,
+): FunctionAssertion<[string], void, void> {
+    return new FunctionAssertion(deployment.staking.stakingWrapper, 'withdrawDelegatorRewards', {
+        after: async (_beforeInfo: void, result: FunctionResult, args: [string]) => {
+            // Ensure that the tx reverted.
+            expect(result.success).to.be.false();
+
+            // Check revert error
+            const [poolId] = args;
+            const { currentEpoch } = simulationEnvironment;
+            expect(result.data).to.equal(new StakingRevertErrors.PoolNotFinalizedError(poolId, currentEpoch.minus(1)));
         },
     });
 }

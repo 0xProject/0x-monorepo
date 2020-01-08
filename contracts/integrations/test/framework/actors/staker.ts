@@ -9,7 +9,10 @@ import { assetProxyTransferFailedAssertion } from '../assertions/generic_asserti
 import { validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { invalidUnstakeAssertion, validUnstakeAssertion } from '../assertions/unstake';
-import { validWithdrawDelegatorRewardsAssertion } from '../assertions/withdrawDelegatorRewards';
+import {
+    invalidWithdrawDelegatorRewardsAssertion,
+    validWithdrawDelegatorRewardsAssertion,
+} from '../assertions/withdrawDelegatorRewards';
 import { Pseudorandom } from '../utils/pseudorandom';
 
 import { Actor, Constructor } from './base';
@@ -52,6 +55,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 invalidUnstake: this._invalidUnstake(),
                 validMoveStake: this._validMoveStake(),
                 validWithdrawDelegatorRewards: this._validWithdrawDelegatorRewards(),
+                invalidWithdrawDelegatorRewards: this._invalidWithdrawDelegatorRewards(),
             };
         }
 
@@ -197,6 +201,26 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     Object.keys(stakingPools).filter(id =>
                         stakingPools[id].lastFinalized.isGreaterThanOrEqualTo(prevEpoch),
                     ),
+                );
+                if (poolId === undefined) {
+                    yield;
+                } else {
+                    yield assertion.executeAsync([poolId], { from: this.actor.address });
+                }
+            }
+        }
+
+        private async *_invalidWithdrawDelegatorRewards(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingPools } = this.actor.simulationEnvironment!;
+            const assertion = invalidWithdrawDelegatorRewardsAssertion(
+                this.actor.deployment,
+                this.actor.simulationEnvironment!,
+            );
+            while (true) {
+                const prevEpoch = this.actor.simulationEnvironment!.currentEpoch.minus(1);
+                // Pick an unfinalized pool
+                const poolId = Pseudorandom.sample(
+                    Object.keys(stakingPools).filter(id => stakingPools[id].lastFinalized.isLessThan(prevEpoch)),
                 );
                 if (poolId === undefined) {
                     yield;
