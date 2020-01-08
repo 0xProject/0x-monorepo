@@ -51,7 +51,7 @@ export const swapQuoteUpdater = {
                     slippagePercentage,
                     gasPrice: gasInfo.gasPriceInWei,
                     // Only use native orders
-                    excludedSources: [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber, ERC20BridgeSource.Uniswap],
+                    // excludedSources: [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber, ERC20BridgeSource.Uniswap],
                 },
             );
         } catch (error) {
