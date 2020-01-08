@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Set default `hardfork` option for ganache provider to `\"istanbul\"`",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {
