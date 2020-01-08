@@ -41,11 +41,6 @@ contract ERC20BridgeSampler is
     uint256 constant internal UNISWAP_SAMPLE_CALL_GAS = 150e3;
     uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 250e3;
 
-     struct OrdersAndSample {
-        uint256[] orderFillableTakerAssetAmounts;
-        uint256[][] makerTokenAmountsBySource;
-    }
-
     function queryMultipleOrdersAndSampleBuys(
         LibOrder.Order[][] memory orders,
         bytes[][] memory orderSignatures,

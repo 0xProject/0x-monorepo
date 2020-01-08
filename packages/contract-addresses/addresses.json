@@ -22,7 +22,7 @@
         "devUtils": "0x5f53f2aa72cb3a9371bf3c58e8fb3a313478b2f4",
         "erc20BridgeProxy": "0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0",
         "uniswapBridge": "0x533344cfdf2a3e911e2cf4c6f5ed08e791f5355f",
-        "erc20BridgeSampler": "0x1b402fdb5ee87f989c11e3963557e89cc313b6c0",
+        "erc20BridgeSampler": "0xdf291ac755a47ef44e18fecc71f1c13a07d8b303",
         "kyberBridge": "0xf342f3a80fdc9b48713d58fe97e17f5cc764ee62",
         "eth2DaiBridge": "0xe97ea901d034ba2e018155264f77c417ce7717f9",
         "chaiBridge": "0x77c31eba23043b9a72d13470f3a3a311344d7438",
