@@ -9,6 +9,7 @@ async callAsync(
     const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
     {{/ifEquals}}
     const abiEncoder = self._lookupAbiEncoder(functionSignature);
+    BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
     return abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
 },
 getABIEncodedTransactionData(): string {

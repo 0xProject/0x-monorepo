@@ -152,6 +152,20 @@ export class BaseContract {
         }
         throw revertError;
     }
+    protected static _throwIfUnexpectedEmptyCallResult(rawCallResult: string, methodAbi: AbiEncoder.Method): void {
+        // With live nodes, we will receive an empty call result if:
+        // 1. The function has no return value.
+        // 2. The contract reverts without data.
+        // 3. The contract reverts with an invalid opcode (`assert(false)` or `invalid()`).
+        if (!rawCallResult || rawCallResult === '0x') {
+            const returnValueDataItem = methodAbi.getReturnValueDataItem();
+            if (returnValueDataItem.components === undefined || returnValueDataItem.components.length === 0) {
+                // Expected no result (which makes it hard to tell if the call reverted).
+                return;
+            }
+            throw new Error(`Function "${methodAbi.getSignature()}" reverted with no data`);
+        }
+    }
     // Throws if the given arguments cannot be safely/correctly encoded based on
     // the given inputAbi. An argument may not be considered safely encodeable
     // if it overflows the corresponding Solidity type, there is a bug in the

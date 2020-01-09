@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Catch empty reverts on live networks.",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "6.0.3",
         "changes": [
