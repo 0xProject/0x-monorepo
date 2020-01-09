@@ -1,16 +1,13 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ExchangeContract } from '@0x/contract-wrappers';
-import { AbiEncoder, providerUtils } from '@0x/utils';
+import { providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
-import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    ExchangeSmartContractParams,
     MarketOperation,
-    SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
@@ -19,9 +16,8 @@ import {
 } from '../types';
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
-import { utils } from '../utils/utils';
 
-export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<ExchangeSmartContractParams> {
+export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
     public readonly chainId: number;
 
@@ -42,76 +38,27 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
+        _opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
-
-        const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
-
-        const abiEncoder = new AbiEncoder.Method(methodAbi);
-
-        const { orders, signatures } = params;
-        let args: any[];
-        if (params.type === MarketOperation.Buy) {
-            const { makerAssetFillAmount } = params;
-            args = [orders, makerAssetFillAmount, signatures];
-        } else {
-            const { takerAssetFillAmount } = params;
-            args = [orders, takerAssetFillAmount, signatures];
-        }
-        const calldataHexString = abiEncoder.encode(args, { shouldOptimize: true });
-        return {
-            calldataHexString,
-            methodAbi,
-            toAddress,
-            ethAmount,
-        };
-    }
-
-    public async getSmartContractParamsOrThrowAsync(
-        quote: SwapQuote,
-        _opts: Partial<SwapQuoteGetOutputOpts> = {},
-    ): Promise<SmartContractParamsInfo<ExchangeSmartContractParams>> {
-        assert.isValidSwapQuote('quote', quote);
-
         const { orders } = quote;
-
         const signatures = _.map(orders, o => o.signature);
 
-        let params: ExchangeSmartContractParams;
-        let methodName: string;
-
+        let calldataHexString;
         if (quote.type === MarketOperation.Buy) {
-            const { makerAssetFillAmount } = quote;
-
-            params = {
-                orders,
-                signatures,
-                makerAssetFillAmount,
-                type: MarketOperation.Buy,
-            };
-
-            methodName = 'marketBuyOrdersFillOrKill';
+            calldataHexString = this._exchangeContract
+                .marketBuyOrdersFillOrKill(orders, quote.makerAssetFillAmount, signatures)
+                .getABIEncodedTransactionData();
         } else {
-            const { takerAssetFillAmount } = quote;
-
-            params = {
-                orders,
-                signatures,
-                takerAssetFillAmount,
-                type: MarketOperation.Sell,
-            };
-
-            methodName = 'marketSellOrdersFillOrKill';
+            calldataHexString = this._exchangeContract
+                .marketSellOrdersNoThrow(orders, quote.takerAssetFillAmount, signatures)
+                .getABIEncodedTransactionData();
         }
 
-        const methodAbi = utils.getMethodAbiFromContractAbi(this._exchangeContract.abi, methodName) as MethodAbi;
-
         return {
-            params,
-            toAddress: this._exchangeContract.address,
-            methodAbi,
+            calldataHexString,
             ethAmount: quote.worstCaseQuoteInfo.protocolFeeInWeiAmount,
+            toAddress: this._exchangeContract.address,
         };
     }
 
@@ -133,6 +80,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             assert.isBigNumber('ethAmount', ethAmount);
         }
         const { orders, gasPrice } = quote;
+        const signatures = orders.map(o => o.signature);
 
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
         const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
@@ -140,7 +88,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;
             txHash = await this._exchangeContract
-                .marketBuyOrdersFillOrKill(orders, makerAssetFillAmount, orders.map(o => o.signature))
+                .marketBuyOrdersFillOrKill(orders, makerAssetFillAmount, signatures)
                 .sendTransactionAsync({
                     from: finalTakerAddress,
                     gas: gasLimit,
@@ -150,7 +98,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         } else {
             const { takerAssetFillAmount } = quote;
             txHash = await this._exchangeContract
-                .marketSellOrdersFillOrKill(orders, takerAssetFillAmount, orders.map(o => o.signature))
+                .marketSellOrdersFillOrKill(orders, takerAssetFillAmount, signatures)
                 .sendTransactionAsync({
                     from: finalTakerAddress,
                     gas: gasLimit,
