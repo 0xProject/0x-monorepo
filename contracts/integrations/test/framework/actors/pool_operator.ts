@@ -102,7 +102,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
             const assertion = invalidCreateStakingPoolAssertion(this.actor.deployment);
             while (true) {
                 const operatorShare = Pseudorandom.integer(
-                    stakingConstants.PPM + 1,
+                    (stakingConstants.PPM as number) + 1,
                     constants.MAX_UINT32,
                     Distributions.Kumaraswamy(0.2, 0.2),
                 ).toNumber();
@@ -137,7 +137,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                     yield undefined;
                 } else {
                     const operatorShare = Pseudorandom.integer(
-                        stakingPools[poolId].operatorShare + 1,
+                        (stakingPools[poolId].operatorShare as number) + 1,
                         constants.MAX_UINT32,
                         Distributions.Kumaraswamy(0.2, 0.2),
                     ).toNumber();
