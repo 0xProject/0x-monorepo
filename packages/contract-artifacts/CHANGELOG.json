@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.4.0",
+        "changes": [
+            {
+                "note": "Update all artifacts.",
+                "pr": 2432
+            }
+        ]
+    },
+    {
         "version": "3.3.0",
         "changes": [
             {

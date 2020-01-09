@@ -25,7 +25,7 @@ export interface Web3Config {
     blockTime?: number;
     locked?: boolean;
     unlocked_accounts?: string[];
-    hardfork?: string;
+    hardfork?: string; // default: istanbul
 }
 
 export const web3Factory = {
@@ -82,7 +82,7 @@ export const web3Factory = {
                     blockTime: config.blockTime,
                     locked: config.locked,
                     unlocked_accounts: config.unlocked_accounts,
-                    hardfork: config.hardfork,
+                    hardfork: config.hardfork || 'istanbul',
                 } as any), // TODO remove any once types are merged in DefinitelyTyped
             );
         } else {

@@ -39,6 +39,7 @@ export type ExchangeEventArgs =
     | ExchangeCancelEventArgs
     | ExchangeCancelUpToEventArgs
     | ExchangeFillEventArgs
+    | ExchangeOwnershipTransferredEventArgs
     | ExchangeProtocolFeeCollectorAddressEventArgs
     | ExchangeProtocolFeeMultiplierEventArgs
     | ExchangeSignatureValidatorApprovalEventArgs
@@ -49,6 +50,7 @@ export enum ExchangeEvents {
     Cancel = 'Cancel',
     CancelUpTo = 'CancelUpTo',
     Fill = 'Fill',
+    OwnershipTransferred = 'OwnershipTransferred',
     ProtocolFeeCollectorAddress = 'ProtocolFeeCollectorAddress',
     ProtocolFeeMultiplier = 'ProtocolFeeMultiplier',
     SignatureValidatorApproval = 'SignatureValidatorApproval',
@@ -90,6 +92,11 @@ export interface ExchangeFillEventArgs extends DecodedLogArgs {
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
     protocolFeePaid: BigNumber;
+}
+
+export interface ExchangeOwnershipTransferredEventArgs extends DecodedLogArgs {
+    previousOwner: string;
+    newOwner: string;
 }
 
 export interface ExchangeProtocolFeeCollectorAddressEventArgs extends DecodedLogArgs {
@@ -373,6 +380,24 @@ export class ExchangeContract extends BaseContract {
                 anonymous: false,
                 inputs: [
                     {
+                        name: 'previousOwner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: 'newOwner',
+                        type: 'address',
+                        indexed: true,
+                    },
+                ],
+                name: 'OwnershipTransferred',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
                         name: 'oldProtocolFeeCollector',
                         type: 'address',
                         indexed: false,
@@ -601,7 +626,7 @@ export class ExchangeContract extends BaseContract {
                 name: 'batchExecuteTransactions',
                 outputs: [
                     {
-                        name: '',
+                        name: 'returnData',
                         type: 'bytes[]',
                     },
                 ],
@@ -1469,6 +1494,15 @@ export class ExchangeContract extends BaseContract {
             },
             {
                 constant: false,
+                inputs: [],
+                name: 'detachProtocolFeeCollector',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                constant: false,
                 inputs: [
                     {
                         name: 'transaction',
@@ -1756,7 +1790,7 @@ export class ExchangeContract extends BaseContract {
                 name: 'getAssetProxy',
                 outputs: [
                     {
-                        name: '',
+                        name: 'assetProxy',
                         type: 'address',
                     },
                 ],
@@ -3238,7 +3272,7 @@ export class ExchangeContract extends BaseContract {
      * @param transactions Array of 0x transaction structures.
      * @param signatures Array of proofs that transactions have been signed by
      *     signer(s).
-     * @returns Array containing ABI encoded return data for each of the underlying Exchange function calls.
+     * @returns returnData Array containing ABI encoded return data for each of the underlying Exchange function calls.
      */
     public batchExecuteTransactions(
         transactions: Array<{
@@ -3302,7 +3336,7 @@ export class ExchangeContract extends BaseContract {
      * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
      *     in orders.
      * @param signatures Proofs that orders have been created by makers.
-     * @returns Array of amounts filled and fees paid by makers and taker.
+     * @returns fillResults Array of amounts filled and fees paid by makers and taker.
      */
     public batchFillOrKillOrders(
         orders: Array<{
@@ -3405,7 +3439,7 @@ export class ExchangeContract extends BaseContract {
      * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
      *     in orders.
      * @param signatures Proofs that orders have been created by makers.
-     * @returns Array of amounts filled and fees paid by makers and taker.
+     * @returns fillResults Array of amounts filled and fees paid by makers and taker.
      */
     public batchFillOrders(
         orders: Array<{
@@ -3508,7 +3542,7 @@ export class ExchangeContract extends BaseContract {
      * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
      *     in orders.
      * @param signatures Proofs that orders have been created by makers.
-     * @returns Array of amounts filled and fees paid by makers and taker.
+     * @returns fillResults Array of amounts filled and fees paid by makers and taker.
      */
     public batchFillOrdersNoThrow(
         orders: Array<{
@@ -4076,6 +4110,55 @@ export class ExchangeContract extends BaseContract {
         };
     }
     /**
+     * Sets the protocolFeeCollector contract address to 0.
+     * Only callable by owner.
+     */
+    public detachProtocolFeeCollector(): ContractTxFunctionObj<void> {
+        const self = (this as any) as ExchangeContract;
+        const functionSignature = 'detachProtocolFeeCollector()';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    /**
      * Executes an Exchange method call in the context of signer.
      * @param transaction 0x transaction structure.
      * @param signature Proof that transaction has been signed by signer.
@@ -4138,10 +4221,11 @@ export class ExchangeContract extends BaseContract {
         };
     }
     /**
-     * Fills the input order. Reverts if exact takerAssetFillAmount not filled.
+     * Fills the input order. Reverts if exact `takerAssetFillAmount` not filled.
      * @param order Order struct containing order specifications.
      * @param takerAssetFillAmount Desired amount of takerAsset to sell.
      * @param signature Proof that order has been created by maker.
+     * @returns fillResults Amounts filled and fees paid.
      */
     public fillOrKillOrder(
         order: {
@@ -4237,7 +4321,7 @@ export class ExchangeContract extends BaseContract {
      * @param order Order struct containing order specifications.
      * @param takerAssetFillAmount Desired amount of takerAsset to sell.
      * @param signature Proof that order has been created by maker.
-     * @returns Amounts filled and fees paid by maker and taker.
+     * @returns fillResults Amounts filled and fees paid by maker and taker.
      */
     public fillOrder(
         order: {
@@ -4351,7 +4435,7 @@ export class ExchangeContract extends BaseContract {
     /**
      * Gets an asset proxy.
      * @param assetProxyId Id of the asset proxy.
-     * @returns The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
+     * @returns assetProxy The asset proxy address registered to assetProxyId. Returns 0x0 if no proxy is registered.
      */
     public getAssetProxy(assetProxyId: string): ContractFunctionObj<string> {
         const self = (this as any) as ExchangeContract;
@@ -4376,7 +4460,7 @@ export class ExchangeContract extends BaseContract {
     /**
      * Gets information about an order: status, hash, and amount filled.
      * @param order Order to gather information on.
-     * @returns OrderInfo Information about the order and its state.         See LibOrder.OrderInfo for a complete description.
+     * @returns orderInfo Information about the order and its state.         See LibOrder.OrderInfo for a complete description.
      */
     public getOrderInfo(order: {
         makerAddress: string;
@@ -4538,7 +4622,7 @@ export class ExchangeContract extends BaseContract {
      * @param orders Array of order specifications.
      * @param makerAssetFillAmount Minimum amount of makerAsset to buy.
      * @param signatures Proofs that orders have been signed by makers.
-     * @returns Amounts filled and fees paid by makers and taker.
+     * @returns fillResults Amounts filled and fees paid by makers and taker.
      */
     public marketBuyOrdersFillOrKill(
         orders: Array<{
@@ -4636,7 +4720,7 @@ export class ExchangeContract extends BaseContract {
      * @param orders Array of order specifications.
      * @param makerAssetFillAmount Desired amount of makerAsset to buy.
      * @param signatures Proofs that orders have been signed by makers.
-     * @returns Amounts filled and fees paid by makers and taker.
+     * @returns fillResults Amounts filled and fees paid by makers and taker.
      */
     public marketBuyOrdersNoThrow(
         orders: Array<{
@@ -4733,7 +4817,7 @@ export class ExchangeContract extends BaseContract {
      * @param orders Array of order specifications.
      * @param takerAssetFillAmount Minimum amount of takerAsset to sell.
      * @param signatures Proofs that orders have been signed by makers.
-     * @returns Amounts filled and fees paid by makers and taker.
+     * @returns fillResults Amounts filled and fees paid by makers and taker.
      */
     public marketSellOrdersFillOrKill(
         orders: Array<{
@@ -4831,7 +4915,7 @@ export class ExchangeContract extends BaseContract {
      * @param orders Array of order specifications.
      * @param takerAssetFillAmount Desired amount of takerAsset to sell.
      * @param signatures Proofs that orders have been signed by makers.
-     * @returns Amounts filled and fees paid by makers and taker.
+     * @returns fillResults Amounts filled and fees paid by makers and taker.
      */
     public marketSellOrdersNoThrow(
         orders: Array<{
@@ -5671,6 +5755,10 @@ export class ExchangeContract extends BaseContract {
             },
         };
     }
+    /**
+     * Change the owner of this contract.
+     * @param newOwner New owner address.
+     */
     public transferOwnership(newOwner: string): ContractTxFunctionObj<void> {
         const self = (this as any) as ExchangeContract;
         assert.isString('newOwner', newOwner);

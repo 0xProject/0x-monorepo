@@ -1,4 +1,4 @@
-import { ContractAddresses } from '@0x/contract-addresses';
+import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { ForwarderContract } from '@0x/contract-wrappers';
 import {
@@ -15,7 +15,12 @@ import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeContract } from '@0x/contracts-exchange';
-import { StakingProxyContract, TestStakingContract, ZrxVaultContract } from '@0x/contracts-staking';
+import {
+    artifacts as stakingArtifacts,
+    StakingProxyContract,
+    TestStakingContract,
+    ZrxVaultContract,
+} from '@0x/contracts-staking';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, TxData } from 'ethereum-types';
@@ -204,7 +209,7 @@ export async function runMigrationsAsync(
     // Note we use TestStakingContract as the deployed bytecode of a StakingContract
     // has the tokens hardcoded
     const stakingLogic = await TestStakingContract.deployFrom0xArtifactAsync(
-        artifacts.Staking,
+        stakingArtifacts.TestStaking,
         provider,
         txDefaults,
         {},
@@ -237,12 +242,14 @@ export async function runMigrationsAsync(
     // Forwarder
     // Deployed after Exchange and Staking is configured as it queries
     // in the constructor
+    const { exchangeV2: exchangeV2Address } = getContractAddressesForChainOrThrow(chainId.toNumber());
     const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
         artifacts.Forwarder,
         provider,
         txDefaults,
         artifacts,
         exchange.address,
+        exchangeV2Address || constants.NULL_ADDRESS,
         etherToken.address,
     );
 
@@ -257,12 +264,14 @@ export async function runMigrationsAsync(
         erc20BridgeProxy: erc20BridgeProxy.address,
         zeroExGovernor: constants.NULL_ADDRESS,
         forwarder: forwarder.address,
+        orderValidator: constants.NULL_ADDRESS,
+        dutchAuction: constants.NULL_ADDRESS,
         coordinatorRegistry: coordinatorRegistry.address,
         coordinator: coordinator.address,
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
         devUtils: devUtils.address,
-        exchangeV2: exchange.address,
+        exchangeV2: exchangeV2Address || constants.NULL_ADDRESS,
         zrxVault: zrxVault.address,
         staking: stakingLogic.address,
         stakingProxy: stakingProxy.address,

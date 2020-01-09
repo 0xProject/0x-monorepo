@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.4.0",
+        "changes": [
+            {
+                "note": "Update all wrappers.",
+                "pr": 2432
+            }
+        ]
+    },
+    {
         "version": "13.3.0",
         "changes": [
             {

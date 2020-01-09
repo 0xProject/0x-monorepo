@@ -29,7 +29,7 @@
     },
     "compiler": {
         "name": "solc",
-        "version": "soljson-v0.5.11+commit.c082d0b4.js",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
         "settings": {
             "optimizer": {
                 "enabled": true,
@@ -48,8 +48,8 @@
                     ]
                 }
             },
-            "evmVersion": "constantinople"
+            "evmVersion": "istanbul"
         }
     },
-    "networks": {}
+    "chains": {}
 }

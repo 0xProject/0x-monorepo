@@ -27,6 +27,7 @@ export {
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
+    ExchangeOwnershipTransferredEventArgs,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,

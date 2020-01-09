@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.0.0",
+        "changes": [
+            {
+                "note": "Update Forwarder deployment",
+                "pr": 2432
+            }
+        ]
+    },
+    {
         "version": "5.1.0",
         "changes": [
             {

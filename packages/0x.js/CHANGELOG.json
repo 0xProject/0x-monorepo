@@ -1,5 +1,14 @@
 [
     {
+        "version": "9.0.4",
+        "changes": [
+            {
+                "note": "Update exports.",
+                "pr": 2432
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "9.0.3",
         "changes": [

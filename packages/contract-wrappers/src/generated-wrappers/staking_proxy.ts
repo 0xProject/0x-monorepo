@@ -1399,6 +1399,10 @@ export class StakingProxyContract extends BaseContract {
             },
         };
     }
+    /**
+     * Change the owner of this contract.
+     * @param newOwner New owner address.
+     */
     public transferOwnership(newOwner: string): ContractTxFunctionObj<void> {
         const self = (this as any) as StakingProxyContract;
         assert.isString('newOwner', newOwner);
