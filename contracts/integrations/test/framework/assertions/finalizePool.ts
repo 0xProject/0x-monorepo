@@ -166,20 +166,24 @@ export function validFinalizePoolAssertion(
             // Check that pool rewards have increased.
             const poolRewards = await stakingWrapper.rewardsByPoolId(poolId).callAsync();
             expect(poolRewards).to.bignumber.equal(beforeInfo.poolRewards.plus(membersReward));
-            // Check that cumulative rewards have increased.
-            const [
-                mostRecentCumulativeRewards,
-                cumulativeRewardsLastStored,
-            ] = await stakingWrapper.getMostRecentCumulativeReward(poolId).callAsync();
-            expect(cumulativeRewardsLastStored).to.bignumber.equal(currentEpoch);
-            let [numerator, denominator] = ReferenceFunctions.LibFractions.add(
-                beforeInfo.mostRecentCumulativeRewards.numerator,
-                beforeInfo.mostRecentCumulativeRewards.denominator,
-                membersReward,
-                beforeInfo.poolStats.membersStake,
-            );
-            [numerator, denominator] = ReferenceFunctions.LibFractions.normalize(numerator, denominator);
-            expect(mostRecentCumulativeRewards).to.deep.equal({ numerator, denominator });
+
+            if (membersReward.isGreaterThan(0)) {
+                // Check that cumulative rewards have increased.
+                const [
+                    mostRecentCumulativeRewards,
+                    cumulativeRewardsLastStored,
+                ] = await stakingWrapper.getMostRecentCumulativeReward(poolId).callAsync();
+                expect(cumulativeRewardsLastStored).to.bignumber.equal(currentEpoch);
+
+                let [numerator, denominator] = ReferenceFunctions.LibFractions.add(
+                    beforeInfo.mostRecentCumulativeRewards.numerator,
+                    beforeInfo.mostRecentCumulativeRewards.denominator,
+                    membersReward,
+                    beforeInfo.poolStats.membersStake,
+                );
+                [numerator, denominator] = ReferenceFunctions.LibFractions.normalize(numerator, denominator);
+                expect(mostRecentCumulativeRewards).to.deep.equal({ numerator, denominator });
+            }
 
             // Check that aggregated stats have been updated
             const aggregatedStats = AggregatedStats.fromArray(
