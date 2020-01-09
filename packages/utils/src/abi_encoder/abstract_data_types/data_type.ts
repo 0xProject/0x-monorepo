@@ -26,8 +26,8 @@ export abstract class DataType {
         return this._factory;
     }
 
-    public encode(value: any, rules?: EncodingRules, selector?: string): string {
-        const rules_ = rules === undefined ? constants.DEFAULT_ENCODING_RULES : rules;
+    public encode(value: any, rules?: Partial<EncodingRules>, selector?: string): string {
+        const rules_ = { ...constants.DEFAULT_ENCODING_RULES, ...rules };
         const calldata = new Calldata(rules_);
         if (selector !== undefined) {
             calldata.setSelector(selector);
@@ -38,7 +38,7 @@ export abstract class DataType {
         return encodedCalldata;
     }
 
-    public decode(calldata: string, rules?: DecodingRules, selector?: string): any {
+    public decode(calldata: string, rules?: Partial<DecodingRules>, selector?: string): any {
         if (selector !== undefined && !_.startsWith(calldata, selector)) {
             throw new Error(
                 `Tried to decode calldata, but it was missing the function selector. Expected prefix '${selector}'. Got '${calldata}'.`,
@@ -46,13 +46,15 @@ export abstract class DataType {
         }
         const hasSelector = selector !== undefined;
         const rawCalldata = new RawCalldata(calldata, hasSelector);
-        const rules_ = rules === undefined ? constants.DEFAULT_DECODING_RULES : rules;
+        const rules_ = { ...constants.DEFAULT_DECODING_RULES, ...rules };
         const value =
-            rawCalldata.getSizeInBytes() > 0 ? this.generateValue(rawCalldata, rules_) : this.getDefaultValue(rules_);
+            rules_.isStrictMode || rawCalldata.getSizeInBytes() > 0
+                ? this.generateValue(rawCalldata, rules_)
+                : this.getDefaultValue(rules_);
         return value;
     }
 
-    public decodeAsArray(returndata: string, rules?: DecodingRules): any[] {
+    public decodeAsArray(returndata: string, rules?: Partial<DecodingRules>): any[] {
         const value = this.decode(returndata, rules);
         const valuesAsArray = _.isObject(value) ? _.values(value) : [value];
         return valuesAsArray;

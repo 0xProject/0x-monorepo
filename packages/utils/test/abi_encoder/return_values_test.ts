@@ -10,6 +10,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ABI Encoder: Return Value Encoding/Decoding', () => {
+    const DECODE_BEYOND_CALL_DATA_ERROR = 'Tried to decode beyond the end of calldata';
     const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
     const nullEncodedReturnValue = '0x';
     describe('Standard encoding/decoding', () => {
@@ -173,32 +174,29 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
             // This is by design, as only a struct's contents are encoded and returned by a funciton call.
             expect(decodedReturnValue).to.be.deep.equal(returnValue.fillResults);
         });
-        it('Should decode NULL as default value (single; static)', async () => {
+        it('Should fail to decode NULL (single; static)', async () => {
             // Generate Return Value
             const method = new AbiEncoder.Method(ReturnValueAbis.singleStaticReturnValue);
-            const returnValue = '0x00000000';
             const encodedReturnValue = '0x';
-            const decodedReturnValue = method.strictDecodeReturnValue<string>(encodedReturnValue);
+            const decodeReturnValue = () => method.strictDecodeReturnValue<string>(encodedReturnValue);
             // Validate decoded return value
-            expect(decodedReturnValue).to.be.deep.equal(returnValue);
+            expect(decodeReturnValue).to.throws(DECODE_BEYOND_CALL_DATA_ERROR);
         });
-        it('Should decode NULL as default value (multiple; static)', async () => {
+        it('Should fail to decode NULL (multiple; static)', async () => {
             // Generate Return Value
             const method = new AbiEncoder.Method(ReturnValueAbis.multipleStaticReturnValues);
-            const returnValue = ['0x00000000', '0x00000000'];
             const encodedReturnValue = '0x';
-            const decodedReturnValue = method.strictDecodeReturnValue<[string, string]>(encodedReturnValue);
+            const decodeReturnValue = () => method.strictDecodeReturnValue<[string, string]>(encodedReturnValue);
             // Validate decoded return value
-            expect(decodedReturnValue).to.be.deep.equal(returnValue);
+            expect(decodeReturnValue).to.throws(DECODE_BEYOND_CALL_DATA_ERROR);
         });
-        it('Should decode NULL as default value (single; dynamic)', async () => {
+        it('Should fail to decode NULL (single; dynamic)', async () => {
             // Generate Return Value
             const method = new AbiEncoder.Method(ReturnValueAbis.singleDynamicReturnValue);
-            const returnValue = '0x';
             const encodedReturnValue = '0x';
-            const decodedReturnValue = method.strictDecodeReturnValue<string>(encodedReturnValue);
+            const decodeReturnValue = () => method.strictDecodeReturnValue<string>(encodedReturnValue);
             // Validate decoded return value
-            expect(decodedReturnValue).to.be.deep.equal(returnValue);
+            expect(decodeReturnValue).to.throws(DECODE_BEYOND_CALL_DATA_ERROR);
         });
     });
 });

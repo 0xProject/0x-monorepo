@@ -29,13 +29,13 @@ export class MethodDataType extends AbstractSetDataType {
         return calldata;
     }
 
-    public decode(calldata: string, rules?: DecodingRules): any[] | object {
+    public decode(calldata: string, rules?: Partial<DecodingRules>): any[] | object {
         const value = super.decode(calldata, rules, this._methodSelector);
         return value;
     }
 
-    public strictDecode<T>(calldata: string, rules?: DecodingRules): T {
-        const value = super.decode(calldata, rules, this._methodSelector);
+    public strictDecode<T>(calldata: string, rules?: Partial<DecodingRules>): T {
+        const value = super.decode(calldata, { ...rules, isStrictMode: true }, this._methodSelector);
         const valueAsArray: any = _.isObject(value) ? _.values(value) : [value];
         switch (valueAsArray.length) {
             case 0:
@@ -52,13 +52,13 @@ export class MethodDataType extends AbstractSetDataType {
         return returnData;
     }
 
-    public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
+    public decodeReturnValues(returndata: string, rules?: Partial<DecodingRules>): any {
         const returnValues = this._returnDataType.decode(returndata, rules);
         return returnValues;
     }
 
-    public strictDecodeReturnValue<T>(returndata: string, rules?: DecodingRules): T {
-        const returnValues = this._returnDataType.decode(returndata, rules);
+    public strictDecodeReturnValue<T>(returndata: string, rules?: Partial<DecodingRules>): T {
+        const returnValues = this._returnDataType.decode(returndata, { ...rules, isStrictMode: true });
         const returnValuesAsArray: any = _.isObject(returnValues) ? _.values(returnValues) : [returnValues];
         switch (returnValuesAsArray.length) {
             case 0:

@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Allow for strict decoding of return values.",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "5.1.2",
         "changes": [
