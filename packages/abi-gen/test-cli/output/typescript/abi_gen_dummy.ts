@@ -846,6 +846,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -863,6 +864,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -900,6 +902,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{
                     input: { foo: BigNumber; bar: string; car: string };
                     lorem: string;
@@ -936,6 +939,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -981,6 +985,7 @@ export class AbiGenDummyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1004,6 +1009,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<
                     Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
                 >(rawCallResult);
@@ -1022,6 +1028,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1043,6 +1050,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{ innerStruct: { aField: BigNumber } }>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1072,6 +1080,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[string, string, string]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1097,6 +1106,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1122,6 +1132,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{
                     innerStruct: {
                         someBytes: string;
@@ -1149,6 +1160,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1168,6 +1180,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1213,6 +1226,7 @@ export class AbiGenDummyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1258,6 +1272,7 @@ export class AbiGenDummyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1275,6 +1290,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1292,6 +1308,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1308,6 +1325,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1324,6 +1342,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1340,6 +1359,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1360,6 +1380,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1380,6 +1401,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1396,6 +1418,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1413,6 +1436,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1429,6 +1453,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1445,6 +1470,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1467,6 +1493,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1495,6 +1522,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{
                     someBytes: string;
                     anInteger: number;
@@ -1527,6 +1555,7 @@ export class AbiGenDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1573,6 +1602,7 @@ export class AbiGenDummyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {

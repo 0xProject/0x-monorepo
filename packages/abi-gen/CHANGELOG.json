@@ -5,6 +5,10 @@
             {
                 "note": "Catch empty call reverts on live networks.",
                 "pr": 2433
+            },
+            {
+                "note": "Regenerate test outputs.",
+                "pr": 2433
             }
         ]
     },
