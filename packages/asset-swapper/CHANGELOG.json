@@ -4,11 +4,11 @@
         "changes": [
             {
                 "note": "Upgrade to new `Forwarder` contract with flat affiliate fees.",
-                "pr": "TODO"
+                "pr": 2432
             },
             {
                 "note": "Remove `getSmartContractParamsOrThrow()` from `SwapQuoteConsumer`s.",
-                "pr": "TODO"
+                "pr": 2432
             }
         ]
     },

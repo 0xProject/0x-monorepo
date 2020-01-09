@@ -3,8 +3,8 @@
         "version": "13.4.0",
         "changes": [
             {
-                "note": "Added updated `Forwarder` wrapper",
-                "pr": "TODO"
+                "note": "Update all wrappers.",
+                "pr": 2432
             }
         ]
     },

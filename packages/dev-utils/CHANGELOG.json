@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Set default `hardfork` option for ganache provider to `\"istanbul\"`",
-                "pr": "TODO"
+                "pr": 2432
             }
         ]
     },
