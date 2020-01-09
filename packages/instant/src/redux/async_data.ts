@@ -30,7 +30,7 @@ export const asyncData = {
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
         const { providerState, assetMetaDataMap, network } = state;
-        const swapQuoter = proiderState.swapQuoter;
+        const swapQuoter = providerState.swapQuoter;
         try {
             const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
             const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);
