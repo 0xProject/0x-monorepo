@@ -30,6 +30,7 @@ export {
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenContract,
+    ExchangeOwnershipTransferredEventArgs,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,

@@ -14,7 +14,6 @@ export {
 export { APIOrder, Asset, AssetPairsItem, Order, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
-    ConstructorStateMutability,
     DataItem,
     EIP1193Event,
     EIP1193Provider,
@@ -24,8 +23,6 @@ export {
     JSONRPCRequestPayload,
     JSONRPCResponseError,
     JSONRPCResponsePayload,
-    MethodAbi,
-    StateMutability,
     SupportedProvider,
     TupleDataItem,
     Web3JsProvider,
