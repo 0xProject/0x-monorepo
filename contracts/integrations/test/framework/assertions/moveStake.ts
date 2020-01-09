@@ -5,9 +5,11 @@ import {
     OwnerStakeByStatus,
     StakeInfo,
     StakeStatus,
+    StakingRevertErrors,
     StoredBalance,
 } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
+import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -195,5 +197,55 @@ export function validMoveStakeAssertion(
             }
         },
     });
+}
+
+/**
+ * Returns a FunctionAssertion for `moveStake` which asserts that the transaction reverts with a
+ * PoolExistenceError.
+ */
+export function moveStakeNonexistentPoolAssertion(
+    deployment: DeploymentManager,
+    nonExistentPoolId: string,
+): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void> {
+    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void>(
+        deployment.staking.stakingWrapper,
+        'moveStake',
+        {
+            after: async (_beforeInfo: void, result: FunctionResult) => {
+                // Ensure that the tx reverted.
+                expect(result.success).to.be.false();
+
+                // Check revert error
+                expect(result.data).to.equal(new StakingRevertErrors.PoolExistenceError(nonExistentPoolId, false));
+            },
+        },
+    );
+}
+
+/**
+ * Returns a FunctionAssertion for `moveStake` which assumes the input amount exceeds the moveable
+ * amount of stake. Checks that the transaction reverts.
+ */
+export function moveStakeInvalidAmountAssertion(
+    deployment: DeploymentManager,
+): FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void> {
+    return new FunctionAssertion<[StakeInfo, StakeInfo, BigNumber], void, void>(
+        deployment.staking.stakingWrapper,
+        'moveStake',
+        {
+            after: async (_beforeInfo: void, result: FunctionResult) => {
+                // Ensure that the tx reverted.
+                expect(result.success).to.be.false();
+
+                // This isn't ideal but unfortunately there are several different revert errors that
+                // can be triggered by trying to move more stake than possible.
+                expect(
+                    result.data instanceof SafeMathRevertErrors.Uint256BinOpError ||
+                        result.data instanceof SafeMathRevertErrors.Uint256DowncastError ||
+                        result.data instanceof StakingRevertErrors.InsufficientBalanceError,
+                ).to.be.true();
+            },
+        },
+    );
 }
 /* tslint:enable:no-unnecessary-type-assertion */

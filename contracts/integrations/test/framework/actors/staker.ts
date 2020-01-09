@@ -6,7 +6,11 @@ import * as _ from 'lodash';
 
 import { AssertionResult } from '../assertions/function_assertion';
 import { assetProxyTransferFailedAssertion } from '../assertions/generic_assertions';
-import { validMoveStakeAssertion } from '../assertions/moveStake';
+import {
+    moveStakeInvalidAmountAssertion,
+    moveStakeNonexistentPoolAssertion,
+    validMoveStakeAssertion,
+} from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { invalidUnstakeAssertion, validUnstakeAssertion } from '../assertions/unstake';
 import {
@@ -54,6 +58,8 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 validUnstake: this._validUnstake(),
                 invalidUnstake: this._invalidUnstake(),
                 validMoveStake: this._validMoveStake(),
+                moveStakeNonexistentPool: this._moveStakeNonexistentPool(),
+                moveStakeInvalidAmount: this._moveStakeInvalidAmount(),
                 validWithdrawDelegatorRewards: this._validWithdrawDelegatorRewards(),
                 invalidWithdrawDelegatorRewards: this._invalidWithdrawDelegatorRewards(),
             };
@@ -143,48 +149,113 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             }
         }
 
+        private _validMoveParams(): [StakeInfo, StakeInfo, BigNumber] {
+            const { stakingPools, currentEpoch } = this.actor.simulationEnvironment!;
+            // Pick a random pool that this staker has delegated to (undefined if no such pools exist)
+            const fromPoolId = Pseudorandom.sample(Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])));
+            // The `from` status must be Undelegated if the staker isn't delegated to any pools
+            // at the moment, or if the chosen pool is unfinalized
+            const fromStatus =
+                fromPoolId === undefined || stakingPools[fromPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
+                    ? StakeStatus.Undelegated
+                    : (Pseudorandom.sample(
+                          [StakeStatus.Undelegated, StakeStatus.Delegated],
+                          [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
+                      ) as StakeStatus);
+            const from = new StakeInfo(fromStatus, fromPoolId);
+
+            // Pick a random pool to move the stake to
+            const toPoolId = Pseudorandom.sample(Object.keys(stakingPools));
+            // The `from` status must be Undelegated if no pools exist in the simulation yet,
+            // or if the chosen pool is unfinalized
+            const toStatus =
+                toPoolId === undefined || stakingPools[toPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
+                    ? StakeStatus.Undelegated
+                    : (Pseudorandom.sample(
+                          [StakeStatus.Undelegated, StakeStatus.Delegated],
+                          [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
+                      ) as StakeStatus);
+            const to = new StakeInfo(toStatus, toPoolId);
+
+            // The next epoch balance of the `from` stake is the amount that can be moved
+            const moveableStake =
+                from.status === StakeStatus.Undelegated
+                    ? this.stake[StakeStatus.Undelegated].nextEpochBalance
+                    : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
+            const amount = Pseudorandom.integer(0, moveableStake);
+
+            return [from, to, amount];
+        }
+
         private async *_validMoveStake(): AsyncIterableIterator<AssertionResult> {
-            const { deployment, stakingPools } = this.actor.simulationEnvironment!;
-            const assertion = validMoveStakeAssertion(deployment, this.actor.simulationEnvironment!, this.stake);
+            const assertion = validMoveStakeAssertion(
+                this.actor.deployment,
+                this.actor.simulationEnvironment!,
+                this.stake,
+            );
 
             while (true) {
-                const { currentEpoch } = this.actor.simulationEnvironment!;
-                // Pick a random pool that this staker has delegated to (undefined if no such pools exist)
-                const fromPoolId = Pseudorandom.sample(
-                    Object.keys(_.omit(this.stake[StakeStatus.Delegated], ['total'])),
-                );
-                // The `from` status must be Undelegated if the staker isn't delegated to any pools
-                // at the moment, or if the chosen pool is unfinalized
-                const fromStatus =
-                    fromPoolId === undefined || stakingPools[fromPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
-                        ? StakeStatus.Undelegated
-                        : (Pseudorandom.sample(
-                              [StakeStatus.Undelegated, StakeStatus.Delegated],
-                              [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
-                          ) as StakeStatus);
-                const from = new StakeInfo(fromStatus, fromPoolId);
-
-                // Pick a random pool to move the stake to
-                const toPoolId = Pseudorandom.sample(Object.keys(stakingPools));
-                // The `from` status must be Undelegated if no pools exist in the simulation yet,
-                // or if the chosen pool is unfinalized
-                const toStatus =
-                    toPoolId === undefined || stakingPools[toPoolId].lastFinalized.isLessThan(currentEpoch.minus(1))
-                        ? StakeStatus.Undelegated
-                        : (Pseudorandom.sample(
-                              [StakeStatus.Undelegated, StakeStatus.Delegated],
-                              [0.2, 0.8], // 20% chance of `Undelegated`, 80% chance of `Delegated`
-                          ) as StakeStatus);
-                const to = new StakeInfo(toStatus, toPoolId);
-
-                // The next epoch balance of the `from` stake is the amount that can be moved
-                const moveableStake =
-                    from.status === StakeStatus.Undelegated
-                        ? this.stake[StakeStatus.Undelegated].nextEpochBalance
-                        : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
-                const amount = Pseudorandom.integer(0, moveableStake);
-
+                const [from, to, amount] = this._validMoveParams();
                 yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
+            }
+        }
+
+        private async *_moveStakeInvalidAmount(): AsyncIterableIterator<AssertionResult | void> {
+            while (true) {
+                const [from, to] = this._validMoveParams();
+                if (from.status === StakeStatus.Undelegated && to.status === StakeStatus.Undelegated) {
+                    yield;
+                } else {
+                    // The next epoch balance of the `from` stake is the amount that can be moved
+                    const moveableStake =
+                        from.status === StakeStatus.Undelegated
+                            ? this.stake[StakeStatus.Undelegated].nextEpochBalance
+                            : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
+                    const amount = Pseudorandom.integer(moveableStake.plus(1), constants.MAX_UINT256);
+                    const assertion = moveStakeInvalidAmountAssertion(this.actor.deployment);
+                    yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
+                }
+            }
+        }
+
+        private async *_moveStakeNonexistentPool(): AsyncIterableIterator<AssertionResult> {
+            const { stakingWrapper } = this.actor.deployment.staking;
+            // Randomly chooses a poolId that hasn't been used yet
+            const unusedPoolId = (lastPoolId: string) =>
+                `0x${Pseudorandom.integer(new BigNumber(lastPoolId).plus(1), constants.MAX_UINT256)
+                    .plus(1)
+                    .toString(16)
+                    .padStart(64, '0')}`;
+
+            while (true) {
+                const [from, to, amount] = this._validMoveParams();
+                const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
+
+                // If there is 0 moveable stake for the sampled `to` pool, we need to mutate the `to`
+                // info, otherwise `moveStake` will just noop
+                if (amount.isZero()) {
+                    from.poolId = unusedPoolId(lastPoolId);
+                    // Status must be delegated and amount must be nonzero to trigger _assertStakingPoolExists
+                    from.status = StakeStatus.Delegated;
+                    const randomAmount = Pseudorandom.integer(1, constants.MAX_UINT256);
+                    const assertion = moveStakeNonexistentPoolAssertion(this.actor.deployment, from.poolId);
+                    yield assertion.executeAsync([from, to, randomAmount], { from: this.actor.address });
+                } else {
+                    // One or both of the `from` and `to` poolId are invalid
+                    const infoToMutate = Pseudorandom.sample([[from], [to], [from, to]]);
+                    let nonExistentPoolId;
+                    for (const info of infoToMutate!) {
+                        info.poolId = unusedPoolId(lastPoolId);
+                        nonExistentPoolId = nonExistentPoolId || info.poolId;
+                        // Status must be delegated and amount must be nonzero to trigger _assertStakingPoolExists
+                        info.status = StakeStatus.Delegated;
+                    }
+                    const assertion = moveStakeNonexistentPoolAssertion(
+                        this.actor.deployment,
+                        nonExistentPoolId as string,
+                    );
+                    yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
+                }
             }
         }
 
