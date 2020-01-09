@@ -1,4 +1,4 @@
-import { ERC20BridgeSource, MarketBuySwapQuote, SwapQuoter } from '@0x/asset-swapper';
+import { MarketBuySwapQuote, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';

@@ -30,17 +30,22 @@ export const asyncData = {
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
         const { providerState, assetMetaDataMap, network } = state;
-        const swapQuoter = providerState.swapQuoter;
+        const swapQuoter = proiderState.swapQuoter;
         try {
             const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
             const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);
             const deduplicatedAssetDatas = _.uniq(assetDatas);
-            const assetsWithNativeOrders = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);
-            const assetsWithBridgeOrders = assetUtils.createAssetsFromAssetDatas(SUPPORTED_TOKEN_ASSET_DATA_WITH_BRIDGE_ORDERS, assetMetaDataMap, network);
-            const assets = _.uniqBy(
-                _.concat(assetsWithNativeOrders, assetsWithBridgeOrders),
-                asset => asset.assetData,
+            const assetsWithNativeOrders = assetUtils.createAssetsFromAssetDatas(
+                deduplicatedAssetDatas,
+                assetMetaDataMap,
+                network,
             );
+            const assetsWithBridgeOrders = assetUtils.createAssetsFromAssetDatas(
+                SUPPORTED_TOKEN_ASSET_DATA_WITH_BRIDGE_ORDERS,
+                assetMetaDataMap,
+                network,
+            );
+            const assets = _.uniqBy(_.concat(assetsWithNativeOrders, assetsWithBridgeOrders), asset => asset.assetData);
             dispatch(actions.setAvailableAssets(assets));
         } catch (e) {
             const errorMessage = 'Could not find any assets';
