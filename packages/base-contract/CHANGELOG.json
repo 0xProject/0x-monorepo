@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Catch empty reverts on live networks.",
-                "pr": "TODO"
+                "pr": 2433
             }
         ]
     },

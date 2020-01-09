@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Add mainnet contract wrapper `callAsync()` revert behavior tests.",
-                "pr": "TODO"
+                "pr": 2433
             }
         ]
     },

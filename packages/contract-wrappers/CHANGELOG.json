@@ -8,7 +8,7 @@
             },
             {
                 "note": "Regenerate wrappers to catch empty reverts on live networks.",
-                "pr": "TODO"
+                "pr": 2433
             }
         ]
     },
