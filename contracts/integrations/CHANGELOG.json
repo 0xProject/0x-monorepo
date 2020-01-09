@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add mainnet contract wrapper `callAsync()` revert behavior tests.",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
