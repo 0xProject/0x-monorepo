@@ -9,6 +9,10 @@
             {
                 "note": "Fuzz tests for `matchOrders` and `matchOrdersWithMaximalFill`.",
                 "pr": 2437
+            },
+            {
+                "note": "Add various negative assertions for fuzz tests",
+                "pr": 2431
             }
         ]
     },
