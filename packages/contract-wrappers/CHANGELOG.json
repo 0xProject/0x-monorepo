@@ -5,6 +5,10 @@
             {
                 "note": "Update all wrappers.",
                 "pr": 2432
+            },
+            {
+                "note": "Regenerate wrappers to catch empty reverts on live networks.",
+                "pr": "TODO"
             }
         ]
     },
