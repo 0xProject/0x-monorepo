@@ -18,32 +18,33 @@
 
 pragma solidity ^0.5.9;
 
+
 // solhint-disable no-empty-blocks
 contract TestContractWrapper {
 
     uint256 constant public VALID_RETURN_VALUE = 0xf984f922a56ea9a20a32a32f0f60f2d216ff0c0a0d16c986a97a7f1897a6613b;
 
-    function throwStringRevert() external returns (uint256 r) {
+    function throwStringRevert() external returns (uint256) {
         revert("ERROR");
     }
 
-    function throwEmptyRevert() external returns (uint256 r) {
+    function throwEmptyRevert() external returns (uint256) {
         revert();
     }
 
-    function throwInvalidOpcode() external returns (uint256 r) {
+    function throwInvalidOpcode() external returns (uint256) {
         assembly {
             invalid()
         }
     }
 
-    function returnForcedEmpty() external returns (uint256 r) {
+    function returnForcedEmpty() external returns (uint256) {
         assembly {
             return(0x60, 0)
         }
     }
 
-    function returnTruncated() external returns (uint256 r) {
+    function returnTruncated() external returns (uint256) {
         uint256 v = VALID_RETURN_VALUE;
         assembly {
             mstore(0x0, v)
@@ -53,7 +54,7 @@ contract TestContractWrapper {
 
     function returnEmpty() external { }
 
-    function returnValid() external returns (uint256 r) {
+    function returnValid() external returns (uint256) {
         return VALID_RETURN_VALUE;
     }
 }
