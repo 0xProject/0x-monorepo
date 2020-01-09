@@ -11,14 +11,7 @@ import 'mocha';
 import { SwapQuote } from '../src';
 import { constants } from '../src/constants';
 import { ExchangeSwapQuoteConsumer } from '../src/quote_consumers/exchange_swap_quote_consumer';
-import {
-    ExchangeMarketBuySmartContractParams,
-    ExchangeMarketSellSmartContractParams,
-    MarketBuySwapQuote,
-    MarketOperation,
-    MarketSellSwapQuote,
-    SignedOrderWithFillableAmounts,
-} from '../src/types';
+import { MarketOperation, SignedOrderWithFillableAmounts } from '../src/types';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -247,40 +240,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI),
                 constants.ZERO_AMOUNT,
             );
-        });
-    });
-
-    describe('#getSmartContractParamsOrThrow', () => {
-        describe('valid swap quote', async () => {
-            // TODO(david) Check for valid MethodAbi
-            it('provide correct and optimized smart contract params for a marketSell SwapQuote', async () => {
-                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
-                    marketSellSwapQuote,
-                    {},
-                );
-                expect(toAddress).to.deep.equal(exchangeContract.address);
-                const { takerAssetFillAmount, signatures, type } = params as ExchangeMarketSellSmartContractParams;
-                expect(type).to.deep.equal(MarketOperation.Sell);
-                expect(takerAssetFillAmount).to.bignumber.equal(
-                    (marketSellSwapQuote as MarketSellSwapQuote).takerAssetFillAmount,
-                );
-                const orderSignatures = marketSellSwapQuote.orders.map(order => order.signature);
-                expect(signatures).to.deep.equal(orderSignatures);
-            });
-            it('provide correct smart contract params for a marketBuy SwapQuote', async () => {
-                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
-                    marketBuySwapQuote,
-                    {},
-                );
-                expect(toAddress).to.deep.equal(exchangeContract.address);
-                const { makerAssetFillAmount, signatures, type } = params as ExchangeMarketBuySmartContractParams;
-                expect(type).to.deep.equal(MarketOperation.Buy);
-                expect(makerAssetFillAmount).to.bignumber.equal(
-                    (marketBuySwapQuote as MarketBuySwapQuote).makerAssetFillAmount,
-                );
-                const orderSignatures = marketSellSwapQuote.orders.map(order => order.signature);
-                expect(signatures).to.deep.equal(orderSignatures);
-            });
         });
     });
 

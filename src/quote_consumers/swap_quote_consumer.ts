@@ -8,8 +8,6 @@ import {
     CalldataInfo,
     ExtensionContractType,
     GetExtensionContractTypeOpts,
-    SmartContractParams,
-    SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
@@ -22,7 +20,7 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
-export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractParams> {
+export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
     public readonly chainId: number;
 
@@ -64,20 +62,6 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     }
 
     /**
-     * Given a SwapQuote, returns 'SmartContractParamsInfo' for a 0x extension or exchange call. See type definition of SmartContractParamsInfo for more information.
-     * @param quote An object that conforms to SwapQuote. See type definition for more information.
-     * @param opts  Options for getting SmartContractParams. See type definition for more information.
-     */
-    public async getSmartContractParamsOrThrowAsync(
-        quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts> = {},
-    ): Promise<SmartContractParamsInfo<SmartContractParams>> {
-        assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(opts);
-        return consumer.getSmartContractParamsOrThrowAsync(quote, opts);
-    }
-
-    /**
      * Given a SwapQuote and desired rate (in takerAsset), attempt to execute the swap with 0x extension or exchange contract.
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting CalldataInfo. See type definition for more information.
@@ -108,9 +92,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         );
     }
 
-    private async _getConsumerForSwapQuoteAsync(
-        opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
+    private async _getConsumerForSwapQuoteAsync(opts: Partial<SwapQuoteGetOutputOpts>): Promise<SwapQuoteConsumerBase> {
         if (opts.useExtensionContract === ExtensionContractType.Forwarder) {
             return this._forwarderConsumer;
         }

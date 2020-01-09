@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "Upgrade to new `Forwarder` contract with flat affiliate fees.",
+                "pr": 2432
+            },
+            {
+                "note": "Remove `getSmartContractParamsOrThrow()` from `SwapQuoteConsumer`s.",
+                "pr": 2432
+            }
+        ]
+    },
+    {
         "version": "3.0.3",
         "changes": [
             {

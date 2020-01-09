@@ -1,6 +1,5 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { MethodAbi } from 'ethereum-types';
 
 import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
 
@@ -47,56 +46,13 @@ export interface SignedOrderWithFillableAmounts extends SignedOrder {
 /**
  * Represents the metadata to call a smart contract with calldata.
  * calldataHexString: The hexstring of the calldata.
- * methodAbi: The ABI of the smart contract method to call.
  * toAddress: The contract address to call.
  * ethAmount: The eth amount in wei to send with the smart contract call.
  */
 export interface CalldataInfo {
     calldataHexString: string;
-    methodAbi: MethodAbi;
     toAddress: string;
     ethAmount: BigNumber;
-}
-
-/**
- * Represents the metadata to call a smart contract with parameters.
- * params: The metadata object containing all the input parameters of a smart contract call.
- * toAddress: The contract address to call.
- * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
- * methodAbi: The ABI of the smart contract method to call with params.
- */
-export interface SmartContractParamsInfo<T> {
-    params: T;
-    toAddress: string;
-    ethAmount: BigNumber;
-    methodAbi: MethodAbi;
-}
-
-/**
- * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
- * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
- */
-export interface SmartContractParamsBase {
-    orders: SignedOrder[];
-    signatures: string[];
-}
-
-/**
- * makerAssetFillAmount: The amount of makerAsset to swap for.
- * type: String specifiying which market operation will be performed with the provided parameters. (In this case a market buy operation)
- */
-export interface ExchangeMarketBuySmartContractParams extends SmartContractParamsBase {
-    makerAssetFillAmount: BigNumber;
-    type: MarketOperation.Buy;
-}
-
-/**
- * takerAssetFillAmount: The amount of takerAsset swapped for makerAsset.
- * type: String specifiying which market operation will be performed with the provided parameters. (In this case a market sell operation)
- */
-export interface ExchangeMarketSellSmartContractParams extends SmartContractParamsBase {
-    takerAssetFillAmount: BigNumber;
-    type: MarketOperation.Sell;
 }
 
 /**
@@ -108,11 +64,6 @@ export enum ExtensionContractType {
 }
 
 /**
- * Represents all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
- */
-export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
-
-/**
  * feePercentage: Optional affiliate fee percentage used to calculate the eth amount paid to fee recipient.
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
@@ -121,41 +72,13 @@ export interface ForwarderSmartContractParamsBase {
     feeRecipient: string;
 }
 
-export interface ForwarderMarketBuySmartContractParams
-    extends ExchangeMarketBuySmartContractParams,
-        ForwarderSmartContractParamsBase {}
-
-// Temporary fix until typescript is upgraded to ^3.5
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-export interface ForwarderMarketSellSmartContractParams
-    extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
-        ForwarderSmartContractParamsBase {}
-
-/**
- * Represents all the parameters to interface with 0x forwarder extension contract marketSell and marketBuy functions.
- */
-export type ForwarderSmartContractParams =
-    | ForwarderMarketBuySmartContractParams
-    | ForwarderMarketSellSmartContractParams;
-
-/**
- * Object containing all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
- */
-export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartContractParams;
-
 /**
  * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
  * getCalldataOrThrow: Get CalldataInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
- * getSmartContractParamsOrThrow: Get SmartContractParamsInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
-export interface SwapQuoteConsumerBase<T> {
+export interface SwapQuoteConsumerBase {
     getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
-    getSmartContractParamsOrThrowAsync(
-        quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SmartContractParamsInfo<T>>;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
