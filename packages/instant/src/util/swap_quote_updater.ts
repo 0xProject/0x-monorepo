@@ -1,4 +1,4 @@
-import { ERC20BridgeSource, MarketBuySwapQuote, SwapQuoter } from '@0x/asset-swapper';
+import { MarketBuySwapQuote, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -51,7 +51,7 @@ export const swapQuoteUpdater = {
                     slippagePercentage,
                     gasPrice: gasInfo.gasPriceInWei,
                     // Only use native orders
-                    excludedSources: [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber, ERC20BridgeSource.Uniswap],
+                    // excludedSources: [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber, ERC20BridgeSource.Uniswap],
                 },
             );
         } catch (error) {

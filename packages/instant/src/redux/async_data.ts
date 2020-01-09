@@ -2,7 +2,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
-import { BIG_NUMBER_ZERO } from '../constants';
+import { BIG_NUMBER_ZERO, SUPPORTED_TOKEN_ASSET_DATA_WITH_BRIDGE_ORDERS } from '../constants';
 import { AccountState, BaseCurrency, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
@@ -35,7 +35,17 @@ export const asyncData = {
             const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
             const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);
             const deduplicatedAssetDatas = _.uniq(assetDatas);
-            const assets = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);
+            const assetsWithNativeOrders = assetUtils.createAssetsFromAssetDatas(
+                deduplicatedAssetDatas,
+                assetMetaDataMap,
+                network,
+            );
+            const assetsWithBridgeOrders = assetUtils.createAssetsFromAssetDatas(
+                SUPPORTED_TOKEN_ASSET_DATA_WITH_BRIDGE_ORDERS,
+                assetMetaDataMap,
+                network,
+            );
+            const assets = _.uniqBy(_.concat(assetsWithNativeOrders, assetsWithBridgeOrders), asset => asset.assetData);
             dispatch(actions.setAvailableAssets(assets));
         } catch (e) {
             const errorMessage = 'Could not find any assets';
