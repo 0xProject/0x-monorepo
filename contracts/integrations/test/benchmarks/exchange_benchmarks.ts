@@ -1,7 +1,7 @@
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { blockchainTests, constants, OrderFactory } from '@0x/contracts-test-utils';
+import { blockchainTests, constants } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { BigNumber, StringRevertError } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 
 import { Maker } from '../framework/actors/maker';
 import { Taker } from '../framework/actors/taker';

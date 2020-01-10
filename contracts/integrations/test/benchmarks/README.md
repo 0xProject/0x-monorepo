@@ -1,6 +1,7 @@
 # 0x Contract Benchmarks
 
 ## Setup
+
 Benchmarking the currently deployed version of the contracts (0x v3) requires
 replacing "instanbul" with "constantinople" in all of the "compiler.json" files
 in the `contracts/` directory of the monorepo. Additionally, this change must
@@ -14,6 +15,7 @@ orders with higher block gas limits.
 ### Multi-Asset Proxy Order Maximum Size
 
 #### NFT Use Case
+
 The NFT use case is characterized by a maker asset data that is multi asset data with
 erc721 asset data nested and maker asset data that is erc20 asset data. The maximum
 number of nested erc721 asset data that can be included with a 9.6 million block gas
