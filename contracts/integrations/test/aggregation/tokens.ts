@@ -74,4 +74,9 @@ export const tokens: { [symbol: string]: { address: string; decimals: number; pr
         decimals: 18,
         price: 1.8,
     },
+    sETH: {
+        address: '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
+        decimals: 18,
+        price: 136,
+    },
 };

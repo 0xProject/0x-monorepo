@@ -56,6 +56,7 @@
         "@0x/contract-wrappers": "^13.3.0",
         "@0x/contracts-coordinator": "^3.0.3",
         "@0x/contracts-dev-utils": "^1.0.3",
+        "@0x/contracts-erc20-bridge-sampler": "^3.0.1",
         "@0x/contracts-exchange-forwarder": "^4.0.3",
         "@0x/contracts-exchange-libs": "^4.0.3",
         "@0x/contracts-gen": "^2.0.3",
