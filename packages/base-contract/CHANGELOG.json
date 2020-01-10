@@ -3,7 +3,7 @@
         "version": "6.1.0",
         "changes": [
             {
-                "note": "Catch empty reverts on live networks.",
+                "note": "Support catching empty reverts on live networks.",
                 "pr": 2433
             }
         ]
