@@ -20,6 +20,7 @@ export let providerConfigs: Web3Config = {
     shouldUseInProcessGanache: true,
     shouldAllowUnlimitedContractSize: true,
     hardfork: 'istanbul',
+    unlocked_accounts: ['0x6cc5f688a315f3dc28a7781717a9a798a59fda7b'],
 };
 
 export const provider: Web3ProviderEngine = web3Factory.getRpcProvider(providerConfigs);
