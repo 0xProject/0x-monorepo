@@ -254,6 +254,7 @@ contract LibAssetData is
             // Query allowance
             (bool success, bytes memory returnData) = tokenAddress.staticcall(allowanceData);
             allowance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+
         } else if (assetProxyId == IAssetData(address(0)).ERC721Token.selector) {
             // Get ERC721 token address and id
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
@@ -279,6 +280,7 @@ contract LibAssetData is
                 // Allowance is 2^256 - 1 if `isApprovedForAll` returned true
                 allowance = _MAX_UINT256;
             }
+
         } else if (assetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
             // Get ERC1155 token address
             (, address tokenAddress, , , ) = decodeERC1155AssetData(assetData);
@@ -293,9 +295,11 @@ contract LibAssetData is
             // Query allowance
             (bool success, bytes memory returnData) = tokenAddress.staticcall(isApprovedForAllData);
             allowance = success && returnData.length == 32 && returnData.readUint256(0) == 1 ? _MAX_UINT256 : 0;
+
         } else if (assetProxyId == IAssetData(address(0)).StaticCall.selector) {
             // The StaticCallProxy does not require any approvals
             allowance = _MAX_UINT256;
+
         } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
             // Get address of ERC20 token and bridge contract
             (, address tokenAddress, address bridgeAddress,) = decodeERC20BridgeAssetData(assetData);
@@ -307,7 +311,8 @@ contract LibAssetData is
                 );
                 (bool success, bytes memory returnData) = _getChaiAddress().staticcall(allowanceData);
                 uint256 chaiAllowance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
-                allowance = _convertChaiToDaiAmount(chaiAllowance);
+                // Dai allowance is unlimited if Chai allowance is unlimited
+                allowance = chaiAllowance == _MAX_UINT256 ? _MAX_UINT256 : _convertChaiToDaiAmount(chaiAllowance);
             }
             // Allowance will be 0 if bridge is not supported
         }
@@ -662,6 +667,8 @@ contract LibAssetData is
         );
     }
 
+    /// @dev Reverts if assetData is not of a valid format for its given proxy id.
+    /// @param assetData AssetProxy compliant asset data.
     function revertIfInvalidAssetData(bytes memory assetData)
         public
         pure

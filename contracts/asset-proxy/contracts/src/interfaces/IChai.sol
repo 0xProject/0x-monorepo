@@ -18,6 +18,9 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+
+
 contract PotLike {
     function chi() external returns (uint256);
     function rho() external returns (uint256);
@@ -27,8 +30,9 @@ contract PotLike {
 }
 
 // The actual Chai contract can be found here: https://github.com/dapphub/chai
-contract IChai {
-
+contract IChai is
+    IERC20Token
+{
     /// @dev Withdraws Dai owned by `src`
     /// @param src Address that owns Dai.
     /// @param wad Amount of Dai to withdraw.
@@ -49,4 +53,13 @@ contract IChai {
     function pot()
         external
         returns (PotLike);
+
+    /// @dev Deposits Dai in exchange for Chai
+    /// @param dst Address to receive Chai.
+    /// @param wad Amount of Dai to deposit.
+    function join(
+        address dst,
+        uint256 wad
+    )
+        external;
 }
