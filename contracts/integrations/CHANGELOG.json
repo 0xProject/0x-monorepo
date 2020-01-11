@@ -5,6 +5,10 @@
             {
                 "note": "Add mainnet contract wrapper `callAsync()` revert behavior tests.",
                 "pr": 2433
+            },
+            {
+                "note": "Fuzz tests for `matchOrders` and `matchOrdersWithMaximalFill`.",
+                "pr": 2437
             }
         ]
     },
