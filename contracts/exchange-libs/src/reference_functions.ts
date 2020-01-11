@@ -1,5 +1,5 @@
 import { ReferenceFunctions } from '@0x/contracts-utils';
-import { FillResults, Order } from '@0x/types';
+import { FillResults, MatchedFillResults, Order } from '@0x/types';
 import { BigNumber, LibMathRevertErrors } from '@0x/utils';
 
 const { safeAdd, safeSub, safeMul, safeDiv } = ReferenceFunctions;
@@ -111,6 +111,120 @@ export function calculateFillResults(
         makerFeePaid,
         takerFeePaid,
         protocolFeePaid: safeMul(protocolFeeMultiplier, gasPrice),
+    };
+}
+
+/**
+ * Calculates amounts filled and fees paid by maker and taker.
+ */
+export function calculateMatchResults(
+    leftOrder: Order,
+    rightOrder: Order,
+    protocolFeeMultiplier: BigNumber,
+    gasPrice: BigNumber,
+    withMaximalFill: boolean = false,
+): MatchedFillResults {
+    // Initialize empty fill results.
+    const leftFillResults: FillResults = {
+        makerAssetFilledAmount: new BigNumber(0),
+        takerAssetFilledAmount: new BigNumber(0),
+        makerFeePaid: new BigNumber(0),
+        takerFeePaid: new BigNumber(0),
+        protocolFeePaid: new BigNumber(0),
+    };
+    const rightFillResults: FillResults = {
+        makerAssetFilledAmount: new BigNumber(0),
+        takerAssetFilledAmount: new BigNumber(0),
+        makerFeePaid: new BigNumber(0),
+        takerFeePaid: new BigNumber(0),
+        protocolFeePaid: new BigNumber(0),
+    };
+    let profitInLeftMakerAsset = new BigNumber(0);
+    let profitInRightMakerAsset = new BigNumber(0);
+
+    // Assert matchable
+    if (
+        leftOrder.makerAssetAmount
+            .times(rightOrder.makerAssetAmount)
+            .lt(leftOrder.takerAssetAmount.times(rightOrder.takerAssetAmount))
+    ) {
+        throw new Error(
+            `Orders Cannot Be Matched.\nLeft Order: ${JSON.stringify(leftOrder, null, 4)}\Right Order: ${JSON.stringify(
+                rightOrder,
+                null,
+                4,
+            )}`,
+        );
+    }
+
+    // Asset Transfer Amounts
+    if (leftOrder.takerAssetAmount.gt(rightOrder.makerAssetAmount)) {
+        leftFillResults.makerAssetFilledAmount = leftOrder.makerAssetAmount
+            .multipliedBy(rightOrder.makerAssetAmount)
+            .dividedToIntegerBy(leftOrder.takerAssetAmount);
+        leftFillResults.takerAssetFilledAmount = rightOrder.makerAssetAmount;
+        rightFillResults.makerAssetFilledAmount = rightOrder.makerAssetAmount;
+        rightFillResults.takerAssetFilledAmount = rightOrder.takerAssetAmount;
+    } else if (withMaximalFill && leftOrder.makerAssetAmount.lt(rightOrder.takerAssetAmount)) {
+        leftFillResults.makerAssetFilledAmount = leftOrder.makerAssetAmount;
+        leftFillResults.takerAssetFilledAmount = leftOrder.takerAssetAmount;
+        rightFillResults.makerAssetFilledAmount = safeGetPartialAmountFloor(
+            rightOrder.makerAssetAmount,
+            rightOrder.takerAssetAmount,
+            leftOrder.makerAssetAmount,
+        );
+        rightFillResults.takerAssetFilledAmount = leftOrder.makerAssetAmount;
+    } else if (!withMaximalFill && leftOrder.takerAssetAmount.lt(rightOrder.makerAssetAmount)) {
+        leftFillResults.makerAssetFilledAmount = leftOrder.makerAssetAmount;
+        leftFillResults.takerAssetFilledAmount = leftOrder.takerAssetAmount;
+        rightFillResults.makerAssetFilledAmount = leftOrder.takerAssetAmount;
+        rightFillResults.takerAssetFilledAmount = safeGetPartialAmountCeil(
+            rightOrder.takerAssetAmount,
+            rightOrder.makerAssetAmount,
+            leftOrder.takerAssetAmount,
+        );
+    } else {
+        leftFillResults.makerAssetFilledAmount = leftOrder.makerAssetAmount;
+        leftFillResults.takerAssetFilledAmount = leftOrder.takerAssetAmount;
+        rightFillResults.makerAssetFilledAmount = rightOrder.makerAssetAmount;
+        rightFillResults.takerAssetFilledAmount = rightOrder.takerAssetAmount;
+    }
+
+    // Profit
+    profitInLeftMakerAsset = leftFillResults.makerAssetFilledAmount.minus(rightFillResults.makerAssetFilledAmount);
+    profitInRightMakerAsset = rightFillResults.makerAssetFilledAmount.minus(leftFillResults.makerAssetFilledAmount);
+
+    // Fees
+    leftFillResults.makerFeePaid = safeGetPartialAmountFloor(
+        leftFillResults.makerAssetFilledAmount,
+        leftOrder.makerAssetAmount,
+        leftOrder.makerFee,
+    );
+    leftFillResults.takerFeePaid = safeGetPartialAmountFloor(
+        leftFillResults.takerAssetFilledAmount,
+        leftOrder.takerAssetAmount,
+        leftOrder.takerFee,
+    );
+    rightFillResults.makerFeePaid = safeGetPartialAmountFloor(
+        rightFillResults.makerAssetFilledAmount,
+        rightOrder.makerAssetAmount,
+        rightOrder.makerFee,
+    );
+    rightFillResults.takerFeePaid = safeGetPartialAmountFloor(
+        rightFillResults.takerAssetFilledAmount,
+        rightOrder.takerAssetAmount,
+        rightOrder.takerFee,
+    );
+
+    // Protocol Fee
+    leftFillResults.protocolFeePaid = safeMul(protocolFeeMultiplier, gasPrice);
+    rightFillResults.protocolFeePaid = safeMul(protocolFeeMultiplier, gasPrice);
+
+    return {
+        left: leftFillResults,
+        right: rightFillResults,
+        profitInLeftMakerAsset,
+        profitInRightMakerAsset,
     };
 }
 
