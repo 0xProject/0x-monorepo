@@ -113,7 +113,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         assetProxyArtifacts,
     );
 
-    await ChaiBridgeContract.deployFrom0xArtifactAsync(
+    const chaiBridge = await ChaiBridgeContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.ChaiBridge,
         provider,
         txDefaults,
@@ -251,6 +251,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         txDefaults,
         devUtilsArtifacts,
         exchange.address,
+        chaiBridge.address,
     );
 
     await CoordinatorContract.deployFrom0xArtifactAsync(
