@@ -409,9 +409,20 @@ blockchainTests.resets('LibAssetData', env => {
                     ],
                 )
                 .callAsync();
-            expect(await libAssetData.getBalance(tokenOwnerAddress, assetData).callAsync()).to.bignumber.equal(
-                Math.min(erc20TokenTotalSupply.toNumber(), numberOfERC721Tokens),
-            );
+            expect(await libAssetData.getBalance(tokenOwnerAddress, assetData).callAsync()).to.bignumber.equal(1);
+        });
+
+        it('should query multi-asset batch balance by asset data, skipping over a nested asset if its amount == 0', async () => {
+            const assetData = await libAssetData
+                .encodeMultiAssetData(
+                    [constants.ZERO_AMOUNT, new BigNumber(1)],
+                    [
+                        await libAssetData.encodeERC20AssetData(erc20Token.address).callAsync(),
+                        await libAssetData.encodeERC721AssetData(erc721Token.address, firstERC721TokenId).callAsync(),
+                    ],
+                )
+                .callAsync();
+            expect(await libAssetData.getBalance(tokenOwnerAddress, assetData).callAsync()).to.bignumber.equal(1);
         });
 
         it('should return a balance of 0 if the assetData does not correspond to an AssetProxy contract', async () => {
@@ -505,6 +516,29 @@ blockchainTests.resets('LibAssetData', env => {
             const assetData = await libAssetData
                 .encodeMultiAssetData(
                     [new BigNumber(1), new BigNumber(1)],
+                    [
+                        await libAssetData.encodeERC20AssetData(erc20Token.address).callAsync(),
+                        await libAssetData.encodeERC721AssetData(erc721Token.address, firstERC721TokenId).callAsync(),
+                    ],
+                )
+                .callAsync();
+            expect(
+                await libAssetData.getAssetProxyAllowance(tokenOwnerAddress, assetData).callAsync(),
+            ).to.bignumber.equal(1);
+            return;
+        });
+
+        it('should query multi-asset allowances by asset data, skipping over a nested asset if its amount == 0', async () => {
+            const allowance = new BigNumber(1);
+            await erc20Token.approve(erc20Proxy.address, allowance).awaitTransactionSuccessAsync({
+                from: tokenOwnerAddress,
+            });
+            await erc721Token.approve(erc721Proxy.address, firstERC721TokenId).awaitTransactionSuccessAsync({
+                from: tokenOwnerAddress,
+            });
+            const assetData = await libAssetData
+                .encodeMultiAssetData(
+                    [constants.ZERO_AMOUNT, new BigNumber(1)],
                     [
                         await libAssetData.encodeERC20AssetData(erc20Token.address).callAsync(),
                         await libAssetData.encodeERC721AssetData(erc721Token.address, firstERC721TokenId).callAsync(),
