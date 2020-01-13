@@ -29,6 +29,7 @@ contract PotLike {
     function exit(uint256) external;
 }
 
+
 // The actual Chai contract can be found here: https://github.com/dapphub/chai
 contract IChai is
     IERC20Token
