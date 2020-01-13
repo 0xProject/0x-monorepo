@@ -50,7 +50,7 @@ export class DexOrderSampler {
         return [fillableAmount, quotes];
     }
 
-    public async getMultipleFillableAmountsAndSampleMarketBuyAsync(
+    public async getBatchFillableAmountsAndSampleMarketBuyAsync(
         nativeOrders: SignedOrder[][],
         sampleAmounts: BigNumber[],
         sources: ERC20BridgeSource[],
@@ -64,11 +64,10 @@ export class DexOrderSampler {
                 sampleAmounts,
             )
             .callAsync();
-        const multipleSamples: Array<[BigNumber[], DexSample[][]]> = [];
-        fillableAmountsAndSamples.map((sampleResult, i) => {
-            const rawSamples = sampleResult.makerTokenAmountsBySource;
-            const fillableAmount = sampleResult.orderFillableTakerAssetAmounts;
-            const quotes = rawSamples.map((rawDexSamples, sourceIdx) => {
+        const batchFillableAmountsAndQuotes: Array<[BigNumber[], DexSample[][]]> = [];
+        fillableAmountsAndSamples.forEach((sampleResult, i) => {
+            const { makerTokenAmountsBySource, orderFillableTakerAssetAmounts } = sampleResult;
+            const quotes = makerTokenAmountsBySource.map((rawDexSamples, sourceIdx) => {
                 const source = sources[sourceIdx];
                 return rawDexSamples.map(sample => ({
                     source,
@@ -76,9 +75,9 @@ export class DexOrderSampler {
                     output: sample,
                 }));
             });
-            multipleSamples.push([fillableAmount, quotes]);
+            batchFillableAmountsAndQuotes.push([orderFillableTakerAssetAmounts, quotes]);
         });
-        return multipleSamples;
+        return batchFillableAmountsAndQuotes;
     }
 
     public async getFillableAmountsAndSampleMarketSellAsync(
