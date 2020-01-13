@@ -171,10 +171,16 @@ blockchainTests.resets('OrderValidationUtils/OrderTransferSimulatorUtils', env =
         });
         it('should return a fillableTakerAssetAmount of 0 when balances/allowances of one asset within a multiAssetData are insufficient (ERC721)', async () => {
             const [tokenID] = await taker.configureERC721TokenAsync(deployment.tokens.erc721[0]);
-            const takerOwnedErc721AssetData = assetDataUtils.encodeERC721AssetData(deployment.tokens.erc721[0].address, tokenID);
+            const takerOwnedErc721AssetData = assetDataUtils.encodeERC721AssetData(
+                deployment.tokens.erc721[0].address,
+                tokenID,
+            );
 
             const multiAssetData = await devUtils
-                .encodeMultiAssetData([new BigNumber(1), new BigNumber(1)], [takerOwnedErc721AssetData, erc721AssetData])
+                .encodeMultiAssetData(
+                    [new BigNumber(1), new BigNumber(1)],
+                    [takerOwnedErc721AssetData, erc721AssetData],
+                )
                 .callAsync();
             signedOrder = await maker.signOrderAsync({ makerAssetData: multiAssetData });
             const [, fillableTakerAssetAmount] = await devUtils
