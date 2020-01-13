@@ -84,6 +84,26 @@ export class Orderbook {
             o => o.order.makerAssetData === makerAssetData && o.order.takerAssetData === takerAssetData,
         );
     }
+    public async getBatchOrdersAsync(makerAssetDatas: string[], takerAssetDatas: string[]): Promise<APIOrder[][]> {
+        for (const [mi, makerAssetData] of makerAssetDatas.entries()) {
+            for (const [ti, takerAssetData] of makerAssetDatas.entries()) {
+                assert.isString(`makerAssetDatas[${mi}]`, makerAssetData);
+                assert.isString(`takerAssetDatas[${ti}]`, takerAssetData);
+                const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
+                if (!(await this._orderStore.hasAsync(assetPairKey))) {
+                    await this._orderProvider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
+                }
+            }
+        }
+        const orderSets = await this._orderStore.getBatchOrderSetsForAssetsAsync(makerAssetDatas, takerAssetDatas);
+        return orderSets.map(orderSet =>
+            Array.from(orderSet.values()).filter(
+                o =>
+                    makerAssetDatas.includes(o.order.makerAssetData) &&
+                    takerAssetDatas.includes(o.order.takerAssetData),
+            ),
+        );
+    }
     /**
      * Returns all of the Available Asset Pairs for the provided Order Provider.
      */

@@ -63,86 +63,57 @@ export class SwapQuoteCalculator {
         )) as MarketBuySwapQuote;
     }
 
-    public async calculateMultipleMarketBuySwapQuoteAsync(
-        prunedOrders: SignedOrder[][],
-        takerAssetFillAmount: BigNumber[],
+    public async calculateBatchMarketBuySwapQuoteAsync(
+        batchPrunedOrders: SignedOrder[][],
+        takerAssetFillAmounts: BigNumber[],
         slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<Array<MarketBuySwapQuote | undefined>> {
-        return (await this._calculateMultipleBuySwapQuoteAsync(
-            prunedOrders,
-            takerAssetFillAmount,
+        return (await this._calculateBatchBuySwapQuoteAsync(
+            batchPrunedOrders,
+            takerAssetFillAmounts,
             slippagePercentage,
             gasPrice,
             MarketOperation.Buy,
             opts,
         )) as Array<MarketBuySwapQuote | undefined>;
     }
-
-    private async _calculateMultipleBuySwapQuoteAsync(
-        prunedOrders: SignedOrder[][],
+    private async _calculateBatchBuySwapQuoteAsync(
+        batchPrunedOrders: SignedOrder[][],
         assetFillAmounts: BigNumber[],
         slippagePercentage: number,
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
-    ): Promise<Array<MarketBuySwapQuote | undefined>> {
+    ): Promise<Array<SwapQuote | undefined>> {
         const assetFillAmountsWithSlippage = assetFillAmounts.map(a =>
             a.plus(a.multipliedBy(slippagePercentage).integerValue()),
         );
-        const resultMultipleOrders = await this._marketOperationUtils.getMultipleMarketBuyOrdersAsync(
-            prunedOrders,
+        const batchSignedOrders = await this._marketOperationUtils.getBatchMarketBuyOrdersAsync(
+            batchPrunedOrders,
             assetFillAmountsWithSlippage,
             opts,
         );
-        const createSwapQuote = async (
-            makerAssetData: string,
-            takerAssetData: string,
-            resultOrders: SignedOrderWithFillableAmounts[],
-            assetFillAmount: BigNumber,
-        ) => {
-            const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
-                createBestCaseOrders(resultOrders, operation, opts.bridgeSlippage),
-                assetFillAmount,
-                gasPrice,
-                operation,
-            );
-            // in order to calculate the maxRate, reverse the ordersAndFillableAmounts
-            // such that they are sorted from worst rate to best rate
-            const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
-                _.reverse(resultOrders.slice()),
-                assetFillAmount,
-                gasPrice,
-                operation,
-            );
-
-            const quoteBase = {
-                takerAssetData,
-                makerAssetData,
-                orders: resultOrders,
-                bestCaseQuoteInfo,
-                worstCaseQuoteInfo,
-                gasPrice,
-                makerAssetFillAmount: assetFillAmount,
-                type: MarketOperation.Buy,
-            };
-            return quoteBase;
-        };
-        const swapQuotes: Array<MarketBuySwapQuote | undefined> = [];
-        for (let i = 0; i < resultMultipleOrders.length; i++) {
-            // assetData information for the result
-            const takerAssetData = prunedOrders[i][0].takerAssetData;
-            const makerAssetData = prunedOrders[i][0].makerAssetData;
-            const resultOrders = resultMultipleOrders[i];
-            if (resultOrders) {
-                const quote = await createSwapQuote(makerAssetData, takerAssetData, resultOrders, assetFillAmounts[i]);
-                swapQuotes.push(quote as MarketBuySwapQuote);
-            } else {
-                swapQuotes.push(undefined);
-            }
-        }
-        return swapQuotes;
+        const batchSwapQuotes = await Promise.all(
+            batchSignedOrders.map(async (orders, i) => {
+                if (orders) {
+                    const { makerAssetData, takerAssetData } = batchPrunedOrders[i][0];
+                    return this._createSwapQuoteAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        orders,
+                        operation,
+                        assetFillAmounts[i],
+                        gasPrice,
+                        opts,
+                    );
+                } else {
+                    return undefined;
+                }
+            }),
+        );
+        return batchSwapQuotes;
     }
     private async _calculateSwapQuoteAsync(
         prunedOrders: SignedOrder[],
@@ -172,9 +143,26 @@ export class SwapQuoteCalculator {
         }
 
         // assetData information for the result
-        const takerAssetData = prunedOrders[0].takerAssetData;
-        const makerAssetData = prunedOrders[0].makerAssetData;
-
+        const { makerAssetData, takerAssetData } = prunedOrders[0];
+        return this._createSwapQuoteAsync(
+            makerAssetData,
+            takerAssetData,
+            resultOrders,
+            operation,
+            assetFillAmount,
+            gasPrice,
+            opts,
+        );
+    }
+    private async _createSwapQuoteAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+        resultOrders: SignedOrderWithFillableAmounts[],
+        operation: MarketOperation,
+        assetFillAmount: BigNumber,
+        gasPrice: BigNumber,
+        opts: CalculateSwapQuoteOpts,
+    ): Promise<SwapQuote> {
         const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             createBestCaseOrders(resultOrders, operation, opts.bridgeSlippage),
             assetFillAmount,

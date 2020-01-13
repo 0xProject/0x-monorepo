@@ -150,12 +150,20 @@ export class MarketOperationUtils {
         return signedOrderWithFillableAmounts;
     }
 
-    public async getMultipleMarketBuyOrdersAsync(
-        nativeOrders: SignedOrder[][],
-        makerAmount: BigNumber[],
+    /**
+     * gets the orders required for a batch of market buy operations by (potentially) merging native orders with
+     * generated bridge orders.
+     * @param batchNativeOrders Batch of Native orders.
+     * @param makerAmounts Array amount of maker asset to buy for each batch.
+     * @param opts Options object.
+     * @return orders.
+     */
+    public async getBatchMarketBuyOrdersAsync(
+        batchNativeOrders: SignedOrder[][],
+        makerAmounts: BigNumber[],
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<Array<SignedOrderWithFillableAmounts[] | undefined>> {
-        if (nativeOrders.length === 0) {
+        if (batchNativeOrders.length === 0) {
             throw new Error(AggregationError.EmptyOrders);
         }
         const _opts = {
@@ -163,13 +171,19 @@ export class MarketOperationUtils {
             ...opts,
         };
 
-        const multipleSampleResults = await this._dexSampler.getMultipleFillableAmountsAndSampleMarketBuyAsync(
-            nativeOrders,
-            makerAmount,
+        const batchSampleResults = await this._dexSampler.getBatchFillableAmountsAndSampleMarketBuyAsync(
+            batchNativeOrders,
+            makerAmounts,
             difference(BUY_SOURCES, _opts.excludedSources),
         );
-        return multipleSampleResults.map((r, i) =>
-            this._createBuyOrdersPathFromSamplerResultIfExists(nativeOrders[i], makerAmount[i], r[0], r[1], _opts),
+        return batchSampleResults.map(([fillableAmounts, dexQuotes], i) =>
+            this._createBuyOrdersPathFromSamplerResultIfExists(
+                batchNativeOrders[i],
+                makerAmounts[i],
+                fillableAmounts,
+                dexQuotes,
+                _opts,
+            ),
         );
     }
 

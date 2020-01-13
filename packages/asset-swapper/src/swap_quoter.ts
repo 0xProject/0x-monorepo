@@ -227,8 +227,8 @@ export class SwapQuoter {
         )) as MarketBuySwapQuote;
     }
 
-    public async getMultipleMarketBuySwapQuoteForAssetDataAsync(
-        makerAssetData: string[],
+    public async getBatchMarketBuySwapQuoteForAssetDataAsync(
+        makerAssetDatas: string[],
         takerAssetData: string,
         makerAssetBuyAmount: BigNumber[],
         options: Partial<SwapQuoteRequestOpts> = {},
@@ -247,26 +247,30 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
 
-        const orders = await Promise.all(
-            makerAssetData.map(async m => {
-                // get the relevant orders for the makerAsset
-                let prunedOrders = await this._getSignedOrdersAsync(m, takerAssetData);
-                // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
-                if (prunedOrders.length === 0) {
-                    prunedOrders = [
-                        dummyOrderUtils.createDummyOrderForSampler(
-                            m,
-                            takerAssetData,
-                            this._contractAddresses.uniswapBridge,
-                        ),
-                    ];
-                }
-                return prunedOrders;
-            }),
-        );
+        const apiOrders = await this.orderbook.getBatchOrdersAsync(makerAssetDatas, [takerAssetData]);
+        const allOrders = apiOrders.map(orders => orders.map(o => o.order));
+        const allPrunedOrders = allOrders.map((orders, i) => {
+            if (orders.length === 0) {
+                return [
+                    dummyOrderUtils.createDummyOrderForSampler(
+                        makerAssetDatas[i],
+                        takerAssetData,
+                        this._contractAddresses.uniswapBridge,
+                    ),
+                ];
+            } else {
+                return sortingUtils.sortOrders(
+                    orderPrunerUtils.pruneForUsableSignedOrders(
+                        orders,
+                        this.permittedOrderFeeTypes,
+                        this.expiryBufferMs,
+                    ),
+                );
+            }
+        });
 
-        const swapQuotes = await this._swapQuoteCalculator.calculateMultipleMarketBuySwapQuoteAsync(
-            orders,
+        const swapQuotes = await this._swapQuoteCalculator.calculateBatchMarketBuySwapQuoteAsync(
+            allPrunedOrders,
             makerAssetBuyAmount,
             slippagePercentage,
             gasPrice,

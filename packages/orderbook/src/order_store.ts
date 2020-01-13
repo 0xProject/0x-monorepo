@@ -25,6 +25,19 @@ export class OrderStore {
         }
         return orderSet;
     }
+    public async getBatchOrderSetsForAssetsAsync(
+        makerAssetDatas: string[],
+        takerAssetDatas: string[],
+    ): Promise<OrderSet[]> {
+        const orderSets: OrderSet[] = [];
+        for (const makerAssetData of makerAssetDatas) {
+            for (const takerAssetData of takerAssetDatas) {
+                const orderSet = await this.getOrderSetForAssetsAsync(makerAssetData, takerAssetData);
+                orderSets.push(orderSet);
+            }
+        }
+        return orderSets;
+    }
     public async updateAsync(addedRemoved: AddedRemovedOrders): Promise<void> {
         const { added, removed, assetPairKey } = addedRemoved;
         const orders = await this.getOrderSetForAssetPairAsync(assetPairKey);
