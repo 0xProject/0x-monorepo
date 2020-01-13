@@ -479,6 +479,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -526,6 +527,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -546,6 +548,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -565,6 +568,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -610,6 +614,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -629,6 +634,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -648,6 +654,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -667,6 +674,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -714,6 +722,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -762,6 +771,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -808,6 +818,7 @@ export class WETH9Contract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {

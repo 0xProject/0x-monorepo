@@ -5,6 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as TestContractWrapper from '../test/generated-artifacts/TestContractWrapper.json';
 import * as TestDydxUser from '../test/generated-artifacts/TestDydxUser.json';
 import * as TestEth2Dai from '../test/generated-artifacts/TestEth2Dai.json';
 import * as TestEth2DaiBridge from '../test/generated-artifacts/TestEth2DaiBridge.json';
@@ -15,6 +16,7 @@ import * as TestUniswapBridge from '../test/generated-artifacts/TestUniswapBridg
 import * as TestUniswapExchange from '../test/generated-artifacts/TestUniswapExchange.json';
 import * as TestUniswapExchangeFactory from '../test/generated-artifacts/TestUniswapExchangeFactory.json';
 export const artifacts = {
+    TestContractWrapper: TestContractWrapper as ContractArtifact,
     TestDydxUser: TestDydxUser as ContractArtifact,
     TestEth2Dai: TestEth2Dai as ContractArtifact,
     TestEth2DaiBridge: TestEth2DaiBridge as ContractArtifact,

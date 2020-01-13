@@ -11,14 +11,14 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ABI Encoder: Method Encoding / Decoding', () => {
-    const defaultEncodingRules: AbiEncoder.EncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
-    const defaultDecodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: false };
+    const defaultEncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
+    const defaultDecodingRules = { shouldConvertStructsToObjects: false };
     const runTest = <T>(
         encoder: AbiEncoder.Method,
         methodArgs: any,
         expectedEncoding: string,
-        encodingRules: AbiEncoder.EncodingRules = defaultEncodingRules,
-        decodingRules: AbiEncoder.DecodingRules = defaultDecodingRules,
+        encodingRules = defaultEncodingRules,
+        decodingRules = defaultDecodingRules,
     ) => {
         // Validate encoding
         // note - the encoder takes an array of parameters as input;

@@ -772,6 +772,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -797,6 +798,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]>(
                     rawCallResult,
                 );
@@ -821,6 +823,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -871,6 +874,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -891,6 +895,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -911,6 +916,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -962,6 +968,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -981,6 +988,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1000,6 +1008,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1019,6 +1028,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1038,6 +1048,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1086,6 +1097,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1105,6 +1117,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1128,6 +1141,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1147,6 +1161,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1166,6 +1181,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1185,6 +1201,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1205,6 +1222,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1232,6 +1250,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1282,6 +1301,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1334,6 +1354,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1353,6 +1374,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1373,6 +1395,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1392,6 +1415,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1442,6 +1466,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1462,6 +1487,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1481,6 +1507,7 @@ export class StakingProxyContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {

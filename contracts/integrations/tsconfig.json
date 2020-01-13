@@ -4,6 +4,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/TestFramework.json",
+        "test/generated-artifacts/TestContractWrapper.json",
         "test/generated-artifacts/TestDydxUser.json",
         "test/generated-artifacts/TestEth2Dai.json",
         "test/generated-artifacts/TestEth2DaiBridge.json",

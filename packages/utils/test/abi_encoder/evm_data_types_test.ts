@@ -272,7 +272,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -296,7 +296,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20576f726c6421000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008abcdef0123456789000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -320,7 +320,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -344,7 +344,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -370,7 +370,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0x0102030400000000000000000000000000000000000000000000000000000000050607080000000000000000000000000000000000000000000000000000000009101112000000000000000000000000000000000000000000000000000000001314151600000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -396,7 +396,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040506070800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041314151600000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -430,7 +430,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20576f726c6421000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008abcdef0123456789000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
             // Validate signature
@@ -464,7 +464,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = { field_1: new BigNumber(0), field_2: false };
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(nullEncodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
         });
@@ -489,7 +489,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 field_4: '0x',
             };
             // Decode Encoded Args and validate result
-            const decodingRules: AbiEncoder.DecodingRules = { shouldConvertStructsToObjects: true };
+            const decodingRules = { shouldConvertStructsToObjects: true };
             const decodedArgs = dataType.decode(nullEncodedArgs, decodingRules);
             expect(decodedArgs).to.be.deep.equal(args);
         });

@@ -193,6 +193,7 @@ export class TestLibDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -210,6 +211,7 @@ export class TestLibDummyContract extends BaseContract {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
