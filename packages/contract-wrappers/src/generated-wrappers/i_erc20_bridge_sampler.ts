@@ -852,135 +852,8 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             },
         };
     }
-    public queryMultipleOrdersAndSampleBuys(
-        orders: Array<Array<{
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-            makerFeeAssetData: string;
-            takerFeeAssetData: string;
-        }>>,
-        orderSignatures: string[][],
-        sources: string[],
-        makerTokenAmounts: BigNumber[],
-    ): ContractFunctionObj<
-        Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-    > {
-        const self = (this as any) as IERC20BridgeSamplerContract;
-        assert.isArray('orders', orders);
-        assert.isArray('orderSignatures', orderSignatures);
-        assert.isArray('sources', sources);
-        assert.isArray('makerTokenAmounts', makerTokenAmounts);
-        const functionSignature =
-            'queryMultipleOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[])';
-
-        return {
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<
-                Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-            > {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<
-                    Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-                >(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    orders,
-                    orderSignatures,
-                    sources,
-                    makerTokenAmounts,
-                ]);
-            },
-        };
-    }
-    public queryMultipleOrdersAndSampleSells(
-        orders: Array<Array<{
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-            makerFeeAssetData: string;
-            takerFeeAssetData: string;
-        }>>,
-        orderSignatures: string[][],
-        sources: string[],
-        makerTokenAmounts: BigNumber[],
-    ): ContractFunctionObj<
-        Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-    > {
-        const self = (this as any) as IERC20BridgeSamplerContract;
-        assert.isArray('orders', orders);
-        assert.isArray('orderSignatures', orderSignatures);
-        assert.isArray('sources', sources);
-        assert.isArray('makerTokenAmounts', makerTokenAmounts);
-        const functionSignature =
-            'queryMultipleOrdersAndSampleSells((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[])';
-
-        return {
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<
-                Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-            > {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                return abiEncoder.strictDecodeReturnValue<
-                    Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-                >(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    orders,
-                    orderSignatures,
-                    sources,
-                    makerTokenAmounts,
-                ]);
-            },
-        };
-    }
-    /**
-     * Query batches of native orders and sample buy quotes on multiple DEXes at once.
-     * @param orders Batches of Native orders to query.
-     * @param orderSignatures Batches of Signatures for each respective order in
-     *     `orders`.
-     * @param sources Address of each DEX. Passing in an unsupported DEX will
-     *     throw.
-     * @param makerTokenAmounts Batches of Maker token sell amount for each sample.
-     * @returns ordersAndSamples How much taker asset can be filled         by each order in &#x60;orders&#x60;. Taker amounts sold for each source at         each maker token amount. First indexed by source index, then sample         index
-     */
     public queryBatchOrdersAndSampleBuys(
-        // tslint:disable-next-line: array-type
-        orders: Array<{
+        orders: Array<Array<{
             makerAddress: string;
             takerAddress: string;
             feeRecipientAddress: string;
@@ -995,7 +868,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerAssetData: string;
             makerFeeAssetData: string;
             takerFeeAssetData: string;
-        }>[],
+        }>>,
         orderSignatures: string[][],
         sources: string[],
         makerTokenAmounts: BigNumber[][],
@@ -1033,19 +906,8 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             },
         };
     }
-    /**
-     * Query batches of native orders and sample sell quotes on multiple DEXes at once.
-     * @param orders Batches of Native orders to query.
-     * @param orderSignatures Batches of Signatures for each respective order in
-     *     `orders`.
-     * @param sources Address of each DEX. Passing in an unsupported DEX will
-     *     throw.
-     * @param takerTokenAmounts Batches of Taker token sell amount for each sample.
-     * @returns ordersAndSamples How much taker asset can be filled         by each order in &#x60;orders&#x60;. Maker amounts bought for each source at         each taker token amount. First indexed by source index, then sample         index.
-     */
     public queryBatchOrdersAndSampleSells(
-        // tslint:disable-next-line: array-type
-        orders: Array<{
+        orders: Array<Array<{
             makerAddress: string;
             takerAddress: string;
             feeRecipientAddress: string;
@@ -1060,7 +922,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerAssetData: string;
             makerFeeAssetData: string;
             takerFeeAssetData: string;
-        }>[],
+        }>>,
         orderSignatures: string[][],
         sources: string[],
         takerTokenAmounts: BigNumber[][],
