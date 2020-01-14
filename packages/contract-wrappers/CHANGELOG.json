@@ -3,8 +3,12 @@
         "version": "13.4.0",
         "changes": [
             {
-                "note": "Update all wrappers.",
+                "note": "Update all wrappers",
                 "pr": 2432
+            },
+            {
+                "note": "Update `IERC20BridgeSampler`",
+                "pr": 2427
             }
         ]
     },
