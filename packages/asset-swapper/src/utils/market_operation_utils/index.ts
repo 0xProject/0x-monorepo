@@ -173,7 +173,7 @@ export class MarketOperationUtils {
 
         const batchSampleResults = await this._dexSampler.getBatchFillableAmountsAndSampleMarketBuyAsync(
             batchNativeOrders,
-            makerAmounts,
+            makerAmounts.map(makerAmount => DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples)),
             difference(BUY_SOURCES, _opts.excludedSources),
         );
         return batchSampleResults.map(([fillableAmounts, dexQuotes], i) =>
