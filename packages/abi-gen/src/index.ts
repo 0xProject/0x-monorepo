@@ -277,10 +277,16 @@ for (const abiFileName of abiFileNames) {
         // use command-line tool black to reformat, if its available
         try {
             execSync(`black --line-length 79 ${outFilePath}`);
-        } catch {
-            logUtils.warn(
-                'Failed to reformat generated Python with black. Do you have it installed? Proceeding anyways...',
-            );
+        } catch (e) {
+            const BLACK_RC_CANNOT_PARSE = 123; // empirical black exit code
+            if (e.status === BLACK_RC_CANNOT_PARSE) {
+                logUtils.warn(
+                    'Failed to reformat generated Python with black.  Exception thrown by execSync("black ...") follows.',
+                );
+                throw e;
+            } else {
+                logUtils.warn('Failed to invoke black. Do you have it installed? Proceeding anyways...');
+            }
         }
     }
 
