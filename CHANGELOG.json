@@ -9,6 +9,10 @@
             {
                 "note": "Remove `getSmartContractParamsOrThrow()` from `SwapQuoteConsumer`s.",
                 "pr": 2432
+            },
+            {
+                "note": "Added `getBatchMarketBuySwapQuoteForAssetDataAsync` on `SwapQuoter`",
+                "pr": 2427
             }
         ]
     },
