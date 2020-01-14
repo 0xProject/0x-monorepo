@@ -5,21 +5,18 @@ export {
     IERC1155ReceiverContract,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
     ERC1155TransferSingleEventArgs,
+    ERC1155TransferBatchEventArgs,
+    ERC1155Events,
 } from './wrappers';
 export { artifacts } from './artifacts';
 export { Erc1155Wrapper } from './erc1155_wrapper';
 export {
-    Provider,
     TransactionReceiptWithDecodedLogs,
-    JSONRPCRequestPayload,
-    JSONRPCResponsePayload,
-    JSONRPCResponseError,
-    JSONRPCErrorCallback,
     TransactionReceiptStatus,
-    ContractArtifact,
     ContractChains,
     CompilerOpts,
     StandardContractOutput,
+    ContractArtifact,
     CompilerSettings,
     ContractChainData,
     ContractAbi,

@@ -60,7 +60,7 @@ export class ERC1155ProxyWrapper {
                 txDefaults,
                 artifacts,
             );
-            const erc1155Wrapper = new Erc1155Wrapper(erc1155Contract, this._provider, this._contractOwnerAddress);
+            const erc1155Wrapper = new Erc1155Wrapper(erc1155Contract, this._contractOwnerAddress);
             this._dummyTokenWrappers.push(erc1155Wrapper);
         }
         return this._dummyTokenWrappers;
