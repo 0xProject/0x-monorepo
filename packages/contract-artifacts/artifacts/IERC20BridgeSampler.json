@@ -97,22 +97,14 @@
                     },
                     { "internalType": "bytes[][]", "name": "orderSignatures", "type": "bytes[][]" },
                     { "internalType": "address[]", "name": "sources", "type": "address[]" },
-                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                    { "internalType": "uint256[][]", "name": "makerTokenAmounts", "type": "uint256[][]" }
                 ],
-                "name": "queryMultipleOrdersAndSampleBuys",
+                "name": "queryBatchOrdersAndSampleBuys",
                 "outputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "uint256[]",
-                                "name": "orderFillableTakerAssetAmounts",
-                                "type": "uint256[]"
-                            },
-                            {
-                                "internalType": "uint256[][]",
-                                "name": "makerTokenAmountsBySource",
-                                "type": "uint256[][]"
-                            }
+                            { "internalType": "uint256[]", "name": "orderFillableAssetAmounts", "type": "uint256[]" },
+                            { "internalType": "uint256[][]", "name": "tokenAmountsBySource", "type": "uint256[][]" }
                         ],
                         "internalType": "struct IERC20BridgeSampler.OrdersAndSample[]",
                         "name": "ordersAndSamples",
@@ -149,22 +141,14 @@
                     },
                     { "internalType": "bytes[][]", "name": "orderSignatures", "type": "bytes[][]" },
                     { "internalType": "address[]", "name": "sources", "type": "address[]" },
-                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                    { "internalType": "uint256[][]", "name": "takerTokenAmounts", "type": "uint256[][]" }
                 ],
-                "name": "queryMultipleOrdersAndSampleSells",
+                "name": "queryBatchOrdersAndSampleSells",
                 "outputs": [
                     {
                         "components": [
-                            {
-                                "internalType": "uint256[]",
-                                "name": "orderFillableTakerAssetAmounts",
-                                "type": "uint256[]"
-                            },
-                            {
-                                "internalType": "uint256[][]",
-                                "name": "makerTokenAmountsBySource",
-                                "type": "uint256[][]"
-                            }
+                            { "internalType": "uint256[]", "name": "orderFillableAssetAmounts", "type": "uint256[]" },
+                            { "internalType": "uint256[][]", "name": "tokenAmountsBySource", "type": "uint256[][]" }
                         ],
                         "internalType": "struct IERC20BridgeSampler.OrdersAndSample[]",
                         "name": "ordersAndSamples",

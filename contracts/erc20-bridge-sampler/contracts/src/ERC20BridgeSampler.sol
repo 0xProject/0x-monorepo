@@ -41,11 +41,20 @@ contract ERC20BridgeSampler is
     uint256 constant internal UNISWAP_SAMPLE_CALL_GAS = 150e3;
     uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 250e3;
 
-    function queryMultipleOrdersAndSampleBuys(
+    /// @dev Query batches of native orders and sample sell quotes on multiple DEXes at once.
+    /// @param orders Batches of Native orders to query.
+    /// @param orderSignatures Batches of Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerTokenAmounts Batches of Taker token sell amount for each sample.
+    /// @return ordersAndSamples How much taker asset can be filled
+    ///         by each order in `orders`. Maker amounts bought for each source at
+    ///         each taker token amount. First indexed by source index, then sample
+    ///         index.
+    function queryBatchOrdersAndSampleSells(
         LibOrder.Order[][] memory orders,
         bytes[][] memory orderSignatures,
         address[] memory sources,
-        uint256[] memory makerTokenAmounts
+        uint256[][] memory takerTokenAmounts
     )
         public
         view
@@ -54,23 +63,30 @@ contract ERC20BridgeSampler is
         )
     {
         ordersAndSamples = new OrdersAndSample[](orders.length);
-        uint256[] memory amounts = new uint256[](1);
         for (uint256 i = 0; i != orders.length; i++) {
-            amounts[0] = makerTokenAmounts[i];
             (
-                uint256[] memory orderFillableTakerAssetAmounts,
-                uint256[][] memory makerTokenAmountsBySource
-            ) = queryOrdersAndSampleBuys(orders[i], orderSignatures[i], sources, amounts);
-            ordersAndSamples[i].orderFillableTakerAssetAmounts = orderFillableTakerAssetAmounts;
-            ordersAndSamples[i].makerTokenAmountsBySource = makerTokenAmountsBySource;
+                uint256[] memory orderFillableAssetAmounts,
+                uint256[][] memory tokenAmountsBySource
+            ) = queryOrdersAndSampleSells(orders[i], orderSignatures[i], sources, takerTokenAmounts[i]);
+            ordersAndSamples[i].orderFillableAssetAmounts = orderFillableAssetAmounts;
+            ordersAndSamples[i].tokenAmountsBySource = tokenAmountsBySource;
         }
     }
 
-    function queryMultipleOrdersAndSampleSells(
+    /// @dev Query batches of native orders and sample buy quotes on multiple DEXes at once.
+    /// @param orders Batches of Native orders to query.
+    /// @param orderSignatures Batches of Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param makerTokenAmounts Batches of Maker token sell amount for each sample.
+    /// @return ordersAndSamples How much taker asset can be filled
+    ///         by each order in `orders`. Taker amounts sold for each source at
+    ///         each maker token amount. First indexed by source index, then sample
+    ///         index.
+    function queryBatchOrdersAndSampleBuys(
         LibOrder.Order[][] memory orders,
         bytes[][] memory orderSignatures,
         address[] memory sources,
-        uint256[] memory makerTokenAmounts
+        uint256[][] memory makerTokenAmounts
     )
         public
         view
@@ -79,17 +95,16 @@ contract ERC20BridgeSampler is
         )
     {
         ordersAndSamples = new OrdersAndSample[](orders.length);
-        uint256[] memory amounts = new uint256[](1);
         for (uint256 i = 0; i != orders.length; i++) {
-            amounts[0] = makerTokenAmounts[i];
             (
-                uint256[] memory orderFillableTakerAssetAmounts,
-                uint256[][] memory makerTokenAmountsBySource
-            ) = queryOrdersAndSampleSells(orders[i], orderSignatures[i], sources, amounts);
-            ordersAndSamples[i].orderFillableTakerAssetAmounts = orderFillableTakerAssetAmounts;
-            ordersAndSamples[i].makerTokenAmountsBySource = makerTokenAmountsBySource;
+                uint256[] memory orderFillableAssetAmounts,
+                uint256[][] memory tokenAmountsBySource
+            ) = queryOrdersAndSampleBuys(orders[i], orderSignatures[i], sources, makerTokenAmounts[i]);
+            ordersAndSamples[i].orderFillableAssetAmounts = orderFillableAssetAmounts;
+            ordersAndSamples[i].tokenAmountsBySource = tokenAmountsBySource;
         }
     }
+
 
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
