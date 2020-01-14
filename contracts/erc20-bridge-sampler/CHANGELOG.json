@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add batch functions to query quotes",
+                "pr": 2427
+            }
+        ]
+    },
+    {
         "version": "1.0.3",
         "changes": [
             {

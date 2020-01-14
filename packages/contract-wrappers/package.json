@@ -18,7 +18,7 @@
         "rebuild": "yarn wrappers:clean && yarn wrappers:generate && yarn wrappers:prettier && yarn build",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project . --exclude **/lib/**/*",
-        "fix": "tslint --fix --format stylish --project .--exclude **/lib/**/*",
+        "fix": "tslint --fix --format stylish --project . --exclude **/lib/**/*",
         "prettier": "prettier --write **/* --config ../../.prettierrc",
         "clean": "shx rm -rf lib generated_docs",
         "docs_test": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --out generated_docs ./src/generated-wrappers/*",

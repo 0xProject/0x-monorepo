@@ -13,6 +13,10 @@
             {
                 "note": "Regenerate wrappers to catch empty reverts on live networks.",
                 "pr": 2433
+            },
+            {
+                "note": "Update `IERC20BridgeSampler`",
+                "pr": 2427
             }
         ]
     },

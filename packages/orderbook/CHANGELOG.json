@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added `getBatchOrdersAsync` for fetching batches of orders",
+                "pr": 2427
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "2.0.1",
         "changes": [
