@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Uses updated event decoding to properly decodes arrays and objects.",
+                "pr": 2443
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "3.0.3",
         "changes": [
