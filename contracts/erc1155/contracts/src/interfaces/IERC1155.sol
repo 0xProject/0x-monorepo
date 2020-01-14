@@ -17,13 +17,14 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 
 /// @title ERC-1155 Multi Token Standard
 /// @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md
 /// Note: The ERC-165 identifier for this interface is 0xd9b67a26.
 interface IERC1155 {
-    
+
     /// @dev Either TransferSingle or TransferBatch MUST emit when tokens are transferred,
     ///      including zero value transfers as well as minting or burning.
     /// Operator will always be msg.sender.

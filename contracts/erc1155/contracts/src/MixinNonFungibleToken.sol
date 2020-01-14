@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 
 contract MixinNonFungibleToken {
@@ -64,7 +65,7 @@ contract MixinNonFungibleToken {
         // A base type has the NF bit but does has an index.
         return (id & TYPE_NF_BIT == TYPE_NF_BIT) && (id & NF_INDEX_MASK != 0);
     }
-    
+
     /// @dev returns owner of a non-fungible token
     function ownerOf(uint256 id) public view returns (address) {
         return nfOwners[id];

@@ -139,8 +139,8 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         expect(actual[13]).to.be.eq(expected.takerFeeAssetData);
     }
 
-    describe('fillOrKillOrder', () => {
-        it('works if the order is filled by exactly `takerAssetFillAmount`', async () => {
+    describe.only('fillOrKillOrder', () => {
+        it.only('works if the order is filled by exactly `takerAssetFillAmount`', async () => {
             const fillAmount = randomAmount();
             const order = randomOrder({
                 // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
