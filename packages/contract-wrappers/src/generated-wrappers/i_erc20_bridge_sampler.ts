@@ -356,21 +356,21 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     },
                     {
                         name: 'makerTokenAmounts',
-                        type: 'uint256[]',
+                        type: 'uint256[][]',
                     },
                 ],
-                name: 'queryMultipleOrdersAndSampleBuys',
+                name: 'queryBatchOrdersAndSampleBuys',
                 outputs: [
                     {
                         name: 'ordersAndSamples',
                         type: 'tuple[]',
                         components: [
                             {
-                                name: 'orderFillableTakerAssetAmounts',
+                                name: 'orderFillableAssetAmounts',
                                 type: 'uint256[]',
                             },
                             {
-                                name: 'makerTokenAmountsBySource',
+                                name: 'tokenAmountsBySource',
                                 type: 'uint256[][]',
                             },
                         ],
@@ -454,22 +454,22 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                         type: 'address[]',
                     },
                     {
-                        name: 'makerTokenAmounts',
-                        type: 'uint256[]',
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[][]',
                     },
                 ],
-                name: 'queryMultipleOrdersAndSampleSells',
+                name: 'queryBatchOrdersAndSampleSells',
                 outputs: [
                     {
                         name: 'ordersAndSamples',
                         type: 'tuple[]',
                         components: [
                             {
-                                name: 'orderFillableTakerAssetAmounts',
+                                name: 'orderFillableAssetAmounts',
                                 type: 'uint256[]',
                             },
                             {
-                                name: 'makerTokenAmountsBySource',
+                                name: 'tokenAmountsBySource',
                                 type: 'uint256[][]',
                             },
                         ],
@@ -850,7 +850,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             },
         };
     }
-    public queryMultipleOrdersAndSampleBuys(
+    public queryBatchOrdersAndSampleBuys(
         orders: Array<{
             makerAddress: string;
             takerAddress: string;
@@ -869,25 +869,21 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         }>[],
         orderSignatures: string[][],
         sources: string[],
-        makerTokenAmounts: BigNumber[],
-    ): ContractFunctionObj<
-        Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-    > {
+        makerTokenAmounts: BigNumber[][],
+    ): ContractFunctionObj<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
         const self = (this as any) as IERC20BridgeSamplerContract;
         assert.isArray('orders', orders);
         assert.isArray('orderSignatures', orderSignatures);
         assert.isArray('sources', sources);
         assert.isArray('makerTokenAmounts', makerTokenAmounts);
         const functionSignature =
-            'queryMultipleOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[])';
+            'queryBatchOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[][])';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
-            ): Promise<
-                Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-            > {
+            ): Promise<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
@@ -895,7 +891,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<
-                    Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+                    Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>
                 >(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -908,7 +904,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             },
         };
     }
-    public queryMultipleOrdersAndSampleSells(
+    public queryBatchOrdersAndSampleSells(
         orders: Array<{
             makerAddress: string;
             takerAddress: string;
@@ -927,25 +923,21 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         }>[],
         orderSignatures: string[][],
         sources: string[],
-        makerTokenAmounts: BigNumber[],
-    ): ContractFunctionObj<
-        Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-    > {
+        takerTokenAmounts: BigNumber[][],
+    ): ContractFunctionObj<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
         const self = (this as any) as IERC20BridgeSamplerContract;
         assert.isArray('orders', orders);
         assert.isArray('orderSignatures', orderSignatures);
         assert.isArray('sources', sources);
-        assert.isArray('makerTokenAmounts', makerTokenAmounts);
+        assert.isArray('takerTokenAmounts', takerTokenAmounts);
         const functionSignature =
-            'queryMultipleOrdersAndSampleSells((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[])';
+            'queryBatchOrdersAndSampleSells((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[][])';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
-            ): Promise<
-                Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
-            > {
+            ): Promise<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
@@ -953,7 +945,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 return abiEncoder.strictDecodeReturnValue<
-                    Array<{ orderFillableTakerAssetAmounts: BigNumber[]; makerTokenAmountsBySource: BigNumber[][] }>
+                    Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>
                 >(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -961,7 +953,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     orders,
                     orderSignatures,
                     sources,
-                    makerTokenAmounts,
+                    takerTokenAmounts,
                 ]);
             },
         };
