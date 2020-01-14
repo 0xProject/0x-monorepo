@@ -853,7 +853,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         };
     }
     public queryBatchOrdersAndSampleBuys(
-        orders: Array<{
+        orders: Array<Array<{
             makerAddress: string;
             takerAddress: string;
             feeRecipientAddress: string;
@@ -868,7 +868,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerAssetData: string;
             makerFeeAssetData: string;
             takerFeeAssetData: string;
-        }>[],
+        }>>,
         orderSignatures: string[][],
         sources: string[],
         makerTokenAmounts: BigNumber[][],
@@ -907,7 +907,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         };
     }
     public queryBatchOrdersAndSampleSells(
-        orders: Array<{
+        orders: Array<Array<{
             makerAddress: string;
             takerAddress: string;
             feeRecipientAddress: string;
@@ -922,7 +922,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerAssetData: string;
             makerFeeAssetData: string;
             takerFeeAssetData: string;
-        }>[],
+        }>>,
         orderSignatures: string[][],
         sources: string[],
         takerTokenAmounts: BigNumber[][],
