@@ -63,7 +63,7 @@ export class MarketOperationUtils {
         };
         const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketSellAsync(
             nativeOrders,
-            DexOrderSampler.getSampleAmounts(takerAmount, _opts.numSamples),
+            DexOrderSampler.getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
             difference(SELL_SOURCES, _opts.excludedSources),
         );
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
@@ -78,7 +78,6 @@ export class MarketOperationUtils {
             _opts.dustFractionThreshold,
         );
         const clippedNativePath = clipPathToInput(prunedNativePath, takerAmount);
-
         const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
@@ -134,7 +133,7 @@ export class MarketOperationUtils {
 
         const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketBuyAsync(
             nativeOrders,
-            DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples),
+            DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
             difference(BUY_SOURCES, _opts.excludedSources),
         );
         const signedOrderWithFillableAmounts = this._createBuyOrdersPathFromSamplerResultIfExists(
