@@ -3,6 +3,10 @@
         "version": "13.4.0",
         "changes": [
             {
+                "note": "Update `DevUtils` wrapper",
+                "pr": 2436
+            },
+            {
                 "note": "Update all wrappers.",
                 "pr": 2432
             },
