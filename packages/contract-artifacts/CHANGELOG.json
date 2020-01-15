@@ -5,6 +5,10 @@
             {
                 "note": "Update all artifacts.",
                 "pr": 2432
+            },
+            {
+                "note": "Update `IERC20BridgeSampler artifact",
+                "pr": 2427
             }
         ]
     },
