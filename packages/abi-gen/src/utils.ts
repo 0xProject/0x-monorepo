@@ -195,7 +195,7 @@ export const utils = {
             return tuple.internalType
                 .replace('struct ', '')
                 .replace('.', '')
-                .replace('[]', '');
+                .replace(/\[\]/g, '');
         } else {
             const tupleComponents = tuple.components;
             const lengthOfHashSuffix = 8;
