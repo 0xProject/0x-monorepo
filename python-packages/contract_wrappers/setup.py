@@ -117,16 +117,11 @@ class CleanCommandExtension(clean):
             )
         ):
             try:
-                remove(
-                    path.join(
-                        "src",
-                        "zero_ex",
-                        "contract_wrappers",
-                        contract,
-                        "__init__.py",
-                    )
-                )
+                print(f"Removing {contract}...", end="")
+                remove(contract)
+                print("done")
             except FileNotFoundError:
+                print("file not found")
                 pass
 
 
