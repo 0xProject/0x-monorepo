@@ -17,10 +17,11 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 
 interface IERC1155Receiver {
-    
+
     /// @notice Handle the receipt of a single ERC1155 token type
     /// @dev The smart contract calls this function on the recipient
     /// after a `safeTransferFrom`. This function MAY throw to revert and reject the

@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Replaced ethers with 0x ABI Encoder for decoding logs. Fixes decoding for arrays/objects.",
+                "pr": 2443
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "4.0.3",
         "changes": [

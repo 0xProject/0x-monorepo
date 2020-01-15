@@ -121,22 +121,21 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
     }
 
-    function assertSameOrderFromEvent(actual: any[], expected: Order): void {
-        expect(actual.length === 14);
-        expect(actual[0].toLowerCase()).to.be.eq(expected.makerAddress);
-        expect(actual[1].toLowerCase()).to.be.eq(expected.takerAddress);
-        expect(actual[2].toLowerCase()).to.be.eq(expected.feeRecipientAddress);
-        expect(actual[3].toLowerCase()).to.be.eq(expected.senderAddress);
-        expect(actual[4]).to.be.bignumber.eq(expected.makerAssetAmount);
-        expect(actual[5]).to.be.bignumber.eq(expected.takerAssetAmount);
-        expect(actual[6]).to.be.bignumber.eq(expected.makerFee);
-        expect(actual[7]).to.be.bignumber.eq(expected.takerFee);
-        expect(actual[8]).to.be.bignumber.eq(expected.expirationTimeSeconds);
-        expect(actual[9]).to.be.bignumber.eq(expected.salt);
-        expect(actual[10]).to.be.eq(expected.makerAssetData);
-        expect(actual[11]).to.be.eq(expected.takerAssetData);
-        expect(actual[12]).to.be.eq(expected.makerFeeAssetData);
-        expect(actual[13]).to.be.eq(expected.takerFeeAssetData);
+    function assertSameOrderFromEvent(actual: any, expected: Order): void {
+        expect(actual.makerAddress).to.be.eq(expected.makerAddress);
+        expect(actual.takerAddress).to.be.eq(expected.takerAddress);
+        expect(actual.feeRecipientAddress).to.be.eq(expected.feeRecipientAddress);
+        expect(actual.senderAddress).to.be.eq(expected.senderAddress);
+        expect(actual.makerAssetAmount).to.bignumber.eq(expected.makerAssetAmount);
+        expect(actual.takerAssetAmount).to.bignumber.eq(expected.takerAssetAmount);
+        expect(actual.makerFee).to.bignumber.eq(expected.makerFee);
+        expect(actual.takerFee).to.bignumber.eq(expected.takerFee);
+        expect(actual.expirationTimeSeconds).to.bignumber.eq(expected.expirationTimeSeconds);
+        expect(actual.salt).to.bignumber.eq(expected.salt);
+        expect(actual.makerAssetData).to.eq(expected.makerAssetData);
+        expect(actual.takerAssetData).to.eq(expected.takerAssetData);
+        expect(actual.makerFeeAssetData).to.eq(expected.makerFeeAssetData);
+        expect(actual.takerFeeAssetData).to.eq(expected.takerFeeAssetData);
     }
 
     describe('fillOrKillOrder', () => {
