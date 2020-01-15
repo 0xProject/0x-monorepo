@@ -1,6 +1,7 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import {
     artifacts as ERC1155Artifacts,
+    ERC1155Events,
     ERC1155MintableContract,
     ERC1155TransferBatchEventArgs,
     Erc1155Wrapper,
@@ -247,12 +248,11 @@ blockchainTests.resets('Supported asset type unit tests', env => {
             const txReceipt = await forwarder
                 .transferOut(assetData, amount)
                 .awaitTransactionSuccessAsync({ from: receiver });
-            const logArgs = (txReceipt.logs[0] as LogWithDecodedArgs<ERC1155TransferBatchEventArgs>).args;
-            expect(logArgs.operator).to.eq(forwarder.address);
-            expect(logArgs.from).to.eq(forwarder.address);
-            expect(logArgs.to).to.eq(receiver);
-            logArgs.ids.forEach((id, i) => expect(new BigNumber(id)).to.bignumber.eq(ids[i]));
-            logArgs.values.forEach((value, i) => expect(new BigNumber(value)).to.bignumber.eq(values[i]));
+            verifyEventsFromLogs<ERC1155TransferBatchEventArgs>(
+                txReceipt.logs,
+                [{ operator: forwarder.address, from: forwarder.address, to: receiver, ids, values }],
+                ERC1155Events.TransferBatch,
+            );
         });
         it('transfers multiple ids of an ERC1155 token', async () => {
             const amount = new BigNumber(1);
@@ -265,33 +265,29 @@ blockchainTests.resets('Supported asset type unit tests', env => {
                 .ERC1155Assets(erc1155Token.address, ids, values, constants.NULL_BYTES)
                 .getABIEncodedTransactionData();
             const txReceipt = await forwarder.transferOut(assetData, amount).awaitTransactionSuccessAsync();
-            const logArgs = (txReceipt.logs[0] as LogWithDecodedArgs<ERC1155TransferBatchEventArgs>).args;
-            expect(logArgs.operator).to.eq(forwarder.address);
-            expect(logArgs.from).to.eq(forwarder.address);
-            expect(logArgs.to).to.eq(receiver);
-            logArgs.ids.forEach((id, i) => expect(new BigNumber(id)).to.bignumber.eq(ids[i]));
-            logArgs.values.forEach((value, i) => expect(new BigNumber(value)).to.bignumber.eq(values[i]));
+            verifyEventsFromLogs<ERC1155TransferBatchEventArgs>(
+                txReceipt.logs,
+                [{ operator: forwarder.address, from: forwarder.address, to: receiver, ids, values }],
+                ERC1155Events.TransferBatch,
+            );
         });
         it('scales up values when transfering ERC1155 tokens', async () => {
-            it('transfers multiple ids of an ERC1155 token', async () => {
-                const amount = new BigNumber(2);
-                const ids = [
-                    await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [amount]),
-                    await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [amount]),
-                ];
-                const values = [new BigNumber(1), new BigNumber(2)];
-                const assetData = assetDataEncoder
-                    .ERC1155Assets(erc1155Token.address, ids, values, constants.NULL_BYTES)
-                    .getABIEncodedTransactionData();
-                const txReceipt = await forwarder.transferOut(assetData, amount).awaitTransactionSuccessAsync();
-                const scaledValues = values.map(value => value.times(amount));
-                const logArgs = (txReceipt.logs[0] as LogWithDecodedArgs<ERC1155TransferBatchEventArgs>).args;
-                expect(logArgs.operator).to.eq(forwarder.address);
-                expect(logArgs.from).to.eq(forwarder.address);
-                expect(logArgs.to).to.eq(receiver);
-                logArgs.ids.forEach((id, i) => expect(new BigNumber(id)).to.bignumber.eq(ids[i]));
-                logArgs.values.forEach((value, i) => expect(new BigNumber(value)).to.bignumber.eq(scaledValues[i]));
-            });
+            const amount = new BigNumber(2);
+            const values = [new BigNumber(1), new BigNumber(2)];
+            const scaledValues = values.map(value => value.times(amount));
+            const ids = [
+                await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [scaledValues[0]]),
+                await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [scaledValues[1]]),
+            ];
+            const assetData = assetDataEncoder
+                .ERC1155Assets(erc1155Token.address, ids, values, constants.NULL_BYTES)
+                .getABIEncodedTransactionData();
+            const txReceipt = await forwarder.transferOut(assetData, amount).awaitTransactionSuccessAsync();
+            verifyEventsFromLogs<ERC1155TransferBatchEventArgs>(
+                txReceipt.logs,
+                [{ operator: forwarder.address, from: forwarder.address, to: receiver, ids, values: scaledValues }],
+                ERC1155Events.TransferBatch,
+            );
         });
         it('transfers a single ERC20 token wrapped as MultiAsset', async () => {
             const nestedAmount = new BigNumber(1337);

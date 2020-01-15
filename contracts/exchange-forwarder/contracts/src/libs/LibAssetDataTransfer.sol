@@ -58,25 +58,25 @@ library LibAssetDataTransfer {
             proxyId == IAssetData(address(0)).ERC20Token.selector ||
             proxyId == IAssetData(address(0)).ERC20Bridge.selector
         ) {
-            assetData._transferERC20Token(
+            assetData.transferERC20Token(
                 from,
                 to,
                 amount
             );
         } else if (proxyId == IAssetData(address(0)).ERC721Token.selector) {
-            assetData._transferERC721Token(
+            assetData.transferERC721Token(
                 from,
                 to,
                 amount
             );
         } else if (proxyId == IAssetData(address(0)).ERC1155Assets.selector) {
-            assetData._transferERC1155Assets(
+            assetData.transferERC1155Assets(
                 from,
                 to,
                 amount
             );
         } else if (proxyId == IAssetData(address(0)).MultiAsset.selector) {
-            assetData._transferMultiAsset(
+            assetData.transferMultiAsset(
                 from,
                 to,
                 amount
@@ -125,7 +125,7 @@ library LibAssetDataTransfer {
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer to sender.
-    function _transferERC20Token(
+    function transferERC20Token(
         bytes memory assetData,
         address from,
         address to,
@@ -156,7 +156,7 @@ library LibAssetDataTransfer {
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer to sender.
-    function _transferERC721Token(
+    function transferERC721Token(
         bytes memory assetData,
         address from,
         address to,
@@ -186,7 +186,7 @@ library LibAssetDataTransfer {
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer to sender.
-    function _transferERC1155Assets(
+    function transferERC1155Assets(
         bytes memory assetData,
         address from,
         address to,
@@ -230,7 +230,7 @@ library LibAssetDataTransfer {
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer to sender.
-    function _transferMultiAsset(
+    function transferMultiAsset(
         bytes memory assetData,
         address from,
         address to,
