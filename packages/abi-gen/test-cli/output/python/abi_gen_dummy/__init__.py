@@ -457,6 +457,108 @@ class EmitSimpleEventMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
+class MethodAcceptingArrayOfArrayOfStructsMethod(ContractMethod):
+    """Various interfaces to the methodAcceptingArrayOfArrayOfStructs method."""
+
+    def __init__(
+        self,
+        web3_or_provider: Union[Web3, BaseProvider],
+        contract_address: str,
+        contract_function: ContractFunction,
+        validator: Validator = None,
+    ):
+        """Persist instance data."""
+        super().__init__(web3_or_provider, contract_address, validator)
+        self._underlying_method = contract_function
+
+    def validate_and_normalize_inputs(
+        self, index_0: List[List[AbiGenDummyStruct]]
+    ):
+        """Validate the inputs to the methodAcceptingArrayOfArrayOfStructs method."""
+        self.validator.assert_valid(
+            method_name="methodAcceptingArrayOfArrayOfStructs",
+            parameter_name="index_0",
+            argument_value=index_0,
+        )
+        return index_0
+
+    def call(
+        self,
+        index_0: List[List[AbiGenDummyStruct]],
+        tx_params: Optional[TxParams] = None,
+    ) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        (index_0) = self.validate_and_normalize_inputs(index_0)
+        tx_params = super().normalize_tx_params(tx_params)
+        self._underlying_method(index_0).call(tx_params.as_dict())
+
+    def estimate_gas(
+        self,
+        index_0: List[List[AbiGenDummyStruct]],
+        tx_params: Optional[TxParams] = None,
+    ) -> int:
+        """Estimate gas consumption of method call."""
+        (index_0) = self.validate_and_normalize_inputs(index_0)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self._underlying_method(index_0).estimateGas(
+            tx_params.as_dict()
+        )
+
+
+class MethodAcceptingArrayOfStructsMethod(ContractMethod):
+    """Various interfaces to the methodAcceptingArrayOfStructs method."""
+
+    def __init__(
+        self,
+        web3_or_provider: Union[Web3, BaseProvider],
+        contract_address: str,
+        contract_function: ContractFunction,
+        validator: Validator = None,
+    ):
+        """Persist instance data."""
+        super().__init__(web3_or_provider, contract_address, validator)
+        self._underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, index_0: List[AbiGenDummyStruct]):
+        """Validate the inputs to the methodAcceptingArrayOfStructs method."""
+        self.validator.assert_valid(
+            method_name="methodAcceptingArrayOfStructs",
+            parameter_name="index_0",
+            argument_value=index_0,
+        )
+        return index_0
+
+    def call(
+        self,
+        index_0: List[AbiGenDummyStruct],
+        tx_params: Optional[TxParams] = None,
+    ) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        (index_0) = self.validate_and_normalize_inputs(index_0)
+        tx_params = super().normalize_tx_params(tx_params)
+        self._underlying_method(index_0).call(tx_params.as_dict())
+
+    def estimate_gas(
+        self,
+        index_0: List[AbiGenDummyStruct],
+        tx_params: Optional[TxParams] = None,
+    ) -> int:
+        """Estimate gas consumption of method call."""
+        (index_0) = self.validate_and_normalize_inputs(index_0)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self._underlying_method(index_0).estimateGas(
+            tx_params.as_dict()
+        )
+
+
 class MethodReturningArrayOfStructsMethod(ContractMethod):
     """Various interfaces to the methodReturningArrayOfStructs method."""
 
@@ -1531,6 +1633,16 @@ class AbiGenDummy:
     :class:`EmitSimpleEventMethod`.
     """
 
+    method_accepting_array_of_array_of_structs: MethodAcceptingArrayOfArrayOfStructsMethod
+    """Constructor-initialized instance of
+    :class:`MethodAcceptingArrayOfArrayOfStructsMethod`.
+    """
+
+    method_accepting_array_of_structs: MethodAcceptingArrayOfStructsMethod
+    """Constructor-initialized instance of
+    :class:`MethodAcceptingArrayOfStructsMethod`.
+    """
+
     method_returning_array_of_structs: MethodReturningArrayOfStructsMethod
     """Constructor-initialized instance of
     :class:`MethodReturningArrayOfStructsMethod`.
@@ -1745,6 +1857,20 @@ class AbiGenDummy:
             web3_or_provider, contract_address, functions.emitSimpleEvent
         )
 
+        self.method_accepting_array_of_array_of_structs = MethodAcceptingArrayOfArrayOfStructsMethod(
+            web3_or_provider,
+            contract_address,
+            functions.methodAcceptingArrayOfArrayOfStructs,
+            validator,
+        )
+
+        self.method_accepting_array_of_structs = MethodAcceptingArrayOfStructsMethod(
+            web3_or_provider,
+            contract_address,
+            functions.methodAcceptingArrayOfStructs,
+            validator,
+        )
+
         self.method_returning_array_of_structs = MethodReturningArrayOfStructsMethod(
             web3_or_provider,
             contract_address,
@@ -1920,7 +2046,7 @@ class AbiGenDummy:
     def abi():
         """Return the ABI to the underlying contract."""
         return json.loads(
-            '[{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes","name":"someBytes","type":"bytes"},{"indexed":false,"internalType":"string","name":"someString","type":"string"}],"name":"SimpleEvent","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"_value","type":"uint256"}],"name":"Withdrawal","type":"event"},{"constant":true,"inputs":[{"internalType":"bytes[]","name":"a","type":"bytes[]"}],"name":"acceptsAnArrayOfBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes","name":"a","type":"bytes"}],"name":"acceptsBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"internalType":"uint256","name":"foo","type":"uint256"},{"internalType":"bytes","name":"bar","type":"bytes"},{"internalType":"string","name":"car","type":"string"}],"internalType":"struct AbiGenDummy.ComplexInput","name":"complexInput","type":"tuple"}],"name":"complexInputComplexOutput","outputs":[{"components":[{"components":[{"internalType":"uint256","name":"foo","type":"uint256"},{"internalType":"bytes","name":"bar","type":"bytes"},{"internalType":"string","name":"car","type":"string"}],"internalType":"struct AbiGenDummy.ComplexInput","name":"input","type":"tuple"},{"internalType":"bytes","name":"lorem","type":"bytes"},{"internalType":"bytes","name":"ipsum","type":"bytes"},{"internalType":"string","name":"dolor","type":"string"}],"internalType":"struct AbiGenDummy.ComplexOutput","name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"hash","type":"bytes32"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"ecrecoverFn","outputs":[{"internalType":"address","name":"signerAddress","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"emitSimpleEvent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"methodReturningArrayOfStructs","outputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct[]","name":"","type":"tuple[]"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodReturningMultipleValues","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodUsingNestedStructWithInnerStructNotUsedElsewhere","outputs":[{"components":[{"components":[{"internalType":"uint256","name":"aField","type":"uint256"}],"internalType":"struct AbiGenDummy.StructNotDirectlyUsedAnywhere","name":"innerStruct","type":"tuple"}],"internalType":"struct AbiGenDummy.NestedStructWithInnerStructNotUsedElsewhere","name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index_0","type":"uint256"},{"internalType":"bytes","name":"index_1","type":"bytes"},{"internalType":"string","name":"index_2","type":"string"}],"name":"multiInputMultiOutput","outputs":[{"internalType":"bytes","name":"","type":"bytes"},{"internalType":"bytes","name":"","type":"bytes"},{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"innerStruct","type":"tuple"},{"internalType":"string","name":"description","type":"string"}],"internalType":"struct AbiGenDummy.NestedStruct","name":"n","type":"tuple"}],"name":"nestedStructInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"nestedStructOutput","outputs":[{"components":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"innerStruct","type":"tuple"},{"internalType":"string","name":"description","type":"string"}],"internalType":"struct AbiGenDummy.NestedStruct","name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputSimpleOutput","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethod","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethodThatReturnsNothing","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"string","name":"a","type":"string"}],"name":"overloadedMethod","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"int256","name":"a","type":"int256"}],"name":"overloadedMethod","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"pureFunctionWithConstant","outputs":[{"internalType":"uint256","name":"someConstant","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"requireWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"revertWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index_0","type":"uint256"}],"name":"simpleInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index_0","type":"uint256"}],"name":"simpleInputSimpleOutput","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simplePureFunction","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"simplePureFunctionWithInput","outputs":[{"internalType":"uint256","name":"sum","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRequire","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRevert","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"s","type":"tuple"}],"name":"structInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"structOutput","outputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"s","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"x","type":"address"},{"internalType":"uint256","name":"a","type":"uint256"},{"internalType":"uint256","name":"b","type":"uint256"},{"internalType":"address","name":"y","type":"address"},{"internalType":"uint256","name":"c","type":"uint256"}],"name":"withAddressInput","outputs":[{"internalType":"address","name":"z","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'  # noqa: E501 (line-too-long)
+            '[{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bytes","name":"someBytes","type":"bytes"},{"indexed":false,"internalType":"string","name":"someString","type":"string"}],"name":"SimpleEvent","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"_value","type":"uint256"}],"name":"Withdrawal","type":"event"},{"constant":true,"inputs":[{"internalType":"bytes[]","name":"a","type":"bytes[]"}],"name":"acceptsAnArrayOfBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes","name":"a","type":"bytes"}],"name":"acceptsBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"internalType":"uint256","name":"foo","type":"uint256"},{"internalType":"bytes","name":"bar","type":"bytes"},{"internalType":"string","name":"car","type":"string"}],"internalType":"struct AbiGenDummy.ComplexInput","name":"complexInput","type":"tuple"}],"name":"complexInputComplexOutput","outputs":[{"components":[{"components":[{"internalType":"uint256","name":"foo","type":"uint256"},{"internalType":"bytes","name":"bar","type":"bytes"},{"internalType":"string","name":"car","type":"string"}],"internalType":"struct AbiGenDummy.ComplexInput","name":"input","type":"tuple"},{"internalType":"bytes","name":"lorem","type":"bytes"},{"internalType":"bytes","name":"ipsum","type":"bytes"},{"internalType":"string","name":"dolor","type":"string"}],"internalType":"struct AbiGenDummy.ComplexOutput","name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"bytes32","name":"hash","type":"bytes32"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"ecrecoverFn","outputs":[{"internalType":"address","name":"signerAddress","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"emitSimpleEvent","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct[][]","name":"index_0","type":"tuple[][]"}],"name":"methodAcceptingArrayOfArrayOfStructs","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct[]","name":"index_0","type":"tuple[]"}],"name":"methodAcceptingArrayOfStructs","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodReturningArrayOfStructs","outputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct[]","name":"","type":"tuple[]"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodReturningMultipleValues","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodUsingNestedStructWithInnerStructNotUsedElsewhere","outputs":[{"components":[{"components":[{"internalType":"uint256","name":"aField","type":"uint256"}],"internalType":"struct AbiGenDummy.StructNotDirectlyUsedAnywhere","name":"innerStruct","type":"tuple"}],"internalType":"struct AbiGenDummy.NestedStructWithInnerStructNotUsedElsewhere","name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index_0","type":"uint256"},{"internalType":"bytes","name":"index_1","type":"bytes"},{"internalType":"string","name":"index_2","type":"string"}],"name":"multiInputMultiOutput","outputs":[{"internalType":"bytes","name":"","type":"bytes"},{"internalType":"bytes","name":"","type":"bytes"},{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"innerStruct","type":"tuple"},{"internalType":"string","name":"description","type":"string"}],"internalType":"struct AbiGenDummy.NestedStruct","name":"n","type":"tuple"}],"name":"nestedStructInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"nestedStructOutput","outputs":[{"components":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"innerStruct","type":"tuple"},{"internalType":"string","name":"description","type":"string"}],"internalType":"struct AbiGenDummy.NestedStruct","name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputSimpleOutput","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethod","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethodThatReturnsNothing","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"internalType":"string","name":"a","type":"string"}],"name":"overloadedMethod","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"int256","name":"a","type":"int256"}],"name":"overloadedMethod","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"pureFunctionWithConstant","outputs":[{"internalType":"uint256","name":"someConstant","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"requireWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"revertWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index_0","type":"uint256"}],"name":"simpleInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"index_0","type":"uint256"}],"name":"simpleInputSimpleOutput","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simplePureFunction","outputs":[{"internalType":"uint256","name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"x","type":"uint256"}],"name":"simplePureFunctionWithInput","outputs":[{"internalType":"uint256","name":"sum","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRequire","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRevert","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"s","type":"tuple"}],"name":"structInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"structOutput","outputs":[{"components":[{"internalType":"bytes","name":"someBytes","type":"bytes"},{"internalType":"uint32","name":"anInteger","type":"uint32"},{"internalType":"bytes[]","name":"aDynamicArrayOfBytes","type":"bytes[]"},{"internalType":"string","name":"aString","type":"string"}],"internalType":"struct AbiGenDummy.Struct","name":"s","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"x","type":"address"},{"internalType":"uint256","name":"a","type":"uint256"},{"internalType":"uint256","name":"b","type":"uint256"},{"internalType":"address","name":"y","type":"address"},{"internalType":"uint256","name":"c","type":"uint256"}],"name":"withAddressInput","outputs":[{"internalType":"address","name":"z","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]'  # noqa: E501 (line-too-long)
         )
 
 
