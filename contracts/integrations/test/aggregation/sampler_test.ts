@@ -17,13 +17,8 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
         let token: ERC20TokenContract;
 
         before(async () => {
-            samplerAddress =
-                getContractAddressesForChainOrThrow(await env.getChainIdAsync()).erc20BridgeSampler;
-            token = new ERC20TokenContract(
-                tokens.USDT.address,
-                env.provider,
-                env.txDefaults,
-            );
+            samplerAddress = getContractAddressesForChainOrThrow(await env.getChainIdAsync()).erc20BridgeSampler;
+            token = new ERC20TokenContract(tokens.USDT.address, env.provider, env.txDefaults);
         });
 
         it('has decials', async () => {
@@ -37,24 +32,29 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
         let kyber: IKyberNetworkContract;
 
         before(async () => {
-            samplerAddress =
-                getContractAddressesForChainOrThrow(await env.getChainIdAsync()).erc20BridgeSampler;
+            samplerAddress = getContractAddressesForChainOrThrow(await env.getChainIdAsync()).erc20BridgeSampler;
             kyber = new IKyberNetworkContract(
                 '0x818E6FECD516Ecc3849DAf6845e3EC868087B755',
                 env.provider,
                 env.txDefaults,
             );
-
         });
 
         it('can get an ETH -> USDT sell quote directly from kyber', async () => {
             const token = tokens.USDT;
-            const amount = new BigNumber(10).pow(token.decimals).times(10);
-            const r = await kyber.getExpectedRate(
-                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-                token.address,
-                amount,
-            ).callAsync({ from: samplerAddress });
+            const amount = new BigNumber(10).pow(ETH_TOKEN.decimals).times(10);
+            const r = await kyber
+                .getExpectedRate('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', token.address, amount)
+                .callAsync({ from: samplerAddress });
+            logUtils.log(r);
+        });
+
+        it.only('can get a big ETH -> DAI sell quote directly from kyber', async () => {
+            const token = tokens.DAI;
+            const amount = new BigNumber(10).pow(token.decimals).times(80e3);
+            const r = await kyber
+                .getExpectedRate(token.address, '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', amount)
+                .callAsync({ gas: 1e6 });
             logUtils.log(r);
         });
     });
@@ -62,8 +62,9 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
     describe('sampler', () => {
         let sampler: ERC20BridgeSamplerContract;
         before(async () => {
-            const { erc20BridgeSampler: samplerAddress } =
-                getContractAddressesForChainOrThrow(await env.getChainIdAsync());
+            const { erc20BridgeSampler: samplerAddress } = getContractAddressesForChainOrThrow(
+                await env.getChainIdAsync(),
+            );
             sampler = new ERC20BridgeSamplerContract(samplerAddress, env.provider, env.txDefaults);
         });
 

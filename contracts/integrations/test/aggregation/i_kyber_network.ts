@@ -32,8 +32,6 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-
-
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -41,14 +39,14 @@ export class IKyberNetworkContract extends BaseContract {
     /**
      * @ignore
      */
-public static deployedBytecode: string | undefined;
-public static contractName = 'IKyberNetwork';
+    public static deployedBytecode: string | undefined;
+    public static contractName = 'IKyberNetwork';
     private readonly _methodABIIndex: { [name: string]: number } = {};
-public static async deployFrom0xArtifactAsync(
+    public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<IKyberNetworkContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -67,7 +65,7 @@ public static async deployFrom0xArtifactAsync(
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return IKyberNetworkContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
+        return IKyberNetworkContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
@@ -84,11 +82,7 @@ public static async deployFrom0xArtifactAsync(
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
@@ -104,18 +98,22 @@ public static async deployFrom0xArtifactAsync(
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`IKyberNetwork successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IKyberNetworkContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        const contractInstance = new IKyberNetworkContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-
 
     /**
      * @returns      The contract ABI
      */
     public static ABI(): ContractAbi {
         const abi = [
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
@@ -178,39 +176,39 @@ public static async deployFrom0xArtifactAsync(
     }
 
     public getExpectedRate(
-            fromToken: string,
-            toToken: string,
-            fromAmount: BigNumber,
-    ): ContractFunctionObj<[BigNumber, BigNumber]
-> {
-        const self = this as any as IKyberNetworkContract;
-            assert.isString('fromToken', fromToken);
-            assert.isString('toToken', toToken);
-            assert.isBigNumber('fromAmount', fromAmount);
+        fromToken: string,
+        toToken: string,
+        fromAmount: BigNumber,
+    ): ContractFunctionObj<[BigNumber, BigNumber]> {
+        const self = (this as any) as IKyberNetworkContract;
+        assert.isString('fromToken', fromToken);
+        assert.isString('toToken', toToken);
+        assert.isBigNumber('fromAmount', fromAmount);
         const functionSignature = 'getExpectedRate(address,address,uint256)';
 
         return {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
-            ): Promise<[BigNumber, BigNumber]
-            > {
+            ): Promise<[BigNumber, BigNumber]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]
-            >(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [fromToken.toLowerCase(),
-            toToken.toLowerCase(),
-            fromAmount
-            ]);
+                return self._strictEncodeArguments(functionSignature, [
+                    fromToken.toLowerCase(),
+                    toToken.toLowerCase(),
+                    fromAmount,
+                ]);
             },
-        }
-    };
-
+        };
+    }
 
     constructor(
         address: string,
@@ -219,9 +217,17 @@ public static async deployFrom0xArtifactAsync(
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = IKyberNetworkContract.deployedBytecode,
     ) {
-        super('IKyberNetwork', IKyberNetworkContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
+        super(
+            'IKyberNetwork',
+            IKyberNetworkContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-IKyberNetworkContract.ABI().forEach((item, index) => {
+        IKyberNetworkContract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;
