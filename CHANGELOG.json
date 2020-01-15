@@ -13,6 +13,10 @@
             {
                 "note": "Added `getBatchMarketBuySwapQuoteForAssetDataAsync` on `SwapQuoter`",
                 "pr": 2427
+            },
+            {
+                "note": "Add exponential sampling distribution and `sampleDistributionBase` option to `SwapQuoter`",
+                "pr": 2427
             }
         ]
     },

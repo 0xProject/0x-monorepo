@@ -306,7 +306,7 @@ describe('MarketOperationUtils tests', () => {
                 _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native][0]),
             );
             const DEFAULT_SAMPLER = createSamplerFromSellRates(SOURCE_RATES);
-            const DEFAULT_OPTS = { numSamples: 3, runLimit: 0 };
+            const DEFAULT_OPTS = { numSamples: 3, runLimit: 0, sampleDistributionBase: 1 };
             const defaultMarketOperationUtils = new MarketOperationUtils(
                 DEFAULT_SAMPLER,
                 contractAddresses,
@@ -552,7 +552,7 @@ describe('MarketOperationUtils tests', () => {
                 _.times(3, () => SOURCE_RATES[ERC20BridgeSource.Native][0]),
             );
             const DEFAULT_SAMPLER = createSamplerFromBuyRates(SOURCE_RATES);
-            const DEFAULT_OPTS = { numSamples: 3, runLimit: 0 };
+            const DEFAULT_OPTS = { numSamples: 3, runLimit: 0, sampleDistributionBase: 1 };
             const defaultMarketOperationUtils = new MarketOperationUtils(
                 DEFAULT_SAMPLER,
                 contractAddresses,
