@@ -122,7 +122,6 @@ class CleanCommandExtension(clean):
                 print("done")
             except FileNotFoundError:
                 print("file not found")
-                pass
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
