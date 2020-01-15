@@ -6,11 +6,7 @@ import * as _ from 'lodash';
 
 import { AssertionResult } from '../assertions/function_assertion';
 import { assetProxyTransferFailedAssertion } from '../assertions/generic_assertions';
-import {
-    moveStakeInvalidAmountAssertion,
-    moveStakeNonexistentPoolAssertion,
-    validMoveStakeAssertion,
-} from '../assertions/moveStake';
+import { moveStakeNonexistentPoolAssertion, validMoveStakeAssertion } from '../assertions/moveStake';
 import { validStakeAssertion } from '../assertions/stake';
 import { invalidUnstakeAssertion, validUnstakeAssertion } from '../assertions/unstake';
 import {
@@ -59,7 +55,6 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 invalidUnstake: this._invalidUnstake(),
                 validMoveStake: this._validMoveStake(),
                 moveStakeNonexistentPool: this._moveStakeNonexistentPool(),
-                moveStakeInvalidAmount: this._moveStakeInvalidAmount(),
                 validWithdrawDelegatorRewards: this._validWithdrawDelegatorRewards(),
                 invalidWithdrawDelegatorRewards: this._invalidWithdrawDelegatorRewards(),
             };
@@ -106,7 +101,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             while (true) {
                 await balanceStore.updateErc20BalancesAsync();
                 const zrxBalance = balanceStore.balances.erc20[this.actor.address][zrx.address];
-                const amount = Pseudorandom.integer(zrxBalance, constants.MAX_UINT256);
+                const amount = Pseudorandom.integer(zrxBalance.plus(1), constants.MAX_UINT256);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -144,7 +139,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     undelegatedStake.nextEpochBalance,
                 );
                 const assertion = invalidUnstakeAssertion(deployment, withdrawableStake);
-                const amount = Pseudorandom.integer(withdrawableStake, constants.MAX_UINT256);
+                const amount = Pseudorandom.integer(withdrawableStake.plus(1), constants.MAX_UINT256);
                 yield assertion.executeAsync([amount], { from: this.actor.address });
             }
         }
@@ -200,41 +195,14 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
             }
         }
 
-        private async *_moveStakeInvalidAmount(): AsyncIterableIterator<AssertionResult | void> {
-            while (true) {
-                const [from, to] = this._validMoveParams();
-                if (from.status === StakeStatus.Undelegated && to.status === StakeStatus.Undelegated) {
-                    yield;
-                } else {
-                    // The next epoch balance of the `from` stake is the amount that can be moved
-                    const moveableStake =
-                        from.status === StakeStatus.Undelegated
-                            ? this.stake[StakeStatus.Undelegated].nextEpochBalance
-                            : this.stake[StakeStatus.Delegated][from.poolId].nextEpochBalance;
-                    const amount = Pseudorandom.integer(moveableStake.plus(1), constants.MAX_UINT256);
-                    const assertion = moveStakeInvalidAmountAssertion(this.actor.deployment);
-                    yield assertion.executeAsync([from, to, amount], { from: this.actor.address });
-                }
-            }
-        }
-
         private async *_moveStakeNonexistentPool(): AsyncIterableIterator<AssertionResult> {
-            const { stakingWrapper } = this.actor.deployment.staking;
-            // Randomly chooses a poolId that hasn't been used yet
-            const unusedPoolId = (lastPoolId: string) =>
-                `0x${Pseudorandom.integer(new BigNumber(lastPoolId).plus(1), constants.MAX_UINT256)
-                    .plus(1)
-                    .toString(16)
-                    .padStart(64, '0')}`;
-
             while (true) {
                 const [from, to, amount] = this._validMoveParams();
-                const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
 
-                // If there is 0 moveable stake for the sampled `to` pool, we need to mutate the `to`
-                // info, otherwise `moveStake` will just noop
+                // If there is 0 moveable stake for the sampled `to` pool, we need to mutate the
+                // `from` info, otherwise `moveStake` will just noop
                 if (amount.isZero()) {
-                    from.poolId = unusedPoolId(lastPoolId);
+                    from.poolId = Pseudorandom.hex();
                     // Status must be delegated and amount must be nonzero to trigger _assertStakingPoolExists
                     from.status = StakeStatus.Delegated;
                     const randomAmount = Pseudorandom.integer(1, constants.MAX_UINT256);
@@ -245,7 +213,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     const infoToMutate = Pseudorandom.sample([[from], [to], [from, to]]);
                     let nonExistentPoolId;
                     for (const info of infoToMutate!) {
-                        info.poolId = unusedPoolId(lastPoolId);
+                        info.poolId = Pseudorandom.hex();
                         nonExistentPoolId = nonExistentPoolId || info.poolId;
                         // Status must be delegated and amount must be nonzero to trigger _assertStakingPoolExists
                         info.status = StakeStatus.Delegated;

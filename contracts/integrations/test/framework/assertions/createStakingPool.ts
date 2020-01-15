@@ -1,6 +1,6 @@
 import { StakingRevertErrors, StoredBalance } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 
 import { DeploymentManager } from '../deployment_manager';
@@ -26,10 +26,7 @@ export function validCreateStakingPoolAssertion(
         before: async () => {
             const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
             // Effectively the last poolId + 1, but as a bytestring
-            return `0x${new BigNumber(lastPoolId)
-                .plus(1)
-                .toString(16)
-                .padStart(64, '0')}`;
+            return hexUtils.leftPad(new BigNumber(lastPoolId).plus(1));
         },
         after: async (
             expectedPoolId: string,
@@ -73,10 +70,7 @@ export function invalidCreateStakingPoolAssertion(
         before: async () => {
             const lastPoolId = await stakingWrapper.lastPoolId().callAsync();
             // Effectively the last poolId + 1, but as a bytestring
-            return `0x${new BigNumber(lastPoolId)
-                .plus(1)
-                .toString(16)
-                .padStart(64, '0')}`;
+            return hexUtils.leftPad(new BigNumber(lastPoolId).plus(1));
         },
         after: async (expectedPoolId: string, result: FunctionResult, args: [number, boolean]) => {
             // Ensure that the tx reverted.

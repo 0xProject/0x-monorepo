@@ -30,12 +30,10 @@ export class StakeManagementSimulation extends Simulation {
             ...stakers.map(staker => [staker.simulationActions.validStake, 0.28 / stakers.length]),
             // 2% chance of executing invalidUnstake for a random staker
             ...stakers.map(staker => [staker.simulationActions.validUnstake, 0.02 / stakers.length]),
-            // 26% chance of executing validMoveStake for a random staker
-            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.26 / stakers.length]),
+            // 28% chance of executing validMoveStake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.28 / stakers.length]),
             // 2% chance of executing moveStakeNonexistentPool for a random staker
             ...stakers.map(staker => [staker.simulationActions.moveStakeNonexistentPool, 0.02 / stakers.length]),
-            // 2% chance of executing moveStakeInvalidAmount for a random staker
-            ...stakers.map(staker => [staker.simulationActions.moveStakeInvalidAmount, 0.02 / stakers.length]),
             // 20% chance of executing an assertion generated from the pool management simulation
             [poolManagement.generator, 0.2],
         ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];

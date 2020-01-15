@@ -92,7 +92,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                 const operatorShare = Pseudorandom.integer(
                     0,
                     stakingConstants.PPM,
-                    Distributions.Kumaraswamy(0.2, 0.2),
+                    Distributions.Kumaraswamy(),
                 ).toNumber();
                 yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
             }
@@ -104,7 +104,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                 const operatorShare = Pseudorandom.integer(
                     (stakingConstants.PPM as number) + 1,
                     constants.MAX_UINT32,
-                    Distributions.Kumaraswamy(0.2, 0.2),
+                    Distributions.Kumaraswamy(),
                 ).toNumber();
                 yield assertion.executeAsync([operatorShare, false], { from: this.actor.address });
             }
@@ -121,7 +121,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                     const operatorShare = Pseudorandom.integer(
                         0,
                         stakingPools[poolId].operatorShare,
-                        Distributions.Kumaraswamy(0.2, 0.2),
+                        Distributions.Kumaraswamy(),
                     ).toNumber();
                     yield assertion.executeAsync([poolId, operatorShare], { from: this.actor.address });
                 }
@@ -139,7 +139,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase
                     const operatorShare = Pseudorandom.integer(
                         (stakingPools[poolId].operatorShare as number) + 1,
                         constants.MAX_UINT32,
-                        Distributions.Kumaraswamy(0.2, 0.2),
+                        Distributions.Kumaraswamy(),
                     ).toNumber();
                     yield assertion.executeAsync([poolId, operatorShare], { from: this.actor.address });
                 }
