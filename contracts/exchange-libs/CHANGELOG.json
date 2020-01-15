@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Reference functions for `matchOrders` and `matchOrdersWithMaximalFill`.",
+                "pr": 2437
+            }
+        ]
+    },
+    {
         "timestamp": 1578272714,
         "version": "4.0.3",
         "changes": [
