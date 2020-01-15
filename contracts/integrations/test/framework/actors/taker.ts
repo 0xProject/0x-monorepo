@@ -79,7 +79,6 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 .matchOrders(leftOrder, rightOrder, leftOrder.signature, rightOrder.signature)
                 .awaitTransactionSuccessAsync({
                     from: this.actor.address,
-                    gasPrice: DeploymentManager.gasPrice,
                     value: DeploymentManager.protocolFee,
                     ...txData,
                 });
@@ -97,7 +96,6 @@ export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 .matchOrdersWithMaximalFill(leftOrder, rightOrder, leftOrder.signature, rightOrder.signature)
                 .awaitTransactionSuccessAsync({
                     from: this.actor.address,
-                    gasPrice: DeploymentManager.gasPrice,
                     value: DeploymentManager.protocolFee,
                     ...txData,
                 });

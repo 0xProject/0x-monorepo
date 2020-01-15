@@ -1,7 +1,7 @@
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { orderHashUtils, verifyEvents } from '@0x/contracts-test-utils';
+import { constants, orderHashUtils, verifyEvents } from '@0x/contracts-test-utils';
 import { MatchedFillResults, Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
@@ -122,7 +122,7 @@ const verifyMatchTransferEvents = (
             _to: deployment.staking.stakingProxy.address,
             _value: value.isLessThan(DeploymentManager.protocolFee.times(2))
                 ? DeploymentManager.protocolFee
-                : new BigNumber(0),
+                : constants.ZERO_AMOUNT,
         },
         {
             _from: takerAddress,
@@ -134,7 +134,7 @@ const verifyMatchTransferEvents = (
             _to: rightOrder.feeRecipientAddress,
             _value:
                 leftOrder.feeRecipientAddress === rightOrder.feeRecipientAddress
-                    ? new BigNumber(0)
+                    ? constants.ZERO_AMOUNT
                     : matchResults.right.takerFeePaid,
         },
         {

@@ -3,7 +3,6 @@ import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { Maker } from '../actors/maker';
-import { filterActorsByRole } from '../actors/utils';
 import { DeploymentManager } from '../deployment_manager';
 import { SimulationEnvironment } from '../simulation';
 import { assertProtocolFeePaidAsync, getPoolInfoAsync, PoolInfo } from '../utils/assert_protocol_fee';
@@ -11,7 +10,7 @@ import { verifyMatchEvents } from '../utils/verify_match_events';
 
 import { FunctionAssertion, FunctionResult } from './function_assertion';
 
-export const matchOrderRuntimeAssertion = (
+export const matchOrdersRuntimeAssertion = (
     deployment: DeploymentManager,
     simulationEnvironment: SimulationEnvironment,
     withMaximalFill: boolean,
@@ -22,9 +21,9 @@ export const matchOrderRuntimeAssertion = (
     return {
         before: async (args: [Order, Order, string, string]) => {
             const [order] = args;
-            const maker = filterActorsByRole(actors, Maker).find(actor => actor.address === order.makerAddress);
-            // tslint:disable-next-line no-non-null-assertion
-            const poolInfo = getPoolInfoAsync(maker!, simulationEnvironment, deployment);
+            // tslint:disable-next-line no-unnecessary-type-assertion
+            const maker = actors.find(actor => actor.address === order.makerAddress) as Maker;
+            const poolInfo = getPoolInfoAsync(maker, simulationEnvironment, deployment);
             return poolInfo;
         },
         after: async (
@@ -72,7 +71,7 @@ export function validMatchOrdersAssertion(
     return new FunctionAssertion<[Order, Order, string, string], PoolInfo | void, MatchedFillResults>(
         deployment.exchange,
         'matchOrders',
-        matchOrderRuntimeAssertion(deployment, simulationEnvironment, false),
+        matchOrdersRuntimeAssertion(deployment, simulationEnvironment, false),
     );
 }
 /* tslint:enable:no-non-null-assertion */

@@ -99,7 +99,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
             );
 
             // Maker and taker set balances/allowances to guarantee that the fill succeeds.
-            // Amounts are chosen to be within each actor's balance (divided by 2, in case
+            // Amounts are chosen to be within each actor's balance (divided by 8, in case
             // e.g. makerAsset = makerFeeAsset)
             const [makerAssetAmount, makerFee, takerAssetAmount, takerFee] = await Promise.all(
                 [

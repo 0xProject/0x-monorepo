@@ -6,7 +6,7 @@ import { SimulationEnvironment } from '../simulation';
 import { PoolInfo } from '../utils/assert_protocol_fee';
 
 import { FunctionAssertion } from './function_assertion';
-import { matchOrderRuntimeAssertion } from './matchOrders';
+import { matchOrdersRuntimeAssertion } from './matchOrders';
 
 /**
  * A function assertion that verifies that a complete and valid `matchOrdersWithMaximalFill` succeeded and emitted the correct logs.
@@ -20,7 +20,7 @@ export function validMatchOrdersWithMaximalFillAssertion(
     return new FunctionAssertion<[Order, Order, string, string], PoolInfo | void, MatchedFillResults>(
         deployment.exchange,
         'matchOrdersWithMaximalFill',
-        matchOrderRuntimeAssertion(deployment, simulationEnvironment, true),
+        matchOrdersRuntimeAssertion(deployment, simulationEnvironment, true),
     );
 }
 /* tslint:enable:no-non-null-assertion */

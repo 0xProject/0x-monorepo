@@ -1,6 +1,7 @@
+import { orderHashUtils } from '@0x/contracts-test-utils';
 import { ReferenceFunctions } from '@0x/contracts-utils';
 import { FillResults, MatchedFillResults, Order } from '@0x/types';
-import { BigNumber, LibMathRevertErrors } from '@0x/utils';
+import { BigNumber, ExchangeRevertErrors, LibMathRevertErrors } from '@0x/utils';
 
 const { safeAdd, safeSub, safeMul, safeDiv } = ReferenceFunctions;
 
@@ -148,20 +149,19 @@ export function calculateMatchResults(
             .times(rightOrder.makerAssetAmount)
             .lt(leftOrder.takerAssetAmount.times(rightOrder.takerAssetAmount))
     ) {
-        throw new Error(
-            `Orders Cannot Be Matched.\nLeft Order: ${JSON.stringify(leftOrder, null, 4)}\Right Order: ${JSON.stringify(
-                rightOrder,
-                null,
-                4,
-            )}`,
+        throw new ExchangeRevertErrors.NegativeSpreadError(
+            orderHashUtils.getOrderHashHex(leftOrder),
+            orderHashUtils.getOrderHashHex(rightOrder),
         );
     }
 
     // Asset Transfer Amounts
     if (leftOrder.takerAssetAmount.gt(rightOrder.makerAssetAmount)) {
-        leftFillResults.makerAssetFilledAmount = leftOrder.makerAssetAmount
-            .multipliedBy(rightOrder.makerAssetAmount)
-            .dividedToIntegerBy(leftOrder.takerAssetAmount);
+        leftFillResults.makerAssetFilledAmount = safeGetPartialAmountFloor(
+            leftOrder.makerAssetAmount,
+            leftOrder.takerAssetAmount,
+            rightOrder.makerAssetAmount,
+        );
         leftFillResults.takerAssetFilledAmount = rightOrder.makerAssetAmount;
         rightFillResults.makerAssetFilledAmount = rightOrder.makerAssetAmount;
         rightFillResults.takerAssetFilledAmount = rightOrder.takerAssetAmount;

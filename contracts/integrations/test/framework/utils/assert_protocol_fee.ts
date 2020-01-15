@@ -34,7 +34,7 @@ export async function getPoolInfoAsync(
 ): Promise<PoolInfo | undefined> {
     const { stakingWrapper } = deployment.staking;
     // tslint:disable-next-line no-non-null-assertion no-unnecessary-type-assertion
-    const poolId = maker!.makerPoolId;
+    const poolId = maker.makerPoolId;
     const { currentEpoch } = simulationEnvironment;
     if (poolId === undefined) {
         return;
