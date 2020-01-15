@@ -100,6 +100,11 @@ contract LibAssetData {
 
             uint256 length = tokenIds.length;
             for (uint256 i = 0; i != length; i++) {
+                // Skip over the token if the corresponding value is 0.
+                if (tokenValues[i] == 0) {
+                    continue;
+                }
+
                 // Encode data for `balanceOf(ownerAddress, tokenIds[i])
                 bytes memory balanceOfData = abi.encodeWithSelector(
                     IERC1155(address(0)).balanceOf.selector,
