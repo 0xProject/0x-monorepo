@@ -114,4 +114,12 @@ export interface GetMarketOrdersOpts {
      * Default is 0.01 (100 basis points).
      */
     dustFractionThreshold: number;
+    /**
+     * The exponential sampling distribution base.
+     * A value of 1 will result in evenly spaced samples.
+     * > 1 will result in more samples at lower sizes.
+     * < 1 will result in more samples at higher sizes.
+     * Default: 1.25.
+     */
+    sampleDistributionBase: number;
 }
