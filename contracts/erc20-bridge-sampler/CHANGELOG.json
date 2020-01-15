@@ -5,6 +5,10 @@
             {
                 "note": "Add batch functions to query quotes",
                 "pr": 2427
+            },
+            {
+                "note": "Early exit if a DEX sample fails",
+                "pr": 2427
             }
         ]
     },

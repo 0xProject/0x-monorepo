@@ -195,7 +195,7 @@ blockchainTests('erc20-bridge-sampler', env => {
 
     function getDeterministicFillableTakerAssetAmount(order: Order): BigNumber {
         const hash = getPackedHash(hexUtils.toHex(order.salt, 32));
-        const orderStatus = new BigNumber(hash).mod(255).toNumber();
+        const orderStatus = new BigNumber(hash).mod(100).toNumber() > 90 ? 5 : 3;
         const isValidSignature = !!new BigNumber(hash).mod(2).toNumber();
         if (orderStatus !== 3 || !isValidSignature) {
             return constants.ZERO_AMOUNT;
@@ -208,7 +208,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         return order.makerAssetAmount
             .times(takerAmount)
             .div(order.takerAssetAmount)
-            .integerValue(BigNumber.ROUND_DOWN);
+            .integerValue(BigNumber.ROUND_UP);
     }
 
     function getERC20AssetData(tokenAddress: string): string {
@@ -255,7 +255,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     describe('getOrderFillableTakerAssetAmounts()', () => {
         it('returns the expected amount for each order', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN);
-            const signatures: string[] = _.times(orders.length, hexUtils.random);
+            const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const expected = orders.map(getDeterministicFillableTakerAssetAmount);
             const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
             expect(actual).to.deep.eq(expected);
@@ -269,7 +269,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('returns zero for an order with zero maker asset amount', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].makerAssetAmount = constants.ZERO_AMOUNT;
-            const signatures: string[] = _.times(orders.length, hexUtils.random);
+            const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
@@ -277,7 +277,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('returns zero for an order with zero taker asset amount', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].takerAssetAmount = constants.ZERO_AMOUNT;
-            const signatures: string[] = _.times(orders.length, hexUtils.random);
+            const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const actual = await testContract.getOrderFillableTakerAssetAmounts(orders, signatures).callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
@@ -293,7 +293,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     describe('getOrderFillableMakerAssetAmounts()', () => {
         it('returns the expected amount for each order', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN);
-            const signatures: string[] = _.times(orders.length, hexUtils.random);
+            const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const expected = orders.map(getDeterministicFillableMakerAssetAmount);
             const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
             expect(actual).to.deep.eq(expected);
@@ -307,7 +307,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('returns zero for an order with zero maker asset amount', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].makerAssetAmount = constants.ZERO_AMOUNT;
-            const signatures: string[] = _.times(orders.length, hexUtils.random);
+            const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
@@ -315,7 +315,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('returns zero for an order with zero taker asset amount', async () => {
             const orders = createOrders(MAKER_TOKEN, TAKER_TOKEN, 1);
             orders[0].takerAssetAmount = constants.ZERO_AMOUNT;
-            const signatures: string[] = _.times(orders.length, hexUtils.random);
+            const signatures: string[] = _.times(orders.length, i => hexUtils.random());
             const actual = await testContract.getOrderFillableMakerAssetAmounts(orders, signatures).callAsync();
             expect(actual).to.deep.eq([constants.ZERO_AMOUNT]);
         });
@@ -330,7 +330,7 @@ blockchainTests('erc20-bridge-sampler', env => {
 
     describe('queryOrdersAndSampleSells()', () => {
         const ORDERS = createOrders(MAKER_TOKEN, TAKER_TOKEN);
-        const SIGNATURES: string[] = _.times(ORDERS.length, hexUtils.random);
+        const SIGNATURES: string[] = _.times(ORDERS.length, i => hexUtils.random());
 
         before(async () => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
@@ -436,7 +436,7 @@ blockchainTests('erc20-bridge-sampler', env => {
 
     describe('queryOrdersAndSampleBuys()', () => {
         const ORDERS = createOrders(MAKER_TOKEN, TAKER_TOKEN);
-        const SIGNATURES: string[] = _.times(ORDERS.length, hexUtils.random);
+        const SIGNATURES: string[] = _.times(ORDERS.length, i => hexUtils.random());
 
         before(async () => {
             await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
