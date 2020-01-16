@@ -100,6 +100,11 @@ contract LibAssetData {
 
             uint256 length = tokenIds.length;
             for (uint256 i = 0; i != length; i++) {
+                // Skip over the token if the corresponding value is 0.
+                if (tokenValues[i] == 0) {
+                    continue;
+                }
+
                 // Encode data for `balanceOf(ownerAddress, tokenIds[i])
                 bytes memory balanceOfData = abi.encodeWithSelector(
                     IERC1155(address(0)).balanceOf.selector,
@@ -113,6 +118,9 @@ contract LibAssetData {
 
                 // Scale total balance down by corresponding value in assetData
                 uint256 scaledBalance = totalBalance / tokenValues[i];
+                if (scaledBalance == 0) {
+                    return 0;
+                }
                 if (scaledBalance < balance || balance == 0) {
                     balance = scaledBalance;
                 }
@@ -138,11 +146,19 @@ contract LibAssetData {
 
             uint256 length = nestedAssetData.length;
             for (uint256 i = 0; i != length; i++) {
+                // Skip over the asset if the corresponding amount is 0.
+                if (assetAmounts[i] == 0) {
+                    continue;
+                }
+
                 // Query balance of individual assetData
                 uint256 totalBalance = getBalance(ownerAddress, nestedAssetData[i]);
 
                 // Scale total balance down by corresponding value in assetData
                 uint256 scaledBalance = totalBalance / assetAmounts[i];
+                if (scaledBalance == 0) {
+                    return 0;
+                }
                 if (scaledBalance < balance || balance == 0) {
                     balance = scaledBalance;
                 }
@@ -193,11 +209,19 @@ contract LibAssetData {
 
             uint256 length = nestedAssetData.length;
             for (uint256 i = 0; i != length; i++) {
+                // Skip over the asset if the corresponding amount is 0.
+                if (amounts[i] == 0) {
+                    continue;
+                }
+
                 // Query allowance of individual assetData
                 uint256 totalAllowance = getAssetProxyAllowance(ownerAddress, nestedAssetData[i]);
 
                 // Scale total allowance down by corresponding value in assetData
                 uint256 scaledAllowance = totalAllowance / amounts[i];
+                if (scaledAllowance == 0) {
+                    return 0;
+                }
                 if (scaledAllowance < allowance || allowance == 0) {
                     allowance = scaledAllowance;
                 }
