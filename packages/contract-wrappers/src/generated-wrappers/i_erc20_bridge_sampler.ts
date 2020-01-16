@@ -797,6 +797,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -843,6 +844,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -861,6 +863,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
      * @returns ordersAndSamples How much taker asset can be filled         by each order in &#x60;orders&#x60;. Taker amounts sold for each source at         each maker token amount. First indexed by source index, then sample         index
      */
     public queryBatchOrdersAndSampleBuys(
+        // tslint:disable-next-line: array-type
         orders: Array<{
             makerAddress: string;
             takerAddress: string;
@@ -925,6 +928,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
      * @returns ordersAndSamples How much taker asset can be filled         by each order in &#x60;orders&#x60;. Maker amounts bought for each source at         each taker token amount. First indexed by source index, then sample         index.
      */
     public queryBatchOrdersAndSampleSells(
+        // tslint:disable-next-line: array-type
         orders: Array<{
             makerAddress: string;
             takerAddress: string;
@@ -1027,6 +1031,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[][]]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1088,6 +1093,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[][]]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1130,6 +1136,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber[][]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1172,6 +1179,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     defaultBlock,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber[][]>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
