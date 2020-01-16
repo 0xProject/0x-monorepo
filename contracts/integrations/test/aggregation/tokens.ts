@@ -2,7 +2,7 @@ export const tokens: { [symbol: string]: { address: string; decimals: number; pr
     ETH: {
         address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
         decimals: 18,
-        price: 133,
+        price: 161,
     },
     SAI: {
         address: '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
@@ -57,7 +57,7 @@ export const tokens: { [symbol: string]: { address: string; decimals: number; pr
     USDT: {
         address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
         decimals: 6,
-        price: 0.019,
+        price: 1,
     },
     REP: {
         address: '0x1985365e9f78359a9B6AD760e32412f4a445E862',
@@ -73,6 +73,11 @@ export const tokens: { [symbol: string]: { address: string; decimals: number; pr
         address: '0x514910771AF9Ca656af840dff83E8264EcF986CA',
         decimals: 18,
         price: 1.8,
+    },
+    SNX: {
+        address: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+        decimals: 18,
+        price: 0.91,
     },
     sETH: {
         address: '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',

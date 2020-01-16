@@ -1,7 +1,7 @@
 import { SwapQuoter } from '@0x/asset-swapper';
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { ERC20TokenContract } from '@0x/contracts-erc20';
-import { ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
+import { artifacts as samplerArtifacts, ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
@@ -49,7 +49,7 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
             logUtils.log(r);
         });
 
-        it.only('can get a big ETH -> DAI sell quote directly from kyber', async () => {
+        it('can get a big ETH -> DAI sell quote directly from kyber', async () => {
             const token = tokens.DAI;
             const amount = new BigNumber(10).pow(token.decimals).times(80e3);
             const r = await kyber
@@ -75,7 +75,7 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
 
         it('can get valid ETH -> sETH sell samples from uniswap', async () => {
             const token = tokens.sETH;
-            const amount = new BigNumber(10).pow(token.decimals).times(10);
+            const amount = new BigNumber(10).pow(ETH_TOKEN.decimals).times(10);
             const samples = getSampleAmounts(amount);
             const r = await sampler.sampleSellsFromUniswap(ETH_TOKEN.address, token.address, samples).callAsync();
             expect(_.some(r, v => !v.isZero())).to.be.true();
@@ -95,7 +95,7 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
 
         it('can get a ETH -> sETH market sell from SwapQuoter', async () => {
             const token = tokens.sETH;
-            const amount = new BigNumber(10).pow(token.decimals).times(10);
+            const amount = new BigNumber(10).pow(ETH_TOKEN.decimals).times(10);
             const quote = await swapQuoter.getMarketSellSwapQuoteAsync(token.address, ETH_TOKEN.address, amount);
             const { makerAssetAmount } = quote.bestCaseQuoteInfo;
             expect(makerAssetAmount).to.bignumber.not.eq(0);
@@ -107,6 +107,14 @@ blockchainTests.live.only('ERC20BridgeSampler Mainnet Tests', env => {
             const quote = await swapQuoter.getMarketBuySwapQuoteAsync(token.address, ETH_TOKEN.address, amount);
             const { takerAssetAmount } = quote.bestCaseQuoteInfo;
             expect(takerAssetAmount).to.bignumber.not.eq(0);
+        });
+
+        it.only('can get a ETH -> SNX market sell from SwapQuoter', async () => {
+            const token = tokens.SNX;
+            const amount = new BigNumber(10).pow(ETH_TOKEN.decimals).times(10);
+            const quote = await swapQuoter.getMarketSellSwapQuoteAsync(token.address, ETH_TOKEN.address, amount);
+            const { makerAssetAmount } = quote.bestCaseQuoteInfo;
+            expect(makerAssetAmount).to.bignumber.not.eq(0);
         });
     });
 });
