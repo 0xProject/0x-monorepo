@@ -80,6 +80,48 @@ export interface Fill {
 }
 
 /**
+ * Represents continguous fills on a path that have been merged together.
+ */
+export interface CollapsedFill {
+    /**
+     * The source DEX.
+     */
+    source: ERC20BridgeSource;
+    /**
+     * Total maker asset amount.
+     */
+    totalMakerAssetAmount: BigNumber;
+    /**
+     * Total taker asset amount.
+     */
+    totalTakerAssetAmount: BigNumber;
+    /**
+     * All the fill asset amounts that were collapsed into this node.
+     */
+    subFills: Array<{
+        makerAssetAmount: BigNumber;
+        takerAssetAmount: BigNumber;
+    }>;
+}
+
+/**
+ * A `CollapsedFill` wrapping a native order.
+ */
+export interface NativeCollapsedFill extends CollapsedFill {
+    nativeOrder: SignedOrderWithFillableAmounts;
+}
+
+/**
+ * Optimized orders to fill.
+ */
+export interface OptimizedMarketOrder extends SignedOrderWithFillableAmounts {
+    /**
+     * The optimized fills that generated this order.
+     */
+    fill: CollapsedFill;
+}
+
+/**
  * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
  */
 export interface GetMarketOrdersOpts {
