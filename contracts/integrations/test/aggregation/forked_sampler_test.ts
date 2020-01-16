@@ -10,11 +10,7 @@ blockchainTests.fork.skip('ERC20BridgeSampler Forekd Mainnet Tests', env => {
     const ETH2DAI_SOURCE = '0x39755357759ce0d7f32dc8dc45414cca409ae24e';
     const UNISWAP_SOURCE = '0xc0a47dfe034b400b47bdad5fecda2621de6c4d95';
     const KYBER_SOURCE = '0x818e6fecd516ecc3849daf6845e3ec868087b755';
-    const ALL_SOURCES = [
-        ETH2DAI_SOURCE,
-        UNISWAP_SOURCE,
-        KYBER_SOURCE,
-    ];
+    const ALL_SOURCES = [ETH2DAI_SOURCE, UNISWAP_SOURCE, KYBER_SOURCE];
     let sampler: ERC20BridgeSamplerContract;
 
     before(async () => {

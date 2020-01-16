@@ -17,7 +17,7 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
     const GAS_PRICE = new BigNumber(1);
     const TAKER_ASSET_ETH_VALUE = 500e18;
     const MIN_BALANCE = 500.1e18;
-    const SYMBOLS = ['ETH', 'DAI', 'USDC', 'FOAM'];
+    const SYMBOLS = ['ETH', 'SNX'];
     const TEST_PAIRS = _.flatten(SYMBOLS.map(m => SYMBOLS.filter(t => t !== m).map(t => [m, t])));
     const FILL_VALUES = [1, 10, 1e2, 1e3, 1e4, 2.5e4, 5e4];
 
@@ -180,6 +180,7 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
                             from: TAKER_ADDRESS,
                             gasPrice: quote.gasPrice,
                         });
+                    console.log(quote.worstCaseQuoteInfo, quote.bestCaseQuoteInfo);
                     if (checkHadEnoughTakerAsset(quote, fill)) {
                         expect(fill.fillResults.makerAssetFilledAmount, 'makerAssetFilledAmount').to.bignumber.gte(
                             quote.worstCaseQuoteInfo.makerAssetAmount,
