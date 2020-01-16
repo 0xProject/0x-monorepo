@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "./MixinForwarderCore.sol";
 import "./libs/LibConstants.sol";
+import "./MixinReceiver.sol";
 
 
 // solhint-disable no-empty-blocks
@@ -28,7 +29,8 @@ import "./libs/LibConstants.sol";
 // MixinForwarderCore.
 contract Forwarder is
     LibConstants,
-    MixinForwarderCore
+    MixinForwarderCore,
+    MixinReceiver
 {
     constructor (
         address _exchange,

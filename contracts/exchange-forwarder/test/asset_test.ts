@@ -1,5 +1,12 @@
 import { IAssetDataContract } from '@0x/contracts-asset-proxy';
 import {
+    artifacts as ERC1155Artifacts,
+    ERC1155Events,
+    ERC1155MintableContract,
+    ERC1155TransferBatchEventArgs,
+    Erc1155Wrapper,
+} from '@0x/contracts-erc1155';
+import {
     artifacts as ERC20Artifacts,
     DummyERC20TokenContract,
     ERC20TokenEvents,
@@ -25,6 +32,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import { artifacts } from './artifacts';
 import { TestForwarderContract } from './wrappers';
 
+// tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Supported asset type unit tests', env => {
     let forwarder: TestForwarderContract;
     let assetDataEncoder: IAssetDataContract;
@@ -34,6 +42,8 @@ blockchainTests.resets('Supported asset type unit tests', env => {
 
     let erc20Token: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
+    let erc1155Token: ERC1155MintableContract;
+    let erc1155Wrapper: Erc1155Wrapper;
     let nftId: BigNumber;
 
     let erc20AssetData: string;
@@ -50,7 +60,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
             artifacts.TestForwarder,
             env.provider,
             env.txDefaults,
-            { ...artifacts, ...ERC20Artifacts, ...ERC721Artifacts },
+            { ...artifacts, ...ERC20Artifacts, ...ERC721Artifacts, ...ERC1155Artifacts },
         );
 
         erc20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
@@ -75,6 +85,14 @@ blockchainTests.resets('Supported asset type unit tests', env => {
         );
         nftId = getRandomInteger(0, constants.MAX_UINT256);
         erc721AssetData = assetDataEncoder.ERC721Token(erc721Token.address, nftId).getABIEncodedTransactionData();
+
+        erc1155Token = await ERC1155MintableContract.deployFrom0xArtifactAsync(
+            ERC1155Artifacts.ERC1155Mintable,
+            env.provider,
+            env.txDefaults,
+            ERC1155Artifacts,
+        );
+        erc1155Wrapper = new Erc1155Wrapper(erc1155Token, receiver);
 
         bridgeAddress = randomAddress();
         bridgeData = hexUtils.random();
@@ -183,7 +201,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
         });
     });
 
-    describe('_transferAssetToSender', () => {
+    describe('transferOut', () => {
         const TRANSFER_AMOUNT = new BigNumber(1);
         before(async () => {
             await erc20Token
@@ -194,7 +212,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
 
         it('transfers an ERC20 token given ERC20 assetData', async () => {
             const txReceipt = await forwarder
-                .transferAssetToSender(erc20AssetData, TRANSFER_AMOUNT)
+                .transferOut(erc20AssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             verifyEventsFromLogs<ERC20TokenTransferEventArgs>(
                 txReceipt.logs,
@@ -204,7 +222,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
         });
         it('transfers an ERC721 token given ERC721 assetData and amount == 1', async () => {
             const txReceipt = await forwarder
-                .transferAssetToSender(erc721AssetData, TRANSFER_AMOUNT)
+                .transferOut(erc721AssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             verifyEventsFromLogs<ERC721TokenTransferEventArgs>(
                 txReceipt.logs,
@@ -215,10 +233,61 @@ blockchainTests.resets('Supported asset type unit tests', env => {
         it('reverts if attempting to transfer an ERC721 token with amount != 1', async () => {
             const invalidAmount = new BigNumber(2);
             const tx = forwarder
-                .transferAssetToSender(erc721AssetData, invalidAmount)
+                .transferOut(erc721AssetData, invalidAmount)
                 .awaitTransactionSuccessAsync({ from: receiver });
             const expectedError = new ExchangeForwarderRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
             return expect(tx).to.revertWith(expectedError);
+        });
+        it('transfers a single ERC1155 token', async () => {
+            const values = [new BigNumber(1)];
+            const amount = new BigNumber(1);
+            const ids = [await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], values)];
+            const assetData = assetDataEncoder
+                .ERC1155Assets(erc1155Token.address, ids, values, constants.NULL_BYTES)
+                .getABIEncodedTransactionData();
+            const txReceipt = await forwarder
+                .transferOut(assetData, amount)
+                .awaitTransactionSuccessAsync({ from: receiver });
+            verifyEventsFromLogs<ERC1155TransferBatchEventArgs>(
+                txReceipt.logs,
+                [{ operator: forwarder.address, from: forwarder.address, to: receiver, ids, values }],
+                ERC1155Events.TransferBatch,
+            );
+        });
+        it('transfers multiple ids of an ERC1155 token', async () => {
+            const amount = new BigNumber(1);
+            const ids = [
+                await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [amount]),
+                await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [amount]),
+            ];
+            const values = [amount, amount];
+            const assetData = assetDataEncoder
+                .ERC1155Assets(erc1155Token.address, ids, values, constants.NULL_BYTES)
+                .getABIEncodedTransactionData();
+            const txReceipt = await forwarder.transferOut(assetData, amount).awaitTransactionSuccessAsync();
+            verifyEventsFromLogs<ERC1155TransferBatchEventArgs>(
+                txReceipt.logs,
+                [{ operator: forwarder.address, from: forwarder.address, to: receiver, ids, values }],
+                ERC1155Events.TransferBatch,
+            );
+        });
+        it('scales up values when transfering ERC1155 tokens', async () => {
+            const amount = new BigNumber(2);
+            const values = [new BigNumber(1), new BigNumber(2)];
+            const scaledValues = values.map(value => value.times(amount));
+            const ids = [
+                await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [scaledValues[0]]),
+                await erc1155Wrapper.mintFungibleTokensAsync([forwarder.address], [scaledValues[1]]),
+            ];
+            const assetData = assetDataEncoder
+                .ERC1155Assets(erc1155Token.address, ids, values, constants.NULL_BYTES)
+                .getABIEncodedTransactionData();
+            const txReceipt = await forwarder.transferOut(assetData, amount).awaitTransactionSuccessAsync();
+            verifyEventsFromLogs<ERC1155TransferBatchEventArgs>(
+                txReceipt.logs,
+                [{ operator: forwarder.address, from: forwarder.address, to: receiver, ids, values: scaledValues }],
+                ERC1155Events.TransferBatch,
+            );
         });
         it('transfers a single ERC20 token wrapped as MultiAsset', async () => {
             const nestedAmount = new BigNumber(1337);
@@ -227,7 +296,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
                 .getABIEncodedTransactionData();
             const multiAssetAmount = new BigNumber(2);
             const txReceipt = await forwarder
-                .transferAssetToSender(erc20MultiAssetData, multiAssetAmount)
+                .transferOut(erc20MultiAssetData, multiAssetAmount)
                 .awaitTransactionSuccessAsync({ from: receiver });
             verifyEventsFromLogs<ERC20TokenTransferEventArgs>(
                 txReceipt.logs,
@@ -241,7 +310,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
                 .MultiAsset(nestedAmounts, [erc20AssetData, erc721AssetData, staticCallAssetData])
                 .getABIEncodedTransactionData();
             const txReceipt = await forwarder
-                .transferAssetToSender(assortedMultiAssetData, TRANSFER_AMOUNT)
+                .transferOut(assortedMultiAssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             expect(txReceipt.logs.length).to.equal(2);
             // tslint:disable:no-unnecessary-type-assertion
@@ -261,7 +330,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
                 .MultiAsset(nestedAmounts, [multiAssetData, erc721AssetData, staticCallAssetData])
                 .getABIEncodedTransactionData();
             const txReceipt = await forwarder
-                .transferAssetToSender(assortedMultiAssetData, TRANSFER_AMOUNT)
+                .transferOut(assortedMultiAssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             expect(txReceipt.logs.length).to.equal(2);
             // tslint:disable:no-unnecessary-type-assertion
@@ -277,7 +346,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
         });
         it('transfers an ERC20 token given ERC20Bridge assetData', async () => {
             const txReceipt = await forwarder
-                .transferAssetToSender(erc20BridgeAssetData, TRANSFER_AMOUNT)
+                .transferOut(erc20BridgeAssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             verifyEventsFromLogs<ERC20TokenTransferEventArgs>(
                 txReceipt.logs,
@@ -287,14 +356,14 @@ blockchainTests.resets('Supported asset type unit tests', env => {
         });
         it('noops (emits no events) for StaticCall assetData', async () => {
             const txReceipt = await forwarder
-                .transferAssetToSender(staticCallAssetData, TRANSFER_AMOUNT)
+                .transferOut(staticCallAssetData, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             expect(txReceipt.logs.length).to.equal(0);
         });
         it('reverts if assetData is unsupported', async () => {
             const randomBytes = hexUtils.random();
             const tx = forwarder
-                .transferAssetToSender(randomBytes, TRANSFER_AMOUNT)
+                .transferOut(randomBytes, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
             const expectedError = new ExchangeForwarderRevertErrors.UnsupportedAssetProxyError(
                 hexUtils.slice(randomBytes, 0, 4),

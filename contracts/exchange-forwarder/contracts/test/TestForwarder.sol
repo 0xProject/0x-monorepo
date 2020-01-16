@@ -21,12 +21,17 @@ pragma experimental ABIEncoderV2;
 
 import "../src/MixinExchangeWrapper.sol";
 import "../src/libs/LibConstants.sol";
+import "../src/libs/LibAssetDataTransfer.sol";
+import "../src/MixinReceiver.sol";
 
 
 contract TestForwarder is
     LibConstants,
-    MixinExchangeWrapper
+    MixinExchangeWrapper,
+    MixinReceiver
 {
+    using LibAssetDataTransfer for bytes;
+
     // solhint-disable no-empty-blocks
     constructor ()
         public
@@ -50,15 +55,12 @@ contract TestForwarder is
         );
     }
 
-    function transferAssetToSender(
+    function transferOut(
         bytes memory assetData,
         uint256 amount
     )
         public
     {
-        _transferAssetToSender(
-            assetData,
-            amount
-        );
+        assetData.transferOut(amount);
     }
 }

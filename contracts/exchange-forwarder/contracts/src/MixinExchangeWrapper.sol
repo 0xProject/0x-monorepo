@@ -159,8 +159,7 @@ contract MixinExchangeWrapper is
         uint256 protocolFee = tx.gasprice.safeMul(EXCHANGE.protocolFeeMultiplier());
         bytes4 erc20BridgeProxyId = IAssetData(address(0)).ERC20Bridge.selector;
 
-        uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i != ordersLength; i++) {
+        for (uint256 i = 0; i != orders.length; i++) {
             // Preemptively skip to avoid division by zero in _marketSellSingleOrder
             if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
                 continue;
@@ -198,7 +197,7 @@ contract MixinExchangeWrapper is
                 );
             }
 
-            _transferAssetToSender(orders[i].makerAssetData, makerAssetAcquiredAmount);
+            orders[i].makerAssetData.transferOut(makerAssetAcquiredAmount);
 
             totalWethSpentAmount = totalWethSpentAmount
                 .safeAdd(wethSpentAmount);
@@ -346,7 +345,7 @@ contract MixinExchangeWrapper is
                 );
             }
 
-            _transferAssetToSender(orders[i].makerAssetData, makerAssetAcquiredAmount);
+            orders[i].makerAssetData.transferOut(makerAssetAcquiredAmount);
 
             totalWethSpentAmount = totalWethSpentAmount
                 .safeAdd(wethSpentAmount);
