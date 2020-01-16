@@ -3,11 +3,17 @@ import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
-import { SignedOrderWithFillableAmounts } from '../../types';
 import { sortingUtils } from '../../utils/sorting_utils';
 
 import { constants as marketOperationUtilConstants } from './constants';
-import { AggregationError, ERC20BridgeSource, Fill, FillData, NativeFillData, OrderDomain } from './types';
+import {
+    AggregationError,
+    CollapsedFill,
+    ERC20BridgeSource,
+    NativeCollapsedFill,
+    OptimizedMarketOrder,
+    OrderDomain,
+} from './types';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
 const { INFINITE_TIMESTAMP_SEC, WALLET_SIGNATURE } = marketOperationUtilConstants;
@@ -24,23 +30,21 @@ export class CreateOrderUtils {
         orderDomain: OrderDomain,
         inputToken: string,
         outputToken: string,
-        path: Fill[],
+        path: CollapsedFill[],
         bridgeSlippage: number,
-    ): SignedOrderWithFillableAmounts[] {
-        const orders: SignedOrderWithFillableAmounts[] = [];
+    ): OptimizedMarketOrder[] {
+        const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
-            const source = (fill.fillData as FillData).source;
-            if (source === ERC20BridgeSource.Native) {
-                orders.push((fill.fillData as NativeFillData).order);
+            if (fill.source === ERC20BridgeSource.Native) {
+                orders.push(createNativeOrder(fill));
             } else {
                 orders.push(
                     createBridgeOrder(
                         orderDomain,
-                        this._getBridgeAddressFromSource(source),
+                        fill,
+                        this._getBridgeAddressFromSource(fill.source),
                         outputToken,
                         inputToken,
-                        fill.output,
-                        fill.input,
                         bridgeSlippage,
                     ),
                 );
@@ -54,23 +58,21 @@ export class CreateOrderUtils {
         orderDomain: OrderDomain,
         inputToken: string,
         outputToken: string,
-        path: Fill[],
+        path: CollapsedFill[],
         bridgeSlippage: number,
-    ): SignedOrderWithFillableAmounts[] {
-        const orders: SignedOrderWithFillableAmounts[] = [];
+    ): OptimizedMarketOrder[] {
+        const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
-            const source = (fill.fillData as FillData).source;
-            if (source === ERC20BridgeSource.Native) {
-                orders.push((fill.fillData as NativeFillData).order);
+            if (fill.source === ERC20BridgeSource.Native) {
+                orders.push(createNativeOrder(fill));
             } else {
                 orders.push(
                     createBridgeOrder(
                         orderDomain,
-                        this._getBridgeAddressFromSource(source),
+                        fill,
+                        this._getBridgeAddressFromSource(fill.source),
                         inputToken,
                         outputToken,
-                        fill.input,
-                        fill.output,
                         bridgeSlippage,
                         true,
                     ),
@@ -97,14 +99,13 @@ export class CreateOrderUtils {
 
 function createBridgeOrder(
     orderDomain: OrderDomain,
+    fill: CollapsedFill,
     bridgeAddress: string,
     makerToken: string,
     takerToken: string,
-    makerAssetAmount: BigNumber,
-    takerAssetAmount: BigNumber,
     slippage: number,
     isBuy: boolean = false,
-): SignedOrderWithFillableAmounts {
+): OptimizedMarketOrder {
     return {
         makerAddress: bridgeAddress,
         makerAssetData: assetDataUtils.encodeERC20BridgeAssetData(
@@ -113,7 +114,7 @@ function createBridgeOrder(
             createBridgeData(takerToken),
         ),
         takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
-        ...createCommonOrderFields(orderDomain, makerAssetAmount, takerAssetAmount, slippage, isBuy),
+        ...createCommonOrderFields(orderDomain, fill, slippage, isBuy),
     };
 }
 
@@ -123,24 +124,24 @@ function createBridgeData(tokenAddress: string): string {
 }
 
 type CommonOrderFields = Pick<
-    SignedOrderWithFillableAmounts,
-    Exclude<keyof SignedOrderWithFillableAmounts, 'makerAddress' | 'makerAssetData' | 'takerAssetData'>
+    OptimizedMarketOrder,
+    Exclude<keyof OptimizedMarketOrder, 'makerAddress' | 'makerAssetData' | 'takerAssetData'>
 >;
 
 function createCommonOrderFields(
     orderDomain: OrderDomain,
-    makerAssetAmount: BigNumber,
-    takerAssetAmount: BigNumber,
+    fill: CollapsedFill,
     slippage: number,
     isBuy: boolean = false,
 ): CommonOrderFields {
     const makerAssetAmountAdjustedWithSlippage = isBuy
-        ? makerAssetAmount
-        : makerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_DOWN);
+        ? fill.totalMakerAssetAmount
+        : fill.totalMakerAssetAmount.times(1 - slippage).integerValue(BigNumber.ROUND_DOWN);
     const takerAssetAmountAdjustedWithSlippage = isBuy
-        ? takerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
-        : takerAssetAmount;
+        ? fill.totalTakerAssetAmount.times(slippage + 1).integerValue(BigNumber.ROUND_UP)
+        : fill.totalTakerAssetAmount;
     return {
+        fill,
         takerAddress: NULL_ADDRESS,
         senderAddress: NULL_ADDRESS,
         feeRecipientAddress: NULL_ADDRESS,
@@ -157,5 +158,17 @@ function createCommonOrderFields(
         fillableTakerFeeAmount: ZERO_AMOUNT,
         signature: WALLET_SIGNATURE,
         ...orderDomain,
+    };
+}
+
+function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
+    return {
+        fill: {
+            source: fill.source,
+            totalMakerAssetAmount: fill.totalMakerAssetAmount,
+            totalTakerAssetAmount: fill.totalTakerAssetAmount,
+            subFills: fill.subFills,
+        },
+        ...(fill as NativeCollapsedFill).nativeOrder,
     };
 }

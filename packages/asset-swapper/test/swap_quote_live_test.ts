@@ -8,7 +8,7 @@ import { SwapQuoter } from '../src/swap_quoter';
 import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
 // tslint:disable: custom-no-magic-numbers
-describe.only('swap quote live test', () => {
+describe('swap quote live test', () => {
     const DAI_TOKEN = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
     const ETH_TOKEN = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
     const USDT_TOKEN = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
@@ -60,11 +60,11 @@ describe.only('swap quote live test', () => {
     let TEST_SCENARIOS = USD_VALUES.map(v => [new BigNumber(v), TOKEN_UNITS_BASE.times(v)]);
     const OPTS = {
         // runLimit: 2 ** 17,
-        // numSamples: 11,
+        // numSamples: 16,
         // slippagePercentage: 0,
         // bridgeSlippage: 0,
         // dustFractionThreshold: 0.0025,
-        // sampleDistributionBase: 0.95,
+        // sampleDistributionBase: 1.25,
     };
 
     for (const [usdValue, fillSize] of TEST_SCENARIOS) {
@@ -102,14 +102,16 @@ describe.only('swap quote live test', () => {
     }
 
     const ETH_SNX_PRICE = 0.91;
-    TEST_SCENARIOS = USD_VALUES.slice(-1).map(v => [new BigNumber(v), TOKEN_UNITS_BASE.times(v / ETH_DAI_PRICE / ETH_SNX_PRICE)]);
+    TEST_SCENARIOS = USD_VALUES.slice(-1).map(v => [
+        new BigNumber(v),
+        TOKEN_UNITS_BASE.times(v / ETH_DAI_PRICE / ETH_SNX_PRICE),
+    ]);
     for (const [usdValue, fillSize] of TEST_SCENARIOS) {
-        it.only(`$${usdValue} of ETH -> SNX quote`, async () => {
+        it(`$${usdValue} of ETH -> SNX quote`, async () => {
             const [sq, competitorPrice] = await Promise.all([
-                swapQuoter.getMarketSellSwapQuoteAsync(SNX_TOKEN, ETH_TOKEN, fillSize, OPTS ),
+                swapQuoter.getMarketSellSwapQuoteAsync(SNX_TOKEN, ETH_TOKEN, fillSize, OPTS),
                 fetchDexAgQuoteAsync('ETH', 'SNX', fillSize),
             ]);
-            console.log(fillSize, sq.bestCaseQuoteInfo, sq.orders);
             const price = sq.bestCaseQuoteInfo.makerAssetAmount.div(sq.bestCaseQuoteInfo.takerAssetAmount);
             const gain = price.minus(competitorPrice).div(BigNumber.max(price, competitorPrice));
             logUtils.log({
@@ -128,7 +130,9 @@ describe.only('swap quote live test', () => {
             swapQuoter.getMarketSellSwapQuoteAsync(toToken, fromToken, fillSize, OPTS),
             fetchDexAgQuoteAsync('ETH', 'USDT', fillSize),
         ]);
-        const price = sq.bestCaseQuoteInfo.makerAssetAmount.div(1e6).div(sq.bestCaseQuoteInfo.takerAssetAmount.div(1e18));
+        const price = sq.bestCaseQuoteInfo.makerAssetAmount
+            .div(1e6)
+            .div(sq.bestCaseQuoteInfo.takerAssetAmount.div(1e18));
         const gain = price.minus(competitorPrice).div(BigNumber.max(price, competitorPrice));
         logUtils.log({
             ourPrice: price,

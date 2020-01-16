@@ -29,9 +29,9 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     excludedSources: [],
     bridgeSlippage: 0.0005,
     dustFractionThreshold: 0.0025,
-    numSamples: 12,
+    numSamples: 13,
     noConflicts: true,
-    sampleDistributionBase: 1.25,
+    sampleDistributionBase: 1.05,
 };
 
 export const constants = {
