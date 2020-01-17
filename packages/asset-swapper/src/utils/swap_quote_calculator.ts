@@ -80,6 +80,7 @@ export class SwapQuoteCalculator {
             opts,
         )) as Array<MarketBuySwapQuote | undefined>;
     }
+
     private async _calculateBatchBuySwapQuoteAsync(
         batchPrunedOrders: SignedOrder[][],
         assetFillAmounts: BigNumber[],
@@ -107,7 +108,6 @@ export class SwapQuoteCalculator {
                         operation,
                         assetFillAmounts[i],
                         gasPrice,
-                        opts,
                     );
                 } else {
                     return undefined;
@@ -152,7 +152,6 @@ export class SwapQuoteCalculator {
             operation,
             assetFillAmount,
             gasPrice,
-            opts,
         );
     }
     private async _createSwapQuoteAsync(
@@ -162,26 +161,25 @@ export class SwapQuoteCalculator {
         operation: MarketOperation,
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
-        opts: CalculateSwapQuoteOpts,
     ): Promise<SwapQuote> {
         const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
-            createBestCaseOrders(resultOrders, operation, opts.bridgeSlippage),
+            resultOrders,
             assetFillAmount,
             gasPrice,
             operation,
         );
-        // in order to calculate the maxRate, reverse the ordersAndFillableAmounts
-        // such that they are sorted from worst rate to best rate
         const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
-            _.reverse(resultOrders.slice()),
+            resultOrders,
             assetFillAmount,
             gasPrice,
             operation,
+            true,
         );
 
         const quoteBase = {
             takerAssetData,
             makerAssetData,
+            // Remove fill metadata.
             orders: resultOrders.map(o => _.omit(o, 'fill')) as SignedOrderWithFillableAmounts[],
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
@@ -209,11 +207,12 @@ export class SwapQuoteCalculator {
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
         operation: MarketOperation,
+        worstCase: boolean = false,
     ): Promise<SwapQuoteInfo> {
         if (operation === MarketOperation.Buy) {
-            return this._calculateMarketBuyQuoteInfoAsync(orders, assetFillAmount, gasPrice);
+            return this._calculateMarketBuyQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase);
         } else {
-            return this._calculateMarketSellQuoteInfoAsync(orders, assetFillAmount, gasPrice);
+            return this._calculateMarketSellQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase);
         }
     }
 
@@ -221,25 +220,28 @@ export class SwapQuoteCalculator {
         orders: OptimizedMarketOrder[],
         takerAssetSellAmount: BigNumber,
         gasPrice: BigNumber,
+        worstCase: boolean = false,
     ): Promise<SwapQuoteInfo> {
         let totalMakerAssetAmount = constants.ZERO_AMOUNT;
         let totalTakerAssetAmount = constants.ZERO_AMOUNT;
         let totalFeeTakerAssetAmount = constants.ZERO_AMOUNT;
         let remainingTakerAssetFillAmount = takerAssetSellAmount;
         const filledOrders = [] as OptimizedMarketOrder[];
-        for (const order of orders) {
+        const _orders = !worstCase ? orders : orders.slice().reverse();
+        for (const order of _orders) {
             let makerAssetAmount = constants.ZERO_AMOUNT;
             let takerAssetAmount = constants.ZERO_AMOUNT;
             let feeTakerAssetAmount = constants.ZERO_AMOUNT;
             if (remainingTakerAssetFillAmount.lte(0)) {
                 break;
             }
-            const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(order);
-            const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(order);
-            if (
-                remainingTakerAssetFillAmount.gt(adjustedFillableTakerAssetAmount) ||
-                order.fill.source === ERC20BridgeSource.Native
-            ) {
+            if (order.fill.source === ERC20BridgeSource.Native) {
+                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+                    order,
+                );
+                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+                    order,
+                );
                 const takerAssetAmountWithFees = BigNumber.min(
                     remainingTakerAssetFillAmount,
                     adjustedFillableTakerAssetAmount,
@@ -252,26 +254,39 @@ export class SwapQuoteCalculator {
                     .times(adjustedFillableMakerAssetAmount)
                     .integerValue(BigNumber.ROUND_DOWN);
             } else {
-                // This is the last order filled AND a collapsed bridge order.
+                // This is a collapsed bridge order.
                 // Because collapsed bridge orders actually fill at different rates,
                 // we can iterate over the uncollapsed fills to get the actual
                 // asset amounts transfered.
                 // We can also assume there are no fees and the order is not
                 // partially filled.
-                for (const subFill of order.fill.subFills) {
+
+                // Infer the bridge slippage from the difference between the fill
+                // size and the atual order asset amounts.
+                const makerAssetBridgeSlippage = !worstCase
+                    ? constants.ONE_AMOUNT
+                    : order.makerAssetAmount.div(order.fill.totalMakerAssetAmount);
+                const takerAssetBridgeSlippage = !worstCase
+                    ? constants.ONE_AMOUNT
+                    : order.takerAssetAmount.div(order.fill.totalTakerAssetAmount);
+                // Consecutively fill the subfills in this order.
+                const subFills = !worstCase ? order.fill.subFills : order.fill.subFills.slice().reverse();
+                for (const subFill of subFills) {
                     if (remainingTakerAssetFillAmount.minus(takerAssetAmount).lte(0)) {
                         break;
                     }
-                    const partialTakerAssetAmount = BigNumber.min(
-                        subFill.takerAssetAmount,
+                    const partialTakerAssetAmount = subFill.takerAssetAmount.times(takerAssetBridgeSlippage);
+                    const partialMakerAssetAmount = subFill.makerAssetAmount.times(makerAssetBridgeSlippage);
+                    const partialTakerAssetFillAmount = BigNumber.min(
+                        partialTakerAssetAmount,
                         remainingTakerAssetFillAmount.minus(takerAssetAmount),
                     );
-                    const partialMakerAssetAmount = partialTakerAssetAmount
-                        .div(subFill.takerAssetAmount)
-                        .times(subFill.makerAssetAmount)
+                    const partialMakerAssetFillAmount = partialTakerAssetFillAmount
+                        .div(partialTakerAssetAmount)
+                        .times(partialMakerAssetAmount)
                         .integerValue(BigNumber.ROUND_DOWN);
-                    takerAssetAmount = takerAssetAmount.plus(partialTakerAssetAmount);
-                    makerAssetAmount = makerAssetAmount.plus(partialMakerAssetAmount);
+                    takerAssetAmount = takerAssetAmount.plus(partialTakerAssetFillAmount);
+                    makerAssetAmount = makerAssetAmount.plus(partialMakerAssetFillAmount);
                 }
             }
             totalMakerAssetAmount = totalMakerAssetAmount.plus(makerAssetAmount);
@@ -299,57 +314,87 @@ export class SwapQuoteCalculator {
         orders: OptimizedMarketOrder[],
         makerAssetBuyAmount: BigNumber,
         gasPrice: BigNumber,
+        worstCase: boolean = false,
     ): Promise<SwapQuoteInfo> {
-        const result = orders.reduce(
-            (acc, order) => {
-                const {
-                    totalMakerAssetAmount,
-                    totalTakerAssetAmount,
-                    totalFeeTakerAssetAmount,
-                    remainingMakerAssetFillAmount,
-                } = acc;
+        let totalMakerAssetAmount = constants.ZERO_AMOUNT;
+        let totalTakerAssetAmount = constants.ZERO_AMOUNT;
+        let totalFeeTakerAssetAmount = constants.ZERO_AMOUNT;
+        let remainingMakerAssetFillAmount = makerAssetBuyAmount;
+        const filledOrders = [] as OptimizedMarketOrder[];
+        const _orders = !worstCase ? orders : orders.slice().reverse();
+        for (const order of _orders) {
+            let makerAssetAmount = constants.ZERO_AMOUNT;
+            let takerAssetAmount = constants.ZERO_AMOUNT;
+            let feeTakerAssetAmount = constants.ZERO_AMOUNT;
+            if (remainingMakerAssetFillAmount.lte(0)) {
+                break;
+            }
+            if (order.fill.source === ERC20BridgeSource.Native) {
                 const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
                     order,
                 );
                 const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
                     order,
                 );
-                const makerFillAmount = BigNumber.min(remainingMakerAssetFillAmount, adjustedFillableMakerAssetAmount);
-                const takerAssetAmountWithFees = makerFillAmount
+                makerAssetAmount = BigNumber.min(remainingMakerAssetFillAmount, adjustedFillableMakerAssetAmount);
+                const takerAssetAmountWithFees = makerAssetAmount
                     .div(adjustedFillableMakerAssetAmount)
                     .multipliedBy(adjustedFillableTakerAssetAmount)
                     .integerValue(BigNumber.ROUND_UP);
+                const takerAssetAmountBreakDown = getTakerAssetAmountBreakDown(order, takerAssetAmountWithFees);
+                takerAssetAmount = takerAssetAmountBreakDown.takerAssetAmount;
+                feeTakerAssetAmount = takerAssetAmountBreakDown.feeTakerAssetAmount;
+            } else {
+                // This is a collapsed bridge order.
+                // Because collapsed bridge orders actually fill at different rates,
+                // we can iterate over the uncollapsed fills to get the actual
+                // asset amounts transfered.
+                // We can also assume there are no fees and the order is not
+                // partially filled.
 
-                const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(
-                    order,
-                    takerAssetAmountWithFees,
-                );
-                return {
-                    totalMakerAssetAmount: totalMakerAssetAmount.plus(makerFillAmount),
-                    totalTakerAssetAmount: totalTakerAssetAmount.plus(takerAssetAmount),
-                    totalFeeTakerAssetAmount: totalFeeTakerAssetAmount.plus(feeTakerAssetAmount),
-                    remainingMakerAssetFillAmount: BigNumber.max(
-                        constants.ZERO_AMOUNT,
-                        remainingMakerAssetFillAmount.minus(makerFillAmount),
-                    ),
-                };
-            },
-            {
-                totalMakerAssetAmount: constants.ZERO_AMOUNT,
-                totalTakerAssetAmount: constants.ZERO_AMOUNT,
-                totalFeeTakerAssetAmount: constants.ZERO_AMOUNT,
-                remainingMakerAssetFillAmount: makerAssetBuyAmount,
-            },
-        );
+                // Infer the bridge slippage from the difference between the fill
+                // size and the atual order asset amounts.
+                const makerAssetBridgeSlippage = !worstCase
+                    ? constants.ONE_AMOUNT
+                    : order.makerAssetAmount.div(order.fill.totalMakerAssetAmount);
+                const takerAssetBridgeSlippage = !worstCase
+                    ? constants.ONE_AMOUNT
+                    : order.takerAssetAmount.div(order.fill.totalTakerAssetAmount);
+                // Consecutively fill the subfills in this order.
+                const subFills = !worstCase ? order.fill.subFills : order.fill.subFills.slice().reverse();
+                for (const subFill of subFills) {
+                    if (remainingMakerAssetFillAmount.minus(makerAssetAmount).lte(0)) {
+                        break;
+                    }
+                    const partialTakerAssetAmount = subFill.takerAssetAmount.times(takerAssetBridgeSlippage);
+                    const partialMakerAssetAmount = subFill.makerAssetAmount.times(makerAssetBridgeSlippage);
+                    const partialMakerAssetFillAmount = BigNumber.min(
+                        partialMakerAssetAmount,
+                        remainingMakerAssetFillAmount.minus(makerAssetAmount),
+                    );
+                    const partialTakerAssetFillAmount = partialMakerAssetFillAmount
+                        .div(partialMakerAssetAmount)
+                        .times(partialTakerAssetAmount)
+                        .integerValue(BigNumber.ROUND_UP);
+                    takerAssetAmount = takerAssetAmount.plus(partialTakerAssetFillAmount);
+                    makerAssetAmount = makerAssetAmount.plus(partialMakerAssetFillAmount);
+                }
+            }
+            totalMakerAssetAmount = totalMakerAssetAmount.plus(makerAssetAmount);
+            totalTakerAssetAmount = totalTakerAssetAmount.plus(takerAssetAmount);
+            totalFeeTakerAssetAmount = totalFeeTakerAssetAmount.plus(feeTakerAssetAmount);
+            remainingMakerAssetFillAmount = remainingMakerAssetFillAmount.minus(makerAssetAmount);
+            filledOrders.push(order);
+        }
         const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(
-            orders,
+            filledOrders,
             gasPrice,
         );
         return {
-            feeTakerAssetAmount: result.totalFeeTakerAssetAmount,
-            takerAssetAmount: result.totalTakerAssetAmount,
-            totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
-            makerAssetAmount: result.totalMakerAssetAmount,
+            feeTakerAssetAmount: totalFeeTakerAssetAmount,
+            takerAssetAmount: totalTakerAssetAmount,
+            totalTakerAssetAmount: totalFeeTakerAssetAmount.plus(totalTakerAssetAmount),
+            makerAssetAmount: totalMakerAssetAmount,
             protocolFeeInWeiAmount,
         };
     }
@@ -389,36 +434,4 @@ function getTakerAssetAmountBreakDown(
         feeTakerAssetAmount: constants.ZERO_AMOUNT,
         takerAssetAmount: takerAssetAmountWithFees,
     };
-}
-
-function createBestCaseOrders(
-    orders: OptimizedMarketOrder[],
-    operation: MarketOperation,
-    bridgeSlippage: number,
-): OptimizedMarketOrder[] {
-    // Scale the asset amounts to undo the bridge slippage applied to
-    // bridge orders.
-    const bestCaseOrders: OptimizedMarketOrder[] = [];
-    for (const order of orders) {
-        if (order.fill.source === ERC20BridgeSource.Native) {
-            bestCaseOrders.push(order);
-            continue;
-        }
-        bestCaseOrders.push({
-            ...order,
-            ...(operation === MarketOperation.Sell
-                ? {
-                      makerAssetAmount: order.makerAssetAmount
-                          .dividedBy(1 - bridgeSlippage)
-                          .integerValue(BigNumber.ROUND_DOWN),
-                  }
-                : // Buy operation
-                  {
-                      takerAssetAmount: order.takerAssetAmount
-                          .dividedBy(bridgeSlippage + 1)
-                          .integerValue(BigNumber.ROUND_UP),
-                  }),
-        });
-    }
-    return bestCaseOrders;
 }

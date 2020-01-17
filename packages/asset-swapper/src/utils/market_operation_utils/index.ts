@@ -81,7 +81,7 @@ export class MarketOperationUtils {
             takerAmount,
             _opts.dustFractionThreshold,
         );
-        const clippedNativePath = clipPathToInput(prunedNativePath, takerAmount);
+        const clippedNativePath = clipPathToInput(sortFillsByPrice(prunedNativePath), takerAmount);
         const dexPaths = createPathsFromDexQuotes(dexQuotes, _opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
@@ -207,7 +207,7 @@ export class MarketOperationUtils {
             makerAmount,
             opts.dustFractionThreshold,
         );
-        const clippedNativePath = clipPathToInput(prunedNativePath, makerAmount);
+        const clippedNativePath = clipPathToInput(sortFillsByPrice(prunedNativePath).reverse(), makerAmount);
         const dexPaths = createPathsFromDexQuotes(dexQuotes, opts.noConflicts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
