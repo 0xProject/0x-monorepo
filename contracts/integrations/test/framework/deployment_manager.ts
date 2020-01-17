@@ -203,6 +203,7 @@ export class DeploymentManager {
             environment.txDefaults,
             devUtilsArtifacts,
             exchange.address,
+            constants.NULL_ADDRESS,
         );
         const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
 

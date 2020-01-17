@@ -7,7 +7,7 @@ import { BigNumber } from '@0x/utils';
 
 import { contractAddresses, getContractwrappers } from './mainnet_fork_utils';
 
-blockchainTests.fork.resets('Mainnet configs tests', env => {
+blockchainTests.live('Mainnet configs tests', env => {
     let contractWrappers: ContractWrappers;
 
     before(async () => {

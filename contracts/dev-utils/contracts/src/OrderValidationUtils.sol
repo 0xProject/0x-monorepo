@@ -35,9 +35,15 @@ contract OrderValidationUtils is
     using LibBytes for bytes;
     using LibSafeMath for uint256;
 
-    constructor (address _exchange)
+    constructor (
+        address _exchange,
+        address _chaiBridge
+    )
         public
-        LibAssetData(_exchange)
+        LibAssetData(
+            _exchange,
+            _chaiBridge
+        )
     {}
 
     /// @dev Fetches all order-relevant information needed to validate if the supplied order is fillable.
@@ -173,7 +179,6 @@ contract OrderValidationUtils is
     /// the individual asset amounts located within the `assetData`.
     function getTransferableAssetAmount(address ownerAddress, bytes memory assetData)
         public
-        view
         returns (uint256 transferableAssetAmount)
     {
         (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);

@@ -15,6 +15,7 @@ export {
     UniswapBridgeContract,
     KyberBridgeContract,
     ChaiBridgeContract,
+    IChaiContract,
 } from './wrappers';
 
 export { ERC20Wrapper } from './erc20_wrapper';

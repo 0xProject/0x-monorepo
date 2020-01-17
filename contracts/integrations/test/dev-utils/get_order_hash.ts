@@ -25,6 +25,7 @@ blockchainTests('DevUtils.getOrderHash', env => {
             env.txDefaults,
             artifacts,
             exchange.address,
+            constants.NULL_ADDRESS,
         );
     });
 
