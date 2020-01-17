@@ -4,6 +4,7 @@ import {
     StakingEpochEndedEventArgs,
     StakingEpochFinalizedEventArgs,
     StakingEvents,
+    StakingRevertErrors,
 } from '@0x/contracts-staking';
 import { constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
@@ -114,6 +115,52 @@ export function validEndEpochAssertion(
 
             // Update currentEpoch locally
             simulationEnvironment.currentEpoch = currentEpoch.plus(1);
+        },
+    });
+}
+
+/**
+ * Returns a FunctionAssertion for `endEpoch` which assumes it has been called while the previous
+ * epoch hasn't been fully finalized. Checks that the transaction reverts with PreviousEpochNotFinalizedError.
+ */
+export function endEpochUnfinalizedPoolsAssertion(
+    deployment: DeploymentManager,
+    simulationEnvironment: SimulationEnvironment,
+    numPoolsToFinalizeFromPrevEpoch: BigNumber,
+): FunctionAssertion<[], void, void> {
+    return new FunctionAssertion(deployment.staking.stakingWrapper, 'endEpoch', {
+        after: async (_beforeInfo: void, result: FunctionResult) => {
+            // Ensure that the tx reverted.
+            expect(result.success).to.be.false();
+
+            // Check revert error
+            expect(result.data).to.equal(
+                new StakingRevertErrors.PreviousEpochNotFinalizedError(
+                    simulationEnvironment.currentEpoch.minus(1),
+                    numPoolsToFinalizeFromPrevEpoch,
+                ),
+            );
+        },
+    });
+}
+
+/**
+ * Returns a FunctionAssertion for `endEpoch` which assumes it has been called before the full epoch
+ * duration has elapsed. Checks that the transaction reverts with BlockTimestampTooLowError.
+ */
+export function endEpochTooEarlyAssertion(deployment: DeploymentManager): FunctionAssertion<[], void, void> {
+    const { stakingWrapper } = deployment.staking;
+    return new FunctionAssertion(stakingWrapper, 'endEpoch', {
+        after: async (_beforeInfo: void, result: FunctionResult) => {
+            // Ensure that the tx reverted.
+            expect(result.success).to.be.false();
+
+            // Check revert error
+            const epochEndTime = await stakingWrapper.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
+            const lastBlockTime = await deployment.web3Wrapper.getBlockTimestampAsync('latest');
+            expect(result.data).to.equal(
+                new StakingRevertErrors.BlockTimestampTooLowError(epochEndTime, lastBlockTime),
+            );
         },
     });
 }

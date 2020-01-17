@@ -7,7 +7,11 @@ import { filterLogsToArguments, web3Wrapper } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { validEndEpochAssertion } from '../assertions/endEpoch';
+import {
+    endEpochTooEarlyAssertion,
+    endEpochUnfinalizedPoolsAssertion,
+    validEndEpochAssertion,
+} from '../assertions/endEpoch';
 import { validFinalizePoolAssertion } from '../assertions/finalizePool';
 import { AssertionResult } from '../assertions/function_assertion';
 import { Pseudorandom } from '../utils/pseudorandom';
@@ -43,6 +47,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                 ...this.actor.simulationActions,
                 validFinalizePool: this._validFinalizePool(),
                 validEndEpoch: this._validEndEpoch(),
+                invalidEndEpoch: this._invalidEndEpoch(),
             };
         }
 
@@ -115,6 +120,27 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Con
                     await this._fastForwardToNextEpochAsync();
                     yield assertion.executeAsync([], { from: this.actor.address });
                 }
+            }
+        }
+
+        private async *_invalidEndEpoch(): AsyncIterableIterator<AssertionResult | void> {
+            const { stakingWrapper } = this.actor.deployment.staking;
+            while (true) {
+                const { simulationEnvironment } = this.actor;
+                const aggregatedStats = AggregatedStats.fromArray(
+                    await stakingWrapper
+                        .aggregatedStatsByEpoch(simulationEnvironment!.currentEpoch.minus(1))
+                        .callAsync(),
+                );
+                const assertion = aggregatedStats.numPoolsToFinalize.isGreaterThan(0)
+                    ? endEpochUnfinalizedPoolsAssertion(
+                          this.actor.deployment,
+                          simulationEnvironment!,
+                          aggregatedStats.numPoolsToFinalize,
+                      )
+                    : endEpochTooEarlyAssertion(this.actor.deployment);
+
+                yield assertion.executeAsync([], { from: this.actor.address });
             }
         }
 

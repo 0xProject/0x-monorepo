@@ -38,8 +38,10 @@ export class StakingRewardsSimulation extends Simulation {
             ...stakers.map(staker => [staker.simulationActions.validWithdrawDelegatorRewards, 0.1 / stakers.length]),
             // 10% chance of executing validFinalizePool for a random keeper
             ...keepers.map(keeper => [keeper.simulationActions.validFinalizePool, 0.1 / keepers.length]),
-            // 10% chance of executing validEndEpoch for a random keeper
-            ...keepers.map(keeper => [keeper.simulationActions.validEndEpoch, 0.1 / keepers.length]),
+            // 7% chance of executing validEndEpoch for a random keeper
+            ...keepers.map(keeper => [keeper.simulationActions.validEndEpoch, 0.07 / keepers.length]),
+            // 3% chance of executing invalidEndEpoch for a random keeper
+            ...keepers.map(keeper => [keeper.simulationActions.invalidEndEpoch, 0.03 / keepers.length]),
             // 50% chance of executing an assertion generated from the pool membership simulation
             [poolMembership.generator, 0.5],
             // 20% chance of executing an assertion generated from the stake management simulation

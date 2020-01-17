@@ -22,12 +22,18 @@ export class StakeManagementSimulation extends Simulation {
         const poolManagement = new PoolManagementSimulation(this.environment);
 
         const [actions, weights] = _.unzip([
-            // 30% chance of executing validStake for a random staker
-            ...stakers.map(staker => [staker.simulationActions.validStake, 0.3 / stakers.length]),
-            // 20% chance of executing validUnstake for a random staker
-            ...stakers.map(staker => [staker.simulationActions.validUnstake, 0.2 / stakers.length]),
-            // 30% chance of executing validMoveStake for a random staker
-            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.3 / stakers.length]),
+            // 28% chance of executing validStake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validStake, 0.28 / stakers.length]),
+            // 2% chance of executing invalidUnstake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.invalidStake, 0.02 / stakers.length]),
+            // 28% chance of executing validUnstake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validStake, 0.28 / stakers.length]),
+            // 2% chance of executing invalidUnstake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validUnstake, 0.02 / stakers.length]),
+            // 28% chance of executing validMoveStake for a random staker
+            ...stakers.map(staker => [staker.simulationActions.validMoveStake, 0.28 / stakers.length]),
+            // 2% chance of executing moveStakeNonexistentPool for a random staker
+            ...stakers.map(staker => [staker.simulationActions.moveStakeNonexistentPool, 0.02 / stakers.length]),
             // 20% chance of executing an assertion generated from the pool management simulation
             [poolManagement.generator, 0.2],
         ]) as [Array<AsyncIterableIterator<AssertionResult | void>>, number[]];
