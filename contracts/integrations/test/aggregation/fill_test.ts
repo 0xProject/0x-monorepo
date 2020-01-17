@@ -1,4 +1,4 @@
-import { MarketBuySwapQuote, MarketSellSwapQuote, Orderbook, SwapQuoter } from '@0x/asset-swapper';
+import { MarketBuySwapQuote, MarketSellSwapQuote, Orderbook, SwapQuoteInfo, SwapQuoter } from '@0x/asset-swapper';
 import { blockchainTests, expect, Numberish } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { FillResults, SignedOrder } from '@0x/types';
@@ -17,7 +17,7 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
     const GAS_PRICE = new BigNumber(1);
     const TAKER_ASSET_ETH_VALUE = 500e18;
     const MIN_BALANCE = 500.1e18;
-    const SYMBOLS = ['ETH', 'SNX'];
+    const SYMBOLS = ['ETH', 'DAI', 'USDC'];
     const TEST_PAIRS = _.flatten(SYMBOLS.map(m => SYMBOLS.filter(t => t !== m).map(t => [m, t])));
     const FILL_VALUES = [1, 10, 1e2, 1e3, 1e4, 2.5e4, 5e4];
 
@@ -93,6 +93,21 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
         return new BigNumber(units)
             .times(new BigNumber(10).pow(tokens[symbol].decimals))
             .integerValue(BigNumber.ROUND_DOWN);
+    }
+
+    function getFillLoss(
+        makerSymbol: string,
+        takerSymbol: string,
+        marketOperationResult: MarketOperationResult,
+        quoteInfo: SwapQuoteInfo,
+    ): string {
+        const quotePrice = toTokenUnits(makerSymbol, quoteInfo.makerAssetAmount).div(
+            toTokenUnits(takerSymbol, quoteInfo.takerAssetAmount),
+        );
+        const fillPrice = toTokenUnits(makerSymbol, marketOperationResult.fillResults.makerAssetFilledAmount).div(
+            toTokenUnits(takerSymbol, marketOperationResult.fillResults.takerAssetFilledAmount),
+        );
+        return `${((1 - fillPrice.div(quotePrice).toNumber()) * -100).toFixed(5)}%`;
     }
 
     interface MarketOperationResult {
@@ -180,7 +195,10 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
                             from: TAKER_ADDRESS,
                             gasPrice: quote.gasPrice,
                         });
-                    console.log(quote.worstCaseQuoteInfo, quote.bestCaseQuoteInfo);
+                    console.log(
+                        getFillLoss(makerSymbol, takerSymbol, fill, quote.bestCaseQuoteInfo),
+                        quote.orders.length,
+                    );
                     if (checkHadEnoughTakerAsset(quote, fill)) {
                         expect(fill.fillResults.makerAssetFilledAmount, 'makerAssetFilledAmount').to.bignumber.gte(
                             quote.worstCaseQuoteInfo.makerAssetAmount,
@@ -225,6 +243,10 @@ blockchainTests.live('Aggregator Mainnet Tests', env => {
                             from: TAKER_ADDRESS,
                             gasPrice: quote.gasPrice,
                         });
+                    console.log(
+                        getFillLoss(makerSymbol, takerSymbol, fill, quote.bestCaseQuoteInfo),
+                        quote.orders.length,
+                    );
                     if (checkHadEnoughTakerAsset(quote, fill)) {
                         expect(fill.fillResults.takerAssetFilledAmount, 'takerAssetFilledAmount').to.bignumber.lte(
                             quote.worstCaseQuoteInfo.takerAssetAmount,
