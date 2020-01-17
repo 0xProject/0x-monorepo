@@ -82,13 +82,13 @@ contract OrderTransferSimulationUtils is
         // Transfer `makerAsset` from maker to taker
         assetData[0] = order.makerAssetData;
         fromAddresses[0] = order.makerAddress;
-        toAddresses[0] = takerAddress;
+        toAddresses[0] = takerAddress == address(0) ? address(1) : takerAddress;
         amounts[0] = fillResults.makerAssetFilledAmount;
 
         // Transfer `makerFeeAsset` from maker to feeRecipient
         assetData[1] = order.makerFeeAssetData;
         fromAddresses[1] = order.makerAddress;
-        toAddresses[1] = order.feeRecipientAddress;
+        toAddresses[1] = order.feeRecipientAddress == address(0) ? address(1) : order.feeRecipientAddress;
         amounts[1] = fillResults.makerFeePaid;
 
         return _simulateTransferFromCalls(
@@ -134,19 +134,19 @@ contract OrderTransferSimulationUtils is
         // Transfer `makerAsset` from maker to taker
         assetData[1] = order.makerAssetData;
         fromAddresses[1] = order.makerAddress;
-        toAddresses[1] = takerAddress;
+        toAddresses[1] = takerAddress == address(0) ? address(1) : takerAddress;
         amounts[1] = fillResults.makerAssetFilledAmount;
 
         // Transfer `takerFeeAsset` from taker to feeRecipient
         assetData[2] = order.takerFeeAssetData;
         fromAddresses[2] = takerAddress;
-        toAddresses[2] = order.feeRecipientAddress;
+        toAddresses[2] = order.feeRecipientAddress == address(0) ? address(1) : order.feeRecipientAddress;
         amounts[2] = fillResults.takerFeePaid;
 
         // Transfer `makerFeeAsset` from maker to feeRecipient
         assetData[3] = order.makerFeeAssetData;
         fromAddresses[3] = order.makerAddress;
-        toAddresses[3] = order.feeRecipientAddress;
+        toAddresses[3] = order.feeRecipientAddress == address(0) ? address(1) : order.feeRecipientAddress;
         amounts[3] = fillResults.makerFeePaid;
 
         return _simulateTransferFromCalls(
