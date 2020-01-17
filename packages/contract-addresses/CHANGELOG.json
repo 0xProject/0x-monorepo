@@ -3,6 +3,10 @@
         "version": "4.3.0",
         "changes": [
             {
+                "note": "Update `DevUtils` mainnet, Ropsten, Rinkeby, Kovan addresses with PR#2440 changes",
+                "pr": 2446
+            },
+            {
                 "note": "Update `DevUtils` mainnet, Ropsten, Rinkeby, Kovan addresses",
                 "pr": 2436
             }
