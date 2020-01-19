@@ -2,7 +2,7 @@ FROM mhart/alpine-node:10
 
 WORKDIR /usr/src/app
 
-RUN npm install -g ganache-cli@6.7.0
+RUN npm install -g ganache-cli@6.8.2
 
 ENV MNEMONIC "concert load couple harbor equip island argue ramp clarify fence smart topic"
 ENV NETWORK_ID 50
