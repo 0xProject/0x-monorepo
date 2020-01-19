@@ -33,7 +33,7 @@
     "config": {
         "s3_snapshot_bucket": "s3://ganache-snapshots.0x.org",
         "docker_snapshot_name": "0xorg/ganache-cli",
-        "snapshot_name": "0x_ganache_snapshot-v3-beta",
+        "snapshot_name": "0x_ganache_snapshot",
         "postpublish": {
             "assets": []
         }
