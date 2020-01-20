@@ -222,6 +222,34 @@ blockchainTests.resets('OrderValidationUtils/OrderTransferSimulatorUtils', env =
                 .callAsync();
             expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
+        it('should return a fillableTakerAssetAmount of 0 when an erc721 asset is duplicated in the maker fee side of a multi-asset proxy order', async () => {
+            const multiAssetData = await devUtils
+                .encodeMultiAssetData([new BigNumber(1), new BigNumber(1)], [erc721AssetData, erc721AssetData])
+                .callAsync();
+            signedOrder = await maker.signOrderAsync({
+                makerFeeAssetData: multiAssetData,
+                makerFee: new BigNumber(1),
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            const [, fillableTakerAssetAmount] = await devUtils
+                .getOrderRelevantState(signedOrder, signedOrder.signature)
+                .callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('should return a fillableTakerAssetAmount of 0 when an erc721 asset is duplicated in the taker fee side of a multi-asset proxy order', async () => {
+            const multiAssetData = await devUtils
+                .encodeMultiAssetData([new BigNumber(1), new BigNumber(1)], [erc721AssetData, erc721AssetData])
+                .callAsync();
+            signedOrder = await maker.signOrderAsync({
+                makerFee: constants.ZERO_AMOUNT,
+                takerFeeAssetData: multiAssetData,
+                takerFee: new BigNumber(1),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils
+                .getOrderRelevantState(signedOrder, signedOrder.signature)
+                .callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
         it('should return the correct fillableTakerAssetAmount when fee balances/allowances are partially sufficient', async () => {
             await erc20Token.setBalance(maker.address, signedOrder.makerAssetAmount).awaitTransactionSuccessAsync();
             await erc20Token.approve(erc20Proxy.address, signedOrder.makerAssetAmount).awaitTransactionSuccessAsync({
