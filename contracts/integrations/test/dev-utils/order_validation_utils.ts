@@ -155,6 +155,19 @@ blockchainTests.resets('OrderValidationUtils/OrderTransferSimulatorUtils', env =
                 .callAsync();
             expect(fillableTakerAssetAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
+        it.only('should correctly validate fillable order', async () => {
+            signedOrder = await maker.signOrderAsync({
+                makerAssetData: erc721AssetData,
+                makerAssetAmount: new BigNumber(1),
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            await taker.configureERC20TokenAsync(erc20Token2);
+            const [, fillableTakerAssetAmount] = await devUtils
+                .getOrderRelevantState(signedOrder, signedOrder.signature)
+                .callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.greaterThan(constants.ZERO_AMOUNT);
+        });
         it('should return a fillableTakerAssetAmount of 0 when balances/allowances of one asset within a multiAssetData are insufficient (ERC20)', async () => {
             const multiAssetData = await devUtils
                 .encodeMultiAssetData([new BigNumber(1), new BigNumber(1)], [erc20AssetData, erc20AssetData2])
