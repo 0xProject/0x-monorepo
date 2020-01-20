@@ -2,7 +2,7 @@
 version: '3'
 services:
     ganache:
-        image: "0xorg/ganache-cli"
+        image: "0xorg/ganache-cli:6.0.0"
         ports:
             - "8545:8545"
     mesh:

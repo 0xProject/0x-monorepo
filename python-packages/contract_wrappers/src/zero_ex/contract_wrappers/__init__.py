@@ -380,7 +380,7 @@ will be consumed.
 ...     ),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
-74...
+71...
 """
 
 from .tx_params import TxParams
