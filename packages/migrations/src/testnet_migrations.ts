@@ -258,13 +258,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         chaiBridge.address,
     );
 
-    await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
-        devUtilsArtifacts.LibTransactionDecoder,
-        provider,
-        txDefaults,
-        devUtilsArtifacts,
-    );
-
     await CoordinatorContract.deployFrom0xArtifactAsync(
         coordinatorArtifacts.Coordinator,
         provider,
@@ -282,6 +275,13 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         exchange.address,
         deployedAddresses.exchangeV2,
         deployedAddresses.etherToken,
+    );
+
+    await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
+        devUtilsArtifacts.LibTransactionDecoder,
+        provider,
+        txDefaults,
+        devUtilsArtifacts,
     );
 }
 

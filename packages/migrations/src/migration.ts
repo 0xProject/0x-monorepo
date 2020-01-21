@@ -178,14 +178,6 @@ export async function runMigrationsAsync(
         constants.NULL_ADDRESS,
     );
 
-    // LibTransactionDecoder
-    const libTransactionDecoder = await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
-        artifacts.LibTransactionDecoder,
-        provider,
-        txDefaults,
-        artifacts,
-    );
-
     // tslint:disable-next-line:no-unused-variable
     const erc1155DummyToken = await ERC1155MintableContract.deployFrom0xArtifactAsync(
         artifacts.ERC1155Mintable,
@@ -260,6 +252,14 @@ export async function runMigrationsAsync(
         exchange.address,
         exchangeV2Address || constants.NULL_ADDRESS,
         etherToken.address,
+    );
+
+    // LibTransactionDecoder
+    const libTransactionDecoder = await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
+        artifacts.LibTransactionDecoder,
+        provider,
+        txDefaults,
+        artifacts,
     );
 
     const contractAddresses = {
