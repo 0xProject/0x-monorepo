@@ -233,10 +233,14 @@ contract OrderValidationUtils is
             bytes4 nestedAssetProxyId = nestedAssetData[i].readBytes4(0);
             if (nestedAssetProxyId == IAssetData(address(0)).ERC721Token.selector) {
                 hasSeenERC721 = true;
-                _isAssetDataDuplicated(nestedAssetData, i);
+                if (_isAssetDataDuplicated(nestedAssetData, i)) {
+                    return false;
+                }
             } else if (nestedAssetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
                 hasSeenERC1155 = true;
-                _isAssetDataDuplicated(nestedAssetData, i);
+                if (_isAssetDataDuplicated(nestedAssetData, i)) {
+                    return false;
+                }
             }
 
             if (!hasSeenERC721 && !hasSeenERC1155) {
@@ -252,7 +256,7 @@ contract OrderValidationUtils is
     /// @param startIdx The index where the scan should begin.
     /// @return A boolean reflecting whether or not the starting asset data was duplicated.
     function _isAssetDataDuplicated(
-        bytes [] memory nestedAssetData,
+        bytes[] memory nestedAssetData,
         uint256 startIdx
     )
         internal
@@ -262,7 +266,7 @@ contract OrderValidationUtils is
         uint256 length = nestedAssetData.length;
         for (uint256 i = startIdx + 1; i != length; i++) {
             if (nestedAssetData[startIdx].equals(nestedAssetData[i])) {
-                return false;
+                return true;
             }
         }
     }
