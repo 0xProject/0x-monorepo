@@ -26,14 +26,12 @@ import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "./OrderValidationUtils.sol";
 import "./OrderTransferSimulationUtils.sol";
-import "./LibTransactionDecoder.sol";
 import "./EthBalanceChecker.sol";
 
 
 // solhint-disable no-empty-blocks
 contract DevUtils is
     OrderValidationUtils,
-    LibTransactionDecoder,
     LibEIP712ExchangeDomain,
     EthBalanceChecker
 {

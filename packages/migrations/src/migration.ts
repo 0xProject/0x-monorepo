@@ -10,7 +10,7 @@ import {
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
 import { CoordinatorContract, CoordinatorRegistryContract } from '@0x/contracts-coordinator';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { DevUtilsContract, LibTransactionDecoderContract } from '@0x/contracts-dev-utils';
 import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
@@ -178,6 +178,14 @@ export async function runMigrationsAsync(
         constants.NULL_ADDRESS,
     );
 
+    // LibTransactionDecoder
+    const libTransactionDecoder = await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
+        artifacts.LibTransactionDecoder,
+        provider,
+        txDefaults,
+        artifacts,
+    );
+
     // tslint:disable-next-line:no-unused-variable
     const erc1155DummyToken = await ERC1155MintableContract.deployFrom0xArtifactAsync(
         artifacts.ERC1155Mintable,
@@ -265,6 +273,7 @@ export async function runMigrationsAsync(
         erc20BridgeProxy: erc20BridgeProxy.address,
         zeroExGovernor: constants.NULL_ADDRESS,
         forwarder: forwarder.address,
+        libTransactionDecoder: constants.NULL_ADDRESS,
         orderValidator: constants.NULL_ADDRESS,
         dutchAuction: constants.NULL_ADDRESS,
         coordinatorRegistry: coordinatorRegistry.address,

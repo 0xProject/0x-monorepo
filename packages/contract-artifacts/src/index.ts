@@ -15,6 +15,7 @@ import * as Forwarder from '../artifacts/Forwarder.json';
 import * as IAssetProxy from '../artifacts/IAssetProxy.json';
 import * as IValidator from '../artifacts/IValidator.json';
 import * as IWallet from '../artifacts/IWallet.json';
+import * as LibTransactionDecoder from '../artifacts/LibTransactionDecoder.json';
 import * as MultiAssetProxy from '../artifacts/MultiAssetProxy.json';
 import * as Staking from '../artifacts/Staking.json';
 import * as StakingProxy from '../artifacts/StakingProxy.json';
@@ -42,6 +43,7 @@ export {
     IAssetProxy,
     IValidator,
     IWallet,
+    LibTransactionDecoder,
     MultiAssetProxy,
     StaticCallProxy,
     WETH9,

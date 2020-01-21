@@ -14,6 +14,7 @@ export interface ContractAddresses {
     forwarder: string;
     coordinatorRegistry: string;
     coordinator: string;
+    libTransactionDecoder: string;
     multiAssetProxy: string;
     staticCallProxy: string;
     erc1155Proxy: string;

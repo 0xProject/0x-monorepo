@@ -11,6 +11,7 @@ import { ERC20TokenContract } from './generated-wrappers/erc20_token';
 import { ERC721TokenContract } from './generated-wrappers/erc721_token';
 import { ExchangeContract } from './generated-wrappers/exchange';
 import { ForwarderContract } from './generated-wrappers/forwarder';
+import { LibTransactionDecoderContract } from './generated-wrappers/lib_transaction_decoder';
 import { StakingContract } from './generated-wrappers/staking';
 import { WETH9Contract } from './generated-wrappers/weth9';
 import { ContractWrappersConfig } from './types';
@@ -46,9 +47,13 @@ export class ContractWrappers {
      */
     public coordinator: CoordinatorContract;
     /**
-     * An instance of the StakingContract class containing methods for interacting with the Coordinator extension contract.
+     * An instance of the StakingContract class containing methods for interacting with the Staking contracts.
      */
     public staking: StakingContract;
+    /**
+     * An instance of the LibTransactionDecoder class containing methods for interacting with the LibTransactionDecoder smart contract.
+     */
+    public libTransactionDecoder: LibTransactionDecoderContract;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
@@ -73,6 +78,7 @@ export class ContractWrappers {
             ForwarderContract,
             StakingContract,
             WETH9Contract,
+            LibTransactionDecoderContract,
         ];
         contractsArray.forEach(contract => {
             this._web3Wrapper.abiDecoder.addABI(contract.ABI(), contract.contractName);
@@ -87,6 +93,10 @@ export class ContractWrappers {
         this.staking = new StakingContract(contractAddresses.stakingProxy, this.getProvider());
         this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorContract(contractAddresses.coordinator, this.getProvider());
+        this.libTransactionDecoder = new LibTransactionDecoderContract(
+            contractAddresses.libTransactionDecoder,
+            this.getProvider(),
+        );
         this.contractAddresses = contractAddresses;
     }
     /**
