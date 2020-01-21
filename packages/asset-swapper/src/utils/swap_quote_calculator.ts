@@ -353,7 +353,7 @@ export class SwapQuoteCalculator {
                 // partially filled.
 
                 // Infer the bridge slippage from the difference between the fill
-                // size and the atual order asset amounts.
+                // size and the actual order asset amounts.
                 const makerAssetBridgeSlippage = !worstCase
                     ? constants.ONE_AMOUNT
                     : order.makerAssetAmount.div(order.fill.totalMakerAssetAmount);
