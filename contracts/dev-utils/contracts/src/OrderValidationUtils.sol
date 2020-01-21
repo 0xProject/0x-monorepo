@@ -141,7 +141,7 @@ contract OrderValidationUtils is
             fillableTakerAssetAmount = 0;
         }
 
-        if (orderInfo.orderStatus == LibOrder.OrderStatus.CANCELLED) {
+        if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE) {
             fillableTakerAssetAmount = 0;
         }
 
@@ -208,6 +208,12 @@ contract OrderValidationUtils is
         pure
         returns (bool)
     {
+        // Asset data must be composed of an asset proxy Id and a bytes segment with
+        // a length divisible by 32.
+        if (assetData.length % 32 != 4) {
+            return false;
+        }
+
         // Only process the taker asset data if it is multiAssetData.
         bytes4 assetProxyId = assetData.readBytes4(0);
         if (assetProxyId != IAssetData(address(0)).MultiAsset.selector) {
@@ -220,24 +226,44 @@ contract OrderValidationUtils is
         uint256 length = nestedAssetData.length;
         for (uint256 i = 0; i != length; i++) {
             // NOTE(jalextowle): As an optimization, we will break out of this function
-            // as soon as it is determined that there are no possible ERC721 duplicates.
+            // as soon as it is determined that there are no possible ERC721 or ERC1155 duplicates.
             bool hasSeenERC721 = false;
+            bool hasSeenERC1155 = false;
 
             bytes4 nestedAssetProxyId = nestedAssetData[i].readBytes4(0);
             if (nestedAssetProxyId == IAssetData(address(0)).ERC721Token.selector) {
                 hasSeenERC721 = true;
-                for (uint256 j = i; j != length; j++) {
-                    if (nestedAssetData[i].equals(nestedAssetData[j])) {
-                        return false;
-                    }
-                }
+                _isAssetDataDuplicated(nestedAssetData, i);
+            } else if (nestedAssetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
+                hasSeenERC1155 = true;
+                _isAssetDataDuplicated(nestedAssetData, i);
             }
 
-            if (!hasSeenERC721) {
+            if (!hasSeenERC721 && !hasSeenERC1155) {
                 break;
             }
         }
 
         return true;
+    }
+
+    /// Determines whether or not asset data is duplicated later in the nested asset data.
+    /// @param nestedAssetData The asset data to scan for duplication.
+    /// @param startIdx The index where the scan should begin.
+    /// @return A boolean reflecting whether or not the starting asset data was duplicated.
+    function _isAssetDataDuplicated(
+        bytes [] memory nestedAssetData,
+        uint256 startIdx
+    )
+        internal
+        pure
+        returns (bool)
+    {
+        uint256 length = nestedAssetData.length;
+        for (uint256 i = startIdx + 1; i != length; i++) {
+            if (nestedAssetData[startIdx].equals(nestedAssetData[i])) {
+                return false;
+            }
+        }
     }
 }
