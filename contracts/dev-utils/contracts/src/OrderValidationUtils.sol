@@ -250,7 +250,7 @@ contract OrderValidationUtils is
         returns (bool)
     {
         uint256 length = nestedAssetData.length;
-        for (uint256 i = startIdx + 1; i != length; i++) {
+        for (uint256 i = startIdx + 1; i < length; i++) {
             if (nestedAssetData[startIdx].equals(nestedAssetData[i])) {
                 return true;
             }

@@ -43,7 +43,7 @@ contract OrderTransferSimulationUtils is
 
     // NOTE(jalextowle): This is a random address that we use to avoid issues that addresses like `address(1)`
     // may cause later.
-    address constant internal NONZERO = address(0x377f698C4c287018D09b516F415317aEC5919332);
+    address constant internal UNUSED_ADDRESS = address(0x377f698C4c287018D09b516F415317aEC5919332);
 
     // keccak256(abi.encodeWithSignature("Error(string)", "TRANSFERS_SUCCESSFUL"));
     bytes32 constant internal _TRANSFERS_SUCCESSFUL_RESULT_HASH = 0xf43f26ea5a94b478394a975e856464913dc1a8a1ca70939d974aa7c238aa0ce0;
@@ -86,13 +86,13 @@ contract OrderTransferSimulationUtils is
         // Transfer `makerAsset` from maker to taker
         assetData[0] = order.makerAssetData;
         fromAddresses[0] = order.makerAddress;
-        toAddresses[0] = takerAddress == address(0) ? NONZERO : takerAddress;
+        toAddresses[0] = takerAddress == address(0) ? UNUSED_ADDRESS : takerAddress;
         amounts[0] = fillResults.makerAssetFilledAmount;
 
         // Transfer `makerFeeAsset` from maker to feeRecipient
         assetData[1] = order.makerFeeAssetData;
         fromAddresses[1] = order.makerAddress;
-        toAddresses[1] = order.feeRecipientAddress == address(0) ? NONZERO : order.feeRecipientAddress;
+        toAddresses[1] = order.feeRecipientAddress == address(0) ? UNUSED_ADDRESS : order.feeRecipientAddress;
         amounts[1] = fillResults.makerFeePaid;
 
         return _simulateTransferFromCalls(
@@ -138,19 +138,19 @@ contract OrderTransferSimulationUtils is
         // Transfer `makerAsset` from maker to taker
         assetData[1] = order.makerAssetData;
         fromAddresses[1] = order.makerAddress;
-        toAddresses[1] = takerAddress == address(0) ? NONZERO : takerAddress;
+        toAddresses[1] = takerAddress == address(0) ? UNUSED_ADDRESS : takerAddress;
         amounts[1] = fillResults.makerAssetFilledAmount;
 
         // Transfer `takerFeeAsset` from taker to feeRecipient
         assetData[2] = order.takerFeeAssetData;
         fromAddresses[2] = takerAddress;
-        toAddresses[2] = order.feeRecipientAddress == address(0) ? NONZERO : order.feeRecipientAddress;
+        toAddresses[2] = order.feeRecipientAddress == address(0) ? UNUSED_ADDRESS : order.feeRecipientAddress;
         amounts[2] = fillResults.takerFeePaid;
 
         // Transfer `makerFeeAsset` from maker to feeRecipient
         assetData[3] = order.makerFeeAssetData;
         fromAddresses[3] = order.makerAddress;
-        toAddresses[3] = order.feeRecipientAddress == address(0) ? NONZERO : order.feeRecipientAddress;
+        toAddresses[3] = order.feeRecipientAddress == address(0) ? UNUSED_ADDRESS : order.feeRecipientAddress;
         amounts[3] = fillResults.makerFeePaid;
 
         return _simulateTransferFromCalls(
