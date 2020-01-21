@@ -225,26 +225,12 @@ contract OrderValidationUtils is
 
         uint256 length = nestedAssetData.length;
         for (uint256 i = 0; i != length; i++) {
-            // NOTE(jalextowle): As an optimization, we will break out of this function
-            // as soon as it is determined that there are no possible ERC721 or ERC1155 duplicates.
-            bool hasSeenERC721 = false;
-            bool hasSeenERC1155 = false;
-
+            // TODO(jalextowle): Implement similar validation for non-fungible ERC1155 asset data.
             bytes4 nestedAssetProxyId = nestedAssetData[i].readBytes4(0);
             if (nestedAssetProxyId == IAssetData(address(0)).ERC721Token.selector) {
-                hasSeenERC721 = true;
                 if (_isAssetDataDuplicated(nestedAssetData, i)) {
                     return false;
                 }
-            } else if (nestedAssetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
-                hasSeenERC1155 = true;
-                if (_isAssetDataDuplicated(nestedAssetData, i)) {
-                    return false;
-                }
-            }
-
-            if (!hasSeenERC721 && !hasSeenERC1155) {
-                break;
             }
         }
 
