@@ -109,7 +109,6 @@ interface TokenContracts {
 
 // Options to be passed to `deployAsync`
 export interface DeploymentOptions {
-    excludeDevUtils?: boolean;
     owner: string;
     numErc1155TokensToDeploy: number;
     numErc20TokensToDeploy: number;
@@ -197,18 +196,14 @@ export class DeploymentManager {
             exchange,
             staking.stakingProxy,
         ]);
-
-        let devUtils;
-        if (!options.excludeDevUtils) {
-            devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
-                devUtilsArtifacts.DevUtils,
-                environment.provider,
-                environment.txDefaults,
-                devUtilsArtifacts,
-                exchange.address,
-                constants.NULL_ADDRESS,
-            );
-        }
+        const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+            devUtilsArtifacts.DevUtils,
+            environment.provider,
+            environment.txDefaults,
+            devUtilsArtifacts,
+            exchange.address,
+            constants.NULL_ADDRESS,
+        );
         const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
 
         // Construct the new instance and return it.
@@ -222,8 +217,8 @@ export class DeploymentManager {
             chainId,
             accounts,
             txDefaults,
-            assetDataEncoder,
             devUtils,
+            assetDataEncoder,
         );
     }
 
@@ -538,8 +533,8 @@ export class DeploymentManager {
         public chainId: number,
         public accounts: string[],
         public txDefaults: Partial<TxData>,
+        public devUtils: DevUtilsContract,
         public assetDataEncoder: IAssetDataContract,
-        public devUtils?: DevUtilsContract,
     ) {}
 }
 // tslint:disable:max-file-line-count
