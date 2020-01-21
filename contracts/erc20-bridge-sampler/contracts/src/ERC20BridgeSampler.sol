@@ -105,7 +105,6 @@ contract ERC20BridgeSampler is
         }
     }
 
-
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
     /// @param orderSignatures Signatures for each respective order in `orders`.
