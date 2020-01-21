@@ -44,7 +44,7 @@ blockchainTests.resets('OrderValidationUtils/OrderTransferSimulatorUtils', env =
         erc20Token2 = deployment.tokens.erc20[1];
         feeErc20Token = deployment.tokens.erc20[2];
         erc20Proxy = deployment.assetProxies.erc20Proxy;
-        devUtils = deployment.devUtils!; // tslint:disable-line:no-non-null-assertion
+        devUtils = deployment.devUtils;
         exchange = deployment.exchange;
 
         erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);

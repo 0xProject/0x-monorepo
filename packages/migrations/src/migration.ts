@@ -273,7 +273,7 @@ export async function runMigrationsAsync(
         erc20BridgeProxy: erc20BridgeProxy.address,
         zeroExGovernor: constants.NULL_ADDRESS,
         forwarder: forwarder.address,
-        libTransactionDecoder: constants.NULL_ADDRESS,
+        libTransactionDecoder: libTransactionDecoder.address,
         orderValidator: constants.NULL_ADDRESS,
         dutchAuction: constants.NULL_ADDRESS,
         coordinatorRegistry: coordinatorRegistry.address,
