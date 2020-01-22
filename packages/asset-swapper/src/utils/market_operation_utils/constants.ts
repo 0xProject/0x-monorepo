@@ -24,12 +24,14 @@ export const SELL_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Da
 export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
-    runLimit: 4096,
+    // tslint:disable-next-line: custom-no-magic-numbers
+    runLimit: 2 ** 15,
     excludedSources: [],
     bridgeSlippage: 0.0005,
-    dustFractionThreshold: 0.01,
-    numSamples: 10,
+    dustFractionThreshold: 0.0025,
+    numSamples: 13,
     noConflicts: true,
+    sampleDistributionBase: 1.05,
 };
 
 export const constants = {
@@ -40,5 +42,5 @@ export const constants = {
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     ERC20_PROXY_ID: '0xf47261b0',
     WALLET_SIGNATURE: '0x04',
-    SAMPLER_CONTRACT_GAS_LIMIT: 10e6,
+    SAMPLER_CONTRACT_GAS_LIMIT: 16e6,
 };

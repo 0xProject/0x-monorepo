@@ -226,6 +226,58 @@ export class SwapQuoter {
             options,
         )) as MarketBuySwapQuote;
     }
+
+    public async getBatchMarketBuySwapQuoteForAssetDataAsync(
+        makerAssetDatas: string[],
+        takerAssetData: string,
+        makerAssetBuyAmount: BigNumber[],
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<Array<MarketBuySwapQuote | undefined>> {
+        makerAssetBuyAmount.map((a, i) => assert.isBigNumber(`makerAssetBuyAmount[${i}]`, a));
+        let gasPrice: BigNumber;
+        const { slippagePercentage, ...calculateSwapQuoteOpts } = _.merge(
+            {},
+            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
+            options,
+        );
+        if (!!options.gasPrice) {
+            gasPrice = options.gasPrice;
+            assert.isBigNumber('gasPrice', gasPrice);
+        } else {
+            gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
+        }
+
+        const apiOrders = await this.orderbook.getBatchOrdersAsync(makerAssetDatas, [takerAssetData]);
+        const allOrders = apiOrders.map(orders => orders.map(o => o.order));
+        const allPrunedOrders = allOrders.map((orders, i) => {
+            if (orders.length === 0) {
+                return [
+                    dummyOrderUtils.createDummyOrderForSampler(
+                        makerAssetDatas[i],
+                        takerAssetData,
+                        this._contractAddresses.uniswapBridge,
+                    ),
+                ];
+            } else {
+                return sortingUtils.sortOrders(
+                    orderPrunerUtils.pruneForUsableSignedOrders(
+                        orders,
+                        this.permittedOrderFeeTypes,
+                        this.expiryBufferMs,
+                    ),
+                );
+            }
+        });
+
+        const swapQuotes = await this._swapQuoteCalculator.calculateBatchMarketBuySwapQuoteAsync(
+            allPrunedOrders,
+            makerAssetBuyAmount,
+            slippagePercentage,
+            gasPrice,
+            calculateSwapQuoteOpts,
+        );
+        return swapQuotes;
+    }
     /**
      * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.

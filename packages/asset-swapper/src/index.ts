@@ -54,6 +54,11 @@ export {
     SwapQuoteConsumerError,
     SignedOrderWithFillableAmounts,
 } from './types';
-export { ERC20BridgeSource } from './utils/market_operation_utils/types';
+export {
+    ERC20BridgeSource,
+    CollapsedFill,
+    NativeCollapsedFill,
+    OptimizedMarketOrder,
+} from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';

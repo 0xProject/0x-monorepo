@@ -91,6 +91,94 @@
                             { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
                             { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
                         ],
+                        "internalType": "struct LibOrder.Order[][]",
+                        "name": "orders",
+                        "type": "tuple[][]"
+                    },
+                    { "internalType": "bytes[][]", "name": "orderSignatures", "type": "bytes[][]" },
+                    { "internalType": "address[]", "name": "sources", "type": "address[]" },
+                    { "internalType": "uint256[][]", "name": "makerTokenAmounts", "type": "uint256[][]" }
+                ],
+                "name": "queryBatchOrdersAndSampleBuys",
+                "outputs": [
+                    {
+                        "components": [
+                            { "internalType": "uint256[]", "name": "orderFillableAssetAmounts", "type": "uint256[]" },
+                            { "internalType": "uint256[][]", "name": "tokenAmountsBySource", "type": "uint256[][]" }
+                        ],
+                        "internalType": "struct IERC20BridgeSampler.OrdersAndSample[]",
+                        "name": "ordersAndSamples",
+                        "type": "tuple[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
+                        ],
+                        "internalType": "struct LibOrder.Order[][]",
+                        "name": "orders",
+                        "type": "tuple[][]"
+                    },
+                    { "internalType": "bytes[][]", "name": "orderSignatures", "type": "bytes[][]" },
+                    { "internalType": "address[]", "name": "sources", "type": "address[]" },
+                    { "internalType": "uint256[][]", "name": "takerTokenAmounts", "type": "uint256[][]" }
+                ],
+                "name": "queryBatchOrdersAndSampleSells",
+                "outputs": [
+                    {
+                        "components": [
+                            { "internalType": "uint256[]", "name": "orderFillableAssetAmounts", "type": "uint256[]" },
+                            { "internalType": "uint256[][]", "name": "tokenAmountsBySource", "type": "uint256[][]" }
+                        ],
+                        "internalType": "struct IERC20BridgeSampler.OrdersAndSample[]",
+                        "name": "ordersAndSamples",
+                        "type": "tuple[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
+                        ],
                         "internalType": "struct LibOrder.Order[]",
                         "name": "orders",
                         "type": "tuple[]"
@@ -195,6 +283,26 @@
                         "orders": "Native orders to query."
                     },
                     "return": "orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in `orders`."
+                },
+                "queryBatchOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[][])": {
+                    "details": "Query batches of native orders and sample buy quotes on multiple DEXes at once.",
+                    "params": {
+                        "makerTokenAmounts": "Batches of Maker token sell amount for each sample.",
+                        "orderSignatures": "Batches of Signatures for each respective order in `orders`.",
+                        "orders": "Batches of Native orders to query.",
+                        "sources": "Address of each DEX. Passing in an unsupported DEX will throw."
+                    },
+                    "return": "ordersAndSamples How much taker asset can be filled         by each order in `orders`. Taker amounts sold for each source at         each maker token amount. First indexed by source index, then sample         index"
+                },
+                "queryBatchOrdersAndSampleSells((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[][])": {
+                    "details": "Query batches of native orders and sample sell quotes on multiple DEXes at once.",
+                    "params": {
+                        "orderSignatures": "Batches of Signatures for each respective order in `orders`.",
+                        "orders": "Batches of Native orders to query.",
+                        "sources": "Address of each DEX. Passing in an unsupported DEX will throw.",
+                        "takerTokenAmounts": "Batches of Taker token sell amount for each sample."
+                    },
+                    "return": "ordersAndSamples How much taker asset can be filled         by each order in `orders`. Maker amounts bought for each source at         each taker token amount. First indexed by source index, then sample         index."
                 },
                 "queryOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],address[],uint256[])": {
                     "details": "Query native orders and sample buy quotes on multiple DEXes at once.",

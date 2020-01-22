@@ -9,6 +9,10 @@
             {
                 "note": "Update `DevUtils` mainnet, Ropsten, Rinkeby, Kovan addresses",
                 "pr": 2436
+            },
+            {
+                "note": "Update `ERC20BridgeSampler` address on kovan and mainnet.",
+                "pr": 2427
             }
         ]
     },

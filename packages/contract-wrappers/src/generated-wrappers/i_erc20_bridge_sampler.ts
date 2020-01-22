@@ -286,6 +286,204 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 inputs: [
                     {
                         name: 'orders',
+                        type: 'tuple[][]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'orderSignatures',
+                        type: 'bytes[][]',
+                    },
+                    {
+                        name: 'sources',
+                        type: 'address[]',
+                    },
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[][]',
+                    },
+                ],
+                name: 'queryBatchOrdersAndSampleBuys',
+                outputs: [
+                    {
+                        name: 'ordersAndSamples',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'orderFillableAssetAmounts',
+                                type: 'uint256[]',
+                            },
+                            {
+                                name: 'tokenAmountsBySource',
+                                type: 'uint256[][]',
+                            },
+                        ],
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'orders',
+                        type: 'tuple[][]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'orderSignatures',
+                        type: 'bytes[][]',
+                    },
+                    {
+                        name: 'sources',
+                        type: 'address[]',
+                    },
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[][]',
+                    },
+                ],
+                name: 'queryBatchOrdersAndSampleSells',
+                outputs: [
+                    {
+                        name: 'ordersAndSamples',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'orderFillableAssetAmounts',
+                                type: 'uint256[]',
+                            },
+                            {
+                                name: 'tokenAmountsBySource',
+                                type: 'uint256[][]',
+                            },
+                        ],
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'orders',
                         type: 'tuple[]',
                         components: [
                             {
@@ -651,6 +849,118 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [orders, orderSignatures]);
+            },
+        };
+    }
+    public queryBatchOrdersAndSampleBuys(
+        orders: Array<
+            Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>
+        >,
+        orderSignatures: string[][],
+        sources: string[],
+        makerTokenAmounts: BigNumber[][],
+    ): ContractFunctionObj<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('orders', orders);
+        assert.isArray('orderSignatures', orderSignatures);
+        assert.isArray('sources', sources);
+        assert.isArray('makerTokenAmounts', makerTokenAmounts);
+        const functionSignature =
+            'queryBatchOrdersAndSampleBuys((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[][])';
+
+        return {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
+                    Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>
+                >(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    sources,
+                    makerTokenAmounts,
+                ]);
+            },
+        };
+    }
+    public queryBatchOrdersAndSampleSells(
+        orders: Array<
+            Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>
+        >,
+        orderSignatures: string[][],
+        sources: string[],
+        takerTokenAmounts: BigNumber[][],
+    ): ContractFunctionObj<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('orders', orders);
+        assert.isArray('orderSignatures', orderSignatures);
+        assert.isArray('sources', sources);
+        assert.isArray('takerTokenAmounts', takerTokenAmounts);
+        const functionSignature =
+            'queryBatchOrdersAndSampleSells((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[][],bytes[][],address[],uint256[][])';
+
+        return {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                return abiEncoder.strictDecodeReturnValue<
+                    Array<{ orderFillableAssetAmounts: BigNumber[]; tokenAmountsBySource: BigNumber[][] }>
+                >(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    orderSignatures,
+                    sources,
+                    takerTokenAmounts,
+                ]);
             },
         };
     }

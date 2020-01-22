@@ -23,6 +23,52 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 interface IERC20BridgeSampler {
+    struct OrdersAndSample {
+        uint256[] orderFillableAssetAmounts;
+        uint256[][] tokenAmountsBySource;
+    }
+
+    /// @dev Query batches of native orders and sample sell quotes on multiple DEXes at once.
+    /// @param orders Batches of Native orders to query.
+    /// @param orderSignatures Batches of Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerTokenAmounts Batches of Taker token sell amount for each sample.
+    /// @return ordersAndSamples How much taker asset can be filled
+    ///         by each order in `orders`. Maker amounts bought for each source at
+    ///         each taker token amount. First indexed by source index, then sample
+    ///         index.
+    function queryBatchOrdersAndSampleSells(
+        LibOrder.Order[][] calldata orders,
+        bytes[][] calldata orderSignatures,
+        address[] calldata sources,
+        uint256[][] calldata takerTokenAmounts
+    )
+        external
+        view
+        returns (
+            OrdersAndSample[] memory ordersAndSamples
+        );
+
+    /// @dev Query batches of native orders and sample buy quotes on multiple DEXes at once.
+    /// @param orders Batches of Native orders to query.
+    /// @param orderSignatures Batches of Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param makerTokenAmounts Batches of Maker token sell amount for each sample.
+    /// @return ordersAndSamples How much taker asset can be filled
+    ///         by each order in `orders`. Taker amounts sold for each source at
+    ///         each maker token amount. First indexed by source index, then sample
+    ///         index
+    function queryBatchOrdersAndSampleBuys(
+        LibOrder.Order[][] calldata orders,
+        bytes[][] calldata orderSignatures,
+        address[] calldata sources,
+        uint256[][] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (
+            OrdersAndSample[] memory ordersAndSamples
+        );
 
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.

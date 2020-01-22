@@ -9,9 +9,9 @@ export class ProtocolFeeUtils {
     public gasPriceEstimation: BigNumber;
     private readonly _gasPriceHeart: any;
 
-    constructor(gasPricePollingIntervalInMs: number) {
+    constructor(gasPricePollingIntervalInMs: number, initialGasPrice: BigNumber = constants.ZERO_AMOUNT) {
         this._gasPriceHeart = heartbeats.createHeart(gasPricePollingIntervalInMs);
-        this.gasPriceEstimation = constants.ZERO_AMOUNT;
+        this.gasPriceEstimation = initialGasPrice;
         this._initializeHeartBeat();
     }
 

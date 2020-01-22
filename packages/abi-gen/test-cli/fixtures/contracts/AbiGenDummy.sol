@@ -138,6 +138,8 @@ contract AbiGenDummy
     }
 
     function methodReturningArrayOfStructs() public pure returns(Struct[] memory) {}
+    function methodAcceptingArrayOfStructs(Struct[] memory) public pure {}
+    function methodAcceptingArrayOfArrayOfStructs(Struct[][] memory) public pure {}
 
     struct NestedStruct {
         Struct innerStruct;

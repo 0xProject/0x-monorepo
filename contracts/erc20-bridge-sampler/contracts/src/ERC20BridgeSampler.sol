@@ -37,9 +37,73 @@ contract ERC20BridgeSampler is
     DeploymentConstants
 {
     bytes4 constant internal ERC20_PROXY_ID = 0xf47261b0; // bytes4(keccak256("ERC20Token(address)"));
-    uint256 constant internal KYBER_SAMPLE_CALL_GAS = 600e3;
+    uint256 constant internal KYBER_SAMPLE_CALL_GAS = 1500e3;
     uint256 constant internal UNISWAP_SAMPLE_CALL_GAS = 150e3;
-    uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 250e3;
+    uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 1000e3;
+
+    /// @dev Query batches of native orders and sample sell quotes on multiple DEXes at once.
+    /// @param orders Batches of Native orders to query.
+    /// @param orderSignatures Batches of Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param takerTokenAmounts Batches of Taker token sell amount for each sample.
+    /// @return ordersAndSamples How much taker asset can be filled
+    ///         by each order in `orders`. Maker amounts bought for each source at
+    ///         each taker token amount. First indexed by source index, then sample
+    ///         index.
+    function queryBatchOrdersAndSampleSells(
+        LibOrder.Order[][] memory orders,
+        bytes[][] memory orderSignatures,
+        address[] memory sources,
+        uint256[][] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (
+            OrdersAndSample[] memory ordersAndSamples
+        )
+    {
+        ordersAndSamples = new OrdersAndSample[](orders.length);
+        for (uint256 i = 0; i != orders.length; i++) {
+            (
+                uint256[] memory orderFillableAssetAmounts,
+                uint256[][] memory tokenAmountsBySource
+            ) = queryOrdersAndSampleSells(orders[i], orderSignatures[i], sources, takerTokenAmounts[i]);
+            ordersAndSamples[i].orderFillableAssetAmounts = orderFillableAssetAmounts;
+            ordersAndSamples[i].tokenAmountsBySource = tokenAmountsBySource;
+        }
+    }
+
+    /// @dev Query batches of native orders and sample buy quotes on multiple DEXes at once.
+    /// @param orders Batches of Native orders to query.
+    /// @param orderSignatures Batches of Signatures for each respective order in `orders`.
+    /// @param sources Address of each DEX. Passing in an unsupported DEX will throw.
+    /// @param makerTokenAmounts Batches of Maker token sell amount for each sample.
+    /// @return ordersAndSamples How much taker asset can be filled
+    ///         by each order in `orders`. Taker amounts sold for each source at
+    ///         each maker token amount. First indexed by source index, then sample
+    ///         index.
+    function queryBatchOrdersAndSampleBuys(
+        LibOrder.Order[][] memory orders,
+        bytes[][] memory orderSignatures,
+        address[] memory sources,
+        uint256[][] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (
+            OrdersAndSample[] memory ordersAndSamples
+        )
+    {
+        ordersAndSamples = new OrdersAndSample[](orders.length);
+        for (uint256 i = 0; i != orders.length; i++) {
+            (
+                uint256[] memory orderFillableAssetAmounts,
+                uint256[][] memory tokenAmountsBySource
+            ) = queryOrdersAndSampleBuys(orders[i], orderSignatures[i], sources, makerTokenAmounts[i]);
+            ordersAndSamples[i].orderFillableAssetAmounts = orderFillableAssetAmounts;
+            ordersAndSamples[i].tokenAmountsBySource = tokenAmountsBySource;
+        }
+    }
 
     /// @dev Query native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Native orders to query.
@@ -281,6 +345,8 @@ contract ERC20BridgeSampler is
             uint256 rate = 0;
             if (didSucceed) {
                 rate = abi.decode(resultData, (uint256));
+            } else {
+                break;
             }
             makerTokenAmounts[i] =
                 rate *
@@ -321,6 +387,8 @@ contract ERC20BridgeSampler is
             uint256 buyAmount = 0;
             if (didSucceed) {
                 buyAmount = abi.decode(resultData, (uint256));
+            } else{
+                break;
             }
             makerTokenAmounts[i] = buyAmount;
         }
@@ -356,6 +424,8 @@ contract ERC20BridgeSampler is
             uint256 sellAmount = 0;
             if (didSucceed) {
                 sellAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
             }
             takerTokenAmounts[i] = sellAmount;
         }
@@ -384,26 +454,28 @@ contract ERC20BridgeSampler is
         IUniswapExchangeQuotes makerTokenExchange = makerToken == _getWethAddress() ?
             IUniswapExchangeQuotes(0) : _getUniswapExchange(makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
+            bool didSucceed = true;
             if (makerToken == _getWethAddress()) {
-                makerTokenAmounts[i] = _callUniswapExchangePriceFunction(
+                (makerTokenAmounts[i], didSucceed) = _callUniswapExchangePriceFunction(
                     address(takerTokenExchange),
                     takerTokenExchange.getTokenToEthInputPrice.selector,
                     takerTokenAmounts[i]
                 );
             } else if (takerToken == _getWethAddress()) {
-                makerTokenAmounts[i] = _callUniswapExchangePriceFunction(
+                (makerTokenAmounts[i], didSucceed) = _callUniswapExchangePriceFunction(
                     address(makerTokenExchange),
                     makerTokenExchange.getEthToTokenInputPrice.selector,
                     takerTokenAmounts[i]
                 );
             } else {
-                uint256 ethBought = _callUniswapExchangePriceFunction(
+                uint256 ethBought;
+                (ethBought, didSucceed) = _callUniswapExchangePriceFunction(
                     address(takerTokenExchange),
                     takerTokenExchange.getTokenToEthInputPrice.selector,
                     takerTokenAmounts[i]
                 );
                 if (ethBought != 0) {
-                    makerTokenAmounts[i] = _callUniswapExchangePriceFunction(
+                    (makerTokenAmounts[i], didSucceed) = _callUniswapExchangePriceFunction(
                         address(makerTokenExchange),
                         makerTokenExchange.getEthToTokenInputPrice.selector,
                         ethBought
@@ -411,6 +483,9 @@ contract ERC20BridgeSampler is
                 } else {
                     makerTokenAmounts[i] = 0;
                 }
+            }
+            if (!didSucceed) {
+                break;
             }
         }
     }
@@ -438,26 +513,28 @@ contract ERC20BridgeSampler is
         IUniswapExchangeQuotes makerTokenExchange = makerToken == _getWethAddress() ?
             IUniswapExchangeQuotes(0) : _getUniswapExchange(makerToken);
         for (uint256 i = 0; i < numSamples; i++) {
+            bool didSucceed = true;
             if (makerToken == _getWethAddress()) {
-                takerTokenAmounts[i] = _callUniswapExchangePriceFunction(
+                (takerTokenAmounts[i], didSucceed) = _callUniswapExchangePriceFunction(
                     address(takerTokenExchange),
                     takerTokenExchange.getTokenToEthOutputPrice.selector,
                     makerTokenAmounts[i]
                 );
             } else if (takerToken == _getWethAddress()) {
-                takerTokenAmounts[i] = _callUniswapExchangePriceFunction(
+                (takerTokenAmounts[i], didSucceed) = _callUniswapExchangePriceFunction(
                     address(makerTokenExchange),
                     makerTokenExchange.getEthToTokenOutputPrice.selector,
                     makerTokenAmounts[i]
                 );
             } else {
-                uint256 ethSold = _callUniswapExchangePriceFunction(
+                uint256 ethSold;
+                (ethSold, didSucceed) = _callUniswapExchangePriceFunction(
                     address(makerTokenExchange),
                     makerTokenExchange.getEthToTokenOutputPrice.selector,
                     makerTokenAmounts[i]
                 );
                 if (ethSold != 0) {
-                    takerTokenAmounts[i] = _callUniswapExchangePriceFunction(
+                    (takerTokenAmounts[i], didSucceed) = _callUniswapExchangePriceFunction(
                         address(takerTokenExchange),
                         takerTokenExchange.getTokenToEthOutputPrice.selector,
                         ethSold
@@ -465,6 +542,9 @@ contract ERC20BridgeSampler is
                 } else {
                     takerTokenAmounts[i] = 0;
                 }
+            }
+            if (!didSucceed) {
+                break;
             }
         }
     }
@@ -493,12 +573,13 @@ contract ERC20BridgeSampler is
     )
         private
         view
-        returns (uint256 outputAmount)
+        returns (uint256 outputAmount, bool didSucceed)
     {
         if (uniswapExchangeAddress == address(0)) {
-            return 0;
+            return (outputAmount, didSucceed);
         }
-        (bool didSucceed, bytes memory resultData) =
+        bytes memory resultData;
+        (didSucceed, resultData) =
             uniswapExchangeAddress.staticcall.gas(UNISWAP_SAMPLE_CALL_GAS)(
                 abi.encodeWithSelector(
                     functionSelector,

@@ -13,16 +13,14 @@ export class DexOrderSampler {
     /**
      * Generate sample amounts up to `maxFillAmount`.
      */
-    public static getSampleAmounts(maxFillAmount: BigNumber, numSamples: number): BigNumber[] {
-        const amounts = [];
-        for (let i = 0; i < numSamples; i++) {
-            amounts.push(
-                maxFillAmount
-                    .times(i + 1)
-                    .div(numSamples)
-                    .integerValue(BigNumber.ROUND_UP),
-            );
-        }
+    public static getSampleAmounts(maxFillAmount: BigNumber, numSamples: number, expBase: number = 1): BigNumber[] {
+        const distribution = [...Array<BigNumber>(numSamples)].map((v, i) => new BigNumber(expBase).pow(i));
+        const stepSizes = distribution.map(d => d.div(BigNumber.sum(...distribution)));
+        const amounts = stepSizes.map((s, i) => {
+            return maxFillAmount
+                .times(BigNumber.sum(...[0, ...stepSizes.slice(0, i + 1)]))
+                .integerValue(BigNumber.ROUND_UP);
+        });
         return amounts;
     }
 
@@ -48,6 +46,36 @@ export class DexOrderSampler {
             }));
         });
         return [fillableAmount, quotes];
+    }
+
+    public async getBatchFillableAmountsAndSampleMarketBuyAsync(
+        nativeOrders: SignedOrder[][],
+        sampleAmounts: BigNumber[][],
+        sources: ERC20BridgeSource[],
+    ): Promise<Array<[BigNumber[], DexSample[][]]>> {
+        const signatures = nativeOrders.map(o => o.map(i => i.signature));
+        const fillableAmountsAndSamples = await this._samplerContract
+            .queryBatchOrdersAndSampleBuys(
+                nativeOrders,
+                signatures,
+                sources.map(s => SOURCE_TO_ADDRESS[s]),
+                sampleAmounts,
+            )
+            .callAsync();
+        const batchFillableAmountsAndQuotes: Array<[BigNumber[], DexSample[][]]> = [];
+        fillableAmountsAndSamples.forEach((sampleResult, i) => {
+            const { tokenAmountsBySource, orderFillableAssetAmounts } = sampleResult;
+            const quotes = tokenAmountsBySource.map((rawDexSamples, sourceIdx) => {
+                const source = sources[sourceIdx];
+                return rawDexSamples.map((sample, sampleIdx) => ({
+                    source,
+                    input: sampleAmounts[i][sampleIdx],
+                    output: sample,
+                }));
+            });
+            batchFillableAmountsAndQuotes.push([orderFillableAssetAmounts, quotes]);
+        });
+        return batchFillableAmountsAndQuotes;
     }
 
     public async getFillableAmountsAndSampleMarketSellAsync(
