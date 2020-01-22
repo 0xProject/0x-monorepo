@@ -126,21 +126,20 @@ contract OrderValidationUtils is
             transferableTakerAssetAmount
         );
 
-        // Execute the maker transfers.
-        fillableTakerAssetAmount = getSimulatedOrderMakerTransferResults(
-            order,
-            order.takerAddress,
-            fillableTakerAssetAmount
-        ) == OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
 
-        if (!_isAssetDataValid(order.takerAssetData)) {
+        // Ensure that all of the asset data is valid. Fee asset data only needs
+        // to be valid if the fees are nonzero.
+        if (
+            !_isAssetDataValid(order.makerAssetData) ||
+            (order.makerFee != 0 && !_isAssetDataValid(order.makerFeeAssetData)) ||
+            !_isAssetDataValid(order.takerAssetData) ||
+            (order.takerFee != 0 && !_isAssetDataValid(order.takerFeeAssetData))
+        ) {
             fillableTakerAssetAmount = 0;
         }
 
-        if (order.takerFee != 0 && !_isAssetDataValid(order.takerFeeAssetData)) {
-            fillableTakerAssetAmount = 0;
-        }
-
+        // If the order is not fillable, then the fillable taker asset amount is
+        // zero by definition.
         if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE) {
             fillableTakerAssetAmount = 0;
         }
