@@ -51,7 +51,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
                 .getABIEncodedTransactionData();
         } else {
             calldataHexString = this._exchangeContract
-                .marketSellOrdersNoThrow(orders, quote.takerAssetFillAmount, signatures)
+                .marketSellOrdersFillOrKill(orders, quote.takerAssetFillAmount, signatures)
                 .getABIEncodedTransactionData();
         }
 
