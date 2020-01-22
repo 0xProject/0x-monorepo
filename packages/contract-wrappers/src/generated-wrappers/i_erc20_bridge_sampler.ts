@@ -853,22 +853,24 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         };
     }
     public queryBatchOrdersAndSampleBuys(
-        orders: Array<Array<{
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-            makerFeeAssetData: string;
-            takerFeeAssetData: string;
-        }>>,
+        orders: Array<
+            Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>
+        >,
         orderSignatures: string[][],
         sources: string[],
         makerTokenAmounts: BigNumber[][],
@@ -907,22 +909,24 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         };
     }
     public queryBatchOrdersAndSampleSells(
-        orders: Array<Array<{
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-            makerFeeAssetData: string;
-            takerFeeAssetData: string;
-        }>>,
+        orders: Array<
+            Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>
+        >,
         orderSignatures: string[][],
         sources: string[],
         takerTokenAmounts: BigNumber[][],
