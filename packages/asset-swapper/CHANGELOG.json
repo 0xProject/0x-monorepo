@@ -24,6 +24,7 @@
             },
             {
                 "note": "Change Exchange sell function from `marketSellOrdersNoThrow` to `marketSellOrdersFillOrKill`",
+                "pr": 2450
             }
         ]
     },
