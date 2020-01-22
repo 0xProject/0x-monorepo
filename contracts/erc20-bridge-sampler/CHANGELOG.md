@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _January 22, 2020_
+
+    * Add batch functions to query quotes (#2427)
+    * Early exit if a DEX sample fails (#2427)
+
 ## v1.0.3 - _January 6, 2020_
 
     * Add gas limits to external quote calls. (#2405)

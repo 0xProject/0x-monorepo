@@ -10,7 +10,8 @@
                 "note": "Early exit if a DEX sample fails",
                 "pr": 2427
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "version": "1.0.3",

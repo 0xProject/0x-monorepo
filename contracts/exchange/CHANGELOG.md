@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _January 22, 2020_
+
+    * Uses updated event decoding to properly decodes arrays and objects. (#2443)
+
 ## v3.0.3 - _January 6, 2020_
 
     * Dependencies updated

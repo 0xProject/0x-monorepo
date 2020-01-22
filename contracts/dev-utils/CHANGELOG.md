@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.4 - _January 22, 2020_
+
+    * Dependencies updated
+
 ## v1.0.3 - _January 6, 2020_
 
     * Fixed ERC721 duplicate token ID bug (#2400)

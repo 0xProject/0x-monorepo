@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.0 - _January 22, 2020_
+
+    * Support catching empty reverts on live networks. (#2433)
+
 ## v6.0.3 - _January 6, 2020_
 
     * Dependencies updated

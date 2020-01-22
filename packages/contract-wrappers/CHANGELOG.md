@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.4.0 - _January 22, 2020_
+
+    * Update `DevUtils` wrapper (#2436)
+    * Update all wrappers. (#2432)
+    * Regenerate wrappers to catch empty reverts on live networks. (#2433)
+    * Update `IERC20BridgeSampler` (#2427)
+
 ## v13.3.0 - _January 6, 2020_
 
     * Added updated `DevUtils` wrapper (#2402)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _January 22, 2020_
+
+    * Set default `hardfork` option for ganache provider to `"istanbul"` (#2432)
+
 ## v3.1.0 - _January 6, 2020_
 
     * Add `locked` `Web3Config` option. (#2407)

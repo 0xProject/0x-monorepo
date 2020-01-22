@@ -6,7 +6,8 @@
                 "note": "Update Forwarder deployment",
                 "pr": 2432
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "version": "5.1.0",

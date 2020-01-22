@@ -26,7 +26,8 @@
                 "note": "Change Exchange sell function from `marketSellOrdersNoThrow` to `marketSellOrdersFillOrKill`",
                 "pr": 2450
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "version": "3.0.3",

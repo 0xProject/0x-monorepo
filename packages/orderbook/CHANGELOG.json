@@ -6,7 +6,8 @@
                 "note": "Added `getBatchOrdersAsync` for fetching batches of orders",
                 "pr": 2427
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "timestamp": 1578272714,

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.2.0 - _January 22, 2020_
+
+    * Allow for strict decoding of return values. (#2433)
+
 ## v5.1.2 - _January 6, 2020_
 
     * Dependencies updated

@@ -5,13 +5,21 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _January 22, 2020_
+
+    * Update `DevUtils` mainnet, Ropsten, Rinkeby, Kovan addresses with PR#2440 changes (#2446)
+    * Update `DevUtils` mainnet, Ropsten, Rinkeby, Kovan addresses (#2436)
+    * Update `ERC20BridgeSampler` address on kovan and mainnet. (#2427)
+
 ## v4.2.0 - _January 6, 2020_
 
     * Added new `DevUtils` addresses (#2402)
     * Update ERC20BridgeSampler address on Kovan and mainnet. (#2405)
-    * Added DydxBridge Contract to contract-addresses (#2401)
-    * Update `UniswapBridge` mainnet address. (#2412)
-    * Update `KyberBridge` mainnet address. (#2412)
+    * Added DydxBridge Contract to contract-addresses (#2390)
+    * Update `UniswapBridge` mainnet address. (#2390)
+    * Update `KyberBridge` mainnet address. (#2390)
+    * Update `Forwarder` mainnet address. (#2390)
+    * Added ChaiBridge Contract to contract-addresses (#2390)
 
 ## v4.1.0 - _December 17, 2019_
 

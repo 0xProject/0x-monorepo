@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _January 22, 2020_
+
+    * Replaced ethers with 0x ABI Encoder for decoding logs. Fixes decoding for arrays/objects. (#2443)
+
 ## v4.0.3 - _January 6, 2020_
 
     * Dependencies updated

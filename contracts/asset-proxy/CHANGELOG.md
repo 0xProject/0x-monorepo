@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _January 22, 2020_
+
+    * Dependencies updated
+
 ## v3.1.0 - _January 6, 2020_
 
     * Integration tests for DydxBridge with ERC20BridgeProxy. (#2401)

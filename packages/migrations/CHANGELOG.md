@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.0 - _January 22, 2020_
+
+    * Update Forwarder deployment (#2432)
+
 ## v5.1.0 - _January 6, 2020_
 
     * Added DydxBridge Contract to ContractAddresses (#2401)

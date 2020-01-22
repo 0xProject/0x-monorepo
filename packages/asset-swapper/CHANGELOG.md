@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _January 22, 2020_
+
+    * Upgrade to new `Forwarder` contract with flat affiliate fees. (#2432)
+    * Remove `getSmartContractParamsOrThrow()` from `SwapQuoteConsumer`s. (#2432)
+    * Added `getBatchMarketBuySwapQuoteForAssetDataAsync` on `SwapQuoter` (#2427)
+    * Add exponential sampling distribution and `sampleDistributionBase` option to `SwapQuoter` (#2427)
+    * Compute more accurate best quote price (#2427)
+    * Change Exchange sell function from `marketSellOrdersNoThrow` to `marketSellOrdersFillOrKill` (#2450)
+
 ## v3.0.3 - _January 6, 2020_
 
     * Ignore zero sample results from the sampler contract. (#2406)

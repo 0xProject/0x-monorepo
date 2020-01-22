@@ -18,7 +18,8 @@
                 "note": "Update `IERC20BridgeSampler`",
                 "pr": 2427
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "version": "13.3.0",

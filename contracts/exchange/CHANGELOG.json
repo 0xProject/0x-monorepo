@@ -6,7 +6,8 @@
                 "note": "Uses updated event decoding to properly decodes arrays and objects.",
                 "pr": 2443
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "timestamp": 1578272714,

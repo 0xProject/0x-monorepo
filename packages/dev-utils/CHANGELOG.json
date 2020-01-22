@@ -6,7 +6,8 @@
                 "note": "Set default `hardfork` option for ganache provider to `\"istanbul\"`",
                 "pr": 2432
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "version": "3.1.0",

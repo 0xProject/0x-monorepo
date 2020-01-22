@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _January 22, 2020_
+
+    * Added `getBatchOrdersAsync` for fetching batches of orders (#2427)
+
 ## v2.0.1 - _January 6, 2020_
 
     * Dependencies updated

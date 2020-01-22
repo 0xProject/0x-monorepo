@@ -6,7 +6,8 @@
                 "note": "Support catching empty reverts on live networks.",
                 "pr": 2433
             }
-        ]
+        ],
+        "timestamp": 1579682890
     },
     {
         "timestamp": 1578272714,
