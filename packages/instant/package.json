@@ -1,6 +1,6 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.40",
+    "version": "1.0.41",
     "engines": {
         "node": ">=6.12"
     },
@@ -43,13 +43,13 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
-        "@0x/assert": "^3.0.3",
-        "@0x/asset-swapper": "^3.0.3",
-        "@0x/contract-wrappers": "^13.3.0",
-        "@0x/json-schemas": "^5.0.3",
-        "@0x/subproviders": "^6.0.3",
-        "@0x/utils": "^5.1.2",
-        "@0x/web3-wrapper": "^7.0.3",
+        "@0x/assert": "^3.0.4",
+        "@0x/asset-swapper": "^4.0.0",
+        "@0x/contract-wrappers": "^13.4.0",
+        "@0x/json-schemas": "^5.0.4",
+        "@0x/subproviders": "^6.0.4",
+        "@0x/utils": "^5.2.0",
+        "@0x/web3-wrapper": "^7.0.4",
         "babel-runtime": "^6.26.0",
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",

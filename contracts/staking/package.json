@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-staking",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -53,20 +53,20 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/tokens/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^5.0.3",
-        "@0x/contracts-asset-proxy": "^3.1.0",
-        "@0x/contracts-dev-utils": "^1.0.3",
-        "@0x/contracts-erc20": "^3.0.3",
-        "@0x/contracts-exchange-libs": "^4.0.3",
-        "@0x/contracts-gen": "^2.0.3",
-        "@0x/contracts-utils": "^4.0.3",
-        "@0x/dev-utils": "^3.1.0",
-        "@0x/order-utils": "^10.1.0",
-        "@0x/sol-compiler": "^4.0.3",
+        "@0x/abi-gen": "^5.1.0",
+        "@0x/contracts-asset-proxy": "^3.1.1",
+        "@0x/contracts-dev-utils": "^1.0.4",
+        "@0x/contracts-erc20": "^3.0.4",
+        "@0x/contracts-exchange-libs": "^4.1.0",
+        "@0x/contracts-gen": "^2.0.4",
+        "@0x/contracts-utils": "^4.1.0",
+        "@0x/dev-utils": "^3.1.1",
+        "@0x/order-utils": "^10.1.1",
+        "@0x/sol-compiler": "^4.0.4",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
         "@0x/types": "^3.1.1",
-        "@0x/web3-wrapper": "^7.0.3",
+        "@0x/web3-wrapper": "^7.0.4",
         "@types/lodash": "4.14.104",
         "@types/node": "*",
         "chai": "^4.0.1",
@@ -87,10 +87,10 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^6.0.3",
-        "@0x/contracts-test-utils": "^5.1.0",
+        "@0x/base-contract": "^6.1.0",
+        "@0x/contracts-test-utils": "^5.1.1",
         "@0x/typescript-typings": "^5.0.1",
-        "@0x/utils": "^5.1.2",
+        "@0x/utils": "^5.2.0",
         "ethereum-types": "^3.0.0",
         "ethereumjs-util": "^5.1.1"
     },
