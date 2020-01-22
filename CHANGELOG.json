@@ -21,6 +21,10 @@
             {
                 "note": "Compute more accurate best quote price",
                 "pr": 2427
+            },
+            {
+                "note": "Change Exchange sell function from `marketSellOrdersNoThrow` to `marketSellOrdersFillOrKill`",
+                "pr": 2450
             }
         ]
     },
