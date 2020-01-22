@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Fix underestimated protocol fee in worst case quote.",
+                "pr": 2452
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
