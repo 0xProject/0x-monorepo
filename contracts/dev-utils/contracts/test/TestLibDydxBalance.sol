@@ -17,23 +17,14 @@
 */
 
 pragma solidity ^0.5.16;
+pragma experimental ABIEncoderV2;
+
+import "../src/LibDydxBalance.sol";
 
 
-contract EthBalanceChecker {
+// solhint-disable separate-by-one-line-in-contract
+contract TestLibDydxBalance {
 
-    /// @dev Batch fetches ETH balances
-    /// @param addresses Array of addresses.
-    /// @return Array of ETH balances.
-    function getEthBalances(address[] memory addresses)
-        public
-        view
-        returns (uint256[] memory)
-    {
-        uint256[] memory balances = new uint256[](addresses.length);
-        for (uint256 i = 0; i != addresses.length; i++) {
-            balances[i] = addresses[i].balance;
-        }
-        return balances;
-    }
+    // TODO
 
 }

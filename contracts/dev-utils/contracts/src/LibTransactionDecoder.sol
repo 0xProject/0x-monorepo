@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
@@ -24,7 +24,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
-contract LibTransactionDecoder {
+library LibTransactionDecoder {
 
     using LibBytes for bytes;
 

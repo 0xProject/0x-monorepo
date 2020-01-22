@@ -19,13 +19,30 @@
 pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "./LibAssetData.sol";
+import "./LibTransactionDecoder.sol";
 
 
-library LibAssetData {
+contract ExternalFunctions {
 
-    using LibBytes for bytes;
+    /// @dev Decodes the call data for an Exchange contract method call.
+    /// @param transactionData ABI-encoded calldata for an Exchange
+    ///     contract method call.
+    /// @return The name of the function called, and the parameters it was
+    ///     given.  For single-order fills and cancels, the arrays will have
+    ///     just one element.
+    function decodeZeroExTransactionData(bytes memory transactionData)
+        public
+        pure
+        returns(
+            string memory functionName,
+            LibOrder.Order[] memory orders,
+            uint256[] memory takerAssetFillAmounts,
+            bytes[] memory signatures
+        )
+    {
+        return LibTransactionDecoder.decodeZeroExTransactionData(transactionData);
+    }
 
     /// @dev Decode AssetProxy identifier
     /// @param assetData AssetProxy-compliant asset data describing an ERC-20, ERC-721, ERC1155, or MultiAsset asset.
@@ -37,17 +54,7 @@ library LibAssetData {
             bytes4 assetProxyId
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).ERC20Token.selector ||
-            assetProxyId == IAssetData(address(0)).ERC721Token.selector ||
-            assetProxyId == IAssetData(address(0)).ERC1155Assets.selector ||
-            assetProxyId == IAssetData(address(0)).MultiAsset.selector ||
-            assetProxyId == IAssetData(address(0)).StaticCall.selector,
-            "WRONG_PROXY_ID"
-        );
-        return assetProxyId;
+        return LibAssetData.decodeAssetProxyId(assetData);
     }
 
     /// @dev Encode ERC-20 asset data into the format described in the AssetProxy contract specification.
@@ -58,8 +65,7 @@ library LibAssetData {
         pure
         returns (bytes memory assetData)
     {
-        assetData = abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, tokenAddress);
-        return assetData;
+        return LibAssetData.encodeERC20AssetData(tokenAddress);
     }
 
     /// @dev Decode ERC-20 asset data from the format described in the AssetProxy contract specification.
@@ -74,15 +80,7 @@ library LibAssetData {
             address tokenAddress
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).ERC20Token.selector,
-            "WRONG_PROXY_ID"
-        );
-
-        tokenAddress = assetData.readAddress(16);
-        return (assetProxyId, tokenAddress);
+        return LibAssetData.decodeERC20AssetData(assetData);
     }
 
     /// @dev Encode ERC-721 asset data into the format described in the AssetProxy specification.
@@ -94,12 +92,7 @@ library LibAssetData {
         pure
         returns (bytes memory assetData)
     {
-        assetData = abi.encodeWithSelector(
-            IAssetData(address(0)).ERC721Token.selector,
-            tokenAddress,
-            tokenId
-        );
-        return assetData;
+        return LibAssetData.encodeERC721AssetData(tokenAddress, tokenId);
     }
 
     /// @dev Decode ERC-721 asset data from the format described in the AssetProxy contract specification.
@@ -116,16 +109,7 @@ library LibAssetData {
             uint256 tokenId
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).ERC721Token.selector,
-            "WRONG_PROXY_ID"
-        );
-
-        tokenAddress = assetData.readAddress(16);
-        tokenId = assetData.readUint256(36);
-        return (assetProxyId, tokenAddress, tokenId);
+        return LibAssetData.decodeERC721AssetData(assetData);
     }
 
     /// @dev Encode ERC-1155 asset data into the format described in the AssetProxy contract specification.
@@ -144,14 +128,12 @@ library LibAssetData {
         pure
         returns (bytes memory assetData)
     {
-        assetData = abi.encodeWithSelector(
-            IAssetData(address(0)).ERC1155Assets.selector,
+        return LibAssetData.encodeERC1155AssetData(
             tokenAddress,
             tokenIds,
             tokenValues,
             callbackData
         );
-        return assetData;
     }
 
     /// @dev Decode ERC-1155 asset data from the format described in the AssetProxy contract specification.
@@ -174,33 +156,7 @@ library LibAssetData {
             bytes memory callbackData
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).ERC1155Assets.selector,
-            "WRONG_PROXY_ID"
-        );
-
-        assembly {
-            // Skip selector and length to get to the first parameter:
-            assetData := add(assetData, 36)
-            // Read the value of the first parameter:
-            tokenAddress := mload(assetData)
-            // Point to the next parameter's data:
-            tokenIds := add(assetData, mload(add(assetData, 32)))
-            // Point to the next parameter's data:
-            tokenValues := add(assetData, mload(add(assetData, 64)))
-            // Point to the next parameter's data:
-            callbackData := add(assetData, mload(add(assetData, 96)))
-        }
-
-        return (
-            assetProxyId,
-            tokenAddress,
-            tokenIds,
-            tokenValues,
-            callbackData
-        );
+        return LibAssetData.decodeERC1155AssetData(assetData);
     }
 
     /// @dev Encode data for multiple assets, per the AssetProxy contract specification.
@@ -212,12 +168,7 @@ library LibAssetData {
         pure
         returns (bytes memory assetData)
     {
-        assetData = abi.encodeWithSelector(
-            IAssetData(address(0)).MultiAsset.selector,
-            amounts,
-            nestedAssetData
-        );
-        return assetData;
+        return LibAssetData.encodeMultiAssetData(amounts, nestedAssetData);
     }
 
     /// @dev Decode multi-asset data from the format described in the AssetProxy contract specification.
@@ -235,19 +186,7 @@ library LibAssetData {
             bytes[] memory nestedAssetData
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).MultiAsset.selector,
-            "WRONG_PROXY_ID"
-        );
-
-        // solhint-disable indent
-        (amounts, nestedAssetData) = abi.decode(
-            assetData.slice(4, assetData.length),
-            (uint256[], bytes[])
-        );
-        // solhint-enable indent
+        return LibAssetData.decodeMultiAssetData(assetData);
     }
 
     /// @dev Encode StaticCall asset data into the format described in the AssetProxy contract specification.
@@ -264,13 +203,11 @@ library LibAssetData {
         pure
         returns (bytes memory assetData)
     {
-        assetData = abi.encodeWithSelector(
-            IAssetData(address(0)).StaticCall.selector,
+        return LibAssetData.encodeStaticCallAssetData(
             staticCallTargetAddress,
             staticCallData,
             expectedReturnDataHash
         );
-        return assetData;
     }
 
     /// @dev Decode StaticCall asset data from the format described in the AssetProxy contract specification.
@@ -287,17 +224,7 @@ library LibAssetData {
             bytes32 expectedReturnDataHash
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).StaticCall.selector,
-            "WRONG_PROXY_ID"
-        );
-
-        (staticCallTargetAddress, staticCallData, expectedReturnDataHash) = abi.decode(
-            assetData.slice(4, assetData.length),
-            (address, bytes, bytes32)
-        );
+        LibAssetData.decodeStaticCallAssetData(assetData);
     }
 
     /// @dev Decode ERC20Bridge asset data from the format described in the AssetProxy contract specification.
@@ -314,17 +241,7 @@ library LibAssetData {
             bytes memory bridgeData
         )
     {
-        assetProxyId = assetData.readBytes4(0);
-
-        require(
-            assetProxyId == IAssetData(address(0)).ERC20Bridge.selector,
-            "WRONG_PROXY_ID"
-        );
-
-        (tokenAddress, bridgeAddress, bridgeData) = abi.decode(
-            assetData.slice(4, assetData.length),
-            (address, address, bytes)
-        );
+        return LibAssetData.decodeERC20BridgeAssetData(assetData);
     }
 
     /// @dev Reverts if assetData is not of a valid format for its given proxy id.
@@ -333,22 +250,6 @@ library LibAssetData {
         public
         pure
     {
-        bytes4 assetProxyId = assetData.readBytes4(0);
-
-        if (assetProxyId == IAssetData(address(0)).ERC20Token.selector) {
-            decodeERC20AssetData(assetData);
-        } else if (assetProxyId == IAssetData(address(0)).ERC721Token.selector) {
-            decodeERC721AssetData(assetData);
-        } else if (assetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
-            decodeERC1155AssetData(assetData);
-        } else if (assetProxyId == IAssetData(address(0)).MultiAsset.selector) {
-            decodeMultiAssetData(assetData);
-        } else if (assetProxyId == IAssetData(address(0)).StaticCall.selector) {
-            decodeStaticCallAssetData(assetData);
-        } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
-            decodeERC20BridgeAssetData(assetData);
-        } else {
-            revert("WRONG_PROXY_ID");
-        }
+        return LibAssetData.revertIfInvalidAssetData(assetData);
     }
 }

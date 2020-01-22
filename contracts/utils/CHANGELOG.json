@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Add more functions to `LibFractions`.",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

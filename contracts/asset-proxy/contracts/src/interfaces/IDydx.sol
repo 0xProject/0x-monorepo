@@ -71,6 +71,31 @@ interface IDydx {
         uint256 value;
     }
 
+    struct D256 {
+        uint256 value;
+    }
+
+    struct Value {
+        uint256 value;
+    }
+
+    struct Price {
+        uint256 value;
+    }
+
+    /// @dev The global risk parameters that govern the health and security of the system
+    struct RiskParams {
+        // Required ratio of over-collateralization
+        D256 marginRatio;
+        // Percentage penalty incurred by liquidated accounts
+        D256 liquidationSpread;
+        // Percentage of the borrower's interest fee that gets passed to the suppliers
+        D256 earningsRate;
+        // The minimum absolute borrow value of an account
+        // There must be sufficient incentivize to liquidate undercollateralized accounts
+        Value minBorrowedValue;
+    }
+
     /// @dev The main entry-point to Solo that allows users and contracts to manage accounts.
     ///      Take one or more actions on one or more accounts. The msg.sender must be the owner or
     ///      operator of all accounts except for those being liquidated, vaporized, or traded with.
@@ -86,4 +111,60 @@ interface IDydx {
         ActionArgs[] calldata actions
     )
         external;
+
+    /// @dev Return true if a particular address is approved as an operator for an owner's accounts.
+    ///      Approved operators can act on the accounts of the owner as if it were the operator's own.
+    /// @param owner The owner of the accounts
+    /// @param operator The possible operator
+    /// @return isLocalOperator True if operator is approved for owner's accounts
+    function getIsLocalOperator(
+        address owner,
+        address operator
+    )
+        external
+        view
+        returns (bool isLocalOperator);
+
+
+    /// @dev Get the ERC20 token address for a market.
+    /// @param marketId The market to query
+    /// @return tokenAddress The token address
+    function getMarketTokenAddress(
+        uint256 marketId
+    )
+        external
+        view
+        returns (address tokenAddress);
+
+    /// @dev Get all risk parameters in a single struct.
+    /// @return riskParams All global risk parameters
+    function getRiskParams()
+        external
+        view
+        returns (RiskParams memory riskParams);
+
+    /// @dev Get the price of the token for a market.
+    /// @param marketId The market to query
+    /// @return price The price of each atomic unit of the token
+    function getMarketPrice(
+        uint256 marketId
+    )
+        external
+        view
+        returns (Price memory price);
+
+    /// @dev Get the total supplied and total borrowed values of an account adjusted by the marginPremium
+    ///      of each market. Supplied values are divided by (1 + marginPremium) for each market and
+    ///      borrowed values are multiplied by (1 + marginPremium) for each market. Comparing these
+    ///      adjusted values gives the margin-ratio of the account which will be compared to the global
+    ///      margin-ratio when determining if the account can be liquidated.
+    /// @param account The account to query
+    /// @return supplyValue The supplied value of the account (adjusted for marginPremium)
+    /// @return borrowValue The borrowed value of the account (adjusted for marginPremium)
+    function getAdjustedAccountValues(
+        AccountInfo calldata account
+    )
+        external
+        view
+        returns (Value memory supplyValue, Value memory borrowValue);
 }

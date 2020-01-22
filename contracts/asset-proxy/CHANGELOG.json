@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Add more types and functions to `IDydx`",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "timestamp": 1579682890,
         "version": "3.1.1",
         "changes": [

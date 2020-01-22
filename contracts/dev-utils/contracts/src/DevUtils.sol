@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
@@ -27,22 +27,26 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "./OrderValidationUtils.sol";
 import "./OrderTransferSimulationUtils.sol";
 import "./EthBalanceChecker.sol";
+import "./ExternalFunctions.sol";
 
 
 // solhint-disable no-empty-blocks
 contract DevUtils is
     OrderValidationUtils,
     LibEIP712ExchangeDomain,
-    EthBalanceChecker
+    EthBalanceChecker,
+    ExternalFunctions
 {
     constructor (
         address _exchange,
-        address _chaiBridge
+        address _chaiBridge,
+        address _dydxBridge
     )
         public
         OrderValidationUtils(
             _exchange,
-            _chaiBridge
+            _chaiBridge,
+            _dydxBridge
         )
         OrderTransferSimulationUtils(_exchange)
         LibEIP712ExchangeDomain(uint256(0), address(0)) // null args because because we only use constants
