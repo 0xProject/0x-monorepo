@@ -19,6 +19,7 @@
         "./artifacts/ERC721Token.json",
         "./artifacts/Exchange.json",
         "./artifacts/Forwarder.json",
+        "./artifacts/LibTransactionDecoder.json",
         "./artifacts/IAssetProxy.json",
         "./artifacts/IValidator.json",
         "./artifacts/IWallet.json",

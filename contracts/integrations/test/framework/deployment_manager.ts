@@ -196,7 +196,6 @@ export class DeploymentManager {
             exchange,
             staking.stakingProxy,
         ]);
-
         const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
             devUtilsArtifacts.DevUtils,
             environment.provider,

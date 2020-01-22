@@ -133,6 +133,18 @@ contract OrderValidationUtils is
             fillableTakerAssetAmount
         ) == OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
 
+        if (!_isAssetDataValid(order.takerAssetData)) {
+            fillableTakerAssetAmount = 0;
+        }
+
+        if (order.takerFee != 0 && !_isAssetDataValid(order.takerFeeAssetData)) {
+            fillableTakerAssetAmount = 0;
+        }
+
+        if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE) {
+            fillableTakerAssetAmount = 0;
+        }
+
         return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
 
@@ -184,5 +196,64 @@ contract OrderValidationUtils is
         (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);
         transferableAssetAmount = LibSafeMath.min256(balance, allowance);
         return transferableAssetAmount;
+    }
+
+    /// @dev This function handles the edge cases around taker validation. This function
+    ///      currently attempts to find duplicate ERC721 token's in the taker
+    ///      multiAssetData.
+    /// @param assetData The asset data that should be validated.
+    /// @return Whether or not the order should be considered valid.
+    function _isAssetDataValid(bytes memory assetData)
+        internal
+        pure
+        returns (bool)
+    {
+        // Asset data must be composed of an asset proxy Id and a bytes segment with
+        // a length divisible by 32.
+        if (assetData.length % 32 != 4) {
+            return false;
+        }
+
+        // Only process the taker asset data if it is multiAssetData.
+        bytes4 assetProxyId = assetData.readBytes4(0);
+        if (assetProxyId != IAssetData(address(0)).MultiAsset.selector) {
+            return true;
+        }
+
+        // Get array of values and array of assetDatas
+        (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
+
+        uint256 length = nestedAssetData.length;
+        for (uint256 i = 0; i != length; i++) {
+            // TODO(jalextowle): Implement similar validation for non-fungible ERC1155 asset data.
+            bytes4 nestedAssetProxyId = nestedAssetData[i].readBytes4(0);
+            if (nestedAssetProxyId == IAssetData(address(0)).ERC721Token.selector) {
+                if (_isAssetDataDuplicated(nestedAssetData, i)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /// Determines whether or not asset data is duplicated later in the nested asset data.
+    /// @param nestedAssetData The asset data to scan for duplication.
+    /// @param startIdx The index where the scan should begin.
+    /// @return A boolean reflecting whether or not the starting asset data was duplicated.
+    function _isAssetDataDuplicated(
+        bytes[] memory nestedAssetData,
+        uint256 startIdx
+    )
+        internal
+        pure
+        returns (bool)
+    {
+        uint256 length = nestedAssetData.length;
+        for (uint256 i = startIdx + 1; i < length; i++) {
+            if (nestedAssetData[startIdx].equals(nestedAssetData[i])) {
+                return true;
+            }
+        }
     }
 }
