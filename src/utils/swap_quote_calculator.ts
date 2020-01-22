@@ -298,7 +298,7 @@ export class SwapQuoteCalculator {
             filledOrders.push(order);
         }
         const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(
-            filledOrders,
+            !worstCase ? filledOrders : orders,
             gasPrice,
         );
         return {
@@ -387,7 +387,7 @@ export class SwapQuoteCalculator {
             filledOrders.push(order);
         }
         const protocolFeeInWeiAmount = await this._protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(
-            filledOrders,
+            !worstCase ? filledOrders : orders,
             gasPrice,
         );
         return {

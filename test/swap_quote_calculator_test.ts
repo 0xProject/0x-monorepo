@@ -312,7 +312,7 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount,
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(1.6),
-                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(45, 4),
             });
         });
         it('calculates a correct swapQuote with no slippage (takerAsset denominated fee orders)', async () => {
@@ -391,7 +391,7 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(1.2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(1.8),
-                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(30, 4),
             });
         });
         it('calculates a correct swapQuote with no slippage (makerAsset denominated fee orders)', async () => {
@@ -472,7 +472,7 @@ describe('swapQuoteCalculator', () => {
                 takerAssetAmount: assetSellAmount.minus(baseUnitAmount(2)),
                 totalTakerAssetAmount: assetSellAmount,
                 makerAssetAmount: baseUnitAmount(0.8),
-                protocolFeeInWeiAmount: baseUnitAmount(15, 4),
+                protocolFeeInWeiAmount: baseUnitAmount(45, 4),
             });
         });
     });
