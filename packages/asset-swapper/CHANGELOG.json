@@ -17,6 +17,10 @@
             {
                 "note": "Add exponential sampling distribution and `sampleDistributionBase` option to `SwapQuoter`",
                 "pr": 2427
+            },
+            {
+                "note": "Compute more accurate best quote price",
+                "pr": 2427
             }
         ]
     },

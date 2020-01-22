@@ -23,7 +23,7 @@ describe('#calculateLiquidity', () => {
         const { makerAssetAvailableInBaseUnits, takerAssetAvailableInBaseUnits } = calculateLiquidity(
             prunedSignedOrders,
         );
-        expect(makerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(10));
+        expect(makerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(11));
         expect(takerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(9));
     });
     it('should provide correct liquidity result with orders with takerFees in takerAsset', () => {
@@ -31,7 +31,7 @@ describe('#calculateLiquidity', () => {
         const { makerAssetAvailableInBaseUnits, takerAssetAvailableInBaseUnits } = calculateLiquidity(
             prunedSignedOrders,
         );
-        expect(makerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(10));
+        expect(makerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(11));
         expect(takerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(15));
     });
     it('should provide correct liquidity result with orders with takerFees in makerAsset', () => {
@@ -51,7 +51,7 @@ describe('#calculateLiquidity', () => {
         const { makerAssetAvailableInBaseUnits, takerAssetAvailableInBaseUnits } = calculateLiquidity(
             prunedSignedOrders,
         );
-        expect(makerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(25));
+        expect(makerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(27));
         expect(takerAssetAvailableInBaseUnits).to.bignumber.eq(baseUnitAmount(33));
     });
 });
