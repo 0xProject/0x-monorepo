@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "9.0.4",
+    "version": "9.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -79,7 +79,7 @@
     "dependencies": {
         "@0x/abi-gen-wrappers": "^5.4.0-beta.3",
         "@0x/assert": "^3.0.4",
-        "@0x/asset-swapper": "^4.0.0",
+        "@0x/asset-swapper": "^4.0.1",
         "@0x/base-contract": "^6.1.0",
         "@0x/contract-wrappers": "^13.4.0",
         "@0x/order-utils": "^10.1.1",

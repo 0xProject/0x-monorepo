@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-integrations",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -89,7 +89,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/asset-swapper": "^4.0.0",
+        "@0x/asset-swapper": "^4.0.1",
         "@0x/base-contract": "^6.1.0",
         "@0x/contracts-asset-proxy": "^3.1.1",
         "@0x/contracts-erc1155": "^2.0.4",
