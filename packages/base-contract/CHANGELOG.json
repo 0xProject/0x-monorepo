@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.1.1",
+        "changes": [
+            {
+                "note": "Throw Error when revert is StringRevertError",
+                "pr": 2453
+            }
+        ]
+    },
+    {
         "version": "6.1.0",
         "changes": [
             {
