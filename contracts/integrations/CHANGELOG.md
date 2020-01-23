@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _January 23, 2020_
+
+    * Dependencies updated
+
 ## v2.2.0 - _January 22, 2020_
 
     * Add mainnet contract wrapper `callAsync()` revert behavior tests. (#2433)
