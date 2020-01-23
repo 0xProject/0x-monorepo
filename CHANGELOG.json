@@ -6,7 +6,8 @@
                 "note": "Fix underestimated protocol fee in worst case quote.",
                 "pr": 2452
             }
-        ]
+        ],
+        "timestamp": 1579744659
     },
     {
         "version": "4.0.0",

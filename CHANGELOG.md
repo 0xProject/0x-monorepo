@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.1 - _January 23, 2020_
+
+    * Fix underestimated protocol fee in worst case quote. (#2452)
+
 ## v4.0.0 - _January 22, 2020_
 
     * Upgrade to new `Forwarder` contract with flat affiliate fees. (#2432)
