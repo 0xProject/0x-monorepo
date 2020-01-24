@@ -1,2 +1,2 @@
 export { artifacts } from './artifacts';
-export { BrokerContract } from './wrappers';
+export { BrokerContract, GodsUnchainedValidatorContract } from './wrappers';

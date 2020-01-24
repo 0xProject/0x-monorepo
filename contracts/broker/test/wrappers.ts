@@ -4,3 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../test/generated-wrappers/broker';
+export * from '../test/generated-wrappers/gods_unchained_validator';
+export * from '../test/generated-wrappers/i_broker';
+export * from '../test/generated-wrappers/i_gods_unchained';
+export * from '../test/generated-wrappers/i_property_validator';

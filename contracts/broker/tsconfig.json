@@ -2,6 +2,17 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": ["generated-artifacts/Broker.json", "test/generated-artifacts/Broker.json"],
+    "files": [
+        "generated-artifacts/Broker.json",
+        "generated-artifacts/GodsUnchainedValidator.json",
+        "generated-artifacts/IBroker.json",
+        "generated-artifacts/IGodsUnchained.json",
+        "generated-artifacts/IPropertyValidator.json",
+        "test/generated-artifacts/Broker.json",
+        "test/generated-artifacts/GodsUnchainedValidator.json",
+        "test/generated-artifacts/IBroker.json",
+        "test/generated-artifacts/IGodsUnchained.json",
+        "test/generated-artifacts/IPropertyValidator.json"
+    ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

@@ -6,4 +6,14 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as Broker from '../test/generated-artifacts/Broker.json';
-export const artifacts = { Broker: Broker as ContractArtifact };
+import * as GodsUnchainedValidator from '../test/generated-artifacts/GodsUnchainedValidator.json';
+import * as IBroker from '../test/generated-artifacts/IBroker.json';
+import * as IGodsUnchained from '../test/generated-artifacts/IGodsUnchained.json';
+import * as IPropertyValidator from '../test/generated-artifacts/IPropertyValidator.json';
+export const artifacts = {
+    Broker: Broker as ContractArtifact,
+    IBroker: IBroker as ContractArtifact,
+    IGodsUnchained: IGodsUnchained as ContractArtifact,
+    IPropertyValidator: IPropertyValidator as ContractArtifact,
+    GodsUnchainedValidator: GodsUnchainedValidator as ContractArtifact,
+};
