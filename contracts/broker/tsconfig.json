@@ -8,11 +8,13 @@
         "generated-artifacts/IBroker.json",
         "generated-artifacts/IGodsUnchained.json",
         "generated-artifacts/IPropertyValidator.json",
+        "generated-artifacts/TestGodsUnchained.json",
         "test/generated-artifacts/Broker.json",
         "test/generated-artifacts/GodsUnchainedValidator.json",
         "test/generated-artifacts/IBroker.json",
         "test/generated-artifacts/IGodsUnchained.json",
-        "test/generated-artifacts/IPropertyValidator.json"
+        "test/generated-artifacts/IPropertyValidator.json",
+        "test/generated-artifacts/TestGodsUnchained.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }
