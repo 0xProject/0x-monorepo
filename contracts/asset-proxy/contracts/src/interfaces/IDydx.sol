@@ -125,7 +125,6 @@ interface IDydx {
         view
         returns (bool isLocalOperator);
 
-
     /// @dev Get the ERC20 token address for a market.
     /// @param marketId The market to query
     /// @return tokenAddress The token address
