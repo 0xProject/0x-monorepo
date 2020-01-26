@@ -28,9 +28,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
-contract OrderTransferSimulationUtils is
-    LibExchangeRichErrorDecoder
-{
+library LibOrderTransferSimulation {
     using LibBytes for bytes;
 
     enum OrderTransferResults {
@@ -48,22 +46,13 @@ contract OrderTransferSimulationUtils is
     // keccak256(abi.encodeWithSignature("Error(string)", "TRANSFERS_SUCCESSFUL"));
     bytes32 constant internal _TRANSFERS_SUCCESSFUL_RESULT_HASH = 0xf43f26ea5a94b478394a975e856464913dc1a8a1ca70939d974aa7c238aa0ce0;
 
-    // solhint-disable var-name-mixedcase
-    IExchange internal _EXCHANGE;
-    // solhint-enable var-name-mixedcase
-
-    constructor (address _exchange)
-        public
-    {
-        _EXCHANGE = IExchange(_exchange);
-    }
-
     /// @dev Simulates the maker transfers within an order and returns the index of the first failed transfer.
     /// @param order The order to simulate transfers for.
     /// @param takerAddress The address of the taker that will fill the order.
     /// @param takerAssetFillAmount The amount of takerAsset that the taker wished to fill.
     /// @return The index of the first failed transfer (or 4 if all transfers are successful).
     function getSimulatedOrderMakerTransferResults(
+        address exchange,
         LibOrder.Order memory order,
         address takerAddress,
         uint256 takerAssetFillAmount
@@ -74,7 +63,7 @@ contract OrderTransferSimulationUtils is
         LibFillResults.FillResults memory fillResults = LibFillResults.calculateFillResults(
             order,
             takerAssetFillAmount,
-            _EXCHANGE.protocolFeeMultiplier(),
+            IExchange(exchange).protocolFeeMultiplier(),
             tx.gasprice
         );
 
@@ -96,6 +85,7 @@ contract OrderTransferSimulationUtils is
         amounts[1] = fillResults.makerFeePaid;
 
         return _simulateTransferFromCalls(
+            exchange,
             assetData,
             fromAddresses,
             toAddresses,
@@ -109,6 +99,7 @@ contract OrderTransferSimulationUtils is
     /// @param takerAssetFillAmount The amount of takerAsset that the taker wished to fill.
     /// @return The index of the first failed transfer (or 4 if all transfers are successful).
     function getSimulatedOrderTransferResults(
+        address exchange,
         LibOrder.Order memory order,
         address takerAddress,
         uint256 takerAssetFillAmount
@@ -119,7 +110,7 @@ contract OrderTransferSimulationUtils is
         LibFillResults.FillResults memory fillResults = LibFillResults.calculateFillResults(
             order,
             takerAssetFillAmount,
-            _EXCHANGE.protocolFeeMultiplier(),
+            IExchange(exchange).protocolFeeMultiplier(),
             tx.gasprice
         );
 
@@ -154,6 +145,7 @@ contract OrderTransferSimulationUtils is
         amounts[3] = fillResults.makerFeePaid;
 
         return _simulateTransferFromCalls(
+            exchange,
             assetData,
             fromAddresses,
             toAddresses,
@@ -167,6 +159,7 @@ contract OrderTransferSimulationUtils is
     /// @param takerAssetFillAmounts Array of amounts of takerAsset that will be filled for each order.
     /// @return The indices of the first failed transfer (or 4 if all transfers are successful) for each order.
     function getSimulatedOrdersTransferResults(
+        address exchange,
         LibOrder.Order[] memory orders,
         address[] memory takerAddresses,
         uint256[] memory takerAssetFillAmounts
@@ -178,6 +171,7 @@ contract OrderTransferSimulationUtils is
         orderTransferResults = new OrderTransferResults[](length);
         for (uint256 i = 0; i != length; i++) {
             orderTransferResults[i] = getSimulatedOrderTransferResults(
+                exchange,
                 orders[i],
                 takerAddresses[i],
                 takerAssetFillAmounts[i]
@@ -193,12 +187,13 @@ contract OrderTransferSimulationUtils is
     /// @param toAddresses The addresses that will receive funds
     /// @param amounts The amounts involved in the transfer.
     function _simulateTransferFromCalls(
+        address exchange,
         bytes[] memory assetData,
         address[] memory fromAddresses,
         address[] memory toAddresses,
         uint256[] memory amounts
     )
-        internal
+        private
         returns (OrderTransferResults orderTransferResults)
     {
         // Encode data for `simulateDispatchTransferFromCalls(assetData, fromAddresses, toAddresses, amounts)`
@@ -211,16 +206,16 @@ contract OrderTransferSimulationUtils is
         );
 
         // Perform call and catch revert
-        (, bytes memory returnData) = address(_EXCHANGE).call(simulateDispatchTransferFromCallsData);
+        (, bytes memory returnData) = address(exchange).call(simulateDispatchTransferFromCallsData);
 
         bytes4 selector = returnData.readBytes4(0);
         if (selector == LibExchangeRichErrors.AssetProxyDispatchErrorSelector()) {
             // Decode AssetProxyDispatchError and return index of failed transfer
-            (, bytes32 failedTransferIndex,) = decodeAssetProxyDispatchError(returnData);
+            (, bytes32 failedTransferIndex,) = LibExchangeRichErrorDecoder.decodeAssetProxyDispatchError(returnData);
             return OrderTransferResults(uint8(uint256(failedTransferIndex)));
         } else if (selector == LibExchangeRichErrors.AssetProxyTransferErrorSelector()) {
             // Decode AssetProxyTransferError and return index of failed transfer
-            (bytes32 failedTransferIndex, ,) = decodeAssetProxyTransferError(returnData);
+            (bytes32 failedTransferIndex, ,) = LibExchangeRichErrorDecoder.decodeAssetProxyTransferError(returnData);
             return OrderTransferResults(uint8(uint256(failedTransferIndex)));
         } else if (keccak256(returnData) == _TRANSFERS_SUCCESSFUL_RESULT_HASH) {
             // All transfers were successful

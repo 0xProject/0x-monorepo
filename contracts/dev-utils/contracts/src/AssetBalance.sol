@@ -20,52 +20,24 @@ pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
-import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IChai.sol";
-import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "./LibAssetData.sol";
+import "./Addresses.sol";
 import "./LibDydxBalance.sol";
 
 
 contract AssetBalance is
-    DeploymentConstants
+    Addresses
 {
     // 2^256 - 1
     uint256 constant internal _MAX_UINT256 = uint256(-1);
 
     using LibBytes for bytes;
-
-    // solhint-disable var-name-mixedcase
-    IExchange internal _EXCHANGE;
-    address internal _ERC20_PROXY_ADDRESS;
-    address internal _ERC721_PROXY_ADDRESS;
-    address internal _ERC1155_PROXY_ADDRESS;
-    address internal _STATIC_CALL_PROXY_ADDRESS;
-    address internal _CHAI_BRIDGE_ADDRESS;
-    address internal _DYDX_BRIDGE_ADDRESS;
-    // solhint-enable var-name-mixedcase
-
-    constructor (
-        address _exchange,
-        address _chaiBridge,
-        address _dydxBridge
-    )
-        public
-    {
-        _EXCHANGE = IExchange(_exchange);
-        _ERC20_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC20Token.selector);
-        _ERC721_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC721Token.selector);
-        _ERC1155_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).ERC1155Assets.selector);
-        _STATIC_CALL_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(IAssetData(address(0)).StaticCall.selector);
-        _CHAI_BRIDGE_ADDRESS = _chaiBridge;
-        _DYDX_BRIDGE_ADDRESS = _dydxBridge;
-    }
 
     /// @dev Returns the owner's balance of the assets(s) specified in
     /// assetData.  When the asset data contains multiple assets (eg in
@@ -84,7 +56,7 @@ contract AssetBalance is
         if (assetProxyId == IAssetData(address(0)).ERC20Token.selector) {
             // Get ERC20 token address
             address tokenAddress = assetData.readAddress(16);
-            balance = _erc20BalanceOf(tokenAddress, ownerAddress);
+            balance = LibERC20Token.balanceOf(tokenAddress, ownerAddress);
 
         } else if (assetProxyId == IAssetData(address(0)).ERC721Token.selector) {
             // Get ERC721 token address and id
@@ -143,7 +115,7 @@ contract AssetBalance is
             );
 
             // Check if staticcall would be successful
-            (bool success,) = _STATIC_CALL_PROXY_ADDRESS.staticcall(transferFromData);
+            (bool success,) = staticCallProxyAddress.staticcall(transferFromData);
 
             // Success means that the staticcall can be made an unlimited amount of times
             balance = success ? _MAX_UINT256 : 0;
@@ -151,8 +123,8 @@ contract AssetBalance is
         } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
             // Get address of ERC20 token and bridge contract
             (, address tokenAddress, address bridgeAddress, ) = LibAssetData.decodeERC20BridgeAssetData(assetData);
-            if (tokenAddress == _getDaiAddress() && bridgeAddress == _CHAI_BRIDGE_ADDRESS) {
-                uint256 chaiBalance = _erc20BalanceOf(_getChaiAddress(), ownerAddress);
+            if (tokenAddress == _getDaiAddress() && bridgeAddress == chaiBridgeAddress) {
+                uint256 chaiBalance = LibERC20Token.balanceOf(_getChaiAddress(), ownerAddress);
                 // Calculate Dai balance
                 balance = _convertChaiToDaiAmount(chaiBalance);
             }
@@ -248,27 +220,17 @@ contract AssetBalance is
         if (assetProxyId == IAssetData(address(0)).ERC20Token.selector) {
             // Get ERC20 token address
             address tokenAddress = assetData.readAddress(16);
-
-            // Encode data for `allowance(ownerAddress, _ERC20_PROXY_ADDRESS)`
-            bytes memory allowanceData = abi.encodeWithSelector(
-                IERC20Token(address(0)).allowance.selector,
-                ownerAddress,
-                _ERC20_PROXY_ADDRESS
-            );
-
-            // Query allowance
-            (bool success, bytes memory returnData) = tokenAddress.staticcall(allowanceData);
-            allowance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+            allowance = LibERC20Token.allowance(tokenAddress, ownerAddress, erc20ProxyAddress);
 
         } else if (assetProxyId == IAssetData(address(0)).ERC721Token.selector) {
             // Get ERC721 token address and id
             (, address tokenAddress, uint256 tokenId) = LibAssetData.decodeERC721AssetData(assetData);
 
-            // Encode data for `isApprovedForAll(ownerAddress, _ERC721_PROXY_ADDRESS)`
+            // Encode data for `isApprovedForAll(ownerAddress, erc721ProxyAddress)`
             bytes memory isApprovedForAllData = abi.encodeWithSelector(
                 IERC721Token(address(0)).isApprovedForAll.selector,
                 ownerAddress,
-                _ERC721_PROXY_ADDRESS
+                erc721ProxyAddress
             );
 
             (bool success, bytes memory returnData) = tokenAddress.staticcall(isApprovedForAllData);
@@ -280,7 +242,7 @@ contract AssetBalance is
                 (success, returnData) = tokenAddress.staticcall(getApprovedData);
 
                 // Allowance is 1 if successful and the approved address is the ERC721Proxy
-                allowance = success && returnData.length == 32 && returnData.readAddress(12) == _ERC721_PROXY_ADDRESS ? 1 : 0;
+                allowance = success && returnData.length == 32 && returnData.readAddress(12) == erc721ProxyAddress ? 1 : 0;
             } else {
                 // Allowance is 2^256 - 1 if `isApprovedForAll` returned true
                 allowance = _MAX_UINT256;
@@ -290,11 +252,11 @@ contract AssetBalance is
             // Get ERC1155 token address
             (, address tokenAddress, , , ) = LibAssetData.decodeERC1155AssetData(assetData);
 
-            // Encode data for `isApprovedForAll(ownerAddress, _ERC1155_PROXY_ADDRESS)`
+            // Encode data for `isApprovedForAll(ownerAddress, erc1155ProxyAddress)`
             bytes memory isApprovedForAllData = abi.encodeWithSelector(
                 IERC1155(address(0)).isApprovedForAll.selector,
                 ownerAddress,
-                _ERC1155_PROXY_ADDRESS
+                erc1155ProxyAddress
             );
 
             // Query allowance
@@ -308,11 +270,11 @@ contract AssetBalance is
         } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
             // Get address of ERC20 token and bridge contract
             (, address tokenAddress, address bridgeAddress,) = LibAssetData.decodeERC20BridgeAssetData(assetData);
-            if (tokenAddress == _getDaiAddress() && bridgeAddress == _CHAI_BRIDGE_ADDRESS) {
-                uint256 chaiAllowance = LibERC20Token.allowance(_getChaiAddress(), ownerAddress, _CHAI_BRIDGE_ADDRESS);
+            if (tokenAddress == _getDaiAddress() && bridgeAddress == chaiBridgeAddress) {
+                uint256 chaiAllowance = LibERC20Token.allowance(_getChaiAddress(), ownerAddress, chaiBridgeAddress);
                 // Dai allowance is unlimited if Chai allowance is unlimited
                 allowance = chaiAllowance == _MAX_UINT256 ? _MAX_UINT256 : _convertChaiToDaiAmount(chaiAllowance);
-            } else if (bridgeAddress == _DYDX_BRIDGE_ADDRESS) {
+            } else if (bridgeAddress == dydxBridgeAddress) {
                 // Dydx bridges always have infinite allowance.
                 allowance = _MAX_UINT256;
             }
@@ -375,30 +337,6 @@ contract AssetBalance is
         return (balances, allowances);
     }
 
-    /// @dev Queries balance of an ERC20 token. Returns 0 if call was unsuccessful.
-    /// @param tokenAddress Address of ERC20 token.
-    /// @param ownerAddress Address of owner of ERC20 token.
-    /// @return balance ERC20 token balance of owner.
-    function _erc20BalanceOf(
-        address tokenAddress,
-        address ownerAddress
-    )
-        internal
-        view
-        returns (uint256 balance)
-    {
-        // Encode data for `balanceOf(ownerAddress)`
-        bytes memory balanceOfData = abi.encodeWithSelector(
-            IERC20Token(address(0)).balanceOf.selector,
-            ownerAddress
-        );
-
-        // Query balance
-        (bool success, bytes memory returnData) = tokenAddress.staticcall(balanceOfData);
-        balance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
-        return balance;
-    }
-
     /// @dev Converts an amount of Chai into its equivalent Dai amount.
     ///      Also accumulates Dai from DSR if called after the last time it was collected.
     /// @param chaiAmount Amount of Chai to converts.
@@ -435,9 +373,9 @@ contract AssetBalance is
         // Handle dydx bridge assets.
         if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
             (, , address bridgeAddress, ) = LibAssetData.decodeERC20BridgeAssetData(order.makerAssetData);
-            if (bridgeAddress == _DYDX_BRIDGE_ADDRESS) {
+            if (bridgeAddress == dydxBridgeAddress) {
                 return (
-                    LibDydxBalance.getDydxMakerBalance(order, _DYDX_BRIDGE_ADDRESS),
+                    LibDydxBalance.getDydxMakerBalance(order, dydxBridgeAddress),
                     _MAX_UINT256
                 );
             }

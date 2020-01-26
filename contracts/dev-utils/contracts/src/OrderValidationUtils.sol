@@ -23,31 +23,18 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "./Addresses.sol";
 import "./AssetBalance.sol";
 import "./LibAssetData.sol";
-import "./OrderTransferSimulationUtils.sol";
+import "./LibOrderTransferSimulation.sol";
 
 
 contract OrderValidationUtils is
-    AssetBalance,
-    OrderTransferSimulationUtils
+    Addresses,
+    AssetBalance
 {
     using LibBytes for bytes;
     using LibSafeMath for uint256;
-
-    constructor (
-        address _exchange,
-        address _chaiBridge,
-        address _dydxBridge
-    )
-        public
-        AssetBalance(
-            _exchange,
-            _chaiBridge,
-            _dydxBridge
-        )
-    // solhint-disable-next-line no-empty-blocks
-    {}
 
     /// @dev Fetches all order-relevant information needed to validate if the supplied order is fillable.
     /// @param order The order structure.
@@ -68,11 +55,11 @@ contract OrderValidationUtils is
         )
     {
         // Get info specific to order
-        orderInfo = _EXCHANGE.getOrderInfo(order);
+        orderInfo = IExchange(exchangeAddress).getOrderInfo(order);
 
         // Validate the maker's signature
         address makerAddress = order.makerAddress;
-        isValidSignature = _EXCHANGE.isValidOrderSignature(
+        isValidSignature = IExchange(exchangeAddress).isValidOrderSignature(
             order,
             signature
         );
@@ -132,11 +119,12 @@ contract OrderValidationUtils is
         );
 
         // Execute the maker transfers.
-        fillableTakerAssetAmount = getSimulatedOrderMakerTransferResults(
+        fillableTakerAssetAmount = LibOrderTransferSimulation.getSimulatedOrderMakerTransferResults(
+            exchangeAddress,
             order,
             order.takerAddress,
             fillableTakerAssetAmount
-        ) == OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
+        ) == LibOrderTransferSimulation.OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
 
         if (!_isAssetDataValid(order.takerAssetData)) {
             fillableTakerAssetAmount = 0;

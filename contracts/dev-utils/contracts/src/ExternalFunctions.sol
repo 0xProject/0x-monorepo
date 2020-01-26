@@ -19,11 +19,15 @@
 pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
+import "./Addresses.sol";
 import "./LibAssetData.sol";
 import "./LibTransactionDecoder.sol";
+import "./LibOrderTransferSimulation.sol";
 
 
-contract ExternalFunctions {
+contract ExternalFunctions is
+    Addresses
+{
 
     /// @dev Decodes the call data for an Exchange contract method call.
     /// @param transactionData ABI-encoded calldata for an Exchange
@@ -251,5 +255,47 @@ contract ExternalFunctions {
         pure
     {
         return LibAssetData.revertIfInvalidAssetData(assetData);
+    }
+
+    /// @dev Simulates the maker transfers within an order and returns the index of the first failed transfer.
+    /// @param order The order to simulate transfers for.
+    /// @param takerAddress The address of the taker that will fill the order.
+    /// @param takerAssetFillAmount The amount of takerAsset that the taker wished to fill.
+    /// @return The index of the first failed transfer (or 4 if all transfers are successful).
+    function getSimulatedOrderMakerTransferResults(
+        LibOrder.Order memory order,
+        address takerAddress,
+        uint256 takerAssetFillAmount
+    )
+        public
+        returns (LibOrderTransferSimulation.OrderTransferResults orderTransferResults)
+    {
+        return LibOrderTransferSimulation.getSimulatedOrderTransferResults(
+            exchangeAddress,
+            order,
+            takerAddress,
+            takerAssetFillAmount
+        );
+    }
+
+    /// @dev Simulates all of the transfers within an order and returns the index of the first failed transfer.
+    /// @param order The order to simulate transfers for.
+    /// @param takerAddress The address of the taker that will fill the order.
+    /// @param takerAssetFillAmount The amount of takerAsset that the taker wished to fill.
+    /// @return The index of the first failed transfer (or 4 if all transfers are successful).
+    function getSimulatedOrderTransferResults(
+        LibOrder.Order memory order,
+        address takerAddress,
+        uint256 takerAssetFillAmount
+    )
+        public
+        returns (LibOrderTransferSimulation.OrderTransferResults orderTransferResults)
+    {
+        return LibOrderTransferSimulation.getSimulatedOrderTransferResults(
+            exchangeAddress,
+            order,
+            takerAddress,
+            takerAssetFillAmount
+        );
     }
 }

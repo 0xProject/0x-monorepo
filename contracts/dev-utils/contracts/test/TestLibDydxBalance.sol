@@ -25,6 +25,13 @@ import "../src/LibDydxBalance.sol";
 // solhint-disable separate-by-one-line-in-contract
 contract TestLibDydxBalance {
 
-    // TODO
-
+    function getSolventMakerAmount(
+        LibDydxBalance.BalanceCheckInfo memory info
+    )
+        public
+        view
+        returns (uint256 solventMakerAmount)
+    {
+        return LibDydxBalance._getSolventMakerAmount(info);
+    }
 }

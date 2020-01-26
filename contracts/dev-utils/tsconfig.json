@@ -6,15 +6,17 @@
         "generated-artifacts/DevUtils.json",
         "generated-artifacts/LibAssetData.json",
         "generated-artifacts/LibTransactionDecoder.json",
+        "test/generated-artifacts/Addresses.json",
         "test/generated-artifacts/AssetBalance.json",
         "test/generated-artifacts/DevUtils.json",
         "test/generated-artifacts/EthBalanceChecker.json",
         "test/generated-artifacts/ExternalFunctions.json",
         "test/generated-artifacts/LibAssetData.json",
         "test/generated-artifacts/LibDydxBalance.json",
+        "test/generated-artifacts/LibOrderTransferSimulation.json",
         "test/generated-artifacts/LibTransactionDecoder.json",
-        "test/generated-artifacts/OrderTransferSimulationUtils.json",
         "test/generated-artifacts/OrderValidationUtils.json",
+        "test/generated-artifacts/TestDydx.json",
         "test/generated-artifacts/TestLibDydxBalance.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

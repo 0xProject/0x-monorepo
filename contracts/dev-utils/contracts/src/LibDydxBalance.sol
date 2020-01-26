@@ -70,7 +70,7 @@ library LibDydxBalance {
     {
         BalanceCheckInfo memory info = _getBalanceCheckInfo(order, dydx);
         // The Dydx bridge must be an operator for the maker.
-        if (!info.dydx.getIsLocalOperator(info.makerAddress, address(info.dydx))) {
+        if (!info.dydx.getIsLocalOperator(info.makerAddress, info.bridgeAddress)) {
             return 0;
         }
         // Actions must be well-formed.
@@ -268,7 +268,8 @@ library LibDydxBalance {
             solventMakerAmount = LibMath.getPartialAmountFloor(
                 t.n,
                 t.d,
-                info.makerAssetAmount
+                // info.makerAssetAmount ?
+                1
             );
         }
     }
@@ -378,7 +379,7 @@ library LibDydxBalance {
         address owner,
         address spender
     )
-        private
+        internal
         view
         returns (uint256 transferableAmount)
     {
