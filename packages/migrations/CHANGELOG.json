@@ -1,5 +1,18 @@
 [
     {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Update `DevUtils` deployment",
+                "pr": 2456
+            },
+            {
+                "note": "Remove `LibTransactionDecoder` deployment",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "6.0.0",
         "changes": [
             {

@@ -12,7 +12,6 @@ import { artifacts as coordinatorArtifacts, CoordinatorContract } from '@0x/cont
 import {
     artifacts as devUtilsArtifacts,
     DevUtilsContract,
-    LibTransactionDecoderContract,
 } from '@0x/contracts-dev-utils';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
@@ -124,7 +123,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         assetProxyArtifacts,
     );
 
-    await DydxBridgeContract.deployFrom0xArtifactAsync(
+    const dydxBridge = await DydxBridgeContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.DydxBridge,
         provider,
         txDefaults,
@@ -256,6 +255,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         devUtilsArtifacts,
         exchange.address,
         chaiBridge.address,
+        dydxBridge.address,
     );
 
     await CoordinatorContract.deployFrom0xArtifactAsync(
@@ -275,13 +275,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         exchange.address,
         deployedAddresses.exchangeV2,
         deployedAddresses.etherToken,
-    );
-
-    await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
-        devUtilsArtifacts.LibTransactionDecoder,
-        provider,
-        txDefaults,
-        devUtilsArtifacts,
     );
 }
 

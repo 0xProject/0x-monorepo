@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Remove `libTransactionDecoder`",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "4.3.0",
         "changes": [
             {
