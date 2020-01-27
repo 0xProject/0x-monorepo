@@ -1,7 +1,6 @@
 import {
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     provider,
     txDefaults,
     web3Wrapper,
@@ -193,12 +192,11 @@ describe('ERC1155Token', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // execute transfer
-            await expectTransactionFailedAsync(
+            return expect(
                 erc1155Contract
                     .safeTransferFrom(spender, receiver, tokenToTransfer, valueToTransfer, receiverCallbackData)
-                    .sendTransactionAsync({ from: spender }),
-                RevertReason.TransferRejected,
-            );
+                    .awaitTransactionSuccessAsync({ from: spender }),
+            ).to.revertWith(RevertReason.TransferRejected);
         });
     });
     describe('batchSafeTransferFrom', () => {
@@ -359,12 +357,11 @@ describe('ERC1155Token', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             // execute transfer
-            await expectTransactionFailedAsync(
+            return expect(
                 erc1155Contract
                     .safeBatchTransferFrom(spender, receiver, tokensToTransfer, valuesToTransfer, receiverCallbackData)
-                    .sendTransactionAsync({ from: spender }),
-                RevertReason.TransferRejected,
-            );
+                    .awaitTransactionSuccessAsync({ from: spender }),
+            ).to.revertWith(RevertReason.TransferRejected);
         });
     });
     describe('setApprovalForAll', () => {
@@ -409,12 +406,11 @@ describe('ERC1155Token', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedInitialBalances);
             // execute transfer
-            await expectTransactionFailedAsync(
+            return expect(
                 erc1155Contract
                     .safeTransferFrom(spender, receiver, tokenToTransfer, valueToTransfer, receiverCallbackData)
-                    .sendTransactionAsync({ from: delegatedSpender }),
-                RevertReason.InsufficientAllowance,
-            );
+                    .awaitTransactionSuccessAsync({ from: delegatedSpender }),
+            ).to.revertWith(RevertReason.InsufficientAllowance);
         });
         it('should transfer token via safeBatchTransferFrom if called by approved account', async () => {
             // set approval
@@ -457,12 +453,11 @@ describe('ERC1155Token', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            await expectTransactionFailedAsync(
+            return expect(
                 erc1155Contract
                     .safeBatchTransferFrom(spender, receiver, tokensToTransfer, valuesToTransfer, receiverCallbackData)
-                    .sendTransactionAsync({ from: delegatedSpender }),
-                RevertReason.InsufficientAllowance,
-            );
+                    .awaitTransactionSuccessAsync({ from: delegatedSpender }),
+            ).to.revertWith(RevertReason.InsufficientAllowance);
         });
     });
 });
