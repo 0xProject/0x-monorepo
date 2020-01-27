@@ -20,21 +20,21 @@ pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IDydx.sol";
+import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 
 
 // solhint-disable separate-by-one-line-in-contract
 contract TestDydx {
 
-    struct Balances {
-        uint256 supply;
-        uint256 borrow;
+    struct OperatorConfig {
+        address owner;
+        address operator;
     }
 
     struct AccountConfig {
         address owner;
         uint256 accountId;
-        address[] operators;
-        Balances[] balances;
+        int256[] balances;
     }
 
     struct MarketInfo {
@@ -44,12 +44,13 @@ contract TestDydx {
 
     struct TestConfig {
         uint256 marginRatio;
+        OperatorConfig[] operators;
         AccountConfig[] accounts;
         MarketInfo[] markets;
     }
 
     mapping (bytes32 => bool) private _operators;
-    mapping (bytes32 => Balances) private _balances;
+    mapping (bytes32 => int256) private _balance;
     MarketInfo[] private _markets;
     uint256 private _marginRatio;
 
@@ -58,13 +59,14 @@ contract TestDydx {
         for (uint256 marketId = 0; marketId < config.markets.length; ++marketId) {
             _markets.push(config.markets[marketId]);
         }
+        for (uint256 i = 0; i < config.operators.length; ++i) {
+            OperatorConfig memory op = config.operators[i];
+            _operators[_getOperatorHash(op.owner, op.operator)] = true;
+        }
         for (uint256 i = 0; i < config.accounts.length; ++i) {
             AccountConfig memory acct = config.accounts[i];
-            for (uint256 j = 0; j < acct.operators.length; ++j) {
-                _operators[_getOperatorHash(acct.owner, acct.operators[j])] = true;
-            }
             for (uint256 marketId = 0; marketId < acct.balances.length; ++marketId) {
-                _balances[_getBalanceHash(acct.owner, acct.accountId, marketId)] =
+                _balance[_getBalanceHash(acct.owner, acct.accountId, marketId)] =
                     acct.balances[marketId];
             }
         }
@@ -122,10 +124,16 @@ contract TestDydx {
         returns (IDydx.Value memory supplyValue, IDydx.Value memory borrowValue)
     {
         for (uint256 marketId = 0; marketId < _markets.length; ++marketId) {
-            Balances memory balance =
-                _balances[_getBalanceHash(account.owner, account.number, marketId)];
-            supplyValue.value += balance.supply;
-            borrowValue.value += balance.borrow;
+            MarketInfo memory market = _markets[marketId];
+            int256 balance =
+                _balance[_getBalanceHash(account.owner, account.number, marketId)];
+            uint256 decimals = LibERC20Token.decimals(market.token);
+            balance = balance * int256(market.price) / int256(10 ** decimals);
+            if (balance >= 0) {
+                supplyValue.value += uint256(balance);
+            } else {
+                borrowValue.value += uint256(-balance);
+            }
         }
     }
 

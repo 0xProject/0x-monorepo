@@ -38,7 +38,7 @@ library LibDydxBalance {
     using LibSafeMath for uint256;
 
     /// @dev Base units for dydx value quantities.
-    uint256 private constant DYDX_UNITS_BASE = 10 ** 18;
+    uint256 private constant DYDX_UNITS_BASE = 1e18;
 
     /// @dev A fraction/rate.
     struct Fraction {
@@ -66,6 +66,7 @@ library LibDydxBalance {
     /// @return balance The maker asset balance.
     function getDydxMakerBalance(LibOrder.Order memory order, address dydx)
         public
+        view
         returns (uint256 balance)
     {
         BalanceCheckInfo memory info = _getBalanceCheckInfo(order, dydx);
@@ -149,7 +150,7 @@ library LibDydxBalance {
     /// @return makerTokenWithdrawRate Maker token withdraw rate.
     function _getMakerTokenWithdrawRate(BalanceCheckInfo memory info)
         internal
-        view
+        pure
         returns (Fraction memory makerTokenWithdrawRate)
     {
         // The last action is always a withdraw for the maker token.
@@ -221,7 +222,9 @@ library LibDydxBalance {
         returns (uint256 solventMakerAmount)
     {
         solventMakerAmount = info.makerAssetAmount;
+        assert(info.actions.length >= 1);
         IDydxBridge.BridgeAction memory withdraw = info.actions[info.actions.length - 1];
+        assert(withdraw.actionType == IDydxBridge.BridgeActionType.Withdraw);
         Fraction memory minCr = _getMinimumCollateralizationRatio(info.dydx);
         require(_gtef(minCr, Fraction(1, 1)), "DevUtils/MIN_CR_MUST_BE_GTE_ONE");
         // Loop through the accounts.
@@ -229,7 +232,7 @@ library LibDydxBalance {
             (uint256 supplyValue, uint256 borrowValue) =
                 _getAccountValues(info, info.accounts[accountIdx]);
             // All accounts must currently be solvent.
-            if (_ltf(Fraction(supplyValue, borrowValue), minCr)) {
+            if (borrowValue != 0 && _ltf(Fraction(supplyValue, borrowValue), minCr)) {
                 return 0;
             }
             // If this is the same account used to in the withdraw/borrow action,
@@ -239,37 +242,51 @@ library LibDydxBalance {
             }
             // Compute the deposit/collateralization rate, which is the rate at
             // which (USD) value is added to the account across all markets.
-            Fraction memory dc = Fraction(0, 1);
+            Fraction memory dd = Fraction(0, 1);
             for (uint256 i = 0; i < info.actions.length - 1; ++i) {
                 IDydxBridge.BridgeAction memory deposit = info.actions[i];
+                assert(deposit.actionType == IDydxBridge.BridgeActionType.Deposit);
                 if (deposit.accountId == accountIdx) {
-                    dc = _addf(dc, _toQuoteValue(info.dydx, deposit.marketId, _getActionRate(deposit)));
+                    dd = _addf(
+                        dd,
+                        _toQuoteValue(
+                            info.dydx,
+                            deposit.marketId,
+                            _getActionRate(deposit)
+                        )
+                    );
                 }
             }
             // Compute the borrow/withdraw rate, which is the rate at which
             // (USD) value is deducted from the account.
-            Fraction memory db = _toQuoteValue(info.dydx, withdraw.marketId, _getActionRate(withdraw));
+            Fraction memory db = _toQuoteValue(
+                info.dydx,
+                withdraw.marketId,
+                _getActionRate(withdraw)
+            );
             // If the deposit to withdraw ratio is >= the minimum collateralization
             // rate, then we will never become insolvent (at current prices).
-            if (_gtef(_divf(dc, db), minCr)) {
+            if (_gtef(_divf(dd, db), minCr)) {
                 continue;
             }
             // The collateralization ratio for this account, parameterized by
             // `t` (maker amount), is given by:
-            //      `cr = (supplyValue + t * dc) / (borrowValue + t * db)`
+            //      `cr = (supplyValue + t * dd) / (borrowValue + t * db)`
             // Solving for `t` gives us:
-            //      `t = (supplyValue - cr * borrowValue) / (cr * db - dc)`
+            //      `t = (supplyValue - cr * borrowValue) / (cr * db - dd)`
             Fraction memory t = _divf(
-                _subf(Fraction(supplyValue, 1), _mulf(minCr, Fraction(borrowValue, 1))),
-                _subf(_mulf(minCr, db), dc)
+                _subf(
+                    Fraction(supplyValue, DYDX_UNITS_BASE),
+                    _mulf(minCr, Fraction(borrowValue, DYDX_UNITS_BASE))
+                ),
+                _subf(_mulf(minCr, db), dd)
             );
             // There should only be one withdraw action, so we only update this
             // amount once (no need to do a `min()`).
             solventMakerAmount = LibMath.getPartialAmountFloor(
                 t.n,
                 t.d,
-                // info.makerAssetAmount ?
-                1
+                10 ** uint256(LibERC20Token.decimals(info.makerTokenAddress))
             );
         }
     }
