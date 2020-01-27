@@ -5,7 +5,7 @@ export enum DydxBridgeActionType {
     Withdraw,
 }
 
-export interface DydxBrigeAction {
+export interface DydxBridgeAction {
     actionType: DydxBridgeActionType;
     accountIdx: BigNumber;
     marketId: BigNumber;
@@ -15,7 +15,7 @@ export interface DydxBrigeAction {
 
 export interface DydxBridgeData {
     accountNumbers: BigNumber[];
-    actions: DydxBrigeAction[];
+    actions: DydxBridgeAction[];
 }
 
 export const dydxBridgeDataEncoder = AbiEncoder.create([

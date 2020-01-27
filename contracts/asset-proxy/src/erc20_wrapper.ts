@@ -144,7 +144,7 @@ export class ERC20Wrapper {
         return tokenAddresses;
     }
     private async _getTokenContractFromAssetDataAsync(assetData: string): Promise<DummyERC20TokenContract> {
-        const [tokenAddress] = this._assetDataInterface.getABIDecodedTransactionData('ERC20Token', assetData); // tslint:disable-line:no-unused-variable
+        const tokenAddress = this._assetDataInterface.getABIDecodedTransactionData<string>('ERC20Token', assetData); // tslint:disable-line:no-unused-variable
         const tokenContractIfExists = _.find(this._dummyTokenContracts, c => c.address === tokenAddress);
         if (tokenContractIfExists === undefined) {
             throw new Error(`Token: ${tokenAddress} was not deployed through ERC20Wrapper`);

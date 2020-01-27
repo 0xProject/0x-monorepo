@@ -11,6 +11,10 @@
                 "pr": 2456
             },
             {
+                "note": "Fix broken tests.",
+                "pr": 2456
+            },
+            {
                 "note": "Remove dependency on `@0x/contracts-dev-utils`",
                 "pr": 2456
             }

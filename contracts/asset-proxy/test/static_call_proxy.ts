@@ -1,7 +1,6 @@
 import {
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     expectTransactionFailedWithoutReasonAsync,
     provider,
     txDefaults,
