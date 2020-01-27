@@ -5,6 +5,10 @@
             {
                 "note": "Add `allowance()` and `balanceOf()` to `LibERC20Token`",
                 "pr": 2456
+            },
+            {
+                "note": "Fix broken tests",
+                "pr": 2456
             }
         ]
     },
