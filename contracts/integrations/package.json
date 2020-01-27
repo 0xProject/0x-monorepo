@@ -54,6 +54,7 @@
         "@0x/abi-gen": "^5.1.1",
         "@0x/contract-addresses": "^4.4.0",
         "@0x/contract-wrappers": "^13.4.1",
+        "@0x/contracts-broker": "^1.0.0",
         "@0x/contracts-coordinator": "^3.0.5",
         "@0x/contracts-dev-utils": "^1.0.5",
         "@0x/contracts-exchange-forwarder": "^4.0.5",
