@@ -125,7 +125,7 @@ library LibDydxBalance {
                 }
             }
             // Check that the account index is within the valid range.
-            if (action.accountId >= info.accounts.length) {
+            if (action.accountIdx >= info.accounts.length) {
                 return false;
             }
         }
@@ -142,7 +142,7 @@ library LibDydxBalance {
             return false;
         }
         // Check the account index.
-        return withdraw.accountId < info.accounts.length;
+        return withdraw.accountIdx < info.accounts.length;
     }
 
     /// @dev Returns the rate at which we withdraw maker tokens.
@@ -237,7 +237,7 @@ library LibDydxBalance {
             }
             // If this is the same account used to in the withdraw/borrow action,
             // compute the maker amount at which it will become insolvent.
-            if (accountIdx != withdraw.accountId) {
+            if (accountIdx != withdraw.accountIdx) {
                 continue;
             }
             // Compute the deposit/collateralization rate, which is the rate at
@@ -246,7 +246,7 @@ library LibDydxBalance {
             for (uint256 i = 0; i < info.actions.length - 1; ++i) {
                 IDydxBridge.BridgeAction memory deposit = info.actions[i];
                 assert(deposit.actionType == IDydxBridge.BridgeActionType.Deposit);
-                if (deposit.accountId == accountIdx) {
+                if (deposit.accountIdx == accountIdx) {
                     dd = _addf(
                         dd,
                         _toQuoteValue(

@@ -15,9 +15,7 @@
         "test/generated-artifacts/LibDydxBalance.json",
         "test/generated-artifacts/LibOrderTransferSimulation.json",
         "test/generated-artifacts/LibTransactionDecoder.json",
-        "test/generated-artifacts/OrderValidationUtils.json",
-        "test/generated-artifacts/TestDydx.json",
-        "test/generated-artifacts/TestLibDydxBalance.json"
+        "test/generated-artifacts/OrderValidationUtils.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

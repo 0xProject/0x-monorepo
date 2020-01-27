@@ -1,8 +1,9 @@
-import { artifacts as ERC20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { BridgeAction, BridgeActionType } from '@0x/contracts-asset-proxy';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { BigNumber, fromTokenUnitAmount, toTokenUnitAmount } from '@0x/utils';
 
-import { artifacts } from './artifacts';
+import { artifacts as devUtilsArtifacts } from './artifacts';
 import { TestDydxContract, TestLibDydxBalanceContract } from './wrappers';
 
 blockchainTests('LibDydxBalance', env => {
@@ -86,7 +87,7 @@ blockchainTests('LibDydxBalance', env => {
         const tokenDecimals = [TAKER_DECIMALS, MAKER_DECIMALS];
         const tokens = [takerToken, makerToken] = await Promise.all([...Array(2)].map(async (v, i) =>
             DummyERC20TokenContract.deployFrom0xArtifactAsync(
-                ERC20Artifacts.DummyERC20Token,
+                erc20Artifacts.DummyERC20Token,
                 env.provider,
                 env.txDefaults,
                 {},
@@ -98,32 +99,19 @@ blockchainTests('LibDydxBalance', env => {
         ));
         DYDX_CONFIG.markets = DYDX_CONFIG.markets.map((m, i) => ({ ...m, token: tokens[i].address }));
         dydx = await TestDydxContract.deployFrom0xArtifactAsync(
-            artifacts.TestDydx,
+            devUtilsArtifacts.TestDydx,
             env.provider,
             env.txDefaults,
             {},
             DYDX_CONFIG,
         );
         testContract = await TestLibDydxBalanceContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibDydxBalance,
+            devUtilsArtifacts.TestLibDydxBalance,
             env.provider,
             env.txDefaults,
             {},
         );
     });
-
-    enum BridgeActionType {
-        Deposit = 0,
-        Withdraw = 1,
-    }
-
-    interface BridgeAction {
-        actionType: BridgeActionType;
-        accountId: BigNumber;
-        marketId: BigNumber;
-        conversionRateNumerator: BigNumber;
-        conversionRateDenominator: BigNumber;
-    }
 
     interface BalanceCheckInfo {
         dydx: string;
@@ -150,14 +138,14 @@ blockchainTests('LibDydxBalance', env => {
             actions: [
                 {
                     actionType: BridgeActionType.Deposit,
-                    accountId: new BigNumber(0),
+                    accountIdx: new BigNumber(0),
                     marketId: new BigNumber(0),
                     conversionRateNumerator: fromTokenUnitAmount(5, MAKER_DECIMALS - TAKER_DECIMALS),
                     conversionRateDenominator: new BigNumber(10),
                 },
                 {
                     actionType: BridgeActionType.Withdraw,
-                    accountId: new BigNumber(0),
+                    accountIdx: new BigNumber(0),
                     marketId: new BigNumber(1),
                     conversionRateNumerator: new BigNumber(0),
                     conversionRateDenominator: new BigNumber(0),
@@ -176,7 +164,7 @@ blockchainTests('LibDydxBalance', env => {
             const accountBalances = config.accounts[accountIdx].balances.slice();
             for (const action of checkInfo.actions) {
                 const actionMarketId = action.marketId.toNumber();
-                const actionAccountIdx = action.accountId.toNumber();
+                const actionAccountIdx = action.accountIdx.toNumber();
                 if (checkInfo.accounts[actionAccountIdx] !== accountId) {
                     continue;
                 }

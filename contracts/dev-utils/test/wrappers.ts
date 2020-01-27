@@ -13,5 +13,3 @@ export * from '../test/generated-wrappers/lib_dydx_balance';
 export * from '../test/generated-wrappers/lib_order_transfer_simulation';
 export * from '../test/generated-wrappers/lib_transaction_decoder';
 export * from '../test/generated-wrappers/order_validation_utils';
-export * from '../test/generated-wrappers/test_dydx';
-export * from '../test/generated-wrappers/test_lib_dydx_balance';
