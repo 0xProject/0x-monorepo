@@ -5,6 +5,10 @@
             {
                 "note": "Add more types and functions to `IDydx`",
                 "pr": 2456
+            },
+            {
+                "note": "Rename `DydxBrigeAction.accountId` to `DydxBridgeAction.accountIdx`",
+                "pr": 2456
             }
         ]
     },

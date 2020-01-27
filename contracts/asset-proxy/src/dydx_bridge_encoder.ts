@@ -7,7 +7,7 @@ export enum DydxBridgeActionType {
 
 export interface DydxBrigeAction {
     actionType: DydxBridgeActionType;
-    accountId: BigNumber;
+    accountIdx: BigNumber;
     marketId: BigNumber;
     conversionRateNumerator: BigNumber;
     conversionRateDenominator: BigNumber;
@@ -29,7 +29,7 @@ export const dydxBridgeDataEncoder = AbiEncoder.create([
                 type: 'tuple[]',
                 components: [
                     { name: 'actionType', type: 'uint8' },
-                    { name: 'accountId', type: 'uint256' },
+                    { name: 'accountIdx', type: 'uint256' },
                     { name: 'marketId', type: 'uint256' },
                     { name: 'conversionRateNumerator', type: 'uint256' },
                     { name: 'conversionRateDenominator', type: 'uint256' },

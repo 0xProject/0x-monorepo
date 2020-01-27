@@ -17,14 +17,14 @@ blockchainTests.resets('DydxBridge unit tests', env => {
     const notAuthorized = '0x0000000000000000000000000000000000000001';
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit,
-        accountId: constants.ZERO_AMOUNT,
+        accountIdx: constants.ZERO_AMOUNT,
         marketId,
         conversionRateNumerator: constants.ZERO_AMOUNT,
         conversionRateDenominator: constants.ZERO_AMOUNT,
     };
     const defaultWithdrawAction = {
         actionType: DydxBridgeActionType.Withdraw,
-        accountId: constants.ZERO_AMOUNT,
+        accountIdx: constants.ZERO_AMOUNT,
         marketId,
         conversionRateNumerator: constants.ZERO_AMOUNT,
         conversionRateDenominator: constants.ZERO_AMOUNT,
@@ -118,7 +118,7 @@ blockchainTests.resets('DydxBridge unit tests', env => {
             for (const action of bridgeData.actions) {
                 expectedOperateActionEvents.push({
                     actionType: action.actionType as number,
-                    accountId: action.accountId,
+                    accountIdx: action.accountIdx,
                     amountSign: action.actionType === DydxBridgeActionType.Deposit ? true : false,
                     amountDenomination: weiDenomination,
                     amountRef: deltaAmountRef,

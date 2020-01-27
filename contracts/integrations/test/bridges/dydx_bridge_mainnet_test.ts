@@ -23,14 +23,14 @@ blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
     const defaultAmount = toBaseUnitAmount(0.01);
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit as number,
-        accountId: constants.ZERO_AMOUNT,
+        accountIdx: constants.ZERO_AMOUNT,
         marketId: daiMarketId,
         conversionRateNumerator: constants.ZERO_AMOUNT,
         conversionRateDenominator: constants.ZERO_AMOUNT,
     };
     const defaultWithdrawAction = {
         actionType: DydxBridgeActionType.Withdraw as number,
-        accountId: constants.ZERO_AMOUNT,
+        accountIdx: constants.ZERO_AMOUNT,
         marketId: daiMarketId,
         // This ratio must be less than the `1` to account
         // for interest in dydx balances because the test
@@ -71,7 +71,7 @@ blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
                     case DydxBridgeActionType.Deposit:
                         expectedDepositEvents.push({
                             accountOwner: dydxAccountOwner,
-                            accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
+                            accountNumber: bridgeData.accountNumbers[action.accountIdx.toNumber()],
                             market: action.marketId,
                             update: [[true, scaledAmount]],
                             from: dydxAccountOwner,
@@ -81,7 +81,7 @@ blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
                     case DydxBridgeActionType.Withdraw:
                         expectedWithdrawEvents.push({
                             accountOwner: dydxAccountOwner,
-                            accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
+                            accountNumber: bridgeData.accountNumbers[action.accountIdx.toNumber()],
                             market: action.marketId,
                             update: [[false, scaledAmount]],
                             to: receiver,
