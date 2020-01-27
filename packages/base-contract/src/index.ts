@@ -359,8 +359,15 @@ export class BaseContract {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
         if (deployedBytecode !== undefined && deployedBytecode !== '') {
-            assert.isHexString('deployedBytecode', deployedBytecode);
-            this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
+            // `deployedBytecode` might contain references to
+            // unlinked libraries and, hence, would not be a hex string. We'll just
+            // leave `_deployedBytecodeIfExists` empty if this is the case.
+            try {
+                assert.isHexString('deployedBytecode', deployedBytecode);
+                this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
+            } catch (err) {
+                // Do nothing.
+            }
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         if (callAndTxnDefaults !== undefined) {

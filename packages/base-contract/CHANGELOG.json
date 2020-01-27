@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.1.2",
+        "changes": [
+            {
+                "note": "Ignore bytecode with unlinked library references in constructor",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "6.1.1",
         "changes": [
             {
