@@ -26,6 +26,7 @@ export {
     StringRevertError,
     AnyRevertError,
 } from './revert_error';
+export { fromTokenUnitAmount, toTokenUnitAmount } from './token_utils';
 
 export import CoordinatorRevertErrors = require('./revert_errors/coordinator/revert_errors');
 export import ExchangeForwarderRevertErrors = require('./revert_errors/exchange-forwarder/revert_errors');
