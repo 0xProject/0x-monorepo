@@ -1,5 +1,22 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Refactor mixins into public libraries.",
+                "pr": 2456
+            },
+            {
+                "note": "Remove `LibTransactionDecoder` export",
+                "pr": 2456
+            },
+            {
+                "note": "Add `DydxBridge` order validation",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "timestamp": 1579682890,
         "version": "1.0.4",
         "changes": [
