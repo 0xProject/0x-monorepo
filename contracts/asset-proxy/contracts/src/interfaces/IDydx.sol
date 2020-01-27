@@ -45,7 +45,7 @@ interface IDydx {
     /// parsed into before being processed.
     struct ActionArgs {
         ActionType actionType;
-        uint256 accountId;
+        uint256 accountIdx;
         AssetAmount amount;
         uint256 primaryMarketId;
         uint256 secondaryMarketId;
