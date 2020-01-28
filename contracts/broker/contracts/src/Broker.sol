@@ -24,10 +24,12 @@ import "@0x/contracts-exchange-forwarder/contracts/src/libs/LibAssetDataTransfer
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "./interfaces/IBroker.sol";
 import "./interfaces/IPropertyValidator.sol";
+import "./libs/LibBrokerRichErrors.sol";
 
 
 // solhint-disable space-after-comma
@@ -67,10 +69,22 @@ contract Broker is
     )
         external
     {
-        require(from == address(this), "INVALID_FROM_ADDRESS");
-        require(amounts.length == 1, "MUST_PROVIDE_ONE_AMOUNT");
+        if (from != address(this)) {
+            LibRichErrors.rrevert(
+                LibBrokerRichErrors.InvalidFromAddressError(from)
+            );
+        }
+        if (amounts.length != 1) {
+            LibRichErrors.rrevert(
+                LibBrokerRichErrors.AmountsLengthMustEqualOneError(amounts.length)
+            );
+        }
         uint256 remainingAmount = amounts[0];
-        require(_cachedAssetData.length.safeSub(_cacheIndex) >= remainingAmount, "TOO_FEW_BROKERED_ASSETS_PROVIDED");
+        if (_cachedAssetData.length.safeSub(_cacheIndex) < remainingAmount) {
+            LibRichErrors.rrevert(
+                LibBrokerRichErrors.TooFewBrokerAssetsProvidedError(_cachedAssetData.length)
+            );
+        }
 
         while (remainingAmount != 0) {
             bytes memory assetToTransfer = _cachedAssetData[_cacheIndex];
@@ -125,11 +139,13 @@ contract Broker is
         _sender = msg.sender;
 
         // Sanity-check the provided function selector
-        require(
-            fillFunctionSelector == IExchange(address(0)).fillOrder.selector ||
-            fillFunctionSelector == IExchange(address(0)).fillOrKillOrder.selector,
-            "UNRECOGNIZED_FUNCTION_SELECTOR"
-        );
+        if (
+            fillFunctionSelector != IExchange(address(0)).fillOrder.selector &&
+            fillFunctionSelector != IExchange(address(0)).fillOrKillOrder.selector
+        ) {
+            LibBrokerRichErrors.InvalidFunctionSelectorError(fillFunctionSelector);
+        }
+
 
         // Perform the fill
         bytes memory fillCalldata = abi.encodeWithSelector(
@@ -177,12 +193,13 @@ contract Broker is
         _sender = msg.sender;
 
         // Sanity-check the provided function selector
-        require(
-            batchFillFunctionSelector == IExchange(address(0)).batchFillOrders.selector ||
-            batchFillFunctionSelector == IExchange(address(0)).batchFillOrKillOrders.selector ||
-            batchFillFunctionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector,
-            "UNRECOGNIZED_FUNCTION_SELECTOR"
-        );
+        if (
+            batchFillFunctionSelector != IExchange(address(0)).batchFillOrders.selector &&
+            batchFillFunctionSelector != IExchange(address(0)).batchFillOrKillOrders.selector &&
+            batchFillFunctionSelector != IExchange(address(0)).batchFillOrdersNoThrow.selector
+        ) {
+            LibBrokerRichErrors.InvalidFunctionSelectorError(batchFillFunctionSelector);
+        }
 
         // Perform the batch fill
         bytes memory batchFillCalldata = abi.encodeWithSelector(

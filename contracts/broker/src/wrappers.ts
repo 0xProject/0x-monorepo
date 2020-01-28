@@ -8,4 +8,5 @@ export * from '../generated-wrappers/gods_unchained_validator';
 export * from '../generated-wrappers/i_broker';
 export * from '../generated-wrappers/i_gods_unchained';
 export * from '../generated-wrappers/i_property_validator';
+export * from '../generated-wrappers/lib_broker_rich_errors';
 export * from '../generated-wrappers/test_gods_unchained';

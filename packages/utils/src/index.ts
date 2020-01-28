@@ -27,6 +27,7 @@ export {
     AnyRevertError,
 } from './revert_error';
 
+export import BrokerRevertErrors = require('./revert_errors/broker/revert_errors');
 export import CoordinatorRevertErrors = require('./revert_errors/coordinator/revert_errors');
 export import ExchangeForwarderRevertErrors = require('./revert_errors/exchange-forwarder/revert_errors');
 export import LibMathRevertErrors = require('./revert_errors/exchange-libs/lib_math_revert_errors');

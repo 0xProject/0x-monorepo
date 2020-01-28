@@ -10,12 +10,14 @@ import * as GodsUnchainedValidator from '../test/generated-artifacts/GodsUnchain
 import * as IBroker from '../test/generated-artifacts/IBroker.json';
 import * as IGodsUnchained from '../test/generated-artifacts/IGodsUnchained.json';
 import * as IPropertyValidator from '../test/generated-artifacts/IPropertyValidator.json';
+import * as LibBrokerRichErrors from '../test/generated-artifacts/LibBrokerRichErrors.json';
 import * as TestGodsUnchained from '../test/generated-artifacts/TestGodsUnchained.json';
 export const artifacts = {
     Broker: Broker as ContractArtifact,
     IBroker: IBroker as ContractArtifact,
     IGodsUnchained: IGodsUnchained as ContractArtifact,
     IPropertyValidator: IPropertyValidator as ContractArtifact,
+    LibBrokerRichErrors: LibBrokerRichErrors as ContractArtifact,
     GodsUnchainedValidator: GodsUnchainedValidator as ContractArtifact,
     TestGodsUnchained: TestGodsUnchained as ContractArtifact,
 };

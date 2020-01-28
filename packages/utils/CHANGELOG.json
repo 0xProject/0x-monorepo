@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.3.0",
+        "changes": [
+            {
+                "note": "Added Broker revert errors",
+                "pr": 2455
+            }
+        ]
+    },
+    {
         "version": "5.2.0",
         "changes": [
             {
