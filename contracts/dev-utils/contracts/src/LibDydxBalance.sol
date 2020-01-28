@@ -37,8 +37,10 @@ library LibDydxBalance {
     using LibBytes for bytes;
     using LibSafeMath for uint256;
 
+    /// @dev Decimal places for dydx value quantities.
+    uint256 private constant DYDX_UNITS_DECIMALS = 18;
     /// @dev Base units for dydx value quantities.
-    uint256 private constant DYDX_UNITS_BASE = 1e18;
+    uint256 private constant DYDX_UNITS_BASE = 10 ** DYDX_UNITS_DECIMALS;
 
     /// @dev A fraction/rate.
     struct Fraction {
@@ -165,7 +167,7 @@ library LibDydxBalance {
         view
         returns (uint256 depositableMakerAmount)
     {
-        depositableMakerAmount = info.makerAssetAmount;
+        depositableMakerAmount = uint256(-1);
         // The conversion rate from maker -> taker.
         Fraction memory makerToTakerRate = Fraction(
             info.takerAssetAmount,
@@ -221,7 +223,7 @@ library LibDydxBalance {
         view
         returns (uint256 solventMakerAmount)
     {
-        solventMakerAmount = info.makerAssetAmount;
+        solventMakerAmount = uint256(-1);
         assert(info.actions.length >= 1);
         IDydxBridge.BridgeAction memory withdraw = info.actions[info.actions.length - 1];
         assert(withdraw.actionType == IDydxBridge.BridgeActionType.Withdraw);
@@ -265,7 +267,7 @@ library LibDydxBalance {
                 _getActionRate(withdraw)
             );
             // If the deposit to withdraw ratio is >= the minimum collateralization
-            // rate, then we will never become insolvent (at current prices).
+            // rate, then we will never become insolvent at these prices.
             if (_gtef(_divf(dd, db), minCr)) {
                 continue;
             }
@@ -274,6 +276,8 @@ library LibDydxBalance {
             //      `cr = (supplyValue + t * dd) / (borrowValue + t * db)`
             // Solving for `t` gives us:
             //      `t = (supplyValue - cr * borrowValue) / (cr * db - dd)`
+            // TODO(dorothy-zbornak): It'll also revert when getting extremely
+            // close to the minimum collateralization ratio.
             Fraction memory t = _divf(
                 _subf(
                     Fraction(supplyValue, DYDX_UNITS_BASE),
@@ -281,12 +285,9 @@ library LibDydxBalance {
                 ),
                 _subf(_mulf(minCr, db), dd)
             );
-            // There should only be one withdraw action, so we only update this
-            // amount once (no need to do a `min()`).
-            solventMakerAmount = LibMath.getPartialAmountFloor(
-                t.n,
-                t.d,
-                10 ** uint256(LibERC20Token.decimals(info.makerTokenAddress))
+            solventMakerAmount = LibSafeMath.min256(
+                solventMakerAmount,
+                t.n.safeDiv(t.d)
             );
         }
     }
@@ -361,10 +362,11 @@ library LibDydxBalance {
         returns (Fraction memory quotedRate)
     {
         IDydx.Price memory price = dydx.getMarketPrice(marketId);
+        uint8 tokenDecimals = LibERC20Token.decimals(dydx.getMarketTokenAddress(marketId));
         return _mulf(
             Fraction(
                 price.value,
-                DYDX_UNITS_BASE
+                10 ** uint256(DYDX_UNITS_DECIMALS + tokenDecimals)
             ),
             rate
         );
@@ -396,7 +398,7 @@ library LibDydxBalance {
         address owner,
         address spender
     )
-        internal
+        private
         view
         returns (uint256 transferableAmount)
     {

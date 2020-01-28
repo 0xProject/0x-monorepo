@@ -6,10 +6,4 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as DevUtils from '../generated-artifacts/DevUtils.json';
-import * as LibAssetData from '../generated-artifacts/LibAssetData.json';
-import * as LibTransactionDecoder from '../generated-artifacts/LibTransactionDecoder.json';
-export const artifacts = {
-    DevUtils: DevUtils as ContractArtifact,
-    LibAssetData: LibAssetData as ContractArtifact,
-    LibTransactionDecoder: LibTransactionDecoder as ContractArtifact,
-};
+export const artifacts = { DevUtils: DevUtils as ContractArtifact };

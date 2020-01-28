@@ -41,6 +41,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/dev-utils/README.md",
     "devDependencies": {
+        "@0x/contracts-asset-proxy": "^3.1.1",
         "@0x/contracts-erc20": "^3.0.4",
         "@0x/contracts-test-utils": "^5.1.1",
         "@0x/abi-gen": "^5.1.0",
