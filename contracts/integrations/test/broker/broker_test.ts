@@ -498,14 +498,14 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     value: DeploymentManager.protocolFee.times(2),
                     gasPrice: DeploymentManager.gasPrice,
                 });
-                const expectedBalances = simulateBrokerFills(
-                    erc721AssetData.slice(0, 2),
-                    [orders[0]],
-                    [new BigNumber(2)],
-                    receipt,
-                );
-                await balanceStore.updateBalancesAsync();
-                balanceStore.assertEquals(expectedBalances);
+            const expectedBalances = simulateBrokerFills(
+                erc721AssetData.slice(0, 2),
+                [orders[0]],
+                [new BigNumber(2)],
+                receipt,
+            );
+            await balanceStore.updateBalancesAsync();
+            balanceStore.assertEquals(expectedBalances);
         });
     });
-});
+}); // tslint:disable-line:max-file-line-count

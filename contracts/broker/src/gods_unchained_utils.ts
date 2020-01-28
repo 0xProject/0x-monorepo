@@ -22,7 +22,7 @@ export const godsUnchainedUtils = {
         const propertyData = AbiEncoder.create([
             { name: 'proto', type: 'uint16' },
             { name: 'quality', type: 'uint8' },
-        ]).encode({ proto, quality});
+        ]).encode({ proto, quality });
         const data = dataEncoder.encode({ validatorAddress, propertyData });
         return assetDataUtils.encodeERC1155AssetData(brokerAddress, [], [new BigNumber(bundleSize)], data);
     },
