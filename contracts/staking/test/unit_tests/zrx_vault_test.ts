@@ -1,13 +1,11 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import {
     blockchainTests,
     constants,
     expect,
-    expectTransactionFailedAsync,
     filterLogsToArguments,
-    provider,
 } from '@0x/contracts-test-utils';
+import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { AuthorizableRevertErrors, BigNumber, SafeMathRevertErrors, StakingRevertErrors } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -33,8 +31,6 @@ blockchainTests.resets('ZrxVault unit tests', env => {
     let zrxAssetData: string;
     let zrxProxyAddress: string;
 
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
-
     before(async () => {
         // create accounts
         accounts = await env.getAccountAddressesAsync();
@@ -47,7 +43,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
         zrxProxyAddress = erc20ProxyContract.address;
         // deploy zrx token
         const [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, constants.DUMMY_TOKEN_DECIMALS);
-        zrxAssetData = await devUtils.encodeERC20AssetData(zrxTokenContract.address).callAsync();
+        zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenContract.address);
 
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -233,7 +229,7 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                     const tx = zrxVault.depositFrom(staker, initialTokenBalance.plus(1)).sendTransactionAsync({
                         from: stakingProxy,
                     });
-                    expectTransactionFailedAsync(tx, RevertReason.TransferFailed);
+                    return expect(tx).to.revertWith(RevertReason.TransferFailed);
                 });
             });
             describe('Withdrawal', () => {

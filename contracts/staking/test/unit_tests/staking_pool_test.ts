@@ -206,7 +206,7 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
                     {
                         poolId: nextPoolId,
                         operator,
-                        operatorShare,
+                        operatorShare: new BigNumber(operatorShare),
                     },
                 ],
                 TestMixinStakingPoolEvents.StakingPoolCreated,
@@ -306,8 +306,8 @@ blockchainTests.resets('MixinStakingPool unit tests', env => {
                 [
                     {
                         poolId,
-                        oldOperatorShare: operatorShare,
-                        newOperatorShare: operatorShare - 1,
+                        oldOperatorShare: new BigNumber(operatorShare),
+                        newOperatorShare: new BigNumber(operatorShare - 1),
                     },
                 ],
                 TestMixinStakingPoolEvents.OperatorShareDecreased,
