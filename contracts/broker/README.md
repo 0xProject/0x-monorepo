@@ -1,6 +1,6 @@
 ## Broker
 
-This package contains the implementation of the `Broker` contract. This contract serves as an entry-point to the 0x Exchange for the filling of property-based orders. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains the implementation of the [`Broker` contract](https://github.com/0xProject/ZEIPs/issues/75). This contract serves as an entry-point to the 0x Exchange for the filling of property-based orders. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
