@@ -6,12 +6,12 @@ import {
     TestGodsUnchainedContract,
 } from '@0x/contracts-broker';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ExchangeFunctionName } from '@0x/contracts-exchange';
+import { ExchangeFunctionName, ExchangeRevertErrors } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber, ExchangeRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor } from '../framework/actors/base';
@@ -235,7 +235,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                         value: DeploymentManager.protocolFee,
                         gasPrice: DeploymentManager.gasPrice,
                     });
-                expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
+                return expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
             });
             it(`${fnName} with one valid asset, one invalid asset`, async () => {
                 const tx = broker
@@ -251,7 +251,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                         value: DeploymentManager.protocolFee,
                         gasPrice: DeploymentManager.gasPrice,
                     });
-                expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
+                return expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
             });
             it(`${fnName} with too few assets`, async () => {
                 const tx = broker
@@ -267,7 +267,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                         value: DeploymentManager.protocolFee,
                         gasPrice: DeploymentManager.gasPrice,
                     });
-                expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
+                return expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
             });
             it(`${fnName} with same asset twice`, async () => {
                 const tx = broker
@@ -283,7 +283,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                         value: DeploymentManager.protocolFee,
                         gasPrice: DeploymentManager.gasPrice,
                     });
-                expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
+                return expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
             });
             it(`${fnName} with excess assets`, async () => {
                 const receipt = await broker
@@ -310,6 +310,45 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                 balanceStore.assertEquals(expectedBalances);
             });
         }
+        it(`Reverts if insufficient ETH is provided`, async () => {
+            const tx = broker
+                .brokerTrade(
+                    [erc721AssetData[0]],
+                    order,
+                    new BigNumber(1),
+                    order.signature,
+                    deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                )
+                .awaitTransactionSuccessAsync({
+                    from: taker.address,
+                    value: DeploymentManager.protocolFee.minus(1),
+                    gasPrice: DeploymentManager.gasPrice,
+                });
+            return expect(tx).to.revertWith(new ExchangeRevertErrors.PayProtocolFeeError());
+        });
+        it(`Refunds sender if excess ETH is provided`, async () => {
+            const receipt = await broker
+                .brokerTrade(
+                    [erc721AssetData[0]],
+                    order,
+                    new BigNumber(1),
+                    order.signature,
+                    deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                )
+                .awaitTransactionSuccessAsync({
+                    from: taker.address,
+                    value: DeploymentManager.protocolFee.plus(1),
+                    gasPrice: DeploymentManager.gasPrice,
+                });
+            const expectedBalances = simulateBrokerFills(
+                [erc721AssetData[0]],
+                [order],
+                [new BigNumber(1)],
+                receipt,
+            );
+            await balanceStore.updateBalancesAsync();
+            balanceStore.assertEquals(expectedBalances);
+        });
     });
 
     describe('batchBrokerTrade', () => {
@@ -466,7 +505,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     value: DeploymentManager.protocolFee.times(2),
                     gasPrice: DeploymentManager.gasPrice,
                 });
-            expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
+            return expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
         });
         it(`batchFillOrKillOrders reverts on invalid asset`, async () => {
             const tx = broker
@@ -482,7 +521,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     value: DeploymentManager.protocolFee.times(2),
                     gasPrice: DeploymentManager.gasPrice,
                 });
-            expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
+            return expect(tx).to.revertWith(new ExchangeRevertErrors.AssetProxyTransferError());
         });
         it(`batchFillOrdersNoThrow catches revert on invalid asset`, async () => {
             const receipt = await broker
