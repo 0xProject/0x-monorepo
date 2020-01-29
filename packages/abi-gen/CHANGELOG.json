@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Support deploying contracts with unliked libraries through `deployWithLibrariesFrom0xArtifactAsync()`",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "5.1.0",
         "changes": [
             {
