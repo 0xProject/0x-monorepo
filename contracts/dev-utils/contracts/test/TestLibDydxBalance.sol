@@ -78,6 +78,14 @@ contract TestLibDydxBalance {
         tokens[tokenAddress].setApproval(owner, spender, allowance);
     }
 
+    function getDydxMakerBalance(LibOrder.Order memory order, address dydx)
+        public
+        view
+        returns (uint256 balance)
+    {
+        return LibDydxBalance.getDydxMakerBalance(order, dydx);
+    }
+
     function getSolventMakerAmount(
         LibDydxBalance.BalanceCheckInfo memory info
     )
@@ -96,5 +104,13 @@ contract TestLibDydxBalance {
         returns (uint256 depositableMakerAmount)
     {
         return LibDydxBalance._getDepositableMakerAmount(info);
+    }
+
+    function areActionsWellFormed(LibDydxBalance.BalanceCheckInfo memory info)
+        public
+        view
+        returns (bool areWellFormed)
+    {
+        return LibDydxBalance._areActionsWellFormed(info);
     }
 }

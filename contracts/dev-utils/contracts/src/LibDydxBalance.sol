@@ -135,7 +135,7 @@ library LibDydxBalance {
         if (depositCount + 1 != info.actions.length) {
             return false;
         }
-        IDydxBridge.BridgeAction memory withdraw = info.actions[depositCount + 1];
+        IDydxBridge.BridgeAction memory withdraw = info.actions[depositCount];
         if (withdraw.actionType != IDydxBridge.BridgeActionType.Withdraw) {
             return false;
         }
@@ -379,12 +379,12 @@ library LibDydxBalance {
         view
         returns (uint256 supplyValue, uint256 borrowValue)
     {
-        (IDydx.Value memory supplyValue, IDydx.Value memory borrowValue) =
+        (IDydx.Value memory supplyValue_, IDydx.Value memory borrowValue_) =
             info.dydx.getAdjustedAccountValues(IDydx.AccountInfo(
                 info.makerAddress,
                 account
             ));
-        return (supplyValue.value, borrowValue.value);
+        return (supplyValue_.value, borrowValue_.value);
     }
 
     /// @dev Get the amount of an ERC20 token held by `owner` that can be transferred

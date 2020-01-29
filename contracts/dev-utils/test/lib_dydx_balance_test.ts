@@ -1,5 +1,6 @@
-import { DydxBridgeAction, DydxBridgeActionType } from '@0x/contracts-asset-proxy';
+import { DydxBridgeAction, DydxBridgeActionType, DydxBridgeData, dydxBridgeDataEncoder, IAssetDataContract } from '@0x/contracts-asset-proxy';
 import { blockchainTests, constants, expect, getRandomFloat, getRandomInteger, Numberish, randomAddress } from '@0x/contracts-test-utils';
+import { Order } from '@0x/types';
 import { BigNumber, fromTokenUnitAmount, toTokenUnitAmount } from '@0x/utils';
 
 import { artifacts as devUtilsArtifacts } from './artifacts';
@@ -96,19 +97,25 @@ blockchainTests('LibDydxBalance', env => {
 
     let dydx: TestDydxContract;
     let testContract: TestLibDydxBalanceContract;
+    let assetDataContract: IAssetDataContract;
+    let takerTokenAddress: string;
+    let makerTokenAddress: string;
 
     before(async () => {
-        testContract = await TestLibDydxBalanceContract.deployFrom0xArtifactAsync(
+        assetDataContract = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
+
+        testContract = await TestLibDydxBalanceContract.deployWithLibrariesFrom0xArtifactAsync(
             devUtilsArtifacts.TestLibDydxBalance,
+            devUtilsArtifacts,
             env.provider,
             env.txDefaults,
             {},
         );
 
         // Create tokens.
-        const takerTokenAddress = await testContract.createToken(TAKER_DECIMALS).callAsync();
+        takerTokenAddress = await testContract.createToken(TAKER_DECIMALS).callAsync();
         await testContract.createToken(TAKER_DECIMALS).awaitTransactionSuccessAsync();
-        const makerTokenAddress = await testContract.createToken(MAKER_DECIMALS).callAsync();
+        makerTokenAddress = await testContract.createToken(MAKER_DECIMALS).callAsync();
         await testContract.createToken(MAKER_DECIMALS).awaitTransactionSuccessAsync();
 
         DYDX_CONFIG.markets[0].token = takerTokenAddress;
@@ -535,7 +542,7 @@ blockchainTests('LibDydxBalance', env => {
         });
     });
 
-    describe('_getDepositableMakerAmount()', () => {
+    blockchainTests.resets('_getDepositableMakerAmount()', () => {
         it('returns infinite if no deposit action', async () => {
             const checkInfo = createBalanceCheckInfo({
                 takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
@@ -714,6 +721,459 @@ blockchainTests('LibDydxBalance', env => {
             // We do some rounding to account for integer vs FP vs symbolic precision differences.
             expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(5))
                 .to.bignumber.eq(toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(5));
+        });
+
+        it('returns zero if the maker has no taker tokens and the deposit rate is' +
+            'greater than the exchange rate', async () => {
+            await testContract.setTokenBalance(
+                takerTokenAddress,
+                ACCOUNT_OWNER,
+                constants.ZERO_AMOUNT,
+            ).awaitTransactionSuccessAsync();
+            // The taker tokens getting exchanged in will only partially cover the deposit.
+            const exchangeRate = 0.1;
+            const depositRate = Math.random() + exchangeRate;
+            const checkInfo = createBalanceCheckInfo({
+                takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
+                makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
+                        conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                    },
+                ],
+            });
+            const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
+            expect(makerAssetFillAmount).to.bignumber.eq(0);
+        });
+
+        it('returns zero if dydx has no taker token allowance and the deposit rate is' +
+            'greater than the exchange rate', async () => {
+            await testContract.setTokenApproval(
+                takerTokenAddress,
+                ACCOUNT_OWNER,
+                dydx.address,
+                constants.ZERO_AMOUNT,
+            ).awaitTransactionSuccessAsync();
+            // The taker tokens getting exchanged in will only partially cover the deposit.
+            const exchangeRate = 0.1;
+            const depositRate = Math.random() + exchangeRate;
+            const checkInfo = createBalanceCheckInfo({
+                takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
+                makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
+                        conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                    },
+                ],
+            });
+            const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
+            expect(makerAssetFillAmount).to.bignumber.eq(0);
+        });
+    });
+
+    describe('_areActionsWellFormed()', () => {
+        it('Returns false if no actions', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if there is an account index out of range in deposits', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                accounts: DYDX_CONFIG.accounts.slice(0, 2).map(a => a.accountId),
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(2),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if a market is not unique among deposits', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if no withdraw at the end', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if a withdraw comes before a deposit', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if more than one withdraw', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if withdraw is not for maker token', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Returns false if withdraw is for an out of range account', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                accounts: DYDX_CONFIG.accounts.slice(0, 2).map(a => a.accountId),
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(2),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.false();
+        });
+
+        it('Can return true if no deposit', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.true();
+        });
+
+        it('Can return true if no deposit', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.true();
+        });
+
+        it('Can return true with multiple deposits', async () => {
+            const checkInfo = createBalanceCheckInfo({
+                actions: [
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(0),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Deposit,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                    {
+                        actionType: DydxBridgeActionType.Withdraw,
+                        accountIdx: new BigNumber(0),
+                        marketId: new BigNumber(1),
+                        conversionRateNumerator: new BigNumber(0),
+                        conversionRateDenominator: new BigNumber(0),
+                    },
+                ],
+            });
+            const r = await testContract.areActionsWellFormed(checkInfo).callAsync();
+            expect(r).to.be.true();
+        });
+    });
+
+    function createERC20AssetData(tokenAddress: string): string {
+        return assetDataContract.ERC20Token(tokenAddress).getABIEncodedTransactionData();
+    }
+
+    function createERC721AssetData(tokenAddress: string, tokenId: BigNumber): string {
+        return assetDataContract.ERC721Token(tokenAddress, tokenId).getABIEncodedTransactionData();
+    }
+
+    function createBridgeAssetData(
+        makerTokenAddress_: string,
+        bridgeAddress: string,
+        data: Partial<DydxBridgeData> = {},
+    ): string {
+        return assetDataContract.ERC20Bridge(
+            makerTokenAddress_,
+            bridgeAddress,
+            dydxBridgeDataEncoder.encode({
+                bridgeData: {
+                    accountNumbers: DYDX_CONFIG.accounts.slice(0, 1).map(a => a.accountId),
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Deposit,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(0),
+                            conversionRateNumerator: fromTokenUnitAmount(1, TAKER_DECIMALS),
+                            conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                        },
+                        {
+                            actionType: DydxBridgeActionType.Withdraw,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(1),
+                            conversionRateNumerator: new BigNumber(0),
+                            conversionRateDenominator: new BigNumber(0),
+                        },
+                    ],
+                    ...data,
+                },
+            }),
+        ).getABIEncodedTransactionData();
+    }
+
+    function createOrder(orderFields: Partial<Order> = {}): Order {
+        return {
+            chainId: 1,
+            exchangeAddress: randomAddress(),
+            salt: getRandomInteger(1, constants.MAX_UINT256),
+            expirationTimeSeconds: getRandomInteger(1, constants.MAX_UINT256),
+            feeRecipientAddress: randomAddress(),
+            makerAddress: ACCOUNT_OWNER,
+            takerAddress: constants.NULL_ADDRESS,
+            senderAddress: constants.NULL_ADDRESS,
+            makerFee: getRandomInteger(1, constants.MAX_UINT256),
+            takerFee: getRandomInteger(1, constants.MAX_UINT256),
+            makerAssetAmount: fromTokenUnitAmount(100, TAKER_DECIMALS),
+            takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
+            makerAssetData: createBridgeAssetData(
+                makerTokenAddress,
+                BRIDGE_ADDRESS,
+            ),
+            takerAssetData: createERC20AssetData(takerTokenAddress),
+            makerFeeAssetData: constants.NULL_BYTES,
+            takerFeeAssetData: constants.NULL_BYTES,
+            ...orderFields,
+        };
+    }
+
+    describe('getDydxMakerBalance()', () => {
+        it('returns nonzero with valid order', async () => {
+            const order = createOrder();
+            const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
+            expect(r).to.not.bignumber.eq(0);
+        });
+
+        it('returns nonzero with valid order with an ERC721 taker asset', async () => {
+            const order = createOrder({
+                takerAssetData: createERC721AssetData(randomAddress(), getRandomInteger(1, constants.MAX_UINT256)),
+            });
+            const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
+            expect(r).to.not.bignumber.eq(0);
+        });
+
+        it('returns 0 if bridge is not a local operator', async () => {
+            const order = createOrder({
+                makerAssetData: createBridgeAssetData(ACCOUNT_OWNER, randomAddress()),
+            });
+            const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
+            expect(r).to.bignumber.eq(0);
+        });
+
+        it('returns 0 if bridge data does not have well-formed actions', async () => {
+            const order = createOrder({
+                makerAssetData: createBridgeAssetData(
+                    takerTokenAddress,
+                    BRIDGE_ADDRESS,
+                    {
+                        // Two withdraw actions is invalid.
+                        actions: [
+                            {
+                                actionType: DydxBridgeActionType.Withdraw,
+                                accountIdx: new BigNumber(0),
+                                marketId: new BigNumber(0),
+                                conversionRateNumerator: new BigNumber(0),
+                                conversionRateDenominator: new BigNumber(0),
+                            },
+                            {
+                                actionType: DydxBridgeActionType.Withdraw,
+                                accountIdx: new BigNumber(0),
+                                marketId: new BigNumber(1),
+                                conversionRateNumerator: new BigNumber(0),
+                                conversionRateDenominator: new BigNumber(0),
+                            },
+                        ],
+                    },
+                ),
+            });
+            const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
+            expect(r).to.bignumber.eq(0);
+        });
+
+        it('returns 0 if the maker token withdraw rate is < 1', async () => {
+            const order = createOrder({
+                makerAssetData: createBridgeAssetData(
+                    takerTokenAddress,
+                    BRIDGE_ADDRESS,
+                    {
+                        actions: [
+                            {
+                                actionType: DydxBridgeActionType.Withdraw,
+                                accountIdx: new BigNumber(0),
+                                marketId: new BigNumber(1),
+                                conversionRateNumerator: new BigNumber(9e18),
+                                conversionRateDenominator: new BigNumber(10e18),
+                            },
+                        ],
+                    },
+                ),
+            });
+            const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
+            expect(r).to.bignumber.eq(0);
         });
     });
 });
