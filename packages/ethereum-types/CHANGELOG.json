@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `linkReferences` to `EvmBytecodeOutput` and `EvmBytecodeOutputLinkReferences` type",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {

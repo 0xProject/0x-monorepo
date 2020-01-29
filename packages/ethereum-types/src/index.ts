@@ -620,8 +620,15 @@ export interface EvmOutput {
 }
 
 export interface EvmBytecodeOutput {
+    linkReferences: EvmBytecodeOutputLinkReferences;
     object: string;
     sourceMap: string;
+}
+
+export interface EvmBytecodeOutputLinkReferences {
+    [sourceFile: string]: {
+        [libraryName: string]: Array<{ start: number; length: number }>;
+    };
 }
 
 export interface DevdocOutput {
