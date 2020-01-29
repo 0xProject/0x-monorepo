@@ -19,6 +19,7 @@ export const hexUtils = {
     hash,
     size,
     toHex,
+    isHex,
 };
 
 /**
@@ -107,4 +108,11 @@ function toHex(n: Numberish, _size: number = WORD_LENGTH): string {
         ).plus(1).mod(WORD_CEIL);
     }
     return `0x${_n.toString(16)}`;
+}
+
+/**
+ * Check if a string is a hex string.
+ */
+function isHex(s: string): boolean {
+    return /^0x[0-9a-f]+$/i.test(s);
 }

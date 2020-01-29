@@ -5,6 +5,10 @@
             {
                 "note": "Add `toTokenUnitAmount` and `fromTokenUnitAmount`",
                 "pr": 2456
+            },
+            {
+                "note": "Add `hexUtils.isHex`",
+                "pr": 2456
             }
         ]
     },
