@@ -80,8 +80,8 @@ library LibDydxBalance {
         if (!_areActionsWellFormed(info)) {
             return 0;
         }
-        // If we withdraw maker tokens at rate < 1, the asset proxy will
-        // throw because we will always transfer less maker tokens than required.
+        // If the rate we withdraw maker tokens is < 1, the asset proxy will
+        // throw because we will always transfer less maker tokens than asked.
         if (_ltf(_getMakerTokenWithdrawRate(info), Fraction(1, 1))) {
             return 0;
         }
@@ -176,7 +176,7 @@ library LibDydxBalance {
         // Take the minimum maker amount from all deposits.
         for (uint256 i = 0; i < info.actions.length; ++i) {
             IDydxBridge.BridgeAction memory action = info.actions[i];
-            // Must be a deposit action.
+            // Only looking at deposit actions.
             if (action.actionType != IDydxBridge.BridgeActionType.Deposit) {
                 continue;
             }
@@ -185,14 +185,12 @@ library LibDydxBalance {
             // we reduce the effective deposit rate if we're depositing the taker
             // token.
             address depositToken = info.dydx.getMarketTokenAddress(action.marketId);
-            if (info.takerTokenAddress != address(0)) {
-                if (depositToken == info.takerTokenAddress) {
-                    // `depositRate = max(0, depositRate - makerToTakerRate)`
-                    if (_ltf(makerToTakerRate, depositRate)) {
-                        depositRate = _subf(depositRate, makerToTakerRate);
-                    } else {
-                        depositRate = Fraction(0, 1);
-                    }
+            if (info.takerTokenAddress != address(0) && depositToken == info.takerTokenAddress) {
+                // `depositRate = max(0, depositRate - makerToTakerRate)`
+                if (_ltf(makerToTakerRate, depositRate)) {
+                    depositRate = _subf(depositRate, makerToTakerRate);
+                } else {
+                    depositRate = Fraction(0, 1);
                 }
             }
             // If the deposit rate is > 0, we are limited by the transferrable
@@ -206,8 +204,8 @@ library LibDydxBalance {
                 depositableMakerAmount = LibSafeMath.min256(
                     depositableMakerAmount,
                     LibMath.getPartialAmountFloor(
-                        depositRate.n,
                         depositRate.d,
+                        depositRate.n,
                         supply
                     )
                 );
@@ -228,6 +226,7 @@ library LibDydxBalance {
         IDydxBridge.BridgeAction memory withdraw = info.actions[info.actions.length - 1];
         assert(withdraw.actionType == IDydxBridge.BridgeActionType.Withdraw);
         Fraction memory minCr = _getMinimumCollateralizationRatio(info.dydx);
+        // CR < 1 will cause math underflows.
         require(_gtef(minCr, Fraction(1, 1)), "DevUtils/MIN_CR_MUST_BE_GTE_ONE");
         // Loop through the accounts.
         for (uint256 accountIdx = 0; accountIdx < info.accounts.length; ++accountIdx) {
