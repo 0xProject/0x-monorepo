@@ -1,5 +1,5 @@
 import { AbiEncoder } from '@0x/utils';
-import { DataItem, MethodAbi } from 'ethereum-types';
+import { DataItem, EvmBytecodeOutput, MethodAbi } from 'ethereum-types';
 
 // tslint:disable-next-line:completed-docs
 export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: string, value: any) => any): any {
@@ -37,4 +37,31 @@ export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: s
 export function methodAbiToFunctionSignature(methodAbi: MethodAbi): string {
     const method = AbiEncoder.createMethod(methodAbi.name, methodAbi.inputs);
     return method.getSignature();
+}
+
+/**
+ * Replaces unliked library references in bytecode with real addresses
+ * and returns the bytecode.
+ */
+export function linkLibrariesInBytecode(
+    bytecodeArtifact: EvmBytecodeOutput,
+    libraryAddresses: { [libraryName: string]: string },
+): string {
+    let bytecode = bytecodeArtifact.object.substr(2);
+    for (const link of Object.values(bytecodeArtifact.linkReferences)) {
+        for (const [libraryName, libraryRefs] of Object.entries(link)) {
+            const libraryAddress = libraryAddresses[libraryName];
+            if (!libraryAddress) {
+                continue;
+            }
+            for (const ref of libraryRefs) {
+                bytecode = [
+                    bytecode.substring(0, ref.start * 2),
+                    libraryAddress.toLowerCase().substr(2),
+                    bytecode.substring((ref.start + ref.length) * 2),
+                ].join('');
+            }
+        }
+    }
+    return `0x${bytecode}`;
 }

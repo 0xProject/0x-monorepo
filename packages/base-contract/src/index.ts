@@ -30,7 +30,7 @@ import * as util from 'ethereumjs-util';
 import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
 
-export { methodAbiToFunctionSignature } from './utils';
+export { linkLibrariesInBytecode, methodAbiToFunctionSignature } from './utils';
 
 import { AwaitTransactionSuccessOpts } from './types';
 import { formatABIDataItem } from './utils';
@@ -362,6 +362,8 @@ export class BaseContract {
             // `deployedBytecode` might contain references to
             // unlinked libraries and, hence, would not be a hex string. We'll just
             // leave `_deployedBytecodeIfExists` empty if this is the case.
+            // TODO(dorothy-zbornak): We should link the `deployedBytecode`
+            // beforehand in the generated wrappers.
             try {
                 assert.isHexString('deployedBytecode', deployedBytecode);
                 this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
