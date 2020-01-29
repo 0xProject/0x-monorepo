@@ -11,6 +11,8 @@
         "generated-artifacts/LibOrder.json",
         "generated-artifacts/LibZeroExTransaction.json",
         "test/generated-artifacts/IWallet.json",
+        "test/generated-artifacts/LibAssetDataTransfer.json",
+        "test/generated-artifacts/LibAssetDataTransferRichErrors.json",
         "test/generated-artifacts/LibEIP712ExchangeDomain.json",
         "test/generated-artifacts/LibExchangeRichErrors.json",
         "test/generated-artifacts/LibFillResults.json",

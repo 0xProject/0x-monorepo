@@ -20,7 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange-forwarder/contracts/src/libs/LibAssetDataTransfer.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibAssetDataTransfer.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";

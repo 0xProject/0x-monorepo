@@ -9,12 +9,6 @@ export class UnregisteredAssetProxyError extends RevertError {
     }
 }
 
-export class UnsupportedAssetProxyError extends RevertError {
-    constructor(proxyId?: string) {
-        super('UnsupportedAssetProxyError', 'UnsupportedAssetProxyError(bytes4 proxyId)', { proxyId });
-    }
-}
-
 export class CompleteBuyFailedError extends RevertError {
     constructor(
         expectedAssetBuyAmount?: BigNumber | number | string,
@@ -67,14 +61,6 @@ export class MsgValueCannotEqualZeroError extends RevertError {
     }
 }
 
-export class Erc721AmountMustEqualOneError extends RevertError {
-    constructor(amount?: BigNumber | number | string) {
-        super('Erc721AmountMustEqualOneError', 'Erc721AmountMustEqualOneError(uint256 amount)', {
-            amount,
-        });
-    }
-}
-
 export class EthFeeLengthMismatchError extends RevertError {
     constructor(ethFeesLength?: BigNumber | number | string, feeRecipientsLength?: BigNumber | number | string) {
         super(
@@ -90,14 +76,12 @@ export class EthFeeLengthMismatchError extends RevertError {
 
 const types = [
     UnregisteredAssetProxyError,
-    UnsupportedAssetProxyError,
     CompleteBuyFailedError,
     UnsupportedFeeError,
     InsufficientEthForFeeError,
     OverspentWethError,
     DefaultFunctionWethContractOnlyError,
     MsgValueCannotEqualZeroError,
-    Erc721AmountMustEqualOneError,
     EthFeeLengthMismatchError,
 ];
 

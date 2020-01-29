@@ -26,7 +26,7 @@ import {
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { BigNumber, ExchangeForwarderRevertErrors, hexUtils } from '@0x/utils';
+import { BigNumber, hexUtils, LibAssetDataTransferRevertErrors } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import { artifacts } from './artifacts';
@@ -235,7 +235,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
             const tx = forwarder
                 .transferOut(erc721AssetData, invalidAmount)
                 .awaitTransactionSuccessAsync({ from: receiver });
-            const expectedError = new ExchangeForwarderRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
+            const expectedError = new LibAssetDataTransferRevertErrors.Erc721AmountMustEqualOneError(invalidAmount);
             return expect(tx).to.revertWith(expectedError);
         });
         it('transfers a single ERC1155 token', async () => {
@@ -365,7 +365,7 @@ blockchainTests.resets('Supported asset type unit tests', env => {
             const tx = forwarder
                 .transferOut(randomBytes, TRANSFER_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: receiver });
-            const expectedError = new ExchangeForwarderRevertErrors.UnsupportedAssetProxyError(
+            const expectedError = new LibAssetDataTransferRevertErrors.UnsupportedAssetProxyError(
                 hexUtils.slice(randomBytes, 0, 4),
             );
             return expect(tx).to.revertWith(expectedError);

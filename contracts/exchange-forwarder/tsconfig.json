@@ -10,7 +10,6 @@
         "test/generated-artifacts/IExchangeV2.json",
         "test/generated-artifacts/IForwarder.json",
         "test/generated-artifacts/IForwarderCore.json",
-        "test/generated-artifacts/LibAssetDataTransfer.json",
         "test/generated-artifacts/LibConstants.json",
         "test/generated-artifacts/LibForwarderRichErrors.json",
         "test/generated-artifacts/MixinAssets.json",

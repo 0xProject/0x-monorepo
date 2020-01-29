@@ -5,6 +5,10 @@
             {
                 "note": "Added Broker revert errors",
                 "pr": 2455
+            },
+            {
+                "note": "Moved LibAssetDataTransfer revert errors into their own file",
+                "pr": 2455
             }
         ]
     },

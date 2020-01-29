@@ -8,7 +8,7 @@ export {
     LibOrderContract,
     LibZeroExTransactionContract,
 } from './wrappers';
-export { LibMathRevertErrors } from '@0x/utils';
+export { LibAssetDataTransferRevertErrors, LibMathRevertErrors } from '@0x/utils';
 
 import * as ReferenceFunctionsToExport from './reference_functions';
 export import ReferenceFunctions = ReferenceFunctionsToExport;

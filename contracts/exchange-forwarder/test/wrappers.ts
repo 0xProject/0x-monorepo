@@ -8,7 +8,6 @@ export * from '../test/generated-wrappers/i_assets';
 export * from '../test/generated-wrappers/i_exchange_v2';
 export * from '../test/generated-wrappers/i_forwarder';
 export * from '../test/generated-wrappers/i_forwarder_core';
-export * from '../test/generated-wrappers/lib_asset_data_transfer';
 export * from '../test/generated-wrappers/lib_constants';
 export * from '../test/generated-wrappers/lib_forwarder_rich_errors';
 export * from '../test/generated-wrappers/mixin_assets';

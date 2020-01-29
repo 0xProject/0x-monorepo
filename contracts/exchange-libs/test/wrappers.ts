@@ -4,6 +4,8 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../test/generated-wrappers/i_wallet';
+export * from '../test/generated-wrappers/lib_asset_data_transfer';
+export * from '../test/generated-wrappers/lib_asset_data_transfer_rich_errors';
 export * from '../test/generated-wrappers/lib_e_i_p712_exchange_domain';
 export * from '../test/generated-wrappers/lib_exchange_rich_errors';
 export * from '../test/generated-wrappers/lib_fill_results';

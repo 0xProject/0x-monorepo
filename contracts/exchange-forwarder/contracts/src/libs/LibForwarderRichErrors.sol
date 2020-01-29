@@ -25,10 +25,6 @@ library LibForwarderRichErrors {
     bytes4 internal constant UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR =
         0xf3b96b8d;
 
-    // bytes4(keccak256("UnsupportedAssetProxyError(bytes4)"))
-    bytes4 internal constant UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR =
-        0x7996a271;
-
     // bytes4(keccak256("CompleteBuyFailedError(uint256,uint256)"))
     bytes4 internal constant COMPLETE_BUY_FAILED_ERROR_SELECTOR =
         0x91353a0c;
@@ -49,10 +45,6 @@ library LibForwarderRichErrors {
     bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
         0x08b18698;
 
-    // bytes4(keccak256("Erc721AmountMustEqualOneError(uint256)"))
-    bytes4 internal constant ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR =
-        0xbaffa474;
-    
     // bytes4(keccak256("EthFeeLengthMismatchError(uint256,uint256)"))
     bytes4 internal constant ETH_FEE_LENGTH_MISMATCH_ERROR_SELECTOR =
         0x3ecb6ceb;
@@ -64,19 +56,6 @@ library LibForwarderRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR);
-    }
-
-    function UnsupportedAssetProxyError(
-        bytes4 proxyId
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR,
-            proxyId
-        );
     }
 
     function CompleteBuyFailedError(
@@ -147,19 +126,6 @@ library LibForwarderRichErrors {
         return abi.encodeWithSelector(
             DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR,
             senderAddress
-        );
-    }
-
-    function Erc721AmountMustEqualOneError(
-        uint256 amount
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR,
-            amount
         );
     }
 

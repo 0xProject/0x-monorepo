@@ -19,9 +19,9 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibAssetDataTransfer.sol";
 import "../src/MixinExchangeWrapper.sol";
 import "../src/libs/LibConstants.sol";
-import "../src/libs/LibAssetDataTransfer.sol";
 import "../src/MixinReceiver.sol";
 
 

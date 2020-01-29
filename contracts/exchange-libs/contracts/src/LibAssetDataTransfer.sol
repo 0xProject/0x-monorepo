@@ -26,7 +26,7 @@ import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
-import "./LibForwarderRichErrors.sol";
+import "./LibAssetDataTransferRichErrors.sol";
 
 
 library LibAssetDataTransfer {
@@ -82,7 +82,7 @@ library LibAssetDataTransfer {
                 amount
             );
         } else if (proxyId != IAssetData(address(0)).StaticCall.selector) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
+            LibRichErrors.rrevert(LibAssetDataTransferRichErrors.UnsupportedAssetProxyError(
                 proxyId
             ));
         }
@@ -165,7 +165,7 @@ library LibAssetDataTransfer {
         internal
     {
         if (amount != 1) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.Erc721AmountMustEqualOneError(
+            LibRichErrors.rrevert(LibAssetDataTransferRichErrors.Erc721AmountMustEqualOneError(
                 amount
             ));
         }
