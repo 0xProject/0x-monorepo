@@ -22,6 +22,9 @@ pragma experimental ABIEncoderV2;
 
 interface IPropertyValidator {
 
+    /// @dev Checks that the given asset data satisfies the properties encoded in `propertyData`.
+    /// @param assetData The encoded asset to check.
+    /// @param propertyData Encoded properties or auxiliary data needed to perform the check.
     function checkBrokerAsset(
         bytes calldata assetData,
         bytes calldata propertyData

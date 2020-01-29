@@ -37,6 +37,9 @@ contract GodsUnchainedValidator is
         GODS_UNCHAINED = IGodsUnchained(_godsUnchained);
     }
 
+    /// @dev Checks that the given card (encoded as assetData) has the proto and quality encoded in `propertyData`.
+    /// @param assetData The card (encoded as ERC721 assetData) to check.
+    /// @param propertyData Encoded proto and quality that the card is expected to have.
     function checkBrokerAsset(
         bytes calldata assetData,
         bytes calldata propertyData

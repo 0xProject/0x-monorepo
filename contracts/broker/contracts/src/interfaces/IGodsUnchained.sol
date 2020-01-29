@@ -22,6 +22,10 @@ pragma experimental ABIEncoderV2;
 
 interface IGodsUnchained {
 
+    /// @dev Returns the proto and quality for a particular card given its token id
+    /// @param tokenId The id of the card to query.
+    /// @return proto The proto of the given card.
+    /// @return quality The quality of the given card
     function getDetails(uint256 tokenId)
         external
         view
