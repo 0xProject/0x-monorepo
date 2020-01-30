@@ -228,7 +228,7 @@ contract ExternalFunctions is
             bytes32 expectedReturnDataHash
         )
     {
-        LibAssetData.decodeStaticCallAssetData(assetData);
+        return LibAssetData.decodeStaticCallAssetData(assetData);
     }
 
     /// @dev Decode ERC20Bridge asset data from the format described in the AssetProxy contract specification.
@@ -270,7 +270,7 @@ contract ExternalFunctions is
         public
         returns (LibOrderTransferSimulation.OrderTransferResults orderTransferResults)
     {
-        return LibOrderTransferSimulation.getSimulatedOrderTransferResults(
+        return LibOrderTransferSimulation.getSimulatedOrderMakerTransferResults(
             exchangeAddress,
             order,
             takerAddress,
@@ -296,6 +296,27 @@ contract ExternalFunctions is
             order,
             takerAddress,
             takerAssetFillAmount
+        );
+    }
+
+    /// @dev Simulates all of the transfers for each given order and returns the indices of each first failed transfer.
+    /// @param orders Array of orders to individually simulate transfers for.
+    /// @param takerAddresses Array of addresses of takers that will fill each order.
+    /// @param takerAssetFillAmounts Array of amounts of takerAsset that will be filled for each order.
+    /// @return The indices of the first failed transfer (or 4 if all transfers are successful) for each order.
+    function getSimulatedOrdersTransferResults(
+        LibOrder.Order[] memory orders,
+        address[] memory takerAddresses,
+        uint256[] memory takerAssetFillAmounts
+    )
+        public
+        returns (LibOrderTransferSimulation.OrderTransferResults[] memory orderTransferResults)
+    {
+        return LibOrderTransferSimulation.getSimulatedOrdersTransferResults(
+            exchangeAddress,
+            orders,
+            takerAddresses,
+            takerAssetFillAmounts
         );
     }
 }
