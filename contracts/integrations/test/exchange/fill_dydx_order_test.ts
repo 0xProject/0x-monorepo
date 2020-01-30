@@ -28,14 +28,14 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
     let testTokenAddress: string;
     const defaultDepositAction = {
         actionType: DydxBridgeActionType.Deposit as number,
-        accountId: constants.ZERO_AMOUNT,
+        accountIdx: constants.ZERO_AMOUNT,
         marketId,
         conversionRateNumerator: dydxConversionRateNumerator,
         conversionRateDenominator: dydxConversionRateDenominator,
     };
     const defaultWithdrawAction = {
         actionType: DydxBridgeActionType.Withdraw as number,
-        accountId: constants.ZERO_AMOUNT,
+        accountIdx: constants.ZERO_AMOUNT,
         marketId,
         conversionRateNumerator: constants.ZERO_AMOUNT,
         conversionRateDenominator: constants.ZERO_AMOUNT,

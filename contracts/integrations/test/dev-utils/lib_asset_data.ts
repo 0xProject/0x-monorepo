@@ -236,9 +236,8 @@ blockchainTests.resets('LibAssetData', env => {
 
         it('should revert for invalid assetProxyId', async () => {
             const badAssetData = `0x${crypto.randomBytes(4).toString('hex')}${constants.NULL_ADDRESS}`;
-            await expect(devUtils.revertIfInvalidAssetData(badAssetData).callAsync()).to.eventually.be.rejectedWith(
-                StringRevertError,
-            );
+            await expect(devUtils.revertIfInvalidAssetData(badAssetData).callAsync())
+                .to.revertWith('WRONG_PROXY_ID');
         });
 
         it('should revert for invalid assetData with valid assetProxyId', async () => {
@@ -247,9 +246,8 @@ blockchainTests.resets('LibAssetData', env => {
 
             for (const data of assetData) {
                 const badData = data.substring(0, data.length - 2); // drop one byte but retain assetProxyId
-                await expect(devUtils.revertIfInvalidAssetData(badData).callAsync()).to.eventually.be.rejectedWith(
-                    LibBytesRevertErrors.InvalidByteOperationError,
-                );
+                await expect(devUtils.revertIfInvalidAssetData(badData).callAsync())
+                    .to.revertWith(new LibBytesRevertErrors.InvalidByteOperationError());
             }
         });
     });

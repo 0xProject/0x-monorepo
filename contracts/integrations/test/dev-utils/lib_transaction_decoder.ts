@@ -1,14 +1,8 @@
-import { ExchangeContract } from '@0x/contracts-exchange';
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
+import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 
 import { artifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
-
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const order = {
     makerAddress: '0xe36ea790bc9d7ab70c55260c66d52b1eca985f84',
@@ -30,24 +24,27 @@ const takerAssetFillAmount = new BigNumber('100000000000000000000');
 const signature =
     '0x1ce8e3c600d933423172b5021158a6be2e818613ff8e762d70ef490c752fd98a626a215f09f169668990414de75a53da221c294a3002f796d004827258b641876e03';
 
-describe('LibTransactionDecoder', () => {
+blockchainTests('LibTransactionDecoder', env => {
     let devUtils: DevUtilsContract;
-    const exchangeInterface = new ExchangeContract(constants.NULL_ADDRESS, provider, txDefaults);
+    const exchangeInterface = new ExchangeContract(constants.NULL_ADDRESS, { isEIP1193: true } as any);
     before(async () => {
-        await blockchainLifecycle.startAsync();
+        const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.Exchange,
+            env.provider,
+            env.txDefaults,
+            exchangeArtifacts,
+            new BigNumber(1),
+        );
         devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
             artifacts.DevUtils,
             artifacts,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
-            constants.NULL_ADDRESS,
+            exchange.address,
             constants.NULL_ADDRESS,
             constants.NULL_ADDRESS,
         );
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
     });
 
     it('should decode an Exchange.batchCancelOrders() transaction', async () => {
