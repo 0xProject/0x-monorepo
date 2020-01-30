@@ -1,5 +1,5 @@
 // tslint:disable: max-file-line-count
-import { IAssetDataContract } from '@0x/contracts-asset-proxy';
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import {
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -48,7 +48,6 @@ blockchainTests.resets('Transaction integration tests', env => {
             numErc721TokensToDeploy: 0,
             numErc1155TokensToDeploy: 0,
         });
-        const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
         const [makerToken, takerToken, makerFeeToken, takerFeeToken] = deployment.tokens.erc20;
 
         takers = [new Taker({ name: 'Taker 1', deployment }), new Taker({ name: 'Taker 2', deployment })];
@@ -61,10 +60,10 @@ blockchainTests.resets('Transaction integration tests', env => {
             deployment,
             orderConfig: {
                 feeRecipientAddress: feeRecipient.address,
-                makerAssetData: assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData(),
-                takerAssetData: assetDataEncoder.ERC20Token(takerToken.address).getABIEncodedTransactionData(),
-                makerFeeAssetData: assetDataEncoder.ERC20Token(makerFeeToken.address).getABIEncodedTransactionData(),
-                takerFeeAssetData: assetDataEncoder.ERC20Token(takerFeeToken.address).getABIEncodedTransactionData(),
+                makerAssetData: encodeERC20AssetData(makerToken.address),
+                takerAssetData: encodeERC20AssetData(takerToken.address),
+                makerFeeAssetData: encodeERC20AssetData(makerFeeToken.address),
+                takerFeeAssetData: encodeERC20AssetData(takerFeeToken.address),
             },
         });
         sender = new Actor({ name: 'Transaction sender', deployment });

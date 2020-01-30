@@ -1,4 +1,11 @@
-import { artifacts as assetProxyArtifacts, TestStaticCallTargetContract } from '@0x/contracts-asset-proxy';
+import {
+    artifacts as assetProxyArtifacts,
+    encodeERC20AssetData,
+    encodeERC721AssetData,
+    encodeMultiAssetData,
+    encodeStaticCallAssetData,
+    TestStaticCallTargetContract,
+} from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
@@ -63,24 +70,18 @@ blockchainTests('Forwarder integration tests', env => {
 
         [makerToken, makerFeeToken, anotherErc20Token] = deployment.tokens.erc20;
         [erc721Token] = deployment.tokens.erc721;
-        wethAssetData = deployment.assetDataEncoder
-            .ERC20Token(deployment.tokens.weth.address)
-            .getABIEncodedTransactionData();
-        makerAssetData = deployment.assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData();
-        staticCallSuccessAssetData = deployment.assetDataEncoder
-            .StaticCall(
-                staticCallTarget.address,
-                staticCallTarget.assertEvenNumber(new BigNumber(2)).getABIEncodedTransactionData(),
-                constants.KECCAK256_NULL,
-            )
-            .getABIEncodedTransactionData();
-        staticCallFailureAssetData = deployment.assetDataEncoder
-            .StaticCall(
-                staticCallTarget.address,
-                staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData(),
-                constants.KECCAK256_NULL,
-            )
-            .getABIEncodedTransactionData();
+        wethAssetData = encodeERC20AssetData(deployment.tokens.weth.address);
+        makerAssetData = encodeERC20AssetData(makerToken.address);
+        staticCallSuccessAssetData = encodeStaticCallAssetData(
+            staticCallTarget.address,
+            staticCallTarget.assertEvenNumber(new BigNumber(2)).getABIEncodedTransactionData(),
+            constants.KECCAK256_NULL,
+        );
+        staticCallFailureAssetData = encodeStaticCallAssetData(
+            staticCallTarget.address,
+            staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData(),
+            constants.KECCAK256_NULL,
+        );
 
         taker = new Taker({ name: 'Taker', deployment });
         orderFeeRecipient = new FeeRecipient({
@@ -101,9 +102,7 @@ blockchainTests('Forwarder integration tests', env => {
                 makerAssetData,
                 takerAssetData: wethAssetData,
                 takerFee: constants.ZERO_AMOUNT,
-                makerFeeAssetData: deployment.assetDataEncoder
-                    .ERC20Token(makerFeeToken.address)
-                    .getABIEncodedTransactionData(),
+                makerFeeAssetData: encodeERC20AssetData(makerFeeToken.address),
                 takerFeeAssetData: wethAssetData,
             },
         });
@@ -193,9 +192,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync(orders, 1.34);
         });
         it('should fail to fill an order with a percentage fee if the asset proxy is not yet approved', async () => {
-            const unapprovedAsset = deployment.assetDataEncoder
-                .ERC20Token(anotherErc20Token.address)
-                .getABIEncodedTransactionData();
+            const unapprovedAsset = encodeERC20AssetData(anotherErc20Token.address);
             const order = await maker.signOrderAsync({
                 makerAssetData: unapprovedAsset,
                 takerFee: toBaseUnitAmount(2),
@@ -257,9 +254,7 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should fill orders with different makerAssetData', async () => {
             const firstOrder = await maker.signOrderAsync();
-            const secondOrderMakerAssetData = deployment.assetDataEncoder
-                .ERC20Token(anotherErc20Token.address)
-                .getABIEncodedTransactionData();
+            const secondOrderMakerAssetData = encodeERC20AssetData(anotherErc20Token.address);
             const secondOrder = await maker.signOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
@@ -268,9 +263,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync(orders, 1.5);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = deployment.assetDataEncoder
-                .ERC20Token(anotherErc20Token.address)
-                .getABIEncodedTransactionData();
+            const takerFeeAssetData = encodeERC20AssetData(anotherErc20Token.address);
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
@@ -336,9 +329,7 @@ blockchainTests('Forwarder integration tests', env => {
             });
         }
         it('should fill an order with multiAsset makerAssetData', async () => {
-            const multiAssetData = deployment.assetDataEncoder
-                .MultiAsset([new BigNumber(2)], [makerAssetData])
-                .getABIEncodedTransactionData();
+            const multiAssetData = encodeMultiAssetData([new BigNumber(2)], [makerAssetData]);
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -346,9 +337,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should fill an order with multiAsset makerAssetData (nested StaticCall succeeds)', async () => {
-            const multiAssetData = deployment.assetDataEncoder
-                .MultiAsset([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallSuccessAssetData])
-                .getABIEncodedTransactionData();
+            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallSuccessAssetData]);
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -356,9 +345,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should skip over an order with multiAsset makerAssetData where the nested StaticCall fails', async () => {
-            const multiAssetData = deployment.assetDataEncoder
-                .MultiAsset([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallFailureAssetData])
-                .getABIEncodedTransactionData();
+            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallFailureAssetData]);
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -473,9 +460,7 @@ blockchainTests('Forwarder integration tests', env => {
         });
         it('should buy exactly makerAssetBuyAmount in orders with different makerAssetData', async () => {
             const firstOrder = await maker.signOrderAsync();
-            const secondOrderMakerAssetData = deployment.assetDataEncoder
-                .ERC20Token(anotherErc20Token.address)
-                .getABIEncodedTransactionData();
+            const secondOrderMakerAssetData = encodeERC20AssetData(anotherErc20Token.address);
             const secondOrder = await maker.signOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
@@ -524,9 +509,7 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset from a single order', async () => {
             const erc721Order = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: deployment.assetDataEncoder
-                    .ERC721Token(erc721Token.address, nftId)
-                    .getABIEncodedTransactionData(),
+                makerAssetData: encodeERC721AssetData(erc721Token.address, nftId),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721Order], 1);
@@ -534,18 +517,14 @@ blockchainTests('Forwarder integration tests', env => {
         it('should buy an ERC721 asset and pay a WETH fee', async () => {
             const erc721orderWithWethFee = await maker.signOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: deployment.assetDataEncoder
-                    .ERC721Token(erc721Token.address, nftId)
-                    .getABIEncodedTransactionData(),
+                makerAssetData: encodeERC721AssetData(erc721Token.address, nftId),
                 takerFee: toBaseUnitAmount(1),
                 takerFeeAssetData: wethAssetData,
             });
             await testFactory.marketBuyTestAsync([erc721orderWithWethFee], 1);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const takerFeeAssetData = deployment.assetDataEncoder
-                .ERC20Token(anotherErc20Token.address)
-                .getABIEncodedTransactionData();
+            const takerFeeAssetData = encodeERC20AssetData(anotherErc20Token.address);
             const order = await maker.signOrderAsync({
                 takerFeeAssetData,
                 takerFee: toBaseUnitAmount(1),
@@ -709,9 +688,7 @@ blockchainTests('Forwarder integration tests', env => {
             });
         }
         it('should fill an order with multiAsset makerAssetData', async () => {
-            const multiAssetData = deployment.assetDataEncoder
-                .MultiAsset([new BigNumber(2)], [makerAssetData])
-                .getABIEncodedTransactionData();
+            const multiAssetData = encodeMultiAssetData([new BigNumber(2)], [makerAssetData]);
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -719,9 +696,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketBuyTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should fill an order with multiAsset makerAssetData (nested StaticCall succeeds)', async () => {
-            const multiAssetData = deployment.assetDataEncoder
-                .MultiAsset([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallSuccessAssetData])
-                .getABIEncodedTransactionData();
+            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallSuccessAssetData]);
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -729,9 +704,7 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketBuyTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should skip over an order with multiAsset makerAssetData where the nested StaticCall fails', async () => {
-            const multiAssetData = deployment.assetDataEncoder
-                .MultiAsset([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallFailureAssetData])
-                .getABIEncodedTransactionData();
+            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallFailureAssetData]);
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });

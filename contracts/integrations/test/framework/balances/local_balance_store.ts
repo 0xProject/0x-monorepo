@@ -1,6 +1,13 @@
-import { IAssetDataContract } from '@0x/contracts-asset-proxy';
+import {
+    decodeERC1155AssetData,
+    decodeERC20AssetData,
+    decodeERC20BridgeAssetData,
+    decodeERC721AssetData,
+    decodeMultiAssetData,
+    encodeERC20AssetData,
+} from '@0x/contracts-asset-proxy';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { constants, Numberish, provider } from '@0x/contracts-test-utils';
+import { constants, Numberish } from '@0x/contracts-test-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -12,8 +19,6 @@ import { BalanceStore } from './balance_store';
 import { TokenContractsByName, TokenOwnersByName } from './types';
 
 export class LocalBalanceStore extends BalanceStore {
-    private readonly _assetDataDecoder: IAssetDataContract;
-
     /**
      * Creates a new balance store based on an existing one.
      * @param sourceBalanceStore Existing balance store whose values should be copied.
@@ -36,7 +41,6 @@ export class LocalBalanceStore extends BalanceStore {
         tokenContractsByName: Partial<TokenContractsByName> = {},
     ) {
         super(tokenOwnersByName, tokenContractsByName);
-        this._assetDataDecoder = new IAssetDataContract(constants.NULL_ADDRESS, provider);
     }
 
     /**
@@ -86,10 +90,7 @@ export class LocalBalanceStore extends BalanceStore {
         const assetProxyId = hexUtils.slice(assetData, 0, 4);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
-                const tokenAddress = this._assetDataDecoder.getABIDecodedTransactionData<string>(
-                    'ERC20Token',
-                    assetData,
-                );
+                const tokenAddress = decodeERC20AssetData(assetData);
                 _.update(this.balances.erc20, [fromAddress, tokenAddress], balance => balance.minus(amount));
                 _.update(this.balances.erc20, [toAddress, tokenAddress], balance =>
                     (balance || constants.ZERO_AMOUNT).plus(amount),
@@ -97,10 +98,7 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             }
             case AssetProxyId.ERC20Bridge: {
-                const [tokenAddress] = this._assetDataDecoder.getABIDecodedTransactionData<[string]>(
-                    'ERC20Bridge',
-                    assetData,
-                );
+                const [tokenAddress] = decodeERC20BridgeAssetData(assetData);
                 // The test bridge contract (TestEth2DaiBridge or TestUniswapBridge) will be the
                 // fromAddress in this case, and it simply mints the amount of token it needs to transfer.
                 _.update(this.balances.erc20, [fromAddress, tokenAddress], balance =>
@@ -112,9 +110,7 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             }
             case AssetProxyId.ERC721: {
-                const [tokenAddress, tokenId] = this._assetDataDecoder.getABIDecodedTransactionData<
-                    [string, BigNumber]
-                >('ERC721Token', assetData);
+                const [tokenAddress, tokenId] = decodeERC721AssetData(assetData);
                 const fromTokens = _.get(this.balances.erc721, [fromAddress, tokenAddress], []);
                 const toTokens = _.get(this.balances.erc721, [toAddress, tokenAddress], []);
                 if (amount.gte(1)) {
@@ -130,9 +126,7 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             }
             case AssetProxyId.ERC1155: {
-                const [tokenAddress, tokenIds, tokenValues] = this._assetDataDecoder.getABIDecodedTransactionData<
-                    [string, BigNumber[], BigNumber[]]
-                >('ERC1155Assets', assetData);
+                const [tokenAddress, tokenIds, tokenValues] = decodeERC1155AssetData(assetData);
                 const fromBalances = {
                     // tslint:disable-next-line:no-inferred-empty-object-type
                     fungible: _.get(this.balances.erc1155, [fromAddress, tokenAddress, 'fungible'], {}),
@@ -169,9 +163,7 @@ export class LocalBalanceStore extends BalanceStore {
                 break;
             }
             case AssetProxyId.MultiAsset: {
-                const [amounts, nestedAssetData] = this._assetDataDecoder.getABIDecodedTransactionData<
-                    [BigNumber[], string[]]
-                >('MultiAsset', assetData);
+                const [amounts, nestedAssetData] = decodeMultiAssetData(assetData);
                 for (const [i, amt] of amounts.entries()) {
                     const nestedAmount = amount.times(amt);
                     this.transferAsset(fromAddress, toAddress, nestedAmount, nestedAssetData[i]);
@@ -245,9 +237,7 @@ export class LocalBalanceStore extends BalanceStore {
                     takerAddress,
                     deployment.staking.stakingProxy.address,
                     fillResults.protocolFeePaid,
-                    deployment.assetDataEncoder
-                        .ERC20Token(deployment.tokens.weth.address)
-                        .getABIEncodedTransactionData(),
+                    encodeERC20AssetData(deployment.tokens.weth.address),
                 );
             }
         }

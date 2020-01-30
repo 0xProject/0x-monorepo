@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { ExchangeEvents, ExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
@@ -58,14 +59,10 @@ blockchainTests.resets('fillOrder integration tests', env => {
         });
         const orderConfig = {
             feeRecipientAddress: feeRecipient.address,
-            makerAssetData: deployment.assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData(),
-            takerAssetData: deployment.assetDataEncoder.ERC20Token(takerToken.address).getABIEncodedTransactionData(),
-            makerFeeAssetData: deployment.assetDataEncoder
-                .ERC20Token(makerToken.address)
-                .getABIEncodedTransactionData(),
-            takerFeeAssetData: deployment.assetDataEncoder
-                .ERC20Token(takerToken.address)
-                .getABIEncodedTransactionData(),
+            makerAssetData: encodeERC20AssetData(makerToken.address),
+            takerAssetData: encodeERC20AssetData(takerToken.address),
+            makerFeeAssetData: encodeERC20AssetData(makerToken.address),
+            takerFeeAssetData: encodeERC20AssetData(takerToken.address),
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
         };
@@ -271,7 +268,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
-            deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
+            encodeERC20AssetData(deployment.tokens.weth.address),
         );
         expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
         await balanceStore.updateBalancesAsync();
@@ -354,7 +351,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
             deployment.staking.stakingProxy.address,
             operator.address,
             operatorReward,
-            deployment.assetDataEncoder.ERC20Token(deployment.tokens.weth.address).getABIEncodedTransactionData(),
+            encodeERC20AssetData(deployment.tokens.weth.address),
         );
         expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
         await balanceStore.updateBalancesAsync();

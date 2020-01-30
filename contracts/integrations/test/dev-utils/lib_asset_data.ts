@@ -7,7 +7,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, hexUtils, LibBytesRevertErrors, StringRevertError } from '@0x/utils';
+import { BigNumber, hexUtils, LibBytesRevertErrors } from '@0x/utils';
 
 import { Actor } from '../framework/actors/base';
 import { DeploymentManager } from '../framework/deployment_manager';

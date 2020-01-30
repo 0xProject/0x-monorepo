@@ -1,4 +1,4 @@
-import { IAssetDataContract } from '@0x/contracts-asset-proxy';
+import { encodeERC20AssetData, encodeERC20BridgeAssetData, encodeERC721AssetData } from '@0x/contracts-asset-proxy';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { blockchainTests, constants, getLatestBlockTimestampAsync, toBaseUnitAmount } from '@0x/contracts-test-utils';
@@ -26,7 +26,6 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
     let testFactory: ForwarderTestFactory;
 
     let forwarder: ForwarderContract;
-    let assetDataEncoder: IAssetDataContract;
     let eth2Dai: TestEth2DaiContract;
     let uniswapExchange: TestUniswapExchangeContract;
 
@@ -46,7 +45,6 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
     let uniswapBridgeOrder: SignedOrder;
 
     before(async () => {
-        assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
         deployment = await DeploymentManager.deployAsync(env, {
             numErc20TokensToDeploy: 2,
             numErc721TokensToDeploy: 1,
@@ -63,20 +61,14 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
         const [uniswapBridge] = uniswapContracts;
         [, [uniswapExchange]] = uniswapContracts;
 
-        makerTokenAssetData = assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData();
-        makerFeeTokenAssetData = assetDataEncoder.ERC20Token(makerFeeToken.address).getABIEncodedTransactionData();
-        const wethAssetData = assetDataEncoder
-            .ERC20Token(deployment.tokens.weth.address)
-            .getABIEncodedTransactionData();
+        makerTokenAssetData = encodeERC20AssetData(makerToken.address);
+        makerFeeTokenAssetData = encodeERC20AssetData(makerFeeToken.address);
+        const wethAssetData = encodeERC20AssetData(deployment.tokens.weth.address);
 
         const bridgeDataEncoder = AbiEncoder.create([{ name: 'fromTokenAddress', type: 'address' }]);
         const bridgeData = bridgeDataEncoder.encode([deployment.tokens.weth.address]);
-        eth2DaiBridgeAssetData = assetDataEncoder
-            .ERC20Bridge(makerToken.address, eth2DaiBridge.address, bridgeData)
-            .getABIEncodedTransactionData();
-        uniswapBridgeAssetData = assetDataEncoder
-            .ERC20Bridge(makerToken.address, uniswapBridge.address, bridgeData)
-            .getABIEncodedTransactionData();
+        eth2DaiBridgeAssetData = encodeERC20BridgeAssetData(makerToken.address, eth2DaiBridge.address, bridgeData);
+        uniswapBridgeAssetData = encodeERC20BridgeAssetData(makerToken.address, uniswapBridge.address, bridgeData);
 
         taker = new Taker({ name: 'Taker', deployment });
         orderFeeRecipient = new FeeRecipient({
@@ -185,9 +177,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 // ERC721 order
                 await maker.signOrderAsync({
                     makerAssetAmount: new BigNumber(1),
-                    makerAssetData: assetDataEncoder
-                        .ERC721Token(erc721Token.address, nftId)
-                        .getABIEncodedTransactionData(),
+                    makerAssetData: encodeERC721AssetData(erc721Token.address, nftId),
                     takerFee: toBaseUnitAmount(0.01),
                 }),
                 eth2DaiBridgeOrder,
@@ -229,9 +219,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 // ERC721 order
                 await maker.signOrderAsync({
                     makerAssetAmount: new BigNumber(1),
-                    makerAssetData: assetDataEncoder
-                        .ERC721Token(erc721Token.address, nftId)
-                        .getABIEncodedTransactionData(),
+                    makerAssetData: encodeERC721AssetData(erc721Token.address, nftId),
                     takerFee: toBaseUnitAmount(0.01),
                 }),
                 uniswapBridgeOrder,
@@ -287,9 +275,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 // ERC721 order
                 await maker.signOrderAsync({
                     makerAssetAmount: new BigNumber(1),
-                    makerAssetData: assetDataEncoder
-                        .ERC721Token(erc721Token.address, nftId)
-                        .getABIEncodedTransactionData(),
+                    makerAssetData: encodeERC721AssetData(erc721Token.address, nftId),
                     takerFee: toBaseUnitAmount(0.01),
                 }),
                 eth2DaiBridgeOrder,
@@ -341,9 +327,7 @@ blockchainTests.resets('Forwarder <> ERC20Bridge integration tests', env => {
                 // ERC721 order
                 await maker.signOrderAsync({
                     makerAssetAmount: new BigNumber(1),
-                    makerAssetData: assetDataEncoder
-                        .ERC721Token(erc721Token.address, nftId)
-                        .getABIEncodedTransactionData(),
+                    makerAssetData: encodeERC721AssetData(erc721Token.address, nftId),
                     takerFee: toBaseUnitAmount(0.01),
                 }),
                 uniswapBridgeOrder,

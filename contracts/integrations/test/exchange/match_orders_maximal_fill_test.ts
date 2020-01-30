@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ExchangeRevertErrors } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
@@ -66,13 +67,9 @@ blockchainTests.resets('matchOrdersWithMaximalFill integration tests', env => {
         });
 
         // Encode the asset data.
-        makerAssetDataLeft = deployment.assetDataEncoder
-            .ERC20Token(makerAssetLeft.address)
-            .getABIEncodedTransactionData();
-        makerAssetDataRight = deployment.assetDataEncoder
-            .ERC20Token(makerAssetRight.address)
-            .getABIEncodedTransactionData();
-        feeAssetData = deployment.assetDataEncoder.ERC20Token(feeAsset.address).getABIEncodedTransactionData();
+        makerAssetDataLeft = encodeERC20AssetData(makerAssetLeft.address);
+        makerAssetDataRight = encodeERC20AssetData(makerAssetRight.address);
+        feeAssetData = encodeERC20AssetData(feeAsset.address);
 
         // Create two market makers with compatible orders for matching.
         makerLeft = new Maker({
@@ -1010,9 +1007,7 @@ blockchainTests.resets('matchOrdersWithMaximalFill integration tests', env => {
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await makerRight.signOrderAsync({
-                takerAssetData: deployment.assetDataEncoder
-                    .ERC20Token(makerAssetRight.address)
-                    .getABIEncodedTransactionData(),
+                takerAssetData: encodeERC20AssetData(makerAssetRight.address),
                 makerAssetAmount: toBaseUnitAmount(10, 18),
                 takerAssetAmount: toBaseUnitAmount(2, 18),
             });
@@ -1046,9 +1041,7 @@ blockchainTests.resets('matchOrdersWithMaximalFill integration tests', env => {
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await makerLeft.signOrderAsync({
-                takerAssetData: deployment.assetDataEncoder
-                    .ERC20Token(makerAssetLeft.address)
-                    .getABIEncodedTransactionData(),
+                takerAssetData: encodeERC20AssetData(makerAssetLeft.address),
                 makerAssetAmount: toBaseUnitAmount(5, 18),
                 takerAssetAmount: toBaseUnitAmount(10, 18),
             });

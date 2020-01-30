@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { BlockchainTestsEnvironment, constants, expect, orderHashUtils, OrderStatus } from '@0x/contracts-test-utils';
 import { BatchMatchedFillResults, FillResults, MatchedFillResults, Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -411,9 +412,7 @@ export class MatchOrderTester {
         );
 
         // Protocol Fee
-        const wethAssetData = this._deployment.assetDataEncoder
-            .ERC20Token(this._deployment.tokens.weth.address)
-            .getABIEncodedTransactionData();
+        const wethAssetData = encodeERC20AssetData(this._deployment.tokens.weth.address);
         localBalanceStore.sendEth(
             takerAddress,
             this._deployment.staking.stakingProxy.address,

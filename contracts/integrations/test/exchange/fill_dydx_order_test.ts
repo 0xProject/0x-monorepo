@@ -1,4 +1,10 @@
-import { DydxBridgeActionType, dydxBridgeDataEncoder, TestDydxBridgeContract } from '@0x/contracts-asset-proxy';
+import {
+    DydxBridgeActionType,
+    dydxBridgeDataEncoder,
+    encodeERC20AssetData,
+    encodeERC20BridgeAssetData,
+    TestDydxBridgeContract,
+} from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { LibMathRevertErrors } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
@@ -53,25 +59,20 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
         testContract = await deployDydxBridgeAsync(deployment, env);
         const encodedBridgeData = dydxBridgeDataEncoder.encode({ bridgeData });
         testTokenAddress = await testContract.getTestToken().callAsync();
-        dydxBridgeProxyAssetData = deployment.assetDataEncoder
-            .ERC20Bridge(testTokenAddress, testContract.address, encodedBridgeData)
-            .getABIEncodedTransactionData();
+        dydxBridgeProxyAssetData =
+            encodeERC20BridgeAssetData(testTokenAddress, testContract.address, encodedBridgeData);
         [makerToken, takerToken] = deployment.tokens.erc20;
 
         // Configure default order parameters.
         orderConfig = {
             makerAssetAmount: toBaseUnitAmount(1),
             takerAssetAmount: toBaseUnitAmount(1),
-            makerAssetData: deployment.assetDataEncoder.ERC20Token(makerToken.address).getABIEncodedTransactionData(),
-            takerAssetData: deployment.assetDataEncoder.ERC20Token(takerToken.address).getABIEncodedTransactionData(),
+            makerAssetData: encodeERC20AssetData(makerToken.address),
+            takerAssetData: encodeERC20AssetData(takerToken.address),
             // Not important for this test.
             feeRecipientAddress: constants.NULL_ADDRESS,
-            makerFeeAssetData: deployment.assetDataEncoder
-                .ERC20Token(makerToken.address)
-                .getABIEncodedTransactionData(),
-            takerFeeAssetData: deployment.assetDataEncoder
-                .ERC20Token(takerToken.address)
-                .getABIEncodedTransactionData(),
+            makerFeeAssetData: encodeERC20AssetData(makerToken.address),
+            takerFeeAssetData: encodeERC20AssetData(takerToken.address),
             makerFee: toBaseUnitAmount(1),
             takerFee: toBaseUnitAmount(1),
         };
@@ -244,9 +245,8 @@ blockchainTests.resets('Exchange fills dydx orders', env => {
                 actions: [badDepositAction],
             };
             const encodedBridgeData = dydxBridgeDataEncoder.encode({ bridgeData: badBridgeData });
-            const badDydxBridgeProxyAssetData = deployment.assetDataEncoder
-                .ERC20Bridge(testTokenAddress, testContract.address, encodedBridgeData)
-                .getABIEncodedTransactionData();
+            const badDydxBridgeProxyAssetData =
+                encodeERC20BridgeAssetData(testTokenAddress, testContract.address, encodedBridgeData);
             const signedOrder = await maker.signOrderAsync({
                 makerAssetData: badDydxBridgeProxyAssetData,
                 makerAssetAmount: badDepositAction.conversionRateDenominator,

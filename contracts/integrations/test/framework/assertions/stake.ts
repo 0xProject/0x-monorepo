@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { increaseCurrentAndNextBalance, OwnerStakeByStatus, StakeStatus } from '@0x/contracts-staking';
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
@@ -33,7 +34,7 @@ export function validStakeAssertion(
                 txData.from as string,
                 zrxVault.address,
                 amount,
-                deployment.assetDataEncoder.ERC20Token(deployment.tokens.zrx.address).getABIEncodedTransactionData(),
+                encodeERC20AssetData(deployment.tokens.zrx.address),
             );
             return expectedBalances;
         },

@@ -1,3 +1,4 @@
+import { encodeERC1155AssetData, encodeERC20AssetData, encodeERC721AssetData } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ExchangeRevertErrors } from '@0x/contracts-exchange';
 import { blockchainTests, constants, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
@@ -61,13 +62,9 @@ blockchainTests.resets('matchOrders integration tests', env => {
         });
 
         // Encode the asset data.
-        makerAssetDataLeft = deployment.assetDataEncoder
-            .ERC20Token(makerAssetLeft.address)
-            .getABIEncodedTransactionData();
-        makerAssetDataRight = deployment.assetDataEncoder
-            .ERC20Token(makerAssetRight.address)
-            .getABIEncodedTransactionData();
-        feeAssetData = deployment.assetDataEncoder.ERC20Token(feeAsset.address).getABIEncodedTransactionData();
+        makerAssetDataLeft = encodeERC20AssetData(makerAssetLeft.address);
+        makerAssetDataRight = encodeERC20AssetData(makerAssetRight.address);
+        feeAssetData = encodeERC20AssetData(feeAsset.address);
 
         // Create two market makers with compatible orders for matching.
         makerLeft = new Maker({
@@ -812,12 +809,10 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
     describe('token sanity checks', () => {
         it('should be able to match ERC721 tokens with ERC1155 tokens', async () => {
-            const leftMakerAssetData = deployment.assetDataEncoder
-                .ERC1155Assets(deployment.tokens.erc1155[0].address, [leftId], [new BigNumber(1)], '0x')
-                .getABIEncodedTransactionData();
-            const rightMakerAssetData = deployment.assetDataEncoder
-                .ERC721Token(deployment.tokens.erc721[0].address, rightId)
-                .getABIEncodedTransactionData();
+            const leftMakerAssetData =
+                encodeERC1155AssetData(deployment.tokens.erc1155[0].address, [leftId], [new BigNumber(1)], '0x');
+            const rightMakerAssetData =
+                encodeERC721AssetData(deployment.tokens.erc721[0].address, rightId);
 
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 makerAssetAmount: new BigNumber(4),
