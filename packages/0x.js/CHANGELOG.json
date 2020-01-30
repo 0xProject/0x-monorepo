@@ -1,5 +1,14 @@
 [
     {
+        "version": "9.1.0",
+        "changes": [
+            {
+                "note": "Export `EvmBytecodeOutputLinkReferences`",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "timestamp": 1579744659,
         "version": "9.0.5",
         "changes": [
