@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Update `ERC20BridgeSampler` on mainnet and kovan.",
+                "pr": 2459
+            }
+        ]
+    },
+    {
         "version": "4.3.0",
         "changes": [
             {
