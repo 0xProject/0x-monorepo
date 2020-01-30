@@ -1,10 +1,4 @@
-import {
-    chaiSetup,
-    constants,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -59,9 +53,9 @@ describe('UnlimitedAllowanceToken', () => {
         it('should revert if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance.plus(1);
-            return expect(
-                token.transfer(spender, amountToTransfer).callAsync({ from: owner }),
-            ).to.revertWith(RevertReason.Erc20InsufficientBalance);
+            return expect(token.transfer(spender, amountToTransfer).callAsync({ from: owner })).to.revertWith(
+                RevertReason.Erc20InsufficientBalance,
+            );
         });
 
         it('should transfer balance from sender to receiver', async () => {

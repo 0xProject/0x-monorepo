@@ -114,9 +114,7 @@ export const eip712Utils = {
         // TODO(dorothy-zbornak): Refactor these hash files so we can reuse
         // `transactionHashUtils` here without a circular dep.
         const transactionHash = hexUtils.toHex(
-            signTypedDataUtils.generateTypedDataHash(
-                eip712Utils.createZeroExTransactionTypedData(transaction),
-            ),
+            signTypedDataUtils.generateTypedDataHash(eip712Utils.createZeroExTransactionTypedData(transaction)),
         );
         const approval = {
             txOrigin,

@@ -26,10 +26,7 @@ const ZERO_NFT_UNIT = new BigNumber(0);
 export class AssetWrapper {
     private readonly _proxyIdToAssetWrappers: ProxyIdToAssetWrappers;
 
-    constructor(
-        assetWrappers: AbstractAssetWrapper[],
-        private readonly _burnerAddress: string,
-    ) {
+    constructor(assetWrappers: AbstractAssetWrapper[], private readonly _burnerAddress: string) {
         this._proxyIdToAssetWrappers = {};
         _.each(assetWrappers, assetWrapper => {
             const proxyId = assetWrapper.getProxyId();

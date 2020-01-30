@@ -780,17 +780,17 @@ blockchainTests.resets('Exchange core', () => {
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
             const makerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    makerAssetsToTransfer,
-                    makerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
             const takerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    takerAssetsToTransfer,
-                    takerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -815,17 +815,17 @@ blockchainTests.resets('Exchange core', () => {
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
             const makerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    makerAssetsToTransfer,
-                    makerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
             const takerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    takerAssetsToTransfer,
-                    takerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -849,17 +849,17 @@ blockchainTests.resets('Exchange core', () => {
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
             const makerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    makerAssetsToTransfer,
-                    makerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
             const takerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    takerAssetsToTransfer,
-                    takerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -889,17 +889,17 @@ blockchainTests.resets('Exchange core', () => {
             const takerAssetAmount = new BigNumber(1);
             const receiverCallbackData = '0x';
             const makerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    makerAssetsToTransfer,
-                    makerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
             const takerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    takerAssetsToTransfer,
-                    takerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -934,17 +934,17 @@ blockchainTests.resets('Exchange core', () => {
             const takerAssetAmount = new BigNumber(20);
             const receiverCallbackData = '0x';
             const makerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    makerAssetsToTransfer,
-                    makerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                makerAssetsToTransfer,
+                makerValuesToTransfer,
+                receiverCallbackData,
+            );
             const takerAssetData = encodeERC1155AssetData(
-                    erc1155Contract.address,
-                    takerAssetsToTransfer,
-                    takerValuesToTransfer,
-                    receiverCallbackData,
-                );
+                erc1155Contract.address,
+                takerAssetsToTransfer,
+                takerValuesToTransfer,
+                receiverCallbackData,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
                 takerAssetData,
@@ -970,7 +970,11 @@ blockchainTests.resets('Exchange core', () => {
         });
         it('should revert if the staticcall is unsuccessful', async () => {
             const staticCallData = staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData();
-            const assetData = encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL);
+            const assetData = encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                constants.KECCAK256_NULL,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
@@ -987,13 +991,21 @@ blockchainTests.resets('Exchange core', () => {
             const staticCallData = staticCallTarget
                 .assertEvenNumber(constants.ZERO_AMOUNT)
                 .getABIEncodedTransactionData();
-            const assetData = encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL);
+            const assetData = encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                constants.KECCAK256_NULL,
+            );
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should revert if the staticcall is unsuccessful using the MultiAssetProxy', async () => {
             const staticCallData = staticCallTarget.assertEvenNumber(new BigNumber(1)).getABIEncodedTransactionData();
-            const staticCallAssetData = encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL);
+            const staticCallAssetData = encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                constants.KECCAK256_NULL,
+            );
             const assetData = encodeMultiAssetData(
                 [new BigNumber(1), new BigNumber(1)],
                 [encodeERC20AssetData(defaultMakerAssetAddress), staticCallAssetData],
@@ -1014,7 +1026,11 @@ blockchainTests.resets('Exchange core', () => {
             const staticCallData = staticCallTarget
                 .assertEvenNumber(constants.ZERO_AMOUNT)
                 .getABIEncodedTransactionData();
-            const staticCallAssetData = encodeStaticCallAssetData(staticCallTarget.address, staticCallData, constants.KECCAK256_NULL);
+            const staticCallAssetData = encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                constants.KECCAK256_NULL,
+            );
             const assetData = encodeMultiAssetData(
                 [new BigNumber(1), new BigNumber(1)],
                 [encodeERC20AssetData(defaultMakerAssetAddress), staticCallAssetData],

@@ -442,9 +442,7 @@ export class FillOrderCombinatorialUtils {
         return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Any);
     }
 
-    public async testFillOrderScenarioSuccessAsync(
-        fillScenario: FillScenario,
-    ): Promise<void> {
+    public async testFillOrderScenarioSuccessAsync(fillScenario: FillScenario): Promise<void> {
         return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success);
     }
 
@@ -470,11 +468,7 @@ export class FillOrderCombinatorialUtils {
         let _fillErrorIfExists = fillErrorIfExists;
         if (expectedTestResult !== TestOutlook.Failure || fillErrorIfExists === undefined) {
             try {
-                expectedFillResults = await this._simulateFillOrderAsync(
-                    signedOrder,
-                    takerAssetFillAmount,
-                    lazyStore,
-                );
+                expectedFillResults = await this._simulateFillOrderAsync(signedOrder, takerAssetFillAmount, lazyStore);
             } catch (err) {
                 _fillErrorIfExists = err.message;
                 if (expectedTestResult === TestOutlook.Success) {

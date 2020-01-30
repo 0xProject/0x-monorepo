@@ -1,10 +1,4 @@
-import {
-    chaiSetup,
-    constants,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { SafeMathRevertErrors } from '@0x/contracts-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';

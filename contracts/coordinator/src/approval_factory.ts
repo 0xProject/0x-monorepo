@@ -19,11 +19,7 @@ export class ApprovalFactory {
         txOrigin: string,
         signatureType: SignatureType = SignatureType.EthSign,
     ): SignedCoordinatorApproval {
-        const approvalHashBuff = hashUtils.getApprovalHashBuffer(
-            transaction,
-            this._verifyingContractAddress,
-            txOrigin,
-        );
+        const approvalHashBuff = hashUtils.getApprovalHashBuffer(transaction, this._verifyingContractAddress, txOrigin);
         const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
         const signedApproval = {
             txOrigin,

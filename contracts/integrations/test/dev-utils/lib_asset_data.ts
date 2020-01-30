@@ -144,9 +144,11 @@ blockchainTests.resets('LibAssetData', env => {
         });
 
         it('should decode ERC721 asset data', async () => {
-            expect(await devUtils.decodeERC721AssetData(KNOWN_ERC721_ENCODING.assetData).callAsync()).to.deep.equal(
-                [AssetProxyId.ERC721, KNOWN_ERC721_ENCODING.address, KNOWN_ERC721_ENCODING.tokenId],
-            );
+            expect(await devUtils.decodeERC721AssetData(KNOWN_ERC721_ENCODING.assetData).callAsync()).to.deep.equal([
+                AssetProxyId.ERC721,
+                KNOWN_ERC721_ENCODING.address,
+                KNOWN_ERC721_ENCODING.tokenId,
+            ]);
         });
 
         it('should encode ERC1155 asset data', async () => {
@@ -163,9 +165,7 @@ blockchainTests.resets('LibAssetData', env => {
         });
 
         it('should decode ERC1155 asset data', async () => {
-            expect(
-                await devUtils.decodeERC1155AssetData(KNOWN_ERC1155_ENCODING.assetData).callAsync(),
-            ).to.deep.equal([
+            expect(await devUtils.decodeERC1155AssetData(KNOWN_ERC1155_ENCODING.assetData).callAsync()).to.deep.equal([
                 AssetProxyId.ERC1155,
                 KNOWN_ERC1155_ENCODING.tokenAddress,
                 KNOWN_ERC1155_ENCODING.tokenIds,
@@ -186,13 +186,13 @@ blockchainTests.resets('LibAssetData', env => {
         });
 
         it('should decode multiasset data', async () => {
-            expect(
-                await devUtils.decodeMultiAssetData(KNOWN_MULTI_ASSET_ENCODING.assetData).callAsync(),
-            ).to.deep.equal([
-                AssetProxyId.MultiAsset,
-                KNOWN_MULTI_ASSET_ENCODING.amounts,
-                KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
-            ]);
+            expect(await devUtils.decodeMultiAssetData(KNOWN_MULTI_ASSET_ENCODING.assetData).callAsync()).to.deep.equal(
+                [
+                    AssetProxyId.MultiAsset,
+                    KNOWN_MULTI_ASSET_ENCODING.amounts,
+                    KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
+                ],
+            );
         });
 
         it('should encode StaticCall data', async () => {
@@ -236,8 +236,7 @@ blockchainTests.resets('LibAssetData', env => {
 
         it('should revert for invalid assetProxyId', async () => {
             const badAssetData = `0x${crypto.randomBytes(4).toString('hex')}${constants.NULL_ADDRESS}`;
-            await expect(devUtils.revertIfInvalidAssetData(badAssetData).callAsync())
-                .to.revertWith('WRONG_PROXY_ID');
+            await expect(devUtils.revertIfInvalidAssetData(badAssetData).callAsync()).to.revertWith('WRONG_PROXY_ID');
         });
 
         it('should revert for invalid assetData with valid assetProxyId', async () => {
@@ -246,8 +245,9 @@ blockchainTests.resets('LibAssetData', env => {
 
             for (const data of assetData) {
                 const badData = data.substring(0, data.length - 2); // drop one byte but retain assetProxyId
-                await expect(devUtils.revertIfInvalidAssetData(badData).callAsync())
-                    .to.revertWith(new LibBytesRevertErrors.InvalidByteOperationError());
+                await expect(devUtils.revertIfInvalidAssetData(badData).callAsync()).to.revertWith(
+                    new LibBytesRevertErrors.InvalidByteOperationError(),
+                );
             }
         });
     });
@@ -272,9 +272,7 @@ blockchainTests.resets('LibAssetData', env => {
         });
 
         it('should return 0 if ERC721 token does not exist', async () => {
-            const assetData = await devUtils
-                .encodeERC721AssetData(constants.NULL_ADDRESS, erc721TokenId)
-                .callAsync();
+            const assetData = await devUtils.encodeERC721AssetData(constants.NULL_ADDRESS, erc721TokenId).callAsync();
             const balance = await devUtils.getBalance(tokenOwner.address, assetData).callAsync();
             expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
@@ -375,9 +373,9 @@ blockchainTests.resets('LibAssetData', env => {
     describe('getAssetProxyAllowance', () => {
         it('should query ERC20 allowances by asset data', async () => {
             const assetData = await devUtils.encodeERC20AssetData(erc20Token.address).callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(constants.MAX_UINT256);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                constants.MAX_UINT256,
+            );
         });
 
         it('should query ERC721 approval by asset data', async () => {
@@ -391,16 +389,16 @@ blockchainTests.resets('LibAssetData', env => {
                     from: tokenOwner.address,
                 });
             const assetData = await devUtils.encodeERC721AssetData(erc721Token.address, erc721TokenId).callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(1);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                1,
+            );
         });
 
         it('should query ERC721 approvalForAll by assetData', async () => {
             const assetData = await devUtils.encodeERC721AssetData(erc721Token.address, erc721TokenId).callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            );
         });
 
         it('should query ERC1155 allowances by asset data', async () => {
@@ -412,9 +410,9 @@ blockchainTests.resets('LibAssetData', env => {
                     constants.NULL_BYTES,
                 )
                 .callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            );
         });
 
         it('should query multi-asset allowances by asset data', async () => {
@@ -433,9 +431,9 @@ blockchainTests.resets('LibAssetData', env => {
                     ],
                 )
                 .callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(1);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                1,
+            );
             return;
         });
 
@@ -455,9 +453,9 @@ blockchainTests.resets('LibAssetData', env => {
                     ],
                 )
                 .callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+            );
             return;
         });
 
@@ -471,9 +469,9 @@ blockchainTests.resets('LibAssetData', env => {
                     ],
                 )
                 .callAsync();
-            expect(
-                await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync(),
-            ).to.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(await devUtils.getAssetProxyAllowance(tokenOwner.address, assetData).callAsync()).to.bignumber.equal(
+                constants.ZERO_AMOUNT,
+            );
         });
 
         it('should return an allowance of 0 if the assetData does not correspond to an AssetProxy contract', async () => {

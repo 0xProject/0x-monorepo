@@ -1,4 +1,4 @@
-import { decodeERC20AssetData, decodeERC20BridgeAssetData} from '@0x/contracts-asset-proxy';
+import { decodeERC20AssetData, decodeERC20BridgeAssetData } from '@0x/contracts-asset-proxy';
 import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { constants, expect, OrderStatus } from '@0x/contracts-test-utils';
 import { AssetProxyId, OrderInfo, SignedOrder } from '@0x/types';

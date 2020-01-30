@@ -25,9 +25,7 @@ blockchainTests.resets('Authorizable', () => {
 
     describe('addAuthorizedAddress', () => {
         it('should revert if not called by owner', async () => {
-            const tx = authorizable
-                .addAuthorizedAddress(notOwner)
-                .sendTransactionAsync({ from: notOwner });
+            const tx = authorizable.addAuthorizedAddress(notOwner).sendTransactionAsync({ from: notOwner });
             return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
 
@@ -39,9 +37,7 @@ blockchainTests.resets('Authorizable', () => {
 
         it('should revert if owner attempts to authorize a duplicate address', async () => {
             await authorizable.addAuthorizedAddress(address).awaitTransactionSuccessAsync({ from: owner });
-            const tx = authorizable
-                .addAuthorizedAddress(address)
-                .sendTransactionAsync({ from: owner });
+            const tx = authorizable.addAuthorizedAddress(address).sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(RevertReason.TargetAlreadyAuthorized);
         });
     });
@@ -49,9 +45,7 @@ blockchainTests.resets('Authorizable', () => {
     describe('removeAuthorizedAddress', () => {
         it('should revert if not called by owner', async () => {
             await authorizable.addAuthorizedAddress(address).awaitTransactionSuccessAsync({ from: owner });
-            const tx = authorizable
-                .removeAuthorizedAddress(address)
-                .sendTransactionAsync({ from: notOwner });
+            const tx = authorizable.removeAuthorizedAddress(address).sendTransactionAsync({ from: notOwner });
             return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
         });
 
@@ -63,9 +57,7 @@ blockchainTests.resets('Authorizable', () => {
         });
 
         it('should revert if owner attempts to remove an address that is not authorized', async () => {
-            const tx = authorizable
-                .removeAuthorizedAddress(address)
-                .sendTransactionAsync({ from: owner });
+            const tx = authorizable.removeAuthorizedAddress(address).sendTransactionAsync({ from: owner });
             return expect(tx).to.revertWith(RevertReason.TargetNotAuthorized);
         });
     });

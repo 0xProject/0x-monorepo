@@ -1,9 +1,4 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    increaseTimeAndMineBlockAsync,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, increaseTimeAndMineBlockAsync } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -78,12 +73,14 @@ blockchainTests.resets('MultiSigWalletWithTimeLock', env => {
         });
         it('should revert if transaction does not exist', async () => {
             const nonexistentTxId = new BigNumber(123456789);
-            return expect(
-                multiSigWrapper.confirmTransactionAsync(nonexistentTxId, owners[1]),
-            ).to.revertWith('TX_DOESNT_EXIST');
+            return expect(multiSigWrapper.confirmTransactionAsync(nonexistentTxId, owners[1])).to.revertWith(
+                'TX_DOESNT_EXIST',
+            );
         });
         it('should revert if transaction is already confirmed by caller', async () => {
-            return expect(multiSigWrapper.confirmTransactionAsync(txId, owners[0])).to.revertWith('TX_ALREADY_CONFIRMED');
+            return expect(multiSigWrapper.confirmTransactionAsync(txId, owners[0])).to.revertWith(
+                'TX_ALREADY_CONFIRMED',
+            );
         });
         it('should confirm transaction for caller and log a Confirmation event', async () => {
             const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -137,15 +134,15 @@ blockchainTests.resets('MultiSigWalletWithTimeLock', env => {
         });
         it('should revert if transaction has not been fully confirmed', async () => {
             await increaseTimeAndMineBlockAsync(secondsTimeLocked.toNumber());
-            return expect(
-                multiSigWrapper.executeTransactionAsync(txId, owners[1]),
-            ).to.revertWith(RevertReason.TxNotFullyConfirmed);
+            return expect(multiSigWrapper.executeTransactionAsync(txId, owners[1])).to.revertWith(
+                RevertReason.TxNotFullyConfirmed,
+            );
         });
         it('should revert if time lock has not passed', async () => {
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            expect(
-                multiSigWrapper.executeTransactionAsync(txId, owners[1]),
-            ).to.revertWith(RevertReason.TimeLockIncomplete);
+            expect(multiSigWrapper.executeTransactionAsync(txId, owners[1])).to.revertWith(
+                RevertReason.TimeLockIncomplete,
+            );
         });
         it('should execute a transaction and log an Execution event if successful and called by owner', async () => {
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -167,9 +164,9 @@ blockchainTests.resets('MultiSigWalletWithTimeLock', env => {
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             await increaseTimeAndMineBlockAsync(secondsTimeLocked.toNumber());
             await multiSigWrapper.revokeConfirmationAsync(txId, owners[0]);
-            return expect(
-                multiSigWrapper.executeTransactionAsync(txId, owners[1]),
-            ).to.revertWith(RevertReason.TxNotFullyConfirmed);
+            return expect(multiSigWrapper.executeTransactionAsync(txId, owners[1])).to.revertWith(
+                RevertReason.TxNotFullyConfirmed,
+            );
         });
         it('should revert if transaction has been executed', async () => {
             await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
@@ -177,7 +174,9 @@ blockchainTests.resets('MultiSigWalletWithTimeLock', env => {
             const txReceipt = await multiSigWrapper.executeTransactionAsync(txId, owners[1]);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockExecutionEventArgs>;
             expect(log.args.transactionId).to.be.bignumber.equal(txId);
-            return expect(multiSigWrapper.executeTransactionAsync(txId, owners[1])).to.revertWith('TX_ALREADY_EXECUTED');
+            return expect(multiSigWrapper.executeTransactionAsync(txId, owners[1])).to.revertWith(
+                'TX_ALREADY_EXECUTED',
+            );
         });
         it("should log an ExecutionFailure event and not update the transaction's execution state if unsuccessful", async () => {
             const contractWithoutFallback = await TestRejectEtherContract.deployFrom0xArtifactAsync(

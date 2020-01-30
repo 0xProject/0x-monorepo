@@ -264,10 +264,7 @@ describe('AssetProxyDispatcher', () => {
                 from: owner,
             });
             // Shave off the last byte
-            const encodedAssetData = encodeERC20AssetData(erc20TokenA.address).slice(
-                0,
-                72,
-            );
+            const encodedAssetData = encodeERC20AssetData(erc20TokenA.address).slice(0, 72);
             const amount = new BigNumber(1);
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
                 ExchangeRevertErrors.AssetProxyDispatchErrorCode.InvalidAssetDataLength,

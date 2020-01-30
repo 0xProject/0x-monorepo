@@ -638,12 +638,7 @@ describe('ERC1155Proxy', () => {
             });
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             const extraData = '0102030405060708091001020304050607080910010203040506070809100102';
             const assetDataWithExtraData = `${assetData}${extraData}`;
@@ -856,12 +851,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = new BigNumber(2);
             // create callback data that is the encoded version of `valuesToTransfer`
             const generatedAssetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // remove the function selector and contract address from check, as these change on each test
             const offsetToTokenIds = 74;
@@ -982,12 +972,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = new BigNumber(2);
             // create callback data that is the encoded version of `valuesToTransfer`
             const generatedAssetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // remove the function selector and contract address from check, as these change on each test
             const offsetToTokenIds = 74;
@@ -1047,12 +1032,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1096,12 +1076,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1149,12 +1124,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1202,12 +1172,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1255,12 +1220,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1309,12 +1269,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1358,12 +1313,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1411,12 +1361,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1460,12 +1405,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             // The asset data we just generated will look like this:
             // a7cb5fb7
@@ -1513,12 +1453,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             const txData = await erc1155ProxyWrapper.getTransferFromAbiEncodedTxDataAsync(
                 spender,
@@ -1546,12 +1481,7 @@ describe('ERC1155Proxy', () => {
             const valueMultiplier = valueMultiplierSmall;
             const erc1155ContractAddress = erc1155Wrapper.getContract().address;
             const assetData = assetDataContract
-                .ERC1155Assets(
-                    erc1155ContractAddress,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                )
+                .ERC1155Assets(erc1155ContractAddress, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                 .getABIEncodedTransactionData();
             const txData = await erc1155ProxyWrapper.getTransferFromAbiEncodedTxDataAsync(
                 spender,

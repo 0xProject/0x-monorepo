@@ -325,9 +325,7 @@ describe('Signature utils', () => {
         it('should result in the same signature as signing the order hash without an ethereum message prefix', async () => {
             // Note: Since order hash is an EIP712 hash the result of a valid EIP712 signature
             //       of order hash is the same as signing the order without the Ethereum Message prefix.
-            const transactionHashHex = transactionHashUtils.getTransactionHash(
-                transaction,
-            );
+            const transactionHashHex = transactionHashUtils.getTransactionHash(transaction);
             const sig = ethUtil.ecsign(
                 ethUtil.toBuffer(transactionHashHex),
                 Buffer.from('F2F48EE19680706196E2E339E5DA3491186E0C4C5030670656B0E0164837257D', 'hex'),

@@ -8,7 +8,11 @@ import {
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
-import { artifacts as coordinatorArtifacts, CoordinatorContract, CoordinatorRegistryContract } from '@0x/contracts-coordinator';
+import {
+    artifacts as coordinatorArtifacts,
+    CoordinatorContract,
+    CoordinatorRegistryContract,
+} from '@0x/contracts-coordinator';
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc1155Artifacts, ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
@@ -81,7 +85,12 @@ export async function runMigrationsAsync(
     );
 
     // Ether token
-    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, provider, txDefaults, allArtifacts);
+    const etherToken = await WETH9Contract.deployFrom0xArtifactAsync(
+        erc20Artifacts.WETH9,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
 
     // Exchange
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(

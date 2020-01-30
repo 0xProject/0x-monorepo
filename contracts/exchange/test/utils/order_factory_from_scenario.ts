@@ -113,28 +113,28 @@ export class OrderFactoryFromScenario {
                 break;
             case AssetDataScenario.ERC1155Fungible:
                 makerAssetData = encodeERC1155AssetData(
-                        this._erc1155TokenAddress,
-                        [erc1155FungibleMakerTokenIds[0]],
-                        [ONE_UNITS_ZERO_DECIMALS],
-                        erc1155CallbackData,
-                    );
+                    this._erc1155TokenAddress,
+                    [erc1155FungibleMakerTokenIds[0]],
+                    [ONE_UNITS_ZERO_DECIMALS],
+                    erc1155CallbackData,
+                );
                 break;
             case AssetDataScenario.ERC1155NonFungible:
                 makerAssetData = encodeERC1155AssetData(
-                        this._erc1155TokenAddress,
-                        [erc1155NonFungibleMakerTokenIds[0]],
-                        [ONE_UNITS_ZERO_DECIMALS],
-                        erc1155CallbackData,
-                    );
+                    this._erc1155TokenAddress,
+                    [erc1155NonFungibleMakerTokenIds[0]],
+                    [ONE_UNITS_ZERO_DECIMALS],
+                    erc1155CallbackData,
+                );
                 break;
             case AssetDataScenario.MultiAssetERC20:
                 makerAssetData = encodeMultiAssetData(
-                        [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
-                        [
-                            encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[0]),
-                            encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]),
-                        ],
-                    );
+                    [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
+                    [
+                        encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[0]),
+                        encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[0]),
+                    ],
+                );
                 break;
             default:
                 throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
@@ -155,28 +155,28 @@ export class OrderFactoryFromScenario {
                 break;
             case AssetDataScenario.ERC1155Fungible:
                 takerAssetData = encodeERC1155AssetData(
-                        this._erc1155TokenAddress,
-                        [erc1155FungibleTakerTokenIds[1]],
-                        [ONE_UNITS_ZERO_DECIMALS],
-                        erc1155CallbackData,
-                    );
+                    this._erc1155TokenAddress,
+                    [erc1155FungibleTakerTokenIds[1]],
+                    [ONE_UNITS_ZERO_DECIMALS],
+                    erc1155CallbackData,
+                );
                 break;
             case AssetDataScenario.ERC1155NonFungible:
                 takerAssetData = encodeERC1155AssetData(
-                        this._erc1155TokenAddress,
-                        [erc1155NonFungibleTakerTokenIds[0]],
-                        [ONE_UNITS_ZERO_DECIMALS],
-                        erc1155CallbackData,
-                    );
+                    this._erc1155TokenAddress,
+                    [erc1155NonFungibleTakerTokenIds[0]],
+                    [ONE_UNITS_ZERO_DECIMALS],
+                    erc1155CallbackData,
+                );
                 break;
             case AssetDataScenario.MultiAssetERC20:
                 takerAssetData = encodeMultiAssetData(
-                        [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
-                        [
-                            encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[1]),
-                            encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]),
-                        ],
-                    );
+                    [ONE_UNITS_EIGHTEEN_DECIMALS, ONE_UNITS_FIVE_DECIMALS],
+                    [
+                        encodeERC20AssetData(this._erc20EighteenDecimalTokenAddresses[1]),
+                        encodeERC20AssetData(this._erc20FiveDecimalTokenAddresses[1]),
+                    ],
+                );
                 break;
             default:
                 throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
@@ -307,25 +307,13 @@ export class OrderFactoryFromScenario {
                 case FeeAssetDataScenario.TakerToken:
                     return [feeAmount, takerAssetData];
                 case FeeAssetDataScenario.ERC20EighteenDecimals:
-                    return [
-                        feeAmount,
-                        encodeERC20AssetData(erc20EighteenDecimalTokenAddress),
-                    ];
+                    return [feeAmount, encodeERC20AssetData(erc20EighteenDecimalTokenAddress)];
                 case FeeAssetDataScenario.ERC20FiveDecimals:
-                    return [
-                        feeAmount,
-                        encodeERC20AssetData(erc20FiveDecimalTokenAddress),
-                    ];
+                    return [feeAmount, encodeERC20AssetData(erc20FiveDecimalTokenAddress)];
                 case FeeAssetDataScenario.ERC20ZeroDecimals:
-                    return [
-                        feeAmount,
-                        encodeERC20AssetData(erc20ZeroDecimalTokenAddress),
-                    ];
+                    return [feeAmount, encodeERC20AssetData(erc20ZeroDecimalTokenAddress)];
                 case FeeAssetDataScenario.ERC721:
-                    return [
-                        feeAmount,
-                        encodeERC721AssetData(this._erc721TokenAddress, erc721AssetId),
-                    ];
+                    return [feeAmount, encodeERC721AssetData(this._erc721TokenAddress, erc721AssetId)];
                 case FeeAssetDataScenario.ERC1155Fungible:
                     return [
                         feeAmount,

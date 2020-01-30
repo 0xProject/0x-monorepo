@@ -5,8 +5,7 @@ export const utils = {
     getOrderHash(order: APIOrder | SignedOrder): string {
         if ((order as APIOrder).metaData) {
             const apiOrder = order as APIOrder;
-            const orderHash =
-                (apiOrder.metaData as any).orderHash || orderHashUtils.getOrderHash(apiOrder.order);
+            const orderHash = (apiOrder.metaData as any).orderHash || orderHashUtils.getOrderHash(apiOrder.order);
             return orderHash;
         } else {
             const signedOrder = order as SignedOrder;

@@ -1,5 +1,19 @@
-import { DydxBridgeAction, DydxBridgeActionType, DydxBridgeData, dydxBridgeDataEncoder, IAssetDataContract } from '@0x/contracts-asset-proxy';
-import { blockchainTests, constants, expect, getRandomFloat, getRandomInteger, Numberish, randomAddress } from '@0x/contracts-test-utils';
+import {
+    DydxBridgeAction,
+    DydxBridgeActionType,
+    DydxBridgeData,
+    dydxBridgeDataEncoder,
+    IAssetDataContract,
+} from '@0x/contracts-asset-proxy';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    getRandomFloat,
+    getRandomInteger,
+    Numberish,
+    randomAddress,
+} from '@0x/contracts-test-utils';
 import { Order } from '@0x/types';
 import { BigNumber, fromTokenUnitAmount, toTokenUnitAmount } from '@0x/utils';
 
@@ -40,25 +54,20 @@ blockchainTests('LibDydxBalance', env => {
     const ZERO_BALANCE_ACCOUNT_IDX = 3;
     const DYDX_CONFIG: TestDydxConfig = {
         marginRatio: fromTokenUnitAmount(MARGIN_RATIO, PRICE_DECIMALS),
-        operators: [
-            { owner: ACCOUNT_OWNER, operator: BRIDGE_ADDRESS },
-        ],
+        operators: [{ owner: ACCOUNT_OWNER, operator: BRIDGE_ADDRESS }],
         accounts: [
             {
                 owner: ACCOUNT_OWNER,
                 accountId: getRandomInteger(1, 2 ** 64),
                 // Account exceeds collateralization.
-                balances: [
-                    fromTokenUnitAmount(10, TAKER_DECIMALS),
-                    fromTokenUnitAmount(-1, MAKER_DECIMALS),
-                ],
+                balances: [fromTokenUnitAmount(10, TAKER_DECIMALS), fromTokenUnitAmount(-1, MAKER_DECIMALS)],
             },
             {
                 owner: ACCOUNT_OWNER,
                 accountId: getRandomInteger(1, 2 ** 64),
                 // Account is at minimum collateralization.
                 balances: [
-                    fromTokenUnitAmount(MAKER_PRICE / TAKER_PRICE * MARGIN_RATIO * 5, TAKER_DECIMALS),
+                    fromTokenUnitAmount((MAKER_PRICE / TAKER_PRICE) * MARGIN_RATIO * 5, TAKER_DECIMALS),
                     fromTokenUnitAmount(-5, MAKER_DECIMALS),
                 ],
             },
@@ -66,19 +75,13 @@ blockchainTests('LibDydxBalance', env => {
                 owner: ACCOUNT_OWNER,
                 accountId: getRandomInteger(1, 2 ** 64),
                 // Account is undercollateralized..
-                balances: [
-                    fromTokenUnitAmount(1, TAKER_DECIMALS),
-                    fromTokenUnitAmount(-2, MAKER_DECIMALS),
-                ],
+                balances: [fromTokenUnitAmount(1, TAKER_DECIMALS), fromTokenUnitAmount(-2, MAKER_DECIMALS)],
             },
             {
                 owner: ACCOUNT_OWNER,
                 accountId: getRandomInteger(1, 2 ** 64),
                 // Account has no balance.
-                balances: [
-                    fromTokenUnitAmount(0, TAKER_DECIMALS),
-                    fromTokenUnitAmount(0, MAKER_DECIMALS),
-                ],
+                balances: [fromTokenUnitAmount(0, TAKER_DECIMALS), fromTokenUnitAmount(0, MAKER_DECIMALS)],
             },
         ],
         markets: [
@@ -130,18 +133,13 @@ blockchainTests('LibDydxBalance', env => {
         );
 
         // Mint taker tokens.
-        await testContract.setTokenBalance(
-            takerTokenAddress,
-            ACCOUNT_OWNER,
-            INITIAL_TAKER_TOKEN_BALANCE,
-        ).awaitTransactionSuccessAsync();
+        await testContract
+            .setTokenBalance(takerTokenAddress, ACCOUNT_OWNER, INITIAL_TAKER_TOKEN_BALANCE)
+            .awaitTransactionSuccessAsync();
         // Approve the Dydx contract to spend takerToken.
-        await testContract.setTokenApproval(
-            takerTokenAddress,
-            ACCOUNT_OWNER,
-            dydx.address,
-            constants.MAX_UINT256,
-        ).awaitTransactionSuccessAsync();
+        await testContract
+            .setTokenApproval(takerTokenAddress, ACCOUNT_OWNER, dydx.address, constants.MAX_UINT256)
+            .awaitTransactionSuccessAsync();
     });
 
     interface BalanceCheckInfo {
@@ -187,23 +185,27 @@ blockchainTests('LibDydxBalance', env => {
                 const rate = action.conversionRateDenominator.eq(0)
                     ? new BigNumber(1)
                     : action.conversionRateNumerator.div(action.conversionRateDenominator);
-                const change = makerAssetFillAmount
-                    .times(action.actionType === DydxBridgeActionType.Deposit ? rate : rate.negated());
+                const change = makerAssetFillAmount.times(
+                    action.actionType === DydxBridgeActionType.Deposit ? rate : rate.negated(),
+                );
                 accountBalances[actionMarketId] = change.plus(accountBalances[actionMarketId]);
             }
             return accountBalances.map((b, marketId) =>
-                toTokenUnitAmount(b, config.markets[marketId].decimals)
-                    .times(toTokenUnitAmount(config.markets[marketId].price, PRICE_DECIMALS)),
+                toTokenUnitAmount(b, config.markets[marketId].decimals).times(
+                    toTokenUnitAmount(config.markets[marketId].price, PRICE_DECIMALS),
+                ),
             );
         });
-        return values.map(accountValues => {
-            return [
-                // supply
-                BigNumber.sum(...accountValues.filter(b => b.gte(0))),
-                // borrow
-                BigNumber.sum(...accountValues.filter(b => b.lt(0))).abs(),
-            ];
-        }).map(([supply, borrow]) => supply.div(borrow));
+        return values
+            .map(accountValues => {
+                return [
+                    // supply
+                    BigNumber.sum(...accountValues.filter(b => b.gte(0))),
+                    // borrow
+                    BigNumber.sum(...accountValues.filter(b => b.lt(0))).abs(),
+                ];
+            })
+            .map(([supply, borrow]) => supply.div(borrow));
     }
 
     function getRandomRate(): BigNumber {
@@ -213,7 +215,7 @@ blockchainTests('LibDydxBalance', env => {
     // Computes a deposit rate that is the minimum to keep an account solvent
     // perpetually.
     function getBalancedDepositRate(withdrawRate: BigNumber, scaling: Numberish = 1.000001): BigNumber {
-        return withdrawRate.times(MAKER_PRICE / TAKER_PRICE * MARGIN_RATIO).times(scaling);
+        return withdrawRate.times((MAKER_PRICE / TAKER_PRICE) * MARGIN_RATIO).times(scaling);
     }
 
     function takerToMakerAmount(takerAmount: BigNumber): BigNumber {
@@ -248,11 +250,7 @@ blockchainTests('LibDydxBalance', env => {
             expect(makerAssetFillAmount).to.not.bignumber.eq(constants.MAX_UINT256);
             // The collateralization ratio after filling `makerAssetFillAmount`
             // should be exactly at `MARGIN_RATIO`.
-            const cr = getFilledAccountCollateralizations(
-                DYDX_CONFIG,
-                checkInfo,
-                makerAssetFillAmount,
-            );
+            const cr = getFilledAccountCollateralizations(DYDX_CONFIG, checkInfo, makerAssetFillAmount);
             expect(cr[0].dp(2)).to.bignumber.eq(MARGIN_RATIO);
         });
 
@@ -281,11 +279,7 @@ blockchainTests('LibDydxBalance', env => {
             expect(makerAssetFillAmount).to.not.bignumber.eq(constants.MAX_UINT256);
             // The collateralization ratio after filling `makerAssetFillAmount`
             // should be exactly at `MARGIN_RATIO`.
-            const cr = getFilledAccountCollateralizations(
-                DYDX_CONFIG,
-                checkInfo,
-                makerAssetFillAmount,
-            );
+            const cr = getFilledAccountCollateralizations(DYDX_CONFIG, checkInfo, makerAssetFillAmount);
             expect(cr[0].dp(2)).to.bignumber.eq(MARGIN_RATIO);
         });
 
@@ -306,11 +300,7 @@ blockchainTests('LibDydxBalance', env => {
             expect(makerAssetFillAmount).to.not.bignumber.eq(constants.MAX_UINT256);
             // The collateralization ratio after filling `makerAssetFillAmount`
             // should be exactly at `MARGIN_RATIO`.
-            const cr = getFilledAccountCollateralizations(
-                DYDX_CONFIG,
-                checkInfo,
-                makerAssetFillAmount,
-            );
+            const cr = getFilledAccountCollateralizations(DYDX_CONFIG, checkInfo, makerAssetFillAmount);
             expect(cr[0].dp(2)).to.bignumber.eq(MARGIN_RATIO);
         });
 
@@ -348,11 +338,7 @@ blockchainTests('LibDydxBalance', env => {
             expect(makerAssetFillAmount).to.not.bignumber.eq(constants.MAX_UINT256);
             // The collateralization ratio after filling `makerAssetFillAmount`
             // should be exactly at `MARGIN_RATIO`.
-            const cr = getFilledAccountCollateralizations(
-                DYDX_CONFIG,
-                checkInfo,
-                makerAssetFillAmount,
-            );
+            const cr = getFilledAccountCollateralizations(DYDX_CONFIG, checkInfo, makerAssetFillAmount);
             expect(cr[0].dp(2)).to.bignumber.eq(MARGIN_RATIO);
         });
 
@@ -484,62 +470,68 @@ blockchainTests('LibDydxBalance', env => {
             expect(makerAssetFillAmount).to.bignumber.eq(0);
         });
 
-        it('returns zero on an account that has no balance if deposit ' +
-           'to withdraw ratio is < the minimum collateralization rate', async () => {
-            // If the deposit rate is not enough to meet the minimum collateralization ratio,
-            // the fillable maker amount is zero because it will become insolvent as soon as
-            // the withdraw occurs.
-            const withdrawRate = getRandomRate();
-            const depositRate = getBalancedDepositRate(withdrawRate, 0.99);
-            const checkInfo = createBalanceCheckInfo({
-                accounts: [DYDX_CONFIG.accounts[ZERO_BALANCE_ACCOUNT_IDX].accountId],
-                actions: [
-                    {
-                        actionType: DydxBridgeActionType.Deposit,
-                        accountIdx: new BigNumber(0),
-                        marketId: new BigNumber(0),
-                        conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
-                        conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                    },
-                    {
-                        actionType: DydxBridgeActionType.Withdraw,
-                        accountIdx: new BigNumber(0),
-                        marketId: new BigNumber(1),
-                        conversionRateNumerator: fromTokenUnitAmount(withdrawRate),
-                        conversionRateDenominator: fromTokenUnitAmount(1),
-                    },
-                ],
-            });
-            const makerAssetFillAmount = await testContract.getSolventMakerAmount(checkInfo).callAsync();
-            expect(makerAssetFillAmount).to.bignumber.eq(0);
-        });
+        it(
+            'returns zero on an account that has no balance if deposit ' +
+                'to withdraw ratio is < the minimum collateralization rate',
+            async () => {
+                // If the deposit rate is not enough to meet the minimum collateralization ratio,
+                // the fillable maker amount is zero because it will become insolvent as soon as
+                // the withdraw occurs.
+                const withdrawRate = getRandomRate();
+                const depositRate = getBalancedDepositRate(withdrawRate, 0.99);
+                const checkInfo = createBalanceCheckInfo({
+                    accounts: [DYDX_CONFIG.accounts[ZERO_BALANCE_ACCOUNT_IDX].accountId],
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Deposit,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(0),
+                            conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
+                            conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                        },
+                        {
+                            actionType: DydxBridgeActionType.Withdraw,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(1),
+                            conversionRateNumerator: fromTokenUnitAmount(withdrawRate),
+                            conversionRateDenominator: fromTokenUnitAmount(1),
+                        },
+                    ],
+                });
+                const makerAssetFillAmount = await testContract.getSolventMakerAmount(checkInfo).callAsync();
+                expect(makerAssetFillAmount).to.bignumber.eq(0);
+            },
+        );
 
-        it('returns infinite on an account that has no balance if deposit ' +
-           'to withdraw ratio is >= the minimum collateralization rate', async () => {
-            const withdrawRate = getRandomRate();
-            const depositRate = getBalancedDepositRate(withdrawRate);
-            const checkInfo = createBalanceCheckInfo({
-                accounts: [DYDX_CONFIG.accounts[ZERO_BALANCE_ACCOUNT_IDX].accountId],
-                actions: [
-                    {
-                        actionType: DydxBridgeActionType.Deposit,
-                        accountIdx: new BigNumber(0),
-                        marketId: new BigNumber(0),
-                        conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
-                        conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                    },
-                    {
-                        actionType: DydxBridgeActionType.Withdraw,
-                        accountIdx: new BigNumber(0),
-                        marketId: new BigNumber(1),
-                        conversionRateNumerator: fromTokenUnitAmount(withdrawRate),
-                        conversionRateDenominator: fromTokenUnitAmount(1),
-                    },
-                ],
-            });
-            const makerAssetFillAmount = await testContract.getSolventMakerAmount(checkInfo).callAsync();
-            expect(makerAssetFillAmount).to.bignumber.eq(constants.MAX_UINT256);
-        });
+        it(
+            'returns infinite on an account that has no balance if deposit ' +
+                'to withdraw ratio is >= the minimum collateralization rate',
+            async () => {
+                const withdrawRate = getRandomRate();
+                const depositRate = getBalancedDepositRate(withdrawRate);
+                const checkInfo = createBalanceCheckInfo({
+                    accounts: [DYDX_CONFIG.accounts[ZERO_BALANCE_ACCOUNT_IDX].accountId],
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Deposit,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(0),
+                            conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
+                            conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                        },
+                        {
+                            actionType: DydxBridgeActionType.Withdraw,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(1),
+                            conversionRateNumerator: fromTokenUnitAmount(withdrawRate),
+                            conversionRateDenominator: fromTokenUnitAmount(1),
+                        },
+                    ],
+                });
+                const makerAssetFillAmount = await testContract.getSolventMakerAmount(checkInfo).callAsync();
+                expect(makerAssetFillAmount).to.bignumber.eq(constants.MAX_UINT256);
+            },
+        );
     });
 
     blockchainTests.resets('_getDepositableMakerAmount()', () => {
@@ -617,8 +609,9 @@ blockchainTests('LibDydxBalance', env => {
             );
             // Which should equal the entire taker token balance of the account owner.
             // We do some rounding to account for integer vs FP vs symbolic precision differences.
-            expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(5))
-                .to.bignumber.eq(toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(5));
+            expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(5)).to.bignumber.eq(
+                toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(5),
+            );
         });
 
         it('returns correct amount if the taker asset not an ERC20', async () => {
@@ -649,12 +642,12 @@ blockchainTests('LibDydxBalance', env => {
             );
             // Which should equal the entire taker token balance of the account owner.
             // We do some rounding to account for integer vs FP vs symbolic precision differences.
-            expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(6))
-                .to.bignumber.eq(toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(6));
+            expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(6)).to.bignumber.eq(
+                toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(6),
+            );
         });
 
-        it('returns the correct amount if taker:maker deposit rate is 1:1 and' +
-           'token != taker token', async () => {
+        it('returns the correct amount if taker:maker deposit rate is 1:1 and' + 'token != taker token', async () => {
             const checkInfo = createBalanceCheckInfo({
                 takerTokenAddress: randomAddress(),
                 // These amounts should be effectively ignored in the final computation
@@ -705,8 +698,9 @@ blockchainTests('LibDydxBalance', env => {
             expect(makerAssetFillAmount).to.not.bignumber.eq(constants.MAX_UINT256);
             // Extract the deposit rates.
             const depositRates = checkInfo.actions.map(a =>
-                toTokenUnitAmount(a.conversionRateNumerator, TAKER_DECIMALS)
-                    .div(toTokenUnitAmount(a.conversionRateDenominator, MAKER_DECIMALS)),
+                toTokenUnitAmount(a.conversionRateNumerator, TAKER_DECIMALS).div(
+                    toTokenUnitAmount(a.conversionRateDenominator, MAKER_DECIMALS),
+                ),
             );
             // The largest deposit rate will result in the smallest maker asset fill amount.
             const maxDepositRate = BigNumber.max(...depositRates);
@@ -719,64 +713,65 @@ blockchainTests('LibDydxBalance', env => {
             );
             // Which should equal the entire taker token balance of the account owner.
             // We do some rounding to account for integer vs FP vs symbolic precision differences.
-            expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(5))
-                .to.bignumber.eq(toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(5));
+            expect(toTokenUnitAmount(takerAssetFillAmount, TAKER_DECIMALS).dp(5)).to.bignumber.eq(
+                toTokenUnitAmount(INITIAL_TAKER_TOKEN_BALANCE, TAKER_DECIMALS).dp(5),
+            );
         });
 
-        it('returns zero if the maker has no taker tokens and the deposit rate is' +
-            'greater than the exchange rate', async () => {
-            await testContract.setTokenBalance(
-                takerTokenAddress,
-                ACCOUNT_OWNER,
-                constants.ZERO_AMOUNT,
-            ).awaitTransactionSuccessAsync();
-            // The taker tokens getting exchanged in will only partially cover the deposit.
-            const exchangeRate = 0.1;
-            const depositRate = Math.random() + exchangeRate;
-            const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                actions: [
-                    {
-                        actionType: DydxBridgeActionType.Deposit,
-                        accountIdx: new BigNumber(0),
-                        marketId: new BigNumber(0),
-                        conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
-                        conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                    },
-                ],
-            });
-            const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
-            expect(makerAssetFillAmount).to.bignumber.eq(0);
-        });
+        it(
+            'returns zero if the maker has no taker tokens and the deposit rate is' + 'greater than the exchange rate',
+            async () => {
+                await testContract
+                    .setTokenBalance(takerTokenAddress, ACCOUNT_OWNER, constants.ZERO_AMOUNT)
+                    .awaitTransactionSuccessAsync();
+                // The taker tokens getting exchanged in will only partially cover the deposit.
+                const exchangeRate = 0.1;
+                const depositRate = Math.random() + exchangeRate;
+                const checkInfo = createBalanceCheckInfo({
+                    takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
+                    makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Deposit,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(0),
+                            conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
+                            conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                        },
+                    ],
+                });
+                const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
+                expect(makerAssetFillAmount).to.bignumber.eq(0);
+            },
+        );
 
-        it('returns zero if dydx has no taker token allowance and the deposit rate is' +
-            'greater than the exchange rate', async () => {
-            await testContract.setTokenApproval(
-                takerTokenAddress,
-                ACCOUNT_OWNER,
-                dydx.address,
-                constants.ZERO_AMOUNT,
-            ).awaitTransactionSuccessAsync();
-            // The taker tokens getting exchanged in will only partially cover the deposit.
-            const exchangeRate = 0.1;
-            const depositRate = Math.random() + exchangeRate;
-            const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                actions: [
-                    {
-                        actionType: DydxBridgeActionType.Deposit,
-                        accountIdx: new BigNumber(0),
-                        marketId: new BigNumber(0),
-                        conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
-                        conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                    },
-                ],
-            });
-            const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
-            expect(makerAssetFillAmount).to.bignumber.eq(0);
-        });
+        it(
+            'returns zero if dydx has no taker token allowance and the deposit rate is' +
+                'greater than the exchange rate',
+            async () => {
+                await testContract
+                    .setTokenApproval(takerTokenAddress, ACCOUNT_OWNER, dydx.address, constants.ZERO_AMOUNT)
+                    .awaitTransactionSuccessAsync();
+                // The taker tokens getting exchanged in will only partially cover the deposit.
+                const exchangeRate = 0.1;
+                const depositRate = Math.random() + exchangeRate;
+                const checkInfo = createBalanceCheckInfo({
+                    takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
+                    makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Deposit,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(0),
+                            conversionRateNumerator: fromTokenUnitAmount(depositRate, TAKER_DECIMALS),
+                            conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                        },
+                    ],
+                });
+                const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
+                expect(makerAssetFillAmount).to.bignumber.eq(0);
+            },
+        );
     });
 
     describe('_areActionsWellFormed()', () => {
@@ -1048,32 +1043,34 @@ blockchainTests('LibDydxBalance', env => {
         bridgeAddress: string,
         data: Partial<DydxBridgeData> = {},
     ): string {
-        return assetDataContract.ERC20Bridge(
-            makerTokenAddress_,
-            bridgeAddress,
-            dydxBridgeDataEncoder.encode({
-                bridgeData: {
-                    accountNumbers: DYDX_CONFIG.accounts.slice(0, 1).map(a => a.accountId),
-                    actions: [
-                        {
-                            actionType: DydxBridgeActionType.Deposit,
-                            accountIdx: new BigNumber(0),
-                            marketId: new BigNumber(0),
-                            conversionRateNumerator: fromTokenUnitAmount(1, TAKER_DECIMALS),
-                            conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
-                        },
-                        {
-                            actionType: DydxBridgeActionType.Withdraw,
-                            accountIdx: new BigNumber(0),
-                            marketId: new BigNumber(1),
-                            conversionRateNumerator: new BigNumber(0),
-                            conversionRateDenominator: new BigNumber(0),
-                        },
-                    ],
-                    ...data,
-                },
-            }),
-        ).getABIEncodedTransactionData();
+        return assetDataContract
+            .ERC20Bridge(
+                makerTokenAddress_,
+                bridgeAddress,
+                dydxBridgeDataEncoder.encode({
+                    bridgeData: {
+                        accountNumbers: DYDX_CONFIG.accounts.slice(0, 1).map(a => a.accountId),
+                        actions: [
+                            {
+                                actionType: DydxBridgeActionType.Deposit,
+                                accountIdx: new BigNumber(0),
+                                marketId: new BigNumber(0),
+                                conversionRateNumerator: fromTokenUnitAmount(1, TAKER_DECIMALS),
+                                conversionRateDenominator: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                            },
+                            {
+                                actionType: DydxBridgeActionType.Withdraw,
+                                accountIdx: new BigNumber(0),
+                                marketId: new BigNumber(1),
+                                conversionRateNumerator: new BigNumber(0),
+                                conversionRateDenominator: new BigNumber(0),
+                            },
+                        ],
+                        ...data,
+                    },
+                }),
+            )
+            .getABIEncodedTransactionData();
     }
 
     function createOrder(orderFields: Partial<Order> = {}): Order {
@@ -1090,10 +1087,7 @@ blockchainTests('LibDydxBalance', env => {
             takerFee: getRandomInteger(1, constants.MAX_UINT256),
             makerAssetAmount: fromTokenUnitAmount(100, TAKER_DECIMALS),
             takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
-            makerAssetData: createBridgeAssetData(
-                makerTokenAddress,
-                BRIDGE_ADDRESS,
-            ),
+            makerAssetData: createBridgeAssetData(makerTokenAddress, BRIDGE_ADDRESS),
             takerAssetData: createERC20AssetData(takerTokenAddress),
             makerFeeAssetData: constants.NULL_BYTES,
             takerFeeAssetData: constants.NULL_BYTES,
@@ -1126,29 +1120,25 @@ blockchainTests('LibDydxBalance', env => {
 
         it('returns 0 if bridge data does not have well-formed actions', async () => {
             const order = createOrder({
-                makerAssetData: createBridgeAssetData(
-                    takerTokenAddress,
-                    BRIDGE_ADDRESS,
-                    {
-                        // Two withdraw actions is invalid.
-                        actions: [
-                            {
-                                actionType: DydxBridgeActionType.Withdraw,
-                                accountIdx: new BigNumber(0),
-                                marketId: new BigNumber(0),
-                                conversionRateNumerator: new BigNumber(0),
-                                conversionRateDenominator: new BigNumber(0),
-                            },
-                            {
-                                actionType: DydxBridgeActionType.Withdraw,
-                                accountIdx: new BigNumber(0),
-                                marketId: new BigNumber(1),
-                                conversionRateNumerator: new BigNumber(0),
-                                conversionRateDenominator: new BigNumber(0),
-                            },
-                        ],
-                    },
-                ),
+                makerAssetData: createBridgeAssetData(takerTokenAddress, BRIDGE_ADDRESS, {
+                    // Two withdraw actions is invalid.
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Withdraw,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(0),
+                            conversionRateNumerator: new BigNumber(0),
+                            conversionRateDenominator: new BigNumber(0),
+                        },
+                        {
+                            actionType: DydxBridgeActionType.Withdraw,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(1),
+                            conversionRateNumerator: new BigNumber(0),
+                            conversionRateDenominator: new BigNumber(0),
+                        },
+                    ],
+                }),
             });
             const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
             expect(r).to.bignumber.eq(0);
@@ -1156,21 +1146,17 @@ blockchainTests('LibDydxBalance', env => {
 
         it('returns 0 if the maker token withdraw rate is < 1', async () => {
             const order = createOrder({
-                makerAssetData: createBridgeAssetData(
-                    takerTokenAddress,
-                    BRIDGE_ADDRESS,
-                    {
-                        actions: [
-                            {
-                                actionType: DydxBridgeActionType.Withdraw,
-                                accountIdx: new BigNumber(0),
-                                marketId: new BigNumber(1),
-                                conversionRateNumerator: new BigNumber(9e18),
-                                conversionRateDenominator: new BigNumber(10e18),
-                            },
-                        ],
-                    },
-                ),
+                makerAssetData: createBridgeAssetData(takerTokenAddress, BRIDGE_ADDRESS, {
+                    actions: [
+                        {
+                            actionType: DydxBridgeActionType.Withdraw,
+                            accountIdx: new BigNumber(0),
+                            marketId: new BigNumber(1),
+                            conversionRateNumerator: new BigNumber(9e18),
+                            conversionRateDenominator: new BigNumber(10e18),
+                        },
+                    ],
+                }),
             });
             const r = await testContract.getDydxMakerBalance(order, dydx.address).callAsync();
             expect(r).to.bignumber.eq(0);

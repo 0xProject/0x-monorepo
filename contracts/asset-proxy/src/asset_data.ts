@@ -3,10 +3,7 @@ import { BigNumber, hexUtils } from '@0x/utils';
 
 import { IAssetDataContract } from './wrappers';
 
-const assetDataIface = new IAssetDataContract(
-    '0x0000000000000000000000000000000000000000',
-    { isEIP1193: true } as any,
-);
+const assetDataIface = new IAssetDataContract('0x0000000000000000000000000000000000000000', { isEIP1193: true } as any);
 
 /**
  * Get the proxy ID from encoded asset data.
@@ -34,8 +31,10 @@ export function decodeERC721AssetData(encoded: string): [string, BigNumber] {
  * Decode ERC1155 asset data.
  */
 export function decodeERC1155AssetData(encoded: string): [string, BigNumber[], BigNumber[], string] {
-    return assetDataIface
-        .getABIDecodedTransactionData<[string, BigNumber[], BigNumber[], string]>('ERC1155Assets', encoded);
+    return assetDataIface.getABIDecodedTransactionData<[string, BigNumber[], BigNumber[], string]>(
+        'ERC1155Assets',
+        encoded,
+    );
 }
 
 /**
@@ -82,12 +81,7 @@ export function encodeERC1155AssetData(
     values: BigNumber[],
     callbackData: string,
 ): string {
-    return assetDataIface.ERC1155Assets(
-        tokenAddress,
-        tokenIds,
-        values,
-        callbackData,
-    ).getABIEncodedTransactionData();
+    return assetDataIface.ERC1155Assets(tokenAddress, tokenIds, values, callbackData).getABIEncodedTransactionData();
 }
 
 /**
@@ -105,24 +99,14 @@ export function encodeStaticCallAssetData(
     staticCallData: string,
     expectedReturnDataHash: string,
 ): string {
-    return assetDataIface.StaticCall(
-        staticCallTargetAddress,
-        staticCallData,
-        expectedReturnDataHash,
-    ).getABIEncodedTransactionData();
+    return assetDataIface
+        .StaticCall(staticCallTargetAddress, staticCallData, expectedReturnDataHash)
+        .getABIEncodedTransactionData();
 }
 
 /**
  * Encode ERC20Bridge asset data.
  */
-export function encodeERC20BridgeAssetData(
-    tokenAddress: string,
-    bridgeAddress: string,
-    bridgeData: string,
-): string {
-    return assetDataIface.ERC20Bridge(
-        tokenAddress,
-        bridgeAddress,
-        bridgeData,
-    ).getABIEncodedTransactionData();
+export function encodeERC20BridgeAssetData(tokenAddress: string, bridgeAddress: string, bridgeData: string): string {
+    return assetDataIface.ERC20Bridge(tokenAddress, bridgeAddress, bridgeData).getABIEncodedTransactionData();
 }

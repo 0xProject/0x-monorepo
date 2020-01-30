@@ -14,7 +14,12 @@ import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts } from './artifacts';
 
-import { IAssetDataContract, IAssetProxyContract, StaticCallProxyContract, TestStaticCallTargetContract } from './wrappers';
+import {
+    IAssetDataContract,
+    IAssetProxyContract,
+    StaticCallProxyContract,
+    TestStaticCallTargetContract,
+} from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -111,9 +116,10 @@ describe('StaticCallProxy', () => {
         it('should revert if the length of assetData is less than 100 bytes', async () => {
             const staticCallData = constants.NULL_BYTES;
             const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = (assetDataInterface
+            const assetData = assetDataInterface
                 .StaticCall(staticCallTarget.address, staticCallData, expectedResultHash)
-                .getABIEncodedTransactionData()).slice(0, -128);
+                .getABIEncodedTransactionData()
+                .slice(0, -128);
             const assetDataByteLen = (assetData.length - 2) / 2;
             expect((assetDataByteLen - 4) % 32).to.equal(0);
             await expectTransactionFailedWithoutReasonAsync(
@@ -156,9 +162,7 @@ describe('StaticCallProxy', () => {
                 .StaticCall(staticCallTarget.address, staticCallData, expectedResultHash)
                 .getABIEncodedTransactionData();
             return expect(
-                staticCallProxy
-                    .transferFrom(assetData, fromAddress, toAddress, amount)
-                    .awaitTransactionSuccessAsync(),
+                staticCallProxy.transferFrom(assetData, fromAddress, toAddress, amount).awaitTransactionSuccessAsync(),
             ).to.revertWith(RevertReason.TargetNotEven);
         });
         it('should revert if the hash of the output is different than expected expected', async () => {
@@ -169,9 +173,7 @@ describe('StaticCallProxy', () => {
                 .StaticCall(staticCallTarget.address, staticCallData, expectedResultHash)
                 .getABIEncodedTransactionData();
             return expect(
-                staticCallProxy
-                    .transferFrom(assetData, fromAddress, toAddress, amount)
-                    .awaitTransactionSuccessAsync(),
+                staticCallProxy.transferFrom(assetData, fromAddress, toAddress, amount).awaitTransactionSuccessAsync(),
             ).to.revertWith(RevertReason.UnexpectedStaticCallResult);
         });
         it('should be successful if a function call with no inputs and no outputs is successful', async () => {

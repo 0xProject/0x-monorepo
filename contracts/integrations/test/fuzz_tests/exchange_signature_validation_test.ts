@@ -1,5 +1,12 @@
 import { ExchangeContract } from '@0x/contracts-exchange';
-import { blockchainTests, constants, expect, orderHashUtils, signingUtils, transactionHashUtils } from '@0x/contracts-test-utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    orderHashUtils,
+    signingUtils,
+    transactionHashUtils,
+} from '@0x/contracts-test-utils';
 import { Order, SignatureType, ZeroExTransaction } from '@0x/types';
 import { hexUtils, logUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';

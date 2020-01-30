@@ -809,10 +809,13 @@ blockchainTests.resets('matchOrders integration tests', env => {
 
     describe('token sanity checks', () => {
         it('should be able to match ERC721 tokens with ERC1155 tokens', async () => {
-            const leftMakerAssetData =
-                encodeERC1155AssetData(deployment.tokens.erc1155[0].address, [leftId], [new BigNumber(1)], '0x');
-            const rightMakerAssetData =
-                encodeERC721AssetData(deployment.tokens.erc721[0].address, rightId);
+            const leftMakerAssetData = encodeERC1155AssetData(
+                deployment.tokens.erc1155[0].address,
+                [leftId],
+                [new BigNumber(1)],
+                '0x',
+            );
+            const rightMakerAssetData = encodeERC721AssetData(deployment.tokens.erc721[0].address, rightId);
 
             const signedOrderLeft = await makerLeft.signOrderAsync({
                 makerAssetAmount: new BigNumber(4),

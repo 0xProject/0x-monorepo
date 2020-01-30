@@ -337,7 +337,10 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should fill an order with multiAsset makerAssetData (nested StaticCall succeeds)', async () => {
-            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallSuccessAssetData]);
+            const multiAssetData = encodeMultiAssetData(
+                [new BigNumber(2), new BigNumber(3)],
+                [makerAssetData, staticCallSuccessAssetData],
+            );
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -345,7 +348,10 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketSellTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should skip over an order with multiAsset makerAssetData where the nested StaticCall fails', async () => {
-            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallFailureAssetData]);
+            const multiAssetData = encodeMultiAssetData(
+                [new BigNumber(2), new BigNumber(3)],
+                [makerAssetData, staticCallFailureAssetData],
+            );
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -696,7 +702,10 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketBuyTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should fill an order with multiAsset makerAssetData (nested StaticCall succeeds)', async () => {
-            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallSuccessAssetData]);
+            const multiAssetData = encodeMultiAssetData(
+                [new BigNumber(2), new BigNumber(3)],
+                [makerAssetData, staticCallSuccessAssetData],
+            );
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
@@ -704,7 +713,10 @@ blockchainTests('Forwarder integration tests', env => {
             await testFactory.marketBuyTestAsync([multiAssetOrder, nonMultiAssetOrder], 1.3);
         });
         it('should skip over an order with multiAsset makerAssetData where the nested StaticCall fails', async () => {
-            const multiAssetData = encodeMultiAssetData([new BigNumber(2), new BigNumber(3)], [makerAssetData, staticCallFailureAssetData]);
+            const multiAssetData = encodeMultiAssetData(
+                [new BigNumber(2), new BigNumber(3)],
+                [makerAssetData, staticCallFailureAssetData],
+            );
             const multiAssetOrder = await maker.signOrderAsync({
                 makerAssetData: multiAssetData,
             });
