@@ -19,12 +19,14 @@ blockchainTests('DevUtils.getOrderHash', env => {
             exchangeArtifacts,
             new BigNumber(chainId),
         );
-        devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+        devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
             artifacts.DevUtils,
+            artifacts,
             env.provider,
             env.txDefaults,
             artifacts,
             exchange.address,
+            constants.NULL_ADDRESS,
             constants.NULL_ADDRESS,
         );
     });

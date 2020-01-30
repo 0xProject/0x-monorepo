@@ -196,12 +196,14 @@ export class DeploymentManager {
             exchange,
             staking.stakingProxy,
         ]);
-        const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+        const devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
             devUtilsArtifacts.DevUtils,
+            devUtilsArtifacts,
             environment.provider,
             environment.txDefaults,
             devUtilsArtifacts,
             exchange.address,
+            constants.NULL_ADDRESS,
             constants.NULL_ADDRESS,
         );
         const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
