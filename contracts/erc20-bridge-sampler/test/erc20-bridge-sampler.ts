@@ -15,7 +15,6 @@ import { TestERC20BridgeSamplerContract } from './wrappers';
 
 blockchainTests('erc20-bridge-sampler', env => {
     let testContract: TestERC20BridgeSamplerContract;
-    let allSources: { [name: string]: string };
     const RATE_DENOMINATOR = constants.ONE_ETHER;
     const MIN_RATE = new BigNumber('0.01');
     const MAX_RATE = new BigNumber('100');
@@ -30,6 +29,11 @@ blockchainTests('erc20-bridge-sampler', env => {
     const INVALID_ASSET_DATA = hexUtils.random(37);
     const SELL_SOURCES = ['Eth2Dai', 'Kyber', 'Uniswap'];
     const BUY_SOURCES = ['Eth2Dai', 'Uniswap'];
+    const SOURCE_IDS: { [source: string]: string } = {
+        Uniswap: '0xc0a47dfe034b400b47bdad5fecda2621de6c4d95',
+        Eth2Dai: '0x39755357759ce0d7f32dc8dc45414cca409ae24e',
+        Kyber: '0x818e6fecd516ecc3849daf6845e3ec868087b755',
+    };
     const EMPTY_ORDERS_ERROR = 'ERC20BridgeSampler/EMPTY_ORDERS';
     const UNSUPPORTED_ASSET_PROXY_ERROR = 'ERC20BridgeSampler/UNSUPPORTED_ASSET_PROXY';
     const INVALID_ASSET_DATA_ERROR = 'ERC20BridgeSampler/INVALID_ASSET_DATA';
@@ -44,14 +48,6 @@ blockchainTests('erc20-bridge-sampler', env => {
             env.provider,
             env.txDefaults,
             {},
-        );
-        allSources = _.zipObject(
-            ['Uniswap', 'Eth2Dai', 'Kyber'],
-            [
-                await testContract.uniswap().callAsync(),
-                await testContract.eth2Dai().callAsync(),
-                await testContract.kyber().callAsync(),
-            ],
         );
     });
 
@@ -340,7 +336,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const takerTokenAmounts = getSampleAmounts(TAKER_TOKEN);
             const expectedFillableAmounts = ORDERS.map(getDeterministicFillableTakerAssetAmount);
             const [orderInfos] = await testContract
-                .queryOrdersAndSampleSells(ORDERS, SIGNATURES, SELL_SOURCES.map(n => allSources[n]), takerTokenAmounts)
+                .queryOrdersAndSampleSells(ORDERS, SIGNATURES, SELL_SOURCES.map(n => SOURCE_IDS[n]), takerTokenAmounts)
                 .callAsync();
             expect(orderInfos).to.deep.eq(expectedFillableAmounts);
         });
@@ -349,14 +345,14 @@ blockchainTests('erc20-bridge-sampler', env => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
             const expectedQuotes = getDeterministicSellQuotes(TAKER_TOKEN, MAKER_TOKEN, SELL_SOURCES, sampleAmounts);
             const [, quotes] = await testContract
-                .queryOrdersAndSampleSells(ORDERS, SIGNATURES, SELL_SOURCES.map(n => allSources[n]), sampleAmounts)
+                .queryOrdersAndSampleSells(ORDERS, SIGNATURES, SELL_SOURCES.map(n => SOURCE_IDS[n]), sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });
 
         it('throws if no orders are passed in', async () => {
             const tx = testContract
-                .queryOrdersAndSampleSells([], [], SELL_SOURCES.map(n => allSources[n]), getSampleAmounts(TAKER_TOKEN))
+                .queryOrdersAndSampleSells([], [], SELL_SOURCES.map(n => SOURCE_IDS[n]), getSampleAmounts(TAKER_TOKEN))
                 .callAsync();
             return expect(tx).to.revertWith(EMPTY_ORDERS_ERROR);
         });
@@ -366,7 +362,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                 .queryOrdersAndSampleSells(
                     ORDERS,
                     SIGNATURES,
-                    [...SELL_SOURCES.map(n => allSources[n]), randomAddress()],
+                    [...SELL_SOURCES.map(n => SOURCE_IDS[n]), randomAddress()],
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -381,7 +377,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         makerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    SELL_SOURCES.map(n => allSources[n]),
+                    SELL_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -396,7 +392,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         takerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    SELL_SOURCES.map(n => allSources[n]),
+                    SELL_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -411,7 +407,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         makerAssetData: INVALID_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    SELL_SOURCES.map(n => allSources[n]),
+                    SELL_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -426,7 +422,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         takerAssetData: INVALID_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    SELL_SOURCES.map(n => allSources[n]),
+                    SELL_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(TAKER_TOKEN),
                 )
                 .callAsync();
@@ -446,7 +442,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const takerTokenAmounts = getSampleAmounts(MAKER_TOKEN);
             const expectedFillableAmounts = ORDERS.map(getDeterministicFillableMakerAssetAmount);
             const [orderInfos] = await testContract
-                .queryOrdersAndSampleBuys(ORDERS, SIGNATURES, BUY_SOURCES.map(n => allSources[n]), takerTokenAmounts)
+                .queryOrdersAndSampleBuys(ORDERS, SIGNATURES, BUY_SOURCES.map(n => SOURCE_IDS[n]), takerTokenAmounts)
                 .callAsync();
             expect(orderInfos).to.deep.eq(expectedFillableAmounts);
         });
@@ -455,14 +451,14 @@ blockchainTests('erc20-bridge-sampler', env => {
             const sampleAmounts = getSampleAmounts(MAKER_TOKEN);
             const expectedQuotes = getDeterministicBuyQuotes(TAKER_TOKEN, MAKER_TOKEN, BUY_SOURCES, sampleAmounts);
             const [, quotes] = await testContract
-                .queryOrdersAndSampleBuys(ORDERS, SIGNATURES, BUY_SOURCES.map(n => allSources[n]), sampleAmounts)
+                .queryOrdersAndSampleBuys(ORDERS, SIGNATURES, BUY_SOURCES.map(n => SOURCE_IDS[n]), sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });
 
         it('throws if no orders are passed in', async () => {
             const tx = testContract
-                .queryOrdersAndSampleBuys([], [], BUY_SOURCES.map(n => allSources[n]), getSampleAmounts(MAKER_TOKEN))
+                .queryOrdersAndSampleBuys([], [], BUY_SOURCES.map(n => SOURCE_IDS[n]), getSampleAmounts(MAKER_TOKEN))
                 .callAsync();
             return expect(tx).to.revertWith(EMPTY_ORDERS_ERROR);
         });
@@ -472,7 +468,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                 .queryOrdersAndSampleBuys(
                     ORDERS,
                     SIGNATURES,
-                    [...BUY_SOURCES.map(n => allSources[n]), randomAddress()],
+                    [...BUY_SOURCES.map(n => SOURCE_IDS[n]), randomAddress()],
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -485,7 +481,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                 .queryOrdersAndSampleBuys(
                     ORDERS,
                     SIGNATURES,
-                    sources.map(n => allSources[n]),
+                    sources.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -500,7 +496,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         makerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    BUY_SOURCES.map(n => allSources[n]),
+                    BUY_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -515,7 +511,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         takerAssetData: INVALID_ASSET_PROXY_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    BUY_SOURCES.map(n => allSources[n]),
+                    BUY_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -530,7 +526,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         makerAssetData: INVALID_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    BUY_SOURCES.map(n => allSources[n]),
+                    BUY_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -545,7 +541,7 @@ blockchainTests('erc20-bridge-sampler', env => {
                         takerAssetData: INVALID_ASSET_DATA,
                     })),
                     SIGNATURES,
-                    BUY_SOURCES.map(n => allSources[n]),
+                    BUY_SOURCES.map(n => SOURCE_IDS[n]),
                     getSampleAmounts(MAKER_TOKEN),
                 )
                 .callAsync();
@@ -561,7 +557,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('returns empty quotes with no sample amounts', async () => {
             const emptyQuotes = _.times(SELL_SOURCES.length, () => []);
             const quotes = await testContract
-                .sampleSells(SELL_SOURCES.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, [])
+                .sampleSells(SELL_SOURCES.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, [])
                 .callAsync();
             expect(quotes).to.deep.eq(emptyQuotes);
         });
@@ -570,7 +566,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
             const expectedQuotes = getDeterministicSellQuotes(TAKER_TOKEN, MAKER_TOKEN, SELL_SOURCES, sampleAmounts);
             const quotes = await testContract
-                .sampleSells(SELL_SOURCES.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
+                .sampleSells(SELL_SOURCES.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });
@@ -580,7 +576,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const sources = _.sampleSize(SELL_SOURCES, 1);
             const expectedQuotes = getDeterministicSellQuotes(TAKER_TOKEN, MAKER_TOKEN, sources, sampleAmounts);
             const quotes = await testContract
-                .sampleSells(sources.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
+                .sampleSells(sources.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });
@@ -588,7 +584,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('throws with an unsupported source', async () => {
             const tx = testContract
                 .sampleSells(
-                    [...SELL_SOURCES.map(n => allSources[n]), randomAddress()],
+                    [...SELL_SOURCES.map(n => SOURCE_IDS[n]), randomAddress()],
                     TAKER_TOKEN,
                     MAKER_TOKEN,
                     getSampleAmounts(TAKER_TOKEN),
@@ -606,7 +602,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('returns empty quotes with no sample amounts', async () => {
             const emptyQuotes = _.times(BUY_SOURCES.length, () => []);
             const quotes = await testContract
-                .sampleBuys(BUY_SOURCES.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, [])
+                .sampleBuys(BUY_SOURCES.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, [])
                 .callAsync();
             expect(quotes).to.deep.eq(emptyQuotes);
         });
@@ -615,7 +611,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const sampleAmounts = getSampleAmounts(MAKER_TOKEN);
             const expectedQuotes = getDeterministicBuyQuotes(TAKER_TOKEN, MAKER_TOKEN, BUY_SOURCES, sampleAmounts);
             const quotes = await testContract
-                .sampleBuys(BUY_SOURCES.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
+                .sampleBuys(BUY_SOURCES.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });
@@ -625,7 +621,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             const sources = _.sampleSize(BUY_SOURCES, 1);
             const expectedQuotes = getDeterministicBuyQuotes(TAKER_TOKEN, MAKER_TOKEN, sources, sampleAmounts);
             const quotes = await testContract
-                .sampleBuys(sources.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
+                .sampleBuys(sources.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });
@@ -633,7 +629,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('throws with an unsupported source', async () => {
             const tx = testContract
                 .sampleBuys(
-                    [...BUY_SOURCES.map(n => allSources[n]), randomAddress()],
+                    [...BUY_SOURCES.map(n => SOURCE_IDS[n]), randomAddress()],
                     TAKER_TOKEN,
                     MAKER_TOKEN,
                     getSampleAmounts(MAKER_TOKEN),
@@ -645,7 +641,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         it('throws if kyber is passed in as a source', async () => {
             const sources = [...BUY_SOURCES, 'Kyber'];
             const tx = testContract
-                .sampleBuys(sources.map(n => allSources[n]), TAKER_TOKEN, MAKER_TOKEN, getSampleAmounts(MAKER_TOKEN))
+                .sampleBuys(sources.map(n => SOURCE_IDS[n]), TAKER_TOKEN, MAKER_TOKEN, getSampleAmounts(MAKER_TOKEN))
                 .callAsync();
             return expect(tx).to.revertWith(UNSUPPORTED_SOURCE_ERROR);
         });
