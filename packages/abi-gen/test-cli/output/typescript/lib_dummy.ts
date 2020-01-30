@@ -161,11 +161,10 @@ export class LibDummyContract extends BaseContract {
         txDefaults: Partial<TxData>,
         libraryAddresses: { [libraryName: string]: string } = {},
     ): Promise<{ [libraryName: string]: string }> {
-        const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const links = artifact.compilerOutput.evm.bytecode.linkReferences;
         // Go through all linked libraries, recursively deploying them if necessary.
         for (const link of Object.values(links)) {
-            for (const [libraryName, libraryRefs] of Object.entries(link)) {
+            for (const libraryName of Object.keys(link)) {
                 if (!libraryAddresses[libraryName]) {
                     // Library not yet deployed.
                     const libraryArtifact = libraryArtifacts[libraryName];
