@@ -4,6 +4,10 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/DevUtils.json",
+        "generated-artifacts/LibAssetData.json",
+        "generated-artifacts/LibDydxBalance.json",
+        "generated-artifacts/LibOrderTransferSimulation.json",
+        "generated-artifacts/LibTransactionDecoder.json",
         "test/generated-artifacts/Addresses.json",
         "test/generated-artifacts/AssetBalance.json",
         "test/generated-artifacts/DevUtils.json",
