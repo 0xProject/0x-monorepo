@@ -1,4 +1,3 @@
-import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,
@@ -9,19 +8,17 @@ import {
     ValidatorSignature,
     ZeroExTransaction,
 } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { constants } from './constants';
 import { eip712Utils } from './eip712_utils';
 import { orderHashUtils } from './order_hash_utils';
+import { transactionHashUtils } from './transaction_hash_utils';
 import { TypedDataError } from './types';
-
-const devUtilsContract = new DevUtilsContract(constants.NULL_ADDRESS, constants.FAKED_PROVIDER as any);
 
 export const signatureUtils = {
     /**
@@ -51,7 +48,7 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const orderHash = await orderHashUtils.getOrderHashAsync(order);
+            const orderHash = orderHashUtils.getOrderHash(order);
             const signatureHex = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, signerAddress);
             const signedOrder = {
                 ...order,
@@ -134,13 +131,9 @@ export const signatureUtils = {
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
-            const transactionHash = await devUtilsContract
-                .getTransactionHash(
-                    transaction,
-                    new BigNumber(transaction.domain.chainId),
-                    transaction.domain.verifyingContract,
-                )
-                .callAsync();
+            const transactionHash = transactionHashUtils.getTransactionHash(
+                transaction,
+            );
             const signatureHex = await signatureUtils.ecSignHashAsync(
                 supportedProvider,
                 transactionHash,

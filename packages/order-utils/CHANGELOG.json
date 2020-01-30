@@ -1,5 +1,22 @@
 [
     {
+        "version": "10.2.0",
+        "changes": [
+            {
+                "note": "Remove use of ambient `DevUtils` instances.",
+                "pr": 2456
+            },
+            {
+                "note": "Make hash computing tooling non-async again.",
+                "pr": 2456
+            },
+            {
+                "note": "Add `transactionHashUtils`.",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "timestamp": 1579682890,
         "version": "10.1.1",
         "changes": [

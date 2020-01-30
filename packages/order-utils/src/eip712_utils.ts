@@ -1,5 +1,4 @@
 import { assert } from '@0x/assert';
-import { DevUtilsContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import {
     EIP712DomainWithDefaultSchema,
@@ -10,7 +9,7 @@ import {
     SignedZeroExTransaction,
     ZeroExTransaction,
 } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { hexUtils, signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -101,24 +100,24 @@ export const eip712Utils = {
      * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
      * @return  A typed data object
      */
-    async createCoordinatorApprovalTypedDataAsync(
+    createCoordinatorApprovalTypedData(
         transaction: SignedZeroExTransaction,
         verifyingContract: string,
         txOrigin: string,
-    ): Promise<EIP712TypedData> {
+    ): EIP712TypedData {
         const domain = {
             ...transaction.domain,
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
             verifyingContract,
         };
-        const transactionHash = await new DevUtilsContract(constants.NULL_ADDRESS, constants.FAKED_PROVIDER as any)
-            .getTransactionHash(
-                transaction,
-                new BigNumber(transaction.domain.chainId),
-                transaction.domain.verifyingContract,
-            )
-            .callAsync();
+        // TODO(dorothy-zbornak): Refactor these hash files so we can reuse
+        // `transactionHashUtils` here without a circular dep.
+        const transactionHash = hexUtils.toHex(
+            signTypedDataUtils.generateTypedDataHash(
+                eip712Utils.createZeroExTransactionTypedData(transaction),
+            ),
+        );
         const approval = {
             txOrigin,
             transactionHash,

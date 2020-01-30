@@ -1,13 +1,13 @@
-import { Order } from '@0x/types';
+import { ZeroExTransaction } from '@0x/types';
 import { hexUtils, signTypedDataUtils } from '@0x/utils';
 
 import { eip712Utils } from './eip712_utils';
 
-export const orderHashUtils = {
-    getOrderHash: (order: Order): string => {
+export const transactionHashUtils = {
+    getTransactionHash: (tx: ZeroExTransaction): string => {
         return hexUtils.toHex(
             signTypedDataUtils.generateTypedDataHash(
-                eip712Utils.createOrderTypedData(order),
+                eip712Utils.createZeroExTransactionTypedData(tx),
             ),
         );
     },
