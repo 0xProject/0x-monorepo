@@ -9,6 +9,10 @@
             {
                 "note": "Remove `LibTransactionDecoder` deployment",
                 "pr": 2456
+            },
+            {
+                "note": "Use contract package artifacts in ganache migrations",
+                "pr": 2456
             }
         ]
     },

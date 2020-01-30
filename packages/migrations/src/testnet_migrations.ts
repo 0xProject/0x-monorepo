@@ -248,8 +248,9 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     ]);
     await submitAndExecuteTransactionAsync(governor, governor.address, batchTransactionData);
 
-    await DevUtilsContract.deployFrom0xArtifactAsync(
+    await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
         devUtilsArtifacts.DevUtils,
+        devUtilsArtifacts,
         provider,
         txDefaults,
         devUtilsArtifacts,
