@@ -17,6 +17,10 @@
             {
                 "note": "Remove dependency on `@0x/contracts-dev-utils`",
                 "pr": 2456
+            },
+            {
+                "note": "Add asset data decoding functions",
+                "pr": 2456
             }
         ]
     },
