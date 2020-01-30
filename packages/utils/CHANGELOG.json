@@ -9,6 +9,10 @@
             {
                 "note": "Add `hexUtils.isHex`",
                 "pr": 2456
+            },
+            {
+                "note": "Accept `Buffer` type in `hexUtils.toHex()`",
+                "pr": 2456
             }
         ]
     },
