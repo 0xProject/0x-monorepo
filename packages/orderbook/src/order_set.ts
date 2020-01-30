@@ -14,7 +14,7 @@ export class OrderSet {
     }
 
     public async addAsync(item: APIOrder): Promise<void> {
-        const orderHash = await utils.getOrderHashAsync(item);
+        const orderHash = utils.getOrderHash(item);
         (item.metaData as any).orderHash = orderHash;
         this._map.set(orderHash, item);
     }
@@ -26,20 +26,20 @@ export class OrderSet {
     }
 
     public async hasAsync(order: APIOrder): Promise<boolean> {
-        return this._map.has(await utils.getOrderHashAsync(order));
+        return this._map.has(utils.getOrderHash(order));
     }
 
     public async diffAsync(other: OrderSet): Promise<{ added: APIOrder[]; removed: APIOrder[] }> {
         const added: APIOrder[] = [];
         const removed: APIOrder[] = [];
         for (const otherItem of other.values()) {
-            const doesContainItem = this._map.has(await utils.getOrderHashAsync(otherItem));
+            const doesContainItem = this._map.has(utils.getOrderHash(otherItem));
             if (!doesContainItem) {
                 added.push(otherItem);
             }
         }
         for (const item of this.values()) {
-            const doesContainItem = other._map.has(await utils.getOrderHashAsync(item));
+            const doesContainItem = other._map.has(utils.getOrderHash(item));
             if (!doesContainItem) {
                 removed.push(item);
             }
@@ -52,7 +52,7 @@ export class OrderSet {
     }
 
     public async deleteAsync(item: APIOrder): Promise<boolean> {
-        return this._map.delete(await utils.getOrderHashAsync(item));
+        return this._map.delete(utils.getOrderHash(item));
     }
 
     public async deleteManyAsync(items: APIOrder[]): Promise<void> {

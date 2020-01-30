@@ -2,15 +2,15 @@ import { APIOrder, SignedOrder } from '@0x/connect';
 import { orderHashUtils } from '@0x/order-utils';
 
 export const utils = {
-    async getOrderHashAsync(order: APIOrder | SignedOrder): Promise<string> {
+    getOrderHash(order: APIOrder | SignedOrder): string {
         if ((order as APIOrder).metaData) {
             const apiOrder = order as APIOrder;
             const orderHash =
-                (apiOrder.metaData as any).orderHash || (await orderHashUtils.getOrderHashAsync(apiOrder.order));
+                (apiOrder.metaData as any).orderHash || orderHashUtils.getOrderHash(apiOrder.order);
             return orderHash;
         } else {
             const signedOrder = order as SignedOrder;
-            const orderHash = await orderHashUtils.getOrderHashAsync(signedOrder);
+            const orderHash = orderHashUtils.getOrderHash(signedOrder);
             return orderHash;
         }
     },
