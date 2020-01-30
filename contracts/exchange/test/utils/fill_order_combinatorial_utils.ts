@@ -5,7 +5,6 @@ import {
     ERC721Wrapper,
     MultiAssetProxyContract,
 } from '@0x/contracts-asset-proxy';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, expect, LogDecoder, orderHashUtils, orderUtils, signingUtils } from '@0x/contracts-test-utils';
 import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, ExchangeRevertErrors, providerUtils, RevertError, StringRevertError } from '@0x/utils';
@@ -109,8 +108,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         {},
     );
 
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
-    const assetWrapper = new AssetWrapper([erc20Wrapper, erc721Wrapper, erc1155Wrapper], burnerAddress, devUtils);
+    const assetWrapper = new AssetWrapper([erc20Wrapper, erc721Wrapper, erc1155Wrapper], burnerAddress);
 
     const exchangeContract = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
@@ -160,7 +158,6 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     await multiAssetProxy.registerAssetProxy(erc1155Proxy.address).awaitTransactionSuccessAsync({ from: ownerAddress });
 
     const orderFactory = new OrderFactoryFromScenario(
-        devUtils,
         userAddresses,
         erc20EighteenDecimalTokens.map(token => token.address),
         erc20FiveDecimalTokens.map(token => token.address),
@@ -441,29 +438,26 @@ export class FillOrderCombinatorialUtils {
         this.balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(assetWrapper);
     }
 
-    public async testFillOrderScenarioAsync(fillScenario: FillScenario, devUtils: DevUtilsContract): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Any, devUtils);
+    public async testFillOrderScenarioAsync(fillScenario: FillScenario): Promise<void> {
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Any);
     }
 
     public async testFillOrderScenarioSuccessAsync(
         fillScenario: FillScenario,
-        devUtils: DevUtilsContract,
     ): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success, devUtils);
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Success);
     }
 
     public async testFillOrderScenarioFailureAsync(
         fillScenario: FillScenario,
-        devUtils: DevUtilsContract,
         fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
-        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, devUtils, fillErrorIfExists);
+        return this._testFillOrderScenarioAsync(fillScenario, TestOutlook.Failure, fillErrorIfExists);
     }
 
     private async _testFillOrderScenarioAsync(
         fillScenario: FillScenario,
         expectedTestResult: TestOutlook = TestOutlook.Any,
-        devUtils: DevUtilsContract,
         fillErrorIfExists?: FillOrderError,
     ): Promise<void> {
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(this.balanceAndProxyAllowanceFetcher);
@@ -480,7 +474,6 @@ export class FillOrderCombinatorialUtils {
                     signedOrder,
                     takerAssetFillAmount,
                     lazyStore,
-                    devUtils,
                 );
             } catch (err) {
                 _fillErrorIfExists = err.message;
@@ -514,9 +507,8 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
         lazyStore: BalanceAndProxyAllowanceLazyStore,
-        devUtils: DevUtilsContract,
     ): Promise<FillResults> {
-        const simulator = new FillOrderSimulator(lazyStore, devUtils);
+        const simulator = new FillOrderSimulator(lazyStore);
         return simulator.simulateFillOrderAsync(signedOrder, this.takerAddress, takerAssetFillAmount);
     }
 
