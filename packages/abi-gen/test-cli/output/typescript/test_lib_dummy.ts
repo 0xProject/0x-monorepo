@@ -284,7 +284,15 @@ export class TestLibDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -302,7 +310,15 @@ export class TestLibDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
