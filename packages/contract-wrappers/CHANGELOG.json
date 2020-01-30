@@ -5,6 +5,10 @@
             {
                 "note": "Remove `LibTransactionDecoder`.",
                 "pr": 2456
+            },
+            {
+                "note": "Update `DevUtils` wrapper.",
+                "pr": 2456
             }
         ]
     },

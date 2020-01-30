@@ -127,6 +127,7 @@ export {
     DecodedLogEntryEvent,
     ParamDescription,
     EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
     JSONRPCResponsePayload,
     MethodAbi,
     ConstructorAbi,
