@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.5.0",
+        "changes": [
+            {
+                "note": "Update `DevUtils` artifact",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "version": "3.4.0",
         "changes": [
             {
