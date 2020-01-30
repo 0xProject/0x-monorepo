@@ -236,7 +236,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
                         approval.signature,
@@ -251,7 +251,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [order];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
                         approval.signature,
@@ -272,7 +272,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, approvalSignerAddress1, transaction.signature, [
                         approval.signature,
@@ -293,7 +293,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 const signature = hexUtils.concat(
                     hexUtils.slice(approval.signature, 0, 2),
                     '0xFFFFFFFF',
@@ -314,7 +314,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
 
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
@@ -335,7 +335,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
                         approval.signature,
@@ -349,7 +349,7 @@ blockchainTests.resets('Mixins tests', env => {
                 }));
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
                         approval.signature,
@@ -371,7 +371,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, { ...defaultOrder, senderAddress: constants.NULL_ADDRESS }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
                         approval.signature,
@@ -382,8 +382,8 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval1 = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
-                const approval2 = await approvalFactory2.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval1 = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
+                const approval2 = approvalFactory2.newSignedApproval(transaction, transactionSignerAddress);
                 await mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
                         approval1.signature,
@@ -403,7 +403,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval2 = await approvalFactory2.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval2 = approvalFactory2.newSignedApproval(transaction, transactionSignerAddress);
 
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [
@@ -429,7 +429,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
                 const signature = hexUtils.concat(
                     hexUtils.slice(approval.signature, 0, 2),
                     '0xFFFFFFFF',
@@ -450,8 +450,8 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval1 = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
-                const approval2 = await approvalFactory2.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval1 = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
+                const approval2 = approvalFactory2.newSignedApproval(transaction, transactionSignerAddress);
                 const approvalSignature2 = hexUtils.concat(
                     hexUtils.slice(approval2.signature, 0, 2),
                     '0xFFFFFFFF',
@@ -473,7 +473,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, { ...defaultOrder, feeRecipientAddress: approvalSignerAddress2 }];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval2 = await approvalFactory2.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval2 = approvalFactory2.newSignedApproval(transaction, transactionSignerAddress);
                 const approvalSignature2 = hexUtils.concat(
                     hexUtils.slice(approval2.signature, 0, 2),
                     '0xFFFFFFFF',
@@ -494,7 +494,7 @@ blockchainTests.resets('Mixins tests', env => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                const approval1 = await approvalFactory1.newSignedApprovalAsync(transaction, transactionSignerAddress);
+                const approval1 = approvalFactory1.newSignedApproval(transaction, transactionSignerAddress);
 
                 const tx = mixins
                     .assertValidCoordinatorApprovals(transaction, transactionSignerAddress, transaction.signature, [

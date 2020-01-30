@@ -3,12 +3,12 @@ import { SignedZeroExTransaction } from '@0x/types';
 import { hexUtils, signTypedDataUtils } from '@0x/utils';
 
 export const hashUtils = {
-    async getApprovalHashBufferAsync(
+    getApprovalHashBuffer(
         transaction: SignedZeroExTransaction,
         verifyingContract: string,
         txOrigin: string,
-    ): Promise<Buffer> {
-        const typedData = await eip712Utils.createCoordinatorApprovalTypedDataAsync(
+    ): Buffer {
+        const typedData = eip712Utils.createCoordinatorApprovalTypedData(
             transaction,
             verifyingContract,
             txOrigin,
@@ -16,13 +16,13 @@ export const hashUtils = {
         const hashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         return hashBuffer;
     },
-    async getApprovalHashHexAsync(
+    getApprovalHashHex(
         transaction: SignedZeroExTransaction,
         verifyingContract: string,
         txOrigin: string,
-    ): Promise<string> {
+    ): string {
         const hashHex = hexUtils.concat(
-            await hashUtils.getApprovalHashBufferAsync(transaction, verifyingContract, txOrigin),
+            hashUtils.getApprovalHashBuffer(transaction, verifyingContract, txOrigin),
         );
         return hashHex;
     },

@@ -14,12 +14,12 @@ export class ApprovalFactory {
         this._verifyingContractAddress = verifyingContract;
     }
 
-    public async newSignedApprovalAsync(
+    public newSignedApproval(
         transaction: SignedZeroExTransaction,
         txOrigin: string,
         signatureType: SignatureType = SignatureType.EthSign,
-    ): Promise<SignedCoordinatorApproval> {
-        const approvalHashBuff = await hashUtils.getApprovalHashBufferAsync(
+    ): SignedCoordinatorApproval {
+        const approvalHashBuff = hashUtils.getApprovalHashBuffer(
             transaction,
             this._verifyingContractAddress,
             txOrigin,

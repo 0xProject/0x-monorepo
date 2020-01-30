@@ -44,7 +44,7 @@ blockchainTests.resets('Libs tests', env => {
                 transactionHash: transactionHashUtils.getTransactionHashHex(signedTx),
                 transactionSignature: signedTx.signature,
             };
-            const expectedApprovalHash = await hashUtils.getApprovalHashHexAsync(
+            const expectedApprovalHash = hashUtils.getApprovalHashHex(
                 signedTx,
                 coordinatorContract.address,
                 txOrigin,
