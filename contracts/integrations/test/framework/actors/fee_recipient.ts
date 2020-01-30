@@ -54,7 +54,7 @@ export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase
             if (this.approvalFactory === undefined) {
                 throw new Error('No verifying contract provided in FeeRecipient constructor');
             }
-            return this.approvalFactory.newSignedApprovalAsync(transaction, txOrigin, signatureType);
+            return this.approvalFactory.newSignedApproval(transaction, txOrigin, signatureType);
         }
     };
 }

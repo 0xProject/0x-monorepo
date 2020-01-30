@@ -1,6 +1,5 @@
 import { ExchangeContract } from '@0x/contracts-exchange';
-import { blockchainTests, constants, expect, signingUtils, transactionHashUtils } from '@0x/contracts-test-utils';
-import { orderHashUtils } from '@0x/order-utils';
+import { blockchainTests, constants, expect, orderHashUtils, signingUtils, transactionHashUtils } from '@0x/contracts-test-utils';
 import { Order, SignatureType, ZeroExTransaction } from '@0x/types';
 import { hexUtils, logUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
@@ -194,7 +193,7 @@ tests('Exchange signature validation fuzz tests', env => {
                     exchangeAddress: mangled.order!.exchangeAddress,
                     chainId: mangled.order!.chainId,
                 });
-                mangled.hash = await orderHashUtils.getOrderHashAsync(mangled.order);
+                mangled.hash = await orderHashUtils.getOrderHashHex(mangled.order);
                 break;
             case 'RANDOM_TRANSACTION':
                 mangled.transaction = randomTransaction({
@@ -392,7 +391,7 @@ tests('Exchange signature validation fuzz tests', env => {
             fields.validator || (signatureType === SignatureType.Validator ? walletContractAddress : undefined);
         const signerKey = fields.signerKey || privateKeys[signer];
         const order = fields.order || randomOrder({ makerAddress: signer });
-        const hash = fields.hash || (await orderHashUtils.getOrderHashAsync(order));
+        const hash = fields.hash || (await orderHashUtils.getOrderHashHex(order));
         const payload =
             fields.payload ||
             (STRICT_LENGTH_SIGNATURE_TYPES.includes(signatureType) ? constants.NULL_BYTES : randomPayload());
