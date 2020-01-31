@@ -142,6 +142,7 @@ export interface SwapQuoteBase {
     orders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
+    sourceBreakdown: SwapQuoteOrdersBreakdown;
 }
 
 /**
@@ -175,6 +176,13 @@ export interface SwapQuoteInfo {
     totalTakerAssetAmount: BigNumber;
     makerAssetAmount: BigNumber;
     protocolFeeInWeiAmount: BigNumber;
+}
+
+/**
+ * percentage breakdown of each liquidity source used in quote
+ */
+export interface SwapQuoteOrdersBreakdown {
+    [source: string]: BigNumber;
 }
 
 /**

@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { constants } from '../../src/constants';
 import { MarketOperation, SignedOrderWithFillableAmounts, SwapQuote } from '../../src/types';
 import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
+import { ERC20BridgeSource } from '../../src';
 
 /**
  * Creates a swap quote given orders.
@@ -26,6 +27,10 @@ export async function getFullyFillableSwapQuoteWithNoFeesAsync(
         protocolFeeInWeiAmount: await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(orders, gasPrice),
     };
 
+    const breakdown = {
+        [ERC20BridgeSource.Native]: new BigNumber(1),
+    };
+
     const quoteBase = {
         makerAssetData,
         takerAssetData,
@@ -33,6 +38,7 @@ export async function getFullyFillableSwapQuoteWithNoFeesAsync(
         gasPrice,
         bestCaseQuoteInfo: quoteInfo,
         worstCaseQuoteInfo: quoteInfo,
+        sourceBreakdown: breakdown,
     };
 
     if (operation === MarketOperation.Buy) {
