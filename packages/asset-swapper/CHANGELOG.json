@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Allow contract addresses to be passed as optional constructor ags instead of hardcoding",
+                "pr": 2461
+            }
+        ]
+    },
+    {
         "version": "4.0.1",
         "changes": [
             {
