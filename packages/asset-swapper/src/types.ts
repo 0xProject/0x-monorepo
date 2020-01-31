@@ -1,3 +1,4 @@
+import { ContractAddresses } from '@0x/migrations';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -87,6 +88,7 @@ export interface SwapQuoteConsumerBase {
  */
 export interface SwapQuoteConsumerOpts {
     chainId: number;
+    contractAddresses?: ContractAddresses;
 }
 
 /**
@@ -198,6 +200,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     chainId: number;
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
+    contractAddresses?: ContractAddresses;
 }
 
 /**
