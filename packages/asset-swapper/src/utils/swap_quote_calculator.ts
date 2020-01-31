@@ -201,7 +201,6 @@ export class SwapQuoteCalculator {
         if (operation === MarketOperation.Buy) {
             return {
                 ...quoteBase,
-                sourceBreakdown: breakdown,
                 type: MarketOperation.Buy,
                 makerAssetFillAmount: assetFillAmount,
             };
