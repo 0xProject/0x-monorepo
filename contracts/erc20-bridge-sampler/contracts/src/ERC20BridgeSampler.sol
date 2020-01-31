@@ -40,6 +40,9 @@ contract ERC20BridgeSampler is
     uint256 constant internal KYBER_SAMPLE_CALL_GAS = 1500e3;
     uint256 constant internal UNISWAP_SAMPLE_CALL_GAS = 150e3;
     uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 1000e3;
+    address constant private UNISWAP_SOURCE = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
+    address constant private ETH2DAI_SOURCE = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
+    address constant private KYBER_SOURCE = 0x818E6FECD516Ecc3849DAf6845e3EC868087B755;
 
     /// @dev Query batches of native orders and sample sell quotes on multiple DEXes at once.
     /// @param orders Batches of Native orders to query.
@@ -606,13 +609,13 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
-        if (source == _getEth2DaiAddress()) {
+        if (source == ETH2DAI_SOURCE) {
             return sampleSellsFromEth2Dai(takerToken, makerToken, takerTokenAmounts);
         }
-        if (source == _getUniswapExchangeFactoryAddress()) {
+        if (source == UNISWAP_SOURCE) {
             return sampleSellsFromUniswap(takerToken, makerToken, takerTokenAmounts);
         }
-        if (source == _getKyberNetworkProxyAddress()) {
+        if (source == KYBER_SOURCE) {
             return sampleSellsFromKyberNetwork(takerToken, makerToken, takerTokenAmounts);
         }
         revert("ERC20BridgeSampler/UNSUPPORTED_SOURCE");
@@ -634,10 +637,10 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
-        if (source == _getEth2DaiAddress()) {
+        if (source == ETH2DAI_SOURCE) {
             return sampleBuysFromEth2Dai(takerToken, makerToken, makerTokenAmounts);
         }
-        if (source == _getUniswapExchangeFactoryAddress()) {
+        if (source == UNISWAP_SOURCE) {
             return sampleBuysFromUniswap(takerToken, makerToken, makerTokenAmounts);
         }
         revert("ERC20BridgeSampler/UNSUPPORTED_SOURCE");
