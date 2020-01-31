@@ -1,5 +1,18 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Refactor mixins into public libraries.",
+                "pr": 2464
+            },
+            {
+                "note": "Remove `LibTransactionDecoder` export",
+                "pr": 2464
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "1.0.6",
         "changes": [

@@ -81,7 +81,6 @@ export {
     StakingProxyStakingContractAttachedToProxyEventArgs,
     StakingProxyStakingContractDetachedFromProxyEventArgs,
 } from './generated-wrappers/staking_proxy';
-export { LibTransactionDecoderContract } from './generated-wrappers/lib_transaction_decoder';
 export {
     BlockRange,
     SupportedProvider,

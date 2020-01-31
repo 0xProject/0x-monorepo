@@ -1,14 +1,8 @@
-import { ExchangeContract } from '@0x/contracts-exchange';
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
+import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 
-import { artifacts, LibTransactionDecoderContract } from '@0x/contracts-dev-utils';
-
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+import { artifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 
 const order = {
     makerAddress: '0xe36ea790bc9d7ab70c55260c66d52b1eca985f84',
@@ -30,25 +24,31 @@ const takerAssetFillAmount = new BigNumber('100000000000000000000');
 const signature =
     '0x1ce8e3c600d933423172b5021158a6be2e818613ff8e762d70ef490c752fd98a626a215f09f169668990414de75a53da221c294a3002f796d004827258b641876e03';
 
-describe('LibTransactionDecoder', () => {
-    let libTxDecoder: LibTransactionDecoderContract;
-    const exchangeInterface = new ExchangeContract(constants.NULL_ADDRESS, provider, txDefaults);
+blockchainTests('LibTransactionDecoder', env => {
+    let devUtils: DevUtilsContract;
+    const exchangeInterface = new ExchangeContract(constants.NULL_ADDRESS, { isEIP1193: true } as any);
     before(async () => {
-        await blockchainLifecycle.startAsync();
-        libTxDecoder = await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
-            artifacts.LibTransactionDecoder,
-            provider,
-            txDefaults,
-            artifacts,
+        const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.Exchange,
+            env.provider,
+            env.txDefaults,
+            exchangeArtifacts,
+            new BigNumber(1),
         );
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
+        devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
+            artifacts.DevUtils,
+            artifacts,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            exchange.address,
+            constants.NULL_ADDRESS,
+        );
     });
 
     it('should decode an Exchange.batchCancelOrders() transaction', async () => {
         const input = exchangeInterface.batchCancelOrders([order, order]).getABIEncodedTransactionData();
-        expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
+        expect(await devUtils.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
             'batchCancelOrders',
             [order, order],
             [],
@@ -61,7 +61,7 @@ describe('LibTransactionDecoder', () => {
             [func]([order, order], [takerAssetFillAmount, takerAssetFillAmount], [signature, signature])
             .getABIEncodedTransactionData();
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
+            expect(await devUtils.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
                 func,
                 [order, order],
                 [takerAssetFillAmount, takerAssetFillAmount],
@@ -72,7 +72,7 @@ describe('LibTransactionDecoder', () => {
 
     it('should decode an Exchange.cancelOrder() transaction', async () => {
         const input = exchangeInterface.cancelOrder(order).getABIEncodedTransactionData();
-        expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
+        expect(await devUtils.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
             'cancelOrder',
             [order],
             [],
@@ -85,7 +85,7 @@ describe('LibTransactionDecoder', () => {
             [func](order, takerAssetFillAmount, signature)
             .getABIEncodedTransactionData();
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
+            expect(await devUtils.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
                 func,
                 [order],
                 [takerAssetFillAmount],
@@ -104,7 +104,7 @@ describe('LibTransactionDecoder', () => {
             [func]([order, order], takerAssetFillAmount, [signature, signature])
             .getABIEncodedTransactionData();
         it(`should decode an Exchange.${func}() transaction`, async () => {
-            expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
+            expect(await devUtils.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
                 func,
                 [order, order],
                 [takerAssetFillAmount],
@@ -130,7 +130,7 @@ describe('LibTransactionDecoder', () => {
         const input = exchangeInterface
             .matchOrders(order, complementaryOrder, signature, signature)
             .getABIEncodedTransactionData();
-        expect(await libTxDecoder.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
+        expect(await devUtils.decodeZeroExTransactionData(input).callAsync()).to.deep.equal([
             'matchOrders',
             [order, complementaryOrder],
             [order.takerAssetAmount, complementaryOrder.takerAssetAmount],
