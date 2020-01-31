@@ -85,13 +85,14 @@ jobs:
     test-publish:
         resource_class: medium+
         docker:
-            - image: nikolaik/python-nodejs:python3.7-nodejs8
+            - image: nikolaik/python-nodejs:python3.7-nodejs10
             - image: 0xorg/verdaccio
         working_directory: ~/repo
         steps:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn global add node-gyp
             - run:
                   command: yarn test:publish:circleci
                   no_output_timeout: 1800

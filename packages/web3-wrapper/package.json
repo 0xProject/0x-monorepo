@@ -22,7 +22,8 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "diff_docs": "git diff --exit-code ./docs",
         "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
+        "postinstall": "node -e \"try{ fs.unlinkSync(path.resolve(path.dirname(require.resolve('ganache-core')), './typings/index.d.ts')) } catch (err) {}\""
     },
     "config": {
         "postpublish": {
@@ -47,7 +48,7 @@
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
-        "ganache-core": "^2.9.0-istanbul.0",
+        "ganache-core": "^2.10.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
