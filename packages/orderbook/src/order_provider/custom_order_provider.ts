@@ -47,7 +47,7 @@ export class CustomOrderProvider extends BaseOrderProvider {
                         order,
                         metaData: {
                             remainingFillableTakerAssetAmount: order.takerAssetAmount,
-                            orderHash: await utils.getOrderHashAsync(order),
+                            orderHash: utils.getOrderHash(order),
                         },
                     },
                 ],

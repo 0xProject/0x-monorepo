@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.5.0",
+        "changes": [
+            {
+                "note": "export `evmbytecodeoutputlinkreferences` type.",
+                "pr": 2462
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "13.4.2",
         "changes": [

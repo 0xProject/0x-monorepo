@@ -1,4 +1,4 @@
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { decodeMultiAssetData, getAssetDataProxyId } from '@0x/contracts-asset-proxy';
 import { constants } from '@0x/contracts-test-utils';
 import { AssetProxyId, ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -40,7 +40,6 @@ const ERR_MSG_MAPPING = {
  */
 export class ExchangeTransferSimulator {
     private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
-    private readonly _devUtils: DevUtilsContract;
     private static _throwValidationError(
         failureReason: FailureReason,
         tradeSide: TradeSide,
@@ -54,9 +53,8 @@ export class ExchangeTransferSimulator {
      * @param store A class that implements AbstractBalanceAndProxyAllowanceLazyStore
      * @return an instance of ExchangeTransferSimulator
      */
-    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore, devUtilsContract: DevUtilsContract) {
+    constructor(store: AbstractBalanceAndProxyAllowanceLazyStore) {
         this._store = store;
-        this._devUtils = devUtilsContract;
     }
     /**
      * Simulates transferFrom call performed by a proxy
@@ -77,7 +75,7 @@ export class ExchangeTransferSimulator {
         tradeSide: TradeSide,
         transferType: TransferType,
     ): Promise<void> {
-        const assetProxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const assetProxyId = getAssetDataProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC1155:
             case AssetProxyId.ERC20:
@@ -110,11 +108,11 @@ export class ExchangeTransferSimulator {
                 break;
             }
             case AssetProxyId.MultiAsset: {
-                const decodedAssetData = await this._devUtils.decodeMultiAssetData(assetData).callAsync();
+                const decodedAssetData = decodeMultiAssetData(assetData);
                 await this._decreaseBalanceAsync(assetData, from, amountInBaseUnits);
                 await this._increaseBalanceAsync(assetData, to, amountInBaseUnits);
-                for (const [index, nestedAssetDataElement] of decodedAssetData[2].entries()) {
-                    const amountsElement = decodedAssetData[1][index];
+                for (const [index, nestedAssetDataElement] of decodedAssetData[1].entries()) {
+                    const amountsElement = decodedAssetData[0][index];
                     const totalAmount = amountInBaseUnits.times(amountsElement);
                     await this.transferFromAsync(
                         nestedAssetDataElement,

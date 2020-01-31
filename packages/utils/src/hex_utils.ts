@@ -19,6 +19,7 @@ export const hexUtils = {
     hash,
     size,
     toHex,
+    isHex,
 };
 
 /**
@@ -86,10 +87,13 @@ function size(hex: string): number {
 }
 
 /**
- * Convert a string, a number, or a BigNumber into a hex string.
+ * Convert a string, a number, a Buffer, or a BigNumber into a hex string.
  * Works with negative numbers, as well.
  */
-function toHex(n: Numberish, _size: number = WORD_LENGTH): string {
+function toHex(n: Numberish | Buffer, _size: number = WORD_LENGTH): string {
+    if (Buffer.isBuffer(n)) {
+        return `0x${n.toString('hex')}`;
+    }
     if (typeof n === 'string' && /^0x[0-9a-f]+$/i.test(n)) {
         // Already a hex.
         return n;
@@ -107,4 +111,11 @@ function toHex(n: Numberish, _size: number = WORD_LENGTH): string {
         ).plus(1).mod(WORD_CEIL);
     }
     return `0x${_n.toString(16)}`;
+}
+
+/**
+ * Check if a string is a hex string.
+ */
+function isHex(s: string): boolean {
+    return /^0x[0-9a-f]+$/i.test(s);
 }

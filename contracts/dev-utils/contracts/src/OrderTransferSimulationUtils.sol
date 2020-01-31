@@ -28,9 +28,8 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
-contract OrderTransferSimulationUtils is
-    LibExchangeRichErrorDecoder
-{
+contract OrderTransferSimulationUtils {
+
     using LibBytes for bytes;
 
     enum OrderTransferResults {
@@ -216,11 +215,13 @@ contract OrderTransferSimulationUtils is
         bytes4 selector = returnData.readBytes4(0);
         if (selector == LibExchangeRichErrors.AssetProxyDispatchErrorSelector()) {
             // Decode AssetProxyDispatchError and return index of failed transfer
-            (, bytes32 failedTransferIndex,) = decodeAssetProxyDispatchError(returnData);
+            (, bytes32 failedTransferIndex,) = LibExchangeRichErrorDecoder
+                .decodeAssetProxyDispatchError(returnData);
             return OrderTransferResults(uint8(uint256(failedTransferIndex)));
         } else if (selector == LibExchangeRichErrors.AssetProxyTransferErrorSelector()) {
             // Decode AssetProxyTransferError and return index of failed transfer
-            (bytes32 failedTransferIndex, ,) = decodeAssetProxyTransferError(returnData);
+            (bytes32 failedTransferIndex, ,) = LibExchangeRichErrorDecoder
+                .decodeAssetProxyTransferError(returnData);
             return OrderTransferResults(uint8(uint256(failedTransferIndex)));
         } else if (keccak256(returnData) == _TRANSFERS_SUCCESSFUL_RESULT_HASH) {
             // All transfers were successful

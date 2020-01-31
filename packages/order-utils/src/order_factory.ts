@@ -77,7 +77,7 @@ export const orderFactory = {
             await providerUtils.getChainIdAsync(supportedProvider),
             createOrderOpts,
         );
-        const orderHash = await orderHashUtils.getOrderHashAsync(order);
+        const orderHash = orderHashUtils.getOrderHash(order);
         const signature = await signatureUtils.ecSignHashAsync(supportedProvider, orderHash, makerAddress);
         const signedOrder: SignedOrder = { ...order, signature };
         return signedOrder;

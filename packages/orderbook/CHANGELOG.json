@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Use updated `order-utils` with non-async hash functions.",
+                "pr": 2462
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "2.1.2",
         "changes": [

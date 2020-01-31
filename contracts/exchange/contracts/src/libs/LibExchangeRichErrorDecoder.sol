@@ -23,7 +23,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
-contract LibExchangeRichErrorDecoder {
+library LibExchangeRichErrorDecoder {
 
     using LibBytes for bytes;
 
@@ -33,7 +33,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature.
     function decodeSignatureError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             LibExchangeRichErrors.SignatureErrorCodes errorCode,
@@ -57,7 +57,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeEIP1271SignatureError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             address verifyingContractAddress,
@@ -78,7 +78,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return signerAddress The expected signer of the hash.
     /// @return validatorAddress The expected validator.
     function decodeSignatureValidatorNotApprovedError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             address signerAddress,
@@ -99,7 +99,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
     function decodeSignatureWalletError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             bytes32 hash,
@@ -120,7 +120,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return orderHash The order hash.
     /// @return orderStatus The order status.
     function decodeOrderStatusError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             bytes32 orderHash,
@@ -142,7 +142,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return orderHash The order hash.
     /// @return contextAddress The maker, taker, or sender address
     function decodeExchangeInvalidContextError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             LibExchangeRichErrors.ExchangeContextErrorCodes errorCode,
@@ -164,7 +164,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return errorCode The error code.
     /// @return orderHash The order hash.
     function decodeFillError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             LibExchangeRichErrors.FillErrorCodes errorCode,
@@ -186,7 +186,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return orderSenderAddress The order sender.
     /// @return currentEpoch The current epoch for the maker.
     function decodeOrderEpochError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             address makerAddress,
@@ -206,7 +206,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return assetProxyId Id of asset proxy.
     /// @return assetProxyAddress The address of the asset proxy.
     function decodeAssetProxyExistsError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             bytes4 assetProxyId, address assetProxyAddress)
@@ -224,7 +224,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return orderHash Hash of the order being dispatched.
     /// @return assetData Asset data of the order being dispatched.
     function decodeAssetProxyDispatchError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             LibExchangeRichErrors.AssetProxyDispatchErrorCodes errorCode,
@@ -247,7 +247,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return assetData Asset data of the order being dispatched.
     /// @return errorData ABI-encoded revert data from the asset proxy.
     function decodeAssetProxyTransferError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             bytes32 orderHash,
@@ -267,7 +267,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return leftOrderHash Hash of the left order being matched.
     /// @return rightOrderHash Hash of the right order being matched.
     function decodeNegativeSpreadError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             bytes32 leftOrderHash,
@@ -286,7 +286,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return errorCode The error code.
     /// @return transactionHash Hash of the transaction.
     function decodeTransactionError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             LibExchangeRichErrors.TransactionErrorCodes errorCode,
@@ -307,7 +307,7 @@ contract LibExchangeRichErrorDecoder {
     /// @return transactionHash Hash of the transaction.
     /// @return errorData Error thrown by exeucteTransaction().
     function decodeTransactionExecutionError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             bytes32 transactionHash,
@@ -325,7 +325,7 @@ contract LibExchangeRichErrorDecoder {
     /// @param encoded ABI-encoded revert error.
     /// @return orderHash Hash of the order being filled.
     function decodeIncompleteFillError(bytes memory encoded)
-        public
+        internal
         pure
         returns (
             LibExchangeRichErrors.IncompleteFillErrorCode errorCode,

@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import {
     decreaseCurrentAndNextBalance,
     OwnerStakeByStatus,
@@ -38,7 +39,7 @@ export function validUnstakeAssertion(
                 zrxVault.address,
                 txData.from as string,
                 amount,
-                deployment.assetDataEncoder.ERC20Token(deployment.tokens.zrx.address).getABIEncodedTransactionData(),
+                encodeERC20AssetData(deployment.tokens.zrx.address),
             );
             return expectedBalances;
         },

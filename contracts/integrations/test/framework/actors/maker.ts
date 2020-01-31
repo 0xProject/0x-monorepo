@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants, OrderFactory } from '@0x/contracts-test-utils';
 import { Order, SignedOrder } from '@0x/types';
@@ -121,9 +122,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 makerFeeToken,
                 takerToken,
                 takerFeeToken,
-            ].map(token =>
-                this.actor.deployment.assetDataEncoder.ERC20Token(token.address).getABIEncodedTransactionData(),
-            );
+            ].map(token => encodeERC20AssetData(token.address));
 
             // Maker signs the order
             return this.signOrderAsync({
@@ -192,8 +191,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Cons
                 makerFeeAssetData,
                 takerFeeAssetData,
             ] = [leftMakerToken, leftTakerToken, rightMakerToken, rightTakerToken, makerFeeToken, takerFeeToken].map(
-                token =>
-                    this.actor.deployment.assetDataEncoder.ERC20Token(token.address).getABIEncodedTransactionData(),
+                token => encodeERC20AssetData(token.address),
             );
 
             // Construct and sign the left order
