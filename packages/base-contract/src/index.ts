@@ -30,7 +30,7 @@ import * as util from 'ethereumjs-util';
 import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
 
-export { methodAbiToFunctionSignature } from './utils';
+export { linkLibrariesInBytecode, methodAbiToFunctionSignature } from './utils';
 
 import { AwaitTransactionSuccessOpts } from './types';
 import { formatABIDataItem } from './utils';
@@ -76,6 +76,9 @@ export class PromiseWithTransactionHash<T> implements Promise<T> {
     }
     public catch<TResult>(onRejected?: (reason: any) => Promise<TResult>): Promise<TResult | T> {
         return this._promise.catch(onRejected);
+    }
+    public finally(onFinally?: (() => void) | null): Promise<T> {
+        return this._promise.finally(onFinally);
     }
     // tslint:enable:promise-function-async
     // tslint:enable:async-suffix
@@ -359,8 +362,17 @@ export class BaseContract {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
         if (deployedBytecode !== undefined && deployedBytecode !== '') {
-            assert.isHexString('deployedBytecode', deployedBytecode);
-            this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
+            // `deployedBytecode` might contain references to
+            // unlinked libraries and, hence, would not be a hex string. We'll just
+            // leave `_deployedBytecodeIfExists` empty if this is the case.
+            // TODO(dorothy-zbornak): We should link the `deployedBytecode`
+            // beforehand in the generated wrappers.
+            try {
+                assert.isHexString('deployedBytecode', deployedBytecode);
+                this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
+            } catch (err) {
+                // Do nothing.
+            }
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         if (callAndTxnDefaults !== undefined) {
