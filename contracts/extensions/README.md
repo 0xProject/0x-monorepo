@@ -1,6 +1,6 @@
 ## Extensions
 
-This package implements various extensions to the 0x protocol. Extension contracts can add various rules around how orders are settled while still getting the interoperability and security benefits of using the underlying 0x protocol contracts. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package includes utility smart contracts that may be useful for developing on top of the core 0x Exchange. For example, `MixinWethUtils` includes functions to pay affiliate fees in ETH, wrap ETH to be used for 0x trades and protocol fees, and unwrap WETH to refund the sender.
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @0x/contracts-extensions --save
 
 ## Bug bounty
 
-A bug bounty for the 2.0.0 contracts is ongoing! Instructions can be found [here](https://0x.org/docs/guides/bug-bounty-program).
+A bug bounty for the 3.0 contracts is ongoing! Instructions can be found [here](https://0x.org/docs/guides/bug-bounty-program).
 
 ## Contributing
 

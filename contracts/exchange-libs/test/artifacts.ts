@@ -6,8 +6,6 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as IWallet from '../test/generated-artifacts/IWallet.json';
-import * as LibAssetDataTransfer from '../test/generated-artifacts/LibAssetDataTransfer.json';
-import * as LibAssetDataTransferRichErrors from '../test/generated-artifacts/LibAssetDataTransferRichErrors.json';
 import * as LibEIP712ExchangeDomain from '../test/generated-artifacts/LibEIP712ExchangeDomain.json';
 import * as LibExchangeRichErrors from '../test/generated-artifacts/LibExchangeRichErrors.json';
 import * as LibFillResults from '../test/generated-artifacts/LibFillResults.json';
@@ -22,8 +20,6 @@ import * as TestLibOrder from '../test/generated-artifacts/TestLibOrder.json';
 import * as TestLibZeroExTransaction from '../test/generated-artifacts/TestLibZeroExTransaction.json';
 export const artifacts = {
     IWallet: IWallet as ContractArtifact,
-    LibAssetDataTransfer: LibAssetDataTransfer as ContractArtifact,
-    LibAssetDataTransferRichErrors: LibAssetDataTransferRichErrors as ContractArtifact,
     LibEIP712ExchangeDomain: LibEIP712ExchangeDomain as ContractArtifact,
     LibExchangeRichErrors: LibExchangeRichErrors as ContractArtifact,
     LibFillResults: LibFillResults as ContractArtifact,

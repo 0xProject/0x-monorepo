@@ -3,7 +3,7 @@
         "version": "4.1.0",
         "changes": [
             {
-                "note": "Moved LibAssetDataTransfer to exchange-libs",
+                "note": "Refactor, moved LibAssetDataTransfer and MixinWeth(Utils) to extensions",
                 "pr": 2455
             }
         ]

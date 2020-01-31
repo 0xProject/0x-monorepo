@@ -6,17 +6,11 @@
         "generated-artifacts/Forwarder.json",
         "generated-artifacts/IExchangeV2.json",
         "test/generated-artifacts/Forwarder.json",
-        "test/generated-artifacts/IAssets.json",
         "test/generated-artifacts/IExchangeV2.json",
         "test/generated-artifacts/IForwarder.json",
-        "test/generated-artifacts/IForwarderCore.json",
-        "test/generated-artifacts/LibConstants.json",
         "test/generated-artifacts/LibForwarderRichErrors.json",
-        "test/generated-artifacts/MixinAssets.json",
         "test/generated-artifacts/MixinExchangeWrapper.json",
-        "test/generated-artifacts/MixinForwarderCore.json",
         "test/generated-artifacts/MixinReceiver.json",
-        "test/generated-artifacts/MixinWeth.json",
         "test/generated-artifacts/TestForwarder.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

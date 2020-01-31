@@ -19,23 +19,23 @@
 pragma solidity ^0.5.9;
 
 
-library LibForwarderRichErrors {
+library LibWethUtilsRichErrors {
 
     // bytes4(keccak256("UnregisteredAssetProxyError()"))
     bytes4 internal constant UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR =
         0xf3b96b8d;
 
-    // bytes4(keccak256("CompleteBuyFailedError(uint256,uint256)"))
-    bytes4 internal constant COMPLETE_BUY_FAILED_ERROR_SELECTOR =
-        0x91353a0c;
+    // bytes4(keccak256("InsufficientEthForFeeError(uint256,uint256)"))
+    bytes4 internal constant INSUFFICIENT_ETH_FOR_FEE_ERROR_SELECTOR =
+        0xecf40fd9;
 
-    // bytes4(keccak256("UnsupportedFeeError(bytes)"))
-    bytes4 internal constant UNSUPPORTED_FEE_ERROR_SELECTOR =
-        0x31360af1;
+    // bytes4(keccak256("DefaultFunctionWethContractOnlyError(address)"))
+    bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
+        0x08b18698;
 
-    // bytes4(keccak256("OverspentWethError(uint256,uint256)"))
-    bytes4 internal constant OVERSPENT_WETH_ERROR_SELECTOR =
-        0xcdcbed5d;
+    // bytes4(keccak256("EthFeeLengthMismatchError(uint256,uint256)"))
+    bytes4 internal constant ETH_FEE_LENGTH_MISMATCH_ERROR_SELECTOR =
+        0x3ecb6ceb;
 
     // solhint-disable func-name-mixedcase
     function UnregisteredAssetProxyError()
@@ -46,46 +46,46 @@ library LibForwarderRichErrors {
         return abi.encodeWithSelector(UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR);
     }
 
-    function CompleteBuyFailedError(
-        uint256 expectedAssetBuyAmount,
-        uint256 actualAssetBuyAmount
+    function InsufficientEthForFeeError(
+        uint256 ethFeeRequired,
+        uint256 ethAvailable
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            COMPLETE_BUY_FAILED_ERROR_SELECTOR,
-            expectedAssetBuyAmount,
-            actualAssetBuyAmount
+            INSUFFICIENT_ETH_FOR_FEE_ERROR_SELECTOR,
+            ethFeeRequired,
+            ethAvailable
         );
     }
 
-    function UnsupportedFeeError(
-        bytes memory takerFeeAssetData
+    function DefaultFunctionWethContractOnlyError(
+        address senderAddress
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            UNSUPPORTED_FEE_ERROR_SELECTOR,
-            takerFeeAssetData
+            DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR,
+            senderAddress
         );
     }
 
-    function OverspentWethError(
-        uint256 wethSpent,
-        uint256 msgValue
+    function EthFeeLengthMismatchError(
+        uint256 ethFeesLength,
+        uint256 feeRecipientsLength
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            OVERSPENT_WETH_ERROR_SELECTOR,
-            wethSpent,
-            msgValue
+            ETH_FEE_LENGTH_MISMATCH_ERROR_SELECTOR,
+            ethFeesLength,
+            feeRecipientsLength
         );
     }
 }

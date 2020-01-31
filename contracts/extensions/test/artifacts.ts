@@ -5,10 +5,10 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as LibAssetDataTransfer from '../generated-artifacts/LibAssetDataTransfer.json';
-import * as LibAssetDataTransferRichErrors from '../generated-artifacts/LibAssetDataTransferRichErrors.json';
-import * as LibWethUtilsRichErrors from '../generated-artifacts/LibWethUtilsRichErrors.json';
-import * as MixinWethUtils from '../generated-artifacts/MixinWethUtils.json';
+import * as LibAssetDataTransfer from '../test/generated-artifacts/LibAssetDataTransfer.json';
+import * as LibAssetDataTransferRichErrors from '../test/generated-artifacts/LibAssetDataTransferRichErrors.json';
+import * as LibWethUtilsRichErrors from '../test/generated-artifacts/LibWethUtilsRichErrors.json';
+import * as MixinWethUtils from '../test/generated-artifacts/MixinWethUtils.json';
 export const artifacts = {
     LibAssetDataTransfer: LibAssetDataTransfer as ContractArtifact,
     MixinWethUtils: MixinWethUtils as ContractArtifact,

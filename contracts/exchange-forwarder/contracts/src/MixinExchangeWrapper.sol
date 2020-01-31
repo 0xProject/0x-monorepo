@@ -19,27 +19,59 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
-import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "./libs/LibConstants.sol";
+import "@0x/contracts-extensions/contracts/src/LibAssetDataTransfer.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IExchangeV2.sol";
-import "./MixinAssets.sol";
 
 
-contract MixinExchangeWrapper is
-    LibConstants,
-    MixinAssets
-{
+contract MixinExchangeWrapper {
+
+    // The v2 order id is the first 4 bytes of the ExchangeV2 order schema hash.
+    // bytes4(keccak256(abi.encodePacked(
+    //     "Order(",
+    //     "address makerAddress,",
+    //     "address takerAddress,",
+    //     "address feeRecipientAddress,",
+    //     "address senderAddress,",
+    //     "uint256 makerAssetAmount,",
+    //     "uint256 takerAssetAmount,",
+    //     "uint256 makerFee,",
+    //     "uint256 takerFee,",
+    //     "uint256 expirationTimeSeconds,",
+    //     "uint256 salt,",
+    //     "bytes makerAssetData,",
+    //     "bytes takerAssetData",
+    //     ")"
+    // )));
+    bytes4 constant public EXCHANGE_V2_ORDER_ID = 0x770501f8;
+
+     // solhint-disable var-name-mixedcase
+    IExchange internal EXCHANGE;
+    IExchangeV2 internal EXCHANGE_V2;
+    // solhint-enable var-name-mixedcase
+
     using LibBytes for bytes;
+    using LibAssetDataTransfer for bytes;
     using LibSafeMath for uint256;
+
+    constructor (
+        address _exchange,
+        address _exchangeV2
+    )
+        public
+    {
+        EXCHANGE = IExchange(_exchange);
+        EXCHANGE_V2 = IExchangeV2(_exchangeV2);
+    }
 
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.

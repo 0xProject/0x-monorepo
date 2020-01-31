@@ -26,7 +26,7 @@ import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
-import "./LibAssetDataTransferRichErrors.sol";
+import "./rich-errors/LibAssetDataTransferRichErrors.sol";
 
 
 library LibAssetDataTransfer {
