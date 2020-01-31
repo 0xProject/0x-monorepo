@@ -13,11 +13,11 @@
         "changes": [
             {
                 "note": "Add `allowance()` and `balanceOf()` to `LibERC20Token`",
-                "pr": 2464
+                "pr": 2462
             },
             {
                 "note": "Fix broken tests",
-                "pr": 2456
+                "pr": 2462
             }
         ],
         "timestamp": 1581204851
