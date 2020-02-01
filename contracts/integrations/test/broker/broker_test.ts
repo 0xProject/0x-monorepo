@@ -21,13 +21,14 @@ import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance
 import { LocalBalanceStore } from '../framework/balances/local_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 
-blockchainTests.resets.only('Broker <> Gods Unchained integration tests', env => {
+blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
     let deployment: DeploymentManager;
     let balanceStore: BlockchainBalanceStore;
     let initialBalances: LocalBalanceStore;
 
     let maker: Maker;
     let taker: Taker;
+    let affiliate: Actor;
 
     let broker: BrokerContract;
     let godsUnchained: TestGodsUnchainedContract;
@@ -96,22 +97,26 @@ blockchainTests.resets.only('Broker <> Gods Unchained integration tests', env =>
             orderConfig,
         });
         taker = new Taker({ name: 'Taker', deployment });
+        affiliate = new Actor({ name: 'Affiliate', deployment });
 
+        // Set balances and allowances
         await maker.configureERC20TokenAsync(makerToken);
         godsUnchainedTokenIds = await taker.configureERC721TokenAsync(
             new DummyERC721TokenContract(godsUnchained.address, env.provider),
             broker.address,
             5,
         );
+        await maker.configureERC20TokenAsync(deployment.tokens.weth);
 
         const tokenOwners = {
             Maker: maker.address,
             Taker: taker.address,
+            Affiliate: affiliate.address,
             Broker: broker.address,
             StakingProxy: deployment.staking.stakingProxy.address,
         };
         const tokenContracts = {
-            erc20: { makerToken },
+            erc20: { makerToken, WETH: deployment.tokens.weth },
             erc721: { GodsUnchained: new DummyERC721TokenContract(godsUnchained.address, env.provider) },
         };
         const tokenIds = {
@@ -329,48 +334,172 @@ blockchainTests.resets.only('Broker <> Gods Unchained integration tests', env =>
                 balanceStore.assertEquals(expectedBalances);
             });
         }
-        it(`Reverts if insufficient ETH is provided`, async () => {
-            const tx = broker
-                .brokerTrade(
+        describe('ETH/WETH behavior', () => {
+            it(`Reverts if insufficient ETH is provided`, async () => {
+                const tx = broker
+                    .brokerTrade(
+                        [godsUnchainedTokenIds[0]],
+                        order,
+                        new BigNumber(1),
+                        order.signature,
+                        deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                        [],
+                        [],
+                    )
+                    .awaitTransactionSuccessAsync({
+                        from: taker.address,
+                        value: DeploymentManager.protocolFee.minus(1),
+                        gasPrice: DeploymentManager.gasPrice,
+                    });
+                return expect(tx).to.revertWith(new ExchangeRevertErrors.PayProtocolFeeError());
+            });
+            it(`Refunds sender if excess ETH is provided`, async () => {
+                const receipt = await broker
+                    .brokerTrade(
+                        [godsUnchainedTokenIds[0]],
+                        order,
+                        new BigNumber(1),
+                        order.signature,
+                        deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                        [],
+                        [],
+                    )
+                    .awaitTransactionSuccessAsync({
+                        from: taker.address,
+                        value: DeploymentManager.protocolFee.plus(1), // 1 wei gets refunded
+                        gasPrice: DeploymentManager.gasPrice,
+                    });
+                const expectedBalances = simulateBrokerFills(
                     [godsUnchainedTokenIds[0]],
-                    order,
-                    new BigNumber(1),
-                    order.signature,
-                    deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
-                    [],
-                    [],
-                )
-                .awaitTransactionSuccessAsync({
-                    from: taker.address,
-                    value: DeploymentManager.protocolFee.minus(1),
-                    gasPrice: DeploymentManager.gasPrice,
-                });
-            return expect(tx).to.revertWith(new ExchangeRevertErrors.PayProtocolFeeError());
-        });
-        it(`Refunds sender if excess ETH is provided`, async () => {
-            const receipt = await broker
-                .brokerTrade(
+                    [order],
+                    [new BigNumber(1)],
+                    receipt,
+                );
+                await balanceStore.updateBalancesAsync();
+                balanceStore.assertEquals(expectedBalances);
+            });
+            it(`Pays a single ETH affiliate fee and refunds excess ETH`, async () => {
+                const affiliateFee = new BigNumber(100);
+                const receipt = await broker
+                    .brokerTrade(
+                        [godsUnchainedTokenIds[0]],
+                        order,
+                        new BigNumber(1),
+                        order.signature,
+                        deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                        [affiliateFee],
+                        [affiliate.address],
+                    )
+                    .awaitTransactionSuccessAsync({
+                        from: taker.address,
+                        value: DeploymentManager.protocolFee.plus(affiliateFee).plus(1),
+                        gasPrice: DeploymentManager.gasPrice,
+                    });
+                const expectedBalances = simulateBrokerFills(
                     [godsUnchainedTokenIds[0]],
-                    order,
-                    new BigNumber(1),
-                    order.signature,
-                    deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
-                    [],
-                    [],
-                )
-                .awaitTransactionSuccessAsync({
-                    from: taker.address,
-                    value: DeploymentManager.protocolFee.plus(1), // 1 wei gets refunded
-                    gasPrice: DeploymentManager.gasPrice,
+                    [order],
+                    [new BigNumber(1)],
+                    receipt,
+                );
+                expectedBalances.sendEth(receipt.from, affiliate.address, affiliateFee);
+                await balanceStore.updateBalancesAsync();
+                balanceStore.assertEquals(expectedBalances);
+            });
+            it(`Pays a multiple ETH affiliate fees and refunds excess ETH`, async () => {
+                const affiliateFee = new BigNumber(100);
+                const receipt = await broker
+                    .brokerTrade(
+                        [godsUnchainedTokenIds[0]],
+                        order,
+                        new BigNumber(1),
+                        order.signature,
+                        deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                        [affiliateFee, affiliateFee],
+                        [affiliate.address, maker.address],
+                    )
+                    .awaitTransactionSuccessAsync({
+                        from: taker.address,
+                        value: DeploymentManager.protocolFee.plus(affiliateFee.times(2)).plus(1),
+                        gasPrice: DeploymentManager.gasPrice,
+                    });
+                const expectedBalances = simulateBrokerFills(
+                    [godsUnchainedTokenIds[0]],
+                    [order],
+                    [new BigNumber(1)],
+                    receipt,
+                );
+                expectedBalances.sendEth(receipt.from, affiliate.address, affiliateFee);
+                expectedBalances.sendEth(receipt.from, maker.address, affiliateFee);
+                await balanceStore.updateBalancesAsync();
+                balanceStore.assertEquals(expectedBalances);
+            });
+            it(`Taker can fill an order with a WETH takerFee`, async () => {
+                const wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
+                const takerFee = new BigNumber(100);
+                const takerFeeOrder = await maker.signOrderAsync({
+                    feeRecipientAddress: affiliate.address,
+                    takerFeeAssetData: wethAssetData,
+                    takerFee,
                 });
-            const expectedBalances = simulateBrokerFills(
-                [godsUnchainedTokenIds[0]],
-                [order],
-                [new BigNumber(1)],
-                receipt,
-            );
-            await balanceStore.updateBalancesAsync();
-            balanceStore.assertEquals(expectedBalances);
+                const receipt = await broker
+                    .brokerTrade(
+                        [godsUnchainedTokenIds[0], godsUnchainedTokenIds[1]],
+                        takerFeeOrder,
+                        new BigNumber(2),
+                        takerFeeOrder.signature,
+                        deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                        [],
+                        [],
+                    )
+                    .awaitTransactionSuccessAsync({
+                        from: taker.address,
+                        value: takerFee.plus(DeploymentManager.protocolFee),
+                        gasPrice: DeploymentManager.gasPrice,
+                    });
+
+                const expectedBalances = simulateBrokerFills(
+                    [godsUnchainedTokenIds[0], godsUnchainedTokenIds[1]],
+                    [takerFeeOrder],
+                    [new BigNumber(2)],
+                    receipt,
+                );
+                expectedBalances.wrapEth(taker.address, deployment.tokens.weth.address, takerFee);
+                expectedBalances.transferAsset(taker.address, affiliate.address, takerFee, wethAssetData);
+                await balanceStore.updateBalancesAsync();
+                balanceStore.assertEquals(expectedBalances);
+            });
+            it(`Taker can fill a vanilla (not property-based) order through the Broker if takerAssetData = WETH`, async () => {
+                const wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
+                const takerAssetAmount = constants.ONE_ETHER.dividedToIntegerBy(2);
+                const wethOrder = await maker.signOrderAsync({
+                    takerAssetData: wethAssetData,
+                    takerAssetAmount,
+                });
+                const receipt = await broker
+                    .brokerTrade(
+                        [],
+                        wethOrder,
+                        takerAssetAmount,
+                        wethOrder.signature,
+                        deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                        [],
+                        [],
+                    )
+                    .awaitTransactionSuccessAsync({
+                        from: taker.address,
+                        value: takerAssetAmount.plus(DeploymentManager.protocolFee),
+                        gasPrice: DeploymentManager.gasPrice,
+                    });
+                const expectedBalances = LocalBalanceStore.create(initialBalances);
+                expectedBalances.wrapEth(
+                    taker.address,
+                    deployment.tokens.weth.address,
+                    takerAssetAmount.plus(DeploymentManager.protocolFee),
+                );
+                expectedBalances.simulateFills([wethOrder], taker.address, receipt, deployment);
+                await balanceStore.updateBalancesAsync();
+                balanceStore.assertEquals(expectedBalances);
+            });
         });
     });
 
