@@ -38,10 +38,11 @@ contract GodsUnchainedValidator is
     }
 
     /// @dev Checks that the given card (encoded as assetData) has the proto and quality encoded in `propertyData`.
-    /// @param assetData The card (encoded as ERC721 assetData) to check.
+    ///      Reverts if the card doesn't match the specified proto and quality.
+    /// @param tokenId The ERC721 tokenId of the card to check.
     /// @param propertyData Encoded proto and quality that the card is expected to have.
     function checkBrokerAsset(
-        bytes calldata assetData,
+        uint256 tokenId,
         bytes calldata propertyData
     )
         external
@@ -52,13 +53,9 @@ contract GodsUnchainedValidator is
             (uint16, uint8)
         );
 
-        // Decode and validate asset data.
-        address token = assetData.readAddress(16);
-        require(token == address(GODS_UNCHAINED), "TOKEN_ADDRESS_MISMATCH");
-        uint256 tokenId = assetData.readUint256(36);
-
+        // Validate card properties.
         (uint16 proto, uint8 quality) = GODS_UNCHAINED.getDetails(tokenId);
-        require(proto == expectedProto, "PROTO_MISMATCH");
-        require(quality == expectedQuality, "QUALITY_MISMATCH");
+        require(proto == expectedProto, "GodsUnchainedValidator/PROTO_MISMATCH");
+        require(quality == expectedQuality, "GodsUnchainedValidator/QUALITY_MISMATCH");
     }
 }

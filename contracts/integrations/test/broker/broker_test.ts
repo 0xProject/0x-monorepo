@@ -21,7 +21,7 @@ import { BlockchainBalanceStore } from '../framework/balances/blockchain_balance
 import { LocalBalanceStore } from '../framework/balances/local_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 
-blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
+blockchainTests.resets.only('Broker <> Gods Unchained integration tests', env => {
     let deployment: DeploymentManager;
     let balanceStore: BlockchainBalanceStore;
     let initialBalances: LocalBalanceStore;
@@ -34,7 +34,6 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
     let validator: GodsUnchainedValidatorContract;
 
     let godsUnchainedTokenIds: BigNumber[];
-    let erc721AssetData: string[];
     const makerSpecifiedProto = new BigNumber(1337);
     const makerSpecifiedQuality = new BigNumber(25);
 
@@ -69,10 +68,12 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             env.txDefaults,
             BrokerArtifacts,
             deployment.exchange.address,
+            deployment.tokens.weth.address,
         );
 
         const takerAssetData = godsUnchainedUtils.encodeBrokerAssetData(
             broker.address,
+            godsUnchained.address,
             validator.address,
             makerSpecifiedProto,
             makerSpecifiedQuality,
@@ -102,9 +103,6 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             broker.address,
             5,
         );
-        erc721AssetData = godsUnchainedTokenIds.map(tokenId =>
-            assetDataUtils.encodeERC721AssetData(godsUnchained.address, tokenId),
-        );
 
         const tokenOwners = {
             Maker: maker.address,
@@ -129,7 +127,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
     });
 
     function simulateBrokerFills(
-        brokeredAssets: string[],
+        brokeredAssets: BigNumber[],
         orders: SignedOrder[],
         takerAssetFillAmounts: BigNumber[],
         receipt: TransactionReceiptWithDecodedLogs,
@@ -139,7 +137,8 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         expectedBalances.burnGas(receipt.from, DeploymentManager.gasPrice.times(receipt.gasUsed));
         // Taker -> Maker
         for (const brokeredAsset of brokeredAssets) {
-            expectedBalances.transferAsset(taker.address, maker.address, new BigNumber(1), brokeredAsset);
+            const erc721AssetData = assetDataUtils.encodeERC721AssetData(godsUnchained.address, brokeredAsset);
+            expectedBalances.transferAsset(taker.address, maker.address, new BigNumber(1), erc721AssetData);
         }
         // Maker -> Taker
         for (const [i, order] of orders.entries()) {
@@ -154,6 +153,11 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         expectedBalances.sendEth(
             receipt.from,
             deployment.staking.stakingProxy.address,
+            DeploymentManager.protocolFee.times(orders.length),
+        );
+        expectedBalances.wrapEth(
+            deployment.staking.stakingProxy.address,
+            deployment.tokens.weth.address,
             DeploymentManager.protocolFee.times(orders.length),
         );
         return expectedBalances;
@@ -178,11 +182,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with one valid asset`, async () => {
                 const receipt = await broker
                     .brokerTrade(
-                        [erc721AssetData[0]],
+                        [godsUnchainedTokenIds[0]],
                         order,
                         new BigNumber(1),
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -190,7 +196,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                         gasPrice: DeploymentManager.gasPrice,
                     });
                 const expectedBalances = simulateBrokerFills(
-                    [erc721AssetData[0]],
+                    [godsUnchainedTokenIds[0]],
                     [order],
                     [new BigNumber(1)],
                     receipt,
@@ -201,11 +207,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with two valid assets`, async () => {
                 const receipt = await broker
                     .brokerTrade(
-                        [erc721AssetData[0], erc721AssetData[1]],
+                        [godsUnchainedTokenIds[0], godsUnchainedTokenIds[1]],
                         order,
                         new BigNumber(2),
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -214,7 +222,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     });
 
                 const expectedBalances = simulateBrokerFills(
-                    [erc721AssetData[0], erc721AssetData[1]],
+                    [godsUnchainedTokenIds[0], godsUnchainedTokenIds[1]],
                     [order],
                     [new BigNumber(2)],
                     receipt,
@@ -225,11 +233,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with one invalid asset`, async () => {
                 const tx = broker
                     .brokerTrade(
-                        [erc721AssetData[2]],
+                        [godsUnchainedTokenIds[2]],
                         order,
                         new BigNumber(1),
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -241,11 +251,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with one valid asset, one invalid asset`, async () => {
                 const tx = broker
                     .brokerTrade(
-                        [erc721AssetData[0], erc721AssetData[2]], // valid, invalid
+                        [godsUnchainedTokenIds[0], godsUnchainedTokenIds[2]], // valid, invalid
                         order,
                         new BigNumber(2),
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -257,11 +269,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with too few assets`, async () => {
                 const tx = broker
                     .brokerTrade(
-                        [erc721AssetData[0]], // One asset provided
+                        [godsUnchainedTokenIds[0]], // One asset provided
                         order,
                         new BigNumber(2), // But two are required for the fill
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -273,11 +287,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with same asset twice`, async () => {
                 const tx = broker
                     .brokerTrade(
-                        [erc721AssetData[0], erc721AssetData[0]],
+                        [godsUnchainedTokenIds[0], godsUnchainedTokenIds[0]],
                         order,
                         new BigNumber(2),
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -289,11 +305,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with excess assets`, async () => {
                 const receipt = await broker
                     .brokerTrade(
-                        erc721AssetData,
+                        godsUnchainedTokenIds,
                         order,
                         new BigNumber(2),
                         order.signature,
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -302,7 +320,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     });
 
                 const expectedBalances = simulateBrokerFills(
-                    [erc721AssetData[0], erc721AssetData[1]], // 3rd card isn't transferred
+                    [godsUnchainedTokenIds[0], godsUnchainedTokenIds[1]], // 3rd card isn't transferred
                     [order],
                     [new BigNumber(2)],
                     receipt,
@@ -314,11 +332,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         it(`Reverts if insufficient ETH is provided`, async () => {
             const tx = broker
                 .brokerTrade(
-                    [erc721AssetData[0]],
+                    [godsUnchainedTokenIds[0]],
                     order,
                     new BigNumber(1),
                     order.signature,
                     deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                    [],
+                    [],
                 )
                 .awaitTransactionSuccessAsync({
                     from: taker.address,
@@ -330,18 +350,25 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         it(`Refunds sender if excess ETH is provided`, async () => {
             const receipt = await broker
                 .brokerTrade(
-                    [erc721AssetData[0]],
+                    [godsUnchainedTokenIds[0]],
                     order,
                     new BigNumber(1),
                     order.signature,
                     deployment.exchange.getSelector(ExchangeFunctionName.FillOrder),
+                    [],
+                    [],
                 )
                 .awaitTransactionSuccessAsync({
                     from: taker.address,
                     value: DeploymentManager.protocolFee.plus(1), // 1 wei gets refunded
                     gasPrice: DeploymentManager.gasPrice,
                 });
-            const expectedBalances = simulateBrokerFills([erc721AssetData[0]], [order], [new BigNumber(1)], receipt);
+            const expectedBalances = simulateBrokerFills(
+                [godsUnchainedTokenIds[0]],
+                [order],
+                [new BigNumber(1)],
+                receipt,
+            );
             await balanceStore.updateBalancesAsync();
             balanceStore.assertEquals(expectedBalances);
         });
@@ -376,6 +403,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                 await maker.signOrderAsync({
                     takerAssetData: godsUnchainedUtils.encodeBrokerAssetData(
                         broker.address,
+                        godsUnchained.address,
                         validator.address,
                         firstOrderProto,
                         firstOrderQuality,
@@ -384,6 +412,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                 await maker.signOrderAsync({
                     takerAssetData: godsUnchainedUtils.encodeBrokerAssetData(
                         broker.address,
+                        godsUnchained.address,
                         validator.address,
                         secondOrderProto,
                         secondOrderQuality,
@@ -396,11 +425,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with one order, one valid asset`, async () => {
                 const receipt = await broker
                     .batchBrokerTrade(
-                        [erc721AssetData[0]],
+                        [godsUnchainedTokenIds[0]],
                         [orders[0]],
                         [new BigNumber(1)],
                         [orders[0].signature],
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -409,7 +440,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     });
 
                 const expectedBalances = simulateBrokerFills(
-                    [erc721AssetData[0]],
+                    [godsUnchainedTokenIds[0]],
                     [orders[0]],
                     [new BigNumber(1)],
                     receipt,
@@ -420,11 +451,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with two orders, one valid asset each`, async () => {
                 const receipt = await broker
                     .batchBrokerTrade(
-                        [erc721AssetData[0], erc721AssetData[2]], // valid for 1st order, valid for 2nd
+                        [godsUnchainedTokenIds[0], godsUnchainedTokenIds[2]], // valid for 1st order, valid for 2nd
                         orders,
                         [new BigNumber(1), new BigNumber(1)],
                         [orders[0].signature, orders[1].signature],
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -433,7 +466,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     });
 
                 const expectedBalances = simulateBrokerFills(
-                    [erc721AssetData[0], erc721AssetData[2]],
+                    [godsUnchainedTokenIds[0], godsUnchainedTokenIds[2]],
                     orders,
                     [new BigNumber(1), new BigNumber(1)],
                     receipt,
@@ -444,11 +477,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with two orders, two valid assets each`, async () => {
                 const receipt = await broker
                     .batchBrokerTrade(
-                        erc721AssetData.slice(0, 4),
+                        godsUnchainedTokenIds.slice(0, 4),
                         orders,
                         [new BigNumber(2), new BigNumber(2)],
                         [orders[0].signature, orders[1].signature],
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -457,7 +492,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     });
 
                 const expectedBalances = simulateBrokerFills(
-                    erc721AssetData.slice(0, 4),
+                    godsUnchainedTokenIds.slice(0, 4),
                     orders,
                     [new BigNumber(2), new BigNumber(2)],
                     receipt,
@@ -468,11 +503,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             it(`${fnName} with two orders, two valid assets each + excess asset`, async () => {
                 const receipt = await broker
                     .batchBrokerTrade(
-                        erc721AssetData,
+                        godsUnchainedTokenIds,
                         orders,
                         [new BigNumber(2), new BigNumber(2)],
                         [orders[0].signature, orders[1].signature],
                         deployment.exchange.getSelector(fnName),
+                        [],
+                        [],
                     )
                     .awaitTransactionSuccessAsync({
                         from: taker.address,
@@ -481,7 +518,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     });
 
                 const expectedBalances = simulateBrokerFills(
-                    erc721AssetData.slice(0, 4), // 5th card isn't transferred
+                    godsUnchainedTokenIds.slice(0, 4), // 5th card isn't transferred
                     orders,
                     [new BigNumber(2), new BigNumber(2)],
                     receipt,
@@ -493,11 +530,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         it(`batchFillOrders reverts on invalid asset`, async () => {
             const tx = broker
                 .batchBrokerTrade(
-                    [...erc721AssetData.slice(0, 3), erc721AssetData[4]], // Last card isn't valid for 2nd order
+                    [...godsUnchainedTokenIds.slice(0, 3), godsUnchainedTokenIds[4]], // Last card isn't valid for 2nd order
                     orders,
                     [new BigNumber(2), new BigNumber(2)],
                     [orders[0].signature, orders[1].signature],
                     deployment.exchange.getSelector(ExchangeFunctionName.BatchFillOrders),
+                    [],
+                    [],
                 )
                 .awaitTransactionSuccessAsync({
                     from: taker.address,
@@ -509,11 +548,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         it(`batchFillOrKillOrders reverts on invalid asset`, async () => {
             const tx = broker
                 .batchBrokerTrade(
-                    [...erc721AssetData.slice(0, 3), erc721AssetData[4]], // Last card isn't valid for 2nd order
+                    [...godsUnchainedTokenIds.slice(0, 3), godsUnchainedTokenIds[4]], // Last card isn't valid for 2nd order
                     orders,
                     [new BigNumber(2), new BigNumber(2)],
                     [orders[0].signature, orders[1].signature],
                     deployment.exchange.getSelector(ExchangeFunctionName.BatchFillOrKillOrders),
+                    [],
+                    [],
                 )
                 .awaitTransactionSuccessAsync({
                     from: taker.address,
@@ -525,11 +566,13 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
         it(`batchFillOrdersNoThrow catches revert on invalid asset`, async () => {
             const receipt = await broker
                 .batchBrokerTrade(
-                    [...erc721AssetData.slice(0, 3), erc721AssetData[4]], // Last card isn't valid for 2nd order
+                    [...godsUnchainedTokenIds.slice(0, 3), godsUnchainedTokenIds[4]], // Last card isn't valid for 2nd order
                     orders,
                     [new BigNumber(2), new BigNumber(2)],
                     [orders[0].signature, orders[1].signature],
                     deployment.exchange.getSelector(ExchangeFunctionName.BatchFillOrdersNoThrow),
+                    [],
+                    [],
                 )
                 .awaitTransactionSuccessAsync({
                     from: taker.address,
@@ -537,7 +580,7 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
                     gasPrice: DeploymentManager.gasPrice,
                 });
             const expectedBalances = simulateBrokerFills(
-                erc721AssetData.slice(0, 2), // First order gets filled
+                godsUnchainedTokenIds.slice(0, 2), // First order gets filled
                 [orders[0]],
                 [new BigNumber(2)],
                 receipt,

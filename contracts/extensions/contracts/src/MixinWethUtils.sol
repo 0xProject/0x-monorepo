@@ -32,6 +32,7 @@ contract MixinWethUtils {
 
      // solhint-disable var-name-mixedcase
     IEtherToken internal WETH;
+    bytes internal WETH_ASSET_DATA;
     // solhint-enable var-name-mixedcase
 
     using LibSafeMath for uint256;
@@ -43,6 +44,10 @@ contract MixinWethUtils {
         public
     {
         WETH = IEtherToken(weth);
+        WETH_ASSET_DATA = abi.encodeWithSelector(
+            IAssetData(address(0)).ERC20Token.selector,
+            weth
+        );
 
         address proxyAddress = IExchange(exchange).getAssetProxy(IAssetData(address(0)).ERC20Token.selector);
         if (proxyAddress == address(0)) {

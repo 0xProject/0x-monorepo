@@ -19,46 +19,65 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibAssetDataTransfer.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-extensions/contracts/src/LibAssetDataTransfer.sol";
+import "@0x/contracts-extensions/contracts/src/MixinWethUtils.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "./interfaces/IBroker.sol";
 import "./interfaces/IPropertyValidator.sol";
 import "./libs/LibBrokerRichErrors.sol";
 
 
-// solhint-disable space-after-comma
+// solhint-disable space-after-comma, var-name-mixedcase
 contract Broker is
-    Refundable,
-    IBroker
+    IBroker,
+    MixinWethUtils
 {
-    bytes[] internal _cachedAssetData;
+    // Contract addresses
+
+    // Address of the 0x Exchange contract
+    address internal EXCHANGE;
+    // Address of the 0x ERC1155 Asset Proxy contract
+    address internal ERC1155_PROXY;
+
+    // The following storage variables are used to cache data for the duration of the transcation.
+    // They should always cleared at the end of the transaction.
+
+    // Token IDs specified by the taker to be used to fill property-based orders.
+    uint256[] internal _cachedTokenIds;
+    // An index to the above array keeping track of which assets have been transferred.
     uint256 internal _cacheIndex;
+    // The address that called `brokerTrade` or `batchBrokerTrade`. Assets will be transferred to
+    // and from this address as the effectual taker of the orders.
     address internal _sender;
-    address internal _EXCHANGE; // solhint-disable-line var-name-mixedcase
 
     using LibSafeMath for uint256;
     using LibBytes for bytes;
     using LibAssetDataTransfer for bytes;
 
     /// @param exchange Address of the 0x Exchange contract.
-    constructor (address exchange)
+    /// @param exchange Address of the Wrapped Ether contract.
+    /// @param exchange Address of the 0x ERC1155 Asset Proxy contract.
+    constructor (
+        address exchange,
+        address weth
+    )
         public
+        MixinWethUtils(
+            exchange,
+            weth
+        )
     {
-        _EXCHANGE = exchange;
+        EXCHANGE = exchange;
+        ERC1155_PROXY = IExchange(EXCHANGE).getAssetProxy(IAssetData(address(0)).ERC1155Assets.selector);
     }
-
-    /// @dev A payable fallback function that makes this contract "payable". This is necessary to allow
-    ///      this contract to gracefully handle refunds from the Exchange.
-    function ()
-        external
-        payable
-    {} // solhint-disable-line no-empty-blocks
 
     /// @dev The Broker implements the ERC1155 transfer function to be compatible with the ERC1155 asset proxy
     /// @param from Since the Broker serves as the taker of the order, this should equal `address(this)`
@@ -74,79 +93,95 @@ contract Broker is
     )
         external
     {
+        // Only the ERC1155 asset proxy contract should be calling this function.
+        if (msg.sender != ERC1155_PROXY) {
+            LibRichErrors.rrevert(LibBrokerRichErrors.OnlyERC1155ProxyError(
+                msg.sender
+            ));
+        }
+        // Only `takerAssetData` should be using Broker assets
         if (from != address(this)) {
             LibRichErrors.rrevert(
                 LibBrokerRichErrors.InvalidFromAddressError(from)
             );
         }
+        // Only one asset amount should be specified.
         if (amounts.length != 1) {
             LibRichErrors.rrevert(
                 LibBrokerRichErrors.AmountsLengthMustEqualOneError(amounts.length)
             );
         }
+
+        uint256 cacheIndex = _cacheIndex;
         uint256 remainingAmount = amounts[0];
-        if (_cachedAssetData.length.safeSub(_cacheIndex) < remainingAmount) {
+
+        // Verify that there are enough broker assets to transfer
+        if (_cachedTokenIds.length.safeSub(cacheIndex) < remainingAmount) {
             LibRichErrors.rrevert(
-                LibBrokerRichErrors.TooFewBrokerAssetsProvidedError(_cachedAssetData.length)
+                LibBrokerRichErrors.TooFewBrokerAssetsProvidedError(_cachedTokenIds.length)
             );
         }
 
-        while (remainingAmount != 0) {
-            bytes memory assetToTransfer = _cachedAssetData[_cacheIndex];
-            _cacheIndex++;
+        // Decode validator and params from `data`
+        (address tokenAddress, address validator, bytes memory propertyData) = abi.decode(
+            data,
+            (address, address, bytes)
+        );
 
-            // Decode validator and params from `data`
-            (address validator, bytes memory propertyData) = abi.decode(
-                data,
-                (address, bytes)
+        while (remainingAmount != 0) {
+            uint256 tokenId = _cachedTokenIds[cacheIndex];
+            cacheIndex++;
+
+            // Validate asset properties
+            IPropertyValidator(validator).checkBrokerAsset(
+                tokenId,
+                propertyData
             );
 
-            // Execute staticcall
-            (bool success, bytes memory returnData) = validator.staticcall(abi.encodeWithSelector(
-                IPropertyValidator(0).checkBrokerAsset.selector,
-                assetToTransfer,
-                propertyData
-            ));
-
-            // Revert with returned data if staticcall is unsuccessful
-            if (!success) {
-                assembly {
-                    revert(add(returnData, 32), mload(returnData))
-                }
-            }
-
             // Perform the transfer
-            assetToTransfer.transferERC721Token(
+            IERC721Token(tokenAddress).transferFrom(
                 _sender,
                 to,
-                1
+                tokenId
             );
 
             remainingAmount--;
         }
+        // Update cache index in storage
+        _cacheIndex = cacheIndex;
     }
 
     /// @dev Fills a single property-based order by the given amount using the given assets.
-    /// @param brokeredAssets Assets specified by the taker to be used to fill the order.
-    /// @param order The property-based order to fill.
+    ///      Pays protocol fees using either the ETH supplied by the taker to the transaction or
+    ///      WETH acquired from the maker during settlement. The final WETH balance is sent to the taker.
+    /// @param brokeredTokenIds Token IDs specified by the taker to be used to fill the orders.
+    /// @param order The property-based order to fill. The format of a property-based order is the
+    ///        same as that of a normal order, except the takerAssetData. Instaed of specifying a
+    ///        specific ERC721 asset, the takerAssetData should be ERC1155 assetData where the
+    ///        underlying tokenAddress is this contract's address and the desired properties are
+    ///        encoded in the extra data field. Also note that takerFees must be denominated in
+    ///        WETH (or zero).
     /// @param takerAssetFillAmount The amount to fill the order by.
     /// @param signature The maker's signature of the given order.
     /// @param fillFunctionSelector The selector for either `fillOrder` or `fillOrKillOrder`.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return fillResults Amounts filled and fees paid by the maker and taker.
     function brokerTrade(
-        bytes[] memory brokeredAssets,
+        uint256[] memory brokeredTokenIds,
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature,
-        bytes4 fillFunctionSelector
+        bytes4 fillFunctionSelector,
+        uint256[] memory ethFeeAmounts,
+        address payable[] memory feeRecipients
     )
         public
         payable
-        refundFinalBalance
         returns (LibFillResults.FillResults memory fillResults)
     {
         // Cache the taker-supplied asset data
-        _cachedAssetData = brokeredAssets;
+        _cachedTokenIds = brokeredTokenIds;
         // Cache the sender's address
         _sender = msg.sender;
 
@@ -158,6 +193,8 @@ contract Broker is
             LibBrokerRichErrors.InvalidFunctionSelectorError(fillFunctionSelector);
         }
 
+        // Pay ETH affiliate fees to all feeRecipient addresses
+        _transferEthFeesAndWrapRemaining(ethFeeAmounts, feeRecipients);
 
         // Perform the fill
         bytes memory fillCalldata = abi.encodeWithSelector(
@@ -167,47 +204,59 @@ contract Broker is
             signature
         );
         // solhint-disable-next-line avoid-call-value
-        (bool didSucceed, bytes memory returnData) = _EXCHANGE.call.value(msg.value)(fillCalldata);
+        (bool didSucceed, bytes memory returnData) = EXCHANGE.call(fillCalldata);
         if (didSucceed) {
             fillResults = abi.decode(returnData, (LibFillResults.FillResults));
         } else {
-            assembly {
-                revert(add(returnData, 32), mload(returnData))
-            }
+            // Re-throw error
+            LibRichErrors.rrevert(returnData);
         }
 
         // Transfer maker asset to taker
-        order.makerAssetData.transferOut(fillResults.makerAssetFilledAmount);
+        if (!order.makerAssetData.equals(WETH_ASSET_DATA)) {
+            order.makerAssetData.transferOut(fillResults.makerAssetFilledAmount);
+        }
 
-        // Clear storage
-        delete _cachedAssetData;
-        _cacheIndex = 0;
-        _sender = address(0);
+        // Refund remaining ETH to msg.sender.
+        _transferEthRefund(WETH.balanceOf(address(this)));
+
+        _clearStorage();
 
         return fillResults;
     }
 
     /// @dev Fills multiple property-based orders by the given amounts using the given assets.
-    /// @param brokeredAssets Assets specified by the taker to be used to fill the orders.
-    /// @param orders The property-based orders to fill.
+    ///      Pays protocol fees using either the ETH supplied by the taker to the transaction or
+    ///      WETH acquired from the maker during settlement. The final WETH balance is sent to the taker.
+    /// @param brokeredTokenIds Token IDs specified by the taker to be used to fill the orders.
+    /// @param orders The property-based orders to fill. The format of a property-based order is the
+    ///        same as that of a normal order, except the takerAssetData. Instaed of specifying a
+    ///        specific ERC721 asset, the takerAssetData should be ERC1155 assetData where the
+    ///        underlying tokenAddress is this contract's address and the desired properties are
+    ///        encoded in the extra data field. Also note that takerFees must be denominated in
+    ///        WETH (or zero).
     /// @param takerAssetFillAmounts The amounts to fill the orders by.
     /// @param signatures The makers' signatures for the given orders.
-    /// @param batchFillFunctionSelector The selector for either `batchFillOrders`, `batchFillOrKillOrders`, or `batchFillOrdersNoThrow`.
+    /// @param batchFillFunctionSelector The selector for either `batchFillOrders`,
+    ///        `batchFillOrKillOrders`, or `batchFillOrdersNoThrow`.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return fillResults Amounts filled and fees paid by the makers and taker.
     function batchBrokerTrade(
-        bytes[] memory brokeredAssets,
+        uint256[] memory brokeredTokenIds,
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures,
-        bytes4 batchFillFunctionSelector
+        bytes4 batchFillFunctionSelector,
+        uint256[] memory ethFeeAmounts,
+        address payable[] memory feeRecipients
     )
         public
         payable
-        refundFinalBalance
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         // Cache the taker-supplied asset data
-        _cachedAssetData = brokeredAssets;
+        _cachedTokenIds = brokeredTokenIds;
         // Cache the sender's address
         _sender = msg.sender;
 
@@ -220,6 +269,9 @@ contract Broker is
             LibBrokerRichErrors.InvalidFunctionSelectorError(batchFillFunctionSelector);
         }
 
+        // Pay ETH affiliate fees to all feeRecipient addresses
+        _transferEthFeesAndWrapRemaining(ethFeeAmounts, feeRecipients);
+
         // Perform the batch fill
         bytes memory batchFillCalldata = abi.encodeWithSelector(
             batchFillFunctionSelector,
@@ -228,26 +280,35 @@ contract Broker is
             signatures
         );
         // solhint-disable-next-line avoid-call-value
-        (bool didSucceed, bytes memory returnData) = _EXCHANGE.call.value(msg.value)(batchFillCalldata);
+        (bool didSucceed, bytes memory returnData) = EXCHANGE.call(batchFillCalldata);
         if (didSucceed) {
             // solhint-disable-next-line indent
             fillResults = abi.decode(returnData, (LibFillResults.FillResults[]));
         } else {
-            assembly {
-                revert(add(returnData, 32), mload(returnData))
-            }
+            // Re-throw error
+            LibRichErrors.rrevert(returnData);
         }
 
         // Transfer maker assets to taker
         for (uint256 i = 0; i < orders.length; i++) {
-            orders[i].makerAssetData.transferOut(fillResults[i].makerAssetFilledAmount);
+            if (!orders[i].makerAssetData.equals(WETH_ASSET_DATA)) {
+                orders[i].makerAssetData.transferOut(fillResults[i].makerAssetFilledAmount);
+            }
         }
 
-        // Clear storage
-        delete _cachedAssetData;
-        _cacheIndex = 0;
-        _sender = address(0);
+        // Refund remaining ETH to msg.sender.
+        _transferEthRefund(WETH.balanceOf(address(this)));
+
+        _clearStorage();
 
         return fillResults;
+    }
+
+    function _clearStorage()
+        private
+    {
+        delete _cachedTokenIds;
+        _cacheIndex = 0;
+        _sender = address(0);
     }
 }

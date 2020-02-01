@@ -21,7 +21,6 @@ pragma solidity ^0.5.9;
 
 library LibBrokerRichErrors {
 
-
     // bytes4(keccak256("InvalidFromAddressError(address)"))
     bytes4 internal constant INVALID_FROM_ADDRESS_ERROR_SELECTOR =
         0x906bfb3c;
@@ -37,6 +36,10 @@ library LibBrokerRichErrors {
     // bytes4(keccak256("InvalidFunctionSelectorError(bytes4)"))
     bytes4 internal constant INVALID_FUNCTION_SELECTOR_ERROR_SELECTOR =
         0x540943f1;
+
+    // bytes4(keccak256("OnlyERC1155ProxyError(address)"))
+    bytes4 internal constant ONLY_ERC_1155_PROXY_ERROR_SELECTOR =
+        0xccc529af;
 
     // solhint-disable func-name-mixedcase
     function InvalidFromAddressError(
@@ -88,6 +91,19 @@ library LibBrokerRichErrors {
         return abi.encodeWithSelector(
             INVALID_FUNCTION_SELECTOR_ERROR_SELECTOR,
             selector
+        );
+    }
+
+    function OnlyERC1155ProxyError(
+        address sender
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            ONLY_ERC_1155_PROXY_ERROR_SELECTOR,
+            sender
         );
     }
 }

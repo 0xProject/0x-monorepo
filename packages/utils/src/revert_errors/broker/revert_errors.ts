@@ -31,11 +31,18 @@ export class InvalidFunctionSelectorError extends RevertError {
     }
 }
 
+export class OnlyERC1155ProxyError extends RevertError {
+    constructor(sender?: string) {
+        super('OnlyERC1155ProxyError', 'OnlyERC1155ProxyError(address sender)', { sender });
+    }
+}
+
 const types = [
     InvalidFromAddressError,
     AmountsLengthMustEqualOneError,
     TooFewBrokerAssetsProvidedError,
     InvalidFunctionSelectorError,
+    OnlyERC1155ProxyError,
 ];
 
 // Register the types we've defined.

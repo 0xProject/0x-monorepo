@@ -27,36 +27,59 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 interface IBroker {
 
     /// @dev Fills a single property-based order by the given amount using the given assets.
-    /// @param brokeredAssets Assets specified by the taker to be used to fill the order.
-    /// @param order The property-based order to fill.
+    ///      Pays protocol fees using either the ETH supplied by the taker to the transaction or
+    ///      WETH acquired from the maker during settlement. The final WETH balance is sent to the taker.
+    /// @param brokeredTokenIds Token IDs specified by the taker to be used to fill the orders.
+    /// @param order The property-based order to fill. The format of a property-based order is the
+    ///        same as that of a normal order, except the takerAssetData. Instaed of specifying a
+    ///        specific ERC721 asset, the takerAssetData should be ERC1155 assetData where the
+    ///        underlying tokenAddress is this contract's address and the desired properties are
+    ///        encoded in the extra data field. Also note that takerFees must be denominated in
+    ///        WETH (or zero).
     /// @param takerAssetFillAmount The amount to fill the order by.
     /// @param signature The maker's signature of the given order.
     /// @param fillFunctionSelector The selector for either `fillOrder` or `fillOrKillOrder`.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return fillResults Amounts filled and fees paid by the maker and taker.
     function brokerTrade(
-        bytes[] calldata brokeredAssets,
+        uint256[] calldata brokeredTokenIds,
         LibOrder.Order calldata order,
         uint256 takerAssetFillAmount,
         bytes calldata signature,
-        bytes4 fillFunctionSelector
+        bytes4 fillFunctionSelector,
+        uint256[] calldata ethFeeAmounts,
+        address payable[] calldata feeRecipients
     )
         external
         payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Fills multiple property-based orders by the given amounts using the given assets.
-    /// @param brokeredAssets Assets specified by the taker to be used to fill the orders.
-    /// @param orders The property-based orders to fill.
+    ///      Pays protocol fees using either the ETH supplied by the taker to the transaction or
+    ///      WETH acquired from the maker during settlement. The final WETH balance is sent to the taker.
+    /// @param brokeredTokenIds Token IDs specified by the taker to be used to fill the orders.
+    /// @param orders The property-based orders to fill. The format of a property-based order is the
+    ///        same as that of a normal order, except the takerAssetData. Instaed of specifying a
+    ///        specific ERC721 asset, the takerAssetData should be ERC1155 assetData where the
+    ///        underlying tokenAddress is this contract's address and the desired properties are
+    ///        encoded in the extra data field. Also note that takerFees must be denominated in
+    ///        WETH (or zero).
     /// @param takerAssetFillAmounts The amounts to fill the orders by.
     /// @param signatures The makers' signatures for the given orders.
-    /// @param batchFillFunctionSelector The selector for either `batchFillOrders`, `batchFillOrKillOrders`, or `batchFillOrdersNoThrow`.
+    /// @param batchFillFunctionSelector The selector for either `batchFillOrders`,
+    ///        `batchFillOrKillOrders`, or `batchFillOrdersNoThrow`.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
     /// @return fillResults Amounts filled and fees paid by the makers and taker.
     function batchBrokerTrade(
-        bytes[] calldata brokeredAssets,
+        uint256[] calldata brokeredTokenIds,
         LibOrder.Order[] calldata orders,
         uint256[] calldata takerAssetFillAmounts,
         bytes[] calldata signatures,
-        bytes4 batchFillFunctionSelector
+        bytes4 batchFillFunctionSelector,
+        uint256[] calldata ethFeeAmounts,
+        address payable[] calldata feeRecipients
     )
         external
         payable
