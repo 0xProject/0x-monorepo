@@ -18,7 +18,7 @@
         "changes": [
             {
                 "note": "Update `DevUtils` artifact",
-                "pr": 2464
+                "pr": 2466
             },
             {
                 "note": "Remove `LibTransactionDecoder` artifact",

@@ -37,7 +37,101 @@ library LibFractions {
             .safeMul(d2)
             .safeAdd(n2.safeMul(d1));
         denominator = d1.safeMul(d2);
-        return (numerator, denominator);
+        return normalize(numerator, denominator);
+    }
+
+    /// @dev Safely subracts two fractions `n1/d1 - n2/d2`
+    /// @param n1 numerator of `1`
+    /// @param d1 denominator of `1`
+    /// @param n2 numerator of `2`
+    /// @param d2 denominator of `2`
+    /// @return numerator Numerator of sum
+    /// @return denominator Denominator of sum
+    function sub(
+        uint256 n1,
+        uint256 d1,
+        uint256 n2,
+        uint256 d2
+    )
+        internal
+        pure
+        returns (
+            uint256 numerator,
+            uint256 denominator
+        )
+    {
+        if (n2 == 0) {
+            return (numerator = n1, denominator = d1);
+        }
+        numerator = n1
+            .safeMul(d2)
+            .safeSub(n2.safeMul(d1));
+        denominator = d1.safeMul(d2);
+        return normalize(numerator, denominator);
+    }
+
+    /// @dev Multiply two fractions.
+    /// @param n1 numerator of `1`
+    /// @param d1 denominator of `1`
+    /// @param n2 numerator of `2`
+    /// @param d2 denominator of `2`
+    /// @return numerator numerator of product.
+    /// @return denominator numerator of product.
+    function mul(
+        uint256 n1,
+        uint256 d1,
+        uint256 n2,
+        uint256 d2
+    )
+        internal
+        pure
+        returns (
+            uint256 numerator,
+            uint256 denominator
+        )
+    {
+        return normalize(n1.safeMul(n2), d1.safeMul(d2));
+    }
+
+    /// @dev Compares two fractions.
+    /// @param n1 numerator of `1`
+    /// @param d1 denominator of `1`
+    /// @param n2 numerator of `2`
+    /// @param d2 denominator of `2`
+    /// @return compareResult
+    ///         `-1` if `n1/d1 < n2/d2`.
+    ///         `0` if `n1/d1 == n2/d2`.
+    ///         `1` if `n1/d1 > n2/d2`.
+    function cmp(
+        uint256 n1,
+        uint256 d1,
+        uint256 n2,
+        uint256 d2
+    )
+        internal
+        pure
+        returns (int8 compareResult)
+    {
+        // Handle infinities.
+        if (d1 == 0) {
+            if (d2 == 0) {
+                return 0;
+            }
+            return 1;
+        } else {
+            if (d2 == 0) {
+                return -1;
+            }
+        }
+        uint256 nd1 = n1.safeMul(d2);
+        uint256 nd2 = n2.safeMul(d1);
+        if (nd1 > nd2) {
+            return 1;
+        }
+        if (nd1 < nd2) {
+            return -1;
+        }
+        return 0;
     }
 
     /// @dev Rescales a fraction to prevent overflows during addition if either

@@ -18,6 +18,10 @@
             {
                 "note": "Remove `LibTransactionDecoder` export",
                 "pr": 2464
+            },
+            {
+                "note": "Add `DydxBridge` order validation",
+                "pr": 2466
             }
         ],
         "timestamp": 1581204851

@@ -81,6 +81,7 @@ blockchainTests.resets('LibAssetData', env => {
             artifacts,
             deployment.exchange.address,
             constants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
         );
 
         staticCallTarget = await TestStaticCallTargetContract.deployFrom0xArtifactAsync(

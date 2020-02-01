@@ -12,6 +12,14 @@
         "version": "3.2.0",
         "changes": [
             {
+                "note": "Add more types and functions to `IDydx`",
+                "pr": 2466
+            },
+            {
+                "note": "Rename `DydxBrigeAction.accountId` to `DydxBridgeAction.accountIdx`",
+                "pr": 2466
+            },
+            {
                 "note": "Fix broken tests.",
                 "pr": 2462
             },

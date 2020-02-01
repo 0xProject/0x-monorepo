@@ -28,7 +28,7 @@ import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IChai.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./Addresses.sol";
-import "./LibAssetData.sol";
+import "./LibDydxBalance.sol";
 
 
 contract AssetBalance is
@@ -274,6 +274,9 @@ contract AssetBalance is
                 uint256 chaiAllowance = LibERC20Token.allowance(_getChaiAddress(), ownerAddress, chaiBridgeAddress);
                 // Dai allowance is unlimited if Chai allowance is unlimited
                 allowance = chaiAllowance == _MAX_UINT256 ? _MAX_UINT256 : _convertChaiToDaiAmount(chaiAllowance);
+            } else if (bridgeAddress == dydxBridgeAddress) {
+                // Dydx bridges always have infinite allowance.
+                allowance = _MAX_UINT256;
             }
             // Allowance will be 0 if bridge is not supported
         }
@@ -365,6 +368,17 @@ contract AssetBalance is
     {
         if (order.makerAssetData.length < 4) {
             return (0, 0);
+        }
+        bytes4 assetProxyId = order.makerAssetData.readBytes4(0);
+        // Handle dydx bridge assets.
+        if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
+            (, , address bridgeAddress, ) = LibAssetData.decodeERC20BridgeAssetData(order.makerAssetData);
+            if (bridgeAddress == dydxBridgeAddress) {
+                return (
+                    LibDydxBalance.getDydxMakerBalance(order, dydxBridgeAddress),
+                    _MAX_UINT256
+                );
+            }
         }
         return (
             getBalance(order.makerAddress, order.makerAssetData),
