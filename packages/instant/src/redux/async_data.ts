@@ -13,6 +13,7 @@ import { swapQuoteUpdater } from '../util/swap_quote_updater';
 
 import { actions } from './actions';
 import { State } from './reducer';
+import { providerStateFactory } from '../util/provider_state_factory';
 
 export const asyncData = {
     fetchEthPriceAndDispatchToStore: async (dispatch: Dispatch) => {
@@ -71,18 +72,19 @@ export const asyncData = {
         try {
             // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
             const isPrivacyModeEnabled = (provider as any).enable !== undefined;
-            if (providerState.name !== 'Fortmatic') {
-                availableAddresses =
-                    isPrivacyModeEnabled && shouldAttemptUnlock
-                        ? await (provider as any).enable()
-                        : await web3Wrapper.getAvailableAddressesAsync();
-            } else {
-                availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
-            }
+            availableAddresses =
+            isPrivacyModeEnabled && shouldAttemptUnlock
+                ? await (provider as any).enable()
+                : await web3Wrapper.getAvailableAddressesAsync();
+            console.log(availableAddresses);
         } catch (e) {
             analytics.trackAccountUnlockDenied();
             if (e.message.includes('Fortmatic: User denied account access.')) {
-                dispatch(actions.setAccountStateNone());
+                // If Fortmatic is not used, revert to injected provider
+                const initialProviderState = providerStateFactory.getInitialProviderStateWithCurrentProviderState(
+                    providerState,
+                );
+                dispatch(actions.setProviderState(initialProviderState));
             } else {
                 dispatch(actions.setAccountStateLocked());
             }

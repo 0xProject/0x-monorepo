@@ -52,6 +52,7 @@ export const providerStateFactory = {
             swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
             account: LOADING_ACCOUNT,
             orderSource,
+            isProviderInjected: false,
         };
         return providerState;
     },
@@ -71,6 +72,7 @@ export const providerStateFactory = {
                 swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(injectedProviderIfExists, network),
                 account: LOADING_ACCOUNT,
                 orderSource,
+                isProviderInjected: true,
             };
             return providerState;
         } else {
@@ -83,7 +85,6 @@ export const providerStateFactory = {
         walletDisplayName?: string,
     ): ProviderState => {
         const provider = providerFactory.getFallbackNoSigningProvider(network);
-        console.log(walletDisplayName, envUtil.getProviderDisplayName(provider));
         const providerState: ProviderState = {
             name: 'Fallback',
             displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
@@ -93,8 +94,31 @@ export const providerStateFactory = {
             swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
             account: NO_ACCOUNT,
             orderSource,
+            isProviderInjected: true,
         };
         return providerState;
+    },
+    // function to call getInitialProviderState with parameters retreived from a provided ProviderState
+    getInitialProviderStateWithCurrentProviderState: (
+        currentProviderState: ProviderState,
+    ): ProviderState => {
+        const orderSource = currentProviderState.orderSource;
+        const chainId = currentProviderState.swapQuoter.chainId;
+        // If provider is provided to instant, use that and the displayName
+        if (!currentProviderState.isProviderInjected) {
+            return providerStateFactory.getInitialProviderState(
+                orderSource,
+                chainId,
+                currentProviderState.provider,
+                currentProviderState.displayName,
+            );
+        }
+        const newProviderState = providerStateFactory.getInitialProviderState(
+            orderSource,
+            chainId,
+        );
+        newProviderState.account = NO_ACCOUNT;
+        return newProviderState;
     },
     getProviderStateBasedOnProviderType: (
         currentProviderState: ProviderState,
@@ -115,6 +139,7 @@ export const providerStateFactory = {
                     swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, chainId),
                     account: LOADING_ACCOUNT,
                     orderSource,
+                    isProviderInjected: true,
                 };
             }
         }
@@ -130,6 +155,7 @@ export const providerStateFactory = {
                 swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(fmProvider, chainId),
                 account: LOADING_ACCOUNT,
                 orderSource,
+                isProviderInjected: true,
             };
         }
         return providerStateFactory.getInitialProviderState(
