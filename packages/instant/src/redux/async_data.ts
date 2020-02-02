@@ -67,7 +67,6 @@ export const asyncData = {
         if (shouldSetToLoading && providerState.account.state !== AccountState.Loading) {
             dispatch(actions.setAccountStateLoading());
         }
-        console.log('providerState', providerState);
         let availableAddresses: string[] = [];
         try {
             // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
@@ -76,7 +75,6 @@ export const asyncData = {
             isPrivacyModeEnabled && shouldAttemptUnlock
                 ? await (provider as any).enable()
                 : await web3Wrapper.getAvailableAddressesAsync();
-            console.log(availableAddresses);
         } catch (e) {
             analytics.trackAccountUnlockDenied();
             if (e.message.includes('Fortmatic: User denied account access.')) {
