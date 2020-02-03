@@ -411,45 +411,23 @@ export class SwapQuoteCalculator {
         };
     }
 
-    private _determineLiquiditySource(order: SignedOrder): ERC20BridgeSource {
-        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(order.makerAssetData);
-        if (decodedAssetData.assetProxyId === AssetProxyId.ERC20Bridge) {
-            const bridgeAddress = (decodedAssetData as ERC20BridgeAssetData).bridgeAddress;
-            switch (bridgeAddress) {
-                case this._contractAddresses.kyberBridge: return ERC20BridgeSource.Kyber;
-                case this._contractAddresses.uniswapBridge: return ERC20BridgeSource.Uniswap;
-                case this._contractAddresses.eth2DaiBridge: return ERC20BridgeSource.Eth2Dai;
-                default: return ERC20BridgeSource.Native; // HACK: should we throw an error for unknown?
-            }
-        }
-        return ERC20BridgeSource.Native;
-    }
-
+    // tslint:disable-next-line: prefer-function-over-method
     private _getSwapQuoteOrdersBreakdown(
-        orders: SignedOrder[],
+        orders: OptimizedMarketOrder[],
         totalAssetAmount: BigNumber,
         operation: MarketOperation,
     ): SwapQuoteOrdersBreakdown {
         // HACK: to shut up linter
         const breakdown: SwapQuoteOrdersBreakdown = {};
 
-        const aggregatedFillAmountBySource: SwapQuoteOrdersBreakdown = orders.reduce((acc: SwapQuoteOrdersBreakdown, order: SignedOrder): SwapQuoteOrdersBreakdown => {
+        return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
             const assetAmount = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
-            const source = this._determineLiquiditySource(order);
+            const { source } = order.fill;
             return {
                 ...acc,
                 ...{
-                    [source]: !!acc[source] ? acc[source].plus(assetAmount) : assetAmount,
+                    [source]: (!!acc[source] ? acc[source].plus(assetAmount) : assetAmount).dividedBy(totalAssetAmount),
                 },
-            };
-        }, breakdown);
-
-        return Object.keys(aggregatedFillAmountBySource).reduce((acc: SwapQuoteOrdersBreakdown, source: string): SwapQuoteOrdersBreakdown => {
-            return {
-                ...{
-                    [source]: aggregatedFillAmountBySource[source].dividedBy(totalAssetAmount),
-                },
-                ...acc,
             };
         }, breakdown);
     }
