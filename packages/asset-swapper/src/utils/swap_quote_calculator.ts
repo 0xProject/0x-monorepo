@@ -413,9 +413,9 @@ export class SwapQuoteCalculator {
         const breakdown: SwapQuoteOrdersBreakdown = {};
 
         // total asset amount (accounting for slippage protection)
-        const totalAssetAmount = orders.reduce((amount: BigNumber, order: OptimizedMarketOrder): BigNumber => {
-            return amount.plus(operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount);
-        }, constants.ZERO_AMOUNT);
+        const totalAssetAmount = BigNumber.sum(
+            ...[constants.ZERO_AMOUNT, ...orders.map(o => operation === MarketOperation.Buy ? o.makerAssetAmount : o.takerAssetAmount)],
+        );
 
         return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
             const assetAmount = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
