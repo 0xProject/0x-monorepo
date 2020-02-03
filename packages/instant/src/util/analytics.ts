@@ -1,4 +1,3 @@
-import { MarketBuySwapQuote } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -13,6 +12,7 @@ import {
     ProviderState,
     QuoteFetchOrigin,
     WalletSuggestion,
+    ZeroExAPIQuoteResponse,
 } from '../types';
 
 import { EventProperties, heapUtil } from './heap';
@@ -82,21 +82,16 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
     };
 }
 
-const swapQuoteEventProperties = (swapQuote: MarketBuySwapQuote) => {
-    const makerAssetFillAmount = swapQuote.makerAssetFillAmount.toString();
-    const assetEthAmount = swapQuote.worstCaseQuoteInfo.takerAssetAmount.toString();
-    const feeEthAmount = swapQuote.worstCaseQuoteInfo.protocolFeeInWeiAmount
-        .plus(swapQuote.worstCaseQuoteInfo.feeTakerAssetAmount)
-        .toString();
-    const totalEthAmount = swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount
-        .plus(swapQuote.worstCaseQuoteInfo.protocolFeeInWeiAmount)
-        .toString();
+const quoteEventProperties = (quote: ZeroExAPIQuoteResponse) => {
     return {
-        makerAssetFillAmount,
-        assetEthAmount,
-        feeEthAmount,
-        totalEthAmount,
-        gasPrice: swapQuote.gasPrice.toString(),
+        to: quote.to,
+        data: quote.data,
+        value: quote.value.toString(),
+        gasPrice: quote.gasPrice.toString(),
+        gas: quote.gas.toString(),
+        protocolFee: quote.protocolFee.toString(),
+        buyAmount: quote.buyAmount.toString(),
+        sellAmount: quote.sellAmount.toString(),
     };
 };
 
@@ -183,50 +178,50 @@ export const analytics = {
     trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PaymentMethodDropdownOpened),
     trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PaymentMethodOpenedEtherscan),
     trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PaymentMethodCopiedAddress),
-    trackBuyNotEnoughEth: (swapQuote: MarketBuySwapQuote) =>
-        trackingEventFnWithPayload(EventNames.BuyNotEnoughEth)(swapQuoteEventProperties(swapQuote)),
-    trackBuyStarted: (swapQuote: MarketBuySwapQuote) =>
-        trackingEventFnWithPayload(EventNames.BuyStarted)(swapQuoteEventProperties(swapQuote)),
-    trackBuySignatureDenied: (swapQuote: MarketBuySwapQuote) =>
-        trackingEventFnWithPayload(EventNames.BuySignatureDenied)(swapQuoteEventProperties(swapQuote)),
-    trackBuySimulationFailed: (swapQuote: MarketBuySwapQuote) =>
-        trackingEventFnWithPayload(EventNames.BuySimulationFailed)(swapQuoteEventProperties(swapQuote)),
-    trackBuyUnknownError: (swapQuote: MarketBuySwapQuote, errorMessage: string) =>
+    trackBuyNotEnoughEth: (quote: ZeroExAPIQuoteResponse) =>
+        trackingEventFnWithPayload(EventNames.BuyNotEnoughEth)(quoteEventProperties(quote)),
+    trackBuyStarted: (quote: ZeroExAPIQuoteResponse) =>
+        trackingEventFnWithPayload(EventNames.BuyStarted)(quoteEventProperties(quote)),
+    trackBuySignatureDenied: (quote: ZeroExAPIQuoteResponse) =>
+        trackingEventFnWithPayload(EventNames.BuySignatureDenied)(quoteEventProperties(quote)),
+    trackBuySimulationFailed: (quote: ZeroExAPIQuoteResponse) =>
+        trackingEventFnWithPayload(EventNames.BuySimulationFailed)(quoteEventProperties(quote)),
+    trackBuyUnknownError: (quote: ZeroExAPIQuoteResponse, errorMessage: string) =>
         trackingEventFnWithPayload(EventNames.BuyUnknownError)({
-            ...swapQuoteEventProperties(swapQuote),
+            ...quoteEventProperties(quote),
             errorMessage,
         }),
     trackBuyTxSubmitted: (
-        swapQuote: MarketBuySwapQuote,
+        quote: ZeroExAPIQuoteResponse,
         txHash: string,
         startTimeUnix: number,
         expectedEndTimeUnix: number,
     ) =>
         trackingEventFnWithPayload(EventNames.BuyTxSubmitted)({
-            ...swapQuoteEventProperties(swapQuote),
+            ...quoteEventProperties(quote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
         }),
     trackBuyTxSucceeded: (
-        swapQuote: MarketBuySwapQuote,
+        quote: ZeroExAPIQuoteResponse,
         txHash: string,
         startTimeUnix: number,
         expectedEndTimeUnix: number,
     ) =>
         trackingEventFnWithPayload(EventNames.BuyTxSucceeded)({
-            ...swapQuoteEventProperties(swapQuote),
+            ...quoteEventProperties(quote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
     trackBuyTxFailed: (
-        swapQuote: MarketBuySwapQuote,
+        quote: ZeroExAPIQuoteResponse,
         txHash: string,
         startTimeUnix: number,
         expectedEndTimeUnix: number,
     ) =>
         trackingEventFnWithPayload(EventNames.BuyTxFailed)({
-            ...swapQuoteEventProperties(swapQuote),
+            ...quoteEventProperties(quote),
             txHash,
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
@@ -248,9 +243,9 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TokenSelectorSearched)({ searchText }),
     trackTransactionViewed: (orderProcesState: OrderProcessState) =>
         trackingEventFnWithPayload(EventNames.TransactionViewed)({ orderState: orderProcesState }),
-    trackQuoteFetched: (swapQuote: MarketBuySwapQuote, fetchOrigin: QuoteFetchOrigin) =>
+    trackQuoteFetched: (quote: ZeroExAPIQuoteResponse, fetchOrigin: QuoteFetchOrigin) =>
         trackingEventFnWithPayload(EventNames.QuoteFetched)({
-            ...swapQuoteEventProperties(swapQuote),
+            ...quoteEventProperties(quote),
             fetchOrigin,
         }),
     trackQuoteError: (errorMessage: string, makerAssetFillAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {

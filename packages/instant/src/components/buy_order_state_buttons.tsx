@@ -1,10 +1,9 @@
-import { MarketBuySwapQuote, SwapQuoteConsumer, SwapQuoteConsumerError, SwapQuoter } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { AffiliateInfo, Asset, OrderProcessState, ZeroExInstantError } from '../types';
+import { AffiliateInfo, Asset, OrderProcessState, ZeroExAPIQuoteResponse, ZeroExInstantError } from '../types';
 
 import { BuyButton } from './buy_button';
 import { PlacingOrderButton } from './placing_order_button';
@@ -16,28 +15,26 @@ import { Flex } from './ui/flex';
 export interface BuyOrderStateButtonProps {
     accountAddress?: string;
     accountEthBalanceInWei?: BigNumber;
-    swapQuote?: MarketBuySwapQuote;
+    quote?: ZeroExAPIQuoteResponse;
     swapOrderProcessingState: OrderProcessState;
-    swapQuoter: SwapQuoter;
-    swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
     selectedAsset?: Asset;
     onViewTransaction: () => void;
-    onValidationPending: (swapQuote: MarketBuySwapQuote) => void;
+    onValidationPending: (quote: ZeroExAPIQuoteResponse) => void;
     onValidationFail: (
-        swapQuote: MarketBuySwapQuote,
-        errorMessage: SwapQuoteConsumerError | ZeroExInstantError,
+        swapQuote: ZeroExAPIQuoteResponse,
+        errorMessage: ZeroExInstantError, // TODO
     ) => void;
-    onSignatureDenied: (swapQuote: MarketBuySwapQuote) => void;
+    onSignatureDenied: (quote: ZeroExAPIQuoteResponse) => void;
     onBuyProcessing: (
-        swapQuote: MarketBuySwapQuote,
+        quote: ZeroExAPIQuoteResponse,
         txHash: string,
         startTimeUnix: number,
         expectedEndTimeUnix: number,
     ) => void;
-    onBuySuccess: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
-    onBuyFailure: (swapQuote: MarketBuySwapQuote, txHash: string) => void;
+    onBuySuccess: (quote: ZeroExAPIQuoteResponse, txHash: string) => void;
+    onBuyFailure: (quote: ZeroExAPIQuoteResponse, txHash: string) => void;
     onRetry: () => void;
 }
 
@@ -66,9 +63,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         <BuyButton
             accountAddress={props.accountAddress}
             accountEthBalanceInWei={props.accountEthBalanceInWei}
-            swapQuote={props.swapQuote}
-            swapQuoter={props.swapQuoter}
-            swapQuoteConsumer={props.swapQuoteConsumer}
+            quote={props.quote}
             web3Wrapper={props.web3Wrapper}
             affiliateInfo={props.affiliateInfo}
             selectedAsset={props.selectedAsset}

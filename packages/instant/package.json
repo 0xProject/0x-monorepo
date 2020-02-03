@@ -44,9 +44,9 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
         "@0x/assert": "^3.0.3",
-        "@0x/asset-swapper": "^3.0.3",
         "@0x/contract-wrappers": "^13.3.0",
         "@0x/json-schemas": "^5.0.3",
+        "@0x/order-utils": "^10.1.1",
         "@0x/subproviders": "^6.0.3",
         "@0x/utils": "^5.1.2",
         "@0x/web3-wrapper": "^7.0.3",

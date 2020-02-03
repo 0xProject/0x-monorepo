@@ -1,7 +1,6 @@
-import { MarketBuySwapQuote } from '@0x/asset-swapper';
 import { BigNumber } from '@0x/utils';
 
-import { ActionsUnion, AddressAndEthBalanceInWei, Asset, BaseCurrency, StandardSlidingPanelContent } from '../types';
+import { ActionsUnion, AddressAndEthBalanceInWei, Asset, BaseCurrency, StandardSlidingPanelContent, ZeroExAPIQuoteResponse } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -59,8 +58,8 @@ export const actions = {
         createAction(ActionTypes.SetSwapOrderStateProcessing, { txHash, startTimeUnix, expectedEndTimeUnix }),
     setSwapOrderStateFailure: (txHash: string) => createAction(ActionTypes.SetSwapOrderStateFailure, txHash),
     setSwapOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SetSwapOrderStateSuccess, txHash),
-    updateLatestSwapQuote: (swapQuote?: MarketBuySwapQuote) =>
-        createAction(ActionTypes.UpdateLatestSwapQuote, swapQuote),
+    updateLatestSwapQuote: (quote?: ZeroExAPIQuoteResponse) =>
+        createAction(ActionTypes.UpdateLatestSwapQuote, quote),
     updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UpdateSelectedAsset, asset),
     setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SetAvailableAssets, availableAssets),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SetQuoteRequestStatePending),

@@ -7,7 +7,6 @@ import { LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
 import { Maybe, Network, OrderSource, ProviderState } from '../types';
 import { envUtil } from '../util/env';
 
-import { assetSwapperFactory } from './asset_swapper_factory';
 import { providerFactory } from './provider_factory';
 
 export const providerStateFactory = {
@@ -38,7 +37,6 @@ export const providerStateFactory = {
         }
     },
     getInitialProviderStateFromProvider: (
-        orderSource: OrderSource,
         network: Network,
         provider: ZeroExProvider,
         walletDisplayName?: string,
@@ -48,14 +46,11 @@ export const providerStateFactory = {
             displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
             provider,
             web3Wrapper: new Web3Wrapper(provider),
-            swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, network),
-            swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
             account: LOADING_ACCOUNT,
         };
         return providerState;
     },
     getInitialProviderStateFromWindowIfExists: (
-        orderSource: OrderSource,
         network: Network,
         walletDisplayName?: string,
     ): Maybe<ProviderState> => {
@@ -66,8 +61,6 @@ export const providerStateFactory = {
                 displayName: walletDisplayName || envUtil.getProviderDisplayName(injectedProviderIfExists),
                 provider: injectedProviderIfExists,
                 web3Wrapper: new Web3Wrapper(injectedProviderIfExists),
-                swapQuoter: assetSwapperFactory.getSwapQuoter(injectedProviderIfExists, orderSource, network),
-                swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(injectedProviderIfExists, network),
                 account: LOADING_ACCOUNT,
             };
             return providerState;
@@ -86,8 +79,6 @@ export const providerStateFactory = {
             displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
             provider,
             web3Wrapper: new Web3Wrapper(provider),
-            swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, network),
-            swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
             account: NO_ACCOUNT,
         };
         return providerState;

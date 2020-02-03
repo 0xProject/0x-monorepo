@@ -30,6 +30,7 @@ export const ONE_SECOND_MS = 1000;
 export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 export const GIT_SHA = process.env.GIT_SHA;
 export const NODE_ENV = process.env.NODE_ENV;
+export const SELL_TOKEN_SYMBOL = 'ETH';
 export const ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE = 0.2;
 export const ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE = 0;
 export const NPM_PACKAGE_VERSION = process.env.NPM_PACKAGE_VERSION;
@@ -60,6 +61,8 @@ export const INSTANT_DISCHARGE_TARGET = process.env.INSTANT_DISCHARGE_TARGET as
     | 'dogfood'
     | 'staging'
     | undefined;
+export const ZERO_EX_API_BASE_URL = 'https://api.0x.org/';
+export const ZERO_EX_API_SWAP_ENDPOINT = '/swap/v0/quote';
 export const COINBASE_WALLET_IOS_APP_STORE_URL = 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8';
 export const COINBASE_WALLET_ANDROID_APP_STORE_URL = 'https://play.google.com/store/apps/details?id=org.toshi&hl=en';
 export const COINBASE_WALLET_SITE_URL = 'https://wallet.coinbase.com/';

@@ -1,4 +1,3 @@
-import { SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -11,7 +10,7 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { ERC20Asset, Omit, OrderProcessState, QuoteFetchOrigin } from '../types';
-import { swapQuoteUpdater } from '../util/swap_quote_updater';
+import { quoteUpdater } from '../util/quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
@@ -20,7 +19,6 @@ export interface SelectedERC20AssetAmountInputProps {
 }
 
 interface ConnectedState {
-    swapQuoter: SwapQuoter;
     value?: BigNumber;
     asset?: ERC20Asset;
     isInputDisabled: boolean;
@@ -29,7 +27,7 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    updateSwapQuote: (swapQuoter: SwapQuoter, value?: BigNumber, asset?: ERC20Asset) => void;
+    updateSwapQuote: (value?: BigNumber, asset?: ERC20Asset) => void;
 }
 
 type ConnectedProps = Omit<ERC20AssetAmountInputProps, keyof SelectedERC20AssetAmountInputProps>;
@@ -50,9 +48,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
             ? isInputEnabled || processState === OrderProcessState.Success
             : false;
 
-    const swapQuoter = state.providerState.swapQuoter;
     return {
-        swapQuoter,
         value: state.selectedAssetUnitAmount,
         asset: selectedAsset,
         isInputDisabled,
@@ -61,15 +57,15 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     };
 };
 
-const debouncedUpdateSwapQuoteAsync = _.debounce(swapQuoteUpdater.updateSwapQuoteAsync.bind(swapQuoteUpdater), 200, {
+const debouncedUpdateSwapQuoteAsync = _.debounce(quoteUpdater.updateSwapQuoteAsync.bind(quoteUpdater), 200, {
     trailing: true,
-}) as typeof swapQuoteUpdater.updateSwapQuoteAsync;
+}) as typeof quoteUpdater.updateSwapQuoteAsync;
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     _ownProps: SelectedERC20AssetAmountInputProps,
 ): ConnectedDispatch => ({
-    updateSwapQuote: (swapQuoter, value, asset) => {
+    updateSwapQuote: (value, asset) => {
         // Update the input
         dispatch(actions.updateSelectedAssetAmount(value));
         // invalidate the last swap quote.
@@ -81,7 +77,7 @@ const mapDispatchToProps = (
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            debouncedUpdateSwapQuoteAsync(swapQuoter, dispatch, asset, value, QuoteFetchOrigin.Manual, {
+            debouncedUpdateSwapQuoteAsync(dispatch, asset, value, QuoteFetchOrigin.Manual, {
                 setPending: true,
                 dispatchErrors: true,
             });
@@ -99,7 +95,7 @@ const mergeProps = (
         asset: connectedState.asset,
         value: connectedState.value,
         onChange: (value, asset) => {
-            connectedDispatch.updateSwapQuote(connectedState.swapQuoter, value, asset);
+            connectedDispatch.updateSwapQuote(value, asset);
         },
         isInputDisabled: connectedState.isInputDisabled,
         numberOfAssetsAvailable: connectedState.numberOfAssetsAvailable,

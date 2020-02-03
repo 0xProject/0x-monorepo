@@ -9,7 +9,7 @@ import { assetUtils } from '../util/asset';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
 import { errorReporter } from '../util/error_reporter';
-import { swapQuoteUpdater } from '../util/swap_quote_updater';
+import { quoteUpdater } from '../util/quote_updater';
 
 import { actions } from './actions';
 import { State } from './reducer';
@@ -30,7 +30,6 @@ export const asyncData = {
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
         const { providerState, assetMetaDataMap, network } = state;
-        const swapQuoter = providerState.swapQuoter;
         try {
             const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
             const assetDatas = await swapQuoter.getAvailableMakerAssetDatasAsync(wethAssetData);

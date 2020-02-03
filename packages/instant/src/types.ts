@@ -1,5 +1,5 @@
-import { BigNumber, SwapQuoteConsumer, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 
@@ -110,8 +110,6 @@ export interface ProviderState {
     name: string;
     displayName: string;
     provider: ZeroExProvider;
-    swapQuoter: SwapQuoter;
-    swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     account: Account;
 }
@@ -211,3 +209,25 @@ export interface ZeroExInstantOptionalBaseConfig {
 }
 
 export type ZeroExInstantBaseConfig = ZeroExInstantRequiredBaseConfig & Partial<ZeroExInstantOptionalBaseConfig>;
+
+export interface ZeroExAPIQuoteParams {
+    sellToken: string;
+    buyToken: string;
+    buyAmount?: string;
+    sellAmount?: string;
+    slippagePercentage: string;
+    takerAddress?: string;
+}
+
+export interface ZeroExAPIQuoteResponse {
+    price: BigNumber;
+    to: string;
+    data: string;
+    value: BigNumber;
+    gasPrice: BigNumber;
+    gas: BigNumber;
+    protocolFee: BigNumber;
+    buyAmount: BigNumber;
+    sellAmount: BigNumber;
+    orders: SignedOrder[];
+}

@@ -1,6 +1,5 @@
-import { BigNumber, SwapQuoter } from '@0x/asset-swapper';
 import { AssetProxyId } from '@0x/types';
-import { providerUtils } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -189,7 +188,7 @@ export const hasLiquidityForAssetDataAsync = async (
     const bestProvider: ZeroExProvider = provider || providerFactory.getFallbackNoSigningProvider(chainId);
 
     const swapQuoterOptions = { chainId };
-
+    // TODO
     const swapQuoter = _.isString(orderSource)
         ? SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(bestProvider, orderSource, swapQuoterOptions)
         : SwapQuoter.getSwapQuoterForProvidedOrders(bestProvider, orderSource, swapQuoterOptions);

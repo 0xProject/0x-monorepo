@@ -1,4 +1,3 @@
-import { MarketBuySwapQuote } from '@0x/asset-swapper';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -22,6 +21,7 @@ import {
     ProviderState,
     StandardSlidingPanelContent,
     StandardSlidingPanelSettings,
+    ZeroExAPIQuoteResponse,
 } from '../types';
 
 import { Action, ActionTypes } from './actions';
@@ -48,7 +48,7 @@ interface OptionalState {
     availableAssets: Asset[];
     selectedAssetUnitAmount: BigNumber;
     ethUsdPrice: BigNumber;
-    latestSwapQuote: MarketBuySwapQuote;
+    latestQuote: ZeroExAPIQuoteResponse;
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
     walletDisplayName: string;
@@ -116,13 +116,13 @@ export const createReducer = (initialState: State) => {
                     selectedAssetUnitAmount: action.data,
                 };
             case ActionTypes.UpdateLatestSwapQuote:
-                const newSwapQuoteIfExists = action.data;
+                const newQuoteIfExists = action.data;
                 const shouldUpdate =
-                    newSwapQuoteIfExists === undefined || doesSwapQuoteMatchState(newSwapQuoteIfExists, state);
+                    newQuoteIfExists === undefined || doesSwapQuoteMatchState(newQuoteIfExists, state);
                 if (shouldUpdate) {
                     return {
                         ...state,
-                        latestSwapQuote: newSwapQuoteIfExists,
+                        latestQuote: newQuoteIfExists,
                         quoteRequestState: AsyncProcessState.Success,
                     };
                 } else {
@@ -131,13 +131,13 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.SetQuoteRequestStatePending:
                 return {
                     ...state,
-                    latestSwapQuote: undefined,
+                    latestQuote: undefined,
                     quoteRequestState: AsyncProcessState.Pending,
                 };
             case ActionTypes.SetQuoteRequestStateFailure:
                 return {
                     ...state,
-                    latestSwapQuote: undefined,
+                    latestQuote: undefined,
                     quoteRequestState: AsyncProcessState.Failure,
                 };
             case ActionTypes.SetSwapOrderStateNone:
@@ -221,7 +221,7 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.ResetAmount:
                 return {
                     ...state,
-                    latestSwapQuote: undefined,
+                    latestQuote: undefined,
                     quoteRequestState: AsyncProcessState.None,
                     swapOrderState: { processState: OrderProcessState.None },
                     selectedAssetUnitAmount: undefined,
@@ -271,7 +271,7 @@ const reduceStateWithAccount = (state: State, account: Account) => {
     };
 };
 
-const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): boolean => {
+const doesSwapQuoteMatchState = (quote: ZeroExAPIQuoteResponse, state: State): boolean => {
     const selectedAssetIfExists = state.selectedAsset;
     const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false
@@ -279,9 +279,10 @@ const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): b
         return false;
     }
     // if swapQuote's assetData does not match that of the current selected asset, return false
-    if (selectedAssetIfExists.assetData !== swapQuote.makerAssetData) {
-        return false;
-    }
+    // TODO(dave4506) Once API returns the sellToken and buyToken validate
+    // if (selectedAssetIfExists.assetData !== swapQuote.makerAssetData) {
+    //     return false;
+    // }
     // if ERC20 and swapQuote's makerAssetFillAmount does not match selectedAssetAmount, return false
     // if ERC721, return true
     const selectedAssetMetaData = selectedAssetIfExists.metaData;
@@ -290,8 +291,7 @@ const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): b
             selectedAssetUnitAmountIfExists,
             selectedAssetMetaData.decimals,
         );
-        const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(swapQuote.makerAssetFillAmount);
-
+        const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(quote.buyAmount);
         return doesAssetAmountMatch;
     } else {
         return true;
