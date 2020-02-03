@@ -172,7 +172,7 @@ export class SwapQuoter {
             chainId,
             exchangeAddress: this._contractAddresses.exchange,
         });
-        this._swapQuoteCalculator = new SwapQuoteCalculator(this._contractAddresses, this._protocolFeeUtils, this._marketOperationUtils);
+        this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 
     /**

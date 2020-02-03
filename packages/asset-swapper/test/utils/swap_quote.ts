@@ -1,10 +1,10 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { ERC20BridgeSource } from '../../src';
 import { constants } from '../../src/constants';
 import { MarketOperation, SignedOrderWithFillableAmounts, SwapQuote } from '../../src/types';
 import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
-import { ERC20BridgeSource } from '../../src';
 
 /**
  * Creates a swap quote given orders.

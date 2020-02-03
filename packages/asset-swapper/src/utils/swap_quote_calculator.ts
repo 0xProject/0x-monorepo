@@ -1,6 +1,5 @@
-import { ContractAddresses } from '@0x/contract-addresses';
-import { assetDataUtils, orderCalculationUtils } from '@0x/order-utils';
-import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
+import { orderCalculationUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -12,9 +11,9 @@ import {
     MarketSellSwapQuote,
     SignedOrderWithFillableAmounts,
     SwapQuote,
+    SwapQuoteBase,
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
-    SwapQuoteBase,
 } from '../types';
 
 import { fillableAmountsUtils } from './fillable_amounts_utils';
@@ -27,12 +26,10 @@ import { utils } from './utils';
 export class SwapQuoteCalculator {
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _marketOperationUtils: MarketOperationUtils;
-    private readonly _contractAddresses: ContractAddresses;
 
-    constructor(contractAddresses: ContractAddresses, protocolFeeUtils: ProtocolFeeUtils, marketOperationUtils: MarketOperationUtils) {
+    constructor(protocolFeeUtils: ProtocolFeeUtils, marketOperationUtils: MarketOperationUtils) {
         this._protocolFeeUtils = protocolFeeUtils;
         this._marketOperationUtils = marketOperationUtils;
-        this._contractAddresses = contractAddresses;
     }
 
     public async calculateMarketSellSwapQuoteAsync(
@@ -181,11 +178,7 @@ export class SwapQuoteCalculator {
             true,
         );
 
-        const breakdown = this._getSwapQuoteOrdersBreakdown(
-            resultOrders,
-            assetFillAmount,
-            operation,
-        );
+        const breakdown = this._getSwapQuoteOrdersBreakdown(resultOrders, assetFillAmount, operation);
 
         const quoteBase: SwapQuoteBase = {
             takerAssetData,
