@@ -178,7 +178,7 @@ export class SwapQuoteCalculator {
             true,
         );
 
-        const breakdown = this._getSwapQuoteOrdersBreakdown(resultOrders, assetFillAmount, operation);
+        const breakdown = this._getSwapQuoteOrdersBreakdown(resultOrders, operation);
 
         const quoteBase: SwapQuoteBase = {
             takerAssetData,
@@ -407,11 +407,15 @@ export class SwapQuoteCalculator {
     // tslint:disable-next-line: prefer-function-over-method
     private _getSwapQuoteOrdersBreakdown(
         orders: OptimizedMarketOrder[],
-        totalAssetAmount: BigNumber,
         operation: MarketOperation,
     ): SwapQuoteOrdersBreakdown {
         // HACK: to shut up linter
         const breakdown: SwapQuoteOrdersBreakdown = {};
+
+        // total asset amount (accounting for slippage protection)
+        const totalAssetAmount = orders.reduce((amount: BigNumber, order: OptimizedMarketOrder): BigNumber => {
+            return amount.plus(operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount);
+        }, constants.ZERO_AMOUNT);
 
         return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
             const assetAmount = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
