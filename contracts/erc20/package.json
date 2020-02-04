@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-erc20",
-    "version": "3.0.4",
+    "version": "3.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -51,12 +51,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/tokens/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^5.1.0",
-        "@0x/contracts-gen": "^2.0.4",
-        "@0x/contracts-test-utils": "^5.1.1",
-        "@0x/contracts-utils": "^4.1.0",
-        "@0x/dev-utils": "^3.1.1",
-        "@0x/sol-compiler": "^4.0.4",
+        "@0x/abi-gen": "^5.1.1",
+        "@0x/contracts-gen": "^2.0.5",
+        "@0x/contracts-test-utils": "^5.1.2",
+        "@0x/contracts-utils": "^4.2.0",
+        "@0x/dev-utils": "^3.1.2",
+        "@0x/sol-compiler": "^4.0.5",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
         "@0x/types": "^3.1.1",
@@ -82,7 +82,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^6.1.0"
+        "@0x/base-contract": "^6.1.1"
     },
     "publishConfig": {
         "access": "public"

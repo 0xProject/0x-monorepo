@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-utils",
-    "version": "4.1.0",
+    "version": "4.2.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -50,12 +50,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/utils/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^5.1.0",
-        "@0x/contracts-gen": "^2.0.4",
-        "@0x/contracts-test-utils": "^5.1.1",
-        "@0x/dev-utils": "^3.1.1",
-        "@0x/order-utils": "^10.1.1",
-        "@0x/sol-compiler": "^4.0.4",
+        "@0x/abi-gen": "^5.1.1",
+        "@0x/contracts-gen": "^2.0.5",
+        "@0x/contracts-test-utils": "^5.1.2",
+        "@0x/dev-utils": "^3.1.2",
+        "@0x/order-utils": "^10.1.2",
+        "@0x/sol-compiler": "^4.0.5",
         "@0x/tslint-config": "^4.0.0",
         "@0x/types": "^3.1.1",
         "@0x/web3-wrapper": "^7.0.4",
@@ -79,7 +79,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^6.1.0",
+        "@0x/base-contract": "^6.1.1",
         "@0x/typescript-typings": "^5.0.1",
         "@0x/utils": "^5.2.0",
         "bn.js": "^4.11.8",

@@ -1,6 +1,6 @@
 {
     "name": "@0x/orderbook",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Library for retrieving and syncing a remote orderbook locally",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -48,9 +48,9 @@
     "dependencies": {
         "@0x/assert": "^3.0.4",
         "@0x/connect": "^6.0.4",
-        "@0x/contracts-dev-utils": "^1.0.4",
+        "@0x/contracts-dev-utils": "^1.0.5",
         "@0x/mesh-rpc-client": "^7.0.4-beta-0xv3",
-        "@0x/order-utils": "^10.1.1",
+        "@0x/order-utils": "^10.1.2",
         "@0x/utils": "^5.2.0"
     }
 }

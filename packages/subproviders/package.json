@@ -1,6 +1,6 @@
 {
     "name": "@0x/subproviders",
-    "version": "6.0.4",
+    "version": "6.0.5",
     "engines": {
         "node": ">=6.12"
     },

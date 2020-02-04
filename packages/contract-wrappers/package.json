@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-wrappers",
-    "version": "13.4.0",
+    "version": "13.4.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -51,8 +51,8 @@
     },
     "dependencies": {
         "@0x/assert": "^3.0.4",
-        "@0x/base-contract": "^6.1.0",
-        "@0x/contract-addresses": "^4.3.0",
+        "@0x/base-contract": "^6.1.1",
+        "@0x/contract-addresses": "^4.4.0",
         "@0x/json-schemas": "^5.0.4",
         "@0x/types": "^3.1.1",
         "@0x/utils": "^5.2.0",

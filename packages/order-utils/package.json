@@ -1,6 +1,6 @@
 {
     "name": "@0x/order-utils",
-    "version": "10.1.1",
+    "version": "10.1.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -39,8 +39,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0x/dev-utils": "^3.1.1",
-        "@0x/subproviders": "^6.0.4",
+        "@0x/dev-utils": "^3.1.2",
+        "@0x/subproviders": "^6.0.5",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
         "@0x/types": "^3.1.1",
@@ -64,7 +64,7 @@
     },
     "dependencies": {
         "@0x/assert": "^3.0.4",
-        "@0x/contract-wrappers": "^13.4.0",
+        "@0x/contract-wrappers": "^13.4.1",
         "@0x/json-schemas": "^5.0.4",
         "@0x/utils": "^5.2.0",
         "@0x/web3-wrapper": "^7.0.4",

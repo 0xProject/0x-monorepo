@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0x/monorepo-scripts",
-    "version": "1.0.47",
+    "version": "1.0.48",
     "engines": {
         "node": ">=6.12"
     },
