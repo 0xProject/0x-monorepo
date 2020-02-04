@@ -159,7 +159,7 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
+        this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);

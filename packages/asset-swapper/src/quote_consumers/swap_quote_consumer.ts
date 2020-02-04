@@ -42,7 +42,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
         this.chainId = chainId;
-        this._contractAddresses = getContractAddressesForChainOrThrow(chainId);
+        this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, this._contractAddresses, options);
         this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, this._contractAddresses, options);
     }
