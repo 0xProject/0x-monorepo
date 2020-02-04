@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _February 4, 2020_
+
+    * Update kovan addresses in `DeploymentConstants` (#2459)
+
 ## v4.1.0 - _January 22, 2020_
 
     * Replaced ethers with 0x ABI Encoder for decoding logs. Fixes decoding for arrays/objects. (#2443)

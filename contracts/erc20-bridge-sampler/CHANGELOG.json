@@ -6,7 +6,8 @@
                 "note": "Make source IDs static on all networks, not inherited from `DeploymentConstants`.",
                 "pr": 2459
             }
-        ]
+        ],
+        "timestamp": 1580811564
     },
     {
         "version": "1.1.0",

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _February 4, 2020_
+
+    * Dependencies updated
+
 ## v4.1.0 - _January 22, 2020_
 
     * Reference functions for `matchOrders` and `matchOrdersWithMaximalFill`. (#2437)

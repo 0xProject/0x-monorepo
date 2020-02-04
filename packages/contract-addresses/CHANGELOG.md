@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0 - _February 4, 2020_
+
+    * Update `ERC20BridgeSampler` on mainnet and kovan. (#2459)
+
 ## v4.3.0 - _January 22, 2020_
 
     * Update `DevUtils` mainnet, Ropsten, Rinkeby, Kovan addresses with PR#2440 changes (#2446)

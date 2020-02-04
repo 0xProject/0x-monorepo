@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.1 - _February 4, 2020_
+
+    * Throw Error when revert is StringRevertError (#2453)
+
 ## v6.1.0 - _January 22, 2020_
 
     * Support catching empty reverts on live networks. (#2433)

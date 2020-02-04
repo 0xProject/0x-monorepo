@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.1 - _February 4, 2020_
+
+    * Dependencies updated
+
 ## v6.0.0 - _January 22, 2020_
 
     * Update Forwarder deployment (#2432)

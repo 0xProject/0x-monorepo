@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.4.1 - _February 4, 2020_
+
+    * Dependencies updated
+
 ## v13.4.0 - _January 22, 2020_
 
     * Update `DevUtils` wrapper (#2436)

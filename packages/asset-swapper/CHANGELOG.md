@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _February 4, 2020_
+
+    * Allow contract addresses to be passed as optional constructor ags instead of hardcoding (#2461)
+    * Add swap quote liquidity source breakdown (#2465)
+
 ## v4.0.1 - _January 23, 2020_
 
     * Fix underestimated protocol fee in worst case quote. (#2452)

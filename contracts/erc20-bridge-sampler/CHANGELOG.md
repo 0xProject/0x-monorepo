@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.2.0 - _February 4, 2020_
+
+    * Make source IDs static on all networks, not inherited from `DeploymentConstants`. (#2459)
+
 ## v1.1.0 - _January 22, 2020_
 
     * Add batch functions to query quotes (#2427)
