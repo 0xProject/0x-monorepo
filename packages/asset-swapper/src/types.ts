@@ -1,4 +1,4 @@
-import { ContractAddresses } from '@0x/migrations';
+import { ContractAddresses } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
