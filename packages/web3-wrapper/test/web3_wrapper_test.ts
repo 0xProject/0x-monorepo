@@ -35,7 +35,7 @@ describe('Web3Wrapper tests', () => {
     describe('#getNodeVersionAsync', () => {
         it('gets the node version', async () => {
             const nodeVersion = await web3Wrapper.getNodeVersionAsync();
-            const NODE_VERSION = 'EthereumJS TestRPC/v2.9.0-istanbul.0/ethereum-js';
+            const NODE_VERSION = 'EthereumJS packages/web3-wrapper/TestRPC/v2.10.1/ethereum-js';
             expect(nodeVersion).to.be.equal(NODE_VERSION);
         });
     });
