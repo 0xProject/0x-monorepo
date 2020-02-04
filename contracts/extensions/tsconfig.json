@@ -3,12 +3,14 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/BalanceThresholdFilter.json",
-        "generated-artifacts/DutchAuction.json",
-        "generated-artifacts/Exchange.json",
-        "generated-artifacts/ExchangeWrapper.json",
-        "generated-artifacts/OrderMatcher.json",
-        "generated-artifacts/WETH9.json"
+        "generated-artifacts/LibAssetDataTransfer.json",
+        "generated-artifacts/LibAssetDataTransferRichErrors.json",
+        "generated-artifacts/LibWethUtilsRichErrors.json",
+        "generated-artifacts/MixinWethUtils.json",
+        "test/generated-artifacts/LibAssetDataTransfer.json",
+        "test/generated-artifacts/LibAssetDataTransferRichErrors.json",
+        "test/generated-artifacts/LibWethUtilsRichErrors.json",
+        "test/generated-artifacts/MixinWethUtils.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

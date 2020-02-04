@@ -19,14 +19,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-extensions/contracts/src/LibAssetDataTransfer.sol";
 import "../src/MixinExchangeWrapper.sol";
-import "../src/libs/LibConstants.sol";
-import "../src/libs/LibAssetDataTransfer.sol";
 import "../src/MixinReceiver.sol";
 
 
 contract TestForwarder is
-    LibConstants,
     MixinExchangeWrapper,
     MixinReceiver
 {
@@ -35,8 +33,7 @@ contract TestForwarder is
     // solhint-disable no-empty-blocks
     constructor ()
         public
-        LibConstants(
-            address(0),
+        MixinExchangeWrapper(
             address(0),
             address(0)
         )

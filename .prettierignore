@@ -1,5 +1,9 @@
 lib
 .nyc_output
+/contracts/broker/generated-wrappers
+/contracts/broker/test/generated-wrappers
+/contracts/broker/generated-artifacts
+/contracts/broker/test/generated-artifacts
 /contracts/integrations/generated-wrappers
 /contracts/integrations/test/generated-wrappers
 /contracts/integrations/generated-artifacts

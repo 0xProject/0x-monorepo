@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Moved LibAssetDataTransfer here from forwarder",
+                "pr": 2455
+            }
+        ]
+    },
+    {
         "timestamp": 1580811564,
         "version": "4.1.1",
         "changes": [

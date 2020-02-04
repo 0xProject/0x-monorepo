@@ -5,17 +5,13 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as BalanceThresholdFilter from '../generated-artifacts/BalanceThresholdFilter.json';
-import * as DutchAuction from '../generated-artifacts/DutchAuction.json';
-import * as Exchange from '../generated-artifacts/Exchange.json';
-import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
-import * as OrderMatcher from '../generated-artifacts/OrderMatcher.json';
-import * as WETH9 from '../generated-artifacts/WETH9.json';
+import * as LibAssetDataTransfer from '../generated-artifacts/LibAssetDataTransfer.json';
+import * as LibAssetDataTransferRichErrors from '../generated-artifacts/LibAssetDataTransferRichErrors.json';
+import * as LibWethUtilsRichErrors from '../generated-artifacts/LibWethUtilsRichErrors.json';
+import * as MixinWethUtils from '../generated-artifacts/MixinWethUtils.json';
 export const artifacts = {
-    WETH9: WETH9 as ContractArtifact,
-    ExchangeWrapper: ExchangeWrapper as ContractArtifact,
-    Exchange: Exchange as ContractArtifact,
-    BalanceThresholdFilter: BalanceThresholdFilter as ContractArtifact,
-    DutchAuction: DutchAuction as ContractArtifact,
-    OrderMatcher: OrderMatcher as ContractArtifact,
+    LibAssetDataTransfer: LibAssetDataTransfer as ContractArtifact,
+    MixinWethUtils: MixinWethUtils as ContractArtifact,
+    LibAssetDataTransferRichErrors: LibAssetDataTransferRichErrors as ContractArtifact,
+    LibWethUtilsRichErrors: LibWethUtilsRichErrors as ContractArtifact,
 };

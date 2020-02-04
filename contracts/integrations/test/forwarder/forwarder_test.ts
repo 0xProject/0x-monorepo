@@ -3,6 +3,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts, ExchangeForwarderRevertErrors, ForwarderContract } from '@0x/contracts-exchange-forwarder';
+import { MixinWethUtilsRevertErrors } from '@0x/contracts-extensions';
 import {
     blockchainTests,
     constants,
@@ -426,7 +427,7 @@ blockchainTests('Forwarder integration tests', env => {
             });
             const forwarderFeeAmounts = [toBaseUnitAmount(0.2)];
             const forwarderFeeRecipientAddresses: string[] = [];
-            const revertError = new ExchangeForwarderRevertErrors.EthFeeLengthMismatchError(
+            const revertError = new MixinWethUtilsRevertErrors.EthFeeLengthMismatchError(
                 new BigNumber(forwarderFeeAmounts.length),
                 new BigNumber(forwarderFeeRecipientAddresses.length),
             );
@@ -443,7 +444,7 @@ blockchainTests('Forwarder integration tests', env => {
             });
             const forwarderFeeAmounts: BigNumber[] = [];
             const forwarderFeeRecipientAddresses = [randomAddress()];
-            const revertError = new ExchangeForwarderRevertErrors.EthFeeLengthMismatchError(
+            const revertError = new MixinWethUtilsRevertErrors.EthFeeLengthMismatchError(
                 new BigNumber(forwarderFeeAmounts.length),
                 new BigNumber(forwarderFeeRecipientAddresses.length),
             );
@@ -768,7 +769,7 @@ blockchainTests('Forwarder integration tests', env => {
             const order = await maker.signOrderAsync();
             const forwarderFeeAmounts = [toBaseUnitAmount(1)];
             const value = forwarderFeeAmounts[0].minus(1);
-            const revertError = new ExchangeForwarderRevertErrors.InsufficientEthForFeeError(
+            const revertError = new MixinWethUtilsRevertErrors.InsufficientEthForFeeError(
                 forwarderFeeAmounts[0],
                 value,
             );
