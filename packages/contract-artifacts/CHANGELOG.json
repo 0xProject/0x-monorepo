@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.6.0",
+        "changes": [
+            {
+                "note": "Add Broker and GodsUnchainedValidator artifacts",
+                "pr": 2469
+            }
+        ]
+    },
+    {
         "version": "3.5.0",
         "changes": [
             {
