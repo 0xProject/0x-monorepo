@@ -1,3 +1,4 @@
+export { ContractAddresses } from '@0x/contract-addresses';
 export { WSOpts } from '@0x/mesh-rpc-client';
 export {
     AcceptedRejectedOrders,
