@@ -218,7 +218,7 @@ contract Broker is
         }
 
         // Refund remaining ETH to msg.sender.
-        _transferEthRefund(WETH.balanceOf(address(this)));
+        _unwrapAndTransferEth(WETH.balanceOf(address(this)));
 
         _clearStorage();
 
@@ -297,7 +297,7 @@ contract Broker is
         }
 
         // Refund remaining ETH to msg.sender.
-        _transferEthRefund(WETH.balanceOf(address(this)));
+        _unwrapAndTransferEth(WETH.balanceOf(address(this)));
 
         _clearStorage();
 

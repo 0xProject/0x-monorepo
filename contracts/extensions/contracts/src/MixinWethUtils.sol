@@ -117,19 +117,19 @@ contract MixinWethUtils {
         return ethRemaining;
     }
 
-    /// @dev Unwraps and refunds WETH to msg.sender.
-    /// @param refundAmount Amount of WETH balance to refund.
-    function _transferEthRefund(
-        uint256 refundAmount
+    /// @dev Unwraps WETH and transfers ETH to msg.sender.
+    /// @param transferAmount Amount of WETH balance to unwrap and transfer.
+    function _unwrapAndTransferEth(
+        uint256 transferAmount
     )
         internal
     {
-        // Do nothing if no WETH to refund
-        if (refundAmount > 0) {
+        // Do nothing if amount is zero
+        if (transferAmount > 0) {
             // Convert WETH to ETH
-            WETH.withdraw(refundAmount);
+            WETH.withdraw(transferAmount);
             // Transfer ETH to sender
-            msg.sender.transfer(refundAmount);
+            msg.sender.transfer(transferAmount);
         }
     }
 }

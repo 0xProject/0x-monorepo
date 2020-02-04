@@ -61,7 +61,7 @@ contract Forwarder is
             _exchangeV2
         )
     {} // solhint-disable-line no-empty-blocks
-        
+
     /// @dev Withdraws assets from this contract. It may be used by the owner to withdraw assets
     ///      that were accidentally sent to this contract.
     /// @param assetData Byte array encoded for the respective asset proxy.
@@ -148,7 +148,7 @@ contract Forwarder is
         wethRemaining = wethRemaining.safeSub(wethSpentAmount);
 
         // Refund remaining ETH to msg.sender.
-        _transferEthRefund(wethRemaining);
+        _unwrapAndTransferEth(wethRemaining);
     }
 
     /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
@@ -204,6 +204,6 @@ contract Forwarder is
         wethRemaining = wethRemaining.safeSub(wethSpentAmount);
 
         // Refund remaining ETH to msg.sender.
-        _transferEthRefund(wethRemaining);
+        _unwrapAndTransferEth(wethRemaining);
     }
 }
