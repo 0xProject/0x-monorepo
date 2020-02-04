@@ -46,6 +46,9 @@ function logIfDefined(x: any): void {
     }
 }
 
+// tslint:disable-next-line:custom-no-magic-numbers
+const FIVE_MB = 1024 * 1024 * 5;
+
 (async () => {
     const IS_LOCAL_PUBLISH = process.env.IS_LOCAL_PUBLISH === 'true';
     const registry = IS_LOCAL_PUBLISH ? 'http://localhost:4873/' : 'https://registry.npmjs.org/';
@@ -125,6 +128,7 @@ async function testInstallPackageAsync(
     utils.log(`Installing ${packageName}@${lastChangelogVersion}`);
     await execAsync(`npm install --save ${packageName}@${lastChangelogVersion} --registry=${registry}`, {
         cwd: testDirectory,
+        maxBuffer: FIVE_MB,
     });
     const indexFilePath = path.join(testDirectory, 'index.ts');
     await writeFileAsync(indexFilePath, `import * as Package from '${packageName}';\nconsole.log(Package);\n`);
@@ -152,9 +156,7 @@ async function testInstallPackageAsync(
     if (!isUnrunnablePkg) {
         const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
         utils.log(`Running test script with ${packageName} imported`);
-        // tslint:disable-next-line:custom-no-magic-numbers
-        const fiveMb = 1024 * 1024 * 5;
-        await execAsync(`node ${transpiledIndexFilePath}`, { maxBuffer: fiveMb });
+        await execAsync(`node ${transpiledIndexFilePath}`, { maxBuffer: FIVE_MB });
         utils.log(`Successfully ran test script with ${packageName} imported`);
     }
     await rimrafAsync(testDirectory);
