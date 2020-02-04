@@ -54,6 +54,7 @@ export {
     SwapQuoterOpts,
     SwapQuoteConsumerError,
     SignedOrderWithFillableAmounts,
+    SwapQuoteOrdersBreakdown,
 } from './types';
 export {
     ERC20BridgeSource,

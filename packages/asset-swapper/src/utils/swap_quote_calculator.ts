@@ -11,7 +11,9 @@ import {
     MarketSellSwapQuote,
     SignedOrderWithFillableAmounts,
     SwapQuote,
+    SwapQuoteBase,
     SwapQuoteInfo,
+    SwapQuoteOrdersBreakdown,
 } from '../types';
 
 import { fillableAmountsUtils } from './fillable_amounts_utils';
@@ -176,7 +178,9 @@ export class SwapQuoteCalculator {
             true,
         );
 
-        const quoteBase = {
+        const breakdown = this._getSwapQuoteOrdersBreakdown(resultOrders, operation);
+
+        const quoteBase: SwapQuoteBase = {
             takerAssetData,
             makerAssetData,
             // Remove fill metadata.
@@ -184,6 +188,7 @@ export class SwapQuoteCalculator {
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
             gasPrice,
+            sourceBreakdown: breakdown,
         };
 
         if (operation === MarketOperation.Buy) {
@@ -397,6 +402,34 @@ export class SwapQuoteCalculator {
             makerAssetAmount: totalMakerAssetAmount,
             protocolFeeInWeiAmount,
         };
+    }
+
+    // tslint:disable-next-line: prefer-function-over-method
+    private _getSwapQuoteOrdersBreakdown(
+        orders: OptimizedMarketOrder[],
+        operation: MarketOperation,
+    ): SwapQuoteOrdersBreakdown {
+        // HACK: to shut up linter
+        const breakdown: SwapQuoteOrdersBreakdown = {};
+
+        // total asset amount (accounting for slippage protection)
+        const totalAssetAmount = BigNumber.sum(
+            ...[
+                constants.ZERO_AMOUNT,
+                ...orders.map(o => (operation === MarketOperation.Buy ? o.makerAssetAmount : o.takerAssetAmount)),
+            ],
+        );
+
+        return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
+            const assetAmount = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
+            const { source } = order.fill;
+            return {
+                ...acc,
+                ...{
+                    [source]: (!!acc[source] ? acc[source].plus(assetAmount) : assetAmount).dividedBy(totalAssetAmount),
+                },
+            };
+        }, breakdown);
     }
 }
 

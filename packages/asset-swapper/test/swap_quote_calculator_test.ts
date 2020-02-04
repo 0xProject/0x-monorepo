@@ -98,7 +98,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS,
@@ -117,7 +117,7 @@ describe('swapQuoteCalculator', () => {
         //                 exchangeAddress: contractAddresses.exchange,
         //                 chainId: TESTRPC_CHAIN_ID,
         //             });
-        //             const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //             const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS,
         //                 baseUnitAmount(10),
@@ -134,7 +134,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
@@ -152,7 +152,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
@@ -170,7 +170,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET,
@@ -188,7 +188,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET,
@@ -206,7 +206,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 MIXED_TEST_ORDERS,
@@ -224,7 +224,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
         //                 MIXED_TEST_ORDERS,
@@ -485,7 +485,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS,
@@ -503,7 +503,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEELESS,
@@ -521,7 +521,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
@@ -539,7 +539,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
@@ -557,7 +557,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET,
@@ -575,7 +575,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_MAKER_ASSET,
@@ -593,7 +593,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 MIXED_TEST_ORDERS,
@@ -611,7 +611,7 @@ describe('swapQuoteCalculator', () => {
         //             exchangeAddress: contractAddresses.exchange,
         //             chainId: TESTRPC_CHAIN_ID,
         //         });
-        //         const swapQuoteCalculator = new SwapQuoteCalculator(protocolFeeUtils, marketOperationUtils);
+        //         const swapQuoteCalculator = new SwapQuoteCalculator( protocolFeeUtils, marketOperationUtils);
         //         const errorFunction = async () => {
         //             await swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
         //                 MIXED_TEST_ORDERS,
