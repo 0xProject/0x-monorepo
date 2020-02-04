@@ -414,7 +414,10 @@ export class SwapQuoteCalculator {
 
         // total asset amount (accounting for slippage protection)
         const totalAssetAmount = BigNumber.sum(
-            ...[constants.ZERO_AMOUNT, ...orders.map(o => operation === MarketOperation.Buy ? o.makerAssetAmount : o.takerAssetAmount)],
+            ...[
+                constants.ZERO_AMOUNT,
+                ...orders.map(o => (operation === MarketOperation.Buy ? o.makerAssetAmount : o.takerAssetAmount)),
+            ],
         );
 
         return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
