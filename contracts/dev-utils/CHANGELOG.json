@@ -50,6 +50,10 @@
             {
                 "note": "Add `DydxBridge` order validation",
                 "pr": 2466
+            },
+            {
+                "note": "Add `D18` library for working with base-10, 18-precision decimals",
+                "pr": 2466
             }
         ],
         "timestamp": 1581204851

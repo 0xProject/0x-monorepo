@@ -56,10 +56,6 @@
             {
                 "note": "Export `EvmBytecodeOutputLinkReferences` type.",
                 "pr": 2462
-            },
-            {
-                "note": "Add more functions to `LibFractions`.",
-                "pr": 2466
             }
         ],
         "timestamp": 1580811564
