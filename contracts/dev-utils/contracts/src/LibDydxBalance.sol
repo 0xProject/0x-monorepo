@@ -23,30 +23,16 @@ import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IDydxBridge.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IDydx.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./LibAssetData.sol";
+import "./D18.sol";
 
 
-// solhint-disable separate-by-one-line-in-contract
 library LibDydxBalance {
 
     using LibBytes for bytes;
-    using LibSafeMath for uint256;
-
-    /// @dev Decimal places for dydx value quantities.
-    uint256 private constant DYDX_UNITS_DECIMALS = 18;
-    /// @dev Base units for dydx value quantities.
-    uint256 private constant DYDX_UNITS_BASE = 10 ** DYDX_UNITS_DECIMALS;
-
-    /// @dev A fraction/rate.
-    struct Fraction {
-        uint256 n;
-        uint256 d;
-    }
 
     /// @dev Structure that holds all pertinent info needed to perform a balance
     ///      check.
@@ -82,7 +68,7 @@ library LibDydxBalance {
         }
         // If the rate we withdraw maker tokens is < 1, the asset proxy will
         // throw because we will always transfer less maker tokens than asked.
-        if (_ltf(_getMakerTokenWithdrawRate(info), Fraction(1, 1))) {
+        if (_getMakerTokenWithdrawRate(info) < D18.one()) {
             return 0;
         }
         // The maker balance is the smaller of:
@@ -153,7 +139,7 @@ library LibDydxBalance {
     function _getMakerTokenWithdrawRate(BalanceCheckInfo memory info)
         internal
         pure
-        returns (Fraction memory makerTokenWithdrawRate)
+        returns (int256 makerTokenWithdrawRate)
     {
         // The last action is always a withdraw for the maker token.
         IDydxBridge.BridgeAction memory withdraw = info.actions[info.actions.length - 1];
@@ -169,7 +155,7 @@ library LibDydxBalance {
     {
         depositableMakerAmount = uint256(-1);
         // The conversion rate from maker -> taker.
-        Fraction memory makerToTakerRate = Fraction(
+        int256 makerToTakerRate = D18.div(
             info.takerAssetAmount,
             info.makerAssetAmount
         );
@@ -180,22 +166,17 @@ library LibDydxBalance {
             if (action.actionType != IDydxBridge.BridgeActionType.Deposit) {
                 continue;
             }
-            Fraction memory depositRate = _getActionRate(action);
+            int256 depositRate = _getActionRate(action);
             // Taker tokens will be transferred to the maker for every fill, so
             // we reduce the effective deposit rate if we're depositing the taker
             // token.
             address depositToken = info.dydx.getMarketTokenAddress(action.marketId);
             if (info.takerTokenAddress != address(0) && depositToken == info.takerTokenAddress) {
-                // `depositRate = max(0, depositRate - makerToTakerRate)`
-                if (_ltf(makerToTakerRate, depositRate)) {
-                    depositRate = _subf(depositRate, makerToTakerRate);
-                } else {
-                    depositRate = Fraction(0, 1);
-                }
+                depositRate = D18.sub(depositRate, makerToTakerRate);
             }
             // If the deposit rate is > 0, we are limited by the transferrable
             // token balance of the maker.
-            if (_gtf(depositRate, Fraction(0, 1))) {
+            if (depositRate > 0) {
                 uint256 supply = _getTransferabeTokenAmount(
                     depositToken,
                     info.makerAddress,
@@ -203,11 +184,7 @@ library LibDydxBalance {
                 );
                 depositableMakerAmount = LibSafeMath.min256(
                     depositableMakerAmount,
-                    LibMath.getPartialAmountFloor(
-                        depositRate.d,
-                        depositRate.n,
-                        supply
-                    )
+                    uint256(D18.div(supply, depositRate))
                 );
             }
         }
@@ -225,15 +202,13 @@ library LibDydxBalance {
         assert(info.actions.length >= 1);
         IDydxBridge.BridgeAction memory withdraw = info.actions[info.actions.length - 1];
         assert(withdraw.actionType == IDydxBridge.BridgeActionType.Withdraw);
-        Fraction memory minCr = _getMinimumCollateralizationRatio(info.dydx);
-        // CR < 1 will cause math underflows.
-        require(_gtef(minCr, Fraction(1, 1)), "DevUtils/MIN_CR_MUST_BE_GTE_ONE");
+        int256 minCr = _getMinimumCollateralizationRatio(info.dydx);
         // Loop through the accounts.
         for (uint256 accountIdx = 0; accountIdx < info.accounts.length; ++accountIdx) {
             (uint256 supplyValue, uint256 borrowValue) =
                 _getAccountValues(info, info.accounts[accountIdx]);
             // All accounts must currently be solvent.
-            if (borrowValue != 0 && _ltf(Fraction(supplyValue, borrowValue), minCr)) {
+            if (borrowValue != 0 && D18.div(supplyValue, borrowValue) < minCr) {
                 return 0;
             }
             // If this is the same account used to in the withdraw/borrow action,
@@ -243,12 +218,12 @@ library LibDydxBalance {
             }
             // Compute the deposit/collateralization rate, which is the rate at
             // which (USD) value is added to the account across all markets.
-            Fraction memory dd = Fraction(0, 1);
+            int256 dd = 0;
             for (uint256 i = 0; i < info.actions.length - 1; ++i) {
                 IDydxBridge.BridgeAction memory deposit = info.actions[i];
                 assert(deposit.actionType == IDydxBridge.BridgeActionType.Deposit);
                 if (deposit.accountIdx == accountIdx) {
-                    dd = _addf(
+                    dd = D18.add(
                         dd,
                         _toQuoteValue(
                             info.dydx,
@@ -260,14 +235,14 @@ library LibDydxBalance {
             }
             // Compute the borrow/withdraw rate, which is the rate at which
             // (USD) value is deducted from the account.
-            Fraction memory db = _toQuoteValue(
+            int256 db = _toQuoteValue(
                 info.dydx,
                 withdraw.marketId,
                 _getActionRate(withdraw)
             );
             // If the deposit to withdraw ratio is >= the minimum collateralization
             // rate, then we will never become insolvent at these prices.
-            if (_gtef(_divf(dd, db), minCr)) {
+            if (D18.div(dd, db) >= minCr) {
                 continue;
             }
             // The collateralization ratio for this account, parameterized by
@@ -275,18 +250,13 @@ library LibDydxBalance {
             //      `cr = (supplyValue + t * dd) / (borrowValue + t * db)`
             // Solving for `t` gives us:
             //      `t = (supplyValue - cr * borrowValue) / (cr * db - dd)`
-            // TODO(dorothy-zbornak): It'll also revert when getting extremely
-            // close to the minimum collateralization ratio.
-            Fraction memory t = _divf(
-                _subf(
-                    Fraction(supplyValue, DYDX_UNITS_BASE),
-                    _mulf(minCr, Fraction(borrowValue, DYDX_UNITS_BASE))
-                ),
-                _subf(_mulf(minCr, db), dd)
+            int256 t = D18.div(
+                D18.sub(supplyValue, D18.mul(minCr, borrowValue)),
+                D18.sub(D18.mul(minCr, db), dd)
             );
             solventMakerAmount = LibSafeMath.min256(
                 solventMakerAmount,
-                t.n.safeDiv(t.d)
+                uint256(D18.clip(t))
             );
         }
     }
@@ -322,15 +292,13 @@ library LibDydxBalance {
     function _getActionRate(IDydxBridge.BridgeAction memory action)
         private
         pure
-        returns (Fraction memory rate)
+        returns (int256 rate)
     {
         rate = action.conversionRateDenominator == 0
-            ? Fraction(1, 1)
-            : _normalizef(
-                Fraction(
-                    action.conversionRateNumerator,
-                    action.conversionRateDenominator
-                )
+            ? D18.one()
+            : D18.div(
+                action.conversionRateNumerator,
+                action.conversionRateDenominator
             );
     }
 
@@ -340,35 +308,24 @@ library LibDydxBalance {
     function _getMinimumCollateralizationRatio(IDydx dydx)
         private
         view
-        returns (Fraction memory ratio)
+        returns (int256 ratio)
     {
         IDydx.RiskParams memory riskParams = dydx.getRiskParams();
-        return _normalizef(
-            Fraction(
-                riskParams.marginRatio.value,
-                DYDX_UNITS_BASE
-            )
-        );
+        return D18.toSigned(riskParams.marginRatio.value);
     }
 
     /// @dev Get the quote (USD) value of a rate within a market.
     /// @param dydx The Dydx interface.
     /// @param marketId Dydx market ID.
     /// @param rate Rate to scale by price.
-    function _toQuoteValue(IDydx dydx, uint256 marketId, Fraction memory rate)
+    function _toQuoteValue(IDydx dydx, uint256 marketId, int256 rate)
         private
         view
-        returns (Fraction memory quotedRate)
+        returns (int256 quotedRate)
     {
         IDydx.Price memory price = dydx.getMarketPrice(marketId);
         uint8 tokenDecimals = LibERC20Token.decimals(dydx.getMarketTokenAddress(marketId));
-        return _mulf(
-            Fraction(
-                price.value,
-                10 ** uint256(DYDX_UNITS_DECIMALS + tokenDecimals)
-            ),
-            rate
-        );
+        return D18.mul(D18.div(price.value, 10 ** uint256(tokenDecimals)), rate);
     }
 
     /// @dev Get the total supply and borrow values for an account across all markets.
@@ -405,79 +362,5 @@ library LibDydxBalance {
             LibERC20Token.allowance(tokenAddress, owner, spender),
             LibERC20Token.balanceOf(tokenAddress, owner)
         );
-    }
-
-    /*** Fraction helpers ***/
-
-    /// @dev Check if `a < b`.
-    function _ltf(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (bool isLessThan)
-    {
-        return LibFractions.cmp(a.n, a.d, b.n, b.d) == -1;
-    }
-
-    /// @dev Check if `a > b`.
-    function _gtf(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (bool isGreaterThan)
-    {
-        return LibFractions.cmp(a.n, a.d, b.n, b.d) == 1;
-    }
-
-    /// @dev Check if `a >= b`.
-    function _gtef(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (bool isGreaterThanOrEqual)
-    {
-        return !_ltf(a, b);
-    }
-
-    /// @dev Compute `a + b`.
-    function _addf(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (Fraction memory r)
-    {
-        (r.n, r.d) = LibFractions.add(a.n, a.d, b.n, b.d);
-    }
-
-    /// @dev Compute `a - b`.
-    function _subf(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (Fraction memory r)
-    {
-        (r.n, r.d) = LibFractions.sub(a.n, a.d, b.n, b.d);
-    }
-
-    /// @dev Compute `a * b`.
-    function _mulf(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (Fraction memory r)
-    {
-        (r.n, r.d) = LibFractions.mul(a.n, a.d, b.n, b.d);
-    }
-
-    /// @dev Compute `a / b`.
-    function _divf(Fraction memory a, Fraction memory b)
-        private
-        pure
-        returns (Fraction memory r)
-    {
-        (r.n, r.d) = LibFractions.mul(a.n, a.d, b.d, b.n);
-    }
-
-    /// @dev Normalize a fraction to prevent arithmetic overflows.
-    function _normalizef(Fraction memory f)
-        private
-        pure
-        returns (Fraction memory r)
-    {
-        (r.n, r.d) = LibFractions.normalize(f.n, f.d);
     }
 }

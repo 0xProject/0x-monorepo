@@ -375,7 +375,7 @@ contract AssetBalance is
             (, , address bridgeAddress, ) = LibAssetData.decodeERC20BridgeAssetData(order.makerAssetData);
             if (bridgeAddress == dydxBridgeAddress) {
                 return (
-                    LibDydxBalance.getDydxMakerBalance(order, dydxBridgeAddress),
+                    LibDydxBalance.getDydxMakerBalance(order, _getDydxAddress()),
                     _MAX_UINT256
                 );
             }
