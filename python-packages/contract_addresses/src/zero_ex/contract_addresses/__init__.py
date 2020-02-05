@@ -46,12 +46,6 @@ class ContractAddresses(NamedTuple):
     forwarder: str
     """Address of the Forwarder contract."""
 
-    order_validator: str
-    """Address of the OrderValidator contract."""
-
-    dutch_auction: str
-    """Address of the DutchAuction contract."""
-
     coordinator_registry: str
     """Address of the CoordinatorRegistry contract."""
 
@@ -146,8 +140,6 @@ def chain_to_addresses(chain_id: ChainId) -> ContractAddresses:
         asset_proxy_owner=addresses["assetProxyOwner"],
         zero_ex_governor=addresses["zeroExGovernor"],
         forwarder=addresses["forwarder"],
-        order_validator=addresses["orderValidator"],
-        dutch_auction=addresses["dutchAuction"],
         coordinator_registry=addresses["coordinatorRegistry"],
         coordinator=addresses["coordinator"],
         multi_asset_proxy=addresses["multiAssetProxy"],
