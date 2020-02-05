@@ -42,8 +42,7 @@ library LibDydxBalance {
         address makerAddress;
         address makerTokenAddress;
         address takerTokenAddress;
-        uint256 makerAssetAmount;
-        uint256 takerAssetAmount;
+        int256 orderTakerToMakerRate;
         uint256[] accounts;
         IDydxBridge.BridgeAction[] actions;
     }
@@ -66,9 +65,10 @@ library LibDydxBalance {
         if (!_areActionsWellFormed(info)) {
             return 0;
         }
-        // If the rate we withdraw maker tokens is < 1, the asset proxy will
-        // throw because we will always transfer less maker tokens than asked.
-        if (_getMakerTokenWithdrawRate(info) < D18.one()) {
+        // If the rate we withdraw maker tokens is less than the order conversion
+        // rate , the asset proxy will throw because we will always transfer
+        // less maker tokens than asked.
+        if (_getMakerTokenWithdrawRate(info) < info.orderTakerToMakerRate) {
             return 0;
         }
         // The maker balance is the smaller of:
@@ -154,11 +154,7 @@ library LibDydxBalance {
         returns (uint256 depositableMakerAmount)
     {
         depositableMakerAmount = uint256(-1);
-        // The conversion rate from maker -> taker.
-        int256 makerToTakerRate = D18.div(
-            info.takerAssetAmount,
-            info.makerAssetAmount
-        );
+        int256 orderMakerToTakerRate = D18.div(D18.one(), info.orderTakerToMakerRate);
         // Take the minimum maker amount from all deposits.
         for (uint256 i = 0; i < info.actions.length; ++i) {
             IDydxBridge.BridgeAction memory action = info.actions[i];
@@ -172,7 +168,7 @@ library LibDydxBalance {
             // token.
             address depositToken = info.dydx.getMarketTokenAddress(action.marketId);
             if (info.takerTokenAddress != address(0) && depositToken == info.takerTokenAddress) {
-                depositRate = D18.sub(depositRate, makerToTakerRate);
+                depositRate = D18.sub(depositRate, orderMakerToTakerRate);
             }
             // If the deposit rate is > 0, we are limited by the transferrable
             // token balance of the maker.
@@ -241,7 +237,7 @@ library LibDydxBalance {
                 _getActionRate(withdraw)
             );
             // If the deposit to withdraw ratio is >= the minimum collateralization
-            // rate, then we will never become insolvent at these prices.
+            // ratio, then we will never become insolvent at these prices.
             if (D18.div(dd, db) >= minCr) {
                 continue;
             }
@@ -279,8 +275,7 @@ library LibDydxBalance {
             (, info.takerTokenAddress) =
                 LibAssetData.decodeERC20AssetData(order.takerAssetData);
         }
-        info.makerAssetAmount = order.makerAssetAmount;
-        info.takerAssetAmount = order.takerAssetAmount;
+        info.orderTakerToMakerRate = D18.div(order.makerAssetAmount, order.takerAssetAmount);
         (IDydxBridge.BridgeData memory bridgeData) =
             abi.decode(rawBridgeData, (IDydxBridge.BridgeData));
         info.accounts = bridgeData.accountNumbers;
@@ -311,7 +306,7 @@ library LibDydxBalance {
         returns (int256 ratio)
     {
         IDydx.RiskParams memory riskParams = dydx.getRiskParams();
-        return D18.toSigned(riskParams.marginRatio.value);
+        return D18.add(D18.one(), D18.toSigned(riskParams.marginRatio.value));
     }
 
     /// @dev Get the quote (USD) value of a rate within a market.

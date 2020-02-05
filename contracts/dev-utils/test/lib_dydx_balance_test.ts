@@ -53,7 +53,7 @@ blockchainTests('LibDydxBalance', env => {
     const INSOLVENT_ACCOUNT_IDX = 2;
     const ZERO_BALANCE_ACCOUNT_IDX = 3;
     const DYDX_CONFIG: TestDydxConfig = {
-        marginRatio: fromTokenUnitAmount(MARGIN_RATIO, PRICE_DECIMALS),
+        marginRatio: fromTokenUnitAmount(MARGIN_RATIO - 1, PRICE_DECIMALS),
         operators: [{ owner: ACCOUNT_OWNER, operator: BRIDGE_ADDRESS }],
         accounts: [
             {
@@ -148,8 +148,7 @@ blockchainTests('LibDydxBalance', env => {
         makerAddress: string;
         makerTokenAddress: string;
         takerTokenAddress: string;
-        makerAssetAmount: BigNumber;
-        takerAssetAmount: BigNumber;
+        orderTakerToMakerRate: BigNumber;
         accounts: BigNumber[];
         actions: DydxBridgeAction[];
     }
@@ -161,8 +160,9 @@ blockchainTests('LibDydxBalance', env => {
             makerAddress: ACCOUNT_OWNER,
             makerTokenAddress: DYDX_CONFIG.markets[1].token,
             takerTokenAddress: DYDX_CONFIG.markets[0].token,
-            makerAssetAmount: fromTokenUnitAmount(10, MAKER_DECIMALS),
-            takerAssetAmount: fromTokenUnitAmount(5, TAKER_DECIMALS),
+            orderTakerToMakerRate: fromTokenUnitAmount(
+                fromTokenUnitAmount(5, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+            ),
             accounts: [DYDX_CONFIG.accounts[SOLVENT_ACCOUNT_IDX].accountId],
             actions: [],
             ...fields,
@@ -537,8 +537,9 @@ blockchainTests('LibDydxBalance', env => {
     blockchainTests.resets('_getDepositableMakerAmount()', () => {
         it('returns infinite if no deposit action', async () => {
             const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(100, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                ),
                 actions: [],
             });
             const makerAssetFillAmount = await testContract.getDepositableMakerAmount(checkInfo).callAsync();
@@ -547,8 +548,9 @@ blockchainTests('LibDydxBalance', env => {
 
         it('returns infinite if deposit rate is zero', async () => {
             const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(100, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                ),
                 actions: [
                     {
                         actionType: DydxBridgeActionType.Deposit,
@@ -565,8 +567,9 @@ blockchainTests('LibDydxBalance', env => {
 
         it('returns infinite if taker tokens cover the deposit rate', async () => {
             const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(100, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                ),
                 actions: [
                     {
                         actionType: DydxBridgeActionType.Deposit,
@@ -586,8 +589,9 @@ blockchainTests('LibDydxBalance', env => {
             const exchangeRate = 0.1;
             const depositRate = Math.random() + exchangeRate;
             const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(1, MAKER_DECIMALS).div(fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS)),
+                ),
                 actions: [
                     {
                         actionType: DydxBridgeActionType.Deposit,
@@ -619,8 +623,7 @@ blockchainTests('LibDydxBalance', env => {
             const checkInfo = createBalanceCheckInfo({
                 // The `takerTokenAddress` will be zero if the asset is not an ERC20.
                 takerTokenAddress: constants.NULL_ADDRESS,
-                takerAssetAmount: new BigNumber(1),
-                makerAssetAmount: fromTokenUnitAmount(100, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(fromTokenUnitAmount(100, MAKER_DECIMALS)),
                 actions: [
                     {
                         actionType: DydxBridgeActionType.Deposit,
@@ -652,8 +655,9 @@ blockchainTests('LibDydxBalance', env => {
                 takerTokenAddress: randomAddress(),
                 // These amounts should be effectively ignored in the final computation
                 // because the token being deposited is not the taker token.
-                takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(100, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                ),
                 actions: [
                     {
                         actionType: DydxBridgeActionType.Deposit,
@@ -672,8 +676,9 @@ blockchainTests('LibDydxBalance', env => {
             // The taker tokens getting exchanged in will only partially cover the deposit.
             const exchangeRate = 0.1;
             const checkInfo = createBalanceCheckInfo({
-                takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
-                makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                orderTakerToMakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(1, MAKER_DECIMALS).div(fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS)),
+                ),
                 actions: [
                     // Technically, deposits of the same token are not allowed, but the
                     // check isn't done in this function so we'll do this to simulate
@@ -728,8 +733,7 @@ blockchainTests('LibDydxBalance', env => {
                 const exchangeRate = 0.1;
                 const depositRate = Math.random() + exchangeRate;
                 const checkInfo = createBalanceCheckInfo({
-                    takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
-                    makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                    orderTakerToMakerRate: fromTokenUnitAmount(fromTokenUnitAmount(1 / exchangeRate, MAKER_DECIMALS)),
                     actions: [
                         {
                             actionType: DydxBridgeActionType.Deposit,
@@ -756,8 +760,7 @@ blockchainTests('LibDydxBalance', env => {
                 const exchangeRate = 0.1;
                 const depositRate = Math.random() + exchangeRate;
                 const checkInfo = createBalanceCheckInfo({
-                    takerAssetAmount: fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS),
-                    makerAssetAmount: fromTokenUnitAmount(1, MAKER_DECIMALS),
+                    orderTakerToMakerRate: fromTokenUnitAmount(fromTokenUnitAmount(1 / exchangeRate, MAKER_DECIMALS)),
                     actions: [
                         {
                             actionType: DydxBridgeActionType.Deposit,
@@ -1085,7 +1088,7 @@ blockchainTests('LibDydxBalance', env => {
             senderAddress: constants.NULL_ADDRESS,
             makerFee: getRandomInteger(1, constants.MAX_UINT256),
             takerFee: getRandomInteger(1, constants.MAX_UINT256),
-            makerAssetAmount: fromTokenUnitAmount(100, TAKER_DECIMALS),
+            makerAssetAmount: fromTokenUnitAmount(100, MAKER_DECIMALS),
             takerAssetAmount: fromTokenUnitAmount(10, TAKER_DECIMALS),
             makerAssetData: createBridgeAssetData(makerTokenAddress, BRIDGE_ADDRESS),
             takerAssetData: createERC20AssetData(takerTokenAddress),
