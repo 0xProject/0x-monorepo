@@ -250,7 +250,12 @@ export class SwapQuoter {
         const apiOrders = await this.orderbook.getBatchOrdersAsync(makerAssetDatas, [takerAssetData]);
         const allOrders = apiOrders.map(orders => orders.map(o => o.order));
         const allPrunedOrders = allOrders.map((orders, i) => {
-            if (orders.length === 0) {
+            const prunedOrders = orderPrunerUtils.pruneForUsableSignedOrders(
+                orders,
+                this.permittedOrderFeeTypes,
+                this.expiryBufferMs,
+            );
+            if (prunedOrders.length === 0) {
                 return [
                     dummyOrderUtils.createDummyOrderForSampler(
                         makerAssetDatas[i],
@@ -259,13 +264,7 @@ export class SwapQuoter {
                     ),
                 ];
             } else {
-                return sortingUtils.sortOrders(
-                    orderPrunerUtils.pruneForUsableSignedOrders(
-                        orders,
-                        this.permittedOrderFeeTypes,
-                        this.expiryBufferMs,
-                    ),
-                );
+                return sortingUtils.sortOrders(prunedOrders);
             }
         });
 
