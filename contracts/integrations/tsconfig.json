@@ -4,6 +4,9 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/TestFramework.json",
+        "test/generated-artifacts/ChainlinkStopLimit.json",
+        "test/generated-artifacts/IChainlinkAggregator.json",
+        "test/generated-artifacts/TestChainlinkAggregator.json",
         "test/generated-artifacts/TestContractWrapper.json",
         "test/generated-artifacts/TestDydxUser.json",
         "test/generated-artifacts/TestEth2Dai.json",
