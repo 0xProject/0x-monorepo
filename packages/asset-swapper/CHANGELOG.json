@@ -3,7 +3,12 @@
         "version": "4.1.1",
         "changes": [
             {
-                "note": "Prune orders before creating a dummy order for the Sampler"
+                "note": "Prune orders before creating a dummy order for the Sampler",
+                "pr": 2470
+            },
+            {
+                "note": "Bump sampler gas limit to 60e6",
+                "pr": 2471
             }
         ]
     },
