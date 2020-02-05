@@ -9,6 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn tsc -b",
+        "watch": "tsc -w -p tsconfig.json",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
