@@ -24,7 +24,7 @@ export enum AggregationError {
  * DEX sources to aggregate.
  */
 export enum ERC20BridgeSource {
-    Native = 'Native',
+    Native = '0x',
     Uniswap = 'Uniswap',
     Eth2Dai = 'Eth2Dai',
     Kyber = 'Kyber',
