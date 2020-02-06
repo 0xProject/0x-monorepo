@@ -22,7 +22,6 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
-import { constants as marketOperationConstants } from './utils/market_operation_utils/constants';
 import { dummyOrderUtils } from './utils/market_operation_utils/dummy_order_utils';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
