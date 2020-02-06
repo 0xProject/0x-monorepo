@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Added ChainlinkStopLimit contract and tests",
+                "pr": 2473
+            }
+        ]
+    },
+    {
         "version": "2.3.0",
         "changes": [
             {
