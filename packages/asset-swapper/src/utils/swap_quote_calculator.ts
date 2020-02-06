@@ -426,7 +426,7 @@ export class SwapQuoteCalculator {
             return {
                 ...acc,
                 ...{
-                    [source]: (!!acc[source] ? acc[source].plus(assetAmount) : assetAmount).dividedBy(totalAssetAmount),
+                    [source]: !!acc[source] ? acc[source].plus(assetAmount.dividedBy(totalAssetAmount)) : assetAmount.dividedBy(totalAssetAmount),
                 },
             };
         }, breakdown);
