@@ -26,18 +26,11 @@ contract TestChainlinkAggregator is
     IChainlinkAggregator
 {
     int256 internal _price;
-    uint256 internal _timestampDelta;
 
     function setPrice(int256 price_)
         external
     {
         _price = price_;
-    }
-
-    function setTimestampDelta(uint256 delta)
-        external
-    {
-        _timestampDelta = delta;
     }
 
     function latestAnswer()
@@ -46,14 +39,5 @@ contract TestChainlinkAggregator is
         returns (int256)
     {
         return _price;
-    }
-
-    function latestTimestamp()
-        external
-        view
-        returns (uint256)
-    {
-        // solhint-disable-next-line not-rely-on-time
-        return block.timestamp - _timestampDelta;
     }
 }

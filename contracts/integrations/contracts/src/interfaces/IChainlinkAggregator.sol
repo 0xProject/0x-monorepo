@@ -27,8 +27,4 @@ interface IChainlinkAggregator {
     /// @return answer The latest data value recorded. For a price oracle aggregator, this will be
     ///         the price of the given asset in USD, multipled by 10^8
     function latestAnswer() external view returns (int256 answer);
-
-    /// @dev Returns the block timestamp at which the data was last updated.
-    /// @return timestamp The block timestamp at which the data was last updated
-    function latestTimestamp() external view returns (uint256 timestamp);
 }

@@ -29,7 +29,6 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
 
     const minPrice = new BigNumber(42);
     const maxPrice = new BigNumber(1337);
-    const priceFreshness = new BigNumber(123);
 
     before(async () => {
         deployment = await DeploymentManager.deployAsync(env, {
@@ -61,7 +60,6 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
                     chainLinkAggregator.address,
                     minPrice,
                     maxPrice,
-                    priceFreshness,
                 ),
             ],
         );
@@ -152,15 +150,4 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         await balanceStore.updateBalancesAsync();
         balanceStore.assertEquals(expectedBalances);
     });
-    it('fillOrder reverts latestTimestamp is too low', async () => {
-        await chainLinkAggregator.setTimestampDelta(priceFreshness.plus(1)).awaitTransactionSuccessAsync();
-        await chainLinkAggregator.setPrice(minPrice).awaitTransactionSuccessAsync();
-        const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
-        const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
-            orderHashUtils.getOrderHashHex(order),
-            order.makerAssetData,
-            new StringRevertError('ChainlinkStopLimitOracle/PRICE_DATA_TOO_OLD').encode(),
-        );
-        return expect(tx).to.revertWith(expectedError);
-    });
-}); // tslint:disable-line:max-file-line-count
+});
