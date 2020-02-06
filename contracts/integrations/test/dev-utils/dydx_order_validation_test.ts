@@ -33,11 +33,11 @@ enum DydxAssetReference {
 
 const MAKER_ADDRESS = '0x3a9F7C8cA36C42d7035E87C3304eE5cBd353a532';
 
-blockchainTests.config = {
+blockchainTests.configure({
     fork: {
         unlockedAccounts: [MAKER_ADDRESS],
     },
-};
+});
 
 blockchainTests.fork('DevUtils dydx order validation tests', env => {
     const { ZERO_AMOUNT: ZERO } = constants;
