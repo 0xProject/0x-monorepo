@@ -21,10 +21,21 @@ export interface ContextDefinition extends mocha.IContextDefinition {
 }
 
 /**
+ * `blockchainTests()` config options.
+ */
+export interface BlockchainContextConfig {
+    fork: Partial<{
+        // Accounts to unlock on ganache.
+        unlockedAccounts: string[];
+    }>;
+}
+
+/**
  * Interface for `blockchainTests()`.
  */
 export interface BlockchainContextDefinition {
     (description: string, callback: BlockchainSuiteCallback): ISuite;
+    config: Partial<BlockchainContextConfig>;
     only: BlockchainContextDefinitionCallback<ISuite>;
     skip: BlockchainContextDefinitionCallback<void>;
     optional: BlockchainContextDefinitionCallback<ISuite | void>;
@@ -120,10 +131,13 @@ export class ForkedBlockchainTestsEnvironmentSingleton extends BlockchainTestsEn
     }
 
     protected static _createWeb3Provider(forkHost: string): Web3ProviderEngine {
+        const forkConfig = blockchainTests.config.fork || {};
+        const unlockedAccounts = forkConfig.unlockedAccounts;
         return web3Factory.getRpcProvider({
             ...providerConfigs,
             fork: forkHost,
             blockTime: 0,
+            ...(unlockedAccounts ? { unlocked_accounts: unlockedAccounts } : {}),
         });
     }
 
@@ -209,6 +223,7 @@ export const blockchainTests: BlockchainContextDefinition = _.assign(
         return defineBlockchainSuite(StandardBlockchainTestsEnvironmentSingleton, description, callback, describe);
     },
     {
+        config: {},
         only(description: string, callback: BlockchainSuiteCallback): ISuite {
             return defineBlockchainSuite(
                 StandardBlockchainTestsEnvironmentSingleton,
