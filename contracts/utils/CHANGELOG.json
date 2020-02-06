@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Update Eth2Dai addresses in `DeploymentConstants`",
+                "pr": 2474
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "4.2.1",
         "changes": [
