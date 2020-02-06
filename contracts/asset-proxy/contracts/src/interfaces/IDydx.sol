@@ -166,6 +166,15 @@ interface IDydx {
         view
         returns (Price memory price);
 
+    /// @dev Get the margin premium for a market. A margin premium makes it so that any positions that
+    ///      include the market require a higher collateralization to avoid being liquidated.
+    /// @param  marketId  The market to query
+    /// @return premium The market's margin premium
+    function getMarketMarginPremium(uint256 marketId)
+        external
+        view
+        returns (D256 memory premium);
+
     /// @dev Get the total supplied and total borrowed values of an account adjusted by the marginPremium
     ///      of each market. Supplied values are divided by (1 + marginPremium) for each market and
     ///      borrowed values are multiplied by (1 + marginPremium) for each market. Comparing these

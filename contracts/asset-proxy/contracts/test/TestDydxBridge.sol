@@ -210,6 +210,13 @@ contract TestDydxBridge is
         returns (Price memory price)
     {}
 
+    /// @dev Unsused
+    function getMarketMarginPremium(uint256 marketId)
+        external
+        view
+        returns (IDydx.D256 memory premium)
+    {}
+
     /// @dev Unused.
     function getAdjustedAccountValues(
         AccountInfo calldata account

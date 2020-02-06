@@ -129,6 +129,15 @@ contract TestDydx {
         }
     }
 
+    function getMarketMarginPremium(uint256)
+        external
+        view
+        returns (IDydx.D256 memory premium)
+    {
+        // Return 0.
+        return premium;
+    }
+
     function getMarketPrice(
         uint256 marketId
     )

@@ -339,6 +339,16 @@ library LibDydxBalance {
         }
         // The action value is the action rate times the price.
         value = D18.mul(price, value);
+        // Scale by the market premium.
+        int256 marketPremium = D18.add(
+            D18.one(),
+            info.dydx.getMarketMarginPremium(action.marketId).value
+        );
+        if (action.actionType == IDydxBridge.BridgeActionType.Deposit) {
+            value = D18.div(value, marketPremium);
+        } else {
+            value = D18.mul(value, marketPremium);
+        }
     }
 
     /// @dev Returns the conversion rate for an action, expressed as units

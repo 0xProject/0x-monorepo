@@ -58,6 +58,16 @@ library D18 {
     }
 
     /// @dev Add two decimals.
+    function add(int256 a, uint256 b)
+        internal
+        pure
+        returns (int256 r)
+    {
+        require(int256(b) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
+        r = _add(a, int256(b));
+    }
+
+    /// @dev Add two decimals.
     function add(uint256 a, uint256 b)
         internal
         pure
