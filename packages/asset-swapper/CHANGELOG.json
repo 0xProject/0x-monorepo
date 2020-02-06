@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Prune orders before creating a dummy order for the Sampler"
+            },
+            {
+                "note": "Fix bug with liquidity source breakdown",
+                "pr": 2472
             }
         ]
     },
