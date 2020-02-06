@@ -6,7 +6,8 @@
                 "note": "Refactor, moved LibAssetDataTransfer and MixinWeth(Utils) to extensions",
                 "pr": 2455
             }
-        ]
+        ],
+        "timestamp": 1580988106
     },
     {
         "timestamp": 1580811564,

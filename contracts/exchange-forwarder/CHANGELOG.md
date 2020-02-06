@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _February 6, 2020_
+
+    * Refactor, moved LibAssetDataTransfer and MixinWeth(Utils) to extensions (#2455)
+
 ## v4.0.5 - _February 4, 2020_
 
     * Dependencies updated

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _February 6, 2020_
+
+    * Moved LibAssetDataTransfer here from forwarder (#2455)
+
 ## v4.1.1 - _February 4, 2020_
 
     * Dependencies updated

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.1 - _February 6, 2020_
+
+    * Dependencies updated
+
 ## v4.2.0 - _February 4, 2020_
 
     * Update kovan addresses in `DeploymentConstants` (#2459)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.0.0 - _February 6, 2020_
+
+    * New year, new me: remove everything, add MixinWethUtils and LibAssetDataTransfer (#2455)
+
 ## v5.1.4 - _February 4, 2020_
 
     * Dependencies updated

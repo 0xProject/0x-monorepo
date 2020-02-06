@@ -10,7 +10,8 @@
                 "note": "Moved LibAssetDataTransfer revert errors into their own file",
                 "pr": 2455
             }
-        ]
+        ],
+        "timestamp": 1580988106
     },
     {
         "version": "5.2.0",

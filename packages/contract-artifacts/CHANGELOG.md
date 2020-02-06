@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.4.1 - _February 6, 2020_
+
+    * Dependencies updated
+
 ## v3.4.0 - _January 22, 2020_
 
     * Update `DevUtils` artifact (#2436)

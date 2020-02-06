@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.3.0 - _February 6, 2020_
+
+    * Added Broker, MixinWethUtils revert errors (#2455)
+    * Moved LibAssetDataTransfer revert errors into their own file (#2455)
+
 ## v5.2.0 - _January 22, 2020_
 
     * Allow for strict decoding of return values. (#2433)
