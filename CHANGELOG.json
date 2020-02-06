@@ -14,7 +14,8 @@
                 "note": "Bump sampler gas limit to 60e6",
                 "pr": 2471
             }
-        ]
+        ],
+        "timestamp": 1580988106
     },
     {
         "version": "4.1.0",

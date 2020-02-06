@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _February 6, 2020_
+
+    * Fix bug with liquidity source breakdown (#2472)
+    * Prune orders before creating a dummy order for the Sampler (#2470)
+    * Bump sampler gas limit to 60e6 (#2471)
+
 ## v4.1.0 - _February 4, 2020_
 
     * Allow contract addresses to be passed as optional constructor ags instead of hardcoding (#2461)
