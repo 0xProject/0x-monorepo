@@ -204,7 +204,7 @@ export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  * contractAddresses: Optionally override the contract addresses used for the chain
- * samplerGasLimit: The gas limit used when querying the sampler contract. Defaults to 60e6
+ * samplerGasLimit: The gas limit used when querying the sampler contract. Defaults to 36e6
  */
 export interface SwapQuoterOpts extends OrderPrunerOpts {
     chainId: number;

@@ -42,7 +42,7 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
         orderRefreshIntervalMs: 10000, // 10 seconds
     },
     ...DEFAULT_ORDER_PRUNER_OPTS,
-    samplerGasLimit: 60e6,
+    samplerGasLimit: 36e6,
 };
 
 const DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS: ForwarderExtensionContractOpts = {
