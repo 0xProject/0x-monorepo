@@ -54,6 +54,6 @@ contract TestChainlinkAggregator is
         returns (uint256)
     {
         // solhint-disable-next-line not-rely-on-time
-        return now - _timestampDelta;
+        return block.timestamp - _timestampDelta;
     }
 }

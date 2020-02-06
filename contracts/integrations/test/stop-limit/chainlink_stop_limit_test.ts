@@ -27,8 +27,8 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
 
     let order: SignedOrder;
 
-    const stopPrice = new BigNumber(42);
-    const limitPrice = new BigNumber(1337);
+    const minPrice = new BigNumber(42);
+    const maxPrice = new BigNumber(1337);
     const priceFreshness = new BigNumber(123);
 
     before(async () => {
@@ -59,8 +59,8 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
                 encodeStopLimiStaticCallData(
                     chainlinkStopLimit.address,
                     chainLinkAggregator.address,
-                    stopPrice,
-                    limitPrice,
+                    minPrice,
+                    maxPrice,
                     priceFreshness,
                 ),
             ],
@@ -106,8 +106,8 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         Actor.reset();
     });
 
-    it('fillOrder reverts if price < stopPrice', async () => {
-        await chainLinkAggregator.setPrice(stopPrice.minus(1)).awaitTransactionSuccessAsync();
+    it('fillOrder reverts if price < minPrice', async () => {
+        await chainLinkAggregator.setPrice(minPrice.minus(1)).awaitTransactionSuccessAsync();
         const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
         const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
             orderHashUtils.getOrderHashHex(order),
@@ -116,8 +116,8 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         );
         return expect(tx).to.revertWith(expectedError);
     });
-    it('fillOrder reverts price > limitPrice', async () => {
-        await chainLinkAggregator.setPrice(limitPrice.plus(1)).awaitTransactionSuccessAsync();
+    it('fillOrder reverts price > maxPrice', async () => {
+        await chainLinkAggregator.setPrice(maxPrice.plus(1)).awaitTransactionSuccessAsync();
         const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
         const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
             orderHashUtils.getOrderHashHex(order),
@@ -126,25 +126,25 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         );
         return expect(tx).to.revertWith(expectedError);
     });
-    it('fillOrder succeeds if price = stopPrice', async () => {
-        await chainLinkAggregator.setPrice(stopPrice).awaitTransactionSuccessAsync();
+    it('fillOrder succeeds if price = minPrice', async () => {
+        await chainLinkAggregator.setPrice(minPrice).awaitTransactionSuccessAsync();
         const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
         const expectedBalances = LocalBalanceStore.create(initialBalances);
         expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
         await balanceStore.updateBalancesAsync();
         balanceStore.assertEquals(expectedBalances);
     });
-    it('fillOrder succeeds if price = limitPrice', async () => {
-        await chainLinkAggregator.setPrice(limitPrice).awaitTransactionSuccessAsync();
+    it('fillOrder succeeds if price = maxPrice', async () => {
+        await chainLinkAggregator.setPrice(maxPrice).awaitTransactionSuccessAsync();
         const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
         const expectedBalances = LocalBalanceStore.create(initialBalances);
         expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
         await balanceStore.updateBalancesAsync();
         balanceStore.assertEquals(expectedBalances);
     });
-    it('fillOrder succeeds if stopPrice < price < limitPrice', async () => {
+    it('fillOrder succeeds if minPrice < price < maxPrice', async () => {
         await chainLinkAggregator
-            .setPrice(stopPrice.plus(limitPrice).dividedToIntegerBy(2))
+            .setPrice(minPrice.plus(maxPrice).dividedToIntegerBy(2))
             .awaitTransactionSuccessAsync();
         const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
         const expectedBalances = LocalBalanceStore.create(initialBalances);
@@ -154,7 +154,7 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
     });
     it('fillOrder reverts latestTimestamp is too low', async () => {
         await chainLinkAggregator.setTimestampDelta(priceFreshness.plus(1)).awaitTransactionSuccessAsync();
-        await chainLinkAggregator.setPrice(stopPrice).awaitTransactionSuccessAsync();
+        await chainLinkAggregator.setPrice(minPrice).awaitTransactionSuccessAsync();
         const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
         const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
             orderHashUtils.getOrderHashHex(order),

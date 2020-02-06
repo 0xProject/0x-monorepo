@@ -8,17 +8,17 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
  */
 export function encodeChainlinkStopLimitData(
     oracle: string,
-    stopPrice: BigNumber,
-    limitPrice: BigNumber,
+    minPrice: BigNumber,
+    maxPrice: BigNumber,
     priceFreshness: BigNumber,
 ): string {
     const encoder = AbiEncoder.create([
         { name: 'oracle', type: 'address' },
-        { name: 'stopPrice', type: 'int256' },
-        { name: 'limitPrice', type: 'int256' },
+        { name: 'minPrice', type: 'int256' },
+        { name: 'maxPrice', type: 'int256' },
         { name: 'priceFreshness', type: 'uint256' },
     ]);
-    return encoder.encode({ oracle, stopPrice, limitPrice, priceFreshness });
+    return encoder.encode({ oracle, minPrice, maxPrice, priceFreshness });
 }
 /**
  * Encodes the given stop limit data parameters into StaticCall asset data so that it can be used
@@ -27,12 +27,12 @@ export function encodeChainlinkStopLimitData(
 export function encodeStopLimiStaticCallData(
     chainlinkStopLimitAddress: string,
     oracle: string,
-    stopPrice: BigNumber,
-    limitPrice: BigNumber,
+    minPrice: BigNumber,
+    maxPrice: BigNumber,
     priceFreshness: BigNumber,
 ): string {
     const staticCallData = AbiEncoder.createMethod('checkStopLimit', [{ name: 'stopLimitData', type: 'bytes' }]).encode(
-        { stopLimitData: encodeChainlinkStopLimitData(oracle, stopPrice, limitPrice, priceFreshness) },
+        { stopLimitData: encodeChainlinkStopLimitData(oracle, minPrice, maxPrice, priceFreshness) },
     );
     return assetDataUtils.encodeStaticCallAssetData(
         chainlinkStopLimitAddress,

@@ -37,8 +37,8 @@ contract ChainlinkStopLimit {
     {
         (
             address oracle,
-            int256 stopPrice,
-            int256 limitPrice,
+            int256 minPrice,
+            int256 maxPrice,
             uint256 priceFreshness
         ) = abi.decode(
             stopLimitData,
@@ -47,13 +47,13 @@ contract ChainlinkStopLimit {
 
         int256 latestPrice = IChainlinkAggregator(oracle).latestAnswer();
         require(
-            latestPrice >= stopPrice && latestPrice <= limitPrice,
+            latestPrice >= minPrice && latestPrice <= maxPrice,
             "ChainlinkStopLimitOracle/OUT_OF_PRICE_RANGE"
         );
 
         uint256 latestTimestamp = IChainlinkAggregator(oracle).latestTimestamp();
         require(
-            now.safeSub(latestTimestamp) <= priceFreshness, // solhint-disable-line not-rely-on-time
+            block.timestamp.safeSub(latestTimestamp) <= priceFreshness, // solhint-disable-line not-rely-on-time
             "ChainlinkStopLimitOracle/PRICE_DATA_TOO_OLD"
         );
     }
