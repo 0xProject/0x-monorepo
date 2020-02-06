@@ -196,7 +196,7 @@ contract DydxBridge is
             otherAddress: depositFrom,                      // deposit from the account owner.
             // unused parameters
             secondaryMarketId: 0,
-            otherAccountId: 0,
+            otherAccountIdx: 0,
             data: hex''
         });
     }
@@ -234,7 +234,7 @@ contract DydxBridge is
             otherAddress: withdrawTo,                       // withdraw tokens to this address.
             // unused parameters
             secondaryMarketId: 0,
-            otherAccountId: 0,
+            otherAccountIdx: 0,
             data: hex''
         });
     }

@@ -106,16 +106,6 @@ contract TestDydx {
         });
     }
 
-    function getMarketPrice(
-        uint256 marketId
-    )
-        external
-        view
-        returns (IDydx.Price memory price)
-    {
-        return IDydx.Price(_markets[marketId].price);
-    }
-
     function getAdjustedAccountValues(
         IDydx.AccountInfo calldata account
     )
@@ -124,16 +114,36 @@ contract TestDydx {
         returns (IDydx.Value memory supplyValue, IDydx.Value memory borrowValue)
     {
         for (uint256 marketId = 0; marketId < _markets.length; ++marketId) {
-            MarketInfo memory market = _markets[marketId];
             int256 balance =
                 _balance[_getBalanceHash(account.owner, account.number, marketId)];
-            uint256 decimals = LibERC20Token.decimals(market.token);
-            balance = balance * int256(market.price) / int256(10 ** decimals);
+            // Account values have 36 decimal places.
+            // `getMarketPrice()` returns a unit with
+            // 18 + (18 - TOKEN_DECIMALS) decimal places so multiplying the price
+            // with the wei balance will result in a 36 decimal value.
+            balance = balance * int256(getMarketPrice(marketId).value);
             if (balance >= 0) {
                 supplyValue.value += uint256(balance);
             } else {
                 borrowValue.value += uint256(-balance);
             }
+        }
+    }
+
+    function getMarketPrice(
+        uint256 marketId
+    )
+        public
+        view
+        returns (IDydx.Price memory price)
+    {
+        MarketInfo memory market = _markets[marketId];
+        uint256 decimals = LibERC20Token.decimals(market.token);
+        price.value = _markets[marketId].price;
+        // Market prices have 18 + (18 - TOKEN_DECIMALS)
+        if (decimals > 18) {
+            price.value /= 10 ** (decimals - 18);
+        } else {
+            price.value *= 10 ** (18 - decimals);
         }
     }
 

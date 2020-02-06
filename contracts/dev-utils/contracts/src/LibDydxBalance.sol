@@ -33,6 +33,12 @@ import "./D18.sol";
 library LibDydxBalance {
 
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
+
+    /// @dev Padding % added to the minimum collateralization ratio to
+    ///      prevent withdrawing exactly the amount that would make an account
+    ///      insolvent. 1 bps.
+    int256 private constant MARGIN_RATIO_PADDING = 0.0001e18;
 
     /// @dev Structure that holds all pertinent info needed to perform a balance
     ///      check.
@@ -42,7 +48,7 @@ library LibDydxBalance {
         address makerAddress;
         address makerTokenAddress;
         address takerTokenAddress;
-        int256 orderTakerToMakerRate;
+        int256 orderMakerToTakerRate;
         uint256[] accounts;
         IDydxBridge.BridgeAction[] actions;
     }
@@ -65,10 +71,10 @@ library LibDydxBalance {
         if (!_areActionsWellFormed(info)) {
             return 0;
         }
-        // If the rate we withdraw maker tokens is less than the order conversion
-        // rate , the asset proxy will throw because we will always transfer
-        // less maker tokens than asked.
-        if (_getMakerTokenWithdrawRate(info) < info.orderTakerToMakerRate) {
+        // If the rate we withdraw maker tokens is less than one, the asset
+        // proxy will throw because we will always transfer less maker tokens
+        // than asked.
+        if (_getMakerTokenWithdrawRate(info) < D18.one()) {
             return 0;
         }
         // The maker balance is the smaller of:
@@ -154,7 +160,6 @@ library LibDydxBalance {
         returns (uint256 depositableMakerAmount)
     {
         depositableMakerAmount = uint256(-1);
-        int256 orderMakerToTakerRate = D18.div(D18.one(), info.orderTakerToMakerRate);
         // Take the minimum maker amount from all deposits.
         for (uint256 i = 0; i < info.actions.length; ++i) {
             IDydxBridge.BridgeAction memory action = info.actions[i];
@@ -162,13 +167,15 @@ library LibDydxBalance {
             if (action.actionType != IDydxBridge.BridgeActionType.Deposit) {
                 continue;
             }
+            // `depositRate` is the rate at which we convert a maker token into
+            // a taker token for deposit.
             int256 depositRate = _getActionRate(action);
             // Taker tokens will be transferred to the maker for every fill, so
             // we reduce the effective deposit rate if we're depositing the taker
             // token.
             address depositToken = info.dydx.getMarketTokenAddress(action.marketId);
             if (info.takerTokenAddress != address(0) && depositToken == info.takerTokenAddress) {
-                depositRate = D18.sub(depositRate, orderMakerToTakerRate);
+                depositRate = D18.sub(depositRate, info.orderMakerToTakerRate);
             }
             // If the deposit rate is > 0, we are limited by the transferrable
             // token balance of the maker.
@@ -198,11 +205,11 @@ library LibDydxBalance {
         assert(info.actions.length >= 1);
         IDydxBridge.BridgeAction memory withdraw = info.actions[info.actions.length - 1];
         assert(withdraw.actionType == IDydxBridge.BridgeActionType.Withdraw);
-        int256 minCr = _getMinimumCollateralizationRatio(info.dydx);
+        int256 minCr = D18.add(_getMinimumCollateralizationRatio(info.dydx), MARGIN_RATIO_PADDING);
         // Loop through the accounts.
         for (uint256 accountIdx = 0; accountIdx < info.accounts.length; ++accountIdx) {
             (uint256 supplyValue, uint256 borrowValue) =
-                _getAccountValues(info, info.accounts[accountIdx]);
+                _getAccountMarketValues(info, info.accounts[accountIdx]);
             // All accounts must currently be solvent.
             if (borrowValue != 0 && D18.div(supplyValue, borrowValue) < minCr) {
                 return 0;
@@ -221,20 +228,18 @@ library LibDydxBalance {
                 if (deposit.accountIdx == accountIdx) {
                     dd = D18.add(
                         dd,
-                        _toQuoteValue(
-                            info.dydx,
-                            deposit.marketId,
-                            _getActionRate(deposit)
+                        _getActionRateValue(
+                            info,
+                            deposit
                         )
                     );
                 }
             }
             // Compute the borrow/withdraw rate, which is the rate at which
             // (USD) value is deducted from the account.
-            int256 db = _toQuoteValue(
-                info.dydx,
-                withdraw.marketId,
-                _getActionRate(withdraw)
+            int256 db = _getActionRateValue(
+                info,
+                withdraw
             );
             // If the deposit to withdraw ratio is >= the minimum collateralization
             // ratio, then we will never become insolvent at these prices.
@@ -252,7 +257,8 @@ library LibDydxBalance {
             );
             solventMakerAmount = LibSafeMath.min256(
                 solventMakerAmount,
-                uint256(D18.clip(t))
+                // `t` is in maker token units, so convert it to maker wei.
+                _toWei(info.makerTokenAddress, uint256(D18.clip(t)))
             );
         }
     }
@@ -275,14 +281,14 @@ library LibDydxBalance {
             (, info.takerTokenAddress) =
                 LibAssetData.decodeERC20AssetData(order.takerAssetData);
         }
-        info.orderTakerToMakerRate = D18.div(order.makerAssetAmount, order.takerAssetAmount);
+        info.orderMakerToTakerRate = D18.div(order.takerAssetAmount, order.makerAssetAmount);
         (IDydxBridge.BridgeData memory bridgeData) =
             abi.decode(rawBridgeData, (IDydxBridge.BridgeData));
         info.accounts = bridgeData.accountNumbers;
         info.actions = bridgeData.actions;
     }
 
-    /// @dev Returns the conversion rate for an action, treating infinites as 1.
+    /// @dev Returns the conversion rate for an action.
     /// @param action A `BridgeAction`.
     function _getActionRate(IDydxBridge.BridgeAction memory action)
         private
@@ -297,6 +303,59 @@ library LibDydxBalance {
             );
     }
 
+    /// @dev Returns the USD value of an action based on its conversion rate
+    ///      and market prices.
+    /// @param info State from `_getBalanceCheckInfo()`.
+    /// @param action A `BridgeAction`.
+    function _getActionRateValue(
+        BalanceCheckInfo memory info,
+        IDydxBridge.BridgeAction memory action
+    )
+        private
+        view
+        returns (int256 value)
+    {
+        address toToken = info.dydx.getMarketTokenAddress(action.marketId);
+        uint256 fromTokenDecimals = LibERC20Token.decimals(info.makerTokenAddress);
+        uint256 toTokenDecimals = LibERC20Token.decimals(toToken);
+        // First express the rate as 18-decimal units.
+        value = toTokenDecimals > fromTokenDecimals
+            ? int256(
+                uint256(_getActionRate(action))
+                    .safeDiv(10 ** (toTokenDecimals - fromTokenDecimals))
+            )
+            : int256(
+                uint256(_getActionRate(action))
+                    .safeMul(10 ** (fromTokenDecimals - toTokenDecimals))
+            );
+        // Prices have 18 + (18 - TOKEN_DECIMALS) decimal places because
+        // consistency is stupid.
+        uint256 price = info.dydx.getMarketPrice(action.marketId).value;
+        // Make prices have 18 decimals.
+        if (toTokenDecimals > 18) {
+            price = price.safeMul(10 ** (toTokenDecimals - 18));
+        } else {
+            price = price.safeDiv(10 ** (18 - toTokenDecimals));
+        }
+        // The action value is the action rate times the price.
+        value = D18.mul(price, value);
+    }
+
+    /// @dev Returns the conversion rate for an action, expressed as units
+    ///      of the market token.
+    /// @param token Address the of the token.
+    /// @param units Token units expressed with 18 digit precision.
+    function _toWei(address token, uint256 units)
+        private
+        view
+        returns (uint256 rate)
+    {
+        uint256 decimals = LibERC20Token.decimals(token);
+        rate = decimals > 18
+            ? units.safeMul(10 ** (decimals - 18))
+            : units.safeDiv(10 ** (18 - decimals));
+    }
+
     /// @dev Get the global minimum collateralization ratio required for
     ///      an account to be considered solvent.
     /// @param dydx The Dydx interface.
@@ -309,24 +368,10 @@ library LibDydxBalance {
         return D18.add(D18.one(), D18.toSigned(riskParams.marginRatio.value));
     }
 
-    /// @dev Get the quote (USD) value of a rate within a market.
-    /// @param dydx The Dydx interface.
-    /// @param marketId Dydx market ID.
-    /// @param rate Rate to scale by price.
-    function _toQuoteValue(IDydx dydx, uint256 marketId, int256 rate)
-        private
-        view
-        returns (int256 quotedRate)
-    {
-        IDydx.Price memory price = dydx.getMarketPrice(marketId);
-        uint8 tokenDecimals = LibERC20Token.decimals(dydx.getMarketTokenAddress(marketId));
-        return D18.mul(D18.div(price.value, 10 ** uint256(tokenDecimals)), rate);
-    }
-
     /// @dev Get the total supply and borrow values for an account across all markets.
     /// @param info State from `_getBalanceCheckInfo()`.
     /// @param account The Dydx account identifier.
-    function _getAccountValues(BalanceCheckInfo memory info, uint256 account)
+    function _getAccountMarketValues(BalanceCheckInfo memory info, uint256 account)
         private
         view
         returns (uint256 supplyValue, uint256 borrowValue)
@@ -336,7 +381,9 @@ library LibDydxBalance {
                 info.makerAddress,
                 account
             ));
-        return (supplyValue_.value, borrowValue_.value);
+        // Account values have 36 decimal places because dydx likes to make sure
+        // you're paying attention.
+        return (supplyValue_.value / 1e18, borrowValue_.value / 1e18);
     }
 
     /// @dev Get the amount of an ERC20 token held by `owner` that can be transferred

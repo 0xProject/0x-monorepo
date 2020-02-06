@@ -129,7 +129,7 @@ contract TestDydxBridge is
                 actions[i].primaryMarketId,
                 actions[i].secondaryMarketId,
                 actions[i].otherAddress,
-                actions[i].otherAccountId,
+                actions[i].otherAccountIdx,
                 actions[i].data
             );
 
@@ -215,6 +215,9 @@ contract TestDydxBridge is
         view
         returns (Value memory supplyValue, Value memory borrowValue)
     {}
+
+    /// @dev Unused.
+    function setOperators(OperatorArg[] calldata args) external {}
 
     /// @dev overrides `_getDydxAddress()` from `DeploymentConstants` to return this address.
     function _getDydxAddress()

@@ -148,7 +148,7 @@ blockchainTests('LibDydxBalance', env => {
         makerAddress: string;
         makerTokenAddress: string;
         takerTokenAddress: string;
-        orderTakerToMakerRate: BigNumber;
+        orderMakerToTakerRate: BigNumber;
         accounts: BigNumber[];
         actions: DydxBridgeAction[];
     }
@@ -160,8 +160,8 @@ blockchainTests('LibDydxBalance', env => {
             makerAddress: ACCOUNT_OWNER,
             makerTokenAddress: DYDX_CONFIG.markets[1].token,
             takerTokenAddress: DYDX_CONFIG.markets[0].token,
-            orderTakerToMakerRate: fromTokenUnitAmount(
-                fromTokenUnitAmount(5, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+            orderMakerToTakerRate: fromTokenUnitAmount(
+                fromTokenUnitAmount(10, TAKER_DECIMALS).div(fromTokenUnitAmount(5, MAKER_DECIMALS)),
             ),
             accounts: [DYDX_CONFIG.accounts[SOLVENT_ACCOUNT_IDX].accountId],
             actions: [],
@@ -214,8 +214,9 @@ blockchainTests('LibDydxBalance', env => {
 
     // Computes a deposit rate that is the minimum to keep an account solvent
     // perpetually.
-    function getBalancedDepositRate(withdrawRate: BigNumber, scaling: Numberish = 1.000001): BigNumber {
-        return withdrawRate.times((MAKER_PRICE / TAKER_PRICE) * MARGIN_RATIO).times(scaling);
+    function getBalancedDepositRate(withdrawRate: BigNumber, scaling: Numberish = 1): BigNumber {
+        // Add a small amount to the margin ratio to stay just above insolvency.
+        return withdrawRate.times((MAKER_PRICE / TAKER_PRICE) * (MARGIN_RATIO + 1.1e-4)).times(scaling);
     }
 
     function takerToMakerAmount(takerAmount: BigNumber): BigNumber {
@@ -537,8 +538,8 @@ blockchainTests('LibDydxBalance', env => {
     blockchainTests.resets('_getDepositableMakerAmount()', () => {
         it('returns infinite if no deposit action', async () => {
             const checkInfo = createBalanceCheckInfo({
-                orderTakerToMakerRate: fromTokenUnitAmount(
-                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(10, TAKER_DECIMALS).div(fromTokenUnitAmount(100, MAKER_DECIMALS)),
                 ),
                 actions: [],
             });
@@ -548,8 +549,8 @@ blockchainTests('LibDydxBalance', env => {
 
         it('returns infinite if deposit rate is zero', async () => {
             const checkInfo = createBalanceCheckInfo({
-                orderTakerToMakerRate: fromTokenUnitAmount(
-                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(10, TAKER_DECIMALS).div(fromTokenUnitAmount(100, MAKER_DECIMALS)),
                 ),
                 actions: [
                     {
@@ -567,8 +568,8 @@ blockchainTests('LibDydxBalance', env => {
 
         it('returns infinite if taker tokens cover the deposit rate', async () => {
             const checkInfo = createBalanceCheckInfo({
-                orderTakerToMakerRate: fromTokenUnitAmount(
-                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(10, TAKER_DECIMALS).div(fromTokenUnitAmount(100, MAKER_DECIMALS)),
                 ),
                 actions: [
                     {
@@ -589,8 +590,8 @@ blockchainTests('LibDydxBalance', env => {
             const exchangeRate = 0.1;
             const depositRate = Math.random() + exchangeRate;
             const checkInfo = createBalanceCheckInfo({
-                orderTakerToMakerRate: fromTokenUnitAmount(
-                    fromTokenUnitAmount(1, MAKER_DECIMALS).div(fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS).div(fromTokenUnitAmount(1, MAKER_DECIMALS)),
                 ),
                 actions: [
                     {
@@ -623,7 +624,7 @@ blockchainTests('LibDydxBalance', env => {
             const checkInfo = createBalanceCheckInfo({
                 // The `takerTokenAddress` will be zero if the asset is not an ERC20.
                 takerTokenAddress: constants.NULL_ADDRESS,
-                orderTakerToMakerRate: fromTokenUnitAmount(fromTokenUnitAmount(100, MAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(fromTokenUnitAmount(0.1, MAKER_DECIMALS)),
                 actions: [
                     {
                         actionType: DydxBridgeActionType.Deposit,
@@ -655,8 +656,8 @@ blockchainTests('LibDydxBalance', env => {
                 takerTokenAddress: randomAddress(),
                 // These amounts should be effectively ignored in the final computation
                 // because the token being deposited is not the taker token.
-                orderTakerToMakerRate: fromTokenUnitAmount(
-                    fromTokenUnitAmount(100, MAKER_DECIMALS).div(fromTokenUnitAmount(10, TAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(10, TAKER_DECIMALS).div(fromTokenUnitAmount(100, MAKER_DECIMALS)),
                 ),
                 actions: [
                     {
@@ -676,8 +677,8 @@ blockchainTests('LibDydxBalance', env => {
             // The taker tokens getting exchanged in will only partially cover the deposit.
             const exchangeRate = 0.1;
             const checkInfo = createBalanceCheckInfo({
-                orderTakerToMakerRate: fromTokenUnitAmount(
-                    fromTokenUnitAmount(1, MAKER_DECIMALS).div(fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS)),
+                orderMakerToTakerRate: fromTokenUnitAmount(
+                    fromTokenUnitAmount(exchangeRate, TAKER_DECIMALS).div(fromTokenUnitAmount(1, MAKER_DECIMALS)),
                 ),
                 actions: [
                     // Technically, deposits of the same token are not allowed, but the
@@ -733,7 +734,7 @@ blockchainTests('LibDydxBalance', env => {
                 const exchangeRate = 0.1;
                 const depositRate = Math.random() + exchangeRate;
                 const checkInfo = createBalanceCheckInfo({
-                    orderTakerToMakerRate: fromTokenUnitAmount(fromTokenUnitAmount(1 / exchangeRate, MAKER_DECIMALS)),
+                    orderMakerToTakerRate: fromTokenUnitAmount(fromTokenUnitAmount(1 / exchangeRate, MAKER_DECIMALS)),
                     actions: [
                         {
                             actionType: DydxBridgeActionType.Deposit,
@@ -760,7 +761,7 @@ blockchainTests('LibDydxBalance', env => {
                 const exchangeRate = 0.1;
                 const depositRate = Math.random() + exchangeRate;
                 const checkInfo = createBalanceCheckInfo({
-                    orderTakerToMakerRate: fromTokenUnitAmount(fromTokenUnitAmount(1 / exchangeRate, MAKER_DECIMALS)),
+                    orderMakerToTakerRate: fromTokenUnitAmount(fromTokenUnitAmount(1 / exchangeRate, MAKER_DECIMALS)),
                     actions: [
                         {
                             actionType: DydxBridgeActionType.Deposit,
@@ -1155,8 +1156,8 @@ blockchainTests('LibDydxBalance', env => {
                             actionType: DydxBridgeActionType.Withdraw,
                             accountIdx: new BigNumber(0),
                             marketId: new BigNumber(1),
-                            conversionRateNumerator: new BigNumber(9e18),
-                            conversionRateDenominator: new BigNumber(10e18),
+                            conversionRateNumerator: new BigNumber(0.99e18),
+                            conversionRateDenominator: new BigNumber(1e18),
                         },
                     ],
                 }),

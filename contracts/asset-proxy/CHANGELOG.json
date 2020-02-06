@@ -30,6 +30,10 @@
             {
                 "note": "Add asset data decoding functions",
                 "pr": 2462
+            },
+            {
+                "note": "Add `setOperators()` to `IDydx`",
+                "pr": "TODO"
             }
         ],
         "timestamp": 1581204851
