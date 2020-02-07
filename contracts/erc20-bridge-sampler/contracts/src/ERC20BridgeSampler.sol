@@ -40,7 +40,7 @@ contract ERC20BridgeSampler is
     uint256 constant internal KYBER_SAMPLE_CALL_GAS = 1500e3;
     uint256 constant internal UNISWAP_SAMPLE_CALL_GAS = 150e3;
     uint256 constant internal ETH2DAI_SAMPLE_CALL_GAS = 1000e3;
-    uint256 constant internal DEV_UTILS_SAMPLE_CALL_GAS = 500e3;
+    uint256 constant internal DEV_UTILS_CALL_GAS = 500e3;
     address constant private UNISWAP_SOURCE = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address constant private ETH2DAI_SOURCE = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
     address constant private KYBER_SOURCE = 0x818E6FECD516Ecc3849DAf6845e3EC868087B755;
@@ -205,13 +205,28 @@ contract ERC20BridgeSampler is
                 orderFillableTakerAssetAmounts[i] = 0;
                 continue;
             }
+            // solhint-disable indent
+            (bool didSucceed, bytes memory resultData) =
+                _getDevUtilsAddress()
+                    .staticcall
+                    .gas(DEV_UTILS_CALL_GAS)
+                    (abi.encodeWithSelector(
+                       IDevUtils(_getDevUtilsAddress()).getOrderRelevantState.selector,
+                       orders[i],
+                       orderSignatures[i]
+                    ));
+            // solhint-enable indent
+            if (!didSucceed) {
+                orderFillableTakerAssetAmounts[i] = 0;
+                continue;
+            }
             (
                 LibOrder.OrderInfo memory orderInfo,
                 uint256 fillableTakerAssetAmount,
                 bool isValidSignature
-            ) = IDevUtils(_getDevUtilsAddress()).getOrderRelevantState.gas(DEV_UTILS_SAMPLE_CALL_GAS)(
-                orders[i],
-                orderSignatures[i]
+            ) = abi.decode(
+                resultData,
+                (LibOrder.OrderInfo, uint256, bool)
             );
             // The fillable amount is zero if the order is not fillable or if the
             // signature is invalid.
