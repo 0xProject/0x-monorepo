@@ -23,7 +23,7 @@
         "devUtils": "0x161793cdca4ff9e766a706c2c49c36ac1340bbcd",
         "erc20BridgeProxy": "0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0",
         "uniswapBridge": "0x533344cfdf2a3e911e2cf4c6f5ed08e791f5355f",
-        "erc20BridgeSampler": "0x45d41caec1cd893517e6e4e8222717d3d7a3bcb0",
+        "erc20BridgeSampler": "0x38b55fb7b13cbfbf8781e0f11a77b6199ae10a11",
         "kyberBridge": "0xf342f3a80fdc9b48713d58fe97e17f5cc764ee62",
         "eth2DaiBridge": "0xe3379a1956f4a79f39eb2e87bb441419e167538e",
         "chaiBridge": "0x77c31eba23043b9a72d13470f3a3a311344d7438",
@@ -114,7 +114,7 @@
         "erc20BridgeProxy": "0xfb2dd2a1366de37f7241c83d47da58fd503e2c64",
         "uniswapBridge": "0x8224aa8fe5c9f07d5a59c735386ff6cc6aaeb568",
         "eth2DaiBridge": "0x9485d65c6a2fae0d519cced5bd830e57c41998a9",
-        "erc20BridgeSampler": "0x5ad1553c2e60db118d2c01c0b73ac71e6c586b84",
+        "erc20BridgeSampler": "0x76a3d21fc9c16afd29eb12a5bdcedd5ddbf24357",
         "kyberBridge": "0xde7b2747624a647600fdb349184d0448ab954929",
         "chaiBridge": "0x0000000000000000000000000000000000000000",
         "dydxBridge": "0x0000000000000000000000000000000000000000"
