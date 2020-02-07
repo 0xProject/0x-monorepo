@@ -24,18 +24,18 @@ contract DeploymentConstants {
     address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     // /// @dev Kovan address of the WETH contract.
     // address constant private WETH_ADDRESS = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
-    /// @dev Mainnet address of the KyberNeworkProxy contract.
+    /// @dev Mainnet address of the KyberNetworkProxy contract.
     address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x818E6FECD516Ecc3849DAf6845e3EC868087B755;
-    // /// @dev Kovan address of the KyberNeworkProxy contract.
+    // /// @dev Kovan address of the KyberNetworkProxy contract.
     // address constant private KYBER_NETWORK_PROXY_ADDRESS = 0x692f391bCc85cefCe8C237C01e1f636BbD70EA4D;
     /// @dev Mainnet address of the `UniswapExchangeFactory` contract.
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     // /// @dev Kovan address of the `UniswapExchangeFactory` contract.
     // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30;
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
-    address constant private ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
+    address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
     // /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.
-    // address constant private ETH2DAI_ADDRESS = 0x4A6bC4e803c62081ffEbCc8d227B5a87a58f1F8F   ;
+    // address constant private ETH2DAI_ADDRESS = 0xe325acB9765b02b8b418199bf9650972299235F4;
     /// @dev Mainnet address of the `ERC20BridgeProxy` contract
     address constant private ERC20_BRIDGE_PROXY_ADDRESS = 0x8ED95d1746bf1E4dAb58d8ED4724f1Ef95B20Db0;
     // /// @dev Kovan address of the `ERC20BridgeProxy` contract

@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.0",
+        "changes": [
+            {
+                "note": "Update `ERC20BridgeSampler` and `Eth2Dai` on mainnet and kovan.",
+                "pr": 2474
+            }
+        ]
+    },
+    {
         "version": "4.4.0",
         "changes": [
             {
