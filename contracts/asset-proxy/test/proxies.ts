@@ -40,7 +40,7 @@ import { ERC721Wrapper } from '../src/erc721_wrapper';
 import { ERC1155ProxyContract, ERC20ProxyContract, ERC721ProxyContract } from '../src/wrappers';
 
 import { artifacts } from './artifacts';
-import { IAssetDataContract, IAssetProxyContract, MultiAssetProxyContract } from './wrappers';
+import { IAssetProxyContract, MultiAssetProxyContract } from './wrappers';
 
 chaiSetup.configure();
 const expect = chai.expect;
