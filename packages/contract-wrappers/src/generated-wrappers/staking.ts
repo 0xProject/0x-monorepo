@@ -166,6 +166,7 @@ export interface StakingUnstakeEventArgs extends DecodedLogArgs {
 }
 
 /* istanbul ignore next */
+// tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class StakingContract extends BaseContract {
