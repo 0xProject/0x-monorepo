@@ -8,7 +8,7 @@ import 'mocha';
 
 import { constants } from '../src/constants';
 import { CalculateSwapQuoteOpts, SignedOrderWithFillableAmounts } from '../src/types';
-import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
+import { DexOrderSampler, MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 import { SwapQuoteCalculator } from '../src/utils/swap_quote_calculator';
@@ -43,27 +43,26 @@ const CALCULATE_SWAP_QUOTE_OPTS: CalculateSwapQuoteOpts = {
     },
 };
 
-const createSamplerFromSignedOrdersWithFillableAmounts = (
+function createSamplerFromSignedOrdersWithFillableAmounts(
     signedOrders: SignedOrderWithFillableAmounts[],
-): MockSamplerContract => {
-    const sampler = new MockSamplerContract({
-        queryOrdersAndSampleBuys: (orders, signatures, sources, fillAmounts) => {
-            const fillableAmounts = signatures.map((s: string) => {
-                const order = (signedOrders.find(o => o.signature === s) as any) as SignedOrderWithFillableAmounts;
-                return order.fillableMakerAssetAmount;
-            });
-            return [fillableAmounts, sources.map(() => fillAmounts.map(() => constants.ZERO_AMOUNT))];
-        },
-        queryOrdersAndSampleSells: (orders, signatures, sources, fillAmounts) => {
-            const fillableAmounts = signatures.map((s: string) => {
-                const order = (signedOrders.find(o => o.signature === s) as any) as SignedOrderWithFillableAmounts;
-                return order.fillableTakerAssetAmount;
-            });
-            return [fillableAmounts, sources.map(() => fillAmounts.map(() => constants.ZERO_AMOUNT))];
-        },
-    });
-    return sampler;
-};
+): DexOrderSampler {
+    const sampleDexHandler = (takerToken: string, makerToken: string, amounts: BigNumber[]) => {
+        return amounts.map(() => constants.ZERO_AMOUNT);
+    };
+    return new DexOrderSampler(
+        new MockSamplerContract({
+            getOrderFillableMakerAssetAmounts: (orders, signatures) =>
+                orders.map((o, i) => signedOrders[i].fillableMakerAssetAmount),
+            getOrderFillableTakerAssetAmounts: (orders, signatures) =>
+                orders.map((o, i) => signedOrders[i].fillableTakerAssetAmount),
+            sampleSellsFromEth2Dai: sampleDexHandler,
+            sampleSellsFromKyberNetwork: sampleDexHandler,
+            sampleSellsFromUniswap: sampleDexHandler,
+            sampleBuysFromEth2Dai: sampleDexHandler,
+            sampleBuysFromUniswap: sampleDexHandler,
+        }),
+    );
+}
 
 // TODO(dorothy-zbornak): Replace these tests entirely with unit tests because
 // omg they're a nightmare to maintain.

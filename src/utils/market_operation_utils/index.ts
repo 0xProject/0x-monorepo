@@ -1,5 +1,4 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { assetDataUtils, ERC20AssetData, orderCalculationUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -11,7 +10,7 @@ import { fillableAmountsUtils } from '../fillable_amounts_utils';
 import { constants as marketOperationUtilConstants } from './constants';
 import { CreateOrderUtils } from './create_order';
 import { comparePathOutputs, FillsOptimizer, getPathOutput } from './fill_optimizer';
-import { DexOrderSampler } from './sampler';
+import { DexOrderSampler, getSampleAmounts } from './sampler';
 import {
     AggregationError,
     CollapsedFill,
@@ -27,22 +26,20 @@ import {
     OrderDomain,
 } from './types';
 
+export { DexOrderSampler } from './sampler';
+
 const { ZERO_AMOUNT } = constants;
 const { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_SOURCES } = marketOperationUtilConstants;
 
 export class MarketOperationUtils {
-    private readonly _dexSampler: DexOrderSampler;
     private readonly _createOrderUtils: CreateOrderUtils;
-    private readonly _orderDomain: OrderDomain;
 
     constructor(
-        samplerContract: IERC20BridgeSamplerContract,
+        private readonly _sampler: DexOrderSampler,
         contractAddresses: ContractAddresses,
-        orderDomain: OrderDomain,
+        private readonly _orderDomain: OrderDomain,
     ) {
-        this._dexSampler = new DexOrderSampler(samplerContract);
         this._createOrderUtils = new CreateOrderUtils(contractAddresses);
-        this._orderDomain = orderDomain;
     }
 
     /**
@@ -65,10 +62,15 @@ export class MarketOperationUtils {
             ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
-        const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketSellAsync(
-            nativeOrders,
-            DexOrderSampler.getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
-            difference(SELL_SOURCES, _opts.excludedSources),
+        const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
+        const [fillableAmounts, dexQuotes] = await this._sampler.executeAsync(
+            DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getSellQuotes(
+                difference(SELL_SOURCES, _opts.excludedSources),
+                makerToken,
+                takerToken,
+                getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+            ),
         );
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
@@ -134,11 +136,15 @@ export class MarketOperationUtils {
             ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
-
-        const [fillableAmounts, dexQuotes] = await this._dexSampler.getFillableAmountsAndSampleMarketBuyAsync(
-            nativeOrders,
-            DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
-            difference(BUY_SOURCES, _opts.excludedSources),
+        const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
+        const [fillableAmounts, dexQuotes] = await this._sampler.executeAsync(
+            DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getBuyQuotes(
+                difference(BUY_SOURCES, _opts.excludedSources),
+                makerToken,
+                takerToken,
+                getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+            ),
         );
         const signedOrderWithFillableAmounts = this._createBuyOrdersPathFromSamplerResultIfExists(
             nativeOrders,
@@ -174,17 +180,25 @@ export class MarketOperationUtils {
             ...opts,
         };
 
-        const batchSampleResults = await this._dexSampler.getBatchFillableAmountsAndSampleMarketBuyAsync(
-            batchNativeOrders,
-            makerAmounts.map(makerAmount => DexOrderSampler.getSampleAmounts(makerAmount, _opts.numSamples)),
-            difference(BUY_SOURCES, _opts.excludedSources),
-        );
-        return batchSampleResults.map(([fillableAmounts, dexQuotes], i) =>
+        const sources = difference(BUY_SOURCES, _opts.excludedSources);
+        const ops = [
+            ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
+            ...batchNativeOrders.map((orders, i) =>
+                DexOrderSampler.ops.getBuyQuotes(sources, getOrderTokens(orders[0])[0], getOrderTokens(orders[0])[1], [
+                    makerAmounts[i],
+                ]),
+            ),
+        ];
+        const executeResults = await this._sampler.executeBatchAsync(ops);
+        const batchFillableAmounts = executeResults.slice(0, batchNativeOrders.length) as BigNumber[][];
+        const batchDexQuotes = executeResults.slice(batchNativeOrders.length) as DexSample[][][];
+
+        return batchFillableAmounts.map((fillableAmounts, i) =>
             this._createBuyOrdersPathFromSamplerResultIfExists(
                 batchNativeOrders[i],
                 makerAmounts[i],
                 fillableAmounts,
-                dexQuotes,
+                batchDexQuotes[i],
                 _opts,
             ),
         );

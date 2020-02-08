@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Use `batchCall()` version of the `ERC20BridgeSampler` contract",
+                "pr": 2477
+            }
+        ]
+    },
+    {
         "timestamp": 1581204851,
         "version": "4.1.2",
         "changes": [
