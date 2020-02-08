@@ -1,5 +1,5 @@
 import { AbiEncoder } from '@0x/utils';
-import { DataItem, EvmBytecodeOutput, MethodAbi } from 'ethereum-types';
+import { ContractArtifact, DataItem, MethodAbi } from 'ethereum-types';
 
 // tslint:disable-next-line:completed-docs
 export function formatABIDataItem(abi: DataItem, value: any, formatter: (type: string, value: any) => any): any {
@@ -40,19 +40,24 @@ export function methodAbiToFunctionSignature(methodAbi: MethodAbi): string {
 }
 
 /**
- * Replaces unliked library references in bytecode with real addresses
- * and returns the bytecode.
+ * Replaces unliked library references in the bytecode of a contract artifact
+ * with real addresses and returns the bytecode.
  */
 export function linkLibrariesInBytecode(
-    bytecodeArtifact: EvmBytecodeOutput,
+    artifact: ContractArtifact,
     libraryAddresses: { [libraryName: string]: string },
 ): string {
+    const bytecodeArtifact = artifact.compilerOutput.evm.bytecode;
     let bytecode = bytecodeArtifact.object.substr(2);
     for (const link of Object.values(bytecodeArtifact.linkReferences)) {
         for (const [libraryName, libraryRefs] of Object.entries(link)) {
             const libraryAddress = libraryAddresses[libraryName];
             if (!libraryAddress) {
-                continue;
+                throw new Error(
+                    `${
+                        artifact.contractName
+                    } has an unlinked reference library ${libraryName} but no addresses was provided'.`,
+                );
             }
             for (const ref of libraryRefs) {
                 bytecode = [

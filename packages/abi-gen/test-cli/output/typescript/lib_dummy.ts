@@ -98,10 +98,7 @@ export class LibDummyContract extends BaseContract {
             new Web3Wrapper(provider),
             txDefaults,
         );
-        const bytecode = linkLibrariesInBytecode(artifact.compilerOutput.evm.bytecode, libraryAddresses);
-        if (!hexUtils.isHex(bytecode)) {
-            throw new Error(`Bytecode for "${artifact.contractName}" was not fully linked.`);
-        }
+        const bytecode = linkLibrariesInBytecode(artifact, libraryAddresses);
         return LibDummyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
 
@@ -180,13 +177,7 @@ export class LibDummyContract extends BaseContract {
                         libraryAddresses,
                     );
                     // Deploy this library.
-                    const linkedLibraryBytecode = linkLibrariesInBytecode(
-                        libraryArtifact.compilerOutput.evm.bytecode,
-                        libraryAddresses,
-                    );
-                    if (!hexUtils.isHex(linkedLibraryBytecode)) {
-                        throw new Error(`Bytecode for library "${libraryArtifact.contractName}" was not fully linked.`);
-                    }
+                    const linkedLibraryBytecode = linkLibrariesInBytecode(libraryArtifact, libraryAddresses);
                     const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
                         {
                             data: linkedLibraryBytecode,

@@ -130,12 +130,9 @@ export class {{contractName}}Contract extends BaseContract {
             txDefaults
         );
         const bytecode = linkLibrariesInBytecode(
-            artifact.compilerOutput.evm.bytecode,
+            artifact,
             libraryAddresses,
         );
-        if (!hexUtils.isHex(bytecode)) {
-            throw new Error(`Bytecode for "${artifact.contractName}" was not fully linked.`);
-        }
         return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, {{> params inputs=ctor.inputs}});
     }
 
@@ -236,12 +233,9 @@ export class {{contractName}}Contract extends BaseContract {
                     );
                     // Deploy this library.
                     const linkedLibraryBytecode = linkLibrariesInBytecode(
-                        libraryArtifact.compilerOutput.evm.bytecode,
+                        libraryArtifact,
                         libraryAddresses,
                     );
-                    if (!hexUtils.isHex(linkedLibraryBytecode)) {
-                        throw new Error(`Bytecode for library "${libraryArtifact.contractName}" was not fully linked.`);
-                    }
                     const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
                         {
                             data: linkedLibraryBytecode,
