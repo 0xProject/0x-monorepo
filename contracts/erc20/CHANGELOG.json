@@ -4,11 +4,11 @@
         "changes": [
             {
                 "note": "Add `allowance()` and `balanceOf()` to `LibERC20Token`",
-                "pr": 2462
+                "pr": 2464
             },
             {
                 "note": "Fix broken tests",
-                "pr": 2462
+                "pr": 2456
             }
         ]
     },

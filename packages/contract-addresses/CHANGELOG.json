@@ -18,6 +18,14 @@
             {
                 "note": "Update `ERC20BridgeSampler` on mainnet and kovan.",
                 "pr": 2459
+            },
+            {
+                "note": "Remove `libTransactionDecoder`",
+                "pr": 2456
+            },
+            {
+                "note": "Update snapshot addresses",
+                "pr": 2464
             }
         ],
         "timestamp": 1580811564

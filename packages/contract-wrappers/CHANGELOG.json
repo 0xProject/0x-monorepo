@@ -3,8 +3,12 @@
         "version": "13.5.0",
         "changes": [
             {
-                "note": "export `evmbytecodeoutputlinkreferences` type.",
+                "note": "Export `EvmBytecodeOutputLinkReferences` type.",
                 "pr": 2462
+            },
+            {
+                "note": "Remove `LibTransactionDecoder`",
+                "pr": 2464
             }
         ]
     },

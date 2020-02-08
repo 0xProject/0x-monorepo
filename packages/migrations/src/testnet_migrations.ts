@@ -9,11 +9,7 @@ import {
     UniswapBridgeContract,
 } from '@0x/contracts-asset-proxy';
 import { artifacts as coordinatorArtifacts, CoordinatorContract } from '@0x/contracts-coordinator';
-import {
-    artifacts as devUtilsArtifacts,
-    DevUtilsContract,
-    LibTransactionDecoderContract,
-} from '@0x/contracts-dev-utils';
+import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import {
@@ -249,8 +245,9 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     ]);
     await submitAndExecuteTransactionAsync(governor, governor.address, batchTransactionData);
 
-    await DevUtilsContract.deployFrom0xArtifactAsync(
+    await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
         devUtilsArtifacts.DevUtils,
+        devUtilsArtifacts,
         provider,
         txDefaults,
         devUtilsArtifacts,
@@ -275,13 +272,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         exchange.address,
         deployedAddresses.exchangeV2,
         deployedAddresses.etherToken,
-    );
-
-    await LibTransactionDecoderContract.deployFrom0xArtifactAsync(
-        devUtilsArtifacts.LibTransactionDecoder,
-        provider,
-        txDefaults,
-        devUtilsArtifacts,
     );
 }
 

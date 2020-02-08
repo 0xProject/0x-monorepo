@@ -10,6 +10,7 @@ import {
     SubscriptionManager,
     PromiseWithTransactionHash,
     methodAbiToFunctionSignature,
+    linkLibrariesInBytecode,
 } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
@@ -27,7 +28,7 @@ import {
     TxDataPayable,
     SupportedProvider,
 } from 'ethereum-types';
-import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
+import { BigNumber, classUtils, hexUtils, logUtils, providerUtils } from '@0x/utils';
 import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
@@ -52,6 +53,7 @@ export interface AbiGenDummyWithdrawalEventArgs extends DecodedLogArgs {
 }
 
 /* istanbul ignore next */
+// tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class AbiGenDummyContract extends BaseContract {
@@ -88,6 +90,40 @@ export class AbiGenDummyContract extends BaseContract {
         }
         return AbiGenDummyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
+
+    public static async deployWithLibrariesFrom0xArtifactAsync(
+        artifact: ContractArtifact,
+        libraryArtifacts: { [libraryName: string]: ContractArtifact },
+        supportedProvider: SupportedProvider,
+        txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
+    ): Promise<AbiGenDummyContract> {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
+        if (artifact.compilerOutput === undefined) {
+            throw new Error('Compiler output not found in the artifact file');
+        }
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        const abi = artifact.compilerOutput.abi;
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        if (Object.keys(logDecodeDependencies) !== undefined) {
+            for (const key of Object.keys(logDecodeDependencies)) {
+                logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+            }
+        }
+        const libraryAddresses = await AbiGenDummyContract._deployLibrariesAsync(
+            artifact,
+            libraryArtifacts,
+            new Web3Wrapper(provider),
+            txDefaults,
+        );
+        const bytecode = linkLibrariesInBytecode(artifact, libraryAddresses);
+        return AbiGenDummyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
+    }
+
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
@@ -869,12 +905,58 @@ export class AbiGenDummyContract extends BaseContract {
         return abi;
     }
 
+    protected static async _deployLibrariesAsync(
+        artifact: ContractArtifact,
+        libraryArtifacts: { [libraryName: string]: ContractArtifact },
+        web3Wrapper: Web3Wrapper,
+        txDefaults: Partial<TxData>,
+        libraryAddresses: { [libraryName: string]: string } = {},
+    ): Promise<{ [libraryName: string]: string }> {
+        const links = artifact.compilerOutput.evm.bytecode.linkReferences;
+        // Go through all linked libraries, recursively deploying them if necessary.
+        for (const link of Object.values(links)) {
+            for (const libraryName of Object.keys(link)) {
+                if (!libraryAddresses[libraryName]) {
+                    // Library not yet deployed.
+                    const libraryArtifact = libraryArtifacts[libraryName];
+                    if (!libraryArtifact) {
+                        throw new Error(`Missing artifact for linked library "${libraryName}"`);
+                    }
+                    // Deploy any dependent libraries used by this library.
+                    await AbiGenDummyContract._deployLibrariesAsync(
+                        libraryArtifact,
+                        libraryArtifacts,
+                        web3Wrapper,
+                        txDefaults,
+                        libraryAddresses,
+                    );
+                    // Deploy this library.
+                    const linkedLibraryBytecode = linkLibrariesInBytecode(libraryArtifact, libraryAddresses);
+                    const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
+                        {
+                            data: linkedLibraryBytecode,
+                            ...txDefaults,
+                        },
+                        web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+                    );
+                    const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+                    logUtils.log(`transactionHash: ${txHash}`);
+                    const { contractAddress } = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+                    logUtils.log(`${libraryArtifact.contractName} successfully deployed at ${contractAddress}`);
+                    libraryAddresses[libraryArtifact.contractName] = contractAddress as string;
+                }
+            }
+        }
+        return libraryAddresses;
+    }
+
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
         const methodAbi = AbiGenDummyContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }
+
     public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
         const functionSignature = this.getFunctionSignature(methodName);
         const self = (this as any) as AbiGenDummyContract;
@@ -882,6 +964,7 @@ export class AbiGenDummyContract extends BaseContract {
         const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
         return abiDecodedCallData;
     }
+
     public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
         const functionSignature = this.getFunctionSignature(methodName);
         const self = (this as any) as AbiGenDummyContract;
@@ -889,6 +972,7 @@ export class AbiGenDummyContract extends BaseContract {
         const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
         return abiDecodedCallData;
     }
+
     public getSelector(methodName: string): string {
         const functionSignature = this.getFunctionSignature(methodName);
         const self = (this as any) as AbiGenDummyContract;
@@ -908,7 +992,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -926,7 +1018,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -964,7 +1064,15 @@ export class AbiGenDummyContract extends BaseContract {
                 dolor: string;
             }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{
@@ -1001,7 +1109,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -1072,8 +1188,17 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1096,8 +1221,17 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
@@ -1119,7 +1253,15 @@ export class AbiGenDummyContract extends BaseContract {
                 Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
             > {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<
@@ -1138,7 +1280,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[BigNumber, string]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(rawCallResult);
@@ -1160,7 +1310,15 @@ export class AbiGenDummyContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ innerStruct: { aField: BigNumber } }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{ innerStruct: { aField: BigNumber } }>(rawCallResult);
@@ -1190,7 +1348,15 @@ export class AbiGenDummyContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<[string, string, string]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<[string, string, string]>(rawCallResult);
@@ -1216,7 +1382,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1242,7 +1416,15 @@ export class AbiGenDummyContract extends BaseContract {
                 description: string;
             }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{
@@ -1270,7 +1452,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1290,7 +1480,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -1400,7 +1598,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1418,7 +1624,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1435,7 +1649,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -1452,7 +1674,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1469,7 +1699,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1490,7 +1728,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1511,7 +1757,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -1528,7 +1782,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -1546,7 +1808,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
@@ -1563,7 +1833,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1580,7 +1858,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1603,7 +1889,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1632,7 +1926,15 @@ export class AbiGenDummyContract extends BaseContract {
                 defaultBlock?: BlockParam,
             ): Promise<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<{
@@ -1665,7 +1967,15 @@ export class AbiGenDummyContract extends BaseContract {
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                let rawCallResult;
+                if (self._deployedBytecodeIfExists) {
+                    rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
+                } else {
+                    rawCallResult = await self._performCallAsync(
+                        { ...callData, data: this.getABIEncodedTransactionData() },
+                        defaultBlock,
+                    );
+                }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
@@ -1753,6 +2063,7 @@ export class AbiGenDummyContract extends BaseContract {
         );
         return subscriptionToken;
     }
+
     /**
      * Cancel a subscription
      * @param subscriptionToken Subscription token returned by `subscribe()`
@@ -1760,12 +2071,14 @@ export class AbiGenDummyContract extends BaseContract {
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
     }
+
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
         this._subscriptionManager.unsubscribeAll();
     }
+
     /**
      * Gets historical logs without creating a subscription
      * @param eventName The AbiGenDummy contract event you would like to subscribe to.
@@ -1791,6 +2104,7 @@ export class AbiGenDummyContract extends BaseContract {
         );
         return logs;
     }
+
     constructor(
         address: string,
         supportedProvider: SupportedProvider,
