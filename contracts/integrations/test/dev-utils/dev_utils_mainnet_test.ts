@@ -26,8 +26,9 @@ blockchainTests.fork.resets('DevUtils mainnet tests', env => {
 
     before(async () => {
         [noDaiAddress] = await env.getAccountAddressesAsync();
-        devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+        devUtils = await DevUtilsContract.deployWithLibrariesFrom0xArtifactAsync(
             devUtilsArtifacts.DevUtils,
+            devUtilsArtifacts,
             env.provider,
             env.txDefaults,
             devUtilsArtifacts,

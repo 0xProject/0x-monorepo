@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Refactor into public libraries.",
+                "pr": 2464
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "3.1.3",
         "changes": [

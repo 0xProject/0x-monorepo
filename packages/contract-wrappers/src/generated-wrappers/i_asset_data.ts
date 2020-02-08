@@ -34,6 +34,7 @@ import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
 /* istanbul ignore next */
+// tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IAssetDataContract extends BaseContract {

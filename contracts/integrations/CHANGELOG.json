@@ -5,6 +5,10 @@
             {
                 "note": "Remove dependency on `DevUtils` for asset data encoding/decoding",
                 "pr": 2462
+            },
+            {
+                "note": "Update tests for refactored `DevUtils`",
+                "pr": 2464
             }
         ]
     },

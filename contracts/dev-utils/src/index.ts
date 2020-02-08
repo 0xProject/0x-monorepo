@@ -1,5 +1,5 @@
 export { artifacts } from './artifacts';
-export { DevUtilsContract, LibAssetDataContract, LibTransactionDecoderContract } from './wrappers';
+export { DevUtilsContract } from './wrappers';
 export {
     ContractArtifact,
     ContractChains,

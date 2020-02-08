@@ -53,6 +53,7 @@ export interface AbiGenDummyWithdrawalEventArgs extends DecodedLogArgs {
 }
 
 /* istanbul ignore next */
+// tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class AbiGenDummyContract extends BaseContract {

@@ -94,7 +94,8 @@ library LibERC20Token {
 
     /// @dev Retrieves the number of decimals for a token.
     ///      Returns `18` if the call reverts.
-    /// @return The number of decimals places for the token.
+    /// @param token The address of the token contract.
+    /// @return tokenDecimals The number of decimals places for the token.
     function decimals(address token)
         internal
         view
@@ -104,6 +105,50 @@ library LibERC20Token {
         (bool didSucceed, bytes memory resultData) = token.staticcall(DECIMALS_CALL_DATA);
         if (didSucceed && resultData.length == 32) {
             tokenDecimals = uint8(LibBytes.readUint256(resultData, 0));
+        }
+    }
+
+    /// @dev Retrieves the allowance for a token, owner, and spender.
+    ///      Returns `0` if the call reverts.
+    /// @param token The address of the token contract.
+    /// @param owner The owner of the tokens.
+    /// @param spender The address the spender.
+    /// @return allowance The allowance for a token, owner, and spender.
+    function allowance(address token, address owner, address spender)
+        internal
+        view
+        returns (uint256 allowance_)
+    {
+        (bool didSucceed, bytes memory resultData) = token.staticcall(
+            abi.encodeWithSelector(
+                IERC20Token(0).allowance.selector,
+                owner,
+                spender
+            )
+        );
+        if (didSucceed && resultData.length == 32) {
+            allowance_ = LibBytes.readUint256(resultData, 0);
+        }
+    }
+
+    /// @dev Retrieves the balance for a token owner.
+    ///      Returns `0` if the call reverts.
+    /// @param token The address of the token contract.
+    /// @param owner The owner of the tokens.
+    /// @return balance The token balance of an owner.
+    function balanceOf(address token, address owner)
+        internal
+        view
+        returns (uint256 balance)
+    {
+        (bool didSucceed, bytes memory resultData) = token.staticcall(
+            abi.encodeWithSelector(
+                IERC20Token(0).balanceOf.selector,
+                owner
+            )
+        );
+        if (didSucceed && resultData.length == 32) {
+            balance = LibBytes.readUint256(resultData, 0);
         }
     }
 

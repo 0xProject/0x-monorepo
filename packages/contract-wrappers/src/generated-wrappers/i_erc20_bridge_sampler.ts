@@ -34,6 +34,7 @@ import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
 /* istanbul ignore next */
+// tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IERC20BridgeSamplerContract extends BaseContract {
@@ -952,7 +953,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
      * @returns ordersAndSamples How much taker asset can be filled         by each order in &#x60;orders&#x60;. Taker amounts sold for each source at         each maker token amount. First indexed by source index, then sample         index
      */
     public queryBatchOrdersAndSampleBuys(
-        orders: Array<Array<{
+        orders: Array<{
             makerAddress: string;
             takerAddress: string;
             feeRecipientAddress: string;
@@ -967,7 +968,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerAssetData: string;
             makerFeeAssetData: string;
             takerFeeAssetData: string;
-        }>>,
+        }>[],
         orderSignatures: string[][],
         sources: string[],
         makerTokenAmounts: BigNumber[][],
@@ -1017,7 +1018,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
      * @returns ordersAndSamples How much taker asset can be filled         by each order in &#x60;orders&#x60;. Maker amounts bought for each source at         each taker token amount. First indexed by source index, then sample         index.
      */
     public queryBatchOrdersAndSampleSells(
-        orders: Array<Array<{
+        orders: Array<{
             makerAddress: string;
             takerAddress: string;
             feeRecipientAddress: string;
@@ -1032,7 +1033,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             takerAssetData: string;
             makerFeeAssetData: string;
             takerFeeAssetData: string;
-        }>>,
+        }>[],
         orderSignatures: string[][],
         sources: string[],
         takerTokenAmounts: BigNumber[][],

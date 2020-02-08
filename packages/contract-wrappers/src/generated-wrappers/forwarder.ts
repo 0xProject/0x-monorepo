@@ -47,6 +47,7 @@ export interface ForwarderOwnershipTransferredEventArgs extends DecodedLogArgs {
 }
 
 /* istanbul ignore next */
+// tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ForwarderContract extends BaseContract {
@@ -237,6 +238,34 @@ export class ForwarderContract extends BaseContract {
                 payable: true,
                 stateMutability: 'payable',
                 type: 'fallback',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'ERC1155_BATCH_RECEIVED',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bytes4',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'ERC1155_RECEIVED',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bytes4',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
             },
             {
                 constant: true,
@@ -457,6 +486,76 @@ export class ForwarderContract extends BaseContract {
                 type: 'function',
             },
             {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'operator',
+                        type: 'address',
+                    },
+                    {
+                        name: 'from',
+                        type: 'address',
+                    },
+                    {
+                        name: 'ids',
+                        type: 'uint256[]',
+                    },
+                    {
+                        name: 'values',
+                        type: 'uint256[]',
+                    },
+                    {
+                        name: 'data',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'onERC1155BatchReceived',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bytes4',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'operator',
+                        type: 'address',
+                    },
+                    {
+                        name: 'from',
+                        type: 'address',
+                    },
+                    {
+                        name: 'id',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'value',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'data',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'onERC1155Received',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bytes4',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
                 constant: true,
                 inputs: [],
                 name: 'owner',
@@ -581,6 +680,46 @@ export class ForwarderContract extends BaseContract {
         return abiEncoder.getSelector();
     }
 
+    public ERC1155_BATCH_RECEIVED(): ContractFunctionObj<string> {
+        const self = (this as any) as ForwarderContract;
+        const functionSignature = 'ERC1155_BATCH_RECEIVED()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    public ERC1155_RECEIVED(): ContractFunctionObj<string> {
+        const self = (this as any) as ForwarderContract;
+        const functionSignature = 'ERC1155_RECEIVED()';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
     public EXCHANGE_V2_ORDER_ID(): ContractFunctionObj<string> {
         const self = (this as any) as ForwarderContract;
         const functionSignature = 'EXCHANGE_V2_ORDER_ID()';
@@ -838,6 +977,150 @@ export class ForwarderContract extends BaseContract {
                     signatures,
                     ethFeeAmounts,
                     feeRecipients,
+                ]);
+            },
+        };
+    }
+    /**
+     * The smart contract calls this function on the recipient after a `safeTransferFrom`. This function MAY throw to revert and reject the transfer. Return of other than the magic value MUST result in the transaction being reverted Note: the contract address is always the message sender
+     * @param operator The address which called `safeTransferFrom` function
+     * @param from The address which previously owned the token
+     * @param ids An array containing ids of each token being transferred
+     * @param values An array containing amounts of each token being transferred
+     * @param data Additional data with no specified format
+     * @returns &#x60;bytes4(keccak256(&quot;onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)&quot;))&#x60;
+     */
+    public onERC1155BatchReceived(
+        operator: string,
+        from: string,
+        ids: BigNumber[],
+        values: BigNumber[],
+        data: string,
+    ): ContractTxFunctionObj<string> {
+        const self = (this as any) as ForwarderContract;
+        assert.isString('operator', operator);
+        assert.isString('from', from);
+        assert.isArray('ids', ids);
+        assert.isArray('values', values);
+        assert.isString('data', data);
+        const functionSignature = 'onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    operator.toLowerCase(),
+                    from.toLowerCase(),
+                    ids,
+                    values,
+                    data,
+                ]);
+            },
+        };
+    }
+    /**
+     * The smart contract calls this function on the recipient after a `safeTransferFrom`. This function MAY throw to revert and reject the transfer. Return of other than the magic value MUST result in the transaction being reverted Note: the contract address is always the message sender
+     * @param operator The address which called `safeTransferFrom` function
+     * @param from The address which previously owned the token
+     * @param id An array containing the ids of the token being transferred
+     * @param value An array containing the amount of tokens being transferred
+     * @param data Additional data with no specified format
+     * @returns &#x60;bytes4(keccak256(&quot;onERC1155Received(address,address,uint256,uint256,bytes)&quot;))&#x60;
+     */
+    public onERC1155Received(
+        operator: string,
+        from: string,
+        id: BigNumber,
+        value: BigNumber,
+        data: string,
+    ): ContractTxFunctionObj<string> {
+        const self = (this as any) as ForwarderContract;
+        assert.isString('operator', operator);
+        assert.isString('from', from);
+        assert.isBigNumber('id', id);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const functionSignature = 'onERC1155Received(address,address,uint256,uint256,bytes)';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    operator.toLowerCase(),
+                    from.toLowerCase(),
+                    id,
+                    value,
+                    data,
                 ]);
             },
         };

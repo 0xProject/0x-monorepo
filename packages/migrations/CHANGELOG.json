@@ -1,5 +1,22 @@
 [
     {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Update `DevUtils` deployment",
+                "pr": 2456
+            },
+            {
+                "note": "Remove `LibTransactionDecoder` deployment",
+                "pr": 2456
+            },
+            {
+                "note": "Use contract package artifacts in ganache migrations",
+                "pr": 2456
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "6.0.2",
         "changes": [
