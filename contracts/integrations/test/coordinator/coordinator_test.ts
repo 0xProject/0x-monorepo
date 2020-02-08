@@ -119,7 +119,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 order = await maker.signOrderAsync();
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 transaction = await taker.signTransactionAsync({ data });
-                approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
+                approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
             });
 
             it(`${fnName} should fill the order with a signed approval`, async () => {
@@ -253,7 +253,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 orders = [await maker.signOrderAsync(), await maker.signOrderAsync()];
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 transaction = await taker.signTransactionAsync({ data });
-                approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
+                approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
             });
 
             it(`${fnName} should fill the orders with a signed approval`, async () => {

@@ -200,7 +200,7 @@ tests('Exchange signature validation fuzz tests', env => {
                     exchangeAddress: mangled.order!.exchangeAddress,
                     chainId: mangled.order!.chainId,
                 });
-                mangled.hash = await orderHashUtils.getOrderHashHex(mangled.order);
+                mangled.hash = orderHashUtils.getOrderHashHex(mangled.order);
                 break;
             case 'RANDOM_TRANSACTION':
                 mangled.transaction = randomTransaction({
@@ -398,7 +398,7 @@ tests('Exchange signature validation fuzz tests', env => {
             fields.validator || (signatureType === SignatureType.Validator ? walletContractAddress : undefined);
         const signerKey = fields.signerKey || privateKeys[signer];
         const order = fields.order || randomOrder({ makerAddress: signer });
-        const hash = fields.hash || (await orderHashUtils.getOrderHashHex(order));
+        const hash = fields.hash || orderHashUtils.getOrderHashHex(order);
         const payload =
             fields.payload ||
             (STRICT_LENGTH_SIGNATURE_TYPES.includes(signatureType) ? constants.NULL_BYTES : randomPayload());

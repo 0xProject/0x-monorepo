@@ -9,7 +9,7 @@ export const hashUtils = {
         return hashBuffer;
     },
     getApprovalHashHex(transaction: SignedZeroExTransaction, verifyingContract: string, txOrigin: string): string {
-        const hashHex = hexUtils.concat(hashUtils.getApprovalHashBuffer(transaction, verifyingContract, txOrigin));
+        const hashHex = hexUtils.toHex(hashUtils.getApprovalHashBuffer(transaction, verifyingContract, txOrigin));
         return hashHex;
     },
 };
