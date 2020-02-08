@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0 - _February 8, 2020_
+
+    * Add `linkReferences` to `EvmBytecodeOutput` and `EvmBytecodeOutputLinkReferences` type (#2462)
+
 ## v3.0.0 - _December 2, 2019_
 
     * All references to network ID have been removed, and references to chain ID have been introduced instead (#2313)

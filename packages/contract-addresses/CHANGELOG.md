@@ -5,9 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.5.0 - _February 8, 2020_
+
+    * Update `ERC20BridgeSampler` and `Eth2Dai` on mainnet and kovan. (#2474)
+    * Update `ERC20BridgeSampler` address on mainnet and kovan. (#2476)
+
 ## v4.4.0 - _February 4, 2020_
 
     * Update `ERC20BridgeSampler` on mainnet and kovan. (#2459)
+    * Remove `libTransactionDecoder` (#2456)
+    * Update snapshot addresses (#2464)
 
 ## v4.3.0 - _January 22, 2020_
 

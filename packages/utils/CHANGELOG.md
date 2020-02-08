@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.0 - _February 8, 2020_
+
+    * Add `toTokenUnitAmount` and `fromTokenUnitAmount` (#2462)
+    * Add `hexUtils.isHex` (#2462)
+    * Accept `Buffer` type in `hexUtils.toHex()` (#2462)
+
 ## v5.3.0 - _February 6, 2020_
 
     * Added Broker, MixinWethUtils revert errors (#2455)

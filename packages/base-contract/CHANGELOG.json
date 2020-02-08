@@ -10,7 +10,8 @@
                 "note": "Add exported function `linkLibrariesInBytecode()`",
                 "pr": 2463
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "timestamp": 1580988106,

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.3.0 - _February 8, 2020_
+
+    * Catch reverts to `DevUtils` calls (#2476)
+
 ## v1.2.1 - _February 6, 2020_
 
     * Dependencies updated

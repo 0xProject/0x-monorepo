@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.5.0 - _February 8, 2020_
+
+    * Export `EvmBytecodeOutputLinkReferences` type. (#2462)
+    * Remove `LibTransactionDecoder` (#2464)
+
 ## v13.4.2 - _February 6, 2020_
 
     * Dependencies updated

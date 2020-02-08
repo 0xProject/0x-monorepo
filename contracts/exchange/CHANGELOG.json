@@ -10,7 +10,8 @@
                 "note": "Remove dependency on `DevUtils` for asset data encoding/decoding",
                 "pr": 2462
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "timestamp": 1580988106,

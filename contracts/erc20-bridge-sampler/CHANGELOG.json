@@ -6,7 +6,8 @@
                 "note": "Catch reverts to `DevUtils` calls",
                 "pr": 2476
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "timestamp": 1580988106,

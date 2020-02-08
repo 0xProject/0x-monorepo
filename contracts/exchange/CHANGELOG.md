@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _February 8, 2020_
+
+    * Flip `LibExchangeRichErrorDecoder` to an actual library. (#2462)
+    * Remove dependency on `DevUtils` for asset data encoding/decoding (#2462)
+
 ## v3.1.2 - _February 6, 2020_
 
     * Dependencies updated

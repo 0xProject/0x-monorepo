@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0 - _February 8, 2020_
+
+    * Remove dependency on `DevUtils` for asset data encoding/decoding (#2462)
+    * Update tests for refactored `DevUtils` (#2464)
+
 ## v2.2.3 - _February 6, 2020_
 
     * Dependencies updated

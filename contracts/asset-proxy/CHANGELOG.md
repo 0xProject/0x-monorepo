@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _February 8, 2020_
+
+    * Fix broken tests. (#2462)
+    * Remove dependency on `@0x/contracts-dev-utils` (#2462)
+    * Add asset data decoding functions (#2462)
+
 ## v3.1.3 - _February 6, 2020_
 
     * Dependencies updated

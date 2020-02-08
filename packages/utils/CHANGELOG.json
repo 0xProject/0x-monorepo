@@ -14,7 +14,8 @@
                 "note": "Accept `Buffer` type in `hexUtils.toHex()`",
                 "pr": 2462
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "version": "5.3.0",

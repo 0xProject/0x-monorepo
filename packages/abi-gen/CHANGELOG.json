@@ -6,7 +6,8 @@
                 "note": "Support deploying contracts with unliked libraries through `deployWithLibrariesFrom0xArtifactAsync()`",
                 "pr": 2463
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "timestamp": 1580988106,

@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _February 8, 2020_
+
+    * Refactor mixins into public libraries. (#2464)
+    * Remove `LibTransactionDecoder` export (#2464)
+
 ## v1.0.6 - _February 6, 2020_
 
     * Dependencies updated

@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.2.0 - _February 8, 2020_
+
+    * Remove use of ambient `DevUtils` instances. (#2462)
+    * Make hash computing tooling non-async again. (#2462)
+    * Add `transactionHashUtils`. (#2462)
+
 ## v10.1.3 - _February 6, 2020_
 
     * Dependencies updated

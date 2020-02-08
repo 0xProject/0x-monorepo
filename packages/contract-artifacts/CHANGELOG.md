@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.5.0 - _February 8, 2020_
+
+    * Update `DevUtils` artifact (#2464)
+    * Remove `LibTransactionDecoder` artifact (#2464)
+
 ## v3.4.1 - _February 6, 2020_
 
     * Dependencies updated

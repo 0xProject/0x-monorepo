@@ -10,7 +10,8 @@
                 "note": "Update `ERC20BridgeSampler` address on mainnet and kovan.",
                 "pr": 2476
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "version": "4.4.0",

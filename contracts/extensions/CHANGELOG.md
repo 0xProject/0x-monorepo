@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.0 - _February 8, 2020_
+
+    * Export `EvmBytecodeOutputLinkReferences` type. (#2462)
+
 ## v6.0.0 - _February 6, 2020_
 
     * New year, new me: remove everything, add MixinWethUtils and LibAssetDataTransfer (#2455)

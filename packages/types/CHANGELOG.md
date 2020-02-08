@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.2 - _February 8, 2020_
+
+    * Dependencies updated
+
 ## v3.1.1 - _December 17, 2019_
 
     * Added `DydxBridgeOnlyCallableByErc20BridgeProxy` and `DydxBridgeUnrecognizedBridgeAction` (#2378)

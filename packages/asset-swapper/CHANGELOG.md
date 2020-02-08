@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.2 - _February 8, 2020_
+
+    * Dependencies updated
+
 ## v4.1.1 - _February 6, 2020_
 
     * Fix bug with liquidity source breakdown (#2472)

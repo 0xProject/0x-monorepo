@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _February 8, 2020_
+
+    * Update Eth2Dai addresses in `DeploymentConstants` (#2474)
+
 ## v4.2.1 - _February 6, 2020_
 
     * Dependencies updated
@@ -12,6 +16,7 @@ CHANGELOG
 ## v4.2.0 - _February 4, 2020_
 
     * Update kovan addresses in `DeploymentConstants` (#2459)
+    * Export `EvmBytecodeOutputLinkReferences` type. (#2462)
 
 ## v4.1.0 - _January 22, 2020_
 

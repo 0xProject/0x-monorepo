@@ -10,7 +10,8 @@
                 "note": "Remove `LibTransactionDecoder` artifact",
                 "pr": 2464
             }
-        ]
+        ],
+        "timestamp": 1581204851
     },
     {
         "timestamp": 1580988106,

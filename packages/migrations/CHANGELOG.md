@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.0 - _February 8, 2020_
+
+    * Update `DevUtils` deployment (#2456)
+    * Remove `LibTransactionDecoder` deployment (#2456)
+    * Use contract package artifacts in ganache migrations (#2456)
+
 ## v6.0.2 - _February 6, 2020_
 
     * Dependencies updated

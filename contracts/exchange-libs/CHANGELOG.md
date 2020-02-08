@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _February 8, 2020_
+
+    * Export `EvmBytecodeOutputLinkReferences` type. (#2462)
+
 ## v4.2.0 - _February 6, 2020_
 
     * Moved LibAssetDataTransfer here from forwarder (#2455)
