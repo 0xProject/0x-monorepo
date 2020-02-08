@@ -1,22 +1,17 @@
-import { artifacts as assetProxyArtifacts, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { artifacts as assetProxyArtifacts, encodeERC20AssetData, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, ERC20TokenContract } from '@0x/contracts-erc20';
-import { blockchainTests, chaiSetup, constants } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 
 import { ExchangeTransferSimulator } from './utils/exchange_transfer_simulator';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
 import { BalanceAndProxyAllowanceLazyStore } from './utils/store/balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from './utils/types';
 
-chaiSetup.configure();
-const expect = chai.expect;
-
 const GAS_LIMIT = 9e6;
 
-blockchainTests('ExchangeTransferSimulator', env => {
+blockchainTests.resets('ExchangeTransferSimulator', env => {
     const transferAmount = new BigNumber(5);
     let userAddresses: string[];
     let dummyERC20Token: DummyERC20TokenContract;
@@ -26,7 +21,6 @@ blockchainTests('ExchangeTransferSimulator', env => {
     let exampleAssetData: string;
     let exchangeTransferSimulator: ExchangeTransferSimulator;
     let erc20ProxyAddress: string;
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider);
     before(async function(): Promise<void> {
         const mochaTestTimeoutMs = 20000;
         this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
@@ -39,7 +33,6 @@ blockchainTests('ExchangeTransferSimulator', env => {
             from: userAddresses[0],
         };
 
-        await env.blockchainLifecycle.startAsync();
         const erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
             assetProxyArtifacts.ERC20Proxy,
             env.provider,
@@ -64,16 +57,7 @@ blockchainTests('ExchangeTransferSimulator', env => {
             totalSupply,
         );
 
-        exampleAssetData = await devUtils.encodeERC20AssetData(dummyERC20Token.address).callAsync();
-    });
-    beforeEach(async () => {
-        await env.blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await env.blockchainLifecycle.revertAsync();
-    });
-    after(async () => {
-        await env.blockchainLifecycle.revertAsync();
+        exampleAssetData = encodeERC20AssetData(dummyERC20Token.address);
     });
     describe('#transferFromAsync', function(): void {
         // HACK: For some reason these tests need a slightly longer timeout
@@ -87,7 +71,7 @@ blockchainTests('ExchangeTransferSimulator', env => {
             const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(
                 simpleERC20BalanceAndProxyAllowanceFetcher,
             );
-            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore, devUtils);
+            exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
         });
         it("throws if the user doesn't have enough allowance", async () => {
             return expect(

@@ -4,7 +4,6 @@ import {
     ERC20BridgeProxyContract,
     ERC20ProxyContract,
     ERC721ProxyContract,
-    IAssetDataContract,
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
@@ -204,7 +203,6 @@ export class DeploymentManager {
             exchange.address,
             constants.NULL_ADDRESS,
         );
-        const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, environment.provider);
 
         // Construct the new instance and return it.
         return new DeploymentManager(
@@ -218,7 +216,6 @@ export class DeploymentManager {
             accounts,
             txDefaults,
             devUtils,
-            assetDataEncoder,
         );
     }
 
@@ -534,7 +531,6 @@ export class DeploymentManager {
         public accounts: string[],
         public txDefaults: Partial<TxData>,
         public devUtils: DevUtilsContract,
-        public assetDataEncoder: IAssetDataContract,
     ) {}
 }
 // tslint:disable:max-file-line-count

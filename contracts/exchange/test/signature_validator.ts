@@ -1,5 +1,4 @@
-import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
+import { encodeERC20AssetData, ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
@@ -52,7 +51,6 @@ blockchainTests.resets('MixinSignatureValidator', env => {
     let takerAddress: string;
     let feeRecipientAddress: string;
 
-    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     const eip1271Data = new IEIP1271DataContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     before(async () => {
         chainId = await env.getChainIdAsync();
@@ -428,10 +426,10 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 ...constants.STATIC_ORDER_PARAMS,
                 makerAddress: signerAddress,
                 feeRecipientAddress: randomAddress(),
-                makerAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
-                takerAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
-                makerFeeAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
-                takerFeeAssetData: await devUtils.encodeERC20AssetData(randomAddress()).callAsync(),
+                makerAssetData: encodeERC20AssetData(randomAddress()),
+                takerAssetData: encodeERC20AssetData(randomAddress()),
+                makerFeeAssetData: encodeERC20AssetData(randomAddress()),
+                takerFeeAssetData: encodeERC20AssetData(randomAddress()),
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
                 exchangeAddress: exchange.address,
@@ -1175,10 +1173,10 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 ...constants.STATIC_ORDER_PARAMS,
                 makerAddress,
                 feeRecipientAddress,
-                makerAssetData: await devUtils.encodeERC20AssetData(defaultMakerAssetAddress).callAsync(),
-                takerAssetData: await devUtils.encodeERC20AssetData(defaultTakerAssetAddress).callAsync(),
-                makerFeeAssetData: await devUtils.encodeERC20AssetData(defaultFeeAssetAddress).callAsync(),
-                takerFeeAssetData: await devUtils.encodeERC20AssetData(defaultFeeAssetAddress).callAsync(),
+                makerAssetData: encodeERC20AssetData(defaultMakerAssetAddress),
+                takerAssetData: encodeERC20AssetData(defaultTakerAssetAddress),
+                makerFeeAssetData: encodeERC20AssetData(defaultFeeAssetAddress),
+                takerFeeAssetData: encodeERC20AssetData(defaultFeeAssetAddress),
                 exchangeAddress: exchange.address,
                 chainId,
             };

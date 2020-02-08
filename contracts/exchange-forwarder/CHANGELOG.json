@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Export `EvmBytecodeOutputLinkReferences` type.",
+                "pr": 2462
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

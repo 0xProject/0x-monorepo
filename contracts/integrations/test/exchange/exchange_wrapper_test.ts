@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract, ERC20TokenEvents, ERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { ExchangeRevertErrors, IExchangeEvents, IExchangeFillEventArgs } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
@@ -65,18 +66,10 @@ blockchainTests.resets('Exchange wrappers', env => {
             name: 'market maker',
             deployment,
             orderConfig: {
-                makerAssetData: deployment.assetDataEncoder
-                    .ERC20Token(makerToken.address)
-                    .getABIEncodedTransactionData(),
-                takerAssetData: deployment.assetDataEncoder
-                    .ERC20Token(takerToken.address)
-                    .getABIEncodedTransactionData(),
-                makerFeeAssetData: deployment.assetDataEncoder
-                    .ERC20Token(feeToken.address)
-                    .getABIEncodedTransactionData(),
-                takerFeeAssetData: deployment.assetDataEncoder
-                    .ERC20Token(feeToken.address)
-                    .getABIEncodedTransactionData(),
+                makerAssetData: encodeERC20AssetData(makerToken.address),
+                takerAssetData: encodeERC20AssetData(takerToken.address),
+                makerFeeAssetData: encodeERC20AssetData(feeToken.address),
+                takerFeeAssetData: encodeERC20AssetData(feeToken.address),
                 feeRecipientAddress: feeRecipient,
             },
         });
@@ -114,9 +107,7 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         initialLocalBalances = LocalBalanceStore.create(blockchainBalances);
 
-        wethAssetData = deployment.assetDataEncoder
-            .ERC20Token(deployment.tokens.weth.address)
-            .getABIEncodedTransactionData();
+        wethAssetData = encodeERC20AssetData(deployment.tokens.weth.address);
     });
 
     beforeEach(async () => {
@@ -788,9 +779,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same takerAssetAddress (eth protocol fee)', async () => {
-                const differentTakerAssetData = deployment.assetDataEncoder
-                    .ERC20Token(feeToken.address)
-                    .getABIEncodedTransactionData();
+                const differentTakerAssetData = encodeERC20AssetData(feeToken.address);
 
                 signedOrders = [
                     await maker.signOrderAsync(),
@@ -811,9 +800,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same takerAssetAddress (weth protocol fee)', async () => {
-                const differentTakerAssetData = deployment.assetDataEncoder
-                    .ERC20Token(feeToken.address)
-                    .getABIEncodedTransactionData();
+                const differentTakerAssetData = encodeERC20AssetData(feeToken.address);
 
                 signedOrders = [
                     await maker.signOrderAsync(),
@@ -986,9 +973,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same makerAssetAddress (eth protocol fee)', async () => {
-                const differentMakerAssetData = deployment.assetDataEncoder
-                    .ERC20Token(feeToken.address)
-                    .getABIEncodedTransactionData();
+                const differentMakerAssetData = encodeERC20AssetData(feeToken.address);
 
                 signedOrders = [
                     await maker.signOrderAsync(),
@@ -1010,9 +995,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same makerAssetAddress (weth protocol fee)', async () => {
-                const differentMakerAssetData = deployment.assetDataEncoder
-                    .ERC20Token(feeToken.address)
-                    .getABIEncodedTransactionData();
+                const differentMakerAssetData = encodeERC20AssetData(feeToken.address);
 
                 signedOrders = [
                     await maker.signOrderAsync(),

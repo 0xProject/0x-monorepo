@@ -24,6 +24,7 @@ export { ERC1155ProxyWrapper } from './erc1155_proxy_wrapper';
 export { ERC1155MintableContract, Erc1155Wrapper } from '@0x/contracts-erc1155';
 export { DummyERC20TokenContract } from '@0x/contracts-erc20';
 export { DummyERC721TokenContract } from '@0x/contracts-erc721';
+export { AssetProxyId } from '@0x/types';
 export {
     ERC1155HoldingsByOwner,
     ERC20BalancesByOwner,
@@ -54,6 +55,7 @@ export {
     OutputField,
     ParamDescription,
     EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
     AbiDefinition,
     FunctionAbi,
     EventAbi,
@@ -67,4 +69,21 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+
+export {
+    decodeERC1155AssetData,
+    decodeERC20AssetData,
+    decodeERC20BridgeAssetData,
+    decodeERC721AssetData,
+    decodeMultiAssetData,
+    decodeStaticCallAssetData,
+    encodeERC1155AssetData,
+    encodeERC20AssetData,
+    encodeERC20BridgeAssetData,
+    encodeERC721AssetData,
+    encodeMultiAssetData,
+    encodeStaticCallAssetData,
+    getAssetDataProxyId,
+} from './asset_data';
+
 export * from './dydx_bridge_encoder';

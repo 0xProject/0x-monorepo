@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Fix broken tests",
+                "pr": 2462
+            }
+        ]
+    },
+    {
         "timestamp": 1580988106,
         "version": "4.0.6",
         "changes": [

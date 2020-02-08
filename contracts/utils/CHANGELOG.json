@@ -23,6 +23,10 @@
             {
                 "note": "Update kovan addresses in `DeploymentConstants`",
                 "pr": 2459
+            },
+            {
+                "note": "Export `EvmBytecodeOutputLinkReferences` type.",
+                "pr": 2462
             }
         ],
         "timestamp": 1580811564

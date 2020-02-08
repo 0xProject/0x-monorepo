@@ -11,6 +11,7 @@ export {
     EventAbi,
     EventParameter,
     EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
     EvmOutput,
     FallbackAbi,
     FunctionAbi,

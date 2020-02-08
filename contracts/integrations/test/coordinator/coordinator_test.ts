@@ -1,3 +1,4 @@
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { CoordinatorContract, CoordinatorRevertErrors, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
 import {
     ExchangeCancelEventArgs,
@@ -60,18 +61,10 @@ blockchainTests.resets('Coordinator integration tests', env => {
             orderConfig: {
                 senderAddress: coordinator.address,
                 feeRecipientAddress: feeRecipient.address,
-                makerAssetData: deployment.assetDataEncoder
-                    .ERC20Token(makerToken.address)
-                    .getABIEncodedTransactionData(),
-                takerAssetData: deployment.assetDataEncoder
-                    .ERC20Token(takerToken.address)
-                    .getABIEncodedTransactionData(),
-                makerFeeAssetData: deployment.assetDataEncoder
-                    .ERC20Token(makerFeeToken.address)
-                    .getABIEncodedTransactionData(),
-                takerFeeAssetData: deployment.assetDataEncoder
-                    .ERC20Token(takerFeeToken.address)
-                    .getABIEncodedTransactionData(),
+                makerAssetData: encodeERC20AssetData(makerToken.address),
+                takerAssetData: encodeERC20AssetData(takerToken.address),
+                makerFeeAssetData: encodeERC20AssetData(makerFeeToken.address),
+                takerFeeAssetData: encodeERC20AssetData(takerFeeToken.address),
             },
         });
 
@@ -126,7 +119,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 order = await maker.signOrderAsync();
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 transaction = await taker.signTransactionAsync({ data });
-                approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
+                approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
             });
 
             it(`${fnName} should fill the order with a signed approval`, async () => {
@@ -260,7 +253,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
                 orders = [await maker.signOrderAsync(), await maker.signOrderAsync()];
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 transaction = await taker.signTransactionAsync({ data });
-                approval = await feeRecipient.signCoordinatorApprovalAsync(transaction, taker.address);
+                approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
             });
 
             it(`${fnName} should fill the orders with a signed approval`, async () => {

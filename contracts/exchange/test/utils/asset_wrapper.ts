@@ -1,10 +1,16 @@
+import {
+    decodeERC1155AssetData,
+    decodeERC721AssetData,
+    decodeMultiAssetData,
+    ERC1155ProxyWrapper,
+    ERC20Wrapper,
+    ERC721Wrapper,
+    getAssetDataProxyId,
+} from '@0x/contracts-asset-proxy';
 import { AbstractAssetWrapper, constants } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber, errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
-
-import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { DevUtilsContract } from '@0x/contracts-dev-utils';
 
 interface ProxyIdToAssetWrappers {
     [proxyId: string]: AbstractAssetWrapper;
@@ -20,11 +26,7 @@ const ZERO_NFT_UNIT = new BigNumber(0);
 export class AssetWrapper {
     private readonly _proxyIdToAssetWrappers: ProxyIdToAssetWrappers;
 
-    constructor(
-        assetWrappers: AbstractAssetWrapper[],
-        private readonly _burnerAddress: string,
-        private readonly _devUtils: DevUtilsContract,
-    ) {
+    constructor(assetWrappers: AbstractAssetWrapper[], private readonly _burnerAddress: string) {
         this._proxyIdToAssetWrappers = {};
         _.each(assetWrappers, assetWrapper => {
             const proxyId = assetWrapper.getProxyId();
@@ -32,7 +34,7 @@ export class AssetWrapper {
         });
     }
     public async getBalanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
-        const proxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const proxyId = getAssetDataProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -44,9 +46,7 @@ export class AssetWrapper {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, tokenAddress, tokenId] = await this._devUtils
-                    .decodeERC721AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress, tokenId] = decodeERC721AssetData(assetData);
                 const isOwner = await assetWrapper.isOwnerAsync(userAddress, tokenAddress, tokenId);
                 const balance = isOwner ? ONE_NFT_UNIT : ZERO_NFT_UNIT;
                 return balance;
@@ -56,10 +56,9 @@ export class AssetWrapper {
                 const assetProxyWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC1155ProxyWrapper;
                 const [
                     // tslint:disable-next-line:no-unused-variable
-                    assetProxyAddress,
                     tokenAddress,
                     tokenIds,
-                ] = await this._devUtils.decodeERC1155AssetData(assetData).callAsync();
+                ] = decodeERC1155AssetData(assetData);
                 const assetWrapper = assetProxyWrapper.getContractWrapper(tokenAddress);
                 const balances = await Promise.all(
                     _.map(tokenIds).map(tokenId => assetWrapper.getBalanceAsync(userAddress, tokenId)),
@@ -68,9 +67,7 @@ export class AssetWrapper {
             }
             case AssetProxyId.MultiAsset: {
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, amounts, nestedAssetData] = await this._devUtils
-                    .decodeMultiAssetData(assetData)
-                    .callAsync();
+                const [amounts, nestedAssetData] = decodeMultiAssetData(assetData);
                 const nestedBalances = await Promise.all(
                     nestedAssetData.map(async _nestedAssetData => this.getBalanceAsync(userAddress, _nestedAssetData)),
                 );
@@ -84,7 +81,7 @@ export class AssetWrapper {
         }
     }
     public async setBalanceAsync(userAddress: string, assetData: string, desiredBalance: BigNumber): Promise<void> {
-        const proxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const proxyId = getAssetDataProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -100,9 +97,7 @@ export class AssetWrapper {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, tokenAddress, tokenId] = await this._devUtils
-                    .decodeERC721AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress, tokenId] = decodeERC721AssetData(assetData);
                 const doesTokenExist = erc721Wrapper.doesTokenExistAsync(tokenAddress, tokenId);
                 if (!doesTokenExist && desiredBalance.gte(1)) {
                     await erc721Wrapper.mintAsync(tokenAddress, tokenId, userAddress);
@@ -130,11 +125,10 @@ export class AssetWrapper {
                 const assetProxyWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC1155ProxyWrapper;
                 const [
                     // tslint:disable-next-line:no-unused-variable
-                    assetProxyAddress,
                     tokenAddress,
                     tokenIds,
                     tokenValues,
-                ] = await this._devUtils.decodeERC1155AssetData(assetData).callAsync();
+                ] = decodeERC1155AssetData(assetData);
                 const assetWrapper = assetProxyWrapper.getContractWrapper(tokenAddress);
                 const tokenValuesSum = BigNumber.sum(...tokenValues);
                 let tokenValueRatios = tokenValues;
@@ -197,9 +191,7 @@ export class AssetWrapper {
             }
             case AssetProxyId.MultiAsset: {
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, amounts, nestedAssetData] = await this._devUtils
-                    .decodeMultiAssetData(assetData)
-                    .callAsync();
+                const [amounts, nestedAssetData] = decodeMultiAssetData(assetData);
                 const amountsSum = BigNumber.sum(...amounts);
                 let assetAmountRatios = amounts;
                 if (!amountsSum.eq(0)) {
@@ -220,7 +212,7 @@ export class AssetWrapper {
         assetData: string,
         desiredBalance: BigNumber,
     ): Promise<void> {
-        const proxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const proxyId = getAssetDataProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20:
             case AssetProxyId.ERC721:
@@ -235,7 +227,7 @@ export class AssetWrapper {
         }
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
-        const proxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const proxyId = getAssetDataProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -247,9 +239,7 @@ export class AssetWrapper {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 const assetWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, tokenAddress, tokenId] = await this._devUtils
-                    .decodeERC721AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress, tokenId] = decodeERC721AssetData(assetData);
                 const isProxyApprovedForAll = await assetWrapper.isProxyApprovedForAllAsync(userAddress, tokenAddress);
                 if (isProxyApprovedForAll) {
                     return constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
@@ -263,9 +253,7 @@ export class AssetWrapper {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 const assetProxyWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC1155ProxyWrapper;
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyAddress, tokenAddress] = await this._devUtils
-                    .decodeERC1155AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress] = decodeERC1155AssetData(assetData);
                 const isApprovedForAll = await assetProxyWrapper.isProxyApprovedForAllAsync(userAddress, tokenAddress);
                 if (!isApprovedForAll) {
                     // ERC1155 is all or nothing.
@@ -275,9 +263,7 @@ export class AssetWrapper {
             }
             case AssetProxyId.MultiAsset: {
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, amounts, nestedAssetData] = await this._devUtils
-                    .decodeMultiAssetData(assetData)
-                    .callAsync();
+                const [amounts, nestedAssetData] = decodeMultiAssetData(assetData);
                 const allowances = await Promise.all(
                     nestedAssetData.map(async _nestedAssetData =>
                         this.getProxyAllowanceAsync(userAddress, _nestedAssetData),
@@ -294,7 +280,7 @@ export class AssetWrapper {
         assetData: string,
         desiredAllowance: BigNumber,
     ): Promise<void> {
-        const proxyId = await this._devUtils.decodeAssetProxyId(assetData).callAsync();
+        const proxyId = getAssetDataProxyId(assetData);
         switch (proxyId) {
             case AssetProxyId.ERC20: {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -315,9 +301,7 @@ export class AssetWrapper {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 const erc721Wrapper = this._proxyIdToAssetWrappers[proxyId] as ERC721Wrapper;
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, tokenAddress, tokenId] = await this._devUtils
-                    .decodeERC721AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress, tokenId] = decodeERC721AssetData(assetData);
 
                 const doesTokenExist = await erc721Wrapper.doesTokenExistAsync(tokenAddress, tokenId);
                 if (!doesTokenExist) {
@@ -352,9 +336,7 @@ export class AssetWrapper {
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 const assetProxyWrapper = this._proxyIdToAssetWrappers[proxyId] as ERC1155ProxyWrapper;
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyAddress, tokenAddress] = await this._devUtils
-                    .decodeERC1155AssetData(assetData)
-                    .callAsync();
+                const [tokenAddress] = decodeERC1155AssetData(assetData);
                 // ERC1155 allowances are all or nothing.
                 const shouldApprovedForAll = desiredAllowance.gt(0);
                 const currentAllowance = await this.getProxyAllowanceAsync(userAddress, assetData);
@@ -369,9 +351,7 @@ export class AssetWrapper {
             }
             case AssetProxyId.MultiAsset: {
                 // tslint:disable-next-line:no-unused-variable
-                const [assetProxyId, amounts, nestedAssetData] = await this._devUtils
-                    .decodeMultiAssetData(assetData)
-                    .callAsync();
+                const [amounts, nestedAssetData] = decodeMultiAssetData(assetData);
                 await Promise.all(
                     nestedAssetData.map(async _nestedAssetData =>
                         this.setProxyAllowanceAsync(userAddress, _nestedAssetData, desiredAllowance),

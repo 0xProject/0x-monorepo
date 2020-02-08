@@ -130,6 +130,7 @@ export {
     OutputField,
     ParamDescription,
     EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
     RevertErrorAbi,
     DecodedLogArgs,
     LogWithDecodedArgs,

@@ -345,7 +345,7 @@ library LibFixedMath {
 
     /// @dev Returns the multiplication two numbers, reverting on overflow.
     function _mul(int256 a, int256 b) private pure returns (int256 c) {
-        if (a == 0) {
+        if (a == 0 || b == 0) {
             return 0;
         }
         c = a * b;

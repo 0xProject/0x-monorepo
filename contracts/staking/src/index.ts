@@ -75,6 +75,7 @@ export {
     OutputField,
     ParamDescription,
     EvmBytecodeOutput,
+    EvmBytecodeOutputLinkReferences,
     AbiDefinition,
     FunctionAbi,
     EventAbi,

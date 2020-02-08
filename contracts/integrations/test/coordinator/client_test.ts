@@ -1,5 +1,5 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { IAssetDataContract } from '@0x/contracts-asset-proxy';
+import { encodeERC20AssetData } from '@0x/contracts-asset-proxy';
 import { ExchangeContract } from '@0x/contracts-exchange';
 import { blockchainTests, constants, expect, OrderFactory } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
@@ -22,7 +22,6 @@ const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
 blockchainTests.skip('Coordinator Client', env => {
     const takerTokenFillAmount = new BigNumber(0);
     const chainId = 1337;
-    const assetDataEncoder = new IAssetDataContract(constants.NULL_ADDRESS, env.provider);
 
     let contractAddresses: ContractAddresses;
     let coordinatorRegistry: CoordinatorRegistryContract;
@@ -80,9 +79,9 @@ blockchainTests.skip('Coordinator Client', env => {
         const [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         const feeTokenAddress = contractAddresses.zrxToken;
         [makerAssetData, takerAssetData, feeAssetData] = [
-            assetDataEncoder.ERC20Token(makerTokenAddress).getABIEncodedTransactionData(),
-            assetDataEncoder.ERC20Token(takerTokenAddress).getABIEncodedTransactionData(),
-            assetDataEncoder.ERC20Token(feeTokenAddress).getABIEncodedTransactionData(),
+            encodeERC20AssetData(makerTokenAddress),
+            encodeERC20AssetData(takerTokenAddress),
+            encodeERC20AssetData(feeTokenAddress),
         ];
 
         // set initial balances

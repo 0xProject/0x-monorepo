@@ -1,11 +1,4 @@
-import {
-    chaiSetup,
-    constants,
-    expectContractCallFailedAsync,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -60,8 +53,7 @@ describe('UnlimitedAllowanceToken', () => {
         it('should revert if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf(owner).callAsync();
             const amountToTransfer = ownerBalance.plus(1);
-            return expectContractCallFailedAsync(
-                token.transfer(spender, amountToTransfer).callAsync({ from: owner }),
+            return expect(token.transfer(spender, amountToTransfer).callAsync({ from: owner })).to.revertWith(
                 RevertReason.Erc20InsufficientBalance,
             );
         });
@@ -99,12 +91,11 @@ describe('UnlimitedAllowanceToken', () => {
                 await token.approve(spender, amountToTransfer).sendTransactionAsync({ from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectContractCallFailedAsync(
+            return expect(
                 token.transferFrom(owner, spender, amountToTransfer).callAsync({
                     from: spender,
                 }),
-                RevertReason.Erc20InsufficientBalance,
-            );
+            ).to.revertWith(RevertReason.Erc20InsufficientBalance);
         });
 
         it('should revert if spender has insufficient allowance', async () => {
@@ -115,12 +106,11 @@ describe('UnlimitedAllowanceToken', () => {
             const isSpenderAllowanceInsufficient = spenderAllowance.comparedTo(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
-            return expectContractCallFailedAsync(
+            return expect(
                 token.transferFrom(owner, spender, amountToTransfer).callAsync({
                     from: spender,
                 }),
-                RevertReason.Erc20InsufficientAllowance,
-            );
+            ).to.revertWith(RevertReason.Erc20InsufficientAllowance);
         });
 
         it('should return true on a 0 value transfer', async () => {
