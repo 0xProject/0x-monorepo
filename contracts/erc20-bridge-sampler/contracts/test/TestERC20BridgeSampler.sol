@@ -327,7 +327,6 @@ contract TestERC20BridgeSampler is
         bytes memory
     )
         public
-        view
         returns (
             LibOrder.OrderInfo memory orderInfo,
             uint256 fillableTakerAssetAmount,

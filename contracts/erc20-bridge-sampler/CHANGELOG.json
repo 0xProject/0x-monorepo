@@ -5,6 +5,10 @@
             {
                 "note": "Catch reverts to `DevUtils` calls",
                 "pr": 2476
+            },
+            {
+                "note": "Remove wrapper functions and introduce `batchCall()`",
+                "pr": 2477
             }
         ],
         "timestamp": 1581204851
