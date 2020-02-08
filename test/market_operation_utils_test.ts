@@ -115,13 +115,13 @@ describe('MarketOperationUtils tests', () => {
 
     type GetQuotesOperation = (makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => BigNumber[];
 
-    function createGetQuotesOperationFromSellRates(rates: Numberish[]): GetQuotesOperation {
+    function createGetSellQuotesOperationFromRates(rates: Numberish[]): GetQuotesOperation {
         return (makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return fillAmounts.map((a, i) => a.times(rates[i]).integerValue());
         };
     }
 
-    function createGetQuotesOperationFromBuyRates(rates: Numberish[]): GetQuotesOperation {
+    function createGetBuyQuotesOperationFromRates(rates: Numberish[]): GetQuotesOperation {
         return (makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return fillAmounts.map((a, i) => a.div(rates[i]).integerValue());
         };
@@ -134,7 +134,7 @@ describe('MarketOperationUtils tests', () => {
         fillAmounts: BigNumber[],
     ) => DexSample[][];
 
-    function createGetMultipleQuotesOperationFromSellRates(rates: RatesBySource): GetMultipleQuotesOperation {
+    function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
         return (sources: ERC20BridgeSource[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return sources.map(s =>
                 fillAmounts.map((a, i) => ({
@@ -146,7 +146,7 @@ describe('MarketOperationUtils tests', () => {
         };
     }
 
-    function createGetMultipleQuotesOperationFromBuyRates(rates: RatesBySource): GetMultipleQuotesOperation {
+    function createGetMultipleBuyQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
         return (sources: ERC20BridgeSource[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return sources.map(s =>
                 fillAmounts.map((a, i) => ({
@@ -204,13 +204,13 @@ describe('MarketOperationUtils tests', () => {
         getOrderFillableMakerAmounts(orders: SignedOrder[]): BigNumber[] {
             return orders.map(o => o.makerAssetAmount);
         },
-        getKyberSellQuotes: createGetQuotesOperationFromSellRates(DEFAULT_RATES[ERC20BridgeSource.Kyber]),
-        getUniswapSellQuotes: createGetQuotesOperationFromSellRates(DEFAULT_RATES[ERC20BridgeSource.Uniswap]),
-        getEth2DaiSellQuotes: createGetQuotesOperationFromSellRates(DEFAULT_RATES[ERC20BridgeSource.Eth2Dai]),
-        getUniswapBuyQuotes: createGetQuotesOperationFromBuyRates(DEFAULT_RATES[ERC20BridgeSource.Uniswap]),
-        getEth2DaiBuyQuotes: createGetQuotesOperationFromBuyRates(DEFAULT_RATES[ERC20BridgeSource.Eth2Dai]),
-        getSellQuotes: createGetMultipleQuotesOperationFromSellRates(DEFAULT_RATES),
-        getBuyQuotes: createGetMultipleQuotesOperationFromBuyRates(DEFAULT_RATES),
+        getKyberSellQuotes: createGetSellQuotesOperationFromRates(DEFAULT_RATES[ERC20BridgeSource.Kyber]),
+        getUniswapSellQuotes: createGetSellQuotesOperationFromRates(DEFAULT_RATES[ERC20BridgeSource.Uniswap]),
+        getEth2DaiSellQuotes: createGetSellQuotesOperationFromRates(DEFAULT_RATES[ERC20BridgeSource.Eth2Dai]),
+        getUniswapBuyQuotes: createGetBuyQuotesOperationFromRates(DEFAULT_RATES[ERC20BridgeSource.Uniswap]),
+        getEth2DaiBuyQuotes: createGetBuyQuotesOperationFromRates(DEFAULT_RATES[ERC20BridgeSource.Eth2Dai]),
+        getSellQuotes: createGetMultipleSellQuotesOperationFromRates(DEFAULT_RATES),
+        getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(DEFAULT_RATES),
     };
 
     function replaceSamplerOps(ops: Partial<typeof DEFAULT_OPS> = {}): void {
@@ -387,7 +387,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
                 replaceSamplerOps({
-                    getSellQuotes: createGetMultipleQuotesOperationFromSellRates(rates),
+                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
@@ -412,7 +412,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Kyber] = [0.4, 0.05, 0.05, 0.05];
                 replaceSamplerOps({
-                    getSellQuotes: createGetMultipleQuotesOperationFromSellRates(rates),
+                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
@@ -437,7 +437,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Eth2Dai] = [0.15, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
                 replaceSamplerOps({
-                    getSellQuotes: createGetMultipleQuotesOperationFromSellRates(rates),
+                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
@@ -516,7 +516,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {
-                const bestSource = findSourceWithMaxOutput(DEFAULT_RATES);
+                const bestSource = findSourceWithMaxOutput(_.omit(DEFAULT_RATES, ERC20BridgeSource.Kyber));
                 expect(bestSource).to.exist('');
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
@@ -606,7 +606,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
                 replaceSamplerOps({
-                    getBuyQuotes: createGetMultipleQuotesOperationFromBuyRates(rates),
+                    getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
