@@ -177,7 +177,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     }
 
     function getDeterministicFillableTakerAssetAmount(order: Order): BigNumber {
-        const hash = getPackedHash(hexUtils.toHex(order.salt, 32));
+        const hash = getPackedHash(hexUtils.leftPad(order.salt));
         const orderStatus = new BigNumber(hash).mod(100).toNumber() > 90 ? 5 : 3;
         const isValidSignature = !!new BigNumber(hash).mod(2).toNumber();
         if (orderStatus !== 3 || !isValidSignature) {
