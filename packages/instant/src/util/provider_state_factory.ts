@@ -3,7 +3,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as Fortmatic from 'fortmatic';
 
-import { FORTMATIC_API_KEY, LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
+import { FORTMATIC_API_KEY, LOCKED_ACCOUNT, NO_ACCOUNT } from '../constants';
 import { Maybe, Network, OrderSource, ProviderState, ProviderType } from '../types';
 import { envUtil } from '../util/env';
 
@@ -50,7 +50,7 @@ export const providerStateFactory = {
             web3Wrapper: new Web3Wrapper(provider),
             swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, network),
             swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, network),
-            account: LOADING_ACCOUNT,
+            account: LOCKED_ACCOUNT,
             orderSource,
             isProviderInjected: false,
         };
@@ -70,7 +70,7 @@ export const providerStateFactory = {
                 web3Wrapper: new Web3Wrapper(injectedProviderIfExists),
                 swapQuoter: assetSwapperFactory.getSwapQuoter(injectedProviderIfExists, orderSource, network),
                 swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(injectedProviderIfExists, network),
-                account: LOADING_ACCOUNT,
+                account: LOCKED_ACCOUNT,
                 orderSource,
                 isProviderInjected: true,
             };
@@ -99,9 +99,7 @@ export const providerStateFactory = {
         return providerState;
     },
     // function to call getInitialProviderState with parameters retreived from a provided ProviderState
-    getInitialProviderStateWithCurrentProviderState: (
-        currentProviderState: ProviderState,
-    ): ProviderState => {
+    getInitialProviderStateWithCurrentProviderState: (currentProviderState: ProviderState): ProviderState => {
         const orderSource = currentProviderState.orderSource;
         const chainId = currentProviderState.swapQuoter.chainId;
         // If provider is provided to instant, use that and the displayName
@@ -113,11 +111,8 @@ export const providerStateFactory = {
                 currentProviderState.displayName,
             );
         }
-        const newProviderState = providerStateFactory.getInitialProviderState(
-            orderSource,
-            chainId,
-        );
-        newProviderState.account = NO_ACCOUNT;
+        const newProviderState = providerStateFactory.getInitialProviderState(orderSource, chainId);
+        newProviderState.account = LOCKED_ACCOUNT;
         return newProviderState;
     },
     getProviderStateBasedOnProviderType: (
@@ -137,7 +132,7 @@ export const providerStateFactory = {
                     web3Wrapper: new Web3Wrapper(provider),
                     swapQuoter: assetSwapperFactory.getSwapQuoter(provider, orderSource, chainId),
                     swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(provider, chainId),
-                    account: LOADING_ACCOUNT,
+                    account: LOCKED_ACCOUNT,
                     orderSource,
                     isProviderInjected: true,
                 };
@@ -153,14 +148,11 @@ export const providerStateFactory = {
                 web3Wrapper: new Web3Wrapper(fmProvider),
                 swapQuoter: assetSwapperFactory.getSwapQuoter(fmProvider, orderSource, chainId),
                 swapQuoteConsumer: assetSwapperFactory.getSwapQuoteConsumer(fmProvider, chainId),
-                account: LOADING_ACCOUNT,
+                account: LOCKED_ACCOUNT,
                 orderSource,
                 isProviderInjected: true,
             };
         }
-        return providerStateFactory.getInitialProviderState(
-            orderSource,
-            chainId,
-        );
+        return providerStateFactory.getInitialProviderState(orderSource, chainId);
     },
 };
