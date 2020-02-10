@@ -110,7 +110,7 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
             orderHashUtils.getOrderHashHex(order),
             order.makerAssetData,
-            new StringRevertError('ChainlinkStopLimitOracle/OUT_OF_PRICE_RANGE').encode(),
+            new StringRevertError('ChainlinkStopLimit/OUT_OF_PRICE_RANGE').encode(),
         );
         return expect(tx).to.revertWith(expectedError);
     });
@@ -120,7 +120,7 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
             orderHashUtils.getOrderHashHex(order),
             order.makerAssetData,
-            new StringRevertError('ChainlinkStopLimitOracle/OUT_OF_PRICE_RANGE').encode(),
+            new StringRevertError('ChainlinkStopLimit/OUT_OF_PRICE_RANGE').encode(),
         );
         return expect(tx).to.revertWith(expectedError);
     });

@@ -19,13 +19,10 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./interfaces/IChainlinkAggregator.sol";
 
 
 contract ChainlinkStopLimit {
-
-    using LibSafeMath for uint256;
 
     /// @dev Checks that the price returned by the encoded Chainlink reference contract is
     ///      within the encoded price range.
@@ -47,7 +44,7 @@ contract ChainlinkStopLimit {
         int256 latestPrice = IChainlinkAggregator(oracle).latestAnswer();
         require(
             latestPrice >= minPrice && latestPrice <= maxPrice,
-            "ChainlinkStopLimitOracle/OUT_OF_PRICE_RANGE"
+            "ChainlinkStopLimit/OUT_OF_PRICE_RANGE"
         );
     }
 }
