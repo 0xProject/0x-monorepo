@@ -9,6 +9,18 @@
             {
                 "note": "Update `ERC20BridgeSampler` address on mainnet and kovan.",
                 "pr": 2476
+            },
+            {
+                "note": "Removed OrderValidator and DutchAuction addresses",
+                "pr": 2469
+            },
+            {
+                "note": "Added Broker and GodsUnchainedValidator addresses",
+                "pr": 2469
+            },
+            {
+                "note": "Updated Forwarder addresses",
+                "pr": 2469
             }
         ],
         "timestamp": 1581204851
