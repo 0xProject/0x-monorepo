@@ -125,7 +125,7 @@
         "assetProxyOwner": "0x0000000000000000000000000000000000000000",
         "erc20BridgeProxy": "0x038f9b392fb9a9676dbaddf78ea5fdbf6c7d9710",
         "zeroExGovernor": "0x0000000000000000000000000000000000000000",
-        "forwarder": "0x5d3ad3561a1235273cbcb4e82fce63a0073d19be",
+        "forwarder": "0xe704967449b57b2382b7fa482718748c13c63190",
         "coordinatorRegistry": "0xaa86dda78e9434aca114b6676fc742a18d15a1cc",
         "coordinator": "0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29",
         "multiAssetProxy": "0xcfc18cec799fbd1793b5c43e773c98d4d61cc2db",
