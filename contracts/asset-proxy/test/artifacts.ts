@@ -6,6 +6,7 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
+import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
 import * as DydxBridge from '../test/generated-artifacts/DydxBridge.json';
 import * as ERC1155Proxy from '../test/generated-artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../test/generated-artifacts/ERC20BridgeProxy.json';
@@ -17,6 +18,7 @@ import * as IAssetProxy from '../test/generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../test/generated-artifacts/IAssetProxyDispatcher.json';
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
 import * as IChai from '../test/generated-artifacts/IChai.json';
+import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IDydx from '../test/generated-artifacts/IDydx.json';
 import * as IDydxBridge from '../test/generated-artifacts/IDydxBridge.json';
 import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
@@ -49,6 +51,7 @@ export const artifacts = {
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     StaticCallProxy: StaticCallProxy as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
+    CurveBridge: CurveBridge as ContractArtifact,
     DydxBridge: DydxBridge as ContractArtifact,
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
     KyberBridge: KyberBridge as ContractArtifact,
@@ -58,6 +61,7 @@ export const artifacts = {
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IChai: IChai as ContractArtifact,
+    ICurve: ICurve as ContractArtifact,
     IDydx: IDydx as ContractArtifact,
     IDydxBridge: IDydxBridge as ContractArtifact,
     IERC20Bridge: IERC20Bridge as ContractArtifact,
