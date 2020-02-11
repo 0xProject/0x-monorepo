@@ -106,11 +106,10 @@ export class MarketOperationUtils {
         if (!optimalPath) {
             throw new Error(AggregationError.NoOptimalPath);
         }
-        const [outputToken, inputToken] = getOrderTokens(nativeOrders[0]);
         return this._createOrderUtils.createSellOrdersFromPath(
             this._orderDomain,
-            inputToken,
-            outputToken,
+            takerToken,
+            makerToken,
             collapsePath(optimalPath, false),
             _opts.bridgeSlippage,
         );
