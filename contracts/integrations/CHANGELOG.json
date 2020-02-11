@@ -57,6 +57,10 @@
             {
                 "note": "Add DevUtils DydxBridge validation mainnet tests",
                 "pr": 2466
+            },
+            {
+                "note": "Add `ChaiBridge` and `DydxBridge` gas benchmark tests.",
+                "pr": 2478
             }
         ],
         "timestamp": 1581204851
