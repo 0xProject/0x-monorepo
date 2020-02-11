@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.6.0",
+        "changes": [
+            {
+                "note": "Added ChainlinkStopLimit addresses (mainnet, ropsten, rinkeby)",
+                "pr": 2473
+            }
+        ]
+    },
+    {
         "version": "4.5.0",
         "changes": [
             {
