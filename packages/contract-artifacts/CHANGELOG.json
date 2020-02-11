@@ -5,6 +5,10 @@
             {
                 "note": "Add Broker and GodsUnchainedValidator artifacts",
                 "pr": 2469
+            },
+            {
+                "note": "Updated Forwarder artifact",
+                "pr": 2469
             }
         ]
     },

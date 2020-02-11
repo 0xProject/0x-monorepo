@@ -17,6 +17,10 @@
             {
                 "note": "Added Broker and GodsUnchainedValidator addresses",
                 "pr": 2469
+            },
+            {
+                "note": "Updated Forwarder addresses",
+                "pr": 2469
             }
         ],
         "timestamp": 1581204851

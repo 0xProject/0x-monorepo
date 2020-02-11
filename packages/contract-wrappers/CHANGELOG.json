@@ -5,6 +5,10 @@
             {
                 "note": "Add Broker and GodsUnchainedValidator wrappers",
                 "pr": 2469
+            },
+            {
+                "note": "Updated Forwarder wrapper",
+                "pr": 2469
             }
         ]
     },
