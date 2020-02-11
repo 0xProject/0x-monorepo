@@ -18,7 +18,7 @@ export function encodeChainlinkStopLimitData(oracle: string, minPrice: BigNumber
  * Encodes the given stop limit data parameters into StaticCall asset data so that it can be used
  * in a 0x order.
  */
-export function encodeStopLimiStaticCallData(
+export function encodeStopLimitStaticCallData(
     chainlinkStopLimitAddress: string,
     oracle: string,
     minPrice: BigNumber,

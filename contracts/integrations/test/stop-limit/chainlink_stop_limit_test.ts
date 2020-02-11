@@ -4,7 +4,7 @@ import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 
-import { encodeStopLimiStaticCallData } from '../../src/chainlink_utils';
+import { encodeStopLimitStaticCallData } from '../../src/chainlink_utils';
 
 import { artifacts } from '../artifacts';
 import { Actor } from '../framework/actors/base';
@@ -55,7 +55,7 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
             [new BigNumber(1), new BigNumber(1)],
             [
                 assetDataUtils.encodeERC20AssetData(makerToken.address),
-                encodeStopLimiStaticCallData(
+                encodeStopLimitStaticCallData(
                     chainlinkStopLimit.address,
                     chainLinkAggregator.address,
                     minPrice,
