@@ -2,15 +2,25 @@ import { ContractFunctionObj } from '@0x/base-contract';
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { Order } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 
-export type QueryAndSampleResult = [BigNumber[], BigNumber[][]];
-export type QueryAndSampleHandler = (
+export type GetOrderFillableAssetAmountResult = BigNumber[];
+export type GetOrderFillableAssetAmountHandler = (
     orders: Order[],
     signatures: string[],
-    sources: string[],
-    fillAmounts: BigNumber[],
-) => QueryAndSampleResult;
+) => GetOrderFillableAssetAmountResult;
+
+export type SampleResults = BigNumber[];
+export type SampleSellsHandler = (
+    takerToken: string,
+    makerToken: string,
+    takerTokenAmounts: BigNumber[],
+) => SampleResults;
+export type SampleBuysHandler = (
+    takerToken: string,
+    makerToken: string,
+    makerTokenAmounts: BigNumber[],
+) => SampleResults;
 
 const DUMMY_PROVIDER = {
     sendAsync: (...args: any[]): any => {
@@ -18,56 +28,156 @@ const DUMMY_PROVIDER = {
     },
 };
 
+interface Handlers {
+    getOrderFillableMakerAssetAmounts: GetOrderFillableAssetAmountHandler;
+    getOrderFillableTakerAssetAmounts: GetOrderFillableAssetAmountHandler;
+    sampleSellsFromKyberNetwork: SampleSellsHandler;
+    sampleSellsFromEth2Dai: SampleSellsHandler;
+    sampleSellsFromUniswap: SampleSellsHandler;
+    sampleBuysFromEth2Dai: SampleBuysHandler;
+    sampleBuysFromUniswap: SampleBuysHandler;
+}
+
 export class MockSamplerContract extends IERC20BridgeSamplerContract {
-    public readonly queryOrdersAndSampleSellsHandler?: QueryAndSampleHandler;
-    public readonly queryOrdersAndSampleBuysHandler?: QueryAndSampleHandler;
+    private readonly _handlers: Partial<Handlers> = {};
 
-    public constructor(
-        handlers?: Partial<{
-            queryOrdersAndSampleSells: QueryAndSampleHandler;
-            queryOrdersAndSampleBuys: QueryAndSampleHandler;
-        }>,
-    ) {
+    public constructor(handlers: Partial<Handlers> = {}) {
         super(constants.NULL_ADDRESS, DUMMY_PROVIDER);
-        const _handlers = {
-            queryOrdersAndSampleSells: undefined,
-            queryOrdersAndSampleBuys: undefined,
-            ...handlers,
-        };
-        this.queryOrdersAndSampleSellsHandler = _handlers.queryOrdersAndSampleSells;
-        this.queryOrdersAndSampleBuysHandler = _handlers.queryOrdersAndSampleBuys;
+        this._handlers = handlers;
     }
 
-    public queryOrdersAndSampleSells(
-        orders: Order[],
-        signatures: string[],
-        sources: string[],
-        fillAmounts: BigNumber[],
-    ): ContractFunctionObj<QueryAndSampleResult> {
+    public batchCall(callDatas: string[]): ContractFunctionObj<string[]> {
         return {
-            ...super.queryOrdersAndSampleSells(orders, signatures, sources, fillAmounts),
-            callAsync: async (...args: any[]): Promise<QueryAndSampleResult> => {
-                if (!this.queryOrdersAndSampleSellsHandler) {
-                    throw new Error('queryOrdersAndSampleSells handler undefined');
-                }
-                return this.queryOrdersAndSampleSellsHandler(orders, signatures, sources, fillAmounts);
-            },
+            ...super.batchCall(callDatas),
+            callAsync: async (...callArgs: any[]) => callDatas.map(callData => this._callEncodedFunction(callData)),
         };
     }
 
-    public queryOrdersAndSampleBuys(
+    public getOrderFillableMakerAssetAmounts(
         orders: Order[],
         signatures: string[],
-        sources: string[],
-        fillAmounts: BigNumber[],
-    ): ContractFunctionObj<QueryAndSampleResult> {
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.getOrderFillableMakerAssetAmounts,
+            this._handlers.getOrderFillableMakerAssetAmounts,
+            orders,
+            signatures,
+        );
+    }
+
+    public getOrderFillableTakerAssetAmounts(
+        orders: Order[],
+        signatures: string[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.getOrderFillableTakerAssetAmounts,
+            this._handlers.getOrderFillableTakerAssetAmounts,
+            orders,
+            signatures,
+        );
+    }
+
+    public sampleSellsFromKyberNetwork(
+        takerToken: string,
+        makerToken: string,
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromKyberNetwork,
+            this._handlers.sampleSellsFromKyberNetwork,
+            takerToken,
+            makerToken,
+            takerAssetAmounts,
+        );
+    }
+
+    public sampleSellsFromEth2Dai(
+        takerToken: string,
+        makerToken: string,
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromEth2Dai,
+            this._handlers.sampleSellsFromEth2Dai,
+            takerToken,
+            makerToken,
+            takerAssetAmounts,
+        );
+    }
+
+    public sampleSellsFromUniswap(
+        takerToken: string,
+        makerToken: string,
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromUniswap,
+            this._handlers.sampleSellsFromUniswap,
+            takerToken,
+            makerToken,
+            takerAssetAmounts,
+        );
+    }
+
+    public sampleBuysFromEth2Dai(
+        takerToken: string,
+        makerToken: string,
+        makerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleBuysFromEth2Dai,
+            this._handlers.sampleBuysFromEth2Dai,
+            takerToken,
+            makerToken,
+            makerAssetAmounts,
+        );
+    }
+
+    public sampleBuysFromUniswap(
+        takerToken: string,
+        makerToken: string,
+        makerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleBuysFromUniswap,
+            this._handlers.sampleBuysFromUniswap,
+            takerToken,
+            makerToken,
+            makerAssetAmounts,
+        );
+    }
+
+    private _callEncodedFunction(callData: string): string {
+        // tslint:disable-next-line: custom-no-magic-numbers
+        const selector = hexUtils.slice(callData, 0, 4);
+        for (const [name, handler] of Object.entries(this._handlers)) {
+            if (handler && this.getSelector(name) === selector) {
+                const args = this.getABIDecodedTransactionData<any>(name, callData);
+                const result = (handler as any)(...args);
+                return this._lookupAbiEncoder(this.getFunctionSignature(name)).encodeReturnValues([result]);
+            }
+        }
+        if (selector === this.getSelector('batchCall')) {
+            const calls = this.getABIDecodedTransactionData<string[]>('batchCall', callData);
+            const results = calls.map(cd => this._callEncodedFunction(cd));
+            return this._lookupAbiEncoder(this.getFunctionSignature('batchCall')).encodeReturnValues([results]);
+        }
+        throw new Error(`Unkown selector: ${selector}`);
+    }
+
+    private _wrapCall<TArgs extends any[], TResult>(
+        superFn: (this: MockSamplerContract, ...args: TArgs) => ContractFunctionObj<TResult>,
+        handler?: (this: MockSamplerContract, ...args: TArgs) => TResult,
+        // tslint:disable-next-line: trailing-comma
+        ...args: TArgs
+    ): ContractFunctionObj<TResult> {
         return {
-            ...super.queryOrdersAndSampleBuys(orders, signatures, sources, fillAmounts),
-            callAsync: async (...args: any[]): Promise<QueryAndSampleResult> => {
-                if (!this.queryOrdersAndSampleBuysHandler) {
-                    throw new Error('queryOrdersAndSampleBuys handler undefined');
+            ...superFn.call(this, ...args),
+            callAsync: async (...callArgs: any[]): Promise<TResult> => {
+                if (!handler) {
+                    throw new Error(`${superFn.name} handler undefined`);
                 }
-                return this.queryOrdersAndSampleBuysHandler(orders, signatures, sources, fillAmounts);
+                return handler.call(this, ...args);
             },
         };
     }

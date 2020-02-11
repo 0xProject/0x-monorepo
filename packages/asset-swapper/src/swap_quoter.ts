@@ -21,7 +21,7 @@ import {
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
-import { MarketOperationUtils } from './utils/market_operation_utils';
+import { DexOrderSampler, MarketOperationUtils } from './utils/market_operation_utils';
 import { dummyOrderUtils } from './utils/market_operation_utils/dummy_order_utils';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
@@ -162,12 +162,12 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        const samplerContract = new IERC20BridgeSamplerContract(
-            this._contractAddresses.erc20BridgeSampler,
-            this.provider,
-            { gas: samplerGasLimit },
+        const sampler = new DexOrderSampler(
+            new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
+                gas: samplerGasLimit,
+            }),
         );
-        this._marketOperationUtils = new MarketOperationUtils(samplerContract, this._contractAddresses, {
+        this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
             chainId,
             exchangeAddress: this._contractAddresses.exchange,
         });

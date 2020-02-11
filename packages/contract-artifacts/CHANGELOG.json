@@ -22,6 +22,10 @@
             {
                 "note": "Remove `LibTransactionDecoder` artifact",
                 "pr": 2464
+            },
+            {
+                "note": "Update `IERC20BridgeSampler` artifact",
+                "pr": 2477
             }
         ],
         "timestamp": 1581204851
