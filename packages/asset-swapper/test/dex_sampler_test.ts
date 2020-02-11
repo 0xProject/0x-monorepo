@@ -55,7 +55,7 @@ describe('DexSampler tests', () => {
     function createOrder(overrides?: Partial<SignedOrder>): SignedOrder {
         return {
             chainId: CHAIN_ID,
-            exchangeAddress: hexUtils.random(20),
+            exchangeAddress: randomAddress(),
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,
             senderAddress: constants.NULL_ADDRESS,
@@ -111,8 +111,8 @@ describe('DexSampler tests', () => {
         });
 
         it('getKyberSellQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const sampler = new MockSamplerContract({
@@ -135,8 +135,8 @@ describe('DexSampler tests', () => {
         });
 
         it('getEth2DaiSellQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const sampler = new MockSamplerContract({
@@ -159,8 +159,8 @@ describe('DexSampler tests', () => {
         });
 
         it('getUniswapSellQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const sampler = new MockSamplerContract({
@@ -183,8 +183,8 @@ describe('DexSampler tests', () => {
         });
 
         it('getEth2DaiBuyQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const sampler = new MockSamplerContract({
@@ -207,8 +207,8 @@ describe('DexSampler tests', () => {
         });
 
         it('getUniswapBuyQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const expectedMakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 10);
             const sampler = new MockSamplerContract({
@@ -235,8 +235,8 @@ describe('DexSampler tests', () => {
         }
 
         it('getSellQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const sources = [ERC20BridgeSource.Kyber, ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Kyber]: getRandomFloat(0, 100),
@@ -285,8 +285,8 @@ describe('DexSampler tests', () => {
         });
 
         it('getBuyQuotes()', async () => {
-            const expectedTakerToken = hexUtils.random(20);
-            const expectedMakerToken = hexUtils.random(20);
+            const expectedTakerToken = randomAddress();
+            const expectedMakerToken = randomAddress();
             const sources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),
