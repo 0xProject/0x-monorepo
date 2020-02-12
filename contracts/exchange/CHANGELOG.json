@@ -1,5 +1,15 @@
 [
     {
+        "version": "3.3.0",
+        "changes": [
+            {
+                "note": "Add `EIP1654` wallet support",
+                "pr": 2482
+            }
+        ],
+        "timestamp": 1581486998
+    },
+    {
         "version": "3.2.0",
         "changes": [
             {
