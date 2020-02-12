@@ -8,6 +8,7 @@ export * from '../test/generated-wrappers/i_asset_proxy';
 export * from '../test/generated-wrappers/i_asset_proxy_dispatcher';
 export * from '../test/generated-wrappers/i_e_i_p1271_data';
 export * from '../test/generated-wrappers/i_e_i_p1271_wallet';
+export * from '../test/generated-wrappers/i_e_i_p1654_wallet';
 export * from '../test/generated-wrappers/i_exchange';
 export * from '../test/generated-wrappers/i_exchange_core';
 export * from '../test/generated-wrappers/i_match_orders';

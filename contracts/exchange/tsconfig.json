@@ -10,6 +10,7 @@
         "test/generated-artifacts/IAssetProxyDispatcher.json",
         "test/generated-artifacts/IEIP1271Data.json",
         "test/generated-artifacts/IEIP1271Wallet.json",
+        "test/generated-artifacts/IEIP1654Wallet.json",
         "test/generated-artifacts/IExchange.json",
         "test/generated-artifacts/IExchangeCore.json",
         "test/generated-artifacts/IMatchOrders.json",

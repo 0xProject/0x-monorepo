@@ -16,6 +16,7 @@ import * as LibAuthorizableRichErrors from '../test/generated-artifacts/LibAutho
 import * as LibBytes from '../test/generated-artifacts/LibBytes.json';
 import * as LibBytesRichErrors from '../test/generated-artifacts/LibBytesRichErrors.json';
 import * as LibEIP1271 from '../test/generated-artifacts/LibEIP1271.json';
+import * as LibEIP1654 from '../test/generated-artifacts/LibEIP1654.json';
 import * as LibEIP712 from '../test/generated-artifacts/LibEIP712.json';
 import * as LibFractions from '../test/generated-artifacts/LibFractions.json';
 import * as LibOwnableRichErrors from '../test/generated-artifacts/LibOwnableRichErrors.json';
@@ -49,6 +50,7 @@ export const artifacts = {
     LibBytes: LibBytes as ContractArtifact,
     LibBytesRichErrors: LibBytesRichErrors as ContractArtifact,
     LibEIP1271: LibEIP1271 as ContractArtifact,
+    LibEIP1654: LibEIP1654 as ContractArtifact,
     LibEIP712: LibEIP712 as ContractArtifact,
     LibFractions: LibFractions as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,
