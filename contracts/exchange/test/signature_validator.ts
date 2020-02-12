@@ -33,7 +33,8 @@ enum ValidatorWalletAction {
     MatchSignatureHash = 4,
     ReturnTrue = 5,
     ReturnNothing = 6,
-    NTypes = 7,
+    AcceptByEIP1654 = 7,
+    NTypes = 8,
 }
 
 // tslint:disable:no-unnecessary-type-assertion
@@ -1266,6 +1267,35 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             // Allow the signature check for the first fill.
             await validatorWallet
                 .prepare(orderHashHex, ValidatorWalletAction.Accept, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const fillAmount = signedOrder.takerAssetAmount.div(10);
+            await exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            // Reject the signature check for the second fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.Reject, constants.NULL_BYTES)
+                .awaitTransactionSuccessAsync();
+            const tx = exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({
+                from: takerAddress,
+            });
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
+                orderHashHex,
+                signedOrder.makerAddress,
+                signedOrder.signature,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert if `EIP1654Wallet` signature type rejects during a second fill', async () => {
+            const signatureHex = hexUtils.concat(SignatureType.Wallet);
+            signedOrder.makerAddress = validatorWallet.address;
+            signedOrder.signature = signatureHex;
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            // Allow the signature check for the first fill.
+            await validatorWallet
+                .prepare(orderHashHex, ValidatorWalletAction.AcceptByEIP1654, constants.NULL_BYTES)
                 .awaitTransactionSuccessAsync();
             const fillAmount = signedOrder.takerAssetAmount.div(10);
             await exchange.fillOrder(signedOrder, fillAmount, signedOrder.signature).awaitTransactionSuccessAsync({

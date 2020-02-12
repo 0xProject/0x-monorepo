@@ -25,12 +25,14 @@ import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1654.sol";
 import "../src/interfaces/IEIP1271Data.sol";
 
 
 // solhint-disable no-unused-vars
 contract TestValidatorWallet is
-    LibEIP1271
+    LibEIP1271,
+    LibEIP1654
 {
     using LibBytes for bytes;
 
@@ -56,6 +58,8 @@ contract TestValidatorWallet is
         ReturnTrue,
         // Return no data.
         ReturnNothing,
+        // Return success by EIP1654 wallet
+        AcceptByEIP1654,
         NTypes
     }
 
@@ -159,6 +163,8 @@ contract TestValidatorWallet is
             magicValue = bytes4(0);
         } else if (action == ValidatorAction.Accept) {
             magicValue = LEGACY_WALLET_MAGIC_VALUE;
+        } else if (action == ValidatorAction.AcceptByEIP1654) {
+            magicValue = EIP1654_MAGIC_VALUE;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
