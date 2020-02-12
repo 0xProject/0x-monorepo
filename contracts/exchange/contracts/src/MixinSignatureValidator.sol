@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1654.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
@@ -36,6 +37,7 @@ import "./MixinTransactions.sol";
 contract MixinSignatureValidator is
     LibEIP712ExchangeDomain,
     LibEIP1271,
+    LibEIP1654,
     ISignatureValidator,
     MixinTransactions
 {
@@ -500,7 +502,8 @@ contract MixinSignatureValidator is
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return the validity of the signature if the call was successful
         if (didSucceed && returnData.length == 32) {
-            return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
+            bytes4 magicValue = returnData.readBytes4(0);
+            return magicValue == LEGACY_WALLET_MAGIC_VALUE || magicValue == EIP1654_MAGIC_VALUE;
         }
         // Revert if the call was unsuccessful
         LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
