@@ -75,6 +75,8 @@ export interface Fill {
     input: BigNumber;
     // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
     output: BigNumber;
+    // Output penalty for this fill.
+    fillPenalty: BigNumber;
     // Fill that must precede this one. This enforces certain fills to be contiguous.
     parent?: Fill;
     // Data associated with this this Fill object. Used to reconstruct orders
@@ -155,11 +157,6 @@ export interface GetMarketOrdersOpts {
      */
     numSamples: number;
     /**
-     * Dust amount, as a fraction of the fill amount.
-     * Default is 0.01 (100 basis points).
-     */
-    dustFractionThreshold: number;
-    /**
      * The exponential sampling distribution base.
      * A value of 1 will result in evenly spaced samples.
      * > 1 will result in more samples at lower sizes.
@@ -167,4 +164,8 @@ export interface GetMarketOrdersOpts {
      * Default: 1.25.
      */
     sampleDistributionBase: number;
+    /**
+     * Fees for each liquidity source, expressed in ETH wei.
+     */
+    fees: { [source: string]: BigNumber };
 }

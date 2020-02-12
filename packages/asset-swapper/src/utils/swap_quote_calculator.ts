@@ -241,10 +241,10 @@ export class SwapQuoteCalculator {
                 break;
             }
             if (order.fill.source === ERC20BridgeSource.Native) {
-                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterOrderFees(
                     order,
                 );
-                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(
                     order,
                 );
                 const takerAssetAmountWithFees = BigNumber.min(
@@ -335,10 +335,10 @@ export class SwapQuoteCalculator {
                 break;
             }
             if (order.fill.source === ERC20BridgeSource.Native) {
-                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+                const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterOrderFees(
                     order,
                 );
-                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+                const adjustedFillableTakerAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(
                     order,
                 );
                 makerAssetAmount = BigNumber.min(remainingMakerAssetFillAmount, adjustedFillableMakerAssetAmount);

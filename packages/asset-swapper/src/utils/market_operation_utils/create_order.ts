@@ -3,7 +3,6 @@ import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
-import { sortingUtils } from '../../utils/sorting_utils';
 
 import { constants as marketOperationUtilConstants } from './constants';
 import {
@@ -50,7 +49,7 @@ export class CreateOrderUtils {
                 );
             }
         }
-        return sortingUtils.sortOrders(orders);
+        return orders;
     }
 
     // Convert buy fills into orders.
@@ -79,7 +78,7 @@ export class CreateOrderUtils {
                 );
             }
         }
-        return sortingUtils.sortOrders(orders);
+        return orders;
     }
 
     private _getBridgeAddressFromSource(source: ERC20BridgeSource): string {

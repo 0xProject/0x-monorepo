@@ -145,6 +145,35 @@ const samplerOperations = {
             },
         };
     },
+    getMedianSellRate(
+        sources: ERC20BridgeSource[],
+        makerToken: string,
+        takerToken: string,
+        takerFillAmount: BigNumber,
+    ): BatchedOperation<BigNumber> {
+        const getSellQuotes = samplerOperations.getSellQuotes(sources, makerToken, takerToken, [takerFillAmount]);
+        return {
+            encodeCall: contract => {
+                const subCalls = [getSellQuotes.encodeCall(contract)];
+                return contract.batchCall(subCalls).getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
+                const samples = await getSellQuotes.handleCallResultsAsync(contract, rawSubCallResults[0]);
+                if (samples.length === 0) {
+                    return new BigNumber(0);
+                }
+                const flatSortedSamples = samples
+                    .reduce((acc, v) => acc.concat(...v))
+                    .sort((a, b) => a.output.comparedTo(b.output));
+                if (flatSortedSamples.length === 0) {
+                    return new BigNumber(0);
+                }
+                const medianSample = flatSortedSamples[Math.floor(flatSortedSamples.length / 2)];
+                return medianSample.output.div(medianSample.input);
+            },
+        };
+    },
     getSellQuotes(
         sources: ERC20BridgeSource[],
         makerToken: string,
