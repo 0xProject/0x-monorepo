@@ -120,12 +120,7 @@ contract OrderValidationUtils is
 
         // Ensure that all of the asset data is valid. Fee asset data only needs
         // to be valid if the fees are nonzero.
-        if (
-            !_isAssetDataValid(order.makerAssetData) ||
-            (order.makerFee != 0 && !_isAssetDataValid(order.makerFeeAssetData)) ||
-            !_isAssetDataValid(order.takerAssetData) ||
-            (order.takerFee != 0 && !_isAssetDataValid(order.takerFeeAssetData))
-        ) {
+        if (!_areOrderAssetDatasValid(order)) {
             fillableTakerAssetAmount = 0;
         }
 
@@ -205,6 +200,21 @@ contract OrderValidationUtils is
         (uint256 balance, uint256 allowance) = _getConvertibleMakerBalanceAndAssetProxyAllowance(order);
         transferableAssetAmount = LibSafeMath.min256(balance, allowance);
         return transferableAssetAmount;
+    }
+
+    /// @dev Checks that the asset data contained in a ZeroEx is valid and returns
+    /// a boolean that indicates whether or not the asset data was found to be valid.
+    /// @param order A ZeroEx order to validate.
+    /// @return The validatity of the asset data.
+    function _areOrderAssetDatasValid(LibOrder.Order memory order)
+        internal
+        pure
+        returns (bool)
+    {
+        return _isAssetDataValid(order.makerAssetData) &&
+            (order.makerFee == 0 || _isAssetDataValid(order.makerFeeAssetData)) &&
+            _isAssetDataValid(order.takerAssetData) &&
+            (order.takerFee == 0 || _isAssetDataValid(order.takerFeeAssetData));
     }
 
     /// @dev This function handles the edge cases around taker validation. This function
