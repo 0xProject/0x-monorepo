@@ -2,7 +2,7 @@ import { blockchainTests, constants, expect, getRandomInteger } from '@0x/contra
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { godsUnchainedUtils } from '../src/gods_unchained_utils';
+import { encodePropertyData } from '../src/gods_unchained_utils';
 
 import { artifacts } from './artifacts';
 import { GodsUnchainedValidatorContract, TestGodsUnchainedContract } from './wrappers';
@@ -33,7 +33,7 @@ blockchainTests.resets('GodsUnchainedValidator unit tests', env => {
     describe('checkBrokerAsset', () => {
         const proto = new BigNumber(42);
         const quality = new BigNumber(7);
-        const propertyData = godsUnchainedUtils.encodePropertyData(proto, quality);
+        const propertyData = encodePropertyData({ proto, quality });
 
         it('succeeds if assetData proto and quality match propertyData', async () => {
             const tokenId = getRandomInteger(0, constants.MAX_UINT256);
