@@ -3,7 +3,7 @@ import { ContractWrappers } from '@0x/contract-wrappers';
 import { Web3ProviderEngine } from '@0x/dev-utils';
 
 const chainId = 1;
-export const dydxAccountOwner = '0xeb58c2caa96f39626dcceb74fdbb7a9a8b54ec18';
+export const dydxAccountOwner = '0xfdac948232c5bfbe24b770326ee4dff7a8dd8484';
 export const contractAddresses = getContractAddressesForChainOrThrow(chainId);
 
 /**

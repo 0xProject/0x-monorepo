@@ -130,7 +130,7 @@ interface IDydx {
 /// @dev Deploy this contract and call `init` to run the mainnet DydxBridge integration tests.
 contract TestDydxUser {
 
-    address public constant DYDX_BRIDGE_ADDRESS = 0x96DdBa19b69D6EA2549f6a12d005595167414744;
+    address public constant DYDX_BRIDGE_ADDRESS = 0x55dC8f21D20D4c6ED3C82916A438A413ca68e335;
     address public constant DYDX_ADDRESS = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
     address public constant DAI_ADDRESS = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     uint256 public constant DYDX_DAI_MARKET_ID = 3;

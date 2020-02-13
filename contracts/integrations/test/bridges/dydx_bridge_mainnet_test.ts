@@ -14,7 +14,7 @@ import { contractAddresses, dydxAccountOwner } from '../mainnet_fork_utils';
 
 import { dydxEvents } from './abi/dydxEvents';
 
-blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
+blockchainTests.fork.resets('Mainnet dydx bridge tests', env => {
     let testContract: DydxBridgeContract;
     // random account to receive tokens from dydx
     const receiver = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';
@@ -73,7 +73,7 @@ blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
                             accountOwner: dydxAccountOwner,
                             accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
                             market: action.marketId,
-                            update: [[true, scaledAmount]],
+                            update: { deltaWei: { sign: true, value: scaledAmount } },
                             from: dydxAccountOwner,
                         });
                         break;
@@ -83,7 +83,7 @@ blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
                             accountOwner: dydxAccountOwner,
                             accountNumber: bridgeData.accountNumbers[action.accountId.toNumber()],
                             market: action.marketId,
-                            update: [[false, scaledAmount]],
+                            update: { deltaWei: { sign: false, value: scaledAmount } },
                             to: receiver,
                         });
                         break;
@@ -112,10 +112,10 @@ blockchainTests.fork.skip('Mainnet dydx bridge tests', env => {
                 expect(log.args.from, 'from').to.equal(expectedEvent.from);
                 // We only check the first update field because it's the delta balance (amount deposited).
                 // The next field is the new total, which depends on interest rates at the time of execution.
-                expect(log.args.update[0][0], 'update sign').to.equal(expectedEvent.update[0][0]);
-                const updateValueHex = log.args.update[0][1]._hex;
-                const updateValueBn = new BigNumber(updateValueHex, 16);
-                expect(updateValueBn, 'update value').to.bignumber.equal(expectedEvent.update[0][1]);
+                expect(log.args.update.deltaWei.sign, 'update sign').to.equal(expectedEvent.update.deltaWei.sign);
+                expect(log.args.update.deltaWei.value, 'update value').to.bignumber.equal(
+                    expectedEvent.update.deltaWei.value,
+                );
             }
         };
 
