@@ -12,6 +12,7 @@ import {
 } from './types';
 
 import { constants as marketOperationUtilConstants } from './utils/market_operation_utils/constants';
+import { ERC20BridgeSource } from './utils/market_operation_utils/types';
 
 const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 const NULL_BYTES = '0x';
@@ -64,10 +65,19 @@ const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     ...marketOperationUtilConstants.DEFAULT_GET_MARKET_ORDERS_OPTS,
 };
 
-const DEFAULT_CURVE_OPTS: { [curveAddress: string]: { [tokenAddress: string]: number } } = {
-    '0x2e60cf74d81ac34eb21eeff58db4d385920ef419': {
-        '0x6b175474e89094c44da98b954eedeac495271d0f': 0,
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 1,
+// Mainnet Curve configuration
+const DEFAULT_CURVE_OPTS: { [source: string]: { curveAddress: string; tokens: string[] } } = {
+    [ERC20BridgeSource.CurveUsdcDai]: {
+        curveAddress: '0x2e60cf74d81ac34eb21eeff58db4d385920ef419',
+        tokens: ['0x6b175474e89094c44da98b954eedeac495271d0f', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'],
+    },
+    [ERC20BridgeSource.CurveUsdcDaiUsdt]: {
+        curveAddress: '0x52ea46506b9cc5ef470c5bf89f17dc28bb35d85c',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        ],
     },
 };
 

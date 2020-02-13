@@ -90,7 +90,8 @@ export class CreateOrderUtils {
                 return this._contractAddress.kyberBridge;
             case ERC20BridgeSource.Uniswap:
                 return this._contractAddress.uniswapBridge;
-            case ERC20BridgeSource.Curve:
+            case ERC20BridgeSource.CurveUsdcDai:
+            case ERC20BridgeSource.CurveUsdcDaiUsdt:
                 return this._contractAddress.curveBridge;
             default:
                 break;
@@ -109,13 +110,10 @@ function createBridgeOrder(
     isBuy: boolean = false,
 ): OptimizedMarketOrder {
     let makerAssetData;
-    if (fill.source === ERC20BridgeSource.Curve) {
-        // TODO(dekz) best way to pass this data around, in the world of multiple curves at once?
-        const curveAddress = Object.keys(constants.DEFAULT_CURVE_OPTS)[0];
-        const fromTokenIdx =
-            constants.DEFAULT_CURVE_OPTS[curveAddress] && constants.DEFAULT_CURVE_OPTS[curveAddress][takerToken];
-        const toTokenIdx =
-            constants.DEFAULT_CURVE_OPTS[curveAddress] && constants.DEFAULT_CURVE_OPTS[curveAddress][makerToken];
+    if (fill.source === ERC20BridgeSource.CurveUsdcDai || fill.source === ERC20BridgeSource.CurveUsdcDaiUsdt) {
+        const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[fill.source];
+        const fromTokenIdx = tokens.indexOf(takerToken);
+        const toTokenIdx = tokens.indexOf(takerToken);
         makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
             makerToken,
             bridgeAddress,

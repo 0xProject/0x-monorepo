@@ -100,7 +100,12 @@ const samplerOperations = {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleSellsFromCurve(curveAddress, new BigNumber(fromTokenIdx), new BigNumber(toTokenIdx), takerFillAmounts)
+                    .sampleSellsFromCurve(
+                        curveAddress,
+                        new BigNumber(fromTokenIdx),
+                        new BigNumber(toTokenIdx),
+                        takerFillAmounts,
+                    )
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -146,27 +151,36 @@ const samplerOperations = {
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): BatchedOperation<DexSample[][]> {
-        const subOps = sources.map(source => {
-            let batchedOperation;
-            if (source === ERC20BridgeSource.Eth2Dai) {
-                batchedOperation = samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
-            } else if (source === ERC20BridgeSource.Uniswap) {
-                batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
-            } else if (source === ERC20BridgeSource.Kyber) {
-                batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
-            } else if (source === ERC20BridgeSource.Curve) {
-                // TODO(dekz) best way to pass this data around, in the world of multiple curves at once?
-                const curveAddress = Object.keys(constants.DEFAULT_CURVE_OPTS)[0];
-                const fromTokenIdx = constants.DEFAULT_CURVE_OPTS[curveAddress] && constants.DEFAULT_CURVE_OPTS[curveAddress][takerToken];
-                const toTokenIdx = constants.DEFAULT_CURVE_OPTS[curveAddress] && constants.DEFAULT_CURVE_OPTS[curveAddress][makerToken];
-                if (fromTokenIdx !== undefined && toTokenIdx !== undefined) {
-                    batchedOperation = samplerOperations.getCurveSellQuotes(curveAddress, fromTokenIdx, toTokenIdx, takerFillAmounts);
+        const subOps = sources
+            .map(source => {
+                let batchedOperation;
+                if (source === ERC20BridgeSource.Eth2Dai) {
+                    batchedOperation = samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
+                } else if (source === ERC20BridgeSource.Uniswap) {
+                    batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
+                } else if (source === ERC20BridgeSource.Kyber) {
+                    batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
+                } else if (source === ERC20BridgeSource.CurveUsdcDai || source === ERC20BridgeSource.CurveUsdcDaiUsdt) {
+                    const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[source];
+                    const fromTokenIdx = tokens.indexOf(takerToken);
+                    const toTokenIdx = tokens.indexOf(makerToken);
+                    if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
+                        batchedOperation = samplerOperations.getCurveSellQuotes(
+                            curveAddress,
+                            fromTokenIdx,
+                            toTokenIdx,
+                            takerFillAmounts,
+                        );
+                    }
+                } else {
+                    throw new Error(`Unsupported sell sample source: ${source}`);
                 }
-            } else {
-                throw new Error(`Unsupported sell sample source: ${source}`);
-            }
-            return { batchedOperation, source };
-        }).filter(op => op.batchedOperation) as Array<{ batchedOperation: BatchedOperation<BigNumber[]>; source: ERC20BridgeSource }>;
+                return { batchedOperation, source };
+            })
+            .filter(op => op.batchedOperation) as Array<{
+            batchedOperation: BatchedOperation<BigNumber[]>;
+            source: ERC20BridgeSource;
+        }>;
         return {
             encodeCall: contract => {
                 const subCalls = subOps.map(op => op.batchedOperation.encodeCall(contract));
@@ -175,7 +189,9 @@ const samplerOperations = {
             handleCallResultsAsync: async (contract, callResults) => {
                 const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
                 const samples = await Promise.all(
-                    subOps.map(async (op, i) => op.batchedOperation.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    subOps.map(async (op, i) =>
+                        op.batchedOperation.handleCallResultsAsync(contract, rawSubCallResults[i]),
+                    ),
                 );
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({

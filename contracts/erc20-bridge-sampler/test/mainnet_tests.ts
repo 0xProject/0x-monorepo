@@ -21,17 +21,17 @@ blockchainTests.fork.skip('Mainnet Sampler Tests', env => {
         const usdcTokenIdx = new BigNumber(1);
 
         it('samples sells from Curve DAI->USDC', async () => {
-            const samples = await testContract.sampleSellsFromCurve(curveAddress, daiTokenIdx, usdcTokenIdx, [
-                toBaseUnitAmount(1),
-            ]).callAsync();
+            const samples = await testContract
+                .sampleSellsFromCurve(curveAddress, daiTokenIdx, usdcTokenIdx, [toBaseUnitAmount(1)])
+                .callAsync();
             expect(samples.length).to.be.bignumber.greaterThan(0);
             expect(samples[0]).to.be.bignumber.greaterThan(0);
         });
 
         it('samples sells from Curve USDC->DAI', async () => {
-            const samples = await testContract.sampleSellsFromCurve(curveAddress, usdcTokenIdx, daiTokenIdx, [
-                toBaseUnitAmount(1, 6),
-            ]).callAsync();
+            const samples = await testContract
+                .sampleSellsFromCurve(curveAddress, usdcTokenIdx, daiTokenIdx, [toBaseUnitAmount(1, 6)])
+                .callAsync();
             expect(samples.length).to.be.bignumber.greaterThan(0);
             expect(samples[0]).to.be.bignumber.greaterThan(0);
         });

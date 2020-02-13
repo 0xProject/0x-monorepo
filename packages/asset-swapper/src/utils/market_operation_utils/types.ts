@@ -28,7 +28,8 @@ export enum ERC20BridgeSource {
     Uniswap = 'Uniswap',
     Eth2Dai = 'Eth2Dai',
     Kyber = 'Kyber',
-    Curve = 'Curve',
+    CurveUsdcDai = 'Curve_USDC_DAI',
+    CurveUsdcDaiUsdt = 'Curve_USDC_DAI_USDT',
 }
 
 // Internal `fillData` field for `Fill` objects.
