@@ -20,14 +20,15 @@
         "devUtils": "0x161793cdca4ff9e766a706c2c49c36ac1340bbcd",
         "erc20BridgeProxy": "0x8ed95d1746bf1e4dab58d8ed4724f1ef95b20db0",
         "uniswapBridge": "0x533344cfdf2a3e911e2cf4c6f5ed08e791f5355f",
-        "erc20BridgeSampler": "0x774c53ee7604af93cd3ed1cd25a788a9e0c06fb2",
+        "erc20BridgeSampler": "0x2a5a5762bd1105ee9f1eb7a76fb39e55e592b8af",
         "kyberBridge": "0xf342f3a80fdc9b48713d58fe97e17f5cc764ee62",
         "eth2DaiBridge": "0xe3379a1956f4a79f39eb2e87bb441419e167538e",
         "chaiBridge": "0x77c31eba23043b9a72d13470f3a3a311344d7438",
         "dydxBridge": "0x55dc8f21d20d4c6ed3c82916a438a413ca68e335",
         "godsUnchainedValidator": "0x09A379Ef7218BCFD8913fAa8B281ebc5A2E0bC04",
         "broker": "0xd4690a51044db77D91d7Aa8f7a3a5ad5dA331Af0",
-        "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53"
+        "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53",
+        "curveBridge": "0x0fcba61e9a0eaeb3b59409618b854e33d9e870c0"
     },
     "3": {
         "erc20Proxy": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
@@ -57,7 +58,8 @@
         "dydxBridge": "0x0000000000000000000000000000000000000000",
         "godsUnchainedValidator": "0xd4690a51044db77D91d7Aa8f7a3a5ad5dA331Af0",
         "broker": "0x4Aa817C6f383C8e8aE77301d18Ce48efb16Fd2BE",
-        "chainlinkStopLimit": "0x67a094cf028221ffdd93fc658f963151d05e2a74"
+        "chainlinkStopLimit": "0x67a094cf028221ffdd93fc658f963151d05e2a74",
+        "curveBridge": "0x0000000000000000000000000000000000000000"
     },
     "4": {
         "exchangeV2": "0xbff9493f92a3df4b0429b6d00743b3cfb4c85831",
@@ -87,7 +89,8 @@
         "dydxBridge": "0x0000000000000000000000000000000000000000",
         "godsUnchainedValidator": "0x0000000000000000000000000000000000000000",
         "broker": "0x0000000000000000000000000000000000000000",
-        "chainlinkStopLimit": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a"
+        "chainlinkStopLimit": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a",
+        "curveBridge": "0x0000000000000000000000000000000000000000"
     },
     "42": {
         "erc20Proxy": "0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
@@ -117,7 +120,8 @@
         "dydxBridge": "0x0000000000000000000000000000000000000000",
         "godsUnchainedValidator": "0x0000000000000000000000000000000000000000",
         "broker": "0x0000000000000000000000000000000000000000",
-        "chainlinkStopLimit": "0x0000000000000000000000000000000000000000"
+        "chainlinkStopLimit": "0x0000000000000000000000000000000000000000",
+        "curveBridge": "0x0000000000000000000000000000000000000000"
     },
     "1337": {
         "erc20Proxy": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
@@ -147,6 +151,7 @@
         "dydxBridge": "0x0000000000000000000000000000000000000000",
         "godsUnchainedValidator": "0x0000000000000000000000000000000000000000",
         "broker": "0x0000000000000000000000000000000000000000",
-        "chainlinkStopLimit": "0x0000000000000000000000000000000000000000"
+        "chainlinkStopLimit": "0x0000000000000000000000000000000000000000",
+        "curveBridge": "0x0000000000000000000000000000000000000000"
     }
 }

@@ -64,6 +64,13 @@ const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     ...marketOperationUtilConstants.DEFAULT_GET_MARKET_ORDERS_OPTS,
 };
 
+const DEFAULT_CURVE_OPTS: { [curveAddress: string]: { [tokenAddress: string]: number } } = {
+    '0x2e60cf74d81ac34eb21eeff58db4d385920ef419': {
+        '0x6b175474e89094c44da98b954eedeac495271d0f': 0,
+        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 1,
+    },
+};
+
 export const constants = {
     ETH_GAS_STATION_API_BASE_URL,
     PROTOCOL_FEE_MULTIPLIER,
@@ -84,4 +91,5 @@ export const constants = {
     PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
     MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE,
     BRIDGE_ASSET_DATA_PREFIX: '0xdc1600f3',
+    DEFAULT_CURVE_OPTS,
 };

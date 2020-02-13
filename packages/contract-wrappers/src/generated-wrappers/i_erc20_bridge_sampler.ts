@@ -400,6 +400,37 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
+                        name: 'curveAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'fromTokenIdx',
+                        type: 'int128',
+                    },
+                    {
+                        name: 'toTokenIdx',
+                        type: 'int128',
+                    },
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'sampleSellsFromCurve',
+                outputs: [
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
                         name: 'takerToken',
                         type: 'address',
                     },
@@ -747,6 +778,48 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     takerToken.toLowerCase(),
                     makerToken.toLowerCase(),
                     makerTokenAmounts,
+                ]);
+            },
+        };
+    }
+    /**
+     * Sample sell quotes from Curve.
+     * @param curveAddress Address of the Curve contract.
+     * @param fromTokenIdx Index of the taker token (what to sell).
+     * @param toTokenIdx Index of the maker token (what to buy).
+     * @param takerTokenAmounts Taker token sell amount for each sample.
+     * @returns makerTokenAmounts Maker amounts bought at each taker token         amount.
+     */
+    public sampleSellsFromCurve(
+        curveAddress: string,
+        fromTokenIdx: BigNumber,
+        toTokenIdx: BigNumber,
+        takerTokenAmounts: BigNumber[],
+    ): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isString('curveAddress', curveAddress);
+        assert.isBigNumber('fromTokenIdx', fromTokenIdx);
+        assert.isBigNumber('toTokenIdx', toTokenIdx);
+        assert.isArray('takerTokenAmounts', takerTokenAmounts);
+        const functionSignature = 'sampleSellsFromCurve(address,int128,int128,uint256[])';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    curveAddress.toLowerCase(),
+                    fromTokenIdx,
+                    toTokenIdx,
+                    takerTokenAmounts,
                 ]);
             },
         };

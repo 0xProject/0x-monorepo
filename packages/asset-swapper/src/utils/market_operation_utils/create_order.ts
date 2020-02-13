@@ -90,6 +90,8 @@ export class CreateOrderUtils {
                 return this._contractAddress.kyberBridge;
             case ERC20BridgeSource.Uniswap:
                 return this._contractAddress.uniswapBridge;
+            case ERC20BridgeSource.Curve:
+                return this._contractAddress.curveBridge;
             default:
                 break;
         }
@@ -106,13 +108,29 @@ function createBridgeOrder(
     slippage: number,
     isBuy: boolean = false,
 ): OptimizedMarketOrder {
-    return {
-        makerAddress: bridgeAddress,
-        makerAssetData: assetDataUtils.encodeERC20BridgeAssetData(
+    let makerAssetData;
+    if (fill.source === ERC20BridgeSource.Curve) {
+        // TODO(dekz) best way to pass this data around, in the world of multiple curves at once?
+        const curveAddress = Object.keys(constants.DEFAULT_CURVE_OPTS)[0];
+        const fromTokenIdx =
+            constants.DEFAULT_CURVE_OPTS[curveAddress] && constants.DEFAULT_CURVE_OPTS[curveAddress][takerToken];
+        const toTokenIdx =
+            constants.DEFAULT_CURVE_OPTS[curveAddress] && constants.DEFAULT_CURVE_OPTS[curveAddress][makerToken];
+        makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+            makerToken,
+            bridgeAddress,
+            createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx),
+        );
+    } else {
+        makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
             makerToken,
             bridgeAddress,
             createBridgeData(takerToken),
-        ),
+        );
+    }
+    return {
+        makerAddress: bridgeAddress,
+        makerAssetData,
         takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
         ...createCommonOrderFields(orderDomain, fill, slippage, isBuy),
     };
@@ -121,6 +139,15 @@ function createBridgeOrder(
 function createBridgeData(tokenAddress: string): string {
     const encoder = AbiEncoder.create([{ name: 'tokenAddress', type: 'address' }]);
     return encoder.encode({ tokenAddress });
+}
+
+function createCurveBridgeData(curveAddress: string, fromTokenIdx: number, toTokenIdx: number): string {
+    const curveBridgeDataEncoder = AbiEncoder.create([
+        { name: 'curveAddress', type: 'address' },
+        { name: 'fromTokenIdx', type: 'int128' },
+        { name: 'toTokenIdx', type: 'int128' },
+    ]);
+    return curveBridgeDataEncoder.encode([curveAddress, fromTokenIdx, toTokenIdx]);
 }
 
 type CommonOrderFields = Pick<

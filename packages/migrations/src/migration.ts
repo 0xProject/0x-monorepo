@@ -302,6 +302,7 @@ export async function runMigrationsAsync(
         erc20BridgeSampler: constants.NULL_ADDRESS,
         chaiBridge: constants.NULL_ADDRESS,
         dydxBridge: constants.NULL_ADDRESS,
+        curveBridge: constants.NULL_ADDRESS,
     };
     return contractAddresses;
 }

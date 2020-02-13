@@ -29,6 +29,7 @@ import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
 import "./IUniswapExchangeQuotes.sol";
+import "./ICurve.sol";
 
 
 contract ERC20BridgeSampler is
@@ -43,6 +44,8 @@ contract ERC20BridgeSampler is
     uint256 constant internal UNISWAP_CALL_GAS = 150e3; // 150k
     /// @dev Base gas limit for Eth2Dai calls.
     uint256 constant internal ETH2DAI_CALL_GAS = 1000e3; // 1m
+    /// @dev Base gas limit for Curve calls.
+    uint256 constant internal CURVE_CALL_GAS = 150e3; // 150k
 
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
@@ -386,6 +389,44 @@ contract ERC20BridgeSampler is
             if (!didSucceed) {
                 break;
             }
+        }
+    }
+
+    /// @dev Sample sell quotes from Curve.
+    /// @param curveAddress Address of the Curve contract.
+    /// @param fromTokenIdx Index of the taker token (what to sell).
+    /// @param toTokenIdx Index of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromCurve(
+        address curveAddress,
+        int128 fromTokenIdx,
+        int128 toTokenIdx,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                curveAddress.staticcall.gas(CURVE_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        ICurve(0).get_dy_underlying.selector,
+                        fromTokenIdx,
+                        toTokenIdx,
+                        takerTokenAmounts[i]
+                    ));
+            uint256 buyAmount = 0;
+            if (didSucceed) {
+                buyAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            makerTokenAmounts[i] = buyAmount;
         }
     }
 
