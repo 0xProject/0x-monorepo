@@ -434,6 +434,25 @@ blockchainTests.resets('OrderValidationUtils/OrderTransferSimulatorUtils', env =
             expect(fillableTakerAssetAmount).to.bignumber.equal(signedOrder.takerAssetAmount);
             expect(isValidSignature).to.equal(true);
         });
+        it('should not revert when rounding errors occur', async () => {
+            signedOrder = await maker.signOrderAsync({
+                makerAssetAmount: new BigNumber('2040250070'),
+                takerAssetAmount: new BigNumber('2040250070000000000000'),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+            });
+            await erc20Token.setBalance(maker.address, signedOrder.makerAssetAmount).awaitTransactionSuccessAsync();
+            await erc20Token.approve(erc20Proxy.address, signedOrder.makerAssetAmount).awaitTransactionSuccessAsync({
+                from: maker.address,
+            });
+            await erc20Token2.setBalance(taker.address, signedOrder.takerAssetAmount).awaitTransactionSuccessAsync();
+            await erc20Token2.approve(erc20Proxy.address, signedOrder.takerAssetAmount).awaitTransactionSuccessAsync({
+                from: taker.address,
+            });
+            await taker.configureERC20TokenAsync(deployment.tokens.weth, deployment.staking.stakingProxy.address);
+            await taker.fillOrderAsync(signedOrder, new BigNumber('2040250069999999999990'));
+            await devUtils.getOrderRelevantState(signedOrder, signedOrder.signature).callAsync();
+        });
     });
     describe('getOrderRelevantStates', async () => {
         it('should return the correct information for multiple orders', async () => {
