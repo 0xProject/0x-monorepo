@@ -111,10 +111,9 @@ function createBridgeOrder(
 ): OptimizedMarketOrder {
     let makerAssetData;
     if (fill.source === ERC20BridgeSource.CurveUsdcDai || fill.source === ERC20BridgeSource.CurveUsdcDaiUsdt) {
-        const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[fill.source];
+        const { curveAddress, tokens, version } = constants.DEFAULT_CURVE_OPTS[fill.source];
         const fromTokenIdx = tokens.indexOf(takerToken);
         const toTokenIdx = tokens.indexOf(makerToken);
-        const version = fill.source === ERC20BridgeSource.CurveUsdcDai ? 0 : 1;
         makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
             makerToken,
             bridgeAddress,

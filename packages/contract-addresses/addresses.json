@@ -28,7 +28,7 @@
         "godsUnchainedValidator": "0x09A379Ef7218BCFD8913fAa8B281ebc5A2E0bC04",
         "broker": "0xd4690a51044db77D91d7Aa8f7a3a5ad5dA331Af0",
         "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53",
-        "curveBridge": "0x0fcba61e9a0eaeb3b59409618b854e33d9e870c0"
+        "curveBridge": "0xe335bdd1fb0ee30f9a9a434f18f8b118dec32df7"
     },
     "3": {
         "erc20Proxy": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",

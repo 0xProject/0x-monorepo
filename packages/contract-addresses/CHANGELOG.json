@@ -5,6 +5,10 @@
             {
                 "note": "Added ChainlinkStopLimit addresses (mainnet, ropsten, rinkeby)",
                 "pr": 2473
+            },
+            {
+                "note": "Added CurveBridge address (mainnet)",
+                "pr": 2483
             }
         ]
     },

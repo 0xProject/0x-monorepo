@@ -66,12 +66,14 @@ const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
 };
 
 // Mainnet Curve configuration
-const DEFAULT_CURVE_OPTS: { [source: string]: { curveAddress: string; tokens: string[] } } = {
+const DEFAULT_CURVE_OPTS: { [source: string]: { version: number; curveAddress: string; tokens: string[] } } = {
     [ERC20BridgeSource.CurveUsdcDai]: {
+        version: 0,
         curveAddress: '0x2e60cf74d81ac34eb21eeff58db4d385920ef419',
         tokens: ['0x6b175474e89094c44da98b954eedeac495271d0f', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'],
     },
     [ERC20BridgeSource.CurveUsdcDaiUsdt]: {
+        version: 1,
         curveAddress: '0x52ea46506b9cc5ef470c5bf89f17dc28bb35d85c',
         tokens: [
             '0x6b175474e89094c44da98b954eedeac495271d0f',

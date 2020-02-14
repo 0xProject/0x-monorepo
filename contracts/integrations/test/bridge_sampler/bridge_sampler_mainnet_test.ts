@@ -1,8 +1,6 @@
+import { artifacts, ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { blockchainTests, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-
-import { artifacts } from './artifacts';
-import { ERC20BridgeSamplerContract } from './generated-wrappers/erc20_bridge_sampler';
 
 blockchainTests.fork.skip('Mainnet Sampler Tests', env => {
     let testContract: ERC20BridgeSamplerContract;
