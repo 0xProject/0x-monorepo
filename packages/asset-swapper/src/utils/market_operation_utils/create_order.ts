@@ -113,11 +113,12 @@ function createBridgeOrder(
     if (fill.source === ERC20BridgeSource.CurveUsdcDai || fill.source === ERC20BridgeSource.CurveUsdcDaiUsdt) {
         const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[fill.source];
         const fromTokenIdx = tokens.indexOf(takerToken);
-        const toTokenIdx = tokens.indexOf(takerToken);
+        const toTokenIdx = tokens.indexOf(makerToken);
+        const version = fill.source === ERC20BridgeSource.CurveUsdcDai ? 0 : 1;
         makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
             makerToken,
             bridgeAddress,
-            createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx),
+            createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx, version),
         );
     } else {
         makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
@@ -139,13 +140,19 @@ function createBridgeData(tokenAddress: string): string {
     return encoder.encode({ tokenAddress });
 }
 
-function createCurveBridgeData(curveAddress: string, fromTokenIdx: number, toTokenIdx: number): string {
+function createCurveBridgeData(
+    curveAddress: string,
+    fromTokenIdx: number,
+    toTokenIdx: number,
+    version: number,
+): string {
     const curveBridgeDataEncoder = AbiEncoder.create([
         { name: 'curveAddress', type: 'address' },
         { name: 'fromTokenIdx', type: 'int128' },
         { name: 'toTokenIdx', type: 'int128' },
+        { name: 'version', type: 'int128' },
     ]);
-    return curveBridgeDataEncoder.encode([curveAddress, fromTokenIdx, toTokenIdx]);
+    return curveBridgeDataEncoder.encode([curveAddress, fromTokenIdx, toTokenIdx, version]);
 }
 
 type CommonOrderFields = Pick<

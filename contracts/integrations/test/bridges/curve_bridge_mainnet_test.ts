@@ -11,13 +11,15 @@ blockchainTests.fork.skip('Mainnet curve bridge tests', env => {
     const usdcAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
     const daiWallet = '0x6cc5f688a315f3dc28a7781717a9a798a59fda7b';
     const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-    const curveAddress = '0x2e60CF74d81ac34eB21eEff58Db4D385920ef419';
+    const curveAddressUsdcDai = '0x2e60CF74d81ac34eB21eEff58Db4D385920ef419';
+    const curveAddressUsdcDaiUsdt = '0x52EA46506B9CC5Ef470C5bf89f17Dc28bB35D85C';
     const daiTokenIdx = 0;
     const usdcTokenIdx = 1;
     const bridgeDataEncoder = AbiEncoder.create([
         { name: 'curveAddress', type: 'address' },
         { name: 'fromTokenIdx', type: 'int128' },
         { name: 'toTokenIdx', type: 'int128' },
+        { name: 'version', type: 'int128' },
     ]);
     before(async () => {
         testContract = await CurveBridgeContract.deployFrom0xArtifactAsync(
@@ -29,29 +31,81 @@ blockchainTests.fork.skip('Mainnet curve bridge tests', env => {
     });
 
     describe('bridgeTransferFrom()', () => {
-        it('succeeds exchanges DAI for USDC', async () => {
-            const bridgeData = bridgeDataEncoder.encode([curveAddress, daiTokenIdx, usdcTokenIdx]);
-            // Fund the Bridge
-            const dai = new ERC20TokenContract(daiAddress, env.provider, { ...env.txDefaults, from: daiWallet });
-            await dai
-                .transfer(testContract.address, toBaseUnitAmount(1))
-                .awaitTransactionSuccessAsync({ from: daiWallet }, { shouldValidate: false });
-            // Exchange via Curve
-            await testContract
-                .bridgeTransferFrom(usdcAddress, constants.NULL_ADDRESS, receiver, constants.ZERO_AMOUNT, bridgeData)
-                .awaitTransactionSuccessAsync({ from: daiWallet, gasPrice: 1 }, { shouldValidate: false });
+        describe('Version 0', () => {
+            const version = 0;
+            it('succeeds exchanges DAI for USDC', async () => {
+                const bridgeData = bridgeDataEncoder.encode([curveAddressUsdcDai, daiTokenIdx, usdcTokenIdx, version]);
+                // Fund the Bridge
+                const dai = new ERC20TokenContract(daiAddress, env.provider, { ...env.txDefaults, from: daiWallet });
+                await dai
+                    .transfer(testContract.address, toBaseUnitAmount(1))
+                    .awaitTransactionSuccessAsync({ from: daiWallet }, { shouldValidate: false });
+                // Exchange via Curve
+                await testContract
+                    .bridgeTransferFrom(
+                        usdcAddress,
+                        constants.NULL_ADDRESS,
+                        receiver,
+                        constants.ZERO_AMOUNT,
+                        bridgeData,
+                    )
+                    .awaitTransactionSuccessAsync({ from: daiWallet, gasPrice: 1 }, { shouldValidate: false });
+            });
+            it('succeeds exchanges USDC for DAI', async () => {
+                const bridgeData = bridgeDataEncoder.encode([curveAddressUsdcDai, usdcTokenIdx, daiTokenIdx, version]);
+                // Fund the Bridge
+                const usdc = new ERC20TokenContract(usdcAddress, env.provider, { ...env.txDefaults, from: usdcWallet });
+                await usdc
+                    .transfer(testContract.address, toBaseUnitAmount(1, 6))
+                    .awaitTransactionSuccessAsync({ from: usdcWallet }, { shouldValidate: false });
+                // Exchange via Curve
+                await testContract
+                    .bridgeTransferFrom(daiAddress, constants.NULL_ADDRESS, receiver, constants.ZERO_AMOUNT, bridgeData)
+                    .awaitTransactionSuccessAsync({ from: usdcWallet, gasPrice: 1 }, { shouldValidate: false });
+            });
         });
-        it('succeeds exchanges USDC for DAI', async () => {
-            const bridgeData = bridgeDataEncoder.encode([curveAddress, usdcTokenIdx, daiTokenIdx]);
-            // Fund the Bridge
-            const usdc = new ERC20TokenContract(usdcAddress, env.provider, { ...env.txDefaults, from: usdcWallet });
-            await usdc
-                .transfer(testContract.address, toBaseUnitAmount(1, 6))
-                .awaitTransactionSuccessAsync({ from: usdcWallet }, { shouldValidate: false });
-            // Exchange via Curve
-            await testContract
-                .bridgeTransferFrom(daiAddress, constants.NULL_ADDRESS, receiver, constants.ZERO_AMOUNT, bridgeData)
-                .awaitTransactionSuccessAsync({ from: usdcWallet, gasPrice: 1 }, { shouldValidate: false });
+        describe('Version 1', () => {
+            const version = 1;
+            it('succeeds exchanges DAI for USDC', async () => {
+                const bridgeData = bridgeDataEncoder.encode([
+                    curveAddressUsdcDaiUsdt,
+                    daiTokenIdx,
+                    usdcTokenIdx,
+                    version,
+                ]);
+                // Fund the Bridge
+                const dai = new ERC20TokenContract(daiAddress, env.provider, { ...env.txDefaults, from: daiWallet });
+                await dai
+                    .transfer(testContract.address, toBaseUnitAmount(1))
+                    .awaitTransactionSuccessAsync({ from: daiWallet }, { shouldValidate: false });
+                // Exchange via Curve
+                await testContract
+                    .bridgeTransferFrom(
+                        usdcAddress,
+                        constants.NULL_ADDRESS,
+                        receiver,
+                        constants.ZERO_AMOUNT,
+                        bridgeData,
+                    )
+                    .awaitTransactionSuccessAsync({ from: daiWallet, gasPrice: 1 }, { shouldValidate: false });
+            });
+            it('succeeds exchanges USDC for DAI', async () => {
+                const bridgeData = bridgeDataEncoder.encode([
+                    curveAddressUsdcDaiUsdt,
+                    usdcTokenIdx,
+                    daiTokenIdx,
+                    version,
+                ]);
+                // Fund the Bridge
+                const usdc = new ERC20TokenContract(usdcAddress, env.provider, { ...env.txDefaults, from: usdcWallet });
+                await usdc
+                    .transfer(testContract.address, toBaseUnitAmount(1, 6))
+                    .awaitTransactionSuccessAsync({ from: usdcWallet }, { shouldValidate: false });
+                // Exchange via Curve
+                await testContract
+                    .bridgeTransferFrom(daiAddress, constants.NULL_ADDRESS, receiver, constants.ZERO_AMOUNT, bridgeData)
+                    .awaitTransactionSuccessAsync({ from: usdcWallet, gasPrice: 1 }, { shouldValidate: false });
+            });
         });
     });
 });
