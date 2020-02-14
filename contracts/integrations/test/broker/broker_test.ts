@@ -714,8 +714,8 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
     });
 
     describe('Data encoding/decoding tools', () => {
-        const MAX_UINT8 = new BigNumber(2).exponentiatedBy(8).minus(1);
-        const MAX_UINT16 = new BigNumber(2).exponentiatedBy(16).minus(1);
+        const MAX_UINT8 = 2 ** 8 - 1;
+        const MAX_UINT16 = 2 ** 16 - 1;
 
         it('correctly decodes property data', async () => {
             const properties = {

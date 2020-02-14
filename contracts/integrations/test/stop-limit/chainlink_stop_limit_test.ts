@@ -27,7 +27,7 @@ import { LocalBalanceStore } from '../framework/balances/local_balance_store';
 import { DeploymentManager } from '../framework/deployment_manager';
 import { ChainlinkStopLimitContract, TestChainlinkAggregatorContract } from '../wrappers';
 
-blockchainTests.resets.only('Chainlink stop-limit order tests', env => {
+blockchainTests.resets('Chainlink stop-limit order tests', env => {
     let deployment: DeploymentManager;
     let balanceStore: BlockchainBalanceStore;
     let initialBalances: LocalBalanceStore;

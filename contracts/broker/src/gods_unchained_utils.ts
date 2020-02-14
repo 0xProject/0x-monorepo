@@ -3,8 +3,8 @@ import { ERC1155AssetData } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 export interface GodsUnchainedProperties {
-    proto: BigNumber;
-    quality: BigNumber;
+    proto: BigNumber | number;
+    quality: BigNumber | number;
 }
 
 const propertyDataEncoder = AbiEncoder.create([{ name: 'proto', type: 'uint16' }, { name: 'quality', type: 'uint8' }]);
