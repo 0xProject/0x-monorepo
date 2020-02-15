@@ -132,4 +132,21 @@ interface IERC20BridgeSampler {
         external
         view
         returns (uint256[] memory takerTokenAmounts);
+
+    /// @dev Sample sell quotes from Curve.
+    /// @param curveAddress Address of the Curve contract.
+    /// @param fromTokenIdx Index of the taker token (what to sell).
+    /// @param toTokenIdx Index of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromCurve(
+        address curveAddress,
+        int128 fromTokenIdx,
+        int128 toTokenIdx,
+        uint256[] calldata takerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory makerTokenAmounts);
 }

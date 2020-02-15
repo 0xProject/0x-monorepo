@@ -28,6 +28,7 @@ export interface ContractAddresses {
     kyberBridge: string;
     chaiBridge: string;
     dydxBridge: string;
+    curveBridge: string;
 }
 
 export enum ChainId {

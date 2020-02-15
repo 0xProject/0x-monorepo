@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.2.0",
+        "changes": [
+            {
+                "note": "Added `CurveBridge` address (null)",
+                "pr": 2483
+            }
+        ]
+    },
+    {
         "version": "6.1.0",
         "changes": [
             {

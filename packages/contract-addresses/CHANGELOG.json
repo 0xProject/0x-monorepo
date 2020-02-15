@@ -3,8 +3,16 @@
         "version": "4.6.0",
         "changes": [
             {
-                "note": "Added ChainlinkStopLimit addresses (mainnet, ropsten, rinkeby)",
+                "note": "Added `ChainlinkStopLimit` addresses (mainnet, ropsten, rinkeby)",
                 "pr": 2473
+            },
+            {
+                "note": "Added `CurveBridge` address (mainnet)",
+                "pr": 2483
+            },
+            {
+                "note": "Update `ERC20BridgeSampler` address (mainnet, kovan)",
+                "pr": 2483
             }
         ]
     },

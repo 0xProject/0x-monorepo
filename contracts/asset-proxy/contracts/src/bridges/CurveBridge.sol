@@ -37,9 +37,9 @@ contract CurveBridge is
 {
     /// @dev Callback for `ICurve`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the opposing asset
-    ///      (DAI or USDC) to the Curve contract, then transfers the bought
+    ///      (DAI, USDC) to the Curve contract, then transfers the bought
     ///      tokens to `to`.
-    /// @param toTokenAddress The token to give to `to` (either DAI or USDC).
+    /// @param toTokenAddress The token to give to `to` (i.e DAI, USDC, USDT).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
     /// @param bridgeData The abi-encoeded "from" token address.
@@ -55,24 +55,37 @@ contract CurveBridge is
         returns (bytes4 success)
     {
         // Decode the bridge data to get the Curve metadata.
-        (address curveAddress, int128 fromCoinIdx, int128 toCoinIdx) = abi.decode(bridgeData, (address, int128, int128));
+        (address curveAddress, int128 fromCoinIdx, int128 toCoinIdx, int128 version) = abi.decode(bridgeData, (address, int128, int128, int128));
         ICurve exchange = ICurve(curveAddress);
 
         address fromTokenAddress = exchange.underlying_coins(fromCoinIdx);
+        require(toTokenAddress != fromTokenAddress, "CurveBridge/INVALID_PAIR");
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
         LibERC20Token.approve(fromTokenAddress, address(exchange), uint256(-1));
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
-        exchange.exchange_underlying(
-            fromCoinIdx,
-            toCoinIdx,
-            // dx
-            IERC20Token(fromTokenAddress).balanceOf(address(this)),
-            // min dy
-            amount,
-            // expires
-            block.timestamp + 1
-        );
+        if (version == 0) {
+            exchange.exchange_underlying(
+                fromCoinIdx,
+                toCoinIdx,
+                // dx
+                IERC20Token(fromTokenAddress).balanceOf(address(this)),
+                // min dy
+                amount,
+                // expires
+                block.timestamp + 1
+            );
+        } else {
+            exchange.exchange_underlying(
+                fromCoinIdx,
+                toCoinIdx,
+                // dx
+                IERC20Token(fromTokenAddress).balanceOf(address(this)),
+                // min dy
+                amount
+            );
+        }
+
         uint256 toTokenBalance = IERC20Token(toTokenAddress).balanceOf(address(this));
         // Transfer the converted `toToken`s to `to`.
         LibERC20Token.transfer(toTokenAddress, to, toTokenBalance);

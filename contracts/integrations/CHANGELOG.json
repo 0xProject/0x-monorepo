@@ -11,8 +11,12 @@
                 "pr": 2479
             },
             {
-                "note": "Addeded decoders for stop-limit data",
+                "note": "Addded decoders for stop-limit data",
                 "pr": 2484
+            },
+            {
+                "note": "Added ERC20Sampler and Curve Mainnet test",
+                "pr": 2483
             }
         ]
     },

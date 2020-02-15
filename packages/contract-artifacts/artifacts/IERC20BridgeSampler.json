@@ -109,6 +109,20 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "curveAddress", "type": "address" },
+                    { "internalType": "int128", "name": "fromTokenIdx", "type": "int128" },
+                    { "internalType": "int128", "name": "toTokenIdx", "type": "int128" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromCurve",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
                     { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
@@ -186,6 +200,16 @@
                         "takerToken": "Address of the taker token (what to sell)."
                     },
                     "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleSellsFromCurve(address,int128,int128,uint256[])": {
+                    "details": "Sample sell quotes from Curve.",
+                    "params": {
+                        "curveAddress": "Address of the Curve contract.",
+                        "fromTokenIdx": "Index of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample.",
+                        "toTokenIdx": "Index of the maker token (what to buy)."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
                 },
                 "sampleSellsFromEth2Dai(address,address,uint256[])": {
                     "details": "Sample sell quotes from Eth2Dai/Oasis.",
