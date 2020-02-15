@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-wrappers-test",
-    "version": "12.2.8",
+    "version": "12.2.9",
     "engines": {
         "node": ">=6.12"
     },
@@ -31,11 +31,11 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-wrappers-test/README.md",
     "devDependencies": {
-        "@0x/contract-wrappers": "^13.5.0",
-        "@0x/contracts-test-utils": "^5.1.4",
+        "@0x/contract-wrappers": "^13.6.0",
+        "@0x/contracts-test-utils": "^5.1.5",
         "@0x/dev-utils": "^3.2.0",
-        "@0x/migrations": "^6.1.0",
-        "@0x/order-utils": "^10.2.0",
+        "@0x/migrations": "^6.2.0",
+        "@0x/order-utils": "^10.2.1",
         "@0x/subproviders": "^6.0.7",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
