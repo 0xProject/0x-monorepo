@@ -9,6 +9,10 @@
             {
                 "note": "Fixed the mainnet dYdX Bridge tests.",
                 "pr": 2479
+            },
+            {
+                "note": "Addeded decoders for stop-limit data",
+                "pr": 2484
             }
         ]
     },

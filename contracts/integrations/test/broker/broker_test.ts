@@ -1,14 +1,17 @@
 import {
     artifacts as BrokerArtifacts,
     BrokerContract,
-    godsUnchainedUtils,
+    decodeBrokerAssetData,
+    decodePropertyData,
+    encodeBrokerAssetData,
+    encodePropertyData,
     GodsUnchainedValidatorContract,
     TestGodsUnchainedContract,
 } from '@0x/contracts-broker';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeFunctionName, ExchangeRevertErrors } from '@0x/contracts-exchange';
 import { ReferenceFunctions } from '@0x/contracts-exchange-libs';
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -72,13 +75,10 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             deployment.tokens.weth.address,
         );
 
-        const takerAssetData = godsUnchainedUtils.encodeBrokerAssetData(
-            broker.address,
-            godsUnchained.address,
-            validator.address,
-            makerSpecifiedProto,
-            makerSpecifiedQuality,
-        );
+        const takerAssetData = encodeBrokerAssetData(broker.address, godsUnchained.address, validator.address, {
+            proto: makerSpecifiedProto,
+            quality: makerSpecifiedQuality,
+        });
 
         const orderConfig = {
             feeRecipientAddress: constants.NULL_ADDRESS,
@@ -530,22 +530,16 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
 
             orders = [
                 await maker.signOrderAsync({
-                    takerAssetData: godsUnchainedUtils.encodeBrokerAssetData(
-                        broker.address,
-                        godsUnchained.address,
-                        validator.address,
-                        firstOrderProto,
-                        firstOrderQuality,
-                    ),
+                    takerAssetData: encodeBrokerAssetData(broker.address, godsUnchained.address, validator.address, {
+                        proto: firstOrderProto,
+                        quality: firstOrderQuality,
+                    }),
                 }),
                 await maker.signOrderAsync({
-                    takerAssetData: godsUnchainedUtils.encodeBrokerAssetData(
-                        broker.address,
-                        godsUnchained.address,
-                        validator.address,
-                        secondOrderProto,
-                        secondOrderQuality,
-                    ),
+                    takerAssetData: encodeBrokerAssetData(broker.address, godsUnchained.address, validator.address, {
+                        proto: secondOrderProto,
+                        quality: secondOrderQuality,
+                    }),
                 }),
             ];
         });
@@ -716,6 +710,32 @@ blockchainTests.resets('Broker <> Gods Unchained integration tests', env => {
             );
             await balanceStore.updateBalancesAsync();
             balanceStore.assertEquals(expectedBalances);
+        });
+    });
+
+    describe('Data encoding/decoding tools', () => {
+        const MAX_UINT8 = 2 ** 8 - 1;
+        const MAX_UINT16 = 2 ** 16 - 1;
+
+        it('correctly decodes property data', async () => {
+            const properties = {
+                proto: getRandomInteger(0, MAX_UINT16),
+                quality: getRandomInteger(0, MAX_UINT8),
+            };
+            const encoded = encodePropertyData(properties);
+            const decoded = decodePropertyData(encoded);
+            expect(decoded.proto).to.bignumber.equal(properties.proto);
+            expect(decoded.quality).to.bignumber.equal(properties.quality);
+        });
+        it('correctly decodes broker asset data', async () => {
+            const properties = {
+                proto: getRandomInteger(0, MAX_UINT16),
+                quality: getRandomInteger(0, MAX_UINT8),
+            };
+            const encoded = encodeBrokerAssetData(randomAddress(), randomAddress(), randomAddress(), properties);
+            const decoded = decodeBrokerAssetData(encoded);
+            expect(decoded.proto).to.bignumber.equal(properties.proto);
+            expect(decoded.quality).to.bignumber.equal(properties.quality);
         });
     });
 }); // tslint:disable-line:max-file-line-count

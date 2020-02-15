@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Added decoders for broker data",
+                "pr": 2484
+            }
+        ]
+    },
+    {
         "timestamp": 1581204851,
         "version": "1.0.2",
         "changes": [

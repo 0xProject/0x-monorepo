@@ -1,6 +1,6 @@
 export { artifacts } from './artifacts';
 export { BrokerContract, GodsUnchainedValidatorContract, TestGodsUnchainedContract } from './wrappers';
-export { godsUnchainedUtils } from './gods_unchained_utils';
+export * from './gods_unchained_utils';
 export { BrokerRevertErrors } from '@0x/utils';
 export {
     ContractArtifact,

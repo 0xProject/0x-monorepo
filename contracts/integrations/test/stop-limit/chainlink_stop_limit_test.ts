@@ -1,10 +1,22 @@
 import { ExchangeRevertErrors } from '@0x/contracts-exchange';
-import { blockchainTests, constants, expect, orderHashUtils } from '@0x/contracts-test-utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    getRandomInteger,
+    orderHashUtils,
+    randomAddress,
+} from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 
-import { encodeStopLimitStaticCallData } from '../../src/chainlink_utils';
+import {
+    decodeChainlinkStopLimitData,
+    decodeStopLimitStaticCallData,
+    encodeChainlinkStopLimitData,
+    encodeStopLimitStaticCallData,
+} from '../../src/chainlink_utils';
 
 import { artifacts } from '../artifacts';
 import { Actor } from '../framework/actors/base';
@@ -21,6 +33,7 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
     let initialBalances: LocalBalanceStore;
 
     let chainLinkAggregator: TestChainlinkAggregatorContract;
+    let chainlinkStopLimit: ChainlinkStopLimitContract;
 
     let maker: Maker;
     let taker: Taker;
@@ -38,7 +51,7 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         });
         const [makerToken, takerToken] = deployment.tokens.erc20;
 
-        const chainlinkStopLimit = await ChainlinkStopLimitContract.deployFrom0xArtifactAsync(
+        chainlinkStopLimit = await ChainlinkStopLimitContract.deployFrom0xArtifactAsync(
             artifacts.ChainlinkStopLimit,
             env.provider,
             env.txDefaults,
@@ -55,12 +68,11 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
             [new BigNumber(1), new BigNumber(1)],
             [
                 assetDataUtils.encodeERC20AssetData(makerToken.address),
-                encodeStopLimitStaticCallData(
-                    chainlinkStopLimit.address,
-                    chainLinkAggregator.address,
+                encodeStopLimitStaticCallData(chainlinkStopLimit.address, {
+                    oracle: chainLinkAggregator.address,
                     minPrice,
                     maxPrice,
-                ),
+                }),
             ],
         );
 
@@ -104,50 +116,77 @@ blockchainTests.resets('Chainlink stop-limit order tests', env => {
         Actor.reset();
     });
 
-    it('fillOrder reverts if price < minPrice', async () => {
-        await chainLinkAggregator.setPrice(minPrice.minus(1)).awaitTransactionSuccessAsync();
-        const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
-        const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
-            orderHashUtils.getOrderHashHex(order),
-            order.makerAssetData,
-            new StringRevertError('ChainlinkStopLimit/OUT_OF_PRICE_RANGE').encode(),
-        );
-        return expect(tx).to.revertWith(expectedError);
+    describe('filling stop-limit orders', () => {
+        it('fillOrder reverts if price < minPrice', async () => {
+            await chainLinkAggregator.setPrice(minPrice.minus(1)).awaitTransactionSuccessAsync();
+            const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
+            const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
+                orderHashUtils.getOrderHashHex(order),
+                order.makerAssetData,
+                new StringRevertError('ChainlinkStopLimit/OUT_OF_PRICE_RANGE').encode(),
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('fillOrder reverts price > maxPrice', async () => {
+            await chainLinkAggregator.setPrice(maxPrice.plus(1)).awaitTransactionSuccessAsync();
+            const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
+            const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
+                orderHashUtils.getOrderHashHex(order),
+                order.makerAssetData,
+                new StringRevertError('ChainlinkStopLimit/OUT_OF_PRICE_RANGE').encode(),
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('fillOrder succeeds if price = minPrice', async () => {
+            await chainLinkAggregator.setPrice(minPrice).awaitTransactionSuccessAsync();
+            const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
+            const expectedBalances = LocalBalanceStore.create(initialBalances);
+            expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
+            await balanceStore.updateBalancesAsync();
+            balanceStore.assertEquals(expectedBalances);
+        });
+        it('fillOrder succeeds if price = maxPrice', async () => {
+            await chainLinkAggregator.setPrice(maxPrice).awaitTransactionSuccessAsync();
+            const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
+            const expectedBalances = LocalBalanceStore.create(initialBalances);
+            expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
+            await balanceStore.updateBalancesAsync();
+            balanceStore.assertEquals(expectedBalances);
+        });
+        it('fillOrder succeeds if minPrice < price < maxPrice', async () => {
+            await chainLinkAggregator
+                .setPrice(minPrice.plus(maxPrice).dividedToIntegerBy(2))
+                .awaitTransactionSuccessAsync();
+            const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
+            const expectedBalances = LocalBalanceStore.create(initialBalances);
+            expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
+            await balanceStore.updateBalancesAsync();
+            balanceStore.assertEquals(expectedBalances);
+        });
     });
-    it('fillOrder reverts price > maxPrice', async () => {
-        await chainLinkAggregator.setPrice(maxPrice.plus(1)).awaitTransactionSuccessAsync();
-        const tx = taker.fillOrderAsync(order, order.takerAssetAmount);
-        const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
-            orderHashUtils.getOrderHashHex(order),
-            order.makerAssetData,
-            new StringRevertError('ChainlinkStopLimit/OUT_OF_PRICE_RANGE').encode(),
-        );
-        return expect(tx).to.revertWith(expectedError);
-    });
-    it('fillOrder succeeds if price = minPrice', async () => {
-        await chainLinkAggregator.setPrice(minPrice).awaitTransactionSuccessAsync();
-        const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
-        const expectedBalances = LocalBalanceStore.create(initialBalances);
-        expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
-        await balanceStore.updateBalancesAsync();
-        balanceStore.assertEquals(expectedBalances);
-    });
-    it('fillOrder succeeds if price = maxPrice', async () => {
-        await chainLinkAggregator.setPrice(maxPrice).awaitTransactionSuccessAsync();
-        const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
-        const expectedBalances = LocalBalanceStore.create(initialBalances);
-        expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
-        await balanceStore.updateBalancesAsync();
-        balanceStore.assertEquals(expectedBalances);
-    });
-    it('fillOrder succeeds if minPrice < price < maxPrice', async () => {
-        await chainLinkAggregator
-            .setPrice(minPrice.plus(maxPrice).dividedToIntegerBy(2))
-            .awaitTransactionSuccessAsync();
-        const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount);
-        const expectedBalances = LocalBalanceStore.create(initialBalances);
-        expectedBalances.simulateFills([order], taker.address, receipt, deployment, DeploymentManager.protocolFee);
-        await balanceStore.updateBalancesAsync();
-        balanceStore.assertEquals(expectedBalances);
+
+    describe('Data encoding/decoding tools', () => {
+        const MAX_INT256 = new BigNumber(2).exponentiatedBy(255).minus(1);
+
+        it('correctly decodes chainlink stop-limit params', async () => {
+            const params = {
+                oracle: randomAddress(),
+                minPrice: getRandomInteger(0, MAX_INT256),
+                maxPrice: getRandomInteger(0, MAX_INT256),
+            };
+            const encoded = encodeChainlinkStopLimitData(params);
+            const decoded = decodeChainlinkStopLimitData(encoded);
+            expect(decoded).to.deep.equal(params);
+        });
+        it('correctly decodes stop-limit assetData', async () => {
+            const params = {
+                oracle: randomAddress(),
+                minPrice: getRandomInteger(0, MAX_INT256),
+                maxPrice: getRandomInteger(0, MAX_INT256),
+            };
+            const encoded = encodeStopLimitStaticCallData(chainlinkStopLimit.address, params);
+            const decoded = decodeStopLimitStaticCallData(encoded);
+            expect(decoded).to.deep.equal(params);
+        });
     });
 });
