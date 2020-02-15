@@ -30,6 +30,7 @@ export enum ERC20BridgeSource {
     Kyber = 'Kyber',
     CurveUsdcDai = 'Curve_USDC_DAI',
     CurveUsdcDaiUsdt = 'Curve_USDC_DAI_USDT',
+    CurveUsdcDaiUsdtTusd = 'Curve_USDC_DAI_USDT_TUSD',
 }
 
 // Internal `fillData` field for `Fill` objects.

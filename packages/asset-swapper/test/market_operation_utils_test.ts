@@ -186,6 +186,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Uniswap]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.CurveUsdcDai]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.CurveUsdcDaiUsdt]: createDecreasingRates(NUM_SAMPLES),
+        [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: createDecreasingRates(NUM_SAMPLES),
     };
 
     function findSourceWithMaxOutput(rates: RatesBySource): ERC20BridgeSource {
@@ -396,6 +397,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.CurveUsdcDai] = [0, 0, 0, 0];
                 rates[ERC20BridgeSource.CurveUsdcDaiUsdt] = [0, 0, 0, 0];
+                rates[ERC20BridgeSource.CurveUsdcDaiUsdtTusd] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
@@ -423,6 +425,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Kyber] = [0.4, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.CurveUsdcDai] = [0, 0, 0, 0];
                 rates[ERC20BridgeSource.CurveUsdcDaiUsdt] = [0, 0, 0, 0];
+                rates[ERC20BridgeSource.CurveUsdcDaiUsdtTusd] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
@@ -450,6 +453,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.CurveUsdcDai] = [0, 0, 0, 0];
                 rates[ERC20BridgeSource.CurveUsdcDaiUsdt] = [0, 0, 0, 0];
+                rates[ERC20BridgeSource.CurveUsdcDaiUsdtTusd] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });

@@ -81,6 +81,16 @@ const DEFAULT_CURVE_OPTS: { [source: string]: { version: number; curveAddress: s
             '0xdac17f958d2ee523a2206206994597c13d831ec7',
         ],
     },
+    [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: {
+        version: 1,
+        curveAddress: '0x45f783cce6b7ff23b2ab2d70e416cdb7d6055f51',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+            '0x0000000000085d4780b73119b644ae5ecd22b376',
+        ],
+    },
 };
 
 export const constants = {

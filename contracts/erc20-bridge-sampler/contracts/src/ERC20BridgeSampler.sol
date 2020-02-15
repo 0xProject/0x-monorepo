@@ -44,8 +44,9 @@ contract ERC20BridgeSampler is
     uint256 constant internal UNISWAP_CALL_GAS = 150e3; // 150k
     /// @dev Base gas limit for Eth2Dai calls.
     uint256 constant internal ETH2DAI_CALL_GAS = 1000e3; // 1m
-    /// @dev Base gas limit for Curve calls.
-    uint256 constant internal CURVE_CALL_GAS = 150e3; // 150k
+    /// @dev Base gas limit for Curve calls. Some Curves have multiple tokens
+    ///      So a reasonable ceil is 150k per token. Biggest Curve has 4 tokens.
+    uint256 constant internal CURVE_CALL_GAS = 600e3; // 600k
 
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.

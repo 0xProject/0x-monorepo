@@ -13,6 +13,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.Kyber,
     ERC20BridgeSource.CurveUsdcDai,
     ERC20BridgeSource.CurveUsdcDaiUsdt,
+    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
 ];
 
 /**

@@ -14,7 +14,7 @@ blockchainTests.fork.skip('Mainnet Sampler Tests', env => {
     });
 
     describe('sampleSellsFromCurve()', () => {
-        const curveAddress = '0x2e60CF74d81ac34eB21eEff58Db4D385920ef419';
+        const curveAddress = '0x45f783cce6b7ff23b2ab2d70e416cdb7d6055f51';
         const daiTokenIdx = new BigNumber(0);
         const usdcTokenIdx = new BigNumber(1);
 
