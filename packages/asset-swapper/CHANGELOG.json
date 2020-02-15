@@ -5,6 +5,10 @@
             {
                 "note": "Use `batchCall()` version of the `ERC20BridgeSampler` contract",
                 "pr": 2477
+            },
+            {
+                "note": "Support for sampling Curve contracts",
+                "pr": 2483
             }
         ]
     },
