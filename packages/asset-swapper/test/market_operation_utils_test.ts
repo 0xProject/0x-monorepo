@@ -538,7 +538,15 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {
-                const bestSource = findSourceWithMaxOutput(_.omit(DEFAULT_RATES, ERC20BridgeSource.Kyber));
+                const bestSource = findSourceWithMaxOutput(
+                    _.omit(
+                        DEFAULT_RATES,
+                        ERC20BridgeSource.Kyber,
+                        ERC20BridgeSource.CurveUsdcDai,
+                        ERC20BridgeSource.CurveUsdcDaiUsdt,
+                        ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+                    ),
+                );
                 expect(bestSource).to.exist('');
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
                     ...DEFAULT_OPTS,
