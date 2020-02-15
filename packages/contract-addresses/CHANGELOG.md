@@ -5,10 +5,20 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.6.0 - _February 15, 2020_
+
+    * Added `ChainlinkStopLimit` addresses (mainnet, ropsten, rinkeby) (#2473)
+    * Added `CurveBridge` address (mainnet) (#2483)
+    * Update `ERC20BridgeSampler` address (mainnet, kovan) (#2483)
+
 ## v4.5.0 - _February 8, 2020_
 
     * Update `ERC20BridgeSampler` and `Eth2Dai` on mainnet and kovan. (#2474)
     * Update `ERC20BridgeSampler` address on mainnet and kovan. (#2476)
+    * Removed OrderValidator and DutchAuction addresses (#2469)
+    * Added Broker and GodsUnchainedValidator addresses (#2469)
+    * Updated Forwarder addresses (#2469)
+    * Update `ERC20BridgeSampler` address on mainnet and kovan. (#2477)
 
 ## v4.4.0 - _February 4, 2020_
 

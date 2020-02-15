@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _February 15, 2020_
+
+    * Dependencies updated
+
 ## v2.2.0 - _February 8, 2020_
 
     * Use updated `order-utils` with non-async hash functions. (#2462)

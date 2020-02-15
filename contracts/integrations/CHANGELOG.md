@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.4.0 - _February 15, 2020_
+
+    * Added ChainlinkStopLimit contract and tests (#2473)
+    * Fixed the mainnet dYdX Bridge tests. (#2479)
+    * Addded decoders for stop-limit data (#2484)
+    * Added ERC20Sampler and Curve Mainnet test (#2483)
+
 ## v2.3.0 - _February 8, 2020_
 
     * Remove dependency on `DevUtils` for asset data encoding/decoding (#2462)

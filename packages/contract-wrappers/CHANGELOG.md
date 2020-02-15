@@ -5,10 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.6.0 - _February 15, 2020_
+
+    * Add Broker and GodsUnchainedValidator wrappers (#2469)
+    * Updated Forwarder wrapper (#2469)
+
 ## v13.5.0 - _February 8, 2020_
 
     * Export `EvmBytecodeOutputLinkReferences` type. (#2462)
     * Remove `LibTransactionDecoder` (#2464)
+    * Update `IERC20BridgeSampler` wrapper (#2477)
 
 ## v13.4.2 - _February 6, 2020_
 

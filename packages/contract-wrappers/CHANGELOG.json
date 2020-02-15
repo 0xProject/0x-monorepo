@@ -10,7 +10,8 @@
                 "note": "Updated Forwarder wrapper",
                 "pr": 2469
             }
-        ]
+        ],
+        "timestamp": 1581748629
     },
     {
         "version": "13.5.0",

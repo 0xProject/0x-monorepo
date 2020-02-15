@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.2.1 - _February 15, 2020_
+
+    * Dependencies updated
+
 ## v10.2.0 - _February 8, 2020_
 
     * Remove use of ambient `DevUtils` instances. (#2462)

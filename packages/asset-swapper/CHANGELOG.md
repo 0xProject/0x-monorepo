@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _February 15, 2020_
+
+    * Use `batchCall()` version of the `ERC20BridgeSampler` contract (#2477)
+    * Support for sampling Curve contracts (#2483)
+
 ## v4.1.2 - _February 8, 2020_
 
     * Dependencies updated

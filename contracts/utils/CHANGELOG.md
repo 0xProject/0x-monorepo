@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.1 - _February 15, 2020_
+
+    * Dependencies updated
+
 ## v4.3.0 - _February 8, 2020_
 
     * Update Eth2Dai addresses in `DeploymentConstants` (#2474)

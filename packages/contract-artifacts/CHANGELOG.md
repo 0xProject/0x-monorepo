@@ -5,10 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.6.0 - _February 15, 2020_
+
+    * Add Broker and GodsUnchainedValidator artifacts (#2469)
+    * Updated Forwarder artifact (#2469)
+
 ## v3.5.0 - _February 8, 2020_
 
     * Update `DevUtils` artifact (#2464)
     * Remove `LibTransactionDecoder` artifact (#2464)
+    * Update `IERC20BridgeSampler` artifact (#2477)
 
 ## v3.4.1 - _February 6, 2020_
 

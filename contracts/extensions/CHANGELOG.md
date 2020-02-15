@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.1 - _February 15, 2020_
+
+    * Dependencies updated
+
 ## v6.1.0 - _February 8, 2020_
 
     * Export `EvmBytecodeOutputLinkReferences` type. (#2462)

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.2.0 - _February 15, 2020_
+
+    * Added `CurveBridge` address (null) (#2483)
+
 ## v6.1.0 - _February 8, 2020_
 
     * Update `DevUtils` deployment (#2456)

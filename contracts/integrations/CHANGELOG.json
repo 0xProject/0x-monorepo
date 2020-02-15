@@ -18,7 +18,8 @@
                 "note": "Added ERC20Sampler and Curve Mainnet test",
                 "pr": 2483
             }
-        ]
+        ],
+        "timestamp": 1581748629
     },
     {
         "version": "2.3.0",

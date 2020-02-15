@@ -6,7 +6,8 @@
                 "note": "Added `CurveBridge` address (null)",
                 "pr": 2483
             }
-        ]
+        ],
+        "timestamp": 1581748629
     },
     {
         "version": "6.1.0",

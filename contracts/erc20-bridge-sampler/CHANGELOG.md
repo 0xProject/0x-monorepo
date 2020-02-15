@@ -5,9 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.4.0 - _February 15, 2020_
+
+    * Added Curve contract sampling (#2483)
+
 ## v1.3.0 - _February 8, 2020_
 
     * Catch reverts to `DevUtils` calls (#2476)
+    * Remove wrapper functions and introduce `batchCall()` (#2477)
 
 ## v1.2.1 - _February 6, 2020_
 

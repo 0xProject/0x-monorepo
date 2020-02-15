@@ -10,7 +10,8 @@
                 "note": "Updated Forwarder artifact",
                 "pr": 2469
             }
-        ]
+        ],
+        "timestamp": 1581748629
     },
     {
         "version": "3.5.0",
