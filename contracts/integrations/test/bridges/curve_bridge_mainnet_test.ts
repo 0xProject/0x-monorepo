@@ -4,7 +4,7 @@ import { ERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, constants, describe, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { AbiEncoder } from '@0x/utils';
 
-blockchainTests.fork.skip('Mainnet curve bridge tests', env => {
+blockchainTests.fork.resets('Mainnet curve bridge tests', env => {
     let testContract: CurveBridgeContract;
     const receiver = '0x986ccf5234d9cfbb25246f1a5bfa51f4ccfcb308';
     const usdcWallet = '0xF977814e90dA44bFA03b6295A0616a897441aceC';

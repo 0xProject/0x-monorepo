@@ -2,7 +2,7 @@ import { artifacts, ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridg
 import { blockchainTests, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-blockchainTests.fork.skip('Mainnet Sampler Tests', env => {
+blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
     let testContract: ERC20BridgeSamplerContract;
     before(async () => {
         testContract = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
