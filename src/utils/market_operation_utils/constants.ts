@@ -7,7 +7,14 @@ const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
 /**
  * Valid sources for market sell.
  */
-export const SELL_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber];
+export const SELL_SOURCES = [
+    ERC20BridgeSource.Uniswap,
+    ERC20BridgeSource.Eth2Dai,
+    ERC20BridgeSource.Kyber,
+    ERC20BridgeSource.CurveUsdcDai,
+    ERC20BridgeSource.CurveUsdcDaiUsdt,
+    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+];
 
 /**
  * Valid sources for market buy.

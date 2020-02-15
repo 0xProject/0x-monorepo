@@ -90,6 +90,10 @@ export class CreateOrderUtils {
                 return this._contractAddress.kyberBridge;
             case ERC20BridgeSource.Uniswap:
                 return this._contractAddress.uniswapBridge;
+            case ERC20BridgeSource.CurveUsdcDai:
+            case ERC20BridgeSource.CurveUsdcDaiUsdt:
+            case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
+                return this._contractAddress.curveBridge;
             default:
                 break;
         }
@@ -106,13 +110,30 @@ function createBridgeOrder(
     slippage: number,
     isBuy: boolean = false,
 ): OptimizedMarketOrder {
-    return {
-        makerAddress: bridgeAddress,
-        makerAssetData: assetDataUtils.encodeERC20BridgeAssetData(
+    let makerAssetData;
+    if (
+        fill.source === ERC20BridgeSource.CurveUsdcDai ||
+        fill.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
+        fill.source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
+    ) {
+        const { curveAddress, tokens, version } = constants.DEFAULT_CURVE_OPTS[fill.source];
+        const fromTokenIdx = tokens.indexOf(takerToken);
+        const toTokenIdx = tokens.indexOf(makerToken);
+        makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+            makerToken,
+            bridgeAddress,
+            createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx, version),
+        );
+    } else {
+        makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
             makerToken,
             bridgeAddress,
             createBridgeData(takerToken),
-        ),
+        );
+    }
+    return {
+        makerAddress: bridgeAddress,
+        makerAssetData,
         takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken),
         ...createCommonOrderFields(orderDomain, fill, slippage, isBuy),
     };
@@ -121,6 +142,21 @@ function createBridgeOrder(
 function createBridgeData(tokenAddress: string): string {
     const encoder = AbiEncoder.create([{ name: 'tokenAddress', type: 'address' }]);
     return encoder.encode({ tokenAddress });
+}
+
+function createCurveBridgeData(
+    curveAddress: string,
+    fromTokenIdx: number,
+    toTokenIdx: number,
+    version: number,
+): string {
+    const curveBridgeDataEncoder = AbiEncoder.create([
+        { name: 'curveAddress', type: 'address' },
+        { name: 'fromTokenIdx', type: 'int128' },
+        { name: 'toTokenIdx', type: 'int128' },
+        { name: 'version', type: 'int128' },
+    ]);
+    return curveBridgeDataEncoder.encode([curveAddress, fromTokenIdx, toTokenIdx, version]);
 }
 
 type CommonOrderFields = Pick<
