@@ -14,6 +14,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { constants as assetSwapperConstants } from '../src/constants';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
@@ -80,7 +81,10 @@ describe('MarketOperationUtils tests', () => {
             case UNISWAP_BRIDGE_ADDRESS.toLowerCase():
                 return ERC20BridgeSource.Uniswap;
             case CURVE_BRIDGE_ADDRESS.toLowerCase():
-                return ERC20BridgeSource.CurveUsdcDai;
+                const curveSource = Object.keys(assetSwapperConstants.DEFAULT_CURVE_OPTS).filter(
+                    k => assetData.indexOf(assetSwapperConstants.DEFAULT_CURVE_OPTS[k].curveAddress.slice(2)) !== -1,
+                );
+                return curveSource[0] as ERC20BridgeSource;
             default:
                 break;
         }
