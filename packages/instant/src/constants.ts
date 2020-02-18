@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { AccountNotReady, AccountState, Network, ProviderType } from './types';
+import { AccountNotReady, AccountState, AffiliateInfo, Network, ProviderType } from './types';
 
 // TODO(dave4506) until we have /prices endpoint ready, we will use this whitelist for bridge order liquidity assets
 export const SUPPORTED_TOKEN_ASSET_DATA_WITH_BRIDGE_ORDERS = [
@@ -94,4 +94,10 @@ export const PROVIDER_TYPE_TO_NAME: { [key in ProviderType]: string } = {
     [ProviderType.Fortmatic]: 'Fortmatic',
     [ProviderType.Fallback]: 'Fallback',
 };
-export const FORTMATIC_API_KEY = process.env.INSTANT_FORTMATIC_API_KEY || 'pk_live_43E27F282B16AA8C';
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const DEFAULT_AFFILIATE_INFO: AffiliateInfo = {
+    feeRecipient: NULL_ADDRESS,
+    feePercentage: 0,
+};
+
+export const FORTMATIC_API_KEY = process.env.INSTANT_FORTMATIC_API_KEY;

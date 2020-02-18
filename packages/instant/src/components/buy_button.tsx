@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
 
-import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
+import { DEFAULT_AFFILIATE_INFO, WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, Asset, ZeroExInstantError } from '../types';
 import { analytics } from '../util/analytics';
@@ -77,7 +77,7 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         const {
             swapQuote,
             swapQuoteConsumer,
-            affiliateInfo,
+            affiliateInfo= DEFAULT_AFFILIATE_INFO,
             accountAddress,
             accountEthBalanceInWei,
             web3Wrapper,
@@ -109,6 +109,7 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
                 takerAddress: accountAddress,
             });
         } catch (e) {
+            console.log(e);
             if (e instanceof Error) {
                 if (e.message === SwapQuoteConsumerError.TransactionValueTooLow) {
                     analytics.trackBuySimulationFailed(swapQuote);
