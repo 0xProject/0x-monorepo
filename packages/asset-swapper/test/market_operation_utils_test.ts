@@ -201,9 +201,9 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Eth2Dai]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.Kyber]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.Uniswap]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.CurveUsdcDai]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.CurveUsdcDaiUsdt]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: createDecreasingRates(NUM_SAMPLES),
+        [ERC20BridgeSource.CurveUsdcDai]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.CurveUsdcDaiUsdt]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: _.times(NUM_SAMPLES, () => 0),
     };
 
     function findSourceWithMaxOutput(rates: RatesBySource): ERC20BridgeSource {
@@ -269,7 +269,17 @@ describe('MarketOperationUtils tests', () => {
                 FILL_AMOUNT,
                 _.times(NUM_SAMPLES, i => DEFAULT_RATES[ERC20BridgeSource.Native][i]),
             );
-            const DEFAULT_OPTS = { numSamples: NUM_SAMPLES, runLimit: 0, sampleDistributionBase: 1, bridgeSlippage: 0 };
+            const DEFAULT_OPTS = {
+                numSamples: NUM_SAMPLES,
+                runLimit: 0,
+                sampleDistributionBase: 1,
+                bridgeSlippage: 0,
+                excludedSources: [
+                    ERC20BridgeSource.CurveUsdcDai,
+                    ERC20BridgeSource.CurveUsdcDaiUsdt,
+                    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+                ],
+            };
 
             beforeEach(() => {
                 replaceSamplerOps();
@@ -392,9 +402,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.CurveUsdcDai] = [0, 0, 0, 0];
-                rates[ERC20BridgeSource.CurveUsdcDaiUsdt] = [0, 0, 0, 0];
-                rates[ERC20BridgeSource.CurveUsdcDaiUsdtTusd] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
@@ -419,9 +426,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Kyber] = [0.4, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.CurveUsdcDai] = [0, 0, 0, 0];
-                rates[ERC20BridgeSource.CurveUsdcDaiUsdt] = [0, 0, 0, 0];
-                rates[ERC20BridgeSource.CurveUsdcDaiUsdtTusd] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
@@ -446,9 +450,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Uniswap] = [0.15, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.15, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Kyber] = [0.7, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.CurveUsdcDai] = [0, 0, 0, 0];
-                rates[ERC20BridgeSource.CurveUsdcDaiUsdt] = [0, 0, 0, 0];
-                rates[ERC20BridgeSource.CurveUsdcDaiUsdtTusd] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
@@ -540,7 +541,16 @@ describe('MarketOperationUtils tests', () => {
                 FILL_AMOUNT,
                 _.times(NUM_SAMPLES, () => DEFAULT_RATES[ERC20BridgeSource.Native][0]),
             );
-            const DEFAULT_OPTS = { numSamples: NUM_SAMPLES, runLimit: 0, sampleDistributionBase: 1 };
+            const DEFAULT_OPTS = {
+                numSamples: NUM_SAMPLES,
+                runLimit: 0,
+                sampleDistributionBase: 1,
+                excludedSources: [
+                    ERC20BridgeSource.CurveUsdcDai,
+                    ERC20BridgeSource.CurveUsdcDaiUsdt,
+                    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+                ],
+            };
 
             beforeEach(() => {
                 replaceSamplerOps();
