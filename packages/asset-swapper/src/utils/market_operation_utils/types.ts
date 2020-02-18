@@ -166,6 +166,10 @@ export interface GetMarketOrdersOpts {
     sampleDistributionBase: number;
     /**
      * Fees for each liquidity source, expressed in ETH wei.
+     * Gas price is not assumed by the optimizer, so these fees should be
+     * pre-scaled by the gas price if one wishes to factor it in.
+     * E.g, if gas costs for a source is 150k and gas price is 1 gwei, the fee
+     * given here should be 150k * 1 gwei.
      */
     fees: { [source: string]: BigNumber };
 }

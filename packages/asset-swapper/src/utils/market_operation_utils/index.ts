@@ -76,8 +76,8 @@ export class MarketOperationUtils {
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
             DexOrderSampler.ops.getMedianSellRate(
                 difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
-                this._wethAddress,
                 makerToken,
+                this._wethAddress,
                 ONE_ETHER,
             ),
             DexOrderSampler.ops.getSellQuotes(
@@ -152,8 +152,8 @@ export class MarketOperationUtils {
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
             DexOrderSampler.ops.getMedianSellRate(
                 difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                takerToken,
                 this._wethAddress,
-                makerToken,
                 ONE_ETHER,
             ),
             DexOrderSampler.ops.getBuyQuotes(
