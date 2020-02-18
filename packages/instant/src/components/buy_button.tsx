@@ -109,7 +109,6 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
                 takerAddress: accountAddress,
             });
         } catch (e) {
-            console.log(e);
             if (e instanceof Error) {
                 if (e.message === SwapQuoteConsumerError.TransactionValueTooLow) {
                     analytics.trackBuySimulationFailed(swapQuote);
