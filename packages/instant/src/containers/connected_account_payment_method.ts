@@ -11,9 +11,18 @@ import {
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
-import { Network, Omit, OperatingSystem, ProviderState, StandardSlidingPanelContent, WalletSuggestion } from '../types';
+import {
+    Network,
+    Omit,
+    OperatingSystem,
+    ProviderState,
+    ProviderType,
+    StandardSlidingPanelContent,
+    WalletSuggestion,
+} from '../types';
 import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
+import { providerStateFactory } from '../util/provider_state_factory';
 
 export interface ConnectedAccountPaymentMethodProps {}
 
@@ -25,7 +34,7 @@ interface ConnectedState {
 
 interface ConnectedDispatch {
     openInstallWalletPanel: () => void;
-    unlockWalletAndDispatchToStore: (providerState: ProviderState) => void;
+    unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType: ProviderType) => void;
 }
 
 type ConnectedProps = Omit<PaymentMethodProps, keyof ConnectedAccountPaymentMethodProps>;
@@ -43,10 +52,17 @@ const mapDispatchToProps = (
     ownProps: ConnectedAccountPaymentMethodProps,
 ): ConnectedDispatch => ({
     openInstallWalletPanel: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
-    unlockWalletAndDispatchToStore: (providerState: ProviderState) => {
+    unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType: ProviderType) => {
+        const newProviderState: ProviderState = providerStateFactory.getProviderStateBasedOnProviderType(
+            providerState,
+            providerType,
+        );
+        // Updates provider state
+        dispatch(actions.setProviderState(newProviderState));
+        // Unlocks wallet
         analytics.trackAccountUnlockRequested();
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true);
+        asyncData.fetchAccountInfoAndDispatchToStore(newProviderState, dispatch, true);
     },
 });
 
@@ -59,7 +75,8 @@ const mergeProps = (
     network: connectedState.network,
     account: connectedState.providerState.account,
     walletDisplayName: connectedState.providerState.displayName,
-    onUnlockWalletClick: () => connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState),
+    onUnlockWalletClick: (providerType: ProviderType) =>
+        connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState, providerType),
     onInstallWalletClick: () => {
         const isMobile = envUtil.isMobileOperatingSystem();
         const walletSuggestion: WalletSuggestion = isMobile

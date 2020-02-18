@@ -94,11 +94,17 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
             ? process.env.INSTANT_INFURA_PROJECT_ID_PRODUCTION
             : process.env.INSTANT_INFURA_PROJECT_ID_DEVELOPMENT;
 
+    const fortmaticApiKey =
+        dischargeTarget === 'production'
+        ? process.env.INSTANT_FORTMATIC_API_KEY_PRODUCTION
+        : process.env.INSTANT_FORTMATIC_API_KEY_DEVELOPMENT; 
+
     const envVars = {
         GIT_SHA: JSON.stringify(GIT_SHA),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
         ROLLBAR_ENABLED: rollbarEnabled,
         HEAP_ENABLED: heapEnabled,
+        INSTANT_FORTMATIC_API_KEY: JSON.stringify(fortmaticApiKey),
         INSTANT_INFURA_PROJECT_ID: JSON.stringify(infuraProjectId),
     };
     if (dischargeTarget) {

@@ -19,6 +19,7 @@ interface IconInfoMapping {
     failed: IconInfo;
     success: IconInfo;
     chevron: IconInfo;
+    chevronRight: IconInfo;
     search: IconInfo;
     lock: IconInfo;
 }
@@ -47,6 +48,14 @@ const ICONS: IconInfoMapping = {
     chevron: {
         viewBox: '0 0 12 7',
         path: 'M11 1L6 6L1 1',
+        strokeOpacity: 0.5,
+        strokeWidth: 1.5,
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+    },
+    chevronRight: {
+        viewBox: '0 0 7 13',
+        path: 'M1 1.5L6 6.5L1 11.5',
         strokeOpacity: 0.5,
         strokeWidth: 1.5,
         strokeLinecap: 'round',
@@ -89,6 +98,7 @@ const PlainIcon: React.StatelessComponent<IconProps> = props => {
                 viewBox={iconInfo.viewBox}
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                stroke={props.stroke}
             >
                 <path
                     d={iconInfo.path}

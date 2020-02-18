@@ -114,10 +114,12 @@ export interface ProviderState {
     swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     account: Account;
+    orderSource: OrderSource;
+    isProviderInjected: boolean;
 }
 
 export enum AccountState {
-    None = 'NONE,',
+    None = 'NONE',
     Loading = 'LOADING',
     Ready = 'READY',
     Locked = 'LOCKED',
@@ -185,6 +187,7 @@ export enum ProviderType {
     Cipher = 'CIPHER',
     TrustWallet = 'TRUST_WALLET',
     Opera = 'OPERA',
+    Fortmatic = 'Fortmatic',
     Fallback = 'FALLBACK',
 }
 

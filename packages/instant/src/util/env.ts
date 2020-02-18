@@ -51,6 +51,8 @@ export const envUtil = {
             return ProviderType.Parity;
         } else if (anyProvider.isMetaMask) {
             return ProviderType.MetaMask;
+        } else if (anyProvider.isFortmatic) {
+            return ProviderType.Fortmatic;
         } else if (_.get(window, 'SOFA') !== undefined) {
             return ProviderType.CoinbaseWallet;
         } else if (_.get(window, '__CIPHER__') !== undefined) {
@@ -58,7 +60,7 @@ export const envUtil = {
         } else if (envUtil.getBrowser() === Browser.Opera && !anyProvider.isMetaMask) {
             return ProviderType.Opera;
         }
-        return;
+        return undefined;
     },
     getProviderName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);

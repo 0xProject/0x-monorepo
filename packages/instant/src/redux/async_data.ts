@@ -9,6 +9,7 @@ import { assetUtils } from '../util/asset';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
 import { errorReporter } from '../util/error_reporter';
+import { providerStateFactory } from '../util/provider_state_factory';
 import { swapQuoteUpdater } from '../util/swap_quote_updater';
 
 import { actions } from './actions';
@@ -59,24 +60,39 @@ export const asyncData = {
         providerState: ProviderState,
         dispatch: Dispatch,
         shouldAttemptUnlock: boolean = false,
-        shouldSetToLoading: boolean = false,
     ) => {
         const web3Wrapper = providerState.web3Wrapper;
         const provider = providerState.provider;
-        if (shouldSetToLoading && providerState.account.state !== AccountState.Loading) {
+        let availableAddresses: string[] = [];
+        if (shouldAttemptUnlock && providerState.account.state !== AccountState.Loading) {
             dispatch(actions.setAccountStateLoading());
         }
-        let availableAddresses: string[];
         try {
-            // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
-            const isPrivacyModeEnabled = (provider as any).enable !== undefined;
-            availableAddresses =
-                isPrivacyModeEnabled && shouldAttemptUnlock
-                    ? await (provider as any).enable()
-                    : await web3Wrapper.getAvailableAddressesAsync();
+            // HACK: Fortmatic's getAvailableAddressesAsync behaves in ways that default wallet behavior can't handle
+            if ((provider as any).isFortmatic) {
+                availableAddresses =
+                    (provider as any).isLoggedIn || shouldAttemptUnlock
+                        ? await web3Wrapper.getAvailableAddressesAsync()
+                        : [];
+            } else {
+                // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
+                const isPrivacyModeEnabled = (provider as any).enable !== undefined;
+                availableAddresses =
+                    isPrivacyModeEnabled && shouldAttemptUnlock
+                        ? await (provider as any).enable()
+                        : await web3Wrapper.getAvailableAddressesAsync();
+            }
         } catch (e) {
             analytics.trackAccountUnlockDenied();
-            dispatch(actions.setAccountStateLocked());
+            if (e.message.includes('Fortmatic: User denied account access.')) {
+                // If Fortmatic is not used, revert to injected provider
+                const initialProviderState = providerStateFactory.getInitialProviderStateWithCurrentProviderState(
+                    providerState,
+                );
+                dispatch(actions.setProviderState(initialProviderState));
+            } else {
+                dispatch(actions.setAccountStateLocked());
+            }
             return;
         }
         if (!_.isEmpty(availableAddresses)) {
@@ -84,7 +100,7 @@ export const asyncData = {
             dispatch(actions.setAccountStateReady(activeAddress));
             // tslint:disable-next-line:no-floating-promises
             asyncData.fetchAccountBalanceAndDispatchToStore(activeAddress, providerState.web3Wrapper, dispatch);
-        } else {
+        } else if (providerState.account.state !== AccountState.Loading) {
             dispatch(actions.setAccountStateLocked());
         }
     },

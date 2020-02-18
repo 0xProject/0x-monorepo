@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
 
-import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
+import { DEFAULT_AFFILIATE_INFO, WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, Asset, ZeroExInstantError } from '../types';
 import { analytics } from '../util/analytics';
@@ -77,7 +77,7 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         const {
             swapQuote,
             swapQuoteConsumer,
-            affiliateInfo,
+            affiliateInfo = DEFAULT_AFFILIATE_INFO,
             accountAddress,
             accountEthBalanceInWei,
             web3Wrapper,
@@ -131,6 +131,14 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
                 analytics.trackBuySignatureDenied(swapQuote);
                 this.props.onSignatureDenied(swapQuote);
                 return;
+            }
+            // Fortmatic specific error handling
+            if (e.message && e.message.includes('Fortmatic:')) {
+                if (e.message.includes('User denied transaction.')) {
+                    analytics.trackBuySignatureDenied(swapQuote);
+                    this.props.onSignatureDenied(swapQuote);
+                    return;
+                }
             }
             throw e;
         }

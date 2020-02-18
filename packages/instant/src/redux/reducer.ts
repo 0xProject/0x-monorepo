@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
+import { LOADING_ACCOUNT, LOCKED_ACCOUNT, NO_ACCOUNT } from '../constants';
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
     Account,
@@ -77,6 +77,8 @@ export const createReducer = (initialState: State) => {
                 return reduceStateWithAccount(state, LOADING_ACCOUNT);
             case ActionTypes.SetAccountStateLocked:
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
+            case ActionTypes.SetAccountStateNone:
+                return reduceStateWithAccount(state, NO_ACCOUNT);
             case ActionTypes.SetAccountStateReady: {
                 const address = action.data;
                 let newAccount: AccountReady = {
@@ -252,6 +254,11 @@ export const createReducer = (initialState: State) => {
                     ...state,
                     baseCurrency: action.data,
                 };
+            case ActionTypes.SetProviderState:
+                return {
+                    ...state,
+                    providerState: action.data,
+                };
             default:
                 return state;
         }
@@ -291,7 +298,6 @@ const doesSwapQuoteMatchState = (swapQuote: MarketBuySwapQuote, state: State): b
             selectedAssetMetaData.decimals,
         );
         const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(swapQuote.makerAssetFillAmount);
-
         return doesAssetAmountMatch;
     } else {
         return true;
