@@ -77,7 +77,7 @@ export class BuyButton extends React.PureComponent<BuyButtonProps> {
         const {
             swapQuote,
             swapQuoteConsumer,
-            affiliateInfo= DEFAULT_AFFILIATE_INFO,
+            affiliateInfo = DEFAULT_AFFILIATE_INFO,
             accountAddress,
             accountEthBalanceInWei,
             web3Wrapper,
