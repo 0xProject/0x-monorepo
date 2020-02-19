@@ -30,6 +30,7 @@ import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
 import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
+import "./ILiquidityProvider.sol";
 
 
 contract ERC20BridgeSampler is
@@ -47,6 +48,8 @@ contract ERC20BridgeSampler is
     /// @dev Base gas limit for Curve calls. Some Curves have multiple tokens
     ///      So a reasonable ceil is 150k per token. Biggest Curve has 4 tokens.
     uint256 constant internal CURVE_CALL_GAS = 600e3; // 600k
+    /// @dev Defaukt gas limit for liquidity provider calls.
+    uint256 constant internal DEFAULT_CALL_GAS = 200e3; // 200k
 
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
@@ -428,6 +431,143 @@ contract ERC20BridgeSampler is
                 break;
             }
             makerTokenAmounts[i] = buyAmount;
+        }
+    }
+
+    /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
+    ///      Calls the provider contract with the default gas limit (200k).
+    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromLiquidityProvider(
+        address providerAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        return sampleSellsFromLiquidityProvider(
+            providerAddress,
+            takerToken,
+            makerToken,
+            takerTokenAmounts,
+            DEFAULT_CALL_GAS
+        );
+    }
+
+    /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
+    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @param callGasLimit Gas limit to use for calls to the provider's
+    ///        `getSellQuote` method.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromLiquidityProvider(
+        address providerAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] memory takerTokenAmounts,
+        uint256 callGasLimit
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                providerAddress.staticcall.gas(callGasLimit)(
+                    abi.encodeWithSelector(
+                        ILiquidityProvider(0).getSellQuote.selector,
+                        takerToken,
+                        makerToken,
+                        takerTokenAmounts[i]
+                    ));
+            uint256 buyAmount = 0;
+            if (didSucceed) {
+                buyAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            makerTokenAmounts[i] = buyAmount;
+        }
+    }
+
+    /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
+    ///      Calls the provider contract with the default gas limit (200k).
+    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromLiquidityProvider(
+        address providerAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        return sampleBuysFromLiquidityProvider(
+            providerAddress,
+            takerToken,
+            makerToken,
+            makerTokenAmounts,
+            DEFAULT_CALL_GAS
+        );
+    }
+
+    /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
+    ///      Calls the provider contract with the default gas limit (200k).
+    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param callGasLimit Gas limit to use for calls to the provider's
+    ///        `getBuyQuote` method.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromLiquidityProvider(
+        address providerAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts,
+        uint256 callGasLimit
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                providerAddress.staticcall.gas(callGasLimit)(
+                    abi.encodeWithSelector(
+                        ILiquidityProvider(0).getBuyQuote.selector,
+                        takerToken,
+                        makerToken,
+                        makerTokenAmounts[i]
+                    ));
+            uint256 sellAmount = 0;
+            if (didSucceed) {
+                sellAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            takerTokenAmounts[i] = sellAmount;
         }
     }
 
