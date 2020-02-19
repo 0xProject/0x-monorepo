@@ -72,73 +72,73 @@ contract OrderValidationUtils is
         // Get the amount of `takerAsset` that is transferable to maker given the
         // transferability of `makerAsset`, `makerFeeAsset`,
         // and the total amounts specified in the order
-        uint256 transferableTakerAssetAmount = transferableMakerAssetAmount;
-        // if (order.makerAssetData.equals(order.makerFeeAssetData)) {
-        //     // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
-        //     // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
-        //     transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
-        //         transferableMakerAssetAmount,
-        //         order.makerAssetAmount.safeAdd(order.makerFee),
-        //         order.takerAssetAmount
-        //     );
-        // } else {
-        //     // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
-        //     if (order.makerFee == 0) {
-        //         transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
-        //             transferableMakerAssetAmount,
-        //             order.makerAssetAmount,
-        //             order.takerAssetAmount
-        //         );
-        //
-        //     // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
-        //     // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
-        //     } else {
-        //         // Get the transferable amount of the `makerFeeAsset`
-        //         uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(
-        //             makerAddress,
-        //             order.makerFeeAssetData
-        //         );
-        //         uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
-        //             transferableMakerAssetAmount,
-        //             order.makerAssetAmount,
-        //             order.takerAssetAmount
-        //         );
-        //         uint256 transferableMakerFeeToTakerAmount = LibMath.getPartialAmountFloor(
-        //             transferableMakerFeeAssetAmount,
-        //             order.makerFee,
-        //             order.takerAssetAmount
-        //         );
-        //         transferableTakerAssetAmount = LibSafeMath.min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
-        //     }
-        // }
-        //
-        // // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
-        // fillableTakerAssetAmount = LibSafeMath.min256(
-        //     order.takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount),
-        //     transferableTakerAssetAmount
-        // );
-        //
-        // // Execute the maker transfers.
-        // fillableTakerAssetAmount = LibOrderTransferSimulation.getSimulatedOrderMakerTransferResults(
-        //     exchangeAddress,
-        //     order,
-        //     order.takerAddress,
-        //     fillableTakerAssetAmount
-        // ) == LibOrderTransferSimulation.OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
-        //
-        // if (!_isAssetDataValid(order.takerAssetData)) {
-        //     fillableTakerAssetAmount = 0;
-        // }
-        //
-        // if (order.takerFee != 0 && !_isAssetDataValid(order.takerFeeAssetData)) {
-        //     fillableTakerAssetAmount = 0;
-        // }
-        //
-        // if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE) {
-        //     fillableTakerAssetAmount = 0;
-        // }
+        uint256 transferableTakerAssetAmount;
+        if (order.makerAssetData.equals(order.makerFeeAssetData)) {
+            // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
+            // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
+            transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
+                transferableMakerAssetAmount,
+                order.makerAssetAmount.safeAdd(order.makerFee),
+                order.takerAssetAmount
+            );
+        } else {
+            // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
+            if (order.makerFee == 0) {
+                transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
+                    transferableMakerAssetAmount,
+                    order.makerAssetAmount,
+                    order.takerAssetAmount
+                );
 
-        return (orderInfo, transferableMakerAssetAmount, isValidSignature);
+            // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
+            // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
+            } else {
+                // Get the transferable amount of the `makerFeeAsset`
+                uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(
+                    makerAddress,
+                    order.makerFeeAssetData
+                );
+                uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
+                    transferableMakerAssetAmount,
+                    order.makerAssetAmount,
+                    order.takerAssetAmount
+                );
+                uint256 transferableMakerFeeToTakerAmount = LibMath.getPartialAmountFloor(
+                    transferableMakerFeeAssetAmount,
+                    order.makerFee,
+                    order.takerAssetAmount
+                );
+                transferableTakerAssetAmount = LibSafeMath.min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
+            }
+        }
+
+        // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
+        fillableTakerAssetAmount = LibSafeMath.min256(
+            order.takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount),
+            transferableTakerAssetAmount
+        );
+
+        // Execute the maker transfers.
+        fillableTakerAssetAmount = LibOrderTransferSimulation.getSimulatedOrderMakerTransferResults(
+            exchangeAddress,
+            order,
+            order.takerAddress,
+            fillableTakerAssetAmount
+        ) == LibOrderTransferSimulation.OrderTransferResults.TransfersSuccessful ? fillableTakerAssetAmount : 0;
+
+        if (!_isAssetDataValid(order.takerAssetData)) {
+            fillableTakerAssetAmount = 0;
+        }
+
+        if (order.takerFee != 0 && !_isAssetDataValid(order.takerFeeAssetData)) {
+            fillableTakerAssetAmount = 0;
+        }
+
+        if (orderInfo.orderStatus != LibOrder.OrderStatus.FILLABLE) {
+            fillableTakerAssetAmount = 0;
+        }
+
+        return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
 
     /// @dev Fetches all order-relevant information needed to validate if the supplied orders are fillable.
@@ -207,7 +207,7 @@ contract OrderValidationUtils is
     {
         (uint256 balance, uint256 allowance) = _getConvertibleMakerBalanceAndAssetProxyAllowance(order);
         transferableAssetAmount = LibSafeMath.min256(balance, allowance);
-        return transferableAssetAmount;
+        return LibSafeMath.min256(transferableAssetAmount, order.makerAssetAmount);
     }
 
     /// @dev This function handles the edge cases around taker validation. This function

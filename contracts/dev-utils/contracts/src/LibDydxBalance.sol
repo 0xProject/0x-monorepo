@@ -92,8 +92,7 @@ library LibDydxBalance {
         // The maker balance is the smaller of:
         return LibSafeMath.min256(
             // How many times we can execute all the deposit actions.
-            // _getDepositableMakerAmount(info),
-            uint256(-1),
+            _getDepositableMakerAmount(info),
             // How many times we can execute all the actions before the an
             // account becomes undercollateralized.
             _getSolventMakerAmount(info)
