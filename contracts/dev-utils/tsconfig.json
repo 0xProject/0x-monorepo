@@ -10,7 +10,6 @@
         "generated-artifacts/LibTransactionDecoder.json",
         "test/generated-artifacts/Addresses.json",
         "test/generated-artifacts/AssetBalance.json",
-        "test/generated-artifacts/D18.json",
         "test/generated-artifacts/DevUtils.json",
         "test/generated-artifacts/EthBalanceChecker.json",
         "test/generated-artifacts/ExternalFunctions.json",
