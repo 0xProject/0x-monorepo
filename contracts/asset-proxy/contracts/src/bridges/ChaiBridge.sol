@@ -35,7 +35,7 @@ contract ChaiBridge is
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer.
-    /// @return success The magic bytes `0x37708e9b` if successful.
+    /// @return success The magic bytes `0xdc1600f3` if successful.
     function bridgeTransferFrom(
         address /* tokenAddress */,
         address from,
