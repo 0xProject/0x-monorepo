@@ -31,11 +31,12 @@ enum DydxAssetReference {
     Target = 1,
 }
 
-const MAKER_ADDRESS = '0x3a9F7C8cA36C42d7035E87C3304eE5cBd353a532';
+const CHONKY_DAI_WALLET = '0x3a9F7C8cA36C42d7035E87C3304eE5cBd353a532';
+const CHONKY_USDC_WALLET = '0x1EDA7056fF11C9817038E0020C3a6F1d6A8Ec32e';
 
 blockchainTests.configure({
     fork: {
-        unlockedAccounts: [MAKER_ADDRESS],
+        unlockedAccounts: [CHONKY_DAI_WALLET, CHONKY_USDC_WALLET],
     },
 });
 
@@ -57,11 +58,10 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
     };
     const DAI_DECIMALS = TOKEN_INFO[DAI_ADDRESS].decimals;
     const USDC_DECIMALS = TOKEN_INFO[USDC_ADDRESS].decimals;
-    const DAI_MARKET_ID = TOKEN_INFO[DAI_ADDRESS].marketId;
-    const USDC_MARKET_ID = TOKEN_INFO[USDC_ADDRESS].marketId;
     let bridge: DydxBridgeContract;
     let dydx: IDydxContract;
     let dai: ERC20TokenContract;
+    let usdc: ERC20TokenContract;
     let devUtils: DevUtilsContract;
     let accountOwner: string;
     let minMarginRatio: number;
@@ -70,6 +70,7 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
         [accountOwner] = await env.getAccountAddressesAsync();
         dydx = new IDydxContract(DYDX_ADDRESS, env.provider, env.txDefaults);
         dai = new ERC20TokenContract(DAI_ADDRESS, env.provider, env.txDefaults);
+        usdc = new ERC20TokenContract(USDC_ADDRESS, env.provider, env.txDefaults);
         bridge = await DydxBridgeContract.deployFrom0xArtifactAsync(
             assetProxyArtifacts.DydxBridge,
             env.provider,
@@ -89,21 +90,36 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
         minMarginRatio = toTokenUnitAmount((await dydx.getRiskParams().callAsync()).marginRatio.value)
             .plus(1)
             .toNumber();
-        // Deposit Dai collateral.
-        await dai.approve(DYDX_ADDRESS, constants.MAX_UINT256).awaitTransactionSuccessAsync({ from: MAKER_ADDRESS });
+        // Set approvals and operators.
+        await dai
+            .approve(DYDX_ADDRESS, constants.MAX_UINT256)
+            .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET });
+        await usdc
+            .approve(DYDX_ADDRESS, constants.MAX_UINT256)
+            .awaitTransactionSuccessAsync({ from: CHONKY_USDC_WALLET });
         await dydx
             .setOperators([{ operator: bridge.address, trusted: true }])
-            .awaitTransactionSuccessAsync({ from: MAKER_ADDRESS });
+            .awaitTransactionSuccessAsync({ from: CHONKY_DAI_WALLET });
+        await dydx
+            .setOperators([{ operator: bridge.address, trusted: true }])
+            .awaitTransactionSuccessAsync({ from: CHONKY_USDC_WALLET });
     });
 
     async function depositAndWithdrawAsync(
+        makerAddress: string,
         accountId: BigNumber,
         depositSize: Numberish = 0,
         withdrawSize: Numberish = 0,
     ): Promise<void> {
+        const fromToken = makerAddress === CHONKY_DAI_WALLET ? DAI_ADDRESS : USDC_ADDRESS;
+        const toToken = fromToken === DAI_ADDRESS ? USDC_ADDRESS : DAI_ADDRESS;
+        const fromDecimals = TOKEN_INFO[fromToken].decimals;
+        const fromMarketId = TOKEN_INFO[fromToken].marketId;
+        const toDecimals = TOKEN_INFO[toToken].decimals;
+        const toMarketId = TOKEN_INFO[toToken].marketId;
         await dydx
             .operate(
-                [{ owner: MAKER_ADDRESS, number: accountId }],
+                [{ owner: makerAddress, number: accountId }],
                 [
                     ...(depositSize > 0
                         ? [
@@ -114,11 +130,11 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
                                       sign: true,
                                       denomination: DydxAssetDenomination.Wei,
                                       ref: DydxAssetReference.Delta,
-                                      value: fromTokenUnitAmount(depositSize, DAI_DECIMALS),
+                                      value: fromTokenUnitAmount(depositSize, fromDecimals),
                                   },
-                                  primaryMarketId: new BigNumber(DAI_MARKET_ID),
+                                  primaryMarketId: new BigNumber(fromMarketId),
                                   secondaryMarketId: new BigNumber(constants.NULL_ADDRESS),
-                                  otherAddress: MAKER_ADDRESS,
+                                  otherAddress: makerAddress,
                                   otherAccountIdx: ZERO,
                                   data: constants.NULL_BYTES,
                               },
@@ -133,11 +149,11 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
                                       sign: false,
                                       denomination: DydxAssetDenomination.Wei,
                                       ref: DydxAssetReference.Delta,
-                                      value: fromTokenUnitAmount(withdrawSize, USDC_DECIMALS),
+                                      value: fromTokenUnitAmount(withdrawSize, toDecimals),
                                   },
-                                  primaryMarketId: new BigNumber(USDC_MARKET_ID),
+                                  primaryMarketId: new BigNumber(toMarketId),
                                   secondaryMarketId: new BigNumber(constants.NULL_ADDRESS),
-                                  otherAddress: MAKER_ADDRESS,
+                                  otherAddress: makerAddress,
                                   otherAccountIdx: ZERO,
                                   data: constants.NULL_BYTES,
                               },
@@ -145,7 +161,7 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
                         : []),
                 ],
             )
-            .awaitTransactionSuccessAsync({ from: MAKER_ADDRESS });
+            .awaitTransactionSuccessAsync({ from: makerAddress });
     }
 
     const SECONDS_IN_ONE_YEAR = 365 * 24 * 60 * 60;
@@ -155,7 +171,7 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
             chainId: 1,
             exchangeAddress: contractAddresses.exchange,
             expirationTimeSeconds: new BigNumber(Math.floor(Date.now() / 1000 + SECONDS_IN_ONE_YEAR)),
-            makerAddress: MAKER_ADDRESS,
+            makerAddress: CHONKY_DAI_WALLET,
             takerAddress: constants.NULL_ADDRESS,
             senderAddress: constants.NULL_ADDRESS,
             feeRecipientAddress: constants.NULL_ADDRESS,
@@ -240,84 +256,199 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
         return new BigNumber(hexUtils.random());
     }
 
-    it('validates a fully solvent order', async () => {
-        // This account is collateralized enough to fill the order with just
-        // withdraws.
-        const accountId = randomAccountId();
-        await depositAndWithdrawAsync(accountId, 200, 0);
-        const order = createOrder({
-            makerAssetData: encodeDydxBridgeAssetData({
-                accountId,
-                depositRate: 0,
-            }),
+    describe('DAI -> USDC', () => {
+        const makerAddress = CHONKY_DAI_WALLET;
+        function _createOrder(fields: Partial<Order> = {}): Order {
+            return createOrder(fields);
+        }
+
+        it('validates a fully solvent order', async () => {
+            // This account is collateralized enough to fill the order with just
+            // withdraws.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 200, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: 0,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
         });
-        const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
-        expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
+
+        it('validates a perpetually solvent order', async () => {
+            // This account is not very well collateralized, but the deposit rate
+            // will keep the collateralization ratio the same or better.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: minMarginRatio,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
+        });
+
+        it('validates a partially solvent order with an inadequate deposit', async () => {
+            // This account is not very well collateralized and the deposit rate is
+            // also too low to sustain the collateralization ratio for the full order.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: minMarginRatio * 0.95,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.gt(0);
+            expect(fillableTakerAssetAmount).to.bignumber.lt(order.takerAssetAmount);
+        });
+
+        it('validates a partially solvent order with no deposit', async () => {
+            // This account is not very well collateralized and there is no deposit
+            // to keep the collateralization ratio up.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: 0,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.gt(0);
+            expect(fillableTakerAssetAmount).to.bignumber.lt(order.takerAssetAmount);
+        });
+
+        // TODO(dorothy-zbornak): We can't actually create an account that's below
+        // the margin ratio without replacing the price oracles.
+        it('invalidates a virtually insolvent order', async () => {
+            // This account has a collateralization ratio JUST above the
+            // minimum margin ratio, so it can only withdraw nearly zero maker tokens.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 1 / (minMarginRatio + 3e-4));
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: 0,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            // Price fluctuations will cause this to be a little above zero, so we
+            // don't compare to zero.
+            expect(fillableTakerAssetAmount).to.bignumber.lt(fromTokenUnitAmount(1e-3, DAI_DECIMALS));
+        });
     });
 
-    it.only('validates a perpetually solvent order', async () => {
-        // This account is not very well collateralized, but the deposit rate
-        // will keep the collateralization ratio the same or better.
-        const accountId = randomAccountId();
-        await depositAndWithdrawAsync(accountId, 1, 0);
-        const order = createOrder({
-            makerAssetData: encodeDydxBridgeAssetData({
-                accountId,
-                depositRate: minMarginRatio,
-            }),
-        });
-        const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
-        expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
-    });
+    describe('USDC -> DAI', () => {
+        const makerAddress = CHONKY_USDC_WALLET;
+        function _createOrder(fields: Partial<Order> = {}): Order {
+            return createOrder({
+                makerAddress,
+                takerAssetData: encodeERC20AssetData(USDC_ADDRESS),
+                makerAssetData: encodeDydxBridgeAssetData({
+                    fromToken: USDC_ADDRESS,
+                    toToken: DAI_ADDRESS,
+                }),
+                makerAssetAmount: fromTokenUnitAmount(100, DAI_DECIMALS),
+                takerAssetAmount: fromTokenUnitAmount(100, USDC_DECIMALS),
+                ...fields,
+            });
+        }
 
-    it('validates a partially solvent order with an inadequate deposit', async () => {
-        // This account is not very well collateralized and the deposit rate is
-        // also too low to sustain the collateralization ratio for the full order.
-        const accountId = randomAccountId();
-        await depositAndWithdrawAsync(accountId, 1, 0);
-        const order = createOrder({
-            makerAssetData: encodeDydxBridgeAssetData({
-                accountId,
-                depositRate: minMarginRatio * 0.95,
-            }),
+        it('validates a fully solvent order', async () => {
+            // This account is collateralized enough to fill the order with just
+            // withdraws.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 200, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: 0,
+                    fromToken: USDC_ADDRESS,
+                    toToken: DAI_ADDRESS,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
         });
-        const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
-        expect(fillableTakerAssetAmount).to.bignumber.gt(0);
-        expect(fillableTakerAssetAmount).to.bignumber.lt(order.takerAssetAmount);
-    });
 
-    it('validates a partially solvent order with no deposit', async () => {
-        // This account is not very well collateralized and there is no deposit
-        // to keep the collateralization ratio up.
-        const accountId = randomAccountId();
-        await depositAndWithdrawAsync(accountId, 1, 0);
-        const order = createOrder({
-            makerAssetData: encodeDydxBridgeAssetData({
-                accountId,
-                depositRate: 0,
-            }),
+        it('validates a perpetually solvent order', async () => {
+            // This account is not very well collateralized, but the deposit rate
+            // will keep the collateralization ratio the same or better.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: minMarginRatio,
+                    fromToken: USDC_ADDRESS,
+                    toToken: DAI_ADDRESS,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
         });
-        const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
-        expect(fillableTakerAssetAmount).to.bignumber.gt(0);
-        expect(fillableTakerAssetAmount).to.bignumber.lt(order.takerAssetAmount);
-    });
 
-    // TODO(dorothy-zbornak): We can't actually create an account that's below
-    // the margin ratio without replacing the price oracles.
-    it('invalidates a virtually insolvent order', async () => {
-        // This account has a collateralization ratio JUST above the
-        // minimum margin ratio, so it can only withdraw nearly zero maker tokens.
-        const accountId = randomAccountId();
-        await depositAndWithdrawAsync(accountId, 1, 1 / (minMarginRatio + 3e-4));
-        const order = createOrder({
-            makerAssetData: encodeDydxBridgeAssetData({
-                accountId,
-                depositRate: 0,
-            }),
+        it('validates a partially solvent order with an inadequate deposit', async () => {
+            // This account is not very well collateralized and the deposit rate is
+            // also too low to sustain the collateralization ratio for the full order.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: minMarginRatio * 0.95,
+                    fromToken: USDC_ADDRESS,
+                    toToken: DAI_ADDRESS,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.gt(0);
+            expect(fillableTakerAssetAmount).to.bignumber.lt(order.takerAssetAmount);
         });
-        const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
-        // Price fluctuations will cause this to be a little above zero, so we
-        // don't compare to zero.
-        expect(fillableTakerAssetAmount).to.bignumber.lt(fromTokenUnitAmount(1e-7, DAI_DECIMALS));
+
+        it('validates a partially solvent order with no deposit', async () => {
+            // This account is not very well collateralized and there is no deposit
+            // to keep the collateralization ratio up.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 0);
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: 0,
+                    fromToken: USDC_ADDRESS,
+                    toToken: DAI_ADDRESS,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            expect(fillableTakerAssetAmount).to.bignumber.gt(0);
+            expect(fillableTakerAssetAmount).to.bignumber.lt(order.takerAssetAmount);
+        });
+
+        // TODO(dorothy-zbornak): We can't actually create an account that's below
+        // the margin ratio without replacing the price oracles.
+        it('invalidates a virtually insolvent order', async () => {
+            // This account has a collateralization ratio JUST above the
+            // minimum margin ratio, so it can only withdraw nearly zero maker tokens.
+            const accountId = randomAccountId();
+            await depositAndWithdrawAsync(makerAddress, accountId, 1, 1 / (minMarginRatio + 3e-4));
+            const order = _createOrder({
+                makerAssetData: encodeDydxBridgeAssetData({
+                    accountId,
+                    depositRate: 0,
+                    fromToken: USDC_ADDRESS,
+                    toToken: DAI_ADDRESS,
+                }),
+            });
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState(order, SIGNATURE).callAsync();
+            // Price fluctuations will cause this to be a little above zero, so we
+            // don't compare to zero.
+            expect(fillableTakerAssetAmount).to.bignumber.lt(fromTokenUnitAmount(1e-3, USDC_DECIMALS));
+        });
     });
 });
