@@ -229,7 +229,7 @@ contract DydxBridge is
         withdrawAction = IDydx.ActionArgs({
             actionType: IDydx.ActionType.Withdraw,          // withdraw tokens.
             amount: amountToWithdraw,                       // amount to withdraw.
-            accountIdx: bridgeAction.accountIdx,             // index in the `accounts` when calling `operate`.
+            accountIdx: bridgeAction.accountIdx,            // index in the `accounts` when calling `operate`.
             primaryMarketId: bridgeAction.marketId,         // indicates which token to withdraw.
             otherAddress: withdrawTo,                       // withdraw tokens to this address.
             // unused parameters

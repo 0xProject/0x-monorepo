@@ -269,14 +269,14 @@ contract AssetBalance is
 
         } else if (assetProxyId == IAssetData(address(0)).ERC20Bridge.selector) {
             // Get address of ERC20 token and bridge contract
-            (, address tokenAddress, address bridgeAddress,) = LibAssetData.decodeERC20BridgeAssetData(assetData);
+            (, address tokenAddress, address bridgeAddress,) =
+                LibAssetData.decodeERC20BridgeAssetData(assetData);
             if (tokenAddress == _getDaiAddress() && bridgeAddress == chaiBridgeAddress) {
                 uint256 chaiAllowance = LibERC20Token.allowance(_getChaiAddress(), ownerAddress, chaiBridgeAddress);
                 // Dai allowance is unlimited if Chai allowance is unlimited
                 allowance = chaiAllowance == _MAX_UINT256 ? _MAX_UINT256 : _convertChaiToDaiAmount(chaiAllowance);
             } else if (bridgeAddress == dydxBridgeAddress) {
-                // Dydx bridges always have infinite allowance.
-                allowance = _MAX_UINT256;
+                allowance = LibDydxBalance.getDydxMakerAllowance(ownerAddress, bridgeAddress, _getDydxAddress());
             }
             // Allowance will be 0 if bridge is not supported
         }
@@ -376,7 +376,7 @@ contract AssetBalance is
             if (bridgeAddress == dydxBridgeAddress) {
                 return (
                     LibDydxBalance.getDydxMakerBalance(order, _getDydxAddress()),
-                    _MAX_UINT256
+                    getAssetProxyAllowance(order.makerAddress, order.makerAssetData)
                 );
             }
         }

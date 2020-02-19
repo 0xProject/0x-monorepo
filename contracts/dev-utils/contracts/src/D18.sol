@@ -154,7 +154,6 @@ library D18 {
         pure
         returns (int256 r)
     {
-        require(a != MIN_INT256_VALUE || b != -1, "D18/DECIMAL_MUL_OVERFLOW");
         r = _div(_mul(a, DECIMAL_ONE), b);
     }
 
@@ -184,8 +183,8 @@ library D18 {
         pure
         returns (int256 r)
     {
-        require(uint256(a) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
-        require(uint256(b) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
+        require(int256(a) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
+        require(int256(b) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
         r = _div(_mul(int256(a), DECIMAL_ONE), int256(b));
     }
 
@@ -195,7 +194,7 @@ library D18 {
         pure
         returns (int256 r)
     {
-        require(uint256(a) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
+        require(int256(a) >= 0, "D18/DECIMAL_VALUE_TOO_BIG");
         r = int256(a);
     }
 
@@ -228,8 +227,8 @@ library D18 {
         pure
         returns (int256 r)
     {
-        require(b != 0, "D18/DECIMAL_DIVISION_BY_ZERO");
-        require(a != MIN_INT256_VALUE || b != -1, "D18/DECIMAL_MUL_OVERFLOW");
+        require(b != 0, "D18/DECIMAL_DIV_BY_ZERO");
+        require(a != MIN_INT256_VALUE || b != -1, "D18/DECIMAL_DIV_OVERFLOW");
         r = a / b;
     }
 
@@ -242,7 +241,7 @@ library D18 {
         r = a + b;
         require(
             !((a < 0 && b < 0 && r > a) || (a > 0 && b > 0 && r < a)),
-            "D18/DECIMAL_MUL_OVERFLOW"
+            "D18/DECIMAL_ADD_OVERFLOW"
         );
     }
 

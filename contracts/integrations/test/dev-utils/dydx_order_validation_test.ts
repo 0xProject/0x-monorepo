@@ -255,7 +255,7 @@ blockchainTests.fork('DevUtils dydx order validation tests', env => {
         expect(fillableTakerAssetAmount).to.bignumber.eq(order.takerAssetAmount);
     });
 
-    it('validates a perpetually solvent order', async () => {
+    it.only('validates a perpetually solvent order', async () => {
         // This account is not very well collateralized, but the deposit rate
         // will keep the collateralization ratio the same or better.
         const accountId = randomAccountId();

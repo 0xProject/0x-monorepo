@@ -53,6 +53,22 @@ library LibDydxBalance {
         IDydxBridge.BridgeAction[] actions;
     }
 
+    /// @dev Gets the maker asset allowance for a Dydx bridge order.
+    /// @param makerAddress The maker of the order.
+    /// @param bridgeAddress The address of the Dydx bridge.
+    /// @param dydx The Dydx contract address.
+    /// @return allowance The maker asset allowance.
+    function getDydxMakerAllowance(address makerAddress, address bridgeAddress, address dydx)
+        public
+        view
+        returns (uint256 allowance)
+    {
+        // Allowance is infinite if the dydx bridge is an operator for the maker.
+        return IDydx(dydx).getIsLocalOperator(makerAddress, bridgeAddress)
+            ? uint256(-1) : 0;
+    }
+
+    /// @dev Gets the maker allowance for a
     /// @dev Get the maker asset balance of an order with a `DydxBridge` maker asset.
     /// @param order An order with a dydx maker asset.
     /// @param dydx The address of the dydx contract.
@@ -63,10 +79,6 @@ library LibDydxBalance {
         returns (uint256 balance)
     {
         BalanceCheckInfo memory info = _getBalanceCheckInfo(order, dydx);
-        // The Dydx bridge must be an operator for the maker.
-        if (!info.dydx.getIsLocalOperator(info.makerAddress, info.bridgeAddress)) {
-            return 0;
-        }
         // Actions must be well-formed.
         if (!_areActionsWellFormed(info)) {
             return 0;
@@ -80,7 +92,8 @@ library LibDydxBalance {
         // The maker balance is the smaller of:
         return LibSafeMath.min256(
             // How many times we can execute all the deposit actions.
-            _getDepositableMakerAmount(info),
+            // _getDepositableMakerAmount(info),
+            uint256(-1),
             // How many times we can execute all the actions before the an
             // account becomes undercollateralized.
             _getSolventMakerAmount(info)
@@ -246,6 +259,11 @@ library LibDydxBalance {
             if (D18.div(dd, db) >= minCr) {
                 continue;
             }
+            // If the adjusted deposit rates are equal, the account will remain
+            // at the same level of collateralization.
+            if (D18.mul(minCr, db) == dd) {
+                continue;
+            }
             // The collateralization ratio for this account, parameterized by
             // `t` (maker amount), is given by:
             //      `cr = (supplyValue + t * dd) / (borrowValue + t * db)`
@@ -277,9 +295,11 @@ library LibDydxBalance {
             LibAssetData.decodeERC20BridgeAssetData(order.makerAssetData);
         info.dydx = IDydx(dydx);
         info.makerAddress = order.makerAddress;
-        if (order.takerAssetData.readBytes4(0) == IAssetData(0).ERC20Token.selector) {
-            (, info.takerTokenAddress) =
-                LibAssetData.decodeERC20AssetData(order.takerAssetData);
+        if (order.takerAssetData.length == 36) {
+            if (order.takerAssetData.readBytes4(0) == IAssetData(0).ERC20Token.selector) {
+                (, info.takerTokenAddress) =
+                    LibAssetData.decodeERC20AssetData(order.takerAssetData);
+            }
         }
         info.orderMakerToTakerRate = D18.div(order.takerAssetAmount, order.makerAssetAmount);
         (IDydxBridge.BridgeData memory bridgeData) =
@@ -351,8 +371,7 @@ library LibDydxBalance {
         }
     }
 
-    /// @dev Returns the conversion rate for an action, expressed as units
-    ///      of the market token.
+    /// @dev Convert a `D18` fraction of 1 token to the equivalent integer wei.
     /// @param token Address the of the token.
     /// @param units Token units expressed with 18 digit precision.
     function _toWei(address token, uint256 units)
