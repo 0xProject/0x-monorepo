@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.3.0",
+        "changes": [
+            {
+                "note": "Add `blockchainTests.config`",
+                "pr": 2466
+            }
+        ]
+    },
+    {
         "timestamp": 1581748629,
         "version": "5.1.5",
         "changes": [

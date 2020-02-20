@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Add `D18` library",
+                "pr": 2466
+            }
+        ]
+    },
+    {
         "timestamp": 1581748629,
         "version": "4.3.1",
         "changes": [

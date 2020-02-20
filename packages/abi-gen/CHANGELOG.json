@@ -5,6 +5,10 @@
             {
                 "note": "Support deploying contracts with unliked libraries through `deployWithLibrariesFrom0xArtifactAsync()`",
                 "pr": 2463
+            },
+            {
+                "note": "Update reference outputs",
+                "pr": 2466
             }
         ],
         "timestamp": 1581204851

@@ -199,7 +199,7 @@ contract OrderValidationUtils is
     {
         (uint256 balance, uint256 allowance) = _getConvertibleMakerBalanceAndAssetProxyAllowance(order);
         transferableAssetAmount = LibSafeMath.min256(balance, allowance);
-        return transferableAssetAmount;
+        return LibSafeMath.min256(transferableAssetAmount, order.makerAssetAmount);
     }
 
     /// @dev Checks that the asset data contained in a ZeroEx is valid and returns

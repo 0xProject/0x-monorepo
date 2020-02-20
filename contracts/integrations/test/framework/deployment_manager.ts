@@ -203,6 +203,7 @@ export class DeploymentManager {
             devUtilsArtifacts,
             exchange.address,
             constants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
         );
 
         // Construct the new instance and return it.

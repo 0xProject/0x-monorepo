@@ -40,12 +40,14 @@ contract DevUtils is
 {
     constructor (
         address exchange_,
-        address chaiBridge_
+        address chaiBridge_,
+        address dydxBridge_
     )
         public
         Addresses(
             exchange_,
-            chaiBridge_
+            chaiBridge_,
+            dydxBridge_
         )
         LibEIP712ExchangeDomain(uint256(0), address(0)) // null args because because we only use constants
     {}
