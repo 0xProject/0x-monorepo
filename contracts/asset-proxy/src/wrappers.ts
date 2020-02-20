@@ -22,6 +22,7 @@ export * from '../generated-wrappers/i_dydx_bridge';
 export * from '../generated-wrappers/i_erc20_bridge';
 export * from '../generated-wrappers/i_eth2_dai';
 export * from '../generated-wrappers/i_kyber_network_proxy';
+export * from '../generated-wrappers/i_p_l_p_registry';
 export * from '../generated-wrappers/i_uniswap_exchange';
 export * from '../generated-wrappers/i_uniswap_exchange_factory';
 export * from '../generated-wrappers/kyber_bridge';

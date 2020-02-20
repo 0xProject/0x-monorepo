@@ -3,6 +3,7 @@ export { ContractAddresses } from '@0x/contract-addresses';
 export { ContractWrappers } from './contract_wrappers';
 export { DevUtilsContract } from './generated-wrappers/dev_utils';
 export { IERC20BridgeSamplerContract } from './generated-wrappers/i_erc20_bridge_sampler';
+export { IPLPRegistryContract } from './generated-wrappers/i_p_l_p_registry';
 export { IAssetDataContract } from './generated-wrappers/i_asset_data'; // used for synchronously encoding and decoding asset data
 export {
     ERC20TokenEventArgs,

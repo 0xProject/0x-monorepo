@@ -24,6 +24,7 @@ import * as IDydxBridge from '../generated-artifacts/IDydxBridge.json';
 import * as IERC20Bridge from '../generated-artifacts/IERC20Bridge.json';
 import * as IEth2Dai from '../generated-artifacts/IEth2Dai.json';
 import * as IKyberNetworkProxy from '../generated-artifacts/IKyberNetworkProxy.json';
+import * as IPLPRegistry from '../generated-artifacts/IPLPRegistry.json';
 import * as IUniswapExchange from '../generated-artifacts/IUniswapExchange.json';
 import * as IUniswapExchangeFactory from '../generated-artifacts/IUniswapExchangeFactory.json';
 import * as KyberBridge from '../generated-artifacts/KyberBridge.json';
@@ -67,6 +68,7 @@ export const artifacts = {
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
+    IPLPRegistry: IPLPRegistry as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
     TestChaiBridge: TestChaiBridge as ContractArtifact,
