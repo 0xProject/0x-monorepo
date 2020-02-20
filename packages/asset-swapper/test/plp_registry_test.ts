@@ -116,7 +116,7 @@ describe('PLPRegistry', () => {
     it('should also cache when the pool does not exist', async () => {
         mockRegistry.setup(
             registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).throws(new Error('Market pair is not set')).verifiable(TypeMoq.Times.once());
+        ).throws(new Error('PLPRegistry/MARKET_PAIR_NOT_SET')).verifiable(TypeMoq.Times.once());
 
         const plpRegistry = new PLPRegistry(mockRegistry.object);
         const firstRequest = await plpRegistry.getPoolForMarketAsync(tokenB, tokenC);
