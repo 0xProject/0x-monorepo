@@ -26,6 +26,7 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     runLimit: 2 ** 15,
     excludedSources: [],
     bridgeSlippage: 0.0005,
+    dustFractionThreshold: 0.0025,
     numSamples: 13,
     noConflicts: true,
     sampleDistributionBase: 1.05,

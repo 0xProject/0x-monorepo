@@ -74,12 +74,14 @@ export class MarketOperationUtils {
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const [fillableAmounts, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
-            DexOrderSampler.ops.getMedianSellRate(
-                difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
-                makerToken,
-                this._wethAddress,
-                ONE_ETHER,
-            ),
+            makerToken.toLowerCase() === this._wethAddress.toLowerCase()
+                ? DexOrderSampler.ops.constant(new BigNumber(1))
+                : DexOrderSampler.ops.getMedianSellRate(
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                      makerToken,
+                      this._wethAddress,
+                      ONE_ETHER,
+                  ),
             DexOrderSampler.ops.getSellQuotes(
                 difference(SELL_SOURCES, _opts.excludedSources),
                 makerToken,
@@ -93,9 +95,13 @@ export class MarketOperationUtils {
             MarketOperation.Sell,
         );
 
-        const nativeFills = sortFillsByAdjustedRate(
-            createSellPathFromNativeOrders(nativeOrdersWithFillableAmounts, ethToMakerAssetRate, _opts),
-        ).filter(f => f.input.gt(0));
+        const nativeFills = pruneNativeFills(
+            sortFillsByAdjustedRate(
+                createSellPathFromNativeOrders(nativeOrdersWithFillableAmounts, ethToMakerAssetRate, _opts),
+            ),
+            takerAmount,
+            _opts.dustFractionThreshold,
+        );
         const dexPaths = createSellPathsFromDexQuotes(dexQuotes, ethToMakerAssetRate, _opts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
@@ -150,12 +156,14 @@ export class MarketOperationUtils {
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const [fillableAmounts, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
-            DexOrderSampler.ops.getMedianSellRate(
-                difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
-                takerToken,
-                this._wethAddress,
-                ONE_ETHER,
-            ),
+            takerToken.toLowerCase() === this._wethAddress.toLowerCase()
+                ? DexOrderSampler.ops.constant(new BigNumber(1))
+                : DexOrderSampler.ops.getMedianSellRate(
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                      takerToken,
+                      this._wethAddress,
+                      ONE_ETHER,
+                  ),
             DexOrderSampler.ops.getBuyQuotes(
                 difference(BUY_SOURCES, _opts.excludedSources),
                 makerToken,
@@ -245,10 +253,14 @@ export class MarketOperationUtils {
             nativeOrderFillableAmounts,
             MarketOperation.Buy,
         );
-        const nativeFills = sortFillsByAdjustedRate(
-            createBuyPathFromNativeOrders(nativeOrdersWithFillableAmounts, ethToTakerAssetRate, opts),
-            true,
-        ).filter(f => f.input.gt(0));
+        const nativeFills = pruneNativeFills(
+            sortFillsByAdjustedRate(
+                createBuyPathFromNativeOrders(nativeOrdersWithFillableAmounts, ethToTakerAssetRate, opts),
+                true,
+            ),
+            makerAmount,
+            opts.dustFractionThreshold,
+        );
         const dexPaths = createBuyPathsFromDexQuotes(dexQuotes, ethToTakerAssetRate, opts);
         const allPaths = [...dexPaths];
         const allFills = flattenDexPaths(dexPaths);
@@ -370,6 +382,22 @@ function createBuyPathFromNativeOrders(
         });
     }
     return path;
+}
+
+function pruneNativeFills(fills: Fill[], fillAmount: BigNumber, dustFractionThreshold: number): Fill[] {
+    const minInput = fillAmount.times(dustFractionThreshold);
+    const totalInput = ZERO_AMOUNT;
+    const pruned = [];
+    for (const fill of fills) {
+        if (totalInput.gte(fillAmount)) {
+            break;
+        }
+        if (fill.input.lt(minInput)) {
+            continue;
+        }
+        pruned.push(fill);
+    }
+    return pruned;
 }
 
 function createSellPathsFromDexQuotes(

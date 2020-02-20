@@ -157,6 +157,11 @@ export interface GetMarketOrdersOpts {
      */
     numSamples: number;
     /**
+     * Dust amount, as a fraction of the fill amount.
+     * Default is 0.01 (100 basis points).
+     */
+    dustFractionThreshold: number;
+    /**
      * The exponential sampling distribution base.
      * A value of 1 will result in evenly spaced samples.
      * > 1 will result in more samples at lower sizes.

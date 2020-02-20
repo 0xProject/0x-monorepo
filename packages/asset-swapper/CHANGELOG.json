@@ -7,10 +7,6 @@
                 "pr": 2481
             },
             {
-                "note": "Remove `dustFractionThreshold` from `GetMarketOrdersOpts`",
-                "pr": 2481
-            },
-            {
                 "note": "Incorporate fees into fill optimization",
                 "pr": 2481
             }
