@@ -30,10 +30,8 @@ export class PLPRegistry {
 
             const secondsElapsed = (timestamp - result.cachedAt) / constants.ONE_SECOND_MS;
             if (secondsElapsed <= constants.ONE_HOUR_IN_SECONDS) {
-                console.log("Return cache")
                 return result.value;
             }
-            console.log("Cache too old")
         }
         let poolAddress: string | undefined;
         try {
@@ -44,7 +42,6 @@ export class PLPRegistry {
                 throw e;
             }
         }
-        console.log("Set cache")
         this._cache[cacheKey] = {
             cachedAt: timestamp,
             value: poolAddress,
