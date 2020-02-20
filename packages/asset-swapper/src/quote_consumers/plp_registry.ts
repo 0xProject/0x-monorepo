@@ -1,14 +1,13 @@
-import { ContractFunctionObj, IPLPRouterContract, SupportedProvider } from "@0x/contract-wrappers";
-import { constants } from "../constants";
+import { ContractFunctionObj } from '@0x/contract-wrappers';
 
-type MarketPair = [string, string];
+import { constants } from '../constants';
 
 export interface RegistryContract {
     getPoolForMarket(marketA: string, marketB: string): ContractFunctionObj<string>;
 }
 
 interface CacheValue {
-    value: string | undefined;
+    value?: string;
     cachedAt: number;
 }
 
@@ -21,10 +20,10 @@ export class PLPRegistry {
         this._cache = {};
     }
 
-    async getPoolForMarketAsync(marketA: string, marketB: string, currentTimestamp?: number| undefined): Promise<string | undefined> {
+    public async getPoolForMarketAsync(addressA: string, addressB: string, currentTimestamp?: number| undefined): Promise<string | undefined> {
         const timestamp = currentTimestamp || new Date().getTime();
 
-        const cacheKey = this.getCacheKey(marketA, marketB);
+        const cacheKey = JSON.stringify([addressA, addressB].sort());
         if (this._cache[cacheKey]) {
             const result = this._cache[cacheKey];
 
@@ -35,7 +34,7 @@ export class PLPRegistry {
         }
         let poolAddress: string | undefined;
         try {
-            poolAddress = await this._contract.getPoolForMarket(marketA, marketB).callAsync();
+            poolAddress = await this._contract.getPoolForMarket(addressA, addressB).callAsync();
         } catch (e) {
             const error: Error = e;
             if (error.message !== 'Market pair is not set') {
@@ -47,9 +46,5 @@ export class PLPRegistry {
             value: poolAddress,
         };
         return poolAddress;
-    }
-
-    private getCacheKey(marketA: string, marketB: string) {
-        return JSON.stringify([marketA, marketB].sort());
     }
 }
