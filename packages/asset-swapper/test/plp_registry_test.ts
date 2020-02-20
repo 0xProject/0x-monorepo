@@ -24,7 +24,10 @@ class MockRegistryContracy implements RegistryContract {
 const makeContractReturn = (result: string): ContractFunctionObj<string> => {
     return {
         getABIEncodedTransactionData: () => '',
-        callAsync: async (callData?: Partial<CallData> | undefined, defaultBlock?: number | BlockParamLiteral | undefined): Promise<string> => {
+        callAsync: async (
+            callData?: Partial<CallData> | undefined,
+            defaultBlock?: number | BlockParamLiteral | undefined,
+        ): Promise<string> => {
             return result;
         },
     };
@@ -44,12 +47,14 @@ describe('PLPRegistry', () => {
     });
 
     it('should correctly handle multiple markets', async () => {
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).returns(() => makeContractReturn(pool2)).verifiable(TypeMoq.Times.once());
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenA), TypeMoq.It.isValue(tokenC)),
-        ).returns(() => makeContractReturn(pool1)).verifiable(TypeMoq.Times.once());
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .returns(() => makeContractReturn(pool2))
+            .verifiable(TypeMoq.Times.once());
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenA), TypeMoq.It.isValue(tokenC)))
+            .returns(() => makeContractReturn(pool1))
+            .verifiable(TypeMoq.Times.once());
 
         const plpRegistry = new PLPRegistry(mockRegistry.object);
 
@@ -67,9 +72,10 @@ describe('PLPRegistry', () => {
     });
 
     it('should correctly return and cache pool addresses', async () => {
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).returns(() => makeContractReturn(pool2)).verifiable(TypeMoq.Times.once());
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .returns(() => makeContractReturn(pool2))
+            .verifiable(TypeMoq.Times.once());
         const plpRegistry = new PLPRegistry(mockRegistry.object);
 
         const firstRequest = await plpRegistry.getPoolForMarketAsync(tokenB, tokenC);
@@ -85,15 +91,15 @@ describe('PLPRegistry', () => {
     });
 
     it('should expire cache after 1 hour', async () => {
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).returns(() => makeContractReturn(pool2));
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).returns(() => makeContractReturn(pool1));
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).returns(() => makeContractReturn(pool3));
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .returns(() => makeContractReturn(pool2));
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .returns(() => makeContractReturn(pool1));
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .returns(() => makeContractReturn(pool3));
 
         const plpRegistry = new PLPRegistry(mockRegistry.object);
 
@@ -114,9 +120,10 @@ describe('PLPRegistry', () => {
     });
 
     it('should also cache when the pool does not exist', async () => {
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).throws(new Error('PLPRegistry/MARKET_PAIR_NOT_SET')).verifiable(TypeMoq.Times.once());
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .throws(new Error('PLPRegistry/MARKET_PAIR_NOT_SET'))
+            .verifiable(TypeMoq.Times.once());
 
         const plpRegistry = new PLPRegistry(mockRegistry.object);
         const firstRequest = await plpRegistry.getPoolForMarketAsync(tokenB, tokenC);
@@ -129,12 +136,15 @@ describe('PLPRegistry', () => {
     });
 
     it('should not cache miscellaneous errors', async () => {
-        mockRegistry.setup(
-            registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)),
-        ).throws(new Error('Error connecting to Web3 RPC service')).verifiable(TypeMoq.Times.once());
+        mockRegistry
+            .setup(registry => registry.getPoolForMarket(TypeMoq.It.isValue(tokenB), TypeMoq.It.isValue(tokenC)))
+            .throws(new Error('Error connecting to Web3 RPC service'))
+            .verifiable(TypeMoq.Times.once());
 
         const plpRegistry = new PLPRegistry(mockRegistry.object);
-        expect(plpRegistry.getPoolForMarketAsync(tokenB, tokenC)).to.eventually.to.be.rejectedWith('Error connecting to Web3 RPC service');
+        expect(plpRegistry.getPoolForMarketAsync(tokenB, tokenC)).to.eventually.to.be.rejectedWith(
+            'Error connecting to Web3 RPC service',
+        );
         mockRegistry.verifyAll();
     });
 });

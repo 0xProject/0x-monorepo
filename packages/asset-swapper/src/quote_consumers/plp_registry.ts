@@ -15,9 +15,8 @@ interface CacheValue {
  * A wrapper around the PLP Registry that includes a caching layer to minimize latency.
  */
 export class PLPRegistry {
-
     private readonly _contract: RegistryContract;
-    private readonly _cache: {[key: string]: CacheValue};
+    private readonly _cache: { [key: string]: CacheValue };
 
     /**
      * Instantiates a new PLPRegistry.
@@ -39,7 +38,11 @@ export class PLPRegistry {
      * @returns the pool address (represented as a string) if a pool is present for the given market, otherwise `undefined` if the
      *          pool was not found.
      */
-    public async getPoolForMarketAsync(xAsset: string, yAsset: string, _currentTimestamp?: number| undefined): Promise<string | undefined> {
+    public async getPoolForMarketAsync(
+        xAsset: string,
+        yAsset: string,
+        _currentTimestamp?: number | undefined,
+    ): Promise<string | undefined> {
         const timestamp = _currentTimestamp || new Date().getTime();
 
         // We create a consistent ordering of `xAsset` and `yAsset` in order to create a consistent cache key.
