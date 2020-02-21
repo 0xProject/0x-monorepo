@@ -149,4 +149,40 @@ interface IERC20BridgeSampler {
         external
         view
         returns (uint256[] memory makerTokenAmounts);
+
+    /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
+    ///      Calls the provider contract with the default gas limit (200k).
+    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromLiquidityProvider(
+        address providerAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] calldata takerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory makerTokenAmounts);
+
+    /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
+    ///      Calls the provider contract with the default gas limit (200k).
+    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromLiquidityProvider(
+        address providerAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory takerTokenAmounts);
 }
