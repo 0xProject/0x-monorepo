@@ -113,6 +113,28 @@ const samplerOperations = {
             },
         };
     },
+    getPLPBuyQuotes(
+        plpAddress: string,
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromLiquidityProvider(
+                        plpAddress,
+                        makerToken,
+                        takerToken,
+                        makerFillAmounts,
+                    )
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromLiquidityProvider', callResults);
+            },
+        };
+    },
     getCurveSellQuotes(
         curveAddress: string,
         fromTokenIdx: number,
@@ -232,18 +254,20 @@ const samplerOperations = {
         };
     },
     getBuyQuotes(
-        sources: ERC20BridgeSource[],
+        mappings: ERC20BridgeMappings[],
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
     ): BatchedOperation<DexSample[][]> {
-        const subOps = sources.map(source => {
-            if (source === ERC20BridgeSource.Eth2Dai) {
+        const subOps = mappings.map(mapping => {
+            if (mapping.source === ERC20BridgeSource.Eth2Dai) {
                 return samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
-            } else if (source === ERC20BridgeSource.Uniswap) {
+            } else if (mapping.source === ERC20BridgeSource.Uniswap) {
                 return samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
+            } else if (mapping.source === ERC20BridgeSource.Plp) {
+                return samplerOperations.getPLPBuyQuotes(mapping.plpAddress, makerToken, takerToken, makerFillAmounts);
             } else {
-                throw new Error(`Unsupported buy sample source: ${source}`);
+                throw new Error(`Unsupported buy sample source: ${mapping.source}`);
             }
         });
         return {
@@ -256,7 +280,7 @@ const samplerOperations = {
                 const samples = await Promise.all(
                     subOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
                 );
-                return sources.map((source, i) => {
+                return mappings.map((source, i) => {
                     return samples[i].map((output, j) => ({
                         source,
                         output,
