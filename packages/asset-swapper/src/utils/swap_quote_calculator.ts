@@ -240,7 +240,7 @@ export class SwapQuoteCalculator {
             if (remainingTakerAssetFillAmount.lte(0)) {
                 break;
             }
-            if (order.fill.source === ERC20BridgeSource.Native) {
+            if (order.fill.source.source === ERC20BridgeSource.Native) {
                 const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
                     order,
                 );
@@ -334,7 +334,7 @@ export class SwapQuoteCalculator {
             if (remainingMakerAssetFillAmount.lte(0)) {
                 break;
             }
-            if (order.fill.source === ERC20BridgeSource.Native) {
+            if (order.fill.source.source === ERC20BridgeSource.Native) {
                 const adjustedFillableMakerAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
                     order,
                 );
@@ -426,8 +426,8 @@ export class SwapQuoteCalculator {
             return {
                 ...acc,
                 ...{
-                    [source]: !!acc[source]
-                        ? acc[source].plus(assetAmount.dividedBy(totalAssetAmount))
+                    [source.source]: !!acc[source.source]
+                        ? acc[source.source].plus(assetAmount.dividedBy(totalAssetAmount))
                         : assetAmount.dividedBy(totalAssetAmount),
                 },
             };

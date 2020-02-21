@@ -1,25 +1,28 @@
 import { BigNumber } from '@0x/utils';
 
-import { ERC20BridgeSource, GetMarketOrdersOpts } from './types';
+import { ERC20BridgeSource, GetMarketOrdersOpts, StandardERC20BridgeSourceMapping } from './types';
 
 const INFINITE_TIMESTAMP_SEC = new BigNumber(2524604400);
 
 /**
  * Valid sources for market sell.
  */
-export const SELL_SOURCES = [
-    ERC20BridgeSource.Uniswap,
-    ERC20BridgeSource.Eth2Dai,
-    ERC20BridgeSource.Kyber,
-    ERC20BridgeSource.CurveUsdcDai,
-    ERC20BridgeSource.CurveUsdcDaiUsdt,
-    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+export const SELL_MAPPINGS: StandardERC20BridgeSourceMapping[] = [
+    {source: ERC20BridgeSource.Uniswap},
+    {source: ERC20BridgeSource.Eth2Dai},
+    {source: ERC20BridgeSource.Kyber},
+    {source: ERC20BridgeSource.CurveUsdcDai},
+    {source: ERC20BridgeSource.CurveUsdcDaiUsdt},
+    {source: ERC20BridgeSource.CurveUsdcDaiUsdtTusd},
 ];
 
 /**
  * Valid sources for market buy.
  */
-export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
+export const BUY_MAPPINGS: StandardERC20BridgeSourceMapping[] = [
+    {source: ERC20BridgeSource.Uniswap},
+    {source: ERC20BridgeSource.Eth2Dai}
+];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
@@ -34,8 +37,8 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
 
 export const constants = {
     INFINITE_TIMESTAMP_SEC,
-    SELL_SOURCES,
-    BUY_SOURCES,
+    SELL_MAPPINGS,
+    BUY_MAPPINGS,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     ERC20_PROXY_ID: '0xf47261b0',
     WALLET_SIGNATURE: '0x04',

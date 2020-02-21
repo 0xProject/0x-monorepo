@@ -31,11 +31,23 @@ export enum ERC20BridgeSource {
     CurveUsdcDai = 'Curve_USDC_DAI',
     CurveUsdcDaiUsdt = 'Curve_USDC_DAI_USDT',
     CurveUsdcDaiUsdtTusd = 'Curve_USDC_DAI_USDT_TUSD',
+    Plp = 'PLP',
 }
+
+export interface StandardERC20BridgeSourceMapping {
+    source: Exclude<ERC20BridgeSource, ERC20BridgeSource.Plp>;
+}
+
+export interface PLPERC20BridgeSourceMapping {
+    source: ERC20BridgeSource.Plp;
+    plpAddress: string;
+}
+
+export type ERC20BridgeMappings = StandardERC20BridgeSourceMapping | PLPERC20BridgeSourceMapping;
 
 // Internal `fillData` field for `Fill` objects.
 export interface FillData {
-    source: ERC20BridgeSource;
+    source: ERC20BridgeMappings;
 }
 
 // `FillData` for native fills.
@@ -47,7 +59,7 @@ export interface NativeFillData extends FillData {
  * Represents an individual DEX sample from the sampler contract.
  */
 export interface DexSample {
-    source: ERC20BridgeSource;
+    source: ERC20BridgeMappings;
     input: BigNumber;
     output: BigNumber;
 }
@@ -60,6 +72,7 @@ export enum FillFlags {
     SourceUniswap = 0x2,
     SourceEth2Dai = 0x4,
     SourceKyber = 0x8,
+    SourcePlp = 0x10,
 }
 
 /**
@@ -89,7 +102,7 @@ export interface CollapsedFill {
     /**
      * The source DEX.
      */
-    source: ERC20BridgeSource;
+    source: ERC20BridgeMappings;
     /**
      * Total maker asset amount.
      */

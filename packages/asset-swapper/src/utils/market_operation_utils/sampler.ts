@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 
-import { DexSample, ERC20BridgeSource } from './types';
+import { DexSample, ERC20BridgeSource, ERC20BridgeMappings } from './types';
 
 /**
  * A composable operation the be run in `DexOrderSampler.executeAsync()`.
@@ -91,6 +91,28 @@ const samplerOperations = {
             },
         };
     },
+    getPLPSellQuotes(
+        plpAddress: string,
+        makerToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromLiquidityProvider(
+                        plpAddress,
+                        makerToken,
+                        takerToken,
+                        takerFillAmounts,
+                    )
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromLiquidityProvider', callResults);
+            },
+        };
+    },
     getCurveSellQuotes(
         curveAddress: string,
         fromTokenIdx: number,
@@ -146,26 +168,28 @@ const samplerOperations = {
         };
     },
     getSellQuotes(
-        sources: ERC20BridgeSource[],
+        mappings: ERC20BridgeMappings[],
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
     ): BatchedOperation<DexSample[][]> {
-        const subOps = sources
-            .map(source => {
+        const subOps = mappings
+            .map(mapping => {
                 let batchedOperation;
-                if (source === ERC20BridgeSource.Eth2Dai) {
+                if (mapping.source === ERC20BridgeSource.Eth2Dai) {
                     batchedOperation = samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
-                } else if (source === ERC20BridgeSource.Uniswap) {
+                } else if (mapping.source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
-                } else if (source === ERC20BridgeSource.Kyber) {
+                } else if (mapping.source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
+                } else if (mapping.source === ERC20BridgeSource.Plp) {
+                    batchedOperation = samplerOperations.getPLPSellQuotes(mapping.plpAddress, makerToken, takerToken, takerFillAmounts);
                 } else if (
-                    source === ERC20BridgeSource.CurveUsdcDai ||
-                    source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
-                    source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
+                    mapping.source === ERC20BridgeSource.CurveUsdcDai ||
+                    mapping.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
+                    mapping.source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
                 ) {
-                    const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[source];
+                    const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[mapping.source];
                     const fromTokenIdx = tokens.indexOf(takerToken);
                     const toTokenIdx = tokens.indexOf(makerToken);
                     if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
@@ -177,13 +201,13 @@ const samplerOperations = {
                         );
                     }
                 } else {
-                    throw new Error(`Unsupported sell sample source: ${source}`);
+                    throw new Error(`Unsupported sell sample source: ${mapping.source}`);
                 }
-                return { batchedOperation, source };
+                return { batchedOperation, mapping };
             })
             .filter(op => op.batchedOperation) as Array<{
             batchedOperation: BatchedOperation<BigNumber[]>;
-            source: ERC20BridgeSource;
+            mapping: ERC20BridgeMappings;
         }>;
         return {
             encodeCall: contract => {
@@ -199,7 +223,7 @@ const samplerOperations = {
                 );
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
-                        source: op.source,
+                        source: op.mapping,
                         output,
                         input: takerFillAmounts[j],
                     }));

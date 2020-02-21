@@ -29,7 +29,7 @@ import {
 export { DexOrderSampler } from './sampler';
 
 const { ZERO_AMOUNT } = constants;
-const { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_SOURCES } = marketOperationUtilConstants;
+const { DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_MAPPINGS, BUY_MAPPINGS } = marketOperationUtilConstants;
 
 export class MarketOperationUtils {
     private readonly _createOrderUtils: CreateOrderUtils;
@@ -62,11 +62,13 @@ export class MarketOperationUtils {
             ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
+
+        const mappings = SELL_MAPPINGS.filter(mapping => !_opts.excludedSources.includes(mapping.source));
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const [fillableAmounts, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES, _opts.excludedSources),
+                mappings,
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
@@ -135,11 +137,12 @@ export class MarketOperationUtils {
             ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
+        const mappings = BUY_MAPPINGS.filter(mapping => !_opts.excludedSources.includes(mapping.source));
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const [fillableAmounts, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
             DexOrderSampler.ops.getBuyQuotes(
-                difference(BUY_SOURCES, _opts.excludedSources),
+                mappings,
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
@@ -179,11 +182,11 @@ export class MarketOperationUtils {
             ...opts,
         };
 
-        const sources = difference(BUY_SOURCES, _opts.excludedSources);
+        const mappings = BUY_MAPPINGS.filter(mapping => !_opts.excludedSources.includes(mapping.source));
         const ops = [
             ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
             ...batchNativeOrders.map((orders, i) =>
-                DexOrderSampler.ops.getBuyQuotes(sources, getOrderTokens(orders[0])[0], getOrderTokens(orders[0])[1], [
+                DexOrderSampler.ops.getBuyQuotes(mappings, getOrderTokens(orders[0])[0], getOrderTokens(orders[0])[1], [
                     makerAmounts[i],
                 ]),
             ),
@@ -301,7 +304,7 @@ function createSellPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[]
             input: takerAmount,
             output: makerAmount,
             fillData: {
-                source: ERC20BridgeSource.Native,
+                source: {source: ERC20BridgeSource.Native},
                 order,
             },
         });
@@ -323,7 +326,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
             input: makerAmount,
             output: takerAmount,
             fillData: {
-                source: ERC20BridgeSource.Native,
+                source: {source: ERC20BridgeSource.Native},
                 order,
             },
         });
@@ -346,8 +349,8 @@ function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean
             }
             path.push({
                 parent: path.length !== 0 ? path[path.length - 1] : undefined,
-                flags: sourceToFillFlags(sample.source),
-                exclusionMask: noConflicts ? sourceToExclusionMask(sample.source) : 0,
+                flags: sourceToFillFlags(sample.source.source),
+                exclusionMask: noConflicts ? sourceToExclusionMask(sample.source.source) : 0,
                 input: sample.input.minus(prevSample ? prevSample.input : 0),
                 output: sample.output.minus(prevSample ? prevSample.output : 0),
                 fillData: { source: sample.source },
@@ -433,10 +436,10 @@ function collapsePath(path: Fill[], isBuy: boolean): CollapsedFill[] {
         const makerAssetAmount = isBuy ? fill.input : fill.output;
         const takerAssetAmount = isBuy ? fill.output : fill.input;
         const source = (fill.fillData as FillData).source;
-        if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {
+        if (collapsed.length !== 0 && source.source !== ERC20BridgeSource.Native) {
             const prevFill = collapsed[collapsed.length - 1];
             // If the last fill is from the same source, merge them.
-            if (prevFill.source === source) {
+            if (prevFill.source.source === source.source) {
                 prevFill.totalMakerAssetAmount = prevFill.totalMakerAssetAmount.plus(makerAssetAmount);
                 prevFill.totalTakerAssetAmount = prevFill.totalTakerAssetAmount.plus(takerAssetAmount);
                 prevFill.subFills.push({ makerAssetAmount, takerAssetAmount });
