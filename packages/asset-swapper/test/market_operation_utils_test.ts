@@ -18,9 +18,11 @@ import { constants as assetSwapperConstants } from '../src/constants';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { DexSample, ERC20BridgeMappings, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
-const { BUY_SOURCES, SELL_SOURCES } = marketOperationUtilConstants;
+const { BUY_MAPPINGS, SELL_MAPPINGS } = marketOperationUtilConstants;
+const SELL_SOURCES = SELL_MAPPINGS.map(m => m.source);
+const BUY_SOURCES = BUY_MAPPINGS.map(m => m.source);
 
 // tslint:disable: custom-no-magic-numbers
 describe('MarketOperationUtils tests', () => {
@@ -137,31 +139,31 @@ describe('MarketOperationUtils tests', () => {
     }
 
     type GetMultipleQuotesOperation = (
-        sources: ERC20BridgeSource[],
+        sources: ERC20BridgeMappings[],
         makerToken: string,
         takerToken: string,
         fillAmounts: BigNumber[],
     ) => DexSample[][];
 
     function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
-        return (sources: ERC20BridgeSource[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
+        return (sources: ERC20BridgeMappings[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return sources.map(s =>
                 fillAmounts.map((a, i) => ({
                     source: s,
                     input: a,
-                    output: a.times(rates[s][i]).integerValue(),
+                    output: a.times(rates[s.source][i]).integerValue(),
                 })),
             );
         };
     }
 
     function createGetMultipleBuyQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
-        return (sources: ERC20BridgeSource[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
+        return (sources: ERC20BridgeMappings[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return sources.map(s =>
                 fillAmounts.map((a, i) => ({
                     source: s,
                     input: a,
-                    output: a.div(rates[s][i]).integerValue(),
+                    output: a.div(rates[s.source][i]).integerValue(),
                 })),
             );
         };
@@ -278,10 +280,10 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('polls all DEXes if `excludedSources` is empty', async () => {
-                let sourcesPolled: ERC20BridgeSource[] = [];
+                let mappingsPolled: ERC20BridgeMappings[] = [];
                 replaceSamplerOps({
                     getSellQuotes: (sources, makerToken, takerToken, amounts) => {
-                        sourcesPolled = sources.slice();
+                        mappingsPolled = sources.slice();
                         return DEFAULT_OPS.getSellQuotes(sources, makerToken, takerToken, amounts);
                     },
                 });
@@ -289,15 +291,15 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(sourcesPolled.sort()).to.deep.eq(SELL_SOURCES.slice().sort());
+                expect(mappingsPolled.map(m => m.source).sort()).to.deep.eq(SELL_SOURCES.slice().sort());
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {
                 const excludedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
-                let sourcesPolled: ERC20BridgeSource[] = [];
+                let mappingsPolled: ERC20BridgeMappings[] = [];
                 replaceSamplerOps({
                     getSellQuotes: (sources, makerToken, takerToken, amounts) => {
-                        sourcesPolled = sources.slice();
+                        mappingsPolled = sources.slice();
                         return DEFAULT_OPS.getSellQuotes(sources, makerToken, takerToken, amounts);
                     },
                 });
@@ -305,7 +307,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
-                expect(sourcesPolled.sort()).to.deep.eq(_.without(SELL_SOURCES, ...excludedSources).sort());
+                expect(mappingsPolled.map(m => m.source).sort()).to.deep.eq(_.without(SELL_SOURCES, ...excludedSources).sort());
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {
@@ -507,7 +509,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('polls all DEXes if `excludedSources` is empty', async () => {
-                let sourcesPolled: ERC20BridgeSource[] = [];
+                let sourcesPolled: ERC20BridgeMappings[] = [];
                 replaceSamplerOps({
                     getBuyQuotes: (sources, makerToken, takerToken, amounts) => {
                         sourcesPolled = sources.slice();
@@ -518,15 +520,15 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(sourcesPolled).to.deep.eq(BUY_SOURCES);
+                expect(sourcesPolled).to.deep.eq(BUY_MAPPINGS);
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {
                 const excludedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
-                let sourcesPolled: ERC20BridgeSource[] = [];
+                let mappingsPolled: ERC20BridgeMappings[] = [];
                 replaceSamplerOps({
                     getBuyQuotes: (sources, makerToken, takerToken, amounts) => {
-                        sourcesPolled = sources.slice();
+                        mappingsPolled = sources.slice();
                         return DEFAULT_OPS.getBuyQuotes(sources, makerToken, takerToken, amounts);
                     },
                 });
@@ -534,7 +536,7 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
-                expect(sourcesPolled).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources));
+                expect(mappingsPolled.map(m => m.source)).to.deep.eq(_.without(BUY_SOURCES, ...excludedSources));
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {

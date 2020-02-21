@@ -33,13 +33,13 @@ const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 // );
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
 
-const { DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_SOURCES } = marketOperationUtilConstants;
+const { DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_MAPPINGS } = marketOperationUtilConstants;
 
 // Excludes all non native sources
 const CALCULATE_SWAP_QUOTE_OPTS: CalculateSwapQuoteOpts = {
     ...DEFAULT_GET_MARKET_ORDERS_OPTS,
     ...{
-        excludedSources: SELL_SOURCES,
+        excludedSources: SELL_MAPPINGS.map(m => m.source),
     },
 };
 

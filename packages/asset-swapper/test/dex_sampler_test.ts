@@ -5,7 +5,7 @@ import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { DexOrderSampler, getSampleAmounts } from '../src/utils/market_operation_utils/sampler';
-import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { ERC20BridgeMappings, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
 import { MockSamplerContract } from './utils/mock_sampler_contract';
 
@@ -237,7 +237,11 @@ describe('DexSampler tests', () => {
         it('getSellQuotes()', async () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
-            const sources = [ERC20BridgeSource.Kyber, ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap];
+            const sources: ERC20BridgeMappings[] = [
+                {source: ERC20BridgeSource.Kyber},
+                {source: ERC20BridgeSource.Eth2Dai},
+                {source: ERC20BridgeSource.Uniswap},
+            ];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Kyber]: getRandomFloat(0, 100),
                 [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),
@@ -278,7 +282,7 @@ describe('DexSampler tests', () => {
                 expectedTakerFillAmounts.map(a => ({
                     source: s,
                     input: a,
-                    output: a.times(ratesBySource[s]).integerValue(),
+                    output: a.times(ratesBySource[s.source]).integerValue(),
                 })),
             );
             expect(quotes).to.deep.eq(expectedQuotes);
@@ -287,7 +291,10 @@ describe('DexSampler tests', () => {
         it('getBuyQuotes()', async () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
-            const sources = [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap];
+            const sources: ERC20BridgeMappings[] = [
+                {source: ERC20BridgeSource.Eth2Dai},
+                {source: ERC20BridgeSource.Uniswap},
+            ];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),
                 [ERC20BridgeSource.Uniswap]: getRandomFloat(0, 100),
@@ -321,7 +328,7 @@ describe('DexSampler tests', () => {
                 expectedMakerFillAmounts.map(a => ({
                     source: s,
                     input: a,
-                    output: a.times(ratesBySource[s]).integerValue(),
+                    output: a.times(ratesBySource[s.source]).integerValue(),
                 })),
             );
             expect(quotes).to.deep.eq(expectedQuotes);
