@@ -47,7 +47,7 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the `Chai` contract
     address constant private CHAI_ADDRESS = 0x06AF07097C9Eeb7fD685c692751D5C66dB49c215;
     /// @dev Mainnet address of the 0x DevUtils contract.
-    address constant private DEV_UTILS_ADDRESS = 0xcCc2431a7335F21d9268bA62F0B32B0f2EFC463f;
+    address constant private DEV_UTILS_ADDRESS = 0x74134CF88b21383713E096a5ecF59e297dc7f547;
     // /// @dev Kovan address of the 0x DevUtils contract.
     // address constant private DEV_UTILS_ADDRESS = 0x161793Cdca4fF9E766A706c2C49c36AC1340bbcd;
     /// @dev Kyber ETH pseudo-address.
