@@ -1,5 +1,5 @@
 import { assetDataUtils } from '@0x/order-utils';
-import { AssetData, ERC20AssetData, ERC20BridgeAssetData, Order } from '@0x/types';
+import { AssetData, ERC20AssetData, ERC20BridgeAssetData, Order, SignedOrder } from '@0x/types';
 import { BigNumber, NULL_BYTES } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
@@ -7,6 +7,21 @@ import { constants } from '../constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 export const utils = {
+    isSupportedAssetDataInOrders(orders: SignedOrder[]): boolean {
+        const firstOrderMakerAssetData = !!orders[0]
+            ? assetDataUtils.decodeAssetDataOrThrow(orders[0].makerAssetData)
+            : { assetProxyId: '' };
+        return orders.every(o => {
+            const takerAssetData = assetDataUtils.decodeAssetDataOrThrow(o.takerAssetData);
+            const makerAssetData = assetDataUtils.decodeAssetDataOrThrow(o.makerAssetData);
+            return (
+                (makerAssetData.assetProxyId === constants.PROXY_IDS.ERC20_PROXY_ID ||
+                    makerAssetData.assetProxyId === constants.PROXY_IDS.ERC721_PROXY_ID) &&
+                takerAssetData.assetProxyId === constants.PROXY_IDS.ERC20_PROXY_ID &&
+                firstOrderMakerAssetData.assetProxyId === makerAssetData.assetProxyId
+            ); // checks that all native order maker assets are of the same type
+        });
+    },
     numberPercentageToEtherTokenAmountPercentage(percentage: number): BigNumber {
         return Web3Wrapper.toBaseUnitAmount(constants.ONE_AMOUNT, constants.ETHER_TOKEN_DECIMALS).multipliedBy(
             percentage,

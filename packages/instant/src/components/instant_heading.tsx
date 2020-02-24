@@ -72,11 +72,7 @@ export class InstantHeading extends React.PureComponent<InstantHeadingProps, {}>
                         overflow="hidden"
                         borderRadius="50%"
                     >
-                        <Flex
-                            justify="center"
-                            align="center"
-                            height="100%"
-                        >
+                        <Flex justify="center" align="center" height="100%">
                             <Image src={asset.metaData.imageUrl} height="100%" objectFit="cover" />
                         </Flex>
                     </Container>
