@@ -234,6 +234,7 @@ export enum SwapQuoterError {
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
     NoGasPriceProvidedOrEstimated = 'NO_GAS_PRICE_PROVIDED_OR_ESTIMATED',
+    AssetDataUnsupported = 'ASSET_DATA_UNSUPPORTED',
 }
 
 /**

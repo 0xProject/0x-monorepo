@@ -1,4 +1,4 @@
-import { orderCalculationUtils } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -14,6 +14,7 @@ import {
     SwapQuoteBase,
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
+    SwapQuoterError,
 } from '../types';
 
 import { fillableAmountsUtils } from './fillable_amounts_utils';
@@ -126,6 +127,10 @@ export class SwapQuoteCalculator {
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
     ): Promise<SwapQuote> {
+        // checks if maker asset is ERC721 or ERC20 and taker asset is ERC20
+        if (!isSupportedAssetDataInOrders(prunedOrders)) {
+            throw Error(SwapQuoterError.AssetDataUnsupported);
+        }
         // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
 
         const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
@@ -137,21 +142,41 @@ export class SwapQuoteCalculator {
                 ...opts,
                 fees: _.mapValues(opts.fees, (v, k) => v.times(gasPrice)),
             };
-            if (operation === MarketOperation.Buy) {
-                resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
-                    prunedOrders,
-                    assetFillAmount.plus(slippageBufferAmount),
-                    _opts,
-                );
+
+            const firstOrderMakerAssetData = !!prunedOrders[0] ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData) : { assetProxyId: ''};
+
+            if (firstOrderMakerAssetData.assetProxyId === constants.PROXY_IDS.ERC721_PROXY_ID ) {
+                resultOrders = prunedOrders.map(o => {
+                    // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
+                    return {
+                        ...o,
+                        fillableMakerAssetAmount: o.makerAssetAmount,
+                        fillableTakerAssetAmount: o.takerAssetAmount,
+                        fillableTakerFeeAmount: o.takerFee,
+                        fill: {
+                            source: ERC20BridgeSource.Native,
+                            totalMakerAssetAmount: o.makerAssetAmount,
+                            totalTakerAssetAmount: o.takerAssetAmount,
+                            subFills: [],
+                        },
+                    };
+                });
             } else {
-                resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
-                    prunedOrders,
-                    assetFillAmount.plus(slippageBufferAmount),
-                    _opts,
-                );
+                if (operation === MarketOperation.Buy) {
+                    resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
+                        prunedOrders,
+                        assetFillAmount.plus(slippageBufferAmount),
+                        _opts,
+                    );
+                } else {
+                    resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
+                        prunedOrders,
+                        assetFillAmount.plus(slippageBufferAmount),
+                        _opts,
+                    );
+                }
             }
         }
-
         // assetData information for the result
         const { makerAssetData, takerAssetData } = prunedOrders[0];
         return this._createSwapQuoteAsync(
@@ -440,6 +465,24 @@ export class SwapQuoteCalculator {
             };
         }, breakdown);
     }
+}
+
+function isSupportedAssetDataInOrders(
+    orders: SignedOrder[],
+): boolean {
+    const firstOrderMakerAssetData = !!orders[0] ? assetDataUtils.decodeAssetDataOrThrow(orders[0].makerAssetData) : { assetProxyId: '' };
+    return orders.every(o => {
+        const takerAssetData = assetDataUtils.decodeAssetDataOrThrow(o.takerAssetData);
+        const makerAssetData = assetDataUtils.decodeAssetDataOrThrow(o.makerAssetData);
+        return (
+            (makerAssetData.assetProxyId === constants.PROXY_IDS.ERC20_PROXY_ID
+                || makerAssetData.assetProxyId === constants.PROXY_IDS.ERC721_PROXY_ID)
+            ) &&
+            (
+                takerAssetData.assetProxyId === constants.PROXY_IDS.ERC20_PROXY_ID
+            ) &&
+            firstOrderMakerAssetData.assetProxyId === makerAssetData.assetProxyId; // checks that all native order maker assets are of the same type
+    });
 }
 
 function getTakerAssetAmountBreakDown(
