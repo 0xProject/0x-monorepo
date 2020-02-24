@@ -466,7 +466,8 @@ export class SwapQuoter {
      * Destroys any subscriptions or connections.
      */
     public async destroyAsync(): Promise<void> {
-        return this.orderbook.destroyAsync();
+        await this._protocolFeeUtils.destroyAsync();
+        await this.orderbook.destroyAsync();
     }
 
     /**

@@ -153,6 +153,9 @@ export class ZeroExInstantProvider extends React.PureComponent<ZeroExInstantProv
         if (this._swapQuoteHeartbeat) {
             this._swapQuoteHeartbeat.stop();
         }
+        const state = this._store.getState();
+        // tslint:disable-next-line: no-floating-promises
+        state.providerState.swapQuoter.destroyAsync();
     }
     public render(): React.ReactNode {
         return (
