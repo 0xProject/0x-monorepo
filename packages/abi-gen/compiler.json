@@ -3,6 +3,7 @@
     "contractsDir": "./test-cli/fixtures/contracts",
     "useDockerisedSolc": false,
     "isOfflineMode": false,
+    "shouldSaveStandardInput": true,
     "compilerSettings": {
         "evmVersion": "constantinople",
         "optimizer": {

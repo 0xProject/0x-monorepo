@@ -2,6 +2,7 @@
     "artifactsDir": "./test/generated-artifacts",
     "contractsDir": "./contracts",
     "useDockerisedSolc": false,
+    "shouldSaveStandardInput": true,
     "compilerSettings": {
         "evmVersion": "istanbul",
         "optimizer": {
