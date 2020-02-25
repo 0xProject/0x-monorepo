@@ -319,11 +319,6 @@ function createSignedOrdersWithFillableAmounts(
         });
 }
 
-// Gets the difference between two sets.
-function difference<T>(a: T[], b: T[]): T[] {
-    return a.filter(x => b.indexOf(x) === -1);
-}
-
 function createSellPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[]): Fill[] {
     const path: Fill[] = [];
     // tslint:disable-next-line: prefer-for-of
@@ -408,6 +403,9 @@ function sourceToFillFlags(source: ERC20BridgeSource): number {
     }
     if (source === ERC20BridgeSource.Uniswap) {
         return FillFlags.SourceUniswap;
+    }
+    if (source === ERC20BridgeSource.Plp) {
+        return FillFlags.SourcePlp;
     }
     return FillFlags.SourceNative;
 }
