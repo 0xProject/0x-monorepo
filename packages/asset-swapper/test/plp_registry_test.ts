@@ -6,7 +6,7 @@ import * as chai from 'chai';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 
-import { PLPRegistry, RegistryContract } from '../src/quote_consumers/plp_registry';
+import { PLPRegistry, RegistryContract } from '../src/utils/plp_registry';
 
 import { chaiSetup } from './utils/chai_setup';
 
