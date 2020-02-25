@@ -8,3 +8,5 @@
 /lib/monorepo_scripts/
 # Package specific ignore
 /docs
+# Whitelist bin
+!bin/**/*
