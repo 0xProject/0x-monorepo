@@ -24,7 +24,10 @@ import {
     NativeFillData,
     OptimizedMarketOrder,
     OrderDomain,
+    ERC20BridgeMappings,
+    StandardERC20BridgeSourceMapping,
 } from './types';
+import { PLPRegistry } from '../../quote_consumers/plp_registry';
 
 export { DexOrderSampler } from './sampler';
 
@@ -32,6 +35,26 @@ const { ZERO_AMOUNT } = constants;
 const { DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_MAPPINGS, BUY_MAPPINGS } = marketOperationUtilConstants;
 
 export class MarketOperationUtils {
+
+    public static async getMappingsForOrderSampler(
+        makerToken: string, takerToken: string,
+        defaultMappings: StandardERC20BridgeSourceMapping[], excludes: ERC20BridgeSource[],
+        plpRegistry?: PLPRegistry | undefined,
+    ): Promise<ERC20BridgeMappings[]> {
+        const excludeSet = new Set(excludes);
+        const filteredMappings: ERC20BridgeMappings[] = defaultMappings.filter(mapping => !excludeSet.has(mapping.source));
+        if ((plpRegistry !== undefined) && !excludeSet.has(ERC20BridgeSource.Plp)) {
+            const poolAddress = await plpRegistry.getPoolForMarketAsync(makerToken, takerToken);
+            if (poolAddress !== undefined) {
+                filteredMappings.push({
+                    source: ERC20BridgeSource.Plp,
+                    plpAddress: poolAddress,
+                });
+            }
+        }
+        return filteredMappings;
+    }
+
     private readonly _createOrderUtils: CreateOrderUtils;
 
     constructor(

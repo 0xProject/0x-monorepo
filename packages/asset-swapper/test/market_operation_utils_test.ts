@@ -24,7 +24,7 @@ import { constants as assetSwapperConstants } from '../src/constants';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeMappings, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { DexSample, ERC20BridgeMappings, ERC20BridgeSource, StandardERC20BridgeSourceMapping, PLPERC20BridgeSourceMapping } from '../src/utils/market_operation_utils/types';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 import { PLPRegistry } from '../src/quote_consumers/plp_registry';
 
@@ -673,6 +673,8 @@ describe('MarketOperationUtils tests', () => {
             let registryContractAddress: string;
             let liquidityPoolAddress: string;
 
+            const allSellMappingsExceptForUniswap: ERC20BridgeSource[] = SELL_MAPPINGS.map(m => m.source).filter(s => s !== ERC20BridgeSource.Uniswap);
+
             beforeEach(async () => {
                 const allArtifacts = {
                     ...artifacts,
@@ -714,7 +716,7 @@ describe('MarketOperationUtils tests', () => {
                 );
             });
 
-            it.only('is able to perform sampling of sells and buys from PLP pools', async () => {
+            it('is able to perform sampling of sells and buys from PLP pools', async () => {
                 const [sellQuotes, buyQuotes] = await dexSampler.executeAsync(
                     DexOrderSampler.ops.getSellQuotes(
                         [{source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress}],
@@ -747,7 +749,51 @@ describe('MarketOperationUtils tests', () => {
                     });
                     expect(quote.output).to.eql(quote.input.plus(1));
                 }
+            });
+
+            it('correctly computes source bridge mappings for buys and sells', async () => {
+                const mappings = await MarketOperationUtils.getMappingsForOrderSampler(
+                    xAsset, yAsset, SELL_MAPPINGS, [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber]
+                );
+                expect(mappings.map(m => m.source).sort()).to.eql(
+                    [ERC20BridgeSource.CurveUsdcDai, ERC20BridgeSource.CurveUsdcDaiUsdt, ERC20BridgeSource.CurveUsdcDaiUsdtTusd, ERC20BridgeSource.Uniswap],
+                );
+            });
+
+            it('correctly injects PLP liquidity if a registry is present', async () => {
+                const registry = new PLPRegistry(new IPLPRegistryContract(registryContractAddress, provider));
+
+                const mappings = await MarketOperationUtils.getMappingsForOrderSampler(
+                    xAsset, yAsset, SELL_MAPPINGS, allSellMappingsExceptForUniswap, registry,
+                );
+                expect(mappings.map(m => m.source).sort()).to.eql(
+                    [ERC20BridgeSource.Plp, ERC20BridgeSource.Uniswap],
+                );
+                const plpMapping = mappings.find(m => m.source === ERC20BridgeSource.Plp) as PLPERC20BridgeSourceMapping;
+                expect(plpMapping.plpAddress).to.eql(liquidityPoolAddress);
             })
+
+            it.only('correctly ignores PLP if `ERC20BridgeSource.Plp` is included in the exclusion list', async () => {
+                const registry = new PLPRegistry(new IPLPRegistryContract(registryContractAddress, provider));
+
+                const mappings = await MarketOperationUtils.getMappingsForOrderSampler(
+                    xAsset, yAsset, SELL_MAPPINGS, allSellMappingsExceptForUniswap.concat([ERC20BridgeSource.Plp]), registry,
+                );
+                expect(mappings.map(m => m.source).sort()).to.eql(
+                    [ERC20BridgeSource.Uniswap],
+                );
+            });
+
+            it('correctly ignores PLP if PLPRegistry cannot find an entry', async () => {
+                const registry = new PLPRegistry(new IPLPRegistryContract(registryContractAddress, provider));
+
+                const mappings = await MarketOperationUtils.getMappingsForOrderSampler(
+                    xAsset, randomAddress(), SELL_MAPPINGS, allSellMappingsExceptForUniswap, registry,
+                );
+                expect(mappings.map(m => m.source).sort()).to.eql(
+                    [ERC20BridgeSource.Uniswap],
+                );
+            });
 
             // it('accepts a `plpAddress` parameter that is used to initialize the PLP Registry', async () => {
 
