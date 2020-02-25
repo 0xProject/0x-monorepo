@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.4.1",
+        "changes": [
+            {
+                "note": "Fix extra space in `provider.send` signature",
+                "pr": 2428
+            }
+        ]
+    },
+    {
         "version": "5.4.0",
         "changes": [
             {
