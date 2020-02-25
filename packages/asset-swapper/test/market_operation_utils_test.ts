@@ -714,22 +714,38 @@ describe('MarketOperationUtils tests', () => {
                 );
             });
 
-            it.only('is able to perform sampling of sells from PLP pools', async () => {
-                const [dexQuotes] = await dexSampler.executeAsync(
+            it.only('is able to perform sampling of sells and buys from PLP pools', async () => {
+                const [sellQuotes, buyQuotes] = await dexSampler.executeAsync(
                     DexOrderSampler.ops.getSellQuotes(
                         [{source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress}],
                         xAsset,
                         yAsset,
-                        [new BigNumber(1000), new BigNumber(5000), new BigNumber(8000)]
+                        [new BigNumber(1000), new BigNumber(5000), new BigNumber(8000)],
+                    ),
+                    DexOrderSampler.ops.getBuyQuotes(
+                        [{source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress}],
+                        xAsset,
+                        yAsset,
+                        [new BigNumber(200), new BigNumber(1234)],
                     ),
                 );
-                expect(dexQuotes[0].length).to.eql(3);
-                for(const quote of dexQuotes[0]) {
+                expect(sellQuotes[0].length).to.eql(3);
+                expect(buyQuotes[0].length).to.eql(2);
+
+                for(const quote of sellQuotes[0]) {
                     expect(quote.source).to.eql({
                         source: ERC20BridgeSource.Plp,
                         plpAddress: liquidityPoolAddress,
                     });
                     expect(quote.output).to.eql(quote.input.minus(1));
+                }
+
+                for(const quote of buyQuotes[0]) {
+                    expect(quote.source).to.eql({
+                        source: ERC20BridgeSource.Plp,
+                        plpAddress: liquidityPoolAddress,
+                    });
+                    expect(quote.output).to.eql(quote.input.plus(1));
                 }
             })
 
