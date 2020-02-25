@@ -1,13 +1,5 @@
 [
     {
-        "version": "4.0.9",
-        "changes": [
-            {
-                "note": "Include `bin` files"
-            }
-        ]
-    },
-    {
         "timestamp": 1582623685,
         "version": "4.0.8",
         "changes": [
