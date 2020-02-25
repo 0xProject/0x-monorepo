@@ -6,7 +6,8 @@
                 "note": "Fix extra space in `provider.send` signature",
                 "pr": 2428
             }
-        ]
+        ],
+        "timestamp": 1582623685
     },
     {
         "version": "5.4.0",

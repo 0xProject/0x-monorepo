@@ -10,7 +10,8 @@
                 "note": "Incorporate fees into fill optimization",
                 "pr": 2481
             }
-        ]
+        ],
+        "timestamp": 1582623685
     },
     {
         "version": "4.2.0",

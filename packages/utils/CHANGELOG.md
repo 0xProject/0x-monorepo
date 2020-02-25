@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.1 - _February 25, 2020_
+
+    * Fix extra space in `provider.send` signature (#2428)
+
 ## v5.4.0 - _February 8, 2020_
 
     * Add `toTokenUnitAmount` and `fromTokenUnitAmount` (#2462)

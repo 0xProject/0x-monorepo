@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.7.0 - _February 25, 2020_
+
+    * Update `DevUtils` addresses. (#2493)
+
 ## v4.6.0 - _February 15, 2020_
 
     * Added `ChainlinkStopLimit` addresses (mainnet, ropsten, rinkeby) (#2473)
@@ -24,7 +28,7 @@ CHANGELOG
 
     * Update `ERC20BridgeSampler` on mainnet and kovan. (#2459)
     * Remove `libTransactionDecoder` (#2456)
-    * Update snapshot addresses (#2464)
+    * Update snapshot addresses (#2466)
 
 ## v4.3.0 - _January 22, 2020_
 

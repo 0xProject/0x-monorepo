@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.1 - _February 25, 2020_
+
+    * Dependencies updated
+
 ## v1.1.0 - _February 15, 2020_
 
     * Added decoders for broker data (#2484)

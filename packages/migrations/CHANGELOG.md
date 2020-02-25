@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.2.1 - _February 25, 2020_
+
+    * Dependencies updated
+
 ## v6.2.0 - _February 15, 2020_
 
     * Added `CurveBridge` address (null) (#2483)
@@ -14,6 +18,7 @@ CHANGELOG
     * Update `DevUtils` deployment (#2456)
     * Remove `LibTransactionDecoder` deployment (#2456)
     * Use contract package artifacts in ganache migrations (#2456)
+    * Update deployment for new DevUtils (#2466)
 
 ## v6.0.2 - _February 6, 2020_
 

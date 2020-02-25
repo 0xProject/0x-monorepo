@@ -6,7 +6,8 @@
                 "note": "Update `DevUtils` addresses in `DeploymentConstants`",
                 "pr": 2493
             }
-        ]
+        ],
+        "timestamp": 1582623685
     },
     {
         "version": "1.2.0",

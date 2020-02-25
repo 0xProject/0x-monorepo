@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.3.0 - _February 25, 2020_
+
+    * Update `DevUtils` addresses in `DeploymentConstants` (#2493)
+
+## v1.2.0 - _Invalid date_
+
+    * Add `DydxBridge` order validation (#2466)
+
 ## v1.1.1 - _February 15, 2020_
 
     * Dependencies updated

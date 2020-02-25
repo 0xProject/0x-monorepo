@@ -5,9 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.2.1 - _February 25, 2020_
+
+    * Dependencies updated
+
 ## v5.2.0 - _February 8, 2020_
 
     * Support deploying contracts with unliked libraries through `deployWithLibrariesFrom0xArtifactAsync()` (#2463)
+    * Update reference outputs (#2466)
 
 ## v5.1.2 - _February 6, 2020_
 

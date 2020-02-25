@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.2.1 - _February 25, 2020_
+
+    * Dependencies updated
+
 ## v6.2.0 - _February 8, 2020_
 
     * Ignore bytecode with unlinked library references in constructor (#2463)

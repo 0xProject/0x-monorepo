@@ -5,15 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.2 - _February 25, 2020_
+
+    * Dependencies updated
+
 ## v3.2.1 - _February 15, 2020_
 
     * Dependencies updated
 
 ## v3.2.0 - _February 8, 2020_
 
+    * Add more types and functions to `IDydx` (#2466)
+    * Rename `DydxBrigeAction.accountId` to `DydxBridgeAction.accountIdx` (#2466)
     * Fix broken tests. (#2462)
     * Remove dependency on `@0x/contracts-dev-utils` (#2462)
     * Add asset data decoding functions (#2462)
+    * Add `setOperators()` to `IDydx` (#TODO)
 
 ## v3.1.3 - _February 6, 2020_
 

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.4.1 - _February 25, 2020_
+
+    * Dependencies updated
+
 ## v2.4.0 - _February 15, 2020_
 
     * Added ChainlinkStopLimit contract and tests (#2473)
@@ -16,6 +20,8 @@ CHANGELOG
 
     * Remove dependency on `DevUtils` for asset data encoding/decoding (#2462)
     * Update tests for refactored `DevUtils` (#2464)
+    * Add DydxBridge validation (#2466)
+    * Add DevUtils DydxBridge validation mainnet tests (#2466)
 
 ## v2.2.3 - _February 6, 2020_
 

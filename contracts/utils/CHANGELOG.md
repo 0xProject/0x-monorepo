@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0 - _February 25, 2020_
+
+    * Add `D18` library (#2466)
+
 ## v4.3.1 - _February 15, 2020_
 
     * Dependencies updated

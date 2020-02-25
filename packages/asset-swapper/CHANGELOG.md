@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _February 25, 2020_
+
+    * Add `fees` to `GetMarketOrdersOpts` (#2481)
+    * Incorporate fees into fill optimization (#2481)
+
 ## v4.2.0 - _February 15, 2020_
 
     * Use `batchCall()` version of the `ERC20BridgeSampler` contract (#2477)
