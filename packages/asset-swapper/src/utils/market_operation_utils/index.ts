@@ -4,6 +4,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
+import { PLPRegistry } from '../../quote_consumers/plp_registry';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../fillable_amounts_utils';
 
@@ -15,6 +16,7 @@ import {
     AggregationError,
     CollapsedFill,
     DexSample,
+    ERC20BridgeMappings,
     ERC20BridgeSource,
     Fill,
     FillData,
@@ -24,10 +26,8 @@ import {
     NativeFillData,
     OptimizedMarketOrder,
     OrderDomain,
-    ERC20BridgeMappings,
     StandardERC20BridgeSourceMapping,
 } from './types';
-import { PLPRegistry } from '../../quote_consumers/plp_registry';
 
 export { DexOrderSampler } from './sampler';
 
@@ -36,7 +36,9 @@ const { DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_MAPPINGS, BUY_MAPPI
 
 export class MarketOperationUtils {
 
-    public static async getMappingsForOrderSampler(
+    private readonly _createOrderUtils: CreateOrderUtils;
+
+    public static async getMappingsForOrderSamplerAsync(
         makerToken: string, takerToken: string,
         defaultMappings: StandardERC20BridgeSourceMapping[], excludes: ERC20BridgeSource[],
         plpRegistry?: PLPRegistry | undefined,
@@ -55,12 +57,11 @@ export class MarketOperationUtils {
         return filteredMappings;
     }
 
-    private readonly _createOrderUtils: CreateOrderUtils;
-
     constructor(
         private readonly _sampler: DexOrderSampler,
         contractAddresses: ContractAddresses,
         private readonly _orderDomain: OrderDomain,
+        private readonly _plpRegistry?: PLPRegistry | undefined,
     ) {
         this._createOrderUtils = new CreateOrderUtils(contractAddresses);
     }
@@ -86,12 +87,17 @@ export class MarketOperationUtils {
             ...opts,
         };
 
-        const mappings = SELL_MAPPINGS.filter(mapping => !_opts.excludedSources.includes(mapping.source));
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
+        const sourceMappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
+            makerToken, takerToken,
+            SELL_MAPPINGS,
+            _opts.excludedSources,
+            this._plpRegistry,
+        );
         const [fillableAmounts, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
             DexOrderSampler.ops.getSellQuotes(
-                mappings,
+                sourceMappings,
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
@@ -160,12 +166,17 @@ export class MarketOperationUtils {
             ...DEFAULT_GET_MARKET_ORDERS_OPTS,
             ...opts,
         };
-        const mappings = BUY_MAPPINGS.filter(mapping => !_opts.excludedSources.includes(mapping.source));
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
+        const sourceMappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
+            makerToken, takerToken,
+            BUY_MAPPINGS,
+            _opts.excludedSources,
+            this._plpRegistry,
+        );
         const [fillableAmounts, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
             DexOrderSampler.ops.getBuyQuotes(
-                mappings,
+                sourceMappings,
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),

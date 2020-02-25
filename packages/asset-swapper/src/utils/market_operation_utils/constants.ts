@@ -21,7 +21,7 @@ export const SELL_MAPPINGS: StandardERC20BridgeSourceMapping[] = [
  */
 export const BUY_MAPPINGS: StandardERC20BridgeSourceMapping[] = [
     {source: ERC20BridgeSource.Uniswap},
-    {source: ERC20BridgeSource.Eth2Dai}
+    {source: ERC20BridgeSource.Eth2Dai},
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {

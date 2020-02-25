@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
 
-import { DexSample, ERC20BridgeSource, ERC20BridgeMappings } from './types';
+import { DexSample, ERC20BridgeMappings, ERC20BridgeSource } from './types';
 
 /**
  * A composable operation the be run in `DexOrderSampler.executeAsync()`.

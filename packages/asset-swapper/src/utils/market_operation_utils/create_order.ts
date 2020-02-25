@@ -9,11 +9,11 @@ import { constants as marketOperationUtilConstants } from './constants';
 import {
     AggregationError,
     CollapsedFill,
+    ERC20BridgeMappings,
     ERC20BridgeSource,
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
-    ERC20BridgeMappings,
 } from './types';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
