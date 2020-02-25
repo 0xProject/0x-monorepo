@@ -3,6 +3,7 @@
     "contractsDir": "./contracts",
     "useDockerisedSolc": false,
     "isOfflineMode": true,
+    "shouldSaveStandardInput": true,
     "compilerSettings": {
         "evmVersion": "istanbul",
         "optimizer": {
