@@ -1,6 +1,6 @@
 {
     "name": "@0x/order-utils",
-    "version": "10.2.1",
+    "version": "10.2.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -39,8 +39,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0x/dev-utils": "^3.2.0",
-        "@0x/subproviders": "^6.0.7",
+        "@0x/dev-utils": "^3.2.1",
+        "@0x/subproviders": "^6.0.8",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
         "@0x/types": "^3.1.2",
@@ -63,11 +63,11 @@
         "web3-provider-engine": "14.0.6"
     },
     "dependencies": {
-        "@0x/assert": "^3.0.6",
-        "@0x/contract-wrappers": "^13.6.0",
-        "@0x/json-schemas": "^5.0.6",
-        "@0x/utils": "^5.4.0",
-        "@0x/web3-wrapper": "^7.0.6",
+        "@0x/assert": "^3.0.7",
+        "@0x/contract-wrappers": "^13.6.1",
+        "@0x/json-schemas": "^5.0.7",
+        "@0x/utils": "^5.4.1",
+        "@0x/web3-wrapper": "^7.0.7",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"
