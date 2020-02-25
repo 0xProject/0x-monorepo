@@ -6,14 +6,14 @@ import { SignedOrderWithFillableAmounts } from '../types';
 import { utils } from './utils';
 
 export const fillableAmountsUtils = {
-    getTakerAssetAmountSwappedAfterFees(order: SignedOrderWithFillableAmounts): BigNumber {
+    getTakerAssetAmountSwappedAfterOrderFees(order: SignedOrderWithFillableAmounts): BigNumber {
         if (utils.isOrderTakerFeePayableWithTakerAsset(order)) {
             return order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount);
         } else {
             return order.fillableTakerAssetAmount;
         }
     },
-    getMakerAssetAmountSwappedAfterFees(order: SignedOrderWithFillableAmounts): BigNumber {
+    getMakerAssetAmountSwappedAfterOrderFees(order: SignedOrderWithFillableAmounts): BigNumber {
         if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
             return order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount);
         } else {

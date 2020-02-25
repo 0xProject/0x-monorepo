@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Add `fees` to `GetMarketOrdersOpts`",
+                "pr": 2481
+            },
+            {
+                "note": "Incorporate fees into fill optimization",
+                "pr": 2481
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {

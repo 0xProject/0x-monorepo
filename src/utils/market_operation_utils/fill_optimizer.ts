@@ -10,7 +10,7 @@ const { ZERO_AMOUNT } = constants;
 interface FillsOptimizerContext {
     currentPath: Fill[];
     currentPathInput: BigNumber;
-    currentPathOutput: BigNumber;
+    currentPathAdjustedOutput: BigNumber;
     currentPathFlags: number;
 }
 
@@ -22,7 +22,7 @@ export class FillsOptimizer {
     private readonly _shouldMinimize: boolean;
     private _currentRunCount: number = 0;
     private _optimalPath?: Fill[] = undefined;
-    private _optimalPathOutput: BigNumber = ZERO_AMOUNT;
+    private _optimalPathAdjustedOutput: BigNumber = ZERO_AMOUNT;
 
     constructor(runLimit: number, shouldMinimize?: boolean) {
         this._runLimit = runLimit;
@@ -32,24 +32,27 @@ export class FillsOptimizer {
     public optimize(fills: Fill[], input: BigNumber, upperBoundPath?: Fill[]): Fill[] | undefined {
         this._currentRunCount = 0;
         this._optimalPath = upperBoundPath;
-        this._optimalPathOutput = upperBoundPath ? getPathOutput(upperBoundPath, input) : ZERO_AMOUNT;
+        this._optimalPathAdjustedOutput = upperBoundPath ? getPathAdjustedOutput(upperBoundPath, input) : ZERO_AMOUNT;
         const ctx = {
             currentPath: [],
             currentPathInput: ZERO_AMOUNT,
-            currentPathOutput: ZERO_AMOUNT,
+            currentPathAdjustedOutput: ZERO_AMOUNT,
             currentPathFlags: 0,
         };
         // Visit all valid combinations of fills to find the optimal path.
         this._walk(fills, input, ctx);
-        return this._optimalPath;
+        if (this._optimalPath) {
+            return sortFillsByAdjustedRate(this._optimalPath, this._shouldMinimize);
+        }
+        return undefined;
     }
 
     private _walk(fills: Fill[], input: BigNumber, ctx: FillsOptimizerContext): void {
-        const { currentPath, currentPathInput, currentPathOutput, currentPathFlags } = ctx;
+        const { currentPath, currentPathInput, currentPathAdjustedOutput, currentPathFlags } = ctx;
 
         // Stop if the current path is already complete.
         if (currentPathInput.gte(input)) {
-            this._updateOptimalPath(currentPath, currentPathOutput);
+            this._updateOptimalPath(currentPath, currentPathAdjustedOutput);
             return;
         }
 
@@ -67,8 +70,8 @@ export class FillsOptimizer {
             }
             const nextPath = [...currentPath, nextFill];
             const nextPathInput = BigNumber.min(input, currentPathInput.plus(nextFill.input));
-            const nextPathOutput = currentPathOutput.plus(
-                getPartialFillOutput(nextFill, nextPathInput.minus(currentPathInput)),
+            const nextPathAdjustedOutput = currentPathAdjustedOutput.plus(
+                getPartialFillOutput(nextFill, nextPathInput.minus(currentPathInput)).minus(nextFill.fillPenalty),
             );
             // tslint:disable-next-line: no-bitwise
             const nextPathFlags = currentPathFlags | nextFill.flags;
@@ -80,7 +83,7 @@ export class FillsOptimizer {
                 {
                     currentPath: nextPath,
                     currentPathInput: nextPathInput,
-                    currentPathOutput: nextPathOutput,
+                    currentPathAdjustedOutput: nextPathAdjustedOutput,
                     // tslint:disable-next-line: no-bitwise
                     currentPathFlags: nextPathFlags,
                 },
@@ -88,10 +91,10 @@ export class FillsOptimizer {
         }
     }
 
-    private _updateOptimalPath(path: Fill[], output: BigNumber): void {
-        if (!this._optimalPath || this._compareOutputs(output, this._optimalPathOutput) === 1) {
+    private _updateOptimalPath(path: Fill[], adjustedOutput: BigNumber): void {
+        if (!this._optimalPath || this._compareOutputs(adjustedOutput, this._optimalPathAdjustedOutput) === 1) {
             this._optimalPath = path;
-            this._optimalPathOutput = output;
+            this._optimalPathAdjustedOutput = adjustedOutput;
         }
     }
 
@@ -101,13 +104,15 @@ export class FillsOptimizer {
 }
 
 /**
- * Compute the total output for a fill path, optionally clipping the input
+ * Compute the total output minus penalty for a fill path, optionally clipping the input
  * to `maxInput`.
  */
-export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
+export function getPathAdjustedOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
     let currentInput = ZERO_AMOUNT;
     let currentOutput = ZERO_AMOUNT;
+    let currentPenalty = ZERO_AMOUNT;
     for (const fill of path) {
+        currentPenalty = currentPenalty.plus(fill.fillPenalty);
         if (maxInput && currentInput.plus(fill.input).gte(maxInput)) {
             const partialInput = maxInput.minus(currentInput);
             currentOutput = currentOutput.plus(getPartialFillOutput(fill, partialInput));
@@ -118,7 +123,7 @@ export function getPathOutput(path: Fill[], maxInput?: BigNumber): BigNumber {
             currentOutput = currentOutput.plus(fill.output);
         }
     }
-    return currentOutput;
+    return currentOutput.minus(currentPenalty);
 }
 
 /**
@@ -131,7 +136,46 @@ export function comparePathOutputs(a: BigNumber, b: BigNumber, shouldMinimize: b
 
 // Get the partial output earned by a fill at input `partialInput`.
 function getPartialFillOutput(fill: Fill, partialInput: BigNumber): BigNumber {
-    return BigNumber.min(fill.output, fill.output.div(fill.input).times(partialInput)).integerValue(
-        BigNumber.ROUND_DOWN,
-    );
+    return BigNumber.min(fill.output, fill.output.div(fill.input).times(partialInput));
+}
+
+/**
+ * Sort a path by adjusted input -> output rate while keeping sub-fills contiguous.
+ */
+export function sortFillsByAdjustedRate(path: Fill[], shouldMinimize: boolean = false): Fill[] {
+    return path.slice(0).sort((a, b) => {
+        const rootA = getFillRoot(a);
+        const rootB = getFillRoot(b);
+        const adjustedRateA = rootA.output.minus(rootA.fillPenalty).div(rootA.input);
+        const adjustedRateB = rootB.output.minus(rootB.fillPenalty).div(rootB.input);
+        if ((!a.parent && !b.parent) || a.fillData.source !== b.fillData.source) {
+            return shouldMinimize ? adjustedRateA.comparedTo(adjustedRateB) : adjustedRateB.comparedTo(adjustedRateA);
+        }
+        if (isFillAncestorOf(a, b)) {
+            return -1;
+        }
+        if (isFillAncestorOf(b, a)) {
+            return 1;
+        }
+        return 0;
+    });
+}
+
+function getFillRoot(fill: Fill): Fill {
+    let root = fill;
+    while (root.parent) {
+        root = root.parent;
+    }
+    return root;
+}
+
+function isFillAncestorOf(ancestor: Fill, fill: Fill): boolean {
+    let currFill = fill.parent;
+    while (currFill) {
+        if (currFill === ancestor) {
+            return true;
+        }
+        currFill = currFill.parent;
+    }
+    return false;
 }

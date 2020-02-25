@@ -36,9 +36,9 @@ const MAKER_ASSET_DENOMINATED_TAKER_FEE_ORDER = testOrderFactory.generateTestSig
 });
 
 describe('fillableAmountsUtils', () => {
-    describe('getTakerAssetAmountSwappedAfterFees', () => {
+    describe('getTakerAssetAmountSwappedAfterOrderFees', () => {
         it('should return fillableTakerAssetAmount if takerFee is not denominated in taker', () => {
-            const availableAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+            const availableAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(
                 MAKER_ASSET_DENOMINATED_TAKER_FEE_ORDER,
             );
             expect(availableAssetAmount).to.bignumber.eq(
@@ -47,15 +47,15 @@ describe('fillableAmountsUtils', () => {
         });
 
         it('should return fillableTakerAssetAmount + fillableTakerFeeAmount if takerFee is not denominated in maker', () => {
-            const availableAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterFees(
+            const availableAssetAmount = fillableAmountsUtils.getTakerAssetAmountSwappedAfterOrderFees(
                 TAKER_ASSET_DENOMINATED_TAKER_FEE_ORDER,
             );
             expect(availableAssetAmount).to.bignumber.eq(baseUnitAmount(12));
         });
     });
-    describe('getMakerAssetAmountSwappedAfterFees', () => {
+    describe('getMakerAssetAmountSwappedAfterOrderFees', () => {
         it('should return fillableMakerAssetAmount if takerFee is not denominated in maker', () => {
-            const availableAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+            const availableAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterOrderFees(
                 TAKER_ASSET_DENOMINATED_TAKER_FEE_ORDER,
             );
             expect(availableAssetAmount).to.bignumber.eq(
@@ -64,7 +64,7 @@ describe('fillableAmountsUtils', () => {
         });
 
         it('should return fillableMakerAssetAmount - fillableTakerFeeif takerFee is denominated in maker', () => {
-            const availableAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterFees(
+            const availableAssetAmount = fillableAmountsUtils.getMakerAssetAmountSwappedAfterOrderFees(
                 MAKER_ASSET_DENOMINATED_TAKER_FEE_ORDER,
             );
             expect(availableAssetAmount).to.bignumber.eq(baseUnitAmount(8));
