@@ -14,7 +14,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const ONE_MINUTE_IN_MILLIS = 1000 * 60;
 
-class MockRegistryContracy implements RegistryContract {
+class MockRegistryContract implements RegistryContract {
     // tslint:disable-next-line: prefer-function-over-method
     public getPoolForMarket(marketA: string, marketB: string): ContractFunctionObj<string> {
         return makeContractReturn('');
@@ -43,7 +43,7 @@ describe('PLPRegistry', () => {
 
     let mockRegistry: TypeMoq.IMock<RegistryContract>;
     beforeEach(() => {
-        mockRegistry = TypeMoq.Mock.ofType<RegistryContract>(MockRegistryContracy, TypeMoq.MockBehavior.Strict);
+        mockRegistry = TypeMoq.Mock.ofType<RegistryContract>(MockRegistryContract, TypeMoq.MockBehavior.Strict);
     });
 
     it('should correctly handle multiple markets', async () => {
