@@ -1,3 +1,7 @@
+export { ERC20BridgeSamplerContract } from './generated-wrappers/erc20_bridge_sampler';
+export { DummyPLPContract } from './generated-wrappers/dummy_p_l_p';
+export { DummyPLPRegistryContract } from './generated-wrappers/dummy_p_l_p_registry';
+
 export { ContractAddresses } from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';

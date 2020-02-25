@@ -5,6 +5,8 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as DummyPLP from '../test/generated-artifacts/DummyPLP.json';
+import * as DummyPLPRegistry from '../test/generated-artifacts/DummyPLPRegistry.json';
 import * as ERC20BridgeSampler from '../test/generated-artifacts/ERC20BridgeSampler.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IDevUtils from '../test/generated-artifacts/IDevUtils.json';
@@ -15,6 +17,8 @@ import * as ILiquidityProvider from '../test/generated-artifacts/ILiquidityProvi
 import * as IUniswapExchangeQuotes from '../test/generated-artifacts/IUniswapExchangeQuotes.json';
 import * as TestERC20BridgeSampler from '../test/generated-artifacts/TestERC20BridgeSampler.json';
 export const artifacts = {
+    DummyPLP: DummyPLP as ContractArtifact,
+    DummyPLPRegistry: DummyPLPRegistry as ContractArtifact,
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IDevUtils: IDevUtils as ContractArtifact,
