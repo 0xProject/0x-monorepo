@@ -4,6 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../test/generated-wrappers/authorizable';
+export * from '../test/generated-wrappers/d18';
 export * from '../test/generated-wrappers/deployment_constants';
 export * from '../test/generated-wrappers/i_authorizable';
 export * from '../test/generated-wrappers/i_ownable';
