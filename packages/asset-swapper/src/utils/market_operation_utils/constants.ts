@@ -30,7 +30,13 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     numSamples: 13,
     noConflicts: true,
     sampleDistributionBase: 1.05,
+    fees: {},
 };
+
+/**
+ * Sources to poll for ETH fee price estimates.
+ */
+export const FEE_QUOTE_SOURCES = SELL_SOURCES;
 
 export const constants = {
     INFINITE_TIMESTAMP_SEC,
@@ -38,5 +44,7 @@ export const constants = {
     BUY_SOURCES,
     DEFAULT_GET_MARKET_ORDERS_OPTS,
     ERC20_PROXY_ID: '0xf47261b0',
+    FEE_QUOTE_SOURCES,
     WALLET_SIGNATURE: '0x04',
+    ONE_ETHER: new BigNumber(1e18),
 };

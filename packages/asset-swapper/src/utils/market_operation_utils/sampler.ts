@@ -145,6 +145,45 @@ const samplerOperations = {
             },
         };
     },
+    getMedianSellRate(
+        sources: ERC20BridgeSource[],
+        makerToken: string,
+        takerToken: string,
+        takerFillAmount: BigNumber,
+    ): BatchedOperation<BigNumber> {
+        const getSellQuotes = samplerOperations.getSellQuotes(sources, makerToken, takerToken, [takerFillAmount]);
+        return {
+            encodeCall: contract => {
+                const subCalls = [getSellQuotes.encodeCall(contract)];
+                return contract.batchCall(subCalls).getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
+                const samples = await getSellQuotes.handleCallResultsAsync(contract, rawSubCallResults[0]);
+                if (samples.length === 0) {
+                    return new BigNumber(0);
+                }
+                const flatSortedSamples = samples
+                    .reduce((acc, v) => acc.concat(...v))
+                    .sort((a, b) => a.output.comparedTo(b.output));
+                if (flatSortedSamples.length === 0) {
+                    return new BigNumber(0);
+                }
+                const medianSample = flatSortedSamples[Math.floor(flatSortedSamples.length / 2)];
+                return medianSample.output.div(medianSample.input);
+            },
+        };
+    },
+    constant<T>(result: T): BatchedOperation<T> {
+        return {
+            encodeCall: contract => {
+                return '0x';
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return result;
+            },
+        };
+    },
     getSellQuotes(
         sources: ERC20BridgeSource[],
         makerToken: string,
@@ -374,7 +413,17 @@ export class DexOrderSampler {
      */
     public async executeBatchAsync<T extends Array<BatchedOperation<any>>>(ops: T): Promise<any[]> {
         const callDatas = ops.map(o => o.encodeCall(this._samplerContract));
-        const callResults = await this._samplerContract.batchCall(callDatas).callAsync();
-        return Promise.all(callResults.map(async (r, i) => ops[i].handleCallResultsAsync(this._samplerContract, r)));
+        // Execute all non-empty calldatas.
+        const rawCallResults = await this._samplerContract.batchCall(callDatas.filter(cd => cd !== '0x')).callAsync();
+        // Return the parsed results.
+        let rawCallResultsIdx = 0;
+        return Promise.all(
+            callDatas.map(async (callData, i) => {
+                if (callData !== '0x') {
+                    return ops[i].handleCallResultsAsync(this._samplerContract, rawCallResults[rawCallResultsIdx++]);
+                }
+                return ops[i].handleCallResultsAsync(this._samplerContract, '0x');
+            }),
+        );
     }
 }

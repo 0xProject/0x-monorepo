@@ -75,6 +75,8 @@ export interface Fill {
     input: BigNumber;
     // Output fill amount (maker asset amount in a sell, taker asset amount in a buy).
     output: BigNumber;
+    // Output penalty for this fill.
+    fillPenalty: BigNumber;
     // Fill that must precede this one. This enforces certain fills to be contiguous.
     parent?: Fill;
     // Data associated with this this Fill object. Used to reconstruct orders
@@ -167,4 +169,8 @@ export interface GetMarketOrdersOpts {
      * Default: 1.25.
      */
     sampleDistributionBase: number;
+    /**
+     * Fees for each liquidity source, expressed in gas.
+     */
+    fees: { [source: string]: BigNumber };
 }
