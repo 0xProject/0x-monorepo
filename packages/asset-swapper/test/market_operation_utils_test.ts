@@ -666,7 +666,7 @@ describe('MarketOperationUtils tests', () => {
         });
     });
 
-    describe.only('PLP liquidity support', () => {
+    describe('PLP liquidity support', () => {
         let dexSampler: DexOrderSampler;
         let xAsset: string;
         let yAsset: string;
