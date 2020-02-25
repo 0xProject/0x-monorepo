@@ -1,5 +1,13 @@
 [
     {
+        "version": "5.2.2",
+        "changes": [
+            {
+                "note": "Include `bin` files"
+            }
+        ]
+    },
+    {
         "timestamp": 1582623685,
         "version": "5.2.1",
         "changes": [
