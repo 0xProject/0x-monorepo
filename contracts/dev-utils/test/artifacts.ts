@@ -7,7 +7,6 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as Addresses from '../test/generated-artifacts/Addresses.json';
 import * as AssetBalance from '../test/generated-artifacts/AssetBalance.json';
-import * as D18 from '../test/generated-artifacts/D18.json';
 import * as DevUtils from '../test/generated-artifacts/DevUtils.json';
 import * as EthBalanceChecker from '../test/generated-artifacts/EthBalanceChecker.json';
 import * as ExternalFunctions from '../test/generated-artifacts/ExternalFunctions.json';
@@ -22,7 +21,6 @@ import * as TestLibDydxBalance from '../test/generated-artifacts/TestLibDydxBala
 export const artifacts = {
     Addresses: Addresses as ContractArtifact,
     AssetBalance: AssetBalance as ContractArtifact,
-    D18: D18 as ContractArtifact,
     DevUtils: DevUtils as ContractArtifact,
     EthBalanceChecker: EthBalanceChecker as ContractArtifact,
     ExternalFunctions: ExternalFunctions as ContractArtifact,

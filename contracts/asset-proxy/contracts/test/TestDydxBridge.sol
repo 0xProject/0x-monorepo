@@ -226,9 +226,6 @@ contract TestDydxBridge is
         returns (Value memory supplyValue, Value memory borrowValue)
     {}
 
-    /// @dev Unused.
-    function setOperators(OperatorArg[] calldata args) external {}
-
     /// @dev overrides `_getDydxAddress()` from `DeploymentConstants` to return this address.
     function _getDydxAddress()
         internal

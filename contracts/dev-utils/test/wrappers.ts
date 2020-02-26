@@ -5,7 +5,6 @@
  */
 export * from '../test/generated-wrappers/addresses';
 export * from '../test/generated-wrappers/asset_balance';
-export * from '../test/generated-wrappers/d18';
 export * from '../test/generated-wrappers/dev_utils';
 export * from '../test/generated-wrappers/eth_balance_checker';
 export * from '../test/generated-wrappers/external_functions';

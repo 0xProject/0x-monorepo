@@ -9,9 +9,9 @@ import { DecodedLogEntry } from 'ethereum-types';
 
 import { contractAddresses } from '../mainnet_fork_utils';
 
-const CHONKY_DAI_WALLET = '0x3a9F7C8cA36C42d7035E87C3304eE5cBd353a532';
+const CHONKY_DAI_WALLET = '0xe235AAa27428E32cA14089b03F532c571C7ab3c8';
 const CHONKY_CHAI_WALLET = '0xfc64382c9ce89ba1c21692a68000366a35ff0336';
-const CHONKY_WETH_WALLET = '0x07320deb2713370a3d7b49189fc2f99906e1ae8e';
+const CHONKY_WETH_WALLET = '0x4abB24590606f5bf4645185e20C4E7B97596cA3B';
 blockchainTests.configure({
     fork: {
         unlockedAccounts: [CHONKY_CHAI_WALLET, CHONKY_WETH_WALLET, CHONKY_DAI_WALLET],
@@ -91,6 +91,7 @@ blockchainTests.fork.skip('ChaiBridge fill benchmarks', env => {
             return order;
         }
 
+        // Last run: 282194
         it('filling one chai maker asset', async () => {
             const order = await prepareOrderAsync();
             const receipt = await exchange
@@ -108,6 +109,7 @@ blockchainTests.fork.skip('ChaiBridge fill benchmarks', env => {
             logUtils.log(`gas used: ${receipt.gasUsed}`);
         });
 
+        // Last run: 292707
         it('filling one chai taker asset', async () => {
             const order = await prepareOrderAsync({
                 makerAddress: CHONKY_WETH_WALLET,
@@ -151,6 +153,7 @@ blockchainTests.fork.skip('ChaiBridge fill benchmarks', env => {
             return order;
         }
 
+        // Last run: 124665
         it('filling one dai maker asset', async () => {
             const order = await prepareOrderAsync({
                 makerAddress: CHONKY_DAI_WALLET,
@@ -171,6 +174,7 @@ blockchainTests.fork.skip('ChaiBridge fill benchmarks', env => {
             logUtils.log(`gas used: ${receipt.gasUsed}`);
         });
 
+        // Last run: 124665
         it('filling one dai taker asset', async () => {
             const order = await prepareOrderAsync({
                 makerAddress: CHONKY_WETH_WALLET,

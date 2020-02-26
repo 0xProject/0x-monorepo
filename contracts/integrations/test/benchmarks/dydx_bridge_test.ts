@@ -24,7 +24,7 @@ import { DecodedLogEntry } from 'ethereum-types';
 import { contractAddresses } from '../mainnet_fork_utils';
 
 // A chonky dai wallet.
-const MAKER_ADDRESS = '0x3a9F7C8cA36C42d7035E87C3304eE5cBd353a532';
+const MAKER_ADDRESS = '0xe235AAa27428E32cA14089b03F532c571C7ab3c8';
 // Also a chonky dai wallet.
 const TAKER_ADDRESS = '0x66c57bf505a85a74609d2c83e94aabb26d691e1f';
 blockchainTests.configure({
@@ -42,6 +42,7 @@ blockchainTests.fork.skip('DydxBridge fill benchmarks', env => {
         dydx = new IDydxContract(DYDX_ADDRESS, env.provider, env.txDefaults);
         // Initialize a dydx account with some Dai collateral and USDC borrowed.
         await approveSpenderAsync(MAKER_ADDRESS, BRIDGE_ADDRESS, DAI_ADDRESS);
+        await approveSpenderAsync(MAKER_ADDRESS, DYDX_ADDRESS, DAI_ADDRESS);
         await dydx
             .setOperators([{ operator: BRIDGE_ADDRESS, trusted: true }])
             .awaitTransactionSuccessAsync({ from: MAKER_ADDRESS }, { shouldValidate: false });
@@ -225,6 +226,7 @@ blockchainTests.fork.skip('DydxBridge fill benchmarks', env => {
             return order;
         }
 
+        // Last run: 375066
         it('filling a DAI->USDC dydx order with a deposit action', async () => {
             const order = await prepareOrderAsync();
             const receipt = await exchange
@@ -242,6 +244,7 @@ blockchainTests.fork.skip('DydxBridge fill benchmarks', env => {
             logUtils.log(`gas used: ${receipt.gasUsed}`);
         });
 
+        // Last run: 315896
         it('filling a DAI->USDC dydx order with no deposit action', async () => {
             const order = await prepareOrderAsync({
                 makerAssetData: encodeDydxBridgeAssetData(DAI_ADDRESS, USDC_ADDRESS, 0),

@@ -189,13 +189,4 @@ interface IDydx {
         external
         view
         returns (Value memory supplyValue, Value memory borrowValue);
-
-    // @dev Approves/disapproves any number of operators. An operator is an external address that has the
-    //      same permissions to manipulate an account as the owner of the account. Operators are simply
-    //      addresses and therefore may either be externally-owned Ethereum accounts OR smart contracts.
-    //      Operators are also able to act as AutoTrader contracts on behalf of the account owner if the
-    //      operator is a smart contract and implements the IAutoTrader interface.
-    // @param args A list of OperatorArgs which have an address and a boolean. The boolean value
-    //        denotes whether to approve (true) or revoke approval (false) for that address.
-    function setOperators(OperatorArg[] calldata args) external;
 }
