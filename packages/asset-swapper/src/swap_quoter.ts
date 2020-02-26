@@ -170,8 +170,9 @@ export class SwapQuoter {
         );
         let plpRegistry: PLPRegistry | undefined;
         if (options.plpRegistryAddress !== undefined) {
+            assert.isETHAddressHex('plpRegistryAddress', options.plpRegistryAddress);
             plpRegistry = new PLPRegistry(
-                new IPLPRegistryContract(options.plpRegistryAddress, provider),
+                new IPLPRegistryContract(options.plpRegistryAddress, this.provider),
             );
         }
         this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
