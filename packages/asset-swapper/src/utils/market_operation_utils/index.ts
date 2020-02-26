@@ -4,7 +4,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
-import { PLPRegistry } from '../../quote_consumers/plp_registry';
+import { PLPRegistry } from '../../utils/plp_registry';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../fillable_amounts_utils';
 

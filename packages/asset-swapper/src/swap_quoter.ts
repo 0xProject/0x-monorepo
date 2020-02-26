@@ -1,5 +1,5 @@
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { DevUtilsContract, IERC20BridgeSamplerContract, IPLPRegistryContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
@@ -28,6 +28,7 @@ import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
+import { PLPRegistry } from './utils/plp_registry';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
@@ -167,10 +168,16 @@ export class SwapQuoter {
                 gas: samplerGasLimit,
             }),
         );
+        let plpRegistry: PLPRegistry | undefined;
+        if (options.plpRegistryAddress !== undefined) {
+            plpRegistry = new PLPRegistry(
+                new IPLPRegistryContract(options.plpRegistryAddress, provider),
+            );
+        }
         this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
             chainId,
             exchangeAddress: this._contractAddresses.exchange,
-        });
+        }, plpRegistry);
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 

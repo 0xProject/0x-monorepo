@@ -20,7 +20,7 @@ import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants as assetSwapperConstants } from '../src/constants';
-import { PLPRegistry } from '../src/quote_consumers/plp_registry';
+import { PLPRegistry } from '../src/utils/plp_registry';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
@@ -238,7 +238,6 @@ describe('MarketOperationUtils tests', () => {
 
     const MOCK_SAMPLER = ({
         async executeAsync(...ops: any[]): Promise<any[]> {
-            console.log(ops);
             return ops;
         },
         async executeBatchAsync(ops: any[]): Promise<any[]> {
