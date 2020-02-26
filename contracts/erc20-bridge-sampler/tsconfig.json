@@ -11,6 +11,7 @@
         "test/generated-artifacts/IERC20BridgeSampler.json",
         "test/generated-artifacts/IEth2Dai.json",
         "test/generated-artifacts/IKyberNetwork.json",
+        "test/generated-artifacts/ILiquidityProvider.json",
         "test/generated-artifacts/IUniswapExchangeQuotes.json",
         "test/generated-artifacts/TestERC20BridgeSampler.json"
     ],

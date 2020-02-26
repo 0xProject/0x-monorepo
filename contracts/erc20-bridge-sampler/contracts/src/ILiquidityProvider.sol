@@ -19,10 +19,7 @@
 pragma solidity ^0.5.9;
 
 
-contract IERC20Bridge {
-
-    // @dev Result of a successful bridge call.
-    bytes4 constant internal BRIDGE_SUCCESS = 0xdc1600f3;
+interface ILiquidityProvider {
 
     /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.
     /// @param tokenAddress The address of the ERC20 token to transfer.
@@ -40,4 +37,34 @@ contract IERC20Bridge {
     )
         external
         returns (bytes4 success);
+
+    /// @dev Quotes the amount of `makerToken` that would be obtained by
+    ///      selling `sellAmount` of `takerToken`.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param sellAmount Amount of `takerToken` to sell.
+    /// @return makerTokenAmount Amount of `makerToken` that would be obtained.
+    function getSellQuote(
+        address takerToken,
+        address makerToken,
+        uint256 sellAmount
+    )
+        external
+        view
+        returns (uint256 makerTokenAmount);
+
+    /// @dev Quotes the amount of `takerToken` that would need to be sold in
+    ///      order to obtain `buyAmount` of `makerToken`.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param buyAmount Amount of `makerToken` to buy.
+    /// @return takerTokenAmount Amount of `takerToken` that would need to be sold.
+    function getBuyQuote(
+        address takerToken,
+        address makerToken,
+        uint256 buyAmount
+    )
+        external
+        view
+        returns (uint256 takerTokenAmount);
 }

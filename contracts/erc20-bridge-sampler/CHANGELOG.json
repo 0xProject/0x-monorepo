@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.5.0",
+        "changes": [
+            {
+                "note": "Add generic liquidity provider sampling",
+                "pr": 2487
+            }
+        ]
+    },
+    {
         "timestamp": 1582677073,
         "version": "1.4.2",
         "changes": [
