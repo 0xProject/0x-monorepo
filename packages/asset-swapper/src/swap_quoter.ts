@@ -171,14 +171,17 @@ export class SwapQuoter {
         let plpRegistry: PLPRegistry | undefined;
         if (options.plpRegistryAddress !== undefined) {
             assert.isETHAddressHex('plpRegistryAddress', options.plpRegistryAddress);
-            plpRegistry = new PLPRegistry(
-                new IPLPRegistryContract(options.plpRegistryAddress, this.provider),
-            );
+            plpRegistry = new PLPRegistry(new IPLPRegistryContract(options.plpRegistryAddress, this.provider));
         }
-        this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
-            chainId,
-            exchangeAddress: this._contractAddresses.exchange,
-        }, plpRegistry);
+        this._marketOperationUtils = new MarketOperationUtils(
+            sampler,
+            this._contractAddresses,
+            {
+                chainId,
+                exchangeAddress: this._contractAddresses.exchange,
+            },
+            plpRegistry,
+        );
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 

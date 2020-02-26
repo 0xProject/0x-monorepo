@@ -238,9 +238,9 @@ describe('DexSampler tests', () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
             const sources: ERC20BridgeMappings[] = [
-                {source: ERC20BridgeSource.Kyber},
-                {source: ERC20BridgeSource.Eth2Dai},
-                {source: ERC20BridgeSource.Uniswap},
+                { source: ERC20BridgeSource.Kyber },
+                { source: ERC20BridgeSource.Eth2Dai },
+                { source: ERC20BridgeSource.Uniswap },
             ];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Kyber]: getRandomFloat(0, 100),
@@ -292,8 +292,8 @@ describe('DexSampler tests', () => {
             const expectedTakerToken = randomAddress();
             const expectedMakerToken = randomAddress();
             const sources: ERC20BridgeMappings[] = [
-                {source: ERC20BridgeSource.Eth2Dai},
-                {source: ERC20BridgeSource.Uniswap},
+                { source: ERC20BridgeSource.Eth2Dai },
+                { source: ERC20BridgeSource.Uniswap },
             ];
             const ratesBySource: RatesBySource = {
                 [ERC20BridgeSource.Eth2Dai]: getRandomFloat(0, 100),

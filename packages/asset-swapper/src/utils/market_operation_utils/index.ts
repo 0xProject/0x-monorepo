@@ -35,7 +35,6 @@ const { ZERO_AMOUNT } = constants;
 const { DEFAULT_GET_MARKET_ORDERS_OPTS, ERC20_PROXY_ID, SELL_MAPPINGS, BUY_MAPPINGS } = marketOperationUtilConstants;
 
 export class MarketOperationUtils {
-
     private readonly _createOrderUtils: CreateOrderUtils;
 
     /**
@@ -50,16 +49,20 @@ export class MarketOperationUtils {
      *                    private liquidity source to include in the output list.
      */
     public static async getMappingsForOrderSamplerAsync(
-        makerToken: string, takerToken: string,
-        defaultMappings: StandardERC20BridgeSourceMapping[], excludes: ERC20BridgeSource[],
+        makerToken: string,
+        takerToken: string,
+        defaultMappings: StandardERC20BridgeSourceMapping[],
+        excludes: ERC20BridgeSource[],
         plpRegistry?: PLPRegistry | undefined,
     ): Promise<ERC20BridgeMappings[]> {
         const excludeSet = new Set(excludes);
-        const filteredMappings: ERC20BridgeMappings[] = defaultMappings.filter(mapping => !excludeSet.has(mapping.source));
+        const filteredMappings: ERC20BridgeMappings[] = defaultMappings.filter(
+            mapping => !excludeSet.has(mapping.source),
+        );
 
         // If a PLP registry instance is provided as parameter, and PLP has not been excluded by `excludes`, then we query
         // the PLP registry for a potential liquidity liquidity pool for the market in question.
-        if ((plpRegistry !== undefined) && !excludeSet.has(ERC20BridgeSource.Plp)) {
+        if (plpRegistry !== undefined && !excludeSet.has(ERC20BridgeSource.Plp)) {
             const poolAddress = await plpRegistry.getPoolForMarketAsync(makerToken, takerToken);
             if (poolAddress !== undefined) {
                 filteredMappings.push({
@@ -103,7 +106,8 @@ export class MarketOperationUtils {
 
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const sourceMappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
-            makerToken, takerToken,
+            makerToken,
+            takerToken,
             SELL_MAPPINGS,
             _opts.excludedSources,
             this._plpRegistry,
@@ -182,7 +186,8 @@ export class MarketOperationUtils {
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const sourceMappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
-            makerToken, takerToken,
+            makerToken,
+            takerToken,
             BUY_MAPPINGS,
             _opts.excludedSources,
             this._plpRegistry,
@@ -347,7 +352,7 @@ function createSellPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[]
             input: takerAmount,
             output: makerAmount,
             fillData: {
-                source: {source: ERC20BridgeSource.Native},
+                source: { source: ERC20BridgeSource.Native },
                 order,
             },
         });
@@ -369,7 +374,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
             input: makerAmount,
             output: takerAmount,
             fillData: {
-                source: {source: ERC20BridgeSource.Native},
+                source: { source: ERC20BridgeSource.Native },
                 order,
             },
         });

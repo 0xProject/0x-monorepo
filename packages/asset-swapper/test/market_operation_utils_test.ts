@@ -1,5 +1,11 @@
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
-import { DummyPLPContract, DummyPLPRegistryContract, ERC20BridgeSamplerContract, IERC20BridgeSamplerContract, IPLPRegistryContract } from '@0x/contract-wrappers';
+import {
+    DummyPLPContract,
+    DummyPLPRegistryContract,
+    ERC20BridgeSamplerContract,
+    IERC20BridgeSamplerContract,
+    IPLPRegistryContract,
+} from '@0x/contract-wrappers';
 import { artifacts as ERC20Artifacts } from '@0x/contracts-erc20';
 import { artifacts } from '@0x/contracts-erc20-bridge-sampler/lib/test/artifacts';
 import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
@@ -14,7 +20,7 @@ import {
     txDefaults,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { AssetProxyId, SignedOrder } from '@0x/types';
+import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -24,7 +30,12 @@ import { constants as assetSwapperConstants } from '../src/constants';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeMappings, ERC20BridgeSource, PLPERC20BridgeSourceMapping } from '../src/utils/market_operation_utils/types';
+import {
+    DexSample,
+    ERC20BridgeMappings,
+    ERC20BridgeSource,
+    PLPERC20BridgeSourceMapping,
+} from '../src/utils/market_operation_utils/types';
 import { PLPRegistry } from '../src/utils/plp_registry';
 
 import { provider } from './utils/web3_wrapper';
@@ -313,7 +324,9 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
-                expect(mappingsPolled.map(m => m.source).sort()).to.deep.eq(_.without(SELL_SOURCES, ...excludedSources).sort());
+                expect(mappingsPolled.map(m => m.source).sort()).to.deep.eq(
+                    _.without(SELL_SOURCES, ...excludedSources).sort(),
+                );
             });
 
             it('returns the most cost-effective single source if `runLimit == 0`', async () => {
@@ -671,7 +684,9 @@ describe('MarketOperationUtils tests', () => {
         let registryContractAddress: string;
         let liquidityPoolAddress: string;
 
-        const allSellMappingsExceptForUniswap: ERC20BridgeSource[] = SELL_MAPPINGS.map(m => m.source).filter(s => s !== ERC20BridgeSource.Uniswap);
+        const allSellMappingsExceptForUniswap: ERC20BridgeSource[] = SELL_MAPPINGS.map(m => m.source).filter(
+            s => s !== ERC20BridgeSource.Uniswap,
+        );
 
         beforeEach(async () => {
             const allArtifacts = {
@@ -700,7 +715,9 @@ describe('MarketOperationUtils tests', () => {
             // Register PLP
             xAsset = randomAddress();
             yAsset = randomAddress();
-            await registryContract.setPoolForMarket(xAsset, yAsset, liquidityPool.address).awaitTransactionSuccessAsync().txHashPromise;
+            await registryContract
+                .setPoolForMarket(xAsset, yAsset, liquidityPool.address)
+                .awaitTransactionSuccessAsync().txHashPromise;
 
             const samplerContract = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
                 artifacts.ERC20BridgeSampler,
@@ -709,21 +726,19 @@ describe('MarketOperationUtils tests', () => {
                 allArtifacts,
             );
 
-            dexSampler = new DexOrderSampler(
-                new IERC20BridgeSamplerContract(samplerContract.address, provider),
-            );
+            dexSampler = new DexOrderSampler(new IERC20BridgeSamplerContract(samplerContract.address, provider));
         });
 
         it('is able to perform sampling of sells and buys from PLP pools', async () => {
             const [sellQuotes, buyQuotes] = await dexSampler.executeAsync(
                 DexOrderSampler.ops.getSellQuotes(
-                    [{source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress}],
+                    [{ source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress }],
                     xAsset,
                     yAsset,
                     [new BigNumber(1000), new BigNumber(5000), new BigNumber(8000)],
                 ),
                 DexOrderSampler.ops.getBuyQuotes(
-                    [{source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress}],
+                    [{ source: ERC20BridgeSource.Plp, plpAddress: liquidityPoolAddress }],
                     xAsset,
                     yAsset,
                     [new BigNumber(200), new BigNumber(1234)],
@@ -750,23 +765,29 @@ describe('MarketOperationUtils tests', () => {
         });
 
         it('correctly computes source bridge mappings for buys and sells', async () => {
-            const mappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
-                xAsset, yAsset, SELL_MAPPINGS, [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber],
-            );
-            expect(mappings.map(m => m.source).sort()).to.eql(
-                [ERC20BridgeSource.CurveUsdcDai, ERC20BridgeSource.CurveUsdcDaiUsdt, ERC20BridgeSource.CurveUsdcDaiUsdtTusd, ERC20BridgeSource.Uniswap],
-            );
+            const mappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(xAsset, yAsset, SELL_MAPPINGS, [
+                ERC20BridgeSource.Eth2Dai,
+                ERC20BridgeSource.Kyber,
+            ]);
+            expect(mappings.map(m => m.source).sort()).to.eql([
+                ERC20BridgeSource.CurveUsdcDai,
+                ERC20BridgeSource.CurveUsdcDaiUsdt,
+                ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+                ERC20BridgeSource.Uniswap,
+            ]);
         });
 
         it('correctly injects PLP liquidity if a registry is present', async () => {
             const registry = new PLPRegistry(new IPLPRegistryContract(registryContractAddress, provider));
 
             const mappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
-                xAsset, yAsset, SELL_MAPPINGS, allSellMappingsExceptForUniswap, registry,
+                xAsset,
+                yAsset,
+                SELL_MAPPINGS,
+                allSellMappingsExceptForUniswap,
+                registry,
             );
-            expect(mappings.map(m => m.source).sort()).to.eql(
-                [ERC20BridgeSource.Plp, ERC20BridgeSource.Uniswap],
-            );
+            expect(mappings.map(m => m.source).sort()).to.eql([ERC20BridgeSource.Plp, ERC20BridgeSource.Uniswap]);
             const plpMapping = mappings.find(m => m.source === ERC20BridgeSource.Plp) as PLPERC20BridgeSourceMapping;
             expect(plpMapping.plpAddress).to.eql(liquidityPoolAddress);
         });
@@ -775,61 +796,75 @@ describe('MarketOperationUtils tests', () => {
             const registry = new PLPRegistry(new IPLPRegistryContract(registryContractAddress, provider));
 
             const mappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
-                xAsset, yAsset, SELL_MAPPINGS, allSellMappingsExceptForUniswap.concat([ERC20BridgeSource.Plp]), registry,
+                xAsset,
+                yAsset,
+                SELL_MAPPINGS,
+                allSellMappingsExceptForUniswap.concat([ERC20BridgeSource.Plp]),
+                registry,
             );
-            expect(mappings.map(m => m.source).sort()).to.eql(
-                [ERC20BridgeSource.Uniswap],
-            );
+            expect(mappings.map(m => m.source).sort()).to.eql([ERC20BridgeSource.Uniswap]);
         });
 
         it('correctly ignores PLP if PLPRegistry cannot find an entry', async () => {
             const registry = new PLPRegistry(new IPLPRegistryContract(registryContractAddress, provider));
 
             const mappings = await MarketOperationUtils.getMappingsForOrderSamplerAsync(
-                xAsset, randomAddress(), SELL_MAPPINGS, allSellMappingsExceptForUniswap, registry,
+                xAsset,
+                randomAddress(),
+                SELL_MAPPINGS,
+                allSellMappingsExceptForUniswap,
+                registry,
             );
-            expect(mappings.map(m => m.source).sort()).to.eql(
-                [ERC20BridgeSource.Uniswap],
-            );
+            expect(mappings.map(m => m.source).sort()).to.eql([ERC20BridgeSource.Uniswap]);
         });
 
         it('is able to create a order from PLP', async () => {
             const mockSampler = TypeMoq.Mock.ofInstance(dexSampler);
             const toSell = Web3Wrapper.toBaseUnitAmount(10, 18);
             const swapAmount = Web3Wrapper.toBaseUnitAmount(10.5, 18);
-            mockSampler.setup(m => m.executeAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (a, b) => {
-                return [[new BigNumber(0)], [
-                    [
-                      {
-                        'source': {
-                          'source': 'PLP',
-                          'plpAddress': liquidityPoolAddress,
-                        },
-                        'output': swapAmount,
-                        'input': toSell,
-                      },
-                    ],
-                ]];
-            });
+            mockSampler
+                .setup(async m => m.executeAsync(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+                .returns(async (a, b) => {
+                    return [
+                        [new BigNumber(0)],
+                        [
+                            [
+                                {
+                                    source: {
+                                        source: 'PLP',
+                                        plpAddress: liquidityPoolAddress,
+                                    },
+                                    output: swapAmount,
+                                    input: toSell,
+                                },
+                            ],
+                        ],
+                    ];
+                });
             const sampler = new MarketOperationUtils(mockSampler.object, contractAddresses, ORDER_DOMAIN);
-            const result = await sampler.getMarketSellOrdersAsync([
-                createOrder({
-                    makerAssetData: assetDataUtils.encodeERC20AssetData(xAsset),
-                    takerAssetData: assetDataUtils.encodeERC20AssetData(yAsset),
-                }),
-            ], Web3Wrapper.toBaseUnitAmount(10, 18));
+            const result = await sampler.getMarketSellOrdersAsync(
+                [
+                    createOrder({
+                        makerAssetData: assetDataUtils.encodeERC20AssetData(xAsset),
+                        takerAssetData: assetDataUtils.encodeERC20AssetData(yAsset),
+                    }),
+                ],
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+            );
             expect(result.length).to.eql(1);
             expect(result[0].makerAddress).to.eql(liquidityPoolAddress);
-            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(result[0].makerAssetData);
+            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(
+                result[0].makerAssetData,
+            ) as ERC20BridgeAssetData;
             expect(decodedAssetData.assetProxyId).to.eql(AssetProxyId.ERC20Bridge);
             expect(decodedAssetData.bridgeAddress).to.eql(liquidityPoolAddress);
             expect(result[0].takerAssetAmount).to.bignumber.eql(toSell);
 
-            const makerAmountWithSlippage = swapAmount.times(1 - marketOperationUtilConstants.DEFAULT_GET_MARKET_ORDERS_OPTS.bridgeSlippage);
+            const makerAmountWithSlippage = swapAmount.times(
+                1 - marketOperationUtilConstants.DEFAULT_GET_MARKET_ORDERS_OPTS.bridgeSlippage,
+            );
             expect(result[0].makerAssetAmount).to.eql(makerAmountWithSlippage);
         });
-
     });
-
 });
 // tslint:disable-next-line: max-file-line-count

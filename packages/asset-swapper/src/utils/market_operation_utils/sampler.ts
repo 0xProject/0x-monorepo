@@ -100,12 +100,7 @@ const samplerOperations = {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleSellsFromLiquidityProvider(
-                        plpAddress,
-                        makerToken,
-                        takerToken,
-                        takerFillAmounts,
-                    )
+                    .sampleSellsFromLiquidityProvider(plpAddress, makerToken, takerToken, takerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -122,12 +117,7 @@ const samplerOperations = {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromLiquidityProvider(
-                        plpAddress,
-                        makerToken,
-                        takerToken,
-                        makerFillAmounts,
-                    )
+                    .sampleBuysFromLiquidityProvider(plpAddress, makerToken, takerToken, makerFillAmounts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -205,7 +195,12 @@ const samplerOperations = {
                 } else if (mapping.source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (mapping.source === ERC20BridgeSource.Plp) {
-                    batchedOperation = samplerOperations.getPLPSellQuotes(mapping.plpAddress, makerToken, takerToken, takerFillAmounts);
+                    batchedOperation = samplerOperations.getPLPSellQuotes(
+                        mapping.plpAddress,
+                        makerToken,
+                        takerToken,
+                        takerFillAmounts,
+                    );
                 } else if (
                     mapping.source === ERC20BridgeSource.CurveUsdcDai ||
                     mapping.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
