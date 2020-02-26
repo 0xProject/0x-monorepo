@@ -36,14 +36,14 @@ export class CreateOrderUtils {
     ): OptimizedMarketOrder[] {
         const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
-            if (fill.source.source === ERC20BridgeSource.Native) {
+            if (fill.mapping.source === ERC20BridgeSource.Native) {
                 orders.push(createNativeOrder(fill));
             } else {
                 orders.push(
                     createBridgeOrder(
                         orderDomain,
                         fill,
-                        this._getBridgeAddressFromSource(fill.source),
+                        this._getBridgeAddressFromSource(fill.mapping),
                         outputToken,
                         inputToken,
                         bridgeSlippage,
@@ -64,14 +64,14 @@ export class CreateOrderUtils {
     ): OptimizedMarketOrder[] {
         const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
-            if (fill.source.source === ERC20BridgeSource.Native) {
+            if (fill.mapping.source === ERC20BridgeSource.Native) {
                 orders.push(createNativeOrder(fill));
             } else {
                 orders.push(
                     createBridgeOrder(
                         orderDomain,
                         fill,
-                        this._getBridgeAddressFromSource(fill.source),
+                        this._getBridgeAddressFromSource(fill.mapping),
                         inputToken,
                         outputToken,
                         bridgeSlippage,
@@ -115,11 +115,11 @@ function createBridgeOrder(
 ): OptimizedMarketOrder {
     let makerAssetData;
     if (
-        fill.source.source === ERC20BridgeSource.CurveUsdcDai ||
-        fill.source.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
-        fill.source.source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
+        fill.mapping.source === ERC20BridgeSource.CurveUsdcDai ||
+        fill.mapping.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
+        fill.mapping.source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
     ) {
-        const { curveAddress, tokens, version } = constants.DEFAULT_CURVE_OPTS[fill.source.source];
+        const { curveAddress, tokens, version } = constants.DEFAULT_CURVE_OPTS[fill.mapping.source];
         const fromTokenIdx = tokens.indexOf(takerToken);
         const toTokenIdx = tokens.indexOf(makerToken);
         makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
@@ -203,7 +203,7 @@ function createCommonOrderFields(
 function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
     return {
         fill: {
-            source: fill.source,
+            mapping: fill.mapping,
             totalMakerAssetAmount: fill.totalMakerAssetAmount,
             totalTakerAssetAmount: fill.totalTakerAssetAmount,
             subFills: fill.subFills,

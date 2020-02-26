@@ -240,7 +240,7 @@ const samplerOperations = {
                 );
                 return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
-                        source: op.mapping,
+                        mapping: op.mapping,
                         output,
                         input: takerFillAmounts[j],
                     }));
@@ -275,9 +275,9 @@ const samplerOperations = {
                 const samples = await Promise.all(
                     subOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
                 );
-                return mappings.map((source, i) => {
+                return mappings.map((mapping, i) => {
                     return samples[i].map((output, j) => ({
-                        source,
+                        mapping,
                         output,
                         input: makerFillAmounts[j],
                     }));

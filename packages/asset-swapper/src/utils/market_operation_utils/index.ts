@@ -352,7 +352,7 @@ function createSellPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[]
             input: takerAmount,
             output: makerAmount,
             fillData: {
-                source: { source: ERC20BridgeSource.Native },
+                mapping: { source: ERC20BridgeSource.Native },
                 order,
             },
         });
@@ -374,7 +374,7 @@ function createBuyPathFromNativeOrders(orders: SignedOrderWithFillableAmounts[])
             input: makerAmount,
             output: takerAmount,
             fillData: {
-                source: { source: ERC20BridgeSource.Native },
+                mapping: { source: ERC20BridgeSource.Native },
                 order,
             },
         });
@@ -397,11 +397,11 @@ function createPathsFromDexQuotes(dexQuotes: DexSample[][], noConflicts: boolean
             }
             path.push({
                 parent: path.length !== 0 ? path[path.length - 1] : undefined,
-                flags: sourceToFillFlags(sample.source.source),
-                exclusionMask: noConflicts ? sourceToExclusionMask(sample.source.source) : 0,
+                flags: sourceToFillFlags(sample.mapping.source),
+                exclusionMask: noConflicts ? sourceToExclusionMask(sample.mapping.source) : 0,
                 input: sample.input.minus(prevSample ? prevSample.input : 0),
                 output: sample.output.minus(prevSample ? prevSample.output : 0),
-                fillData: { source: sample.source },
+                fillData: { mapping: sample.mapping },
             });
             prevSample = quote[i];
         }
@@ -486,11 +486,11 @@ function collapsePath(path: Fill[], isBuy: boolean): CollapsedFill[] {
     for (const fill of path) {
         const makerAssetAmount = isBuy ? fill.input : fill.output;
         const takerAssetAmount = isBuy ? fill.output : fill.input;
-        const source = (fill.fillData as FillData).source;
-        if (collapsed.length !== 0 && source.source !== ERC20BridgeSource.Native) {
+        const mapping = (fill.fillData as FillData).mapping;
+        if (collapsed.length !== 0 && mapping.source !== ERC20BridgeSource.Native) {
             const prevFill = collapsed[collapsed.length - 1];
             // If the last fill is from the same source, merge them.
-            if (prevFill.source.source === source.source) {
+            if (prevFill.mapping.source === mapping.source) {
                 prevFill.totalMakerAssetAmount = prevFill.totalMakerAssetAmount.plus(makerAssetAmount);
                 prevFill.totalTakerAssetAmount = prevFill.totalTakerAssetAmount.plus(takerAssetAmount);
                 prevFill.subFills.push({ makerAssetAmount, takerAssetAmount });
@@ -498,7 +498,7 @@ function collapsePath(path: Fill[], isBuy: boolean): CollapsedFill[] {
             }
         }
         collapsed.push({
-            source: fill.fillData.source,
+            mapping: fill.fillData.mapping,
             totalMakerAssetAmount: makerAssetAmount,
             totalTakerAssetAmount: takerAssetAmount,
             subFills: [{ makerAssetAmount, takerAssetAmount }],

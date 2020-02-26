@@ -157,24 +157,24 @@ describe('MarketOperationUtils tests', () => {
     ) => DexSample[][];
 
     function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
-        return (sources: ERC20BridgeMappings[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
-            return sources.map(s =>
+        return (mappings: ERC20BridgeMappings[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
+            return mappings.map(mapping =>
                 fillAmounts.map((a, i) => ({
-                    source: s,
+                    mapping,
                     input: a,
-                    output: a.times(rates[s.source][i]).integerValue(),
+                    output: a.times(rates[mapping.source][i]).integerValue(),
                 })),
             );
         };
     }
 
     function createGetMultipleBuyQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
-        return (sources: ERC20BridgeMappings[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
-            return sources.map(s =>
+        return (mappings: ERC20BridgeMappings[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
+            return mappings.map(mapping =>
                 fillAmounts.map((a, i) => ({
-                    source: s,
+                    mapping,
                     input: a,
-                    output: a.div(rates[s.source][i]).integerValue(),
+                    output: a.div(rates[mapping.source][i]).integerValue(),
                 })),
             );
         };
@@ -748,7 +748,7 @@ describe('MarketOperationUtils tests', () => {
             expect(buyQuotes[0].length).to.eql(2);
 
             for (const quote of sellQuotes[0]) {
-                expect(quote.source).to.eql({
+                expect(quote.mapping).to.eql({
                     source: ERC20BridgeSource.Plp,
                     plpAddress: liquidityPoolAddress,
                 });
@@ -756,7 +756,7 @@ describe('MarketOperationUtils tests', () => {
             }
 
             for (const quote of buyQuotes[0]) {
-                expect(quote.source).to.eql({
+                expect(quote.mapping).to.eql({
                     source: ERC20BridgeSource.Plp,
                     plpAddress: liquidityPoolAddress,
                 });
@@ -830,7 +830,7 @@ describe('MarketOperationUtils tests', () => {
                         [
                             [
                                 {
-                                    source: {
+                                    mapping: {
                                         source: 'PLP',
                                         plpAddress: liquidityPoolAddress,
                                     },

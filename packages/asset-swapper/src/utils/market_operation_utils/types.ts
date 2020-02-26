@@ -47,7 +47,7 @@ export type ERC20BridgeMappings = StandardERC20BridgeSourceMapping | PLPERC20Bri
 
 // Internal `fillData` field for `Fill` objects.
 export interface FillData {
-    source: ERC20BridgeMappings;
+    mapping: ERC20BridgeMappings;
 }
 
 // `FillData` for native fills.
@@ -59,7 +59,7 @@ export interface NativeFillData extends FillData {
  * Represents an individual DEX sample from the sampler contract.
  */
 export interface DexSample {
-    source: ERC20BridgeMappings;
+    mapping: ERC20BridgeMappings;
     input: BigNumber;
     output: BigNumber;
 }
@@ -102,7 +102,7 @@ export interface CollapsedFill {
     /**
      * The source DEX.
      */
-    source: ERC20BridgeMappings;
+    mapping: ERC20BridgeMappings;
     /**
      * Total maker asset amount.
      */
