@@ -3,7 +3,6 @@ import { DummyPLPContract, DummyPLPRegistryContract, ERC20BridgeSamplerContract,
 import { artifacts as ERC20Artifacts } from '@0x/contracts-erc20';
 import { artifacts } from '@0x/contracts-erc20-bridge-sampler/lib/test/artifacts';
 import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
-import * as TypeMoq from 'typemoq';
 import {
     assertRoughlyEquals,
     constants,
@@ -15,20 +14,20 @@ import {
     txDefaults,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { SignedOrder, AssetProxyId, ERC20BridgeAssetData } from '@0x/types';
+import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
+import * as TypeMoq from 'typemoq';
 
 import { constants as assetSwapperConstants } from '../src/constants';
-import { PLPRegistry } from '../src/utils/plp_registry';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { DexSample, ERC20BridgeMappings, ERC20BridgeSource, PLPERC20BridgeSourceMapping } from '../src/utils/market_operation_utils/types';
+import { PLPRegistry } from '../src/utils/plp_registry';
 
 import { provider } from './utils/web3_wrapper';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import { decode } from 'punycode';
 
 const { BUY_MAPPINGS, SELL_MAPPINGS } = marketOperationUtilConstants;
 const SELL_SOURCES = SELL_MAPPINGS.map(m => m.source);
@@ -802,12 +801,12 @@ describe('MarketOperationUtils tests', () => {
                 return [[new BigNumber(0)], [
                     [
                       {
-                        "source": {
-                          "source": "PLP",
-                          "plpAddress": liquidityPoolAddress,
+                        'source': {
+                          'source': 'PLP',
+                          'plpAddress': liquidityPoolAddress,
                         },
-                        "output": swapAmount,
-                        "input": toSell,
+                        'output': swapAmount,
+                        'input': toSell,
                       },
                     ],
                 ]];
@@ -817,11 +816,11 @@ describe('MarketOperationUtils tests', () => {
                 createOrder({
                     makerAssetData: assetDataUtils.encodeERC20AssetData(xAsset),
                     takerAssetData: assetDataUtils.encodeERC20AssetData(yAsset),
-                })
+                }),
             ], Web3Wrapper.toBaseUnitAmount(10, 18));
             expect(result.length).to.eql(1);
             expect(result[0].makerAddress).to.eql(liquidityPoolAddress);
-            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(result[0].makerAssetData) as ERC20BridgeAssetData;
+            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(result[0].makerAssetData);
             expect(decodedAssetData.assetProxyId).to.eql(AssetProxyId.ERC20Bridge);
             expect(decodedAssetData.bridgeAddress).to.eql(liquidityPoolAddress);
             expect(result[0].takerAssetAmount).to.bignumber.eql(toSell);

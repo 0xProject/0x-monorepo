@@ -4,8 +4,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
-import { PLPRegistry } from '../../utils/plp_registry';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
+import { PLPRegistry } from '../../utils/plp_registry';
 import { fillableAmountsUtils } from '../fillable_amounts_utils';
 
 import { constants as marketOperationUtilConstants } from './constants';
@@ -38,6 +38,17 @@ export class MarketOperationUtils {
 
     private readonly _createOrderUtils: CreateOrderUtils;
 
+    /**
+     * Returns a list of `ERC20BridgeMappings` to be used for sampling external DEXes. This is helper function that is used when
+     * generating buy or sell quotes across different DEXes.
+     * @param makerToken the address of the maker token
+     * @param takerToken the address of the taker token
+     * @param defaultMappings a list of preset `ERC20BridgeMappings` for the operation you want to perform. Usually, this is
+     *                        `SELL_MAPPINGS` or `BUY_MAPPINGS`.
+     * @param excludes a list of liquidity sources to exclude.
+     * @param plpRegistry A PLP registry can be provided. If present, this function will query `plpRegistry` for a potential
+     *                    private liquidity source to include in the output list.
+     */
     public static async getMappingsForOrderSamplerAsync(
         makerToken: string, takerToken: string,
         defaultMappings: StandardERC20BridgeSourceMapping[], excludes: ERC20BridgeSource[],
@@ -45,6 +56,9 @@ export class MarketOperationUtils {
     ): Promise<ERC20BridgeMappings[]> {
         const excludeSet = new Set(excludes);
         const filteredMappings: ERC20BridgeMappings[] = defaultMappings.filter(mapping => !excludeSet.has(mapping.source));
+
+        // If a PLP registry instance is provided as parameter, and PLP has not been excluded by `excludes`, then we query
+        // the PLP registry for a potential liquidity liquidity pool for the market in question.
         if ((plpRegistry !== undefined) && !excludeSet.has(ERC20BridgeSource.Plp)) {
             const poolAddress = await plpRegistry.getPoolForMarketAsync(makerToken, takerToken);
             if (poolAddress !== undefined) {

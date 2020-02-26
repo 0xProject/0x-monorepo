@@ -25,10 +25,10 @@ import { DexOrderSampler, MarketOperationUtils } from './utils/market_operation_
 import { dummyOrderUtils } from './utils/market_operation_utils/dummy_order_utils';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
+import { PLPRegistry } from './utils/plp_registry';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
-import { PLPRegistry } from './utils/plp_registry';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
