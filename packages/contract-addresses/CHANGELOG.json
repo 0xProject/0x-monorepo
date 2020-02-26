@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.8.0",
+        "changes": [
+            {
+                "note": "Added Broker, GodsUnchainedValidator, ChainlinkStopLimit to index.ts",
+                "pr": 2498
+            }
+        ]
+    },
+    {
         "version": "4.7.0",
         "changes": [
             {

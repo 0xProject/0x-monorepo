@@ -304,6 +304,9 @@ export async function runMigrationsAsync(
         chaiBridge: constants.NULL_ADDRESS,
         dydxBridge: constants.NULL_ADDRESS,
         curveBridge: constants.NULL_ADDRESS,
+        godsUnchainedValidator: constants.NULL_ADDRESS,
+        broker: constants.NULL_ADDRESS,
+        chainlinkStopLimit: constants.NULL_ADDRESS,
     };
     return contractAddresses;
 }

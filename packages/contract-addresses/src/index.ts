@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import addresses from '../addresses.json';
 
 export interface ContractAddresses {
@@ -29,6 +27,9 @@ export interface ContractAddresses {
     chaiBridge: string;
     dydxBridge: string;
     curveBridge: string;
+    godsUnchainedValidator: string;
+    broker: string;
+    chainlinkStopLimit: string;
 }
 
 export enum ChainId {
