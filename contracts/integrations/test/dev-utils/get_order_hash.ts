@@ -27,6 +27,7 @@ blockchainTests('DevUtils.getOrderHash', env => {
             artifacts,
             exchange.address,
             constants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
         );
     });
 

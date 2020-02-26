@@ -151,7 +151,6 @@ interface IERC20BridgeSampler {
         returns (uint256[] memory makerTokenAmounts);
 
     /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
-    ///      Calls the provider contract with the default gas limit (200k).
     /// @param providerAddress Address of the liquidity provider contract.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
@@ -169,7 +168,6 @@ interface IERC20BridgeSampler {
         returns (uint256[] memory makerTokenAmounts);
 
     /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
-    ///      Calls the provider contract with the default gas limit (200k).
     /// @param providerAddress Address of the liquidity provider contract.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).

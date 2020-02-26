@@ -34,6 +34,7 @@ blockchainTests.fork.resets('DevUtils mainnet tests', env => {
             devUtilsArtifacts,
             contractAddresses.exchange,
             contractAddresses.chaiBridge,
+            contractAddresses.dydxBridge,
         );
         await dai.approve(chai.address, constants.MAX_UINT256).awaitTransactionSuccessAsync({ from: daiHolder });
         await chai.join(daiHolder, daiDepositAmount).awaitTransactionSuccessAsync({ from: daiHolder });

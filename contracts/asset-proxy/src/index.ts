@@ -1,21 +1,22 @@
 export { artifacts } from './artifacts';
 export {
+    ChaiBridgeContract,
     ERC1155ProxyContract,
     ERC20BridgeProxyContract,
     ERC20ProxyContract,
     ERC721ProxyContract,
     Eth2DaiBridgeContract,
     DydxBridgeContract,
-    TestDydxBridgeContract,
     IAssetDataContract,
     IAssetProxyContract,
+    IChaiContract,
+    IDydxContract,
+    KyberBridgeContract,
     MultiAssetProxyContract,
     StaticCallProxyContract,
+    TestDydxBridgeContract,
     TestStaticCallTargetContract,
     UniswapBridgeContract,
-    KyberBridgeContract,
-    ChaiBridgeContract,
-    IChaiContract,
 } from './wrappers';
 
 export { ERC20Wrapper } from './erc20_wrapper';

@@ -120,7 +120,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         assetProxyArtifacts,
     );
 
-    await DydxBridgeContract.deployFrom0xArtifactAsync(
+    const dydxBridge = await DydxBridgeContract.deployFrom0xArtifactAsync(
         assetProxyArtifacts.DydxBridge,
         provider,
         txDefaults,
@@ -253,6 +253,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         devUtilsArtifacts,
         exchange.address,
         chaiBridge.address,
+        dydxBridge.address,
     );
 
     await CoordinatorContract.deployFrom0xArtifactAsync(

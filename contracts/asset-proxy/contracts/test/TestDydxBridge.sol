@@ -23,6 +23,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "../src/bridges/DydxBridge.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestDydxBridgeToken {
 
     uint256 private constant INIT_HOLDER_BALANCE = 10 * 10**18; // 10 tokens
@@ -79,7 +80,7 @@ contract TestDydxBridge is
 
     event OperateAction(
         ActionType actionType,
-        uint256 accountId,
+        uint256 accountIdx,
         bool amountSign,
         AssetDenomination amountDenomination,
         AssetReference amountRef,
@@ -120,7 +121,7 @@ contract TestDydxBridge is
         for (uint i = 0; i < actions.length; ++i) {
             emit OperateAction(
                 actions[i].actionType,
-                actions[i].accountId,
+                actions[i].accountIdx,
                 actions[i].amount.sign,
                 actions[i].amount.denomination,
                 actions[i].amount.ref,
@@ -128,7 +129,7 @@ contract TestDydxBridge is
                 actions[i].primaryMarketId,
                 actions[i].secondaryMarketId,
                 actions[i].otherAddress,
-                actions[i].otherAccountId,
+                actions[i].otherAccountIdx,
                 actions[i].data
             );
 
@@ -170,6 +171,60 @@ contract TestDydxBridge is
     {
         return _testTokenAddress;
     }
+
+    /// @dev Unused.
+    function setOperators(OperatorArg[] calldata args) external {}
+
+    /// @dev Unused.
+    function getIsLocalOperator(
+        address owner,
+        address operator
+    )
+        external
+        view
+        returns (bool isLocalOperator)
+    {}
+
+    /// @dev Unused.
+    function getMarketTokenAddress(
+        uint256 marketId
+    )
+        external
+        view
+        returns (address tokenAddress)
+    {}
+
+    /// @dev Unused.
+    function getRiskParams()
+        external
+        view
+        returns (RiskParams memory riskParams)
+    {}
+
+    /// @dev Unsused.
+    function getMarketPrice(
+        uint256 marketId
+    )
+        external
+        view
+        returns (Price memory price)
+    {}
+
+    /// @dev Unsused
+    function getMarketMarginPremium(uint256 marketId)
+        external
+        view
+        returns (IDydx.D256 memory premium)
+    {}
+
+    /// @dev Unused.
+    function getAdjustedAccountValues(
+        AccountInfo calldata account
+    )
+        external
+        view
+        returns (Value memory supplyValue, Value memory borrowValue)
+    {}
 
     /// @dev overrides `_getDydxAddress()` from `DeploymentConstants` to return this address.
     function _getDydxAddress()

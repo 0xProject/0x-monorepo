@@ -21,10 +21,23 @@ export interface ContextDefinition extends mocha.IContextDefinition {
 }
 
 /**
+ * `blockchainTests()` config options.
+ */
+export interface BlockchainContextConfig {
+    fork: Partial<{
+        // Accounts to unlock on ganache.
+        unlockedAccounts: string[];
+    }>;
+}
+
+let TEST_ENV_CONFIG: Partial<BlockchainContextConfig> = {};
+
+/**
  * Interface for `blockchainTests()`.
  */
 export interface BlockchainContextDefinition {
     (description: string, callback: BlockchainSuiteCallback): ISuite;
+    configure: (config?: Partial<BlockchainContextConfig>) => void;
     only: BlockchainContextDefinitionCallback<ISuite>;
     skip: BlockchainContextDefinitionCallback<void>;
     optional: BlockchainContextDefinitionCallback<ISuite | void>;
@@ -91,6 +104,11 @@ export class StandardBlockchainTestsEnvironmentSingleton extends BlockchainTests
         return StandardBlockchainTestsEnvironmentSingleton._instance;
     }
 
+    // Reset the singleton.
+    public static reset(): void {
+        StandardBlockchainTestsEnvironmentSingleton._instance = undefined;
+    }
+
     // Get the singleton instance of this class.
     public static getInstance(): StandardBlockchainTestsEnvironmentSingleton | undefined {
         return StandardBlockchainTestsEnvironmentSingleton._instance;
@@ -119,11 +137,19 @@ export class ForkedBlockchainTestsEnvironmentSingleton extends BlockchainTestsEn
         return ForkedBlockchainTestsEnvironmentSingleton._instance;
     }
 
+    // Reset the singleton.
+    public static reset(): void {
+        ForkedBlockchainTestsEnvironmentSingleton._instance = undefined;
+    }
+
     protected static _createWeb3Provider(forkHost: string): Web3ProviderEngine {
+        const forkConfig = TEST_ENV_CONFIG.fork || {};
+        const unlockedAccounts = forkConfig.unlockedAccounts;
         return web3Factory.getRpcProvider({
             ...providerConfigs,
             fork: forkHost,
             blockTime: 0,
+            ...(unlockedAccounts ? { unlocked_accounts: unlockedAccounts } : {}),
         });
     }
 
@@ -156,6 +182,11 @@ export class LiveBlockchainTestsEnvironmentSingleton extends BlockchainTestsEnvi
             LiveBlockchainTestsEnvironmentSingleton._instance = new LiveBlockchainTestsEnvironmentSingleton();
         }
         return LiveBlockchainTestsEnvironmentSingleton._instance;
+    }
+
+    // Reset the singleton.
+    public static reset(): void {
+        LiveBlockchainTestsEnvironmentSingleton._instance = undefined;
     }
 
     protected static _createWeb3Provider(rpcHost: string): Web3ProviderEngine {
@@ -209,6 +240,16 @@ export const blockchainTests: BlockchainContextDefinition = _.assign(
         return defineBlockchainSuite(StandardBlockchainTestsEnvironmentSingleton, description, callback, describe);
     },
     {
+        configure(config?: Partial<BlockchainContextConfig>): void {
+            // Update the global config and reset all environment singletons.
+            TEST_ENV_CONFIG = {
+                ...TEST_ENV_CONFIG,
+                ...config,
+            };
+            ForkedBlockchainTestsEnvironmentSingleton.reset();
+            StandardBlockchainTestsEnvironmentSingleton.reset();
+            LiveBlockchainTestsEnvironmentSingleton.reset();
+        },
         only(description: string, callback: BlockchainSuiteCallback): ISuite {
             return defineBlockchainSuite(
                 StandardBlockchainTestsEnvironmentSingleton,

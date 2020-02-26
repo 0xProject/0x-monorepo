@@ -198,6 +198,7 @@ export async function runMigrationsAsync(
         allArtifacts,
         exchange.address,
         constants.NULL_ADDRESS,
+        constants.NULL_ADDRESS,
     );
 
     // tslint:disable-next-line:no-unused-variable

@@ -191,12 +191,12 @@ contract DydxBridge is
         depositAction = IDydx.ActionArgs({
             actionType: IDydx.ActionType.Deposit,           // deposit tokens.
             amount: dydxAmount,                             // amount to deposit.
-            accountId: bridgeAction.accountId,              // index in the `accounts` when calling `operate`.
+            accountIdx: bridgeAction.accountIdx,             // index in the `accounts` when calling `operate`.
             primaryMarketId: bridgeAction.marketId,         // indicates which token to deposit.
             otherAddress: depositFrom,                      // deposit from the account owner.
             // unused parameters
             secondaryMarketId: 0,
-            otherAccountId: 0,
+            otherAccountIdx: 0,
             data: hex''
         });
     }
@@ -229,12 +229,12 @@ contract DydxBridge is
         withdrawAction = IDydx.ActionArgs({
             actionType: IDydx.ActionType.Withdraw,          // withdraw tokens.
             amount: amountToWithdraw,                       // amount to withdraw.
-            accountId: bridgeAction.accountId,              // index in the `accounts` when calling `operate`.
+            accountIdx: bridgeAction.accountIdx,            // index in the `accounts` when calling `operate`.
             primaryMarketId: bridgeAction.marketId,         // indicates which token to withdraw.
             otherAddress: withdrawTo,                       // withdraw tokens to this address.
             // unused parameters
             secondaryMarketId: 0,
-            otherAccountId: 0,
+            otherAccountIdx: 0,
             data: hex''
         });
     }

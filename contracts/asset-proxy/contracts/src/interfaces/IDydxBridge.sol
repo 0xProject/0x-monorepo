@@ -29,7 +29,7 @@ interface IDydxBridge {
 
     struct BridgeAction {
         BridgeActionType actionType;            // Action to run on dydx account.
-        uint256 accountId;                      // Index in `BridgeData.accountNumbers` for this action.
+        uint256 accountIdx;                     // Index in `BridgeData.accountNumbers` for this action.
         uint256 marketId;                       // Market to operate on.
         uint256 conversionRateNumerator;        // Optional. If set, transfer amount is scaled by (conversionRateNumerator/conversionRateDenominator).
         uint256 conversionRateDenominator;      // Optional. If set, transfer amount is scaled by (conversionRateNumerator/conversionRateDenominator).
