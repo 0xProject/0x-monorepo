@@ -151,14 +151,14 @@ interface IERC20BridgeSampler {
         returns (uint256[] memory makerTokenAmounts);
 
     /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
-    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param registryAddress Address of the liquidity provider registry contract.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
-    function sampleSellsFromLiquidityProvider(
-        address providerAddress,
+    function sampleSellsFromLiquidityProviderRegistry(
+        address registryAddress,
         address takerToken,
         address makerToken,
         uint256[] calldata takerTokenAmounts
@@ -168,14 +168,14 @@ interface IERC20BridgeSampler {
         returns (uint256[] memory makerTokenAmounts);
 
     /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
-    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param registryAddress Address of the liquidity provider registry contract.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
-    function sampleBuysFromLiquidityProvider(
-        address providerAddress,
+    function sampleBuysFromLiquidityProviderRegistry(
+        address registryAddress,
         address takerToken,
         address makerToken,
         uint256[] calldata makerTokenAmounts
@@ -183,4 +183,19 @@ interface IERC20BridgeSampler {
         external
         view
         returns (uint256[] memory takerTokenAmounts);
+
+    /// @dev Returns the address of a liquidity provider for the given market
+    ///      (takerToken, makerToken), from a registry of liquidity providers.
+    ///      Returns address(0) if no such provider exists in the registry.
+    /// @param takerToken Taker asset managed by liquidity provider.
+    /// @param makerToken Maker asset managed by liquidity provider.
+    /// @return providerAddress Address of the liquidity provider.
+    function getLiquidityProviderFromRegistry(
+        address registryAddress,
+        address takerToken,
+        address makerToken
+    )
+        external
+        view
+        returns (address providerAddress);
 }
