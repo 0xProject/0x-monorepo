@@ -39,19 +39,19 @@ import * as ethers from 'ethers';
 // tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
-export class IERC20BridgeSamplerContract extends BaseContract {
+export class ERC20BridgeSamplerContract extends BaseContract {
     /**
      * @ignore
      */
 public static deployedBytecode: string | undefined;
-public static contractName = 'IERC20BridgeSampler';
+public static contractName = 'ERC20BridgeSampler';
     private readonly _methodABIIndex: { [name: string]: number } = {};
 public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
-    ): Promise<IERC20BridgeSamplerContract> {
+    ): Promise<ERC20BridgeSamplerContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -69,7 +69,7 @@ public static async deployFrom0xArtifactAsync(
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return IERC20BridgeSamplerContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
+        return ERC20BridgeSamplerContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
     }
 
     public static async deployWithLibrariesFrom0xArtifactAsync(
@@ -78,7 +78,7 @@ public static async deployFrom0xArtifactAsync(
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
-    ): Promise<IERC20BridgeSamplerContract> {
+    ): Promise<ERC20BridgeSamplerContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -95,7 +95,7 @@ public static async deployFrom0xArtifactAsync(
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        const libraryAddresses = await IERC20BridgeSamplerContract._deployLibrariesAsync(
+        const libraryAddresses = await ERC20BridgeSamplerContract._deployLibrariesAsync(
             artifact,
             libraryArtifacts,
             new Web3Wrapper(provider),
@@ -105,7 +105,7 @@ public static async deployFrom0xArtifactAsync(
             artifact,
             libraryAddresses,
         );
-        return IERC20BridgeSamplerContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
+        return ERC20BridgeSamplerContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
     }
 
     public static async deployAsync(
@@ -114,7 +114,7 @@ public static async deployFrom0xArtifactAsync(
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-    ): Promise<IERC20BridgeSamplerContract> {
+    ): Promise<ERC20BridgeSamplerContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -142,8 +142,8 @@ public static async deployFrom0xArtifactAsync(
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`IERC20BridgeSampler successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IERC20BridgeSamplerContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        logUtils.log(`ERC20BridgeSampler successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new ERC20BridgeSamplerContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -611,7 +611,7 @@ public static async deployFrom0xArtifactAsync(
                         throw new Error(`Missing artifact for linked library "${libraryName}"`);
                     }
                     // Deploy any dependent libraries used by this library.
-                    await IERC20BridgeSamplerContract._deployLibrariesAsync(
+                    await ERC20BridgeSamplerContract._deployLibrariesAsync(
                         libraryArtifact,
                         libraryArtifacts,
                         web3Wrapper,
@@ -643,14 +643,14 @@ public static async deployFrom0xArtifactAsync(
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = IERC20BridgeSamplerContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
+        const methodAbi = ERC20BridgeSamplerContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }
 
     public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
         const functionSignature = this.getFunctionSignature(methodName);
-        const self = (this as any) as IERC20BridgeSamplerContract;
+        const self = (this as any) as ERC20BridgeSamplerContract;
         const abiEncoder = self._lookupAbiEncoder(functionSignature);
         const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
         return abiDecodedCallData;
@@ -658,7 +658,7 @@ public static async deployFrom0xArtifactAsync(
 
     public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
         const functionSignature = this.getFunctionSignature(methodName);
-        const self = (this as any) as IERC20BridgeSamplerContract;
+        const self = (this as any) as ERC20BridgeSamplerContract;
         const abiEncoder = self._lookupAbiEncoder(functionSignature);
         const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
         return abiDecodedCallData;
@@ -666,7 +666,7 @@ public static async deployFrom0xArtifactAsync(
 
     public getSelector(methodName: string): string {
         const functionSignature = this.getFunctionSignature(methodName);
-        const self = (this as any) as IERC20BridgeSamplerContract;
+        const self = (this as any) as ERC20BridgeSamplerContract;
         const abiEncoder = self._lookupAbiEncoder(functionSignature);
         return abiEncoder.getSelector();
     }
@@ -680,7 +680,7 @@ public static async deployFrom0xArtifactAsync(
             callDatas: string[],
     ): ContractFunctionObj<string[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isArray('callDatas', callDatas);
         const functionSignature = 'batchCall(bytes[])';
 
@@ -717,7 +717,7 @@ public static async deployFrom0xArtifactAsync(
             makerToken: string,
     ): ContractFunctionObj<string
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('registryAddress', registryAddress);
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
@@ -745,7 +745,8 @@ public static async deployFrom0xArtifactAsync(
         }
     };
     /**
-     * Queries the fillable maker asset amounts of native orders.
+     * Queries the fillable taker asset amounts of native orders.
+ * Effectively ignores orders that have empty signatures or
       * @param orders Native orders to query.
       * @param orderSignatures Signatures for each respective order in `orders`.
     * @returns orderFillableMakerAssetAmounts How much maker asset can be filled         by each order in &#x60;orders&#x60;.
@@ -755,7 +756,7 @@ public static async deployFrom0xArtifactAsync(
             orderSignatures: string[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isArray('orders', orders);
             assert.isArray('orderSignatures', orderSignatures);
         const functionSignature = 'getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
@@ -782,6 +783,8 @@ public static async deployFrom0xArtifactAsync(
     };
     /**
      * Queries the fillable taker asset amounts of native orders.
+ * Effectively ignores orders that have empty signatures or
+ * maker/taker asset amounts (returning 0).
       * @param orders Native orders to query.
       * @param orderSignatures Signatures for each respective order in `orders`.
     * @returns orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in &#x60;orders&#x60;.
@@ -791,7 +794,7 @@ public static async deployFrom0xArtifactAsync(
             orderSignatures: string[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isArray('orders', orders);
             assert.isArray('orderSignatures', orderSignatures);
         const functionSignature = 'getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])';
@@ -828,7 +831,7 @@ public static async deployFrom0xArtifactAsync(
             makerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
             assert.isArray('makerTokenAmounts', makerTokenAmounts);
@@ -870,7 +873,7 @@ public static async deployFrom0xArtifactAsync(
             makerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('registryAddress', registryAddress);
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
@@ -912,7 +915,7 @@ public static async deployFrom0xArtifactAsync(
             makerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
             assert.isArray('makerTokenAmounts', makerTokenAmounts);
@@ -954,7 +957,7 @@ public static async deployFrom0xArtifactAsync(
             takerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('curveAddress', curveAddress);
             assert.isBigNumber('fromTokenIdx', fromTokenIdx);
             assert.isBigNumber('toTokenIdx', toTokenIdx);
@@ -996,7 +999,7 @@ public static async deployFrom0xArtifactAsync(
             takerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
             assert.isArray('takerTokenAmounts', takerTokenAmounts);
@@ -1036,7 +1039,7 @@ public static async deployFrom0xArtifactAsync(
             takerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
             assert.isArray('takerTokenAmounts', takerTokenAmounts);
@@ -1078,7 +1081,7 @@ public static async deployFrom0xArtifactAsync(
             takerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('registryAddress', registryAddress);
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
@@ -1120,7 +1123,7 @@ public static async deployFrom0xArtifactAsync(
             takerTokenAmounts: BigNumber[],
     ): ContractFunctionObj<BigNumber[]
 > {
-        const self = this as any as IERC20BridgeSamplerContract;
+        const self = this as any as ERC20BridgeSamplerContract;
             assert.isString('takerToken', takerToken);
             assert.isString('makerToken', makerToken);
             assert.isArray('takerTokenAmounts', takerTokenAmounts);
@@ -1155,11 +1158,11 @@ public static async deployFrom0xArtifactAsync(
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string | undefined = IERC20BridgeSamplerContract.deployedBytecode,
+        deployedBytecode: string | undefined = ERC20BridgeSamplerContract.deployedBytecode,
     ) {
-        super('IERC20BridgeSampler', IERC20BridgeSamplerContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
+        super('ERC20BridgeSampler', ERC20BridgeSamplerContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-IERC20BridgeSamplerContract.ABI().forEach((item, index) => {
+ERC20BridgeSamplerContract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;
