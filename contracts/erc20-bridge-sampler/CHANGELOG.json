@@ -5,6 +5,10 @@
             {
                 "note": "Add generic liquidity provider sampling",
                 "pr": 2487
+            },
+            {
+                "note": "Use liquidity provider registry in sampler",
+                "pr": 2499
             }
         ]
     },

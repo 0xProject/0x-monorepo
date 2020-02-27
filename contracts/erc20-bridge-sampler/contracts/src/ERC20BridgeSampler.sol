@@ -31,6 +31,7 @@ import "./IKyberNetwork.sol";
 import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
+import "./ILiquidityProviderRegistry.sol";
 
 
 contract ERC20BridgeSampler is
@@ -435,14 +436,14 @@ contract ERC20BridgeSampler is
     }
 
     /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
-    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param registryAddress Address of the liquidity provider registry contract.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
     function sampleSellsFromLiquidityProvider(
-        address providerAddress,
+        address registryAddress,
         address takerToken,
         address makerToken,
         uint256[] memory takerTokenAmounts
@@ -451,6 +452,12 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
+        address providerAddress = getLiquidityProviderFromRegistry(
+            registryAddress,
+            takerToken,
+            makerToken
+        );
+
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
@@ -474,14 +481,14 @@ contract ERC20BridgeSampler is
     }
 
     /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
-    /// @param providerAddress Address of the liquidity provider contract.
+    /// @param registryAddress Address of the liquidity provider registry contract.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromLiquidityProvider(
-        address providerAddress,
+        address registryAddress,
         address takerToken,
         address makerToken,
         uint256[] memory makerTokenAmounts
@@ -490,6 +497,12 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
+        address providerAddress = getLiquidityProviderFromRegistry(
+            registryAddress,
+            takerToken,
+            makerToken
+        );
+
         uint256 numSamples = makerTokenAmounts.length;
         takerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
@@ -510,6 +523,26 @@ contract ERC20BridgeSampler is
             }
             takerTokenAmounts[i] = sellAmount;
         }
+    }
+
+    /// @dev Returns the address of a liquidity provider for the given market
+    ///      (takerToken, makerToken), from a registry of liquidity providers.
+    /// @param takerToken Taker asset managed by liquidity provider.
+    /// @param makerToken Maker asset managed by liquidity provider.
+    /// @return Address of the liquidity provider.
+    function getLiquidityProviderFromRegistry(
+        address registryAddress,
+        address takerToken,
+        address makerToken
+    )
+        public
+        view
+        returns (address)
+    {
+        return ILiquidityProviderRegistry(registryAddress).getLiquidityProviderForMarket(
+            takerToken,
+            makerToken
+        );
     }
 
     /// @dev Overridable way to get token decimals.
