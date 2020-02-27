@@ -562,8 +562,8 @@ contract ERC20BridgeSampler is
             makerToken
         );
         (bool didSucceed, bytes memory returnData) = registryAddress.staticcall(callData);
-        if (didSucceed) {
-            return LibBytes.readAddress(returnData, 0);
+        if (didSucceed && returnData.length == 32) {
+            return LibBytes.readAddress(returnData, 12);
         }
     }
 
