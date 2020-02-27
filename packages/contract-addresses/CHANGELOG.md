@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.8.0 - _February 27, 2020_
+
+    * Added Broker, GodsUnchainedValidator, ChainlinkStopLimit to index.ts (#2498)
+
 ## v4.7.0 - _February 25, 2020_
 
     * Update `DevUtils` addresses. (#2493)

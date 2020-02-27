@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.2 - _February 27, 2020_
+
+    * Fix order native pruning by fill amount (#2500)
+
 ## v4.3.1 - _February 26, 2020_
 
     * Dependencies updated

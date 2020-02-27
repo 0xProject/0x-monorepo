@@ -6,7 +6,8 @@
                 "note": "Fix order native pruning by fill amount",
                 "pr": 2500
             }
-        ]
+        ],
+        "timestamp": 1582837861
     },
     {
         "timestamp": 1582677073,

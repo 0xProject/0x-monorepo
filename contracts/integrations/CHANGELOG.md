@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.5.0 - _February 27, 2020_
+
+    * Add `ChaiBridge` and `DydxBridge` gas benchmark tests. (#2478)
+
 ## v2.4.2 - _February 26, 2020_
 
     * Dependencies updated

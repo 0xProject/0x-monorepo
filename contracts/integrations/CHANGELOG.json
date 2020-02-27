@@ -6,7 +6,8 @@
                 "note": "Add `ChaiBridge` and `DydxBridge` gas benchmark tests.",
                 "pr": 2478
             }
-        ]
+        ],
+        "timestamp": 1582837861
     },
     {
         "timestamp": 1582677073,
