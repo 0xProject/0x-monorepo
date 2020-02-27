@@ -184,6 +184,20 @@ const samplerOperations = {
             },
         };
     },
+    getLiquidityProviderFromRegistry(
+        registryAddress: string,
+        makerToken: string,
+        takerToken: string,
+    ): BatchedOperation<string> {
+        return {
+            encodeCall: contract => {
+                return contract.getLiquidityProviderFromRegistry(registryAddress, makerToken, takerToken).getABIEncodedTransactionData()
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<string>('getLiquidityProviderFromRegistry', callResults);
+            },
+        };
+    },
     getSellQuotes(
         sources: ERC20BridgeSource[],
         makerToken: string,
