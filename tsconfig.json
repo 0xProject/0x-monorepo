@@ -1,8 +1,22 @@
 {
-    "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
         "rootDir": "."
+        "module": "commonjs",
+        "target": "es5",
+        "lib": ["es2017", "dom", "esnext.asynciterable"],
+        "experimentalDecorators": true,
+        "downlevelIteration": true,
+        "noImplicitReturns": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
+        "strict": true,
+        // These settings are required for TypeScript project references
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true
     },
     "include": ["./src/**/*", "./test/**/*"]
 }
