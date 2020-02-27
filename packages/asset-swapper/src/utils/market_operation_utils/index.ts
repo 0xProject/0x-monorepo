@@ -386,8 +386,8 @@ function createBuyPathFromNativeOrders(
 
 function pruneNativeFills(fills: Fill[], fillAmount: BigNumber, dustFractionThreshold: number): Fill[] {
     const minInput = fillAmount.times(dustFractionThreshold);
-    const totalInput = ZERO_AMOUNT;
     const pruned = [];
+    let totalInput = ZERO_AMOUNT;
     for (const fill of fills) {
         if (totalInput.gte(fillAmount)) {
             break;
@@ -395,6 +395,7 @@ function pruneNativeFills(fills: Fill[], fillAmount: BigNumber, dustFractionThre
         if (fill.input.lt(minInput)) {
             continue;
         }
+        totalInput = totalInput.plus(fill.input);
         pruned.push(fill);
     }
     return pruned;
