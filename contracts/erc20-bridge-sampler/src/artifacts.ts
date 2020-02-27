@@ -7,7 +7,11 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as ERC20BridgeSampler from '../generated-artifacts/ERC20BridgeSampler.json';
 import * as IERC20BridgeSampler from '../generated-artifacts/IERC20BridgeSampler.json';
+import * as ILiquidityProvider from '../generated-artifacts/ILiquidityProvider.json';
+import * as ILiquidityProviderRegistry from '../generated-artifacts/ILiquidityProviderRegistry.json';
 export const artifacts = {
     ERC20BridgeSampler: ERC20BridgeSampler as ContractArtifact,
     IERC20BridgeSampler: IERC20BridgeSampler as ContractArtifact,
+    ILiquidityProvider: ILiquidityProvider as ContractArtifact,
+    ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
 };

@@ -24,6 +24,7 @@ import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "./IDevUtils.sol";
 import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
@@ -442,7 +443,7 @@ contract ERC20BridgeSampler is
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
-    function sampleSellsFromLiquidityProvider(
+    function sampleSellsFromLiquidityProviderRegistry(
         address registryAddress,
         address takerToken,
         address makerToken,
@@ -452,14 +453,21 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory makerTokenAmounts)
     {
+        // Initialize array of maker token amounts.
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+
+        // Query registry for provider address.
         address providerAddress = getLiquidityProviderFromRegistry(
             registryAddress,
             takerToken,
             makerToken
         );
+        // If provider doesn't exist, return all zeros.
+        if (providerAddress == address(0)) {
+            return makerTokenAmounts;
+        }
 
-        uint256 numSamples = takerTokenAmounts.length;
-        makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
                 providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
@@ -487,7 +495,7 @@ contract ERC20BridgeSampler is
     /// @param makerTokenAmounts Maker token buy amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
-    function sampleBuysFromLiquidityProvider(
+    function sampleBuysFromLiquidityProviderRegistry(
         address registryAddress,
         address takerToken,
         address makerToken,
@@ -497,14 +505,22 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
+        // Initialize array of taker token amounts.
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
+
+        // Query registry for provider address.
         address providerAddress = getLiquidityProviderFromRegistry(
             registryAddress,
             takerToken,
             makerToken
         );
+        // If provider doesn't exist, return all zeros.
+        if (providerAddress == address(0)) {
+            return takerTokenAmounts;
+        }
 
-        uint256 numSamples = makerTokenAmounts.length;
-        takerTokenAmounts = new uint256[](numSamples);
+        // Otherwise, query liquidity provider for quotes.
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
                 providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
@@ -527,9 +543,10 @@ contract ERC20BridgeSampler is
 
     /// @dev Returns the address of a liquidity provider for the given market
     ///      (takerToken, makerToken), from a registry of liquidity providers.
+    ///      Returns address(0) if no such provider exists in the registry.
     /// @param takerToken Taker asset managed by liquidity provider.
     /// @param makerToken Maker asset managed by liquidity provider.
-    /// @return Address of the liquidity provider.
+    /// @return providerAddress Address of the liquidity provider.
     function getLiquidityProviderFromRegistry(
         address registryAddress,
         address takerToken,
@@ -537,12 +554,17 @@ contract ERC20BridgeSampler is
     )
         public
         view
-        returns (address)
+        returns (address providerAddress)
     {
-        return ILiquidityProviderRegistry(registryAddress).getLiquidityProviderForMarket(
+        bytes memory callData = abi.encodeWithSelector(
+            ILiquidityProviderRegistry(0).getLiquidityProviderForMarket.selector,
             takerToken,
             makerToken
         );
+        (bool didSucceed, bytes memory returnData) = registryAddress.staticcall(callData);
+        if (didSucceed) {
+            return LibBytes.readAddress(returnData, 0);
+        }
     }
 
     /// @dev Overridable way to get token decimals.
