@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.3.2",
+        "changes": [
+            {
+                "note": "Fix order native pruning by fill amount",
+                "pr": 2500
+            }
+        ]
+    },
+    {
         "timestamp": 1582677073,
         "version": "4.3.1",
         "changes": [
