@@ -329,7 +329,7 @@ describe('DexSampler tests', () => {
             expect(quotes).to.deep.eq(expectedQuotes);
         });
 
-        describe.only('PLP Operations', () => {
+        describe('PLP Operations', () => {
             const xAsset = randomAddress();
             const yAsset = randomAddress();
             const zAsset = randomAddress();

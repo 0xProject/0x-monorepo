@@ -61,6 +61,7 @@ export enum FillFlags {
     SourceUniswap = 0x2,
     SourceEth2Dai = 0x4,
     SourceKyber = 0x8,
+    SourcePlp = 0x10,
 }
 
 /**

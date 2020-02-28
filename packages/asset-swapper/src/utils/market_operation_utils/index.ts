@@ -79,19 +79,21 @@ export class MarketOperationUtils {
             makerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
                       makerToken,
                       this._wethAddress,
                       ONE_ETHER,
                       this._plpRegistryAddress,
                   ),
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES, _opts.excludedSources),
+                difference(SELL_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+                this._plpRegistryAddress,
             ),
         );
+
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
             fillableAmounts,
@@ -158,21 +160,24 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [fillableAmounts, plpPoolAddress, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._plpRegistryAddress, takerToken, makerToken),
             takerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
                       takerToken,
                       this._wethAddress,
                       ONE_ETHER,
+                      this._plpRegistryAddress,
                   ),
             DexOrderSampler.ops.getBuyQuotes(
-                difference(BUY_SOURCES, _opts.excludedSources),
+                difference(BUY_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+                this._plpRegistryAddress,
             ),
         );
         const signedOrderWithFillableAmounts = this._createBuyOrdersPathFromSamplerResultIfExists(
@@ -182,6 +187,7 @@ export class MarketOperationUtils {
             dexQuotes,
             ethToTakerAssetRate,
             _opts,
+            plpPoolAddress,
         );
         if (!signedOrderWithFillableAmounts) {
             throw new Error(AggregationError.NoOptimalPath);
@@ -192,6 +198,9 @@ export class MarketOperationUtils {
     /**
      * gets the orders required for a batch of market buy operations by (potentially) merging native orders with
      * generated bridge orders.
+     *
+     * NOTE: Currently `getBatchMarketBuyOrdersAsync()` does not support external liquidity providers.
+     * 
      * @param batchNativeOrders Batch of Native orders.
      * @param makerAmounts Array amount of maker asset to buy for each batch.
      * @param opts Options object.
@@ -244,6 +253,10 @@ export class MarketOperationUtils {
         );
     }
 
+    private _plpSourceIfAvailable(): ERC20BridgeSource[] {
+        return this._plpRegistryAddress !== NULL_ADDRESS ? [ERC20BridgeSource.Plp] : [];
+    }
+
     private _createBuyOrdersPathFromSamplerResultIfExists(
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
@@ -251,6 +264,7 @@ export class MarketOperationUtils {
         dexQuotes: DexSample[][],
         ethToTakerAssetRate: BigNumber,
         opts: GetMarketOrdersOpts,
+        plpPoolAddress?: string | undefined,
     ): OptimizedMarketOrder[] | undefined {
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
@@ -293,6 +307,7 @@ export class MarketOperationUtils {
             outputToken,
             collapsePath(optimalPath, true),
             opts.bridgeSlippage,
+            plpPoolAddress,
         );
     }
 }
@@ -473,6 +488,9 @@ function sourceToFillFlags(source: ERC20BridgeSource): number {
     }
     if (source === ERC20BridgeSource.Uniswap) {
         return FillFlags.SourceUniswap;
+    }
+    if (source === ERC20BridgeSource.Plp) {
+        return FillFlags.SourcePlp;
     }
     return FillFlags.SourceNative;
 }
