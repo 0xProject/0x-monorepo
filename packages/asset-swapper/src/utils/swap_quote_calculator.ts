@@ -145,12 +145,14 @@ export class SwapQuoteCalculator {
             };
 
             const firstOrderMakerAssetData = !!prunedOrders[0]
-            ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData)
-            : { assetProxyId: '' };
+                ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData)
+                : { assetProxyId: '' };
 
             if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-                    // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
-                resultOrders = prunedOrders.map(o => CreateOrderUtils.convertNativeOrderToFullyFillableOptimizedOrders(o));
+                // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
+                resultOrders = prunedOrders.map(o =>
+                    CreateOrderUtils.convertNativeOrderToFullyFillableOptimizedOrders(o),
+                );
             } else {
                 if (operation === MarketOperation.Buy) {
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
