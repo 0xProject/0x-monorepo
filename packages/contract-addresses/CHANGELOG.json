@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.9.0",
+        "changes": [
+            {
+                "note": "Redeploy `ERC20BridgeSampler`",
+                "pr": 2503
+            }
+        ]
+    },
+    {
         "version": "4.8.0",
         "changes": [
             {
