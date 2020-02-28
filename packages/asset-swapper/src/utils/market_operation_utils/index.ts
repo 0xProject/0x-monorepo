@@ -200,7 +200,7 @@ export class MarketOperationUtils {
      * generated bridge orders.
      *
      * NOTE: Currently `getBatchMarketBuyOrdersAsync()` does not support external liquidity providers.
-     * 
+     *
      * @param batchNativeOrders Batch of Native orders.
      * @param makerAmounts Array amount of maker asset to buy for each batch.
      * @param opts Options object.

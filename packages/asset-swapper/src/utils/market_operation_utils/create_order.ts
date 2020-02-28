@@ -1,3 +1,4 @@
+import { assert } from '@0x/assert';
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { AbiEncoder, BigNumber } from '@0x/utils';
@@ -13,7 +14,6 @@ import {
     OptimizedMarketOrder,
     OrderDomain,
 } from './types';
-import { assert } from '@0x/assert';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
 const { INFINITE_TIMESTAMP_SEC, WALLET_SIGNATURE } = marketOperationUtilConstants;

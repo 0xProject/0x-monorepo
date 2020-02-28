@@ -167,10 +167,15 @@ export class SwapQuoter {
                 gas: samplerGasLimit,
             }),
         );
-        this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
-            chainId,
-            exchangeAddress: this._contractAddresses.exchange,
-        }, plpRegistryAddress);
+        this._marketOperationUtils = new MarketOperationUtils(
+            sampler,
+            this._contractAddresses,
+            {
+                chainId,
+                exchangeAddress: this._contractAddresses.exchange,
+            },
+            plpRegistryAddress,
+        );
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 

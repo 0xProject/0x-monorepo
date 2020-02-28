@@ -55,6 +55,7 @@
     "devDependencies": {
         "@0x/base-contract": "^6.2.1",
         "@0x/contracts-test-utils": "^5.3.0",
+        "@0x/contracts-erc20-bridge-sampler": "1.5.0",
         "@0x/dev-utils": "^3.2.1",
         "@0x/mesh-rpc-client": "^7.0.4-beta-0xv3",
         "@0x/migrations": "^6.2.2",

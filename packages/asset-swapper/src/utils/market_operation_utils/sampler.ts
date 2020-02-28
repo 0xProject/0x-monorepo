@@ -84,11 +84,19 @@ const samplerOperations = {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleSellsFromLiquidityProviderRegistry(plpRegistryAddress, takerToken, makerToken, takerFillAmounts)
+                    .sampleSellsFromLiquidityProviderRegistry(
+                        plpRegistryAddress,
+                        takerToken,
+                        makerToken,
+                        takerFillAmounts,
+                    )
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromLiquidityProviderRegistry', callResults);
+                return contract.getABIDecodedReturnData<BigNumber[]>(
+                    'sampleSellsFromLiquidityProviderRegistry',
+                    callResults,
+                );
             },
         };
     },
@@ -101,11 +109,19 @@ const samplerOperations = {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromLiquidityProviderRegistry(plpRegistryAddress, takerToken, makerToken, makerFillAmounts)
+                    .sampleBuysFromLiquidityProviderRegistry(
+                        plpRegistryAddress,
+                        takerToken,
+                        makerToken,
+                        makerFillAmounts,
+                    )
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromLiquidityProviderRegistry', callResults);
+                return contract.getABIDecodedReturnData<BigNumber[]>(
+                    'sampleBuysFromLiquidityProviderRegistry',
+                    callResults,
+                );
             },
         };
     },
@@ -186,7 +202,13 @@ const samplerOperations = {
         takerFillAmount: BigNumber,
         plpRegistryAddress?: string | undefined,
     ): BatchedOperation<BigNumber> {
-        const getSellQuotes = samplerOperations.getSellQuotes(sources, makerToken, takerToken, [takerFillAmount], plpRegistryAddress);
+        const getSellQuotes = samplerOperations.getSellQuotes(
+            sources,
+            makerToken,
+            takerToken,
+            [takerFillAmount],
+            plpRegistryAddress,
+        );
         return {
             encodeCall: contract => {
                 const subCalls = [getSellQuotes.encodeCall(contract)];
@@ -226,7 +248,9 @@ const samplerOperations = {
     ): BatchedOperation<string> {
         return {
             encodeCall: contract => {
-                return contract.getLiquidityProviderFromRegistry(registryAddress, takerToken, makerToken).getABIEncodedTransactionData();
+                return contract
+                    .getLiquidityProviderFromRegistry(registryAddress, takerToken, makerToken)
+                    .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract.getABIDecodedReturnData<string>('getLiquidityProviderFromRegistry', callResults);
@@ -267,13 +291,18 @@ const samplerOperations = {
                     }
                 } else if (source === ERC20BridgeSource.Plp) {
                     if (plpRegistryAddress === undefined) {
-                        throw new Error('Cannot sample liquidity from a PLP liquidity pool, if a registry is not provided.');
+                        throw new Error(
+                            'Cannot sample liquidity from a PLP liquidity pool, if a registry is not provided.',
+                        );
                     }
                     batchedOperation = samplerOperations.getPLPSellQuotes(
-                        plpRegistryAddress, takerToken, makerToken, takerFillAmounts,
+                        plpRegistryAddress,
+                        takerToken,
+                        makerToken,
+                        takerFillAmounts,
                     );
                 } else {
-                        throw new Error(`Unsupported sell sample source: ${source}`);
+                    throw new Error(`Unsupported sell sample source: ${source}`);
                 }
                 return { batchedOperation, source };
             })
@@ -317,11 +346,11 @@ const samplerOperations = {
                 return samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
             } else if (source === ERC20BridgeSource.Plp) {
                 if (plpRegistryAddress === undefined) {
-                    throw new Error('Cannot sample liquidity from a PLP liquidity pool, if a registry is not provided.');
+                    throw new Error(
+                        'Cannot sample liquidity from a PLP liquidity pool, if a registry is not provided.',
+                    );
                 }
-                return samplerOperations.getPLPBuyQuotes(
-                    plpRegistryAddress, takerToken, makerToken, makerFillAmounts,
-                );
+                return samplerOperations.getPLPBuyQuotes(plpRegistryAddress, takerToken, makerToken, makerFillAmounts);
             } else {
                 throw new Error(`Unsupported buy sample source: ${source}`);
             }
