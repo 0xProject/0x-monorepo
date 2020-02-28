@@ -1,5 +1,5 @@
 import { assetDataUtils, orderCalculationUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -19,6 +19,7 @@ import {
 
 import { fillableAmountsUtils } from './fillable_amounts_utils';
 import { MarketOperationUtils } from './market_operation_utils';
+import { CreateOrderUtils } from './market_operation_utils/create_order';
 import { ERC20BridgeSource, OptimizedMarketOrder } from './market_operation_utils/types';
 import { ProtocolFeeUtils } from './protocol_fee_utils';
 import { utils } from './utils';
@@ -143,40 +144,30 @@ export class SwapQuoteCalculator {
                 fees: _.mapValues(opts.fees, (v, k) => v.times(gasPrice)),
             };
 
-            const firstOrderMakerAssetData = !!prunedOrders[0] ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData) : { assetProxyId: ''};
+            const firstOrderMakerAssetData = !!prunedOrders[0]
+            ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData)
+            : { assetProxyId: '' };
 
-            if (firstOrderMakerAssetData.assetProxyId === constants.PROXY_IDS.ERC721_PROXY_ID ) {
-                resultOrders = prunedOrders.map(o => {
+            if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
                     // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
-                    return {
-                        ...o,
-                        fillableMakerAssetAmount: o.makerAssetAmount,
-                        fillableTakerAssetAmount: o.takerAssetAmount,
-                        fillableTakerFeeAmount: o.takerFee,
-                        fill: {
-                            source: ERC20BridgeSource.Native,
-                            totalMakerAssetAmount: o.makerAssetAmount,
-                            totalTakerAssetAmount: o.takerAssetAmount,
-                            subFills: [],
-                        },
-                    };
-                });
+                resultOrders = prunedOrders.map(o => CreateOrderUtils.convertNativeOrderToFullyFillableOptimizedOrders(o));
             } else {
                 if (operation === MarketOperation.Buy) {
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
                         assetFillAmount.plus(slippageBufferAmount),
-                        _opts,
+                        opts,
                     );
                 } else {
                     resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
                         assetFillAmount.plus(slippageBufferAmount),
-                        _opts,
+                        opts,
                     );
                 }
             }
         }
+
         // assetData information for the result
         const { makerAssetData, takerAssetData } = prunedOrders[0];
         return this._createSwapQuoteAsync(

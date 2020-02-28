@@ -1,5 +1,5 @@
 import { assetDataUtils } from '@0x/order-utils';
-import { AssetData, ERC20AssetData, ERC20BridgeAssetData, Order, SignedOrder } from '@0x/types';
+import { AssetProxyId, AssetData, ERC20AssetData, ERC20BridgeAssetData, Order, SignedOrder } from '@0x/types';
 import { BigNumber, NULL_BYTES } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
@@ -15,9 +15,9 @@ export const utils = {
             const takerAssetData = assetDataUtils.decodeAssetDataOrThrow(o.takerAssetData);
             const makerAssetData = assetDataUtils.decodeAssetDataOrThrow(o.makerAssetData);
             return (
-                (makerAssetData.assetProxyId === constants.PROXY_IDS.ERC20_PROXY_ID ||
-                    makerAssetData.assetProxyId === constants.PROXY_IDS.ERC721_PROXY_ID) &&
-                takerAssetData.assetProxyId === constants.PROXY_IDS.ERC20_PROXY_ID &&
+                (makerAssetData.assetProxyId === AssetProxyId.ERC20 ||
+                    makerAssetData.assetProxyId === AssetProxyId.ERC721) &&
+                takerAssetData.assetProxyId === AssetProxyId.ERC20 &&
                 firstOrderMakerAssetData.assetProxyId === makerAssetData.assetProxyId
             ); // checks that all native order maker assets are of the same type
         });
