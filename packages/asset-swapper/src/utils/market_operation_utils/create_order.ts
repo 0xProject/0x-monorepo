@@ -13,6 +13,7 @@ import {
     OptimizedMarketOrder,
     OrderDomain,
 } from './types';
+import { assert } from '@0x/assert';
 
 const { NULL_BYTES, NULL_ADDRESS, ZERO_AMOUNT } = constants;
 const { INFINITE_TIMESTAMP_SEC, WALLET_SIGNATURE } = marketOperationUtilConstants;
@@ -31,6 +32,7 @@ export class CreateOrderUtils {
         outputToken: string,
         path: CollapsedFill[],
         bridgeSlippage: number,
+        plpPoolAddress?: string,
     ): OptimizedMarketOrder[] {
         const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
@@ -41,7 +43,7 @@ export class CreateOrderUtils {
                     createBridgeOrder(
                         orderDomain,
                         fill,
-                        this._getBridgeAddressFromSource(fill.source),
+                        this._getBridgeAddressFromSource(fill.source, plpPoolAddress),
                         outputToken,
                         inputToken,
                         bridgeSlippage,
@@ -59,6 +61,7 @@ export class CreateOrderUtils {
         outputToken: string,
         path: CollapsedFill[],
         bridgeSlippage: number,
+        plpPoolAddress?: string,
     ): OptimizedMarketOrder[] {
         const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
@@ -69,7 +72,7 @@ export class CreateOrderUtils {
                     createBridgeOrder(
                         orderDomain,
                         fill,
-                        this._getBridgeAddressFromSource(fill.source),
+                        this._getBridgeAddressFromSource(fill.source, plpPoolAddress),
                         inputToken,
                         outputToken,
                         bridgeSlippage,
@@ -81,7 +84,7 @@ export class CreateOrderUtils {
         return orders;
     }
 
-    private _getBridgeAddressFromSource(source: ERC20BridgeSource): string {
+    private _getBridgeAddressFromSource(source: ERC20BridgeSource, plpPoolAddress?: string): string {
         switch (source) {
             case ERC20BridgeSource.Eth2Dai:
                 return this._contractAddress.eth2DaiBridge;
@@ -93,6 +96,12 @@ export class CreateOrderUtils {
             case ERC20BridgeSource.CurveUsdcDaiUsdt:
             case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
                 return this._contractAddress.curveBridge;
+            case ERC20BridgeSource.Plp:
+                if (plpPoolAddress === undefined) {
+                    throw new Error('Cannot create a PLP order without a PLP pool address.');
+                }
+                assert.isETHAddressHex('plpPoolAddress', plpPoolAddress);
+                return plpPoolAddress;
             default:
                 break;
         }

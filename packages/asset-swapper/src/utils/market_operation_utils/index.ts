@@ -1,7 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, orderCalculationUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
 import { constants } from '../../constants';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
@@ -46,6 +46,7 @@ export class MarketOperationUtils {
         private readonly _sampler: DexOrderSampler,
         contractAddresses: ContractAddresses,
         private readonly _orderDomain: OrderDomain,
+        private readonly _plpRegistryAddress: string = NULL_ADDRESS,
     ) {
         this._createOrderUtils = new CreateOrderUtils(contractAddresses);
         this._wethAddress = contractAddresses.etherToken;
@@ -72,8 +73,9 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [fillableAmounts, plpPoolAddress, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._plpRegistryAddress, takerToken, makerToken),
             makerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
@@ -81,6 +83,7 @@ export class MarketOperationUtils {
                       makerToken,
                       this._wethAddress,
                       ONE_ETHER,
+                      this._plpRegistryAddress,
                   ),
             DexOrderSampler.ops.getSellQuotes(
                 difference(SELL_SOURCES, _opts.excludedSources),
@@ -130,6 +133,7 @@ export class MarketOperationUtils {
             makerToken,
             collapsePath(optimalPath, false),
             _opts.bridgeSlippage,
+            plpPoolAddress,
         );
     }
 

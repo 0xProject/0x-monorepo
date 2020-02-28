@@ -362,14 +362,16 @@ describe('DexSampler tests', () => {
 
                 // Test multiple combinations: 2 pools that are present, 1 pool that is not present.
                 const dexOrderSampler = new DexOrderSampler(new IERC20BridgeSamplerContract(samplerContract.address, provider));
-                const [xyPool, xzPool, yzPool] = await dexOrderSampler.executeBatchAsync([
+                const [xyPool, xzPool, yzPool, nullPool] = await dexOrderSampler.executeBatchAsync([
                     DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, yAsset),
                     DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, zAsset),
                     DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, yAsset, zAsset),
+                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(NULL_ADDRESS, yAsset, zAsset),
                 ]);
                 expect(xyPool).to.eql(liquidityPool1);
                 expect(xzPool).to.eql(liquidityPool2);
                 expect(yzPool).to.eql(NULL_ADDRESS);
+                expect(nullPool).to.eql(NULL_ADDRESS);
             });
             it('is able to sample DEX liquidity from PLP', async () => {
                 const fakeLiquidityPool = await DummyLiquidityProviderContract.deployFrom0xArtifactAsync(

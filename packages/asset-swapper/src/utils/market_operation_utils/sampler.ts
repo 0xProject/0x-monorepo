@@ -184,8 +184,9 @@ const samplerOperations = {
         makerToken: string,
         takerToken: string,
         takerFillAmount: BigNumber,
+        plpRegistryAddress?: string | undefined,
     ): BatchedOperation<BigNumber> {
-        const getSellQuotes = samplerOperations.getSellQuotes(sources, makerToken, takerToken, [takerFillAmount]);
+        const getSellQuotes = samplerOperations.getSellQuotes(sources, makerToken, takerToken, [takerFillAmount], plpRegistryAddress);
         return {
             encodeCall: contract => {
                 const subCalls = [getSellQuotes.encodeCall(contract)];
