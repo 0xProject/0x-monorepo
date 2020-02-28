@@ -1,12 +1,22 @@
 [
     {
+        "version": "4.9.0",
+        "changes": [
+            {
+                "note": "Redeploy `ERC20BridgeSampler`",
+                "pr": 2503
+            }
+        ]
+    },
+    {
         "version": "4.8.0",
         "changes": [
             {
                 "note": "Added Broker, GodsUnchainedValidator, ChainlinkStopLimit to index.ts",
                 "pr": 2498
             }
-        ]
+        ],
+        "timestamp": 1582837861
     },
     {
         "version": "4.7.0",

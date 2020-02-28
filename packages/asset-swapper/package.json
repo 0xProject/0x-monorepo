@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-swapper",
-    "version": "4.3.1",
+    "version": "4.3.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,11 +42,11 @@
     "homepage": "https://0x.org/asset-swapper",
     "dependencies": {
         "@0x/assert": "^3.0.7",
-        "@0x/contract-addresses": "^4.7.0",
-        "@0x/contract-wrappers": "^13.6.1",
+        "@0x/contract-addresses": "^4.8.0",
+        "@0x/contract-wrappers": "^13.6.2",
         "@0x/json-schemas": "^5.0.7",
-        "@0x/order-utils": "^10.2.2",
-        "@0x/orderbook": "^2.2.3",
+        "@0x/order-utils": "^10.2.3",
+        "@0x/orderbook": "^2.2.4",
         "@0x/utils": "^5.4.1",
         "@0x/web3-wrapper": "^7.0.7",
         "heartbeats": "^5.0.1",
@@ -54,11 +54,11 @@
     },
     "devDependencies": {
         "@0x/base-contract": "^6.2.1",
-        "@0x/contracts-test-utils": "^5.3.0",
+        "@0x/contracts-test-utils": "^5.3.1",
         "@0x/contracts-erc20-bridge-sampler": "1.5.0",
         "@0x/dev-utils": "^3.2.1",
         "@0x/mesh-rpc-client": "^7.0.4-beta-0xv3",
-        "@0x/migrations": "^6.2.2",
+        "@0x/migrations": "^6.2.3",
         "@0x/subproviders": "^6.0.8",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
