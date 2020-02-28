@@ -159,7 +159,7 @@ describe('MarketOperationUtils tests', () => {
         };
     }
 
-    function createGetMultipleSellQuotesOperationFromRatesAndRetainPLPParams(rates: RatesBySource): [{sources: ERC20BridgeSource[], plpRegistryAddress?: string}, GetMultipleQuotesOperation] {
+    function callTradeOperationAndRetainPLPParams(tradeOperation: (rates: RatesBySource) => GetMultipleQuotesOperation, rates: RatesBySource): [{sources: ERC20BridgeSource[], plpRegistryAddress?: string}, GetMultipleQuotesOperation] {
         const plpParams: {sources: ERC20BridgeSource[], plpRegistryAddress?: string} = {
             sources: [],
             plpRegistryAddress: undefined,
@@ -167,7 +167,7 @@ describe('MarketOperationUtils tests', () => {
         const fn = (sources: ERC20BridgeSource[], makerToken: string, takerToken: string, fillAmounts: BigNumber[], plpRegistryAddress: string | undefined) => {
             plpParams.plpRegistryAddress = plpRegistryAddress;
             plpParams.sources = sources;
-            return createGetMultipleSellQuotesOperationFromRates(rates)(
+            return tradeOperation(rates)(
                 sources, makerToken, takerToken, fillAmounts, plpRegistryAddress,
             );
         };
@@ -366,7 +366,7 @@ describe('MarketOperationUtils tests', () => {
             });
 
             it('polls the liquidity provider when the registry is provided in the arguments', async () => {
-                const [args, fn] = createGetMultipleSellQuotesOperationFromRatesAndRetainPLPParams(DEFAULT_RATES);
+                const [args, fn] = callTradeOperationAndRetainPLPParams(createGetMultipleSellQuotesOperationFromRates, DEFAULT_RATES);
                 replaceSamplerOps({
                     getSellQuotes: fn,
                 });
@@ -651,6 +651,21 @@ describe('MarketOperationUtils tests', () => {
                 expect(sourcesPolled).to.deep.eq(BUY_SOURCES);
             });
 
+            it('polls the liquidity provider when the registry is provided in the arguments', async () => {
+                const [args, fn] = callTradeOperationAndRetainPLPParams(createGetMultipleBuyQuotesOperationFromRates, DEFAULT_RATES);
+                replaceSamplerOps({
+                    getBuyQuotes: fn,
+                });
+                const registryAddress = randomAddress();
+                const newMarketOperationUtils = new MarketOperationUtils(MOCK_SAMPLER, contractAddresses, ORDER_DOMAIN, registryAddress);
+                await newMarketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                    ...DEFAULT_OPTS,
+                    excludedSources: [],
+                });
+                expect(args.sources.sort()).to.deep.eq(BUY_SOURCES.concat([ERC20BridgeSource.Plp]).sort());
+                expect(args.plpRegistryAddress).to.eql(registryAddress);
+            });
+
             it('does not poll DEXes in `excludedSources`', async () => {
                 const excludedSources = _.sampleSize(SELL_SOURCES, _.random(1, SELL_SOURCES.length));
                 let sourcesPolled: ERC20BridgeSource[] = [];
@@ -838,7 +853,7 @@ describe('MarketOperationUtils tests', () => {
                 const yAsset = randomAddress();
                 const toSell = Web3Wrapper.toBaseUnitAmount(10, 18);
 
-                const [getSellQuiotesParams, getSellQuotesFn] = createGetMultipleSellQuotesOperationFromRatesAndRetainPLPParams({
+                const [getSellQuiotesParams, getSellQuotesFn] = callTradeOperationAndRetainPLPParams(createGetMultipleSellQuotesOperationFromRates, {
                     [ERC20BridgeSource.Plp]: createDecreasingRates(5),
                 });
                 const [getLiquidityProviderParams, getLiquidityProviderFn] = getLiquidityProviderFromRegistryAndReturnCallParameters(liquidityPoolAddress);
