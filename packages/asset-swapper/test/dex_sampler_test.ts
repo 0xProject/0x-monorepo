@@ -1,14 +1,14 @@
-import { constants, expect, getRandomFloat, getRandomInteger, randomAddress, provider, txDefaults } from '@0x/contracts-test-utils';
+import { constants, expect, getRandomFloat, getRandomInteger, provider, randomAddress, txDefaults } from '@0x/contracts-test-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { DexOrderSampler, getSampleAmounts } from '../src/utils/market_operation_utils/sampler';
-import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { ERC20BridgeSource, DexSample } from '../src/utils/market_operation_utils/types';
 
 import { MockSamplerContract } from './utils/mock_sampler_contract';
-import { DummyLiquidityProviderRegistryContract, ERC20BridgeSamplerContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { DummyLiquidityProviderRegistryContract, ERC20BridgeSamplerContract, IERC20BridgeSamplerContract, DummyLiquidityProviderContract } from '@0x/contract-wrappers';
 import { artifacts as erc20BridgeSamplerArtifacts } from '@0x/contracts-erc20-bridge-sampler/lib/src/artifacts';
 
 const CHAIN_ID = 1;
@@ -329,42 +329,90 @@ describe('DexSampler tests', () => {
             expect(quotes).to.deep.eq(expectedQuotes);
         });
 
-        it.only('getLiquidityProviderFromRegistry()', async () => {
+        describe.only('PLP Operations', () => {
             const xAsset = randomAddress();
             const yAsset = randomAddress();
             const zAsset = randomAddress();
             const liquidityPool1 = randomAddress();
             const liquidityPool2 = randomAddress();
 
-            // Deploy Registry
-            const registryContract = await DummyLiquidityProviderRegistryContract.deployFrom0xArtifactAsync(
-                erc20BridgeSamplerArtifacts.DummyLiquidityProviderRegistry,
-                provider,
-                txDefaults,
-                {},
-            );
-            // Write 2 new liquidity pools
-            await registryContract.setLiquidityProviderForMarket(xAsset, yAsset, liquidityPool1).awaitTransactionSuccessAsync();
-            await registryContract.setLiquidityProviderForMarket(xAsset, zAsset, liquidityPool2).awaitTransactionSuccessAsync();
+            let registryContract: DummyLiquidityProviderRegistryContract;
+            let samplerContract: ERC20BridgeSamplerContract;
+            beforeEach(async () => {
+                registryContract = await DummyLiquidityProviderRegistryContract.deployFrom0xArtifactAsync(
+                    erc20BridgeSamplerArtifacts.DummyLiquidityProviderRegistry,
+                    provider,
+                    txDefaults,
+                    {},
+                );
+                samplerContract = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
+                    erc20BridgeSamplerArtifacts.ERC20BridgeSampler,
+                    provider,
+                    txDefaults,
+                    {},
+                );
+            });
+            it('getLiquidityProviderFromRegistry()', async () => {
+                // Deploy Registry
+                // Write 2 new liquidity pools
+                await registryContract.setLiquidityProviderForMarket(xAsset, yAsset, liquidityPool1).awaitTransactionSuccessAsync().txHashPromise;
+                await registryContract.setLiquidityProviderForMarket(xAsset, zAsset, liquidityPool2).awaitTransactionSuccessAsync().txHashPromise;
 
-            // Deploy the sampler
-            const samplerContract = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
-                erc20BridgeSamplerArtifacts.ERC20BridgeSampler,
-                provider,
-                txDefaults,
-                {},
-            );
+                // Deploy the sampler
 
-            // Test multiple combinations: 2 pools that are present, 1 pool that is not present.
-            const dexOrderSampler = new DexOrderSampler(new IERC20BridgeSamplerContract(samplerContract.address, provider));
-            const [xyPool, xzPool, yzPool] = await dexOrderSampler.executeBatchAsync([
-                DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, yAsset),
-                DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, zAsset),
-                DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, yAsset, zAsset),
-            ]);
-            expect(xyPool).to.eql(liquidityPool1);
-            expect(xzPool).to.eql(liquidityPool2);
-            expect(yzPool).to.eql(NULL_ADDRESS);
+                // Test multiple combinations: 2 pools that are present, 1 pool that is not present.
+                const dexOrderSampler = new DexOrderSampler(new IERC20BridgeSamplerContract(samplerContract.address, provider));
+                const [xyPool, xzPool, yzPool] = await dexOrderSampler.executeBatchAsync([
+                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, yAsset),
+                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, zAsset),
+                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, yAsset, zAsset),
+                ]);
+                expect(xyPool).to.eql(liquidityPool1);
+                expect(xzPool).to.eql(liquidityPool2);
+                expect(yzPool).to.eql(NULL_ADDRESS);
+            });
+            it('is able to sample DEX liquidity from PLP', async () => {
+                const fakeLiquidityPool = await DummyLiquidityProviderContract.deployFrom0xArtifactAsync(
+                    erc20BridgeSamplerArtifacts.DummyLiquidityProvider,
+                    provider,
+                    txDefaults,
+                    {},
+                );
+                await registryContract.setLiquidityProviderForMarket(xAsset, yAsset, fakeLiquidityPool.address).awaitTransactionSuccessAsync().txHashPromise;
+
+                const dexOrderSampler = new DexOrderSampler(new IERC20BridgeSamplerContract(samplerContract.address, provider));
+                const [buyQuotes, sellQuotes] = await dexOrderSampler.executeBatchAsync([
+                    DexOrderSampler.ops.getBuyQuotes(
+                        [ERC20BridgeSource.Plp],
+                        xAsset,
+                        yAsset,
+                        [new BigNumber(10), new BigNumber(100)],
+                        registryContract.address,
+                    ),
+                    DexOrderSampler.ops.getSellQuotes(
+                        [ERC20BridgeSource.Plp],
+                        xAsset,
+                        yAsset,
+                        [new BigNumber(10), new BigNumber(100), new BigNumber(500)],
+                        registryContract.address,
+                    ),
+                ]);
+                expect(buyQuotes.length).to.eql(1);
+                const plpBuyQuotes: DexSample[] = buyQuotes[0];
+                expect(plpBuyQuotes.length).to.eql(2);
+                for(const quote of plpBuyQuotes) {
+                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.Plp);
+                    expect(quote.input.plus(1)).to.bignumber.eql(quote.output);
+                }
+
+                expect(sellQuotes.length).to.eql(1);
+                const plpSellQuotes: DexSample[] = sellQuotes[0];
+                expect(plpSellQuotes.length).to.eql(3);
+                for(const quote of plpSellQuotes) {
+                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.Plp);
+                    expect(quote.input.minus(1)).to.bignumber.eql(quote.output);
+                }
+            })
         });
     });
 

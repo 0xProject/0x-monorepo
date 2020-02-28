@@ -75,6 +75,40 @@ const samplerOperations = {
             },
         };
     },
+    getPLPSellQuotes(
+        plpRegistryAddress: string,
+        takerToken: string,
+        makerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromLiquidityProviderRegistry(plpRegistryAddress, takerToken, makerToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromLiquidityProviderRegistry', callResults);
+            },
+        };
+    },
+    getPLPBuyQuotes(
+        plpRegistryAddress: string,
+        takerToken: string,
+        makerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromLiquidityProviderRegistry(plpRegistryAddress, takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromLiquidityProviderRegistry', callResults);
+            },
+        };
+    },
     getEth2DaiSellQuotes(
         makerToken: string,
         takerToken: string,
@@ -186,12 +220,12 @@ const samplerOperations = {
     },
     getLiquidityProviderFromRegistry(
         registryAddress: string,
-        makerToken: string,
         takerToken: string,
+        makerToken: string,
     ): BatchedOperation<string> {
         return {
             encodeCall: contract => {
-                return contract.getLiquidityProviderFromRegistry(registryAddress, makerToken, takerToken).getABIEncodedTransactionData()
+                return contract.getLiquidityProviderFromRegistry(registryAddress, takerToken, makerToken).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract.getABIDecodedReturnData<string>('getLiquidityProviderFromRegistry', callResults);
@@ -203,6 +237,7 @@ const samplerOperations = {
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
+        plpRegistryAddress?: string | undefined,
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources
             .map(source => {
@@ -229,8 +264,15 @@ const samplerOperations = {
                             takerFillAmounts,
                         );
                     }
+                } else if (source === ERC20BridgeSource.Plp) {
+                    if (plpRegistryAddress === undefined) {
+                        throw new Error('Cannot sample liquidity from a PLP liquidity pool, if a registry is not provided.');
+                    }
+                    batchedOperation = samplerOperations.getPLPSellQuotes(
+                        plpRegistryAddress, takerToken, makerToken, takerFillAmounts,
+                    );
                 } else {
-                    throw new Error(`Unsupported sell sample source: ${source}`);
+                        throw new Error(`Unsupported sell sample source: ${source}`);
                 }
                 return { batchedOperation, source };
             })
@@ -265,12 +307,20 @@ const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
+        plpRegistryAddress?: string | undefined,
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources.map(source => {
             if (source === ERC20BridgeSource.Eth2Dai) {
                 return samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
             } else if (source === ERC20BridgeSource.Uniswap) {
                 return samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
+            } else if (source === ERC20BridgeSource.Plp) {
+                if (plpRegistryAddress === undefined) {
+                    throw new Error('Cannot sample liquidity from a PLP liquidity pool, if a registry is not provided.');
+                }
+                return samplerOperations.getPLPBuyQuotes(
+                    plpRegistryAddress, takerToken, makerToken, makerFillAmounts,
+                );
             } else {
                 throw new Error(`Unsupported buy sample source: ${source}`);
             }
