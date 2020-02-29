@@ -46,7 +46,7 @@ export class MarketOperationUtils {
         private readonly _sampler: DexOrderSampler,
         contractAddresses: ContractAddresses,
         private readonly _orderDomain: OrderDomain,
-        private readonly _plpRegistryAddress: string = NULL_ADDRESS,
+        private readonly _liquidityProviderRegistry: string = NULL_ADDRESS,
     ) {
         this._createOrderUtils = new CreateOrderUtils(contractAddresses);
         this._wethAddress = contractAddresses.etherToken;
@@ -73,24 +73,24 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, plpPoolAddress, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [fillableAmounts, liquidityPoolAddress, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
-            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._plpRegistryAddress, takerToken, makerToken),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._liquidityProviderRegistry, takerToken, makerToken),
             makerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._liquidityPoolSourceIfAvailable()),
                       makerToken,
                       this._wethAddress,
                       ONE_ETHER,
-                      this._plpRegistryAddress,
+                      this._liquidityProviderRegistry,
                   ),
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
+                difference(SELL_SOURCES, _opts.excludedSources).concat(this._liquidityPoolSourceIfAvailable()),
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
-                this._plpRegistryAddress,
+                this._liquidityProviderRegistry,
             ),
         );
 
@@ -135,7 +135,7 @@ export class MarketOperationUtils {
             makerToken,
             collapsePath(optimalPath, false),
             _opts.bridgeSlippage,
-            plpPoolAddress,
+            liquidityPoolAddress,
         );
     }
 
@@ -160,24 +160,24 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, plpPoolAddress, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [fillableAmounts, liquidityPoolAddress, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
-            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._plpRegistryAddress, takerToken, makerToken),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._liquidityProviderRegistry, takerToken, makerToken),
             takerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._liquidityPoolSourceIfAvailable()),
                       takerToken,
                       this._wethAddress,
                       ONE_ETHER,
-                      this._plpRegistryAddress,
+                      this._liquidityProviderRegistry,
                   ),
             DexOrderSampler.ops.getBuyQuotes(
-                difference(BUY_SOURCES, _opts.excludedSources).concat(this._plpSourceIfAvailable()),
+                difference(BUY_SOURCES, _opts.excludedSources).concat(this._liquidityPoolSourceIfAvailable()),
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
-                this._plpRegistryAddress,
+                this._liquidityProviderRegistry,
             ),
         );
         const signedOrderWithFillableAmounts = this._createBuyOrdersPathFromSamplerResultIfExists(
@@ -187,7 +187,7 @@ export class MarketOperationUtils {
             dexQuotes,
             ethToTakerAssetRate,
             _opts,
-            plpPoolAddress,
+            liquidityPoolAddress,
         );
         if (!signedOrderWithFillableAmounts) {
             throw new Error(AggregationError.NoOptimalPath);
@@ -253,8 +253,8 @@ export class MarketOperationUtils {
         );
     }
 
-    private _plpSourceIfAvailable(): ERC20BridgeSource[] {
-        return this._plpRegistryAddress !== NULL_ADDRESS ? [ERC20BridgeSource.Plp] : [];
+    private _liquidityPoolSourceIfAvailable(): ERC20BridgeSource[] {
+        return this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [];
     }
 
     private _createBuyOrdersPathFromSamplerResultIfExists(
@@ -264,7 +264,7 @@ export class MarketOperationUtils {
         dexQuotes: DexSample[][],
         ethToTakerAssetRate: BigNumber,
         opts: GetMarketOrdersOpts,
-        plpPoolAddress?: string | undefined,
+        liquidityPoolAddress?: string | undefined,
     ): OptimizedMarketOrder[] | undefined {
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
@@ -307,7 +307,7 @@ export class MarketOperationUtils {
             outputToken,
             collapsePath(optimalPath, true),
             opts.bridgeSlippage,
-            plpPoolAddress,
+            liquidityPoolAddress,
         );
     }
 }
@@ -489,8 +489,8 @@ function sourceToFillFlags(source: ERC20BridgeSource): number {
     if (source === ERC20BridgeSource.Uniswap) {
         return FillFlags.SourceUniswap;
     }
-    if (source === ERC20BridgeSource.Plp) {
-        return FillFlags.SourcePlp;
+    if (source === ERC20BridgeSource.LiquidityProvider) {
+        return FillFlags.SourceLiquidityPool;
     }
     return FillFlags.SourceNative;
 }

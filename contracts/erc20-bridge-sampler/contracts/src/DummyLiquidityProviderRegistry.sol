@@ -41,7 +41,7 @@ contract DummyLiquidityProviderRegistry
         poolAddress = _gAddressBook[takerToken][makerToken];
         require(
             poolAddress != NULL_ADDRESS,
-            "PLPRegistry/MARKET_PAIR_NOT_SET"
+            "Registry/MARKET_PAIR_NOT_SET"
         );
     }
 }

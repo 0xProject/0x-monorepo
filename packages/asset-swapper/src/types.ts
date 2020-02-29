@@ -212,7 +212,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     expiryBufferMs: number;
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
-    plpRegistryAddress?: string;
+    liquidityProviderRegistryAddress?: string;
 }
 
 /**

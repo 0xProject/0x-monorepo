@@ -144,7 +144,7 @@ export class SwapQuoter {
      * @return  An instance of SwapQuoter
      */
     constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
-        const { chainId, expiryBufferMs, permittedOrderFeeTypes, samplerGasLimit, plpRegistryAddress } = _.merge(
+        const { chainId, expiryBufferMs, permittedOrderFeeTypes, samplerGasLimit, liquidityProviderRegistryAddress } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTER_OPTS,
             options,
@@ -174,7 +174,7 @@ export class SwapQuoter {
                 chainId,
                 exchangeAddress: this._contractAddresses.exchange,
             },
-            plpRegistryAddress,
+            liquidityProviderRegistryAddress,
         );
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }

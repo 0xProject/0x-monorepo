@@ -342,7 +342,7 @@ describe('DexSampler tests', () => {
             expect(quotes).to.deep.eq(expectedQuotes);
         });
 
-        describe('PLP Operations', () => {
+        describe('LiquidityProvider Operations', () => {
             const xAsset = randomAddress();
             const yAsset = randomAddress();
             const zAsset = randomAddress();
@@ -392,7 +392,7 @@ describe('DexSampler tests', () => {
                 expect(yzPool).to.eql(NULL_ADDRESS);
                 expect(nullPool).to.eql(NULL_ADDRESS);
             });
-            it('is able to sample DEX liquidity from PLP', async () => {
+            it('is able to sample DEX liquidity from LiquidityProvider', async () => {
                 const fakeLiquidityPool = await DummyLiquidityProviderContract.deployFrom0xArtifactAsync(
                     erc20BridgeSamplerArtifacts.DummyLiquidityProvider,
                     provider,
@@ -408,14 +408,14 @@ describe('DexSampler tests', () => {
                 );
                 const [buyQuotes, sellQuotes] = await dexOrderSampler.executeBatchAsync([
                     DexOrderSampler.ops.getBuyQuotes(
-                        [ERC20BridgeSource.Plp],
+                        [ERC20BridgeSource.LiquidityProvider],
                         xAsset,
                         yAsset,
                         [new BigNumber(10), new BigNumber(100)],
                         registryContract.address,
                     ),
                     DexOrderSampler.ops.getSellQuotes(
-                        [ERC20BridgeSource.Plp],
+                        [ERC20BridgeSource.LiquidityProvider],
                         xAsset,
                         yAsset,
                         [new BigNumber(10), new BigNumber(100), new BigNumber(500)],
@@ -423,18 +423,18 @@ describe('DexSampler tests', () => {
                     ),
                 ]);
                 expect(buyQuotes.length).to.eql(1);
-                const plpBuyQuotes: DexSample[] = buyQuotes[0];
-                expect(plpBuyQuotes.length).to.eql(2);
-                for (const quote of plpBuyQuotes) {
-                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.Plp);
+                const liquidityPoolBuyQuotes: DexSample[] = buyQuotes[0];
+                expect(liquidityPoolBuyQuotes.length).to.eql(2);
+                for (const quote of liquidityPoolBuyQuotes) {
+                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.LiquidityProvider);
                     expect(quote.input.plus(1)).to.bignumber.eql(quote.output);
                 }
 
                 expect(sellQuotes.length).to.eql(1);
-                const plpSellQuotes: DexSample[] = sellQuotes[0];
-                expect(plpSellQuotes.length).to.eql(3);
-                for (const quote of plpSellQuotes) {
-                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.Plp);
+                const iquidityPoolSellQuotes: DexSample[] = sellQuotes[0];
+                expect(iquidityPoolSellQuotes.length).to.eql(3);
+                for (const quote of iquidityPoolSellQuotes) {
+                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.LiquidityProvider);
                     expect(quote.input.minus(1)).to.bignumber.eql(quote.output);
                 }
             });
