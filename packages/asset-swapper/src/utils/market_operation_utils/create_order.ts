@@ -109,6 +109,7 @@ export class CreateOrderUtils {
             case ERC20BridgeSource.CurveUsdcDai:
             case ERC20BridgeSource.CurveUsdcDaiUsdt:
             case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
+            case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
                 return this._contractAddress.curveBridge;
             default:
                 break;
@@ -127,11 +128,7 @@ function createBridgeOrder(
     isBuy: boolean = false,
 ): OptimizedMarketOrder {
     let makerAssetData;
-    if (
-        fill.source === ERC20BridgeSource.CurveUsdcDai ||
-        fill.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
-        fill.source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
-    ) {
+    if (Object.keys(constants.DEFAULT_CURVE_OPTS).includes(fill.source)) {
         const { curveAddress, tokens, version } = constants.DEFAULT_CURVE_OPTS[fill.source];
         const fromTokenIdx = tokens.indexOf(takerToken);
         const toTokenIdx = tokens.indexOf(makerToken);
