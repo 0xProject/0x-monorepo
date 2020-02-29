@@ -236,7 +236,11 @@ export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffe
             try {
                 return getSourceTreeHash(resolver, dependency);
             } catch (e) {
-                throw Error(`Error when trying to resolve dependencies for ${importPath}: ${(e as Error).message}`);
+                if (/Error when trying to resolve dependencies for/.test((e as Error).message)) {
+                    throw e;
+                } else {
+                    throw Error(`Error when trying to resolve dependencies for ${importPath}: ${(e as Error).message}`);
+                }
             }
         });
         const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
