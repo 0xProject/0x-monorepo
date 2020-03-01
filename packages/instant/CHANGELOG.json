@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Clean up heartbeat functions on close",
+                "pr": 2492
+            },
+            {
+                "note": "Fix ERC721 asset support",
+                "pr": 2491
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

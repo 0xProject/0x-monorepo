@@ -158,13 +158,13 @@ export class SwapQuoteCalculator {
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
                         assetFillAmount.plus(slippageBufferAmount),
-                        opts,
+                        _opts,
                     );
                 } else {
                     resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
                         assetFillAmount.plus(slippageBufferAmount),
-                        opts,
+                        _opts,
                     );
                 }
             }

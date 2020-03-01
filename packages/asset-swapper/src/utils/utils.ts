@@ -1,5 +1,5 @@
 import { assetDataUtils } from '@0x/order-utils';
-import { AssetProxyId, AssetData, ERC20AssetData, ERC20BridgeAssetData, Order, SignedOrder } from '@0x/types';
+import { AssetData, AssetProxyId, ERC20AssetData, ERC20BridgeAssetData, Order, SignedOrder } from '@0x/types';
 import { BigNumber, NULL_BYTES } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
