@@ -1,5 +1,5 @@
-import { orderCalculationUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { assetDataUtils, orderCalculationUtils } from '@0x/order-utils';
+import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -14,10 +14,12 @@ import {
     SwapQuoteBase,
     SwapQuoteInfo,
     SwapQuoteOrdersBreakdown,
+    SwapQuoterError,
 } from '../types';
 
 import { fillableAmountsUtils } from './fillable_amounts_utils';
 import { MarketOperationUtils } from './market_operation_utils';
+import { CreateOrderUtils } from './market_operation_utils/create_order';
 import { ERC20BridgeSource, OptimizedMarketOrder } from './market_operation_utils/types';
 import { ProtocolFeeUtils } from './protocol_fee_utils';
 import { utils } from './utils';
@@ -126,6 +128,10 @@ export class SwapQuoteCalculator {
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
     ): Promise<SwapQuote> {
+        // checks if maker asset is ERC721 or ERC20 and taker asset is ERC20
+        if (!utils.isSupportedAssetDataInOrders(prunedOrders)) {
+            throw Error(SwapQuoterError.AssetDataUnsupported);
+        }
         // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
 
         const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
@@ -137,18 +143,30 @@ export class SwapQuoteCalculator {
                 ...opts,
                 fees: _.mapValues(opts.fees, (v, k) => v.times(gasPrice)),
             };
-            if (operation === MarketOperation.Buy) {
-                resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
-                    prunedOrders,
-                    assetFillAmount.plus(slippageBufferAmount),
-                    _opts,
+
+            const firstOrderMakerAssetData = !!prunedOrders[0]
+                ? assetDataUtils.decodeAssetDataOrThrow(prunedOrders[0].makerAssetData)
+                : { assetProxyId: '' };
+
+            if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
+                // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
+                resultOrders = prunedOrders.map(o =>
+                    CreateOrderUtils.convertNativeOrderToFullyFillableOptimizedOrders(o),
                 );
             } else {
-                resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
-                    prunedOrders,
-                    assetFillAmount.plus(slippageBufferAmount),
-                    _opts,
-                );
+                if (operation === MarketOperation.Buy) {
+                    resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
+                        prunedOrders,
+                        assetFillAmount.plus(slippageBufferAmount),
+                        _opts,
+                    );
+                } else {
+                    resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
+                        prunedOrders,
+                        assetFillAmount.plus(slippageBufferAmount),
+                        _opts,
+                    );
+                }
             }
         }
 

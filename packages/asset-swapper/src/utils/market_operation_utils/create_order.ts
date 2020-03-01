@@ -1,5 +1,6 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
@@ -19,6 +20,22 @@ const { INFINITE_TIMESTAMP_SEC, WALLET_SIGNATURE } = marketOperationUtilConstant
 
 export class CreateOrderUtils {
     private readonly _contractAddress: ContractAddresses;
+
+    // utility function for asset-swapper to ignore market operation utils for specific asset types
+    public static convertNativeOrderToFullyFillableOptimizedOrders(order: SignedOrder): OptimizedMarketOrder {
+        return {
+            ...order,
+            fillableMakerAssetAmount: order.makerAssetAmount,
+            fillableTakerAssetAmount: order.takerAssetAmount,
+            fillableTakerFeeAmount: order.takerFee,
+            fill: {
+                source: ERC20BridgeSource.Native,
+                totalMakerAssetAmount: order.makerAssetAmount,
+                totalTakerAssetAmount: order.takerAssetAmount,
+                subFills: [],
+            },
+        };
+    }
 
     constructor(contractAddress: ContractAddresses) {
         this._contractAddress = contractAddress;

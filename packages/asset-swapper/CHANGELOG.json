@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Add support for ERC721 assets",
+                "pr": 2491
+            },
+            {
+                "note": "Add destroy for gas heartbeat",
+                "pr": 2492
+            }
+        ]
+    },
+    {
         "version": "4.3.2",
         "changes": [
             {
