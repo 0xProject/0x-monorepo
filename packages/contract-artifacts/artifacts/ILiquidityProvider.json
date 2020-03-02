@@ -1,204 +1,108 @@
 {
-	"schemaVersion": "2.0.0",
-	"contractName": "ILiquidityProvider",
-	"compilerOutput": {
-		"abi": [
-			{
-				"constant": false,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "tokenAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "from",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bytes",
-						"name": "bridgeData",
-						"type": "bytes"
-					}
-				],
-				"name": "bridgeTransferFrom",
-				"outputs": [
-					{
-						"internalType": "bytes4",
-						"name": "success",
-						"type": "bytes4"
-					}
-				],
-				"payable": false,
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "buyAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "getBuyQuote",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "takerTokenAmount",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "sellAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "getSellQuote",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "makerTokenAmount",
-						"type": "uint256"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			}
-		],
-		"devdoc": {
-			"methods": {
-				"bridgeTransferFrom(address,address,address,uint256,bytes)": {
-					"details": "Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.",
-					"params": {
-						"amount": "Amount of asset to transfer.",
-						"bridgeData": "Arbitrary asset data needed by the bridge contract.",
-						"from": "Address to transfer asset from.",
-						"to": "Address to transfer asset to.",
-						"tokenAddress": "The address of the ERC20 token to transfer."
-					},
-					"return": "success The magic bytes `0xdc1600f3` if successful."
-				},
-				"getBuyQuote(address,address,uint256)": {
-					"details": "Quotes the amount of `takerToken` that would need to be sold in      order to obtain `buyAmount` of `makerToken`.",
-					"params": {
-						"buyAmount": "Amount of `makerToken` to buy.",
-						"makerToken": "Address of the maker token (what to buy).",
-						"takerToken": "Address of the taker token (what to sell)."
-					},
-					"return": "takerTokenAmount Amount of `takerToken` that would need to be sold."
-				},
-				"getSellQuote(address,address,uint256)": {
-					"details": "Quotes the amount of `makerToken` that would be obtained by      selling `sellAmount` of `takerToken`.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"sellAmount": "Amount of `takerToken` to sell.",
-						"takerToken": "Address of the taker token (what to sell)."
-					},
-					"return": "makerTokenAmount Amount of `makerToken` that would be obtained."
-				}
-			}
-		},
-		"evm": {
-			"bytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			},
-			"deployedBytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			}
-		}
-	},
-	"sources": {
-		"src/ILiquidityProvider.sol": {
-			"id": 8
-		}
-	},
-	"sourceCodes": {
-		"src/ILiquidityProvider.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\ninterface ILiquidityProvider {\n\n    /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.\n    /// @param tokenAddress The address of the ERC20 token to transfer.\n    /// @param from Address to transfer asset from.\n    /// @param to Address to transfer asset to.\n    /// @param amount Amount of asset to transfer.\n    /// @param bridgeData Arbitrary asset data needed by the bridge contract.\n    /// @return success The magic bytes `0xdc1600f3` if successful.\n    function bridgeTransferFrom(\n        address tokenAddress,\n        address from,\n        address to,\n        uint256 amount,\n        bytes calldata bridgeData\n    )\n        external\n        returns (bytes4 success);\n\n    /// @dev Quotes the amount of `makerToken` that would be obtained by\n    ///      selling `sellAmount` of `takerToken`.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param sellAmount Amount of `takerToken` to sell.\n    /// @return makerTokenAmount Amount of `makerToken` that would be obtained.\n    function getSellQuote(\n        address takerToken,\n        address makerToken,\n        uint256 sellAmount\n    )\n        external\n        view\n        returns (uint256 makerTokenAmount);\n\n    /// @dev Quotes the amount of `takerToken` that would need to be sold in\n    ///      order to obtain `buyAmount` of `makerToken`.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param buyAmount Amount of `makerToken` to buy.\n    /// @return takerTokenAmount Amount of `takerToken` that would need to be sold.\n    function getBuyQuote(\n        address takerToken,\n        address makerToken,\n        uint256 buyAmount\n    )\n        external\n        view\n        returns (uint256 takerTokenAmount);\n}\n"
-	},
-	"sourceTreeHashHex": "0x3aa914bd3a043f6b6d9bfa0670279ac5544994c2fe62d4764879b109ee620699",
-	"compiler": {
-		"name": "solc",
-		"version": "soljson-v0.5.16+commit.9c3226ce.js",
-		"settings": {
-			"optimizer": {
-				"enabled": true,
-				"runs": 1000000,
-				"details": {
-					"yul": true,
-					"deduplicate": true,
-					"cse": true,
-					"constantOptimizer": true
-				}
-			},
-			"outputSelection": {
-				"*": {
-					"*": [
-						"abi",
-						"devdoc",
-						"evm.bytecode.object",
-						"evm.bytecode.sourceMap",
-						"evm.deployedBytecode.object",
-						"evm.deployedBytecode.sourceMap"
-					]
-				}
-			},
-			"evmVersion": "istanbul",
-			"remappings": [
-				"@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-asset-proxy",
-				"@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-erc20",
-				"@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-utils",
-				"@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-exchange-libs",
-				"@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-exchange"
-			]
-		}
-	},
-	"chains": {}
+    "schemaVersion": "2.0.0",
+    "contractName": "ILiquidityProvider",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": false,
+                "inputs": [
+                    { "internalType": "address", "name": "tokenAddress", "type": "address" },
+                    { "internalType": "address", "name": "from", "type": "address" },
+                    { "internalType": "address", "name": "to", "type": "address" },
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" },
+                    { "internalType": "bytes", "name": "bridgeData", "type": "bytes" }
+                ],
+                "name": "bridgeTransferFrom",
+                "outputs": [{ "internalType": "bytes4", "name": "success", "type": "bytes4" }],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256", "name": "buyAmount", "type": "uint256" }
+                ],
+                "name": "getBuyQuote",
+                "outputs": [{ "internalType": "uint256", "name": "takerTokenAmount", "type": "uint256" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256", "name": "sellAmount", "type": "uint256" }
+                ],
+                "name": "getSellQuote",
+                "outputs": [{ "internalType": "uint256", "name": "makerTokenAmount", "type": "uint256" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {
+                "bridgeTransferFrom(address,address,address,uint256,bytes)": {
+                    "details": "Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.",
+                    "params": {
+                        "amount": "Amount of asset to transfer.",
+                        "bridgeData": "Arbitrary asset data needed by the bridge contract.",
+                        "from": "Address to transfer asset from.",
+                        "to": "Address to transfer asset to.",
+                        "tokenAddress": "The address of the ERC20 token to transfer."
+                    },
+                    "return": "success The magic bytes `0xdc1600f3` if successful."
+                },
+                "getBuyQuote(address,address,uint256)": {
+                    "details": "Quotes the amount of `takerToken` that would need to be sold in      order to obtain `buyAmount` of `makerToken`.",
+                    "params": {
+                        "buyAmount": "Amount of `makerToken` to buy.",
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "takerToken": "Address of the taker token (what to sell)."
+                    },
+                    "return": "takerTokenAmount Amount of `takerToken` that would need to be sold."
+                },
+                "getSellQuote(address,address,uint256)": {
+                    "details": "Quotes the amount of `makerToken` that would be obtained by      selling `sellAmount` of `takerToken`.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "sellAmount": "Amount of `takerToken` to sell.",
+                        "takerToken": "Address of the taker token (what to sell)."
+                    },
+                    "return": "makerTokenAmount Amount of `makerToken` that would be obtained."
+                }
+            }
+        },
+        "evm": { "bytecode": { "object": "0x" }, "deployedBytecode": { "object": "0x" } }
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
 }

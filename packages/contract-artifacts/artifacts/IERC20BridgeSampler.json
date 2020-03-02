@@ -1,697 +1,339 @@
 {
-	"schemaVersion": "2.0.0",
-	"contractName": "IERC20BridgeSampler",
-	"compilerOutput": {
-		"abi": [
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "bytes[]",
-						"name": "callDatas",
-						"type": "bytes[]"
-					}
-				],
-				"name": "batchCall",
-				"outputs": [
-					{
-						"internalType": "bytes[]",
-						"name": "callResults",
-						"type": "bytes[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "registryAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					}
-				],
-				"name": "getLiquidityProviderFromRegistry",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "providerAddress",
-						"type": "address"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "makerAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "address",
-								"name": "takerAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "address",
-								"name": "feeRecipientAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "address",
-								"name": "senderAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "makerAssetAmount",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "takerAssetAmount",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "makerFee",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "takerFee",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "expirationTimeSeconds",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "salt",
-								"type": "uint256"
-							},
-							{
-								"internalType": "bytes",
-								"name": "makerAssetData",
-								"type": "bytes"
-							},
-							{
-								"internalType": "bytes",
-								"name": "takerAssetData",
-								"type": "bytes"
-							},
-							{
-								"internalType": "bytes",
-								"name": "makerFeeAssetData",
-								"type": "bytes"
-							},
-							{
-								"internalType": "bytes",
-								"name": "takerFeeAssetData",
-								"type": "bytes"
-							}
-						],
-						"internalType": "struct LibOrder.Order[]",
-						"name": "orders",
-						"type": "tuple[]"
-					},
-					{
-						"internalType": "bytes[]",
-						"name": "orderSignatures",
-						"type": "bytes[]"
-					}
-				],
-				"name": "getOrderFillableMakerAssetAmounts",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "orderFillableMakerAssetAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"components": [
-							{
-								"internalType": "address",
-								"name": "makerAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "address",
-								"name": "takerAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "address",
-								"name": "feeRecipientAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "address",
-								"name": "senderAddress",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "makerAssetAmount",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "takerAssetAmount",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "makerFee",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "takerFee",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "expirationTimeSeconds",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "salt",
-								"type": "uint256"
-							},
-							{
-								"internalType": "bytes",
-								"name": "makerAssetData",
-								"type": "bytes"
-							},
-							{
-								"internalType": "bytes",
-								"name": "takerAssetData",
-								"type": "bytes"
-							},
-							{
-								"internalType": "bytes",
-								"name": "makerFeeAssetData",
-								"type": "bytes"
-							},
-							{
-								"internalType": "bytes",
-								"name": "takerFeeAssetData",
-								"type": "bytes"
-							}
-						],
-						"internalType": "struct LibOrder.Order[]",
-						"name": "orders",
-						"type": "tuple[]"
-					},
-					{
-						"internalType": "bytes[]",
-						"name": "orderSignatures",
-						"type": "bytes[]"
-					}
-				],
-				"name": "getOrderFillableTakerAssetAmounts",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "orderFillableTakerAssetAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleBuysFromEth2Dai",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "registryAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleBuysFromLiquidityProviderRegistry",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleBuysFromUniswap",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "curveAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "int128",
-						"name": "fromTokenIdx",
-						"type": "int128"
-					},
-					{
-						"internalType": "int128",
-						"name": "toTokenIdx",
-						"type": "int128"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleSellsFromCurve",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleSellsFromEth2Dai",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleSellsFromKyberNetwork",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "registryAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleSellsFromLiquidityProviderRegistry",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"constant": true,
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "takerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "makerToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256[]",
-						"name": "takerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"name": "sampleSellsFromUniswap",
-				"outputs": [
-					{
-						"internalType": "uint256[]",
-						"name": "makerTokenAmounts",
-						"type": "uint256[]"
-					}
-				],
-				"payable": false,
-				"stateMutability": "view",
-				"type": "function"
-			}
-		],
-		"devdoc": {
-			"methods": {
-				"batchCall(bytes[])": {
-					"details": "Call multiple public functions on this contract in a single transaction.",
-					"params": {
-						"callDatas": "ABI-encoded call data for each function call."
-					},
-					"return": "callResults ABI-encoded results data for each call."
-				},
-				"getLiquidityProviderFromRegistry(address,address,address)": {
-					"details": "Returns the address of a liquidity provider for the given market      (takerToken, makerToken), from a registry of liquidity providers.      Returns address(0) if no such provider exists in the registry.",
-					"params": {
-						"makerToken": "Maker asset managed by liquidity provider.",
-						"takerToken": "Taker asset managed by liquidity provider."
-					},
-					"return": "providerAddress Address of the liquidity provider."
-				},
-				"getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
-					"details": "Queries the fillable maker asset amounts of native orders.",
-					"params": {
-						"orderSignatures": "Signatures for each respective order in `orders`.",
-						"orders": "Native orders to query."
-					},
-					"return": "orderFillableMakerAssetAmounts How much maker asset can be filled         by each order in `orders`."
-				},
-				"getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
-					"details": "Queries the fillable taker asset amounts of native orders.",
-					"params": {
-						"orderSignatures": "Signatures for each respective order in `orders`.",
-						"orders": "Native orders to query."
-					},
-					"return": "orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in `orders`."
-				},
-				"sampleBuysFromEth2Dai(address,address,uint256[])": {
-					"details": "Sample buy quotes from Eth2Dai/Oasis.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"takerToken": "Address of the taker token (what to sell).",
-						"takerTokenAmounts": "Maker token sell amount for each sample."
-					},
-					"return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
-				},
-				"sampleBuysFromLiquidityProviderRegistry(address,address,address,uint256[])": {
-					"details": "Sample buy quotes from an arbitrary on-chain liquidity provider.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"makerTokenAmounts": "Maker token buy amount for each sample.",
-						"registryAddress": "Address of the liquidity provider registry contract.",
-						"takerToken": "Address of the taker token (what to sell)."
-					},
-					"return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
-				},
-				"sampleBuysFromUniswap(address,address,uint256[])": {
-					"details": "Sample buy quotes from Uniswap.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"makerTokenAmounts": "Maker token sell amount for each sample.",
-						"takerToken": "Address of the taker token (what to sell)."
-					},
-					"return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
-				},
-				"sampleSellsFromCurve(address,int128,int128,uint256[])": {
-					"details": "Sample sell quotes from Curve.",
-					"params": {
-						"curveAddress": "Address of the Curve contract.",
-						"fromTokenIdx": "Index of the taker token (what to sell).",
-						"takerTokenAmounts": "Taker token sell amount for each sample.",
-						"toTokenIdx": "Index of the maker token (what to buy)."
-					},
-					"return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
-				},
-				"sampleSellsFromEth2Dai(address,address,uint256[])": {
-					"details": "Sample sell quotes from Eth2Dai/Oasis.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"takerToken": "Address of the taker token (what to sell).",
-						"takerTokenAmounts": "Taker token sell amount for each sample."
-					},
-					"return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
-				},
-				"sampleSellsFromKyberNetwork(address,address,uint256[])": {
-					"details": "Sample sell quotes from Kyber.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"takerToken": "Address of the taker token (what to sell).",
-						"takerTokenAmounts": "Taker token sell amount for each sample."
-					},
-					"return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
-				},
-				"sampleSellsFromLiquidityProviderRegistry(address,address,address,uint256[])": {
-					"details": "Sample sell quotes from an arbitrary on-chain liquidity provider.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"registryAddress": "Address of the liquidity provider registry contract.",
-						"takerToken": "Address of the taker token (what to sell).",
-						"takerTokenAmounts": "Taker token sell amount for each sample."
-					},
-					"return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
-				},
-				"sampleSellsFromUniswap(address,address,uint256[])": {
-					"details": "Sample sell quotes from Uniswap.",
-					"params": {
-						"makerToken": "Address of the maker token (what to buy).",
-						"takerToken": "Address of the taker token (what to sell).",
-						"takerTokenAmounts": "Taker token sell amount for each sample."
-					},
-					"return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
-				}
-			}
-		},
-		"evm": {
-			"bytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			},
-			"deployedBytecode": {
-				"linkReferences": {},
-				"object": "0x",
-				"opcodes": "",
-				"sourceMap": ""
-			}
-		}
-	},
-	"sources": {
-		"src/IERC20BridgeSampler.sol": {
-			"id": 5
-		},
-		"@0x/contracts-exchange-libs/contracts/src/LibOrder.sol": {
-			"id": 19
-		},
-		"@0x/contracts-utils/contracts/src/LibEIP712.sol": {
-			"id": 33
-		}
-	},
-	"sourceCodes": {
-		"src/IERC20BridgeSampler.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-exchange-libs/contracts/src/LibOrder.sol\";\n\n\ninterface IERC20BridgeSampler {\n\n    /// @dev Call multiple public functions on this contract in a single transaction.\n    /// @param callDatas ABI-encoded call data for each function call.\n    /// @return callResults ABI-encoded results data for each call.\n    function batchCall(bytes[] calldata callDatas)\n        external\n        view\n        returns (bytes[] memory callResults);\n\n    /// @dev Queries the fillable taker asset amounts of native orders.\n    /// @param orders Native orders to query.\n    /// @param orderSignatures Signatures for each respective order in `orders`.\n    /// @return orderFillableTakerAssetAmounts How much taker asset can be filled\n    ///         by each order in `orders`.\n    function getOrderFillableTakerAssetAmounts(\n        LibOrder.Order[] calldata orders,\n        bytes[] calldata orderSignatures\n    )\n        external\n        view\n        returns (uint256[] memory orderFillableTakerAssetAmounts);\n\n    /// @dev Queries the fillable maker asset amounts of native orders.\n    /// @param orders Native orders to query.\n    /// @param orderSignatures Signatures for each respective order in `orders`.\n    /// @return orderFillableMakerAssetAmounts How much maker asset can be filled\n    ///         by each order in `orders`.\n    function getOrderFillableMakerAssetAmounts(\n        LibOrder.Order[] calldata orders,\n        bytes[] calldata orderSignatures\n    )\n        external\n        view\n        returns (uint256[] memory orderFillableMakerAssetAmounts);\n\n    /// @dev Sample sell quotes from Kyber.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param takerTokenAmounts Taker token sell amount for each sample.\n    /// @return makerTokenAmounts Maker amounts bought at each taker token\n    ///         amount.\n    function sampleSellsFromKyberNetwork(\n        address takerToken,\n        address makerToken,\n        uint256[] calldata takerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory makerTokenAmounts);\n\n    /// @dev Sample sell quotes from Eth2Dai/Oasis.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param takerTokenAmounts Taker token sell amount for each sample.\n    /// @return makerTokenAmounts Maker amounts bought at each taker token\n    ///         amount.\n    function sampleSellsFromEth2Dai(\n        address takerToken,\n        address makerToken,\n        uint256[] calldata takerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory makerTokenAmounts);\n\n    /// @dev Sample sell quotes from Uniswap.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param takerTokenAmounts Taker token sell amount for each sample.\n    /// @return makerTokenAmounts Maker amounts bought at each taker token\n    ///         amount.\n    function sampleSellsFromUniswap(\n        address takerToken,\n        address makerToken,\n        uint256[] calldata takerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory makerTokenAmounts);\n\n    /// @dev Sample buy quotes from Uniswap.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param makerTokenAmounts Maker token sell amount for each sample.\n    /// @return takerTokenAmounts Taker amounts sold at each maker token\n    ///         amount.\n    function sampleBuysFromUniswap(\n        address takerToken,\n        address makerToken,\n        uint256[] calldata makerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory takerTokenAmounts);\n\n    /// @dev Sample buy quotes from Eth2Dai/Oasis.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param takerTokenAmounts Maker token sell amount for each sample.\n    /// @return takerTokenAmounts Taker amounts sold at each maker token\n    ///         amount.\n    function sampleBuysFromEth2Dai(\n        address takerToken,\n        address makerToken,\n        uint256[] calldata makerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory takerTokenAmounts);\n\n    /// @dev Sample sell quotes from Curve.\n    /// @param curveAddress Address of the Curve contract.\n    /// @param fromTokenIdx Index of the taker token (what to sell).\n    /// @param toTokenIdx Index of the maker token (what to buy).\n    /// @param takerTokenAmounts Taker token sell amount for each sample.\n    /// @return makerTokenAmounts Maker amounts bought at each taker token\n    ///         amount.\n    function sampleSellsFromCurve(\n        address curveAddress,\n        int128 fromTokenIdx,\n        int128 toTokenIdx,\n        uint256[] calldata takerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory makerTokenAmounts);\n\n    /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.\n    /// @param registryAddress Address of the liquidity provider registry contract.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param takerTokenAmounts Taker token sell amount for each sample.\n    /// @return makerTokenAmounts Maker amounts bought at each taker token\n    ///         amount.\n    function sampleSellsFromLiquidityProviderRegistry(\n        address registryAddress,\n        address takerToken,\n        address makerToken,\n        uint256[] calldata takerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory makerTokenAmounts);\n\n    /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.\n    /// @param registryAddress Address of the liquidity provider registry contract.\n    /// @param takerToken Address of the taker token (what to sell).\n    /// @param makerToken Address of the maker token (what to buy).\n    /// @param makerTokenAmounts Maker token buy amount for each sample.\n    /// @return takerTokenAmounts Taker amounts sold at each maker token\n    ///         amount.\n    function sampleBuysFromLiquidityProviderRegistry(\n        address registryAddress,\n        address takerToken,\n        address makerToken,\n        uint256[] calldata makerTokenAmounts\n    )\n        external\n        view\n        returns (uint256[] memory takerTokenAmounts);\n\n    /// @dev Returns the address of a liquidity provider for the given market\n    ///      (takerToken, makerToken), from a registry of liquidity providers.\n    ///      Returns address(0) if no such provider exists in the registry.\n    /// @param takerToken Taker asset managed by liquidity provider.\n    /// @param makerToken Maker asset managed by liquidity provider.\n    /// @return providerAddress Address of the liquidity provider.\n    function getLiquidityProviderFromRegistry(\n        address registryAddress,\n        address takerToken,\n        address makerToken\n    )\n        external\n        view\n        returns (address providerAddress);\n}\n",
-		"@0x/contracts-exchange-libs/contracts/src/LibOrder.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\nimport \"@0x/contracts-utils/contracts/src/LibEIP712.sol\";\n\n\nlibrary LibOrder {\n\n    using LibOrder for Order;\n\n    // Hash for the EIP712 Order Schema:\n    // keccak256(abi.encodePacked(\n    //     \"Order(\",\n    //     \"address makerAddress,\",\n    //     \"address takerAddress,\",\n    //     \"address feeRecipientAddress,\",\n    //     \"address senderAddress,\",\n    //     \"uint256 makerAssetAmount,\",\n    //     \"uint256 takerAssetAmount,\",\n    //     \"uint256 makerFee,\",\n    //     \"uint256 takerFee,\",\n    //     \"uint256 expirationTimeSeconds,\",\n    //     \"uint256 salt,\",\n    //     \"bytes makerAssetData,\",\n    //     \"bytes takerAssetData,\",\n    //     \"bytes makerFeeAssetData,\",\n    //     \"bytes takerFeeAssetData\",\n    //     \")\"\n    // ))\n    bytes32 constant internal _EIP712_ORDER_SCHEMA_HASH =\n        0xf80322eb8376aafb64eadf8f0d7623f22130fd9491a221e902b713cb984a7534;\n\n    // A valid order remains fillable until it is expired, fully filled, or cancelled.\n    // An order's status is unaffected by external factors, like account balances.\n    enum OrderStatus {\n        INVALID,                     // Default value\n        INVALID_MAKER_ASSET_AMOUNT,  // Order does not have a valid maker asset amount\n        INVALID_TAKER_ASSET_AMOUNT,  // Order does not have a valid taker asset amount\n        FILLABLE,                    // Order is fillable\n        EXPIRED,                     // Order has already expired\n        FULLY_FILLED,                // Order is fully filled\n        CANCELLED                    // Order has been cancelled\n    }\n\n    // solhint-disable max-line-length\n    /// @dev Canonical order structure.\n    struct Order {\n        address makerAddress;           // Address that created the order.\n        address takerAddress;           // Address that is allowed to fill the order. If set to 0, any address is allowed to fill the order.\n        address feeRecipientAddress;    // Address that will recieve fees when order is filled.\n        address senderAddress;          // Address that is allowed to call Exchange contract methods that affect this order. If set to 0, any address is allowed to call these methods.\n        uint256 makerAssetAmount;       // Amount of makerAsset being offered by maker. Must be greater than 0.\n        uint256 takerAssetAmount;       // Amount of takerAsset being bid on by maker. Must be greater than 0.\n        uint256 makerFee;               // Fee paid to feeRecipient by maker when order is filled.\n        uint256 takerFee;               // Fee paid to feeRecipient by taker when order is filled.\n        uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.\n        uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.\n        bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The leading bytes4 references the id of the asset proxy.\n        bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The leading bytes4 references the id of the asset proxy.\n        bytes makerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring makerFeeAsset. The leading bytes4 references the id of the asset proxy.\n        bytes takerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring takerFeeAsset. The leading bytes4 references the id of the asset proxy.\n    }\n    // solhint-enable max-line-length\n\n    /// @dev Order information returned by `getOrderInfo()`.\n    struct OrderInfo {\n        OrderStatus orderStatus;                    // Status that describes order's validity and fillability.\n        bytes32 orderHash;                    // EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).\n        uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.\n    }\n\n    /// @dev Calculates the EIP712 typed data hash of an order with a given domain separator.\n    /// @param order The order structure.\n    /// @return EIP712 typed data hash of the order.\n    function getTypedDataHash(Order memory order, bytes32 eip712ExchangeDomainHash)\n        internal\n        pure\n        returns (bytes32 orderHash)\n    {\n        orderHash = LibEIP712.hashEIP712Message(\n            eip712ExchangeDomainHash,\n            order.getStructHash()\n        );\n        return orderHash;\n    }\n\n    /// @dev Calculates EIP712 hash of the order struct.\n    /// @param order The order structure.\n    /// @return EIP712 hash of the order struct.\n    function getStructHash(Order memory order)\n        internal\n        pure\n        returns (bytes32 result)\n    {\n        bytes32 schemaHash = _EIP712_ORDER_SCHEMA_HASH;\n        bytes memory makerAssetData = order.makerAssetData;\n        bytes memory takerAssetData = order.takerAssetData;\n        bytes memory makerFeeAssetData = order.makerFeeAssetData;\n        bytes memory takerFeeAssetData = order.takerFeeAssetData;\n\n        // Assembly for more efficiently computing:\n        // keccak256(abi.encodePacked(\n        //     EIP712_ORDER_SCHEMA_HASH,\n        //     uint256(order.makerAddress),\n        //     uint256(order.takerAddress),\n        //     uint256(order.feeRecipientAddress),\n        //     uint256(order.senderAddress),\n        //     order.makerAssetAmount,\n        //     order.takerAssetAmount,\n        //     order.makerFee,\n        //     order.takerFee,\n        //     order.expirationTimeSeconds,\n        //     order.salt,\n        //     keccak256(order.makerAssetData),\n        //     keccak256(order.takerAssetData),\n        //     keccak256(order.makerFeeAssetData),\n        //     keccak256(order.takerFeeAssetData)\n        // ));\n\n        assembly {\n            // Assert order offset (this is an internal error that should never be triggered)\n            if lt(order, 32) {\n                invalid()\n            }\n\n            // Calculate memory addresses that will be swapped out before hashing\n            let pos1 := sub(order, 32)\n            let pos2 := add(order, 320)\n            let pos3 := add(order, 352)\n            let pos4 := add(order, 384)\n            let pos5 := add(order, 416)\n\n            // Backup\n            let temp1 := mload(pos1)\n            let temp2 := mload(pos2)\n            let temp3 := mload(pos3)\n            let temp4 := mload(pos4)\n            let temp5 := mload(pos5)\n\n            // Hash in place\n            mstore(pos1, schemaHash)\n            mstore(pos2, keccak256(add(makerAssetData, 32), mload(makerAssetData)))        // store hash of makerAssetData\n            mstore(pos3, keccak256(add(takerAssetData, 32), mload(takerAssetData)))        // store hash of takerAssetData\n            mstore(pos4, keccak256(add(makerFeeAssetData, 32), mload(makerFeeAssetData)))  // store hash of makerFeeAssetData\n            mstore(pos5, keccak256(add(takerFeeAssetData, 32), mload(takerFeeAssetData)))  // store hash of takerFeeAssetData\n            result := keccak256(pos1, 480)\n\n            // Restore\n            mstore(pos1, temp1)\n            mstore(pos2, temp2)\n            mstore(pos3, temp3)\n            mstore(pos4, temp4)\n            mstore(pos5, temp5)\n        }\n        return result;\n    }\n}\n",
-		"@0x/contracts-utils/contracts/src/LibEIP712.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\nlibrary LibEIP712 {\n\n    // Hash of the EIP712 Domain Separator Schema\n    // keccak256(abi.encodePacked(\n    //     \"EIP712Domain(\",\n    //     \"string name,\",\n    //     \"string version,\",\n    //     \"uint256 chainId,\",\n    //     \"address verifyingContract\",\n    //     \")\"\n    // ))\n    bytes32 constant internal _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;\n\n    /// @dev Calculates a EIP712 domain separator.\n    /// @param name The EIP712 domain name.\n    /// @param version The EIP712 domain version.\n    /// @param verifyingContract The EIP712 verifying contract.\n    /// @return EIP712 domain separator.\n    function hashEIP712Domain(\n        string memory name,\n        string memory version,\n        uint256 chainId,\n        address verifyingContract\n    )\n        internal\n        pure\n        returns (bytes32 result)\n    {\n        bytes32 schemaHash = _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;\n\n        // Assembly for more efficient computing:\n        // keccak256(abi.encodePacked(\n        //     _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,\n        //     keccak256(bytes(name)),\n        //     keccak256(bytes(version)),\n        //     chainId,\n        //     uint256(verifyingContract)\n        // ))\n\n        assembly {\n            // Calculate hashes of dynamic data\n            let nameHash := keccak256(add(name, 32), mload(name))\n            let versionHash := keccak256(add(version, 32), mload(version))\n\n            // Load free memory pointer\n            let memPtr := mload(64)\n\n            // Store params in memory\n            mstore(memPtr, schemaHash)\n            mstore(add(memPtr, 32), nameHash)\n            mstore(add(memPtr, 64), versionHash)\n            mstore(add(memPtr, 96), chainId)\n            mstore(add(memPtr, 128), verifyingContract)\n\n            // Compute hash\n            result := keccak256(memPtr, 160)\n        }\n        return result;\n    }\n\n    /// @dev Calculates EIP712 encoding for a hash struct with a given domain hash.\n    /// @param eip712DomainHash Hash of the domain domain separator data, computed\n    ///                         with getDomainHash().\n    /// @param hashStruct The EIP712 hash struct.\n    /// @return EIP712 hash applied to the given EIP712 Domain.\n    function hashEIP712Message(bytes32 eip712DomainHash, bytes32 hashStruct)\n        internal\n        pure\n        returns (bytes32 result)\n    {\n        // Assembly for more efficient computing:\n        // keccak256(abi.encodePacked(\n        //     EIP191_HEADER,\n        //     EIP712_DOMAIN_HASH,\n        //     hashStruct\n        // ));\n\n        assembly {\n            // Load free memory pointer\n            let memPtr := mload(64)\n\n            mstore(memPtr, 0x1901000000000000000000000000000000000000000000000000000000000000)  // EIP191 header\n            mstore(add(memPtr, 2), eip712DomainHash)                                            // EIP712 domain hash\n            mstore(add(memPtr, 34), hashStruct)                                                 // Hash of struct\n\n            // Compute hash\n            result := keccak256(memPtr, 66)\n        }\n        return result;\n    }\n}\n"
-	},
-	"sourceTreeHashHex": "0x97bf0a1df3d54f15dde82fd55fa032db7bcf5523dcbceac63deb4dc6255e76bb",
-	"compiler": {
-		"name": "solc",
-		"version": "soljson-v0.5.16+commit.9c3226ce.js",
-		"settings": {
-			"optimizer": {
-				"enabled": true,
-				"runs": 1000000,
-				"details": {
-					"yul": true,
-					"deduplicate": true,
-					"cse": true,
-					"constantOptimizer": true
-				}
-			},
-			"outputSelection": {
-				"*": {
-					"*": [
-						"abi",
-						"devdoc",
-						"evm.bytecode.object",
-						"evm.bytecode.sourceMap",
-						"evm.deployedBytecode.object",
-						"evm.deployedBytecode.sourceMap"
-					]
-				}
-			},
-			"evmVersion": "istanbul",
-			"remappings": [
-				"@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-asset-proxy",
-				"@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-erc20",
-				"@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-utils",
-				"@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-exchange-libs",
-				"@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/contracts/erc20-bridge-sampler/node_modules/@0x/contracts-exchange"
-			]
-		}
-	},
-	"chains": {}
+    "schemaVersion": "2.0.0",
+    "contractName": "IERC20BridgeSampler",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [{ "internalType": "bytes[]", "name": "callDatas", "type": "bytes[]" }],
+                "name": "batchCall",
+                "outputs": [{ "internalType": "bytes[]", "name": "callResults", "type": "bytes[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "registryAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" }
+                ],
+                "name": "getLiquidityProviderFromRegistry",
+                "outputs": [{ "internalType": "address", "name": "providerAddress", "type": "address" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
+                        ],
+                        "internalType": "struct LibOrder.Order[]",
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    { "internalType": "bytes[]", "name": "orderSignatures", "type": "bytes[]" }
+                ],
+                "name": "getOrderFillableMakerAssetAmounts",
+                "outputs": [
+                    { "internalType": "uint256[]", "name": "orderFillableMakerAssetAmounts", "type": "uint256[]" }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            { "internalType": "address", "name": "makerAddress", "type": "address" },
+                            { "internalType": "address", "name": "takerAddress", "type": "address" },
+                            { "internalType": "address", "name": "feeRecipientAddress", "type": "address" },
+                            { "internalType": "address", "name": "senderAddress", "type": "address" },
+                            { "internalType": "uint256", "name": "makerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerAssetAmount", "type": "uint256" },
+                            { "internalType": "uint256", "name": "makerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "takerFee", "type": "uint256" },
+                            { "internalType": "uint256", "name": "expirationTimeSeconds", "type": "uint256" },
+                            { "internalType": "uint256", "name": "salt", "type": "uint256" },
+                            { "internalType": "bytes", "name": "makerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "makerFeeAssetData", "type": "bytes" },
+                            { "internalType": "bytes", "name": "takerFeeAssetData", "type": "bytes" }
+                        ],
+                        "internalType": "struct LibOrder.Order[]",
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    { "internalType": "bytes[]", "name": "orderSignatures", "type": "bytes[]" }
+                ],
+                "name": "getOrderFillableTakerAssetAmounts",
+                "outputs": [
+                    { "internalType": "uint256[]", "name": "orderFillableTakerAssetAmounts", "type": "uint256[]" }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromEth2Dai",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "registryAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromLiquidityProviderRegistry",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromUniswap",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "curveAddress", "type": "address" },
+                    { "internalType": "int128", "name": "fromTokenIdx", "type": "int128" },
+                    { "internalType": "int128", "name": "toTokenIdx", "type": "int128" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromCurve",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromEth2Dai",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromKyberNetwork",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "registryAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromLiquidityProviderRegistry",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromUniswap",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {
+                "batchCall(bytes[])": {
+                    "details": "Call multiple public functions on this contract in a single transaction.",
+                    "params": { "callDatas": "ABI-encoded call data for each function call." },
+                    "return": "callResults ABI-encoded results data for each call."
+                },
+                "getLiquidityProviderFromRegistry(address,address,address)": {
+                    "details": "Returns the address of a liquidity provider for the given market      (takerToken, makerToken), from a registry of liquidity providers.      Returns address(0) if no such provider exists in the registry.",
+                    "params": {
+                        "makerToken": "Maker asset managed by liquidity provider.",
+                        "takerToken": "Taker asset managed by liquidity provider."
+                    },
+                    "return": "providerAddress Address of the liquidity provider."
+                },
+                "getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
+                    "details": "Queries the fillable maker asset amounts of native orders.",
+                    "params": {
+                        "orderSignatures": "Signatures for each respective order in `orders`.",
+                        "orders": "Native orders to query."
+                    },
+                    "return": "orderFillableMakerAssetAmounts How much maker asset can be filled         by each order in `orders`."
+                },
+                "getOrderFillableTakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
+                    "details": "Queries the fillable taker asset amounts of native orders.",
+                    "params": {
+                        "orderSignatures": "Signatures for each respective order in `orders`.",
+                        "orders": "Native orders to query."
+                    },
+                    "return": "orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in `orders`."
+                },
+                "sampleBuysFromEth2Dai(address,address,uint256[])": {
+                    "details": "Sample buy quotes from Eth2Dai/Oasis.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Maker token sell amount for each sample."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleBuysFromLiquidityProviderRegistry(address,address,address,uint256[])": {
+                    "details": "Sample buy quotes from an arbitrary on-chain liquidity provider.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "registryAddress": "Address of the liquidity provider registry contract.",
+                        "takerToken": "Address of the taker token (what to sell)."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleBuysFromUniswap(address,address,uint256[])": {
+                    "details": "Sample buy quotes from Uniswap.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "makerTokenAmounts": "Maker token sell amount for each sample.",
+                        "takerToken": "Address of the taker token (what to sell)."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleSellsFromCurve(address,int128,int128,uint256[])": {
+                    "details": "Sample sell quotes from Curve.",
+                    "params": {
+                        "curveAddress": "Address of the Curve contract.",
+                        "fromTokenIdx": "Index of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample.",
+                        "toTokenIdx": "Index of the maker token (what to buy)."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromEth2Dai(address,address,uint256[])": {
+                    "details": "Sample sell quotes from Eth2Dai/Oasis.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromKyberNetwork(address,address,uint256[])": {
+                    "details": "Sample sell quotes from Kyber.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromLiquidityProviderRegistry(address,address,address,uint256[])": {
+                    "details": "Sample sell quotes from an arbitrary on-chain liquidity provider.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "registryAddress": "Address of the liquidity provider registry contract.",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromUniswap(address,address,uint256[])": {
+                    "details": "Sample sell quotes from Uniswap.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                }
+            }
+        },
+        "evm": { "bytecode": { "object": "0x" }, "deployedBytecode": { "object": "0x" } }
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
 }
