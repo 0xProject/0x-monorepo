@@ -1,0 +1,107 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IKyberNetwork",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "fromToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "toToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "fromAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getExpectedRate",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "expectedRate",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "slippageRate",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {}
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sources": {
+        "src/IKyberNetwork.sol": {
+            "id": 7
+        }
+    },
+    "sourceCodes": {
+        "src/IKyberNetwork.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\ninterface IKyberNetwork {\n\n    function getExpectedRate(\n        address fromToken,\n        address toToken,\n        uint256 fromAmount\n    )\n        external\n        view\n        returns (uint256 expectedRate, uint256 slippageRate);\n}\n"
+    },
+    "sourceTreeHashHex": "0x08baba76ff91c68f21b5147d872b2460f475e6004bc9bb185467cc111810aad3",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul",
+            "remappings": [
+                "@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-asset-proxy",
+                "@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-erc20",
+                "@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange"
+            ]
+        }
+    },
+    "chains": {}
+}

@@ -1,0 +1,106 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ILiquidityProviderRegistry",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "takerToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "makerToken",
+                        "type": "address"
+                    }
+                ],
+                "name": "getLiquidityProviderForMarket",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "providerAddress",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {
+                "getLiquidityProviderForMarket(address,address)": {
+                    "details": "Returns the address of a liquidity provider for the given market      (takerToken, makerToken), reverting if the pool does not exist.",
+                    "params": {
+                        "makerToken": "Maker asset managed by liquidity provider.",
+                        "takerToken": "Taker asset managed by liquidity provider."
+                    },
+                    "return": "Address of the liquidity provider."
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sources": {
+        "src/ILiquidityProviderRegistry.sol": {
+            "id": 9
+        }
+    },
+    "sourceCodes": {
+        "src/ILiquidityProviderRegistry.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\ninterface ILiquidityProviderRegistry {\n\n    /// @dev Returns the address of a liquidity provider for the given market\n    ///      (takerToken, makerToken), reverting if the pool does not exist.\n    /// @param takerToken Taker asset managed by liquidity provider.\n    /// @param makerToken Maker asset managed by liquidity provider.\n    /// @return Address of the liquidity provider.\n    function getLiquidityProviderForMarket(\n        address takerToken,\n        address makerToken\n    )\n        external\n        view\n        returns (address providerAddress);\n}\n"
+    },
+    "sourceTreeHashHex": "0x580f250d5134c119fad782c3e9cd3762e3ebd9af20b9768f257c2a0544e62d88",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul",
+            "remappings": [
+                "@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-asset-proxy",
+                "@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-erc20",
+                "@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange"
+            ]
+        }
+    },
+    "chains": {}
+}

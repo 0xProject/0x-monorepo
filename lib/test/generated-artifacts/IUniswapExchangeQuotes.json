@@ -1,0 +1,155 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IUniswapExchangeQuotes",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "ethSold",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getEthToTokenInputPrice",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokensBought",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokensBought",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getEthToTokenOutputPrice",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "ethSold",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokensSold",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getTokenToEthInputPrice",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "ethBought",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "ethBought",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getTokenToEthOutputPrice",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokensSold",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {}
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sources": {
+        "src/IUniswapExchangeQuotes.sol": {
+            "id": 10
+        }
+    },
+    "sourceCodes": {
+        "src/IUniswapExchangeQuotes.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\ninterface IUniswapExchangeQuotes {\n\n    function getEthToTokenInputPrice(\n        uint256 ethSold\n    )\n        external\n        view\n        returns (uint256 tokensBought);\n\n    function getEthToTokenOutputPrice(\n        uint256 tokensBought\n    )\n        external\n        view\n        returns (uint256 ethSold);\n\n    function getTokenToEthInputPrice(\n        uint256 tokensSold\n    )\n        external\n        view\n        returns (uint256 ethBought);\n\n    function getTokenToEthOutputPrice(\n        uint256 ethBought\n    )\n        external\n        view\n        returns (uint256 tokensSold);\n}\n"
+    },
+    "sourceTreeHashHex": "0x89c874ba21d3b08fba470e9309587d600bde314a9047851393f6ecd8ef2e3865",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul",
+            "remappings": [
+                "@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-asset-proxy",
+                "@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-erc20",
+                "@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange"
+            ]
+        }
+    },
+    "chains": {}
+}

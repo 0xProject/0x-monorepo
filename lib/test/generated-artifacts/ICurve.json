@@ -1,0 +1,261 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ICurve",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "int128",
+                        "name": "i",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "int128",
+                        "name": "j",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "sellAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "minBuyAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "deadline",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "exchange_underlying",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "int128",
+                        "name": "i",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "int128",
+                        "name": "j",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "sellAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "minBuyAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "exchange_underlying",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "int128",
+                        "name": "i",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "int128",
+                        "name": "j",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "buyAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "get_dx_underlying",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "dx",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "int128",
+                        "name": "i",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "int128",
+                        "name": "j",
+                        "type": "int128"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "sellAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "get_dy_underlying",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "dy",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "int128",
+                        "name": "i",
+                        "type": "int128"
+                    }
+                ],
+                "name": "underlying_coins",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "tokenAddress",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {
+                "exchange_underlying(int128,int128,uint256,uint256)": {
+                    "details": "Sell `sellAmount` of `fromToken` token and receive `toToken` token.      This function exists on later versions of Curve (USDC/DAI/USDT)",
+                    "params": {
+                        "i": "The token index being sold.",
+                        "j": "The token index being bought.",
+                        "minBuyAmount": "The minimum buy amount of the token being bought.",
+                        "sellAmount": "The amount of token being bought."
+                    }
+                },
+                "exchange_underlying(int128,int128,uint256,uint256,uint256)": {
+                    "details": "Sell `sellAmount` of `fromToken` token and receive `toToken` token.      This function exists on early versions of Curve (USDC/DAI)",
+                    "params": {
+                        "deadline": "The time in seconds when this operation should expire.",
+                        "i": "The token index being sold.",
+                        "j": "The token index being bought.",
+                        "minBuyAmount": "The minimum buy amount of the token being bought.",
+                        "sellAmount": "The amount of token being bought."
+                    }
+                },
+                "get_dx_underlying(int128,int128,uint256)": {
+                    "details": "Get the amount of `fromToken` by buying `buyAmount` of `toToken`      This function exists on later versions of Curve (USDC/DAI/USDT)",
+                    "params": {
+                        "buyAmount": "The amount of token being bought.",
+                        "i": "The token index being sold.",
+                        "j": "The token index being bought."
+                    }
+                },
+                "get_dy_underlying(int128,int128,uint256)": {
+                    "details": "Get the amount of `toToken` by selling `sellAmount` of `fromToken`",
+                    "params": {
+                        "i": "The token index being sold.",
+                        "j": "The token index being bought.",
+                        "sellAmount": "The amount of token being bought."
+                    }
+                },
+                "underlying_coins(int128)": {
+                    "details": "Get the underlying token address from the token index",
+                    "params": {
+                        "i": "The token index."
+                    }
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sources": {
+        "src/ICurve.sol": {
+            "id": 3
+        }
+    },
+    "sourceCodes": {
+        "src/ICurve.sol": "/*\n\n  Copyright 2019 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.9;\n\n\n// solhint-disable func-name-mixedcase\ninterface ICurve {\n\n    /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.\n    ///      This function exists on early versions of Curve (USDC/DAI)\n    /// @param i The token index being sold.\n    /// @param j The token index being bought.\n    /// @param sellAmount The amount of token being bought.\n    /// @param minBuyAmount The minimum buy amount of the token being bought.\n    /// @param deadline The time in seconds when this operation should expire.\n    function exchange_underlying(\n        int128 i,\n        int128 j,\n        uint256 sellAmount,\n        uint256 minBuyAmount,\n        uint256 deadline\n    )\n        external;\n\n    /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.\n    ///      This function exists on later versions of Curve (USDC/DAI/USDT)\n    /// @param i The token index being sold.\n    /// @param j The token index being bought.\n    /// @param sellAmount The amount of token being bought.\n    /// @param minBuyAmount The minimum buy amount of the token being bought.\n    function exchange_underlying(\n        int128 i,\n        int128 j,\n        uint256 sellAmount,\n        uint256 minBuyAmount\n    )\n        external;\n\n    /// @dev Get the amount of `toToken` by selling `sellAmount` of `fromToken`\n    /// @param i The token index being sold.\n    /// @param j The token index being bought.\n    /// @param sellAmount The amount of token being bought.\n    function get_dy_underlying(\n        int128 i,\n        int128 j,\n        uint256 sellAmount\n    )\n        external\n        returns (uint256 dy);\n\n    /// @dev Get the amount of `fromToken` by buying `buyAmount` of `toToken`\n    ///      This function exists on later versions of Curve (USDC/DAI/USDT)\n    /// @param i The token index being sold.\n    /// @param j The token index being bought.\n    /// @param buyAmount The amount of token being bought.\n    function get_dx_underlying(\n        int128 i,\n        int128 j,\n        uint256 buyAmount\n    )\n        external\n        returns (uint256 dx);\n\n    /// @dev Get the underlying token address from the token index\n    /// @param i The token index.\n    function underlying_coins(\n        int128 i\n    )\n        external\n        returns (address tokenAddress);\n}\n"
+    },
+    "sourceTreeHashHex": "0x833443720407eaf0008643ac04a10f0880da798a76158456c0b8e9c1bac2eab1",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul",
+            "remappings": [
+                "@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-asset-proxy",
+                "@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-erc20",
+                "@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange"
+            ]
+        }
+    },
+    "chains": {}
+}

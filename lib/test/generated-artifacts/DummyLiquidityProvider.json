@@ -1,0 +1,154 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "DummyLiquidityProvider",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "buyAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getBuyQuote",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "takerTokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "sellAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getSellQuote",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "makerTokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {
+                "getBuyQuote(address,address,uint256)": {
+                    "details": "Quotes the amount of `takerToken` that would need to be sold in      order to obtain `buyAmount` of `makerToken`.",
+                    "params": {
+                        "buyAmount": "Amount of `makerToken` to buy."
+                    },
+                    "return": "takerTokenAmount Amount of `takerToken` that would need to be sold."
+                },
+                "getSellQuote(address,address,uint256)": {
+                    "details": "Quotes the amount of `makerToken` that would be obtained by      selling `sellAmount` of `takerToken`.",
+                    "params": {
+                        "sellAmount": "Amount of `takerToken` to sell."
+                    },
+                    "return": "makerTokenAmount Amount of `makerToken` that would be obtained."
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b50610159806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063343fbcdd1461003b57806345060eb014610064575b600080fd5b61004e6100493660046100a8565b610077565b60405161005b91906100e8565b60405180910390f35b61004e6100723660046100a8565b61009f565b7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0192915050565b60010192915050565b6000806000606084860312156100bc578283fd5b83356100c7816100f1565b925060208401356100d7816100f1565b929592945050506040919091013590565b90815260200190565b73ffffffffffffffffffffffffffffffffffffffff8116811461011357600080fd5b5056fea365627a7a723158200de855f40d163921ebd6243c0d3208ea89874522417abd31e2d58d53f788d44f6c6578706572696d656e74616cf564736f6c63430005100040",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x159 DUP1 PUSH2 0x20 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x36 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x343FBCDD EQ PUSH2 0x3B JUMPI DUP1 PUSH4 0x45060EB0 EQ PUSH2 0x64 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x4E PUSH2 0x49 CALLDATASIZE PUSH1 0x4 PUSH2 0xA8 JUMP JUMPDEST PUSH2 0x77 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x5B SWAP2 SWAP1 PUSH2 0xE8 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x4E PUSH2 0x72 CALLDATASIZE PUSH1 0x4 PUSH2 0xA8 JUMP JUMPDEST PUSH2 0x9F JUMP JUMPDEST PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF ADD SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x1 ADD SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 PUSH1 0x60 DUP5 DUP7 SUB SLT ISZERO PUSH2 0xBC JUMPI DUP3 DUP4 REVERT JUMPDEST DUP4 CALLDATALOAD PUSH2 0xC7 DUP2 PUSH2 0xF1 JUMP JUMPDEST SWAP3 POP PUSH1 0x20 DUP5 ADD CALLDATALOAD PUSH2 0xD7 DUP2 PUSH2 0xF1 JUMP JUMPDEST SWAP3 SWAP6 SWAP3 SWAP5 POP POP POP PUSH1 0x40 SWAP2 SWAP1 SWAP2 ADD CALLDATALOAD SWAP1 JUMP JUMPDEST SWAP1 DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND DUP2 EQ PUSH2 0x113 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP JUMP INVALID LOG3 PUSH6 0x627A7A723158 KECCAK256 0xD 0xE8 SSTORE DELEGATECALL 0xD AND CODECOPY 0x21 0xEB 0xD6 0x24 EXTCODECOPY 0xD ORIGIN ADDMOD 0xEA DUP10 DUP8 GASLIMIT 0x22 COINBASE PUSH27 0xBD31E2D58D53F788D44F6C6578706572696D656E74616CF564736F PUSH13 0x63430005100040000000000000 ",
+                "sourceMap": "60:1180:0:-;;;98:84;8:9:-1;5:2;;;30:1;27;20:12;5:2;98:84:0;60:1180;;;;;;"
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063343fbcdd1461003b57806345060eb014610064575b600080fd5b61004e6100493660046100a8565b610077565b60405161005b91906100e8565b60405180910390f35b61004e6100723660046100a8565b61009f565b7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0192915050565b60010192915050565b6000806000606084860312156100bc578283fd5b83356100c7816100f1565b925060208401356100d7816100f1565b929592945050506040919091013590565b90815260200190565b73ffffffffffffffffffffffffffffffffffffffff8116811461011357600080fd5b5056fea365627a7a723158200de855f40d163921ebd6243c0d3208ea89874522417abd31e2d58d53f788d44f6c6578706572696d656e74616cf564736f6c63430005100040",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x36 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x343FBCDD EQ PUSH2 0x3B JUMPI DUP1 PUSH4 0x45060EB0 EQ PUSH2 0x64 JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x4E PUSH2 0x49 CALLDATASIZE PUSH1 0x4 PUSH2 0xA8 JUMP JUMPDEST PUSH2 0x77 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x5B SWAP2 SWAP1 PUSH2 0xE8 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x4E PUSH2 0x72 CALLDATASIZE PUSH1 0x4 PUSH2 0xA8 JUMP JUMPDEST PUSH2 0x9F JUMP JUMPDEST PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF ADD SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x1 ADD SWAP3 SWAP2 POP POP JUMP JUMPDEST PUSH1 0x0 DUP1 PUSH1 0x0 PUSH1 0x60 DUP5 DUP7 SUB SLT ISZERO PUSH2 0xBC JUMPI DUP3 DUP4 REVERT JUMPDEST DUP4 CALLDATALOAD PUSH2 0xC7 DUP2 PUSH2 0xF1 JUMP JUMPDEST SWAP3 POP PUSH1 0x20 DUP5 ADD CALLDATALOAD PUSH2 0xD7 DUP2 PUSH2 0xF1 JUMP JUMPDEST SWAP3 SWAP6 SWAP3 SWAP5 POP POP POP PUSH1 0x40 SWAP2 SWAP1 SWAP2 ADD CALLDATALOAD SWAP1 JUMP JUMPDEST SWAP1 DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP JUMPDEST PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND DUP2 EQ PUSH2 0x113 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP JUMP INVALID LOG3 PUSH6 0x627A7A723158 KECCAK256 0xD 0xE8 SSTORE DELEGATECALL 0xD AND CODECOPY 0x21 0xEB 0xD6 0x24 EXTCODECOPY 0xD ORIGIN ADDMOD 0xEA DUP10 DUP8 GASLIMIT 0x22 COINBASE PUSH27 0xBD31E2D58D53F788D44F6C6578706572696D656E74616CF564736F PUSH13 0x63430005100040000000000000 ",
+                "sourceMap": "60:1180:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;60:1180:0;;;;;;;;;;;;;;;;;;;;;;;;450:255;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;986:252;;;;;;;;;:::i;450:255::-;680:14;;;450:255;-1:-1:-1;;450:255:0:o;986:252::-;1226:1;1214:13;;986:252;-1:-1:-1;;986:252:0:o;279:491:-1:-;;;;417:2;405:9;396:7;392:23;388:32;385:2;;;-1:-1;;423:12;385:2;85:6;72:20;97:33;124:5;97:33;;;475:63;-1:-1;575:2;614:22;;72:20;97:33;72:20;97:33;;;379:391;;583:63;;-1:-1;;;683:2;722:22;;;;209:20;;379:391;897:213;848:37;;;1015:2;1000:18;;986:124;1422:117;1288:42;1509:5;1277:54;1484:5;1481:35;1471:2;;1530:1;;1520:12;1471:2;1465:74;"
+            }
+        }
+    },
+    "sources": {
+        "src/DummyLiquidityProvider.sol": {
+            "id": 0
+        }
+    },
+    "sourceCodes": {
+        "src/DummyLiquidityProvider.sol": "pragma solidity ^0.5.9;\npragma experimental ABIEncoderV2;\n\n\ncontract DummyLiquidityProvider\n{\n    constructor()\n        public\n    // solhint-disable-next-line no-empty-blocks\n    {}\n\n    /// @dev Quotes the amount of `makerToken` that would be obtained by\n    ///      selling `sellAmount` of `takerToken`.\n    /// @param sellAmount Amount of `takerToken` to sell.\n    /// @return makerTokenAmount Amount of `makerToken` that would be obtained.\n    function getSellQuote(\n        address, /* takerToken */\n        address, /* makerToken */\n        uint256 sellAmount\n    )\n        external\n        view\n        returns (uint256 makerTokenAmount) {\n            makerTokenAmount = sellAmount - 1;\n        }\n\n    /// @dev Quotes the amount of `takerToken` that would need to be sold in\n    ///      order to obtain `buyAmount` of `makerToken`.\n    /// @param buyAmount Amount of `makerToken` to buy.\n    /// @return takerTokenAmount Amount of `takerToken` that would need to be sold.\n    function getBuyQuote(\n        address, /* takerToken */\n        address, /* makerToken */\n        uint256 buyAmount\n    )\n        external\n        view\n        returns (uint256 takerTokenAmount) {\n            takerTokenAmount = buyAmount + 1;\n        }\n}"
+    },
+    "sourceTreeHashHex": "0x33d4135dfafd8b8c1a52ede0522f4387d9451cfa8b15b11751bbebf3425c726f",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.16+commit.9c3226ce.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul",
+            "remappings": [
+                "@0x/contracts-asset-proxy=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-asset-proxy",
+                "@0x/contracts-erc20=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-erc20",
+                "@0x/contracts-utils=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-exchange-libs=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-exchange=/Users/danielpyrathon/Desktop/Projects/0x-monorepo/node_modules/@0x/contracts-exchange"
+            ]
+        }
+    },
+    "chains": {}
+}
