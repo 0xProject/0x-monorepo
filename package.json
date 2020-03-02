@@ -1,0 +1,33 @@
+{
+    "name": "@0x/contract-addresses",
+    "version": "4.8.0-liquidity-provider",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Used to get known addresses of deployed 0x contracts",
+    "main": "lib/src/index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "build": "yarn tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-addresses/README.md",
+    "devDependencies": {
+        "shx": "^0.2.2",
+        "typescript": "3.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
