@@ -21,11 +21,11 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
-    public readonly web3Wrapper: Web3Wrapper;
     public readonly chainId: number;
 
     private readonly _contractAddresses: ContractAddresses;
     private readonly _forwarder: ForwarderContract;
+    private readonly _web3Wrapper: Web3Wrapper;
 
     constructor(
         supportedProvider: SupportedProvider,
@@ -36,7 +36,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         assert.isNumber('chainId', chainId);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
-        this.web3Wrapper = new Web3Wrapper(this.provider, undefined, jsonRpcIdNameSpace);
+        this._web3Wrapper = new Web3Wrapper(this.provider, undefined, jsonRpcIdNameSpace);
         this.chainId = chainId;
         this._contractAddresses = contractAddresses;
         this._forwarder = new ForwarderContract(
@@ -129,7 +129,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         const signatures = orders.map(o => o.signature);
 
         // get taker address
-        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.web3Wrapper, opts);
+        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this._web3Wrapper, opts);
         // if no ethAmount is provided, default to the worst totalTakerAssetAmount
         const ethAmountWithFees =
             providedEthAmount ||

@@ -22,12 +22,12 @@ import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
 export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
-    public readonly web3Wrapper: Web3Wrapper;
     public readonly chainId: number;
 
     private readonly _exchangeConsumer: ExchangeSwapQuoteConsumer;
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
     private readonly _contractAddresses: ContractAddresses;
+    private readonly _web3Wrapper: Web3Wrapper;
 
     public static getSwapQuoteConsumer(
         supportedProvider: SupportedProvider,
@@ -42,7 +42,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
 
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
-        this.web3Wrapper = new Web3Wrapper(provider, undefined, jsonRpcIdNameSpace);
+        this._web3Wrapper = new Web3Wrapper(provider, undefined, jsonRpcIdNameSpace);
         this.chainId = chainId;
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, this._contractAddresses, options);
@@ -89,7 +89,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase {
         return swapQuoteConsumerUtils.getExtensionContractTypeForSwapQuoteAsync(
             quote,
             this._contractAddresses,
-            this.web3Wrapper,
+            this._web3Wrapper,
             opts,
         );
     }

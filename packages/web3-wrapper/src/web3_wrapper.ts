@@ -685,7 +685,8 @@ export class Web3Wrapper {
     public async sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._provider.sendAsync.bind(this._provider);
         const payloadWithDefaults = {
-            id: `${!!this._jsonRpcRequestNameSpace ? `${this._jsonRpcRequestNameSpace}.` : ''}${this._jsonRpcRequestId++}`,
+            id: `${!!this._jsonRpcRequestNameSpace ? `${this._jsonRpcRequestNameSpace}.` : ''}${this
+                ._jsonRpcRequestId++}`,
             params: [],
             jsonrpc: '2.0',
             ...payload,
