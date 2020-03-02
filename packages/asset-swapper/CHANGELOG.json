@@ -9,6 +9,14 @@
             {
                 "note": "Add destroy for gas heartbeat",
                 "pr": 2492
+            },
+            {
+                "note": "Added `BUSD` Curve",
+                "pr": 2506
+            },
+            {
+                "note": "Updated `Compound` Curve address",
+                "pr": 2506
             }
         ]
     },
