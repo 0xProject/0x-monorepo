@@ -1,5 +1,14 @@
 [
     {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add jsonRpcIdNameSpace to originate JSON RPC requests for debugging purposes",
+                "pr": 2508
+            }
+        ]
+    },
+    {
         "timestamp": 1582623685,
         "version": "7.0.7",
         "changes": [

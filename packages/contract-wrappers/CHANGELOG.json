@@ -1,5 +1,14 @@
 [
     {
+        "version": "13.7.0",
+        "changes": [
+            {
+                "note": "Add support for jsonRpcIdNameSpace",
+                "pr": 2508
+            }
+        ]
+    },
+    {
         "timestamp": 1582837861,
         "version": "13.6.2",
         "changes": [

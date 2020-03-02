@@ -9,6 +9,10 @@
             {
                 "note": "Add destroy for gas heartbeat",
                 "pr": 2492
+            },
+            {
+                "note": "Add support for jsonRpcIdNameSpace",
+                "pr": 2508
             }
         ]
     },
