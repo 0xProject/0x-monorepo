@@ -1,3 +1,4 @@
+import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
 import { SignedOrderWithFillableAmounts } from '../../types';
@@ -175,4 +176,12 @@ export interface GetMarketOrdersOpts {
      * Fees for each liquidity source, expressed in gas.
      */
     fees: { [source: string]: BigNumber };
+}
+
+/**
+ * A composable operation the be run in `DexOrderSampler.executeAsync()`.
+ */
+export interface BatchedOperation<TResult> {
+    encodeCall(contract: IERC20BridgeSamplerContract): string;
+    handleCallResultsAsync(contract: IERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
 }

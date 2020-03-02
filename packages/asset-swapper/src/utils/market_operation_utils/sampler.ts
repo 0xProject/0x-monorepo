@@ -2,14 +2,7 @@ import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
 import { samplerOperations } from './sampler_operations';
-
-/**
- * A composable operation the be run in `DexOrderSampler.executeAsync()`.
- */
-export interface BatchedOperation<TResult> {
-    encodeCall(contract: IERC20BridgeSamplerContract): string;
-    handleCallResultsAsync(contract: IERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
-}
+import { BatchedOperation } from './types';
 
 /**
  * Generate sample amounts up to `maxFillAmount`.
