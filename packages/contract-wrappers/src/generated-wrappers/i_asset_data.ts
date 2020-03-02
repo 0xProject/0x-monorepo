@@ -709,6 +709,7 @@ export class IAssetDataContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = IAssetDataContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'IAssetData',
@@ -718,6 +719,7 @@ export class IAssetDataContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         IAssetDataContract.ABI().forEach((item, index) => {

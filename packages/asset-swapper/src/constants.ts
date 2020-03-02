@@ -41,6 +41,7 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     ...{
         chainId: MAINNET_CHAIN_ID,
         orderRefreshIntervalMs: 10000, // 10 seconds
+        jsonRpcIdNameSpace: '0x-asset-swapper',
     },
     ...DEFAULT_ORDER_PRUNER_OPTS,
     samplerGasLimit: 59e6,

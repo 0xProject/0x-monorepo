@@ -89,6 +89,7 @@ export interface SwapQuoteConsumerBase {
 export interface SwapQuoteConsumerOpts {
     chainId: number;
     contractAddresses?: ContractAddresses;
+    jsonRpcIdNameSpace?: string;
 }
 
 /**
@@ -212,6 +213,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     expiryBufferMs: number;
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
+    jsonRpcIdNameSpace?: string;
 }
 
 /**

@@ -967,6 +967,7 @@ export class CoordinatorContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = CoordinatorContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'Coordinator',
@@ -976,6 +977,7 @@ export class CoordinatorContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         CoordinatorContract.ABI().forEach((item, index) => {

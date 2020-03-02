@@ -358,6 +358,7 @@ export class BaseContract {
         callAndTxnDefaults?: Partial<CallData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode?: string,
+        jsonRpcIdNameSpace?: string,
     ) {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
@@ -383,7 +384,7 @@ export class BaseContract {
             ]);
         }
         this.contractName = contractName;
-        this._web3Wrapper = new Web3Wrapper(provider, callAndTxnDefaults);
+        this._web3Wrapper = new Web3Wrapper(provider, callAndTxnDefaults, jsonRpcIdNameSpace);
         this.abi = abi;
         this.address = address;
         const methodAbis = this.abi.filter(

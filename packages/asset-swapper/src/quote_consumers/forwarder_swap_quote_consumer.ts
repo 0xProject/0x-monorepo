@@ -2,7 +2,7 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { ForwarderContract } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
 import { providerUtils } from '@0x/utils';
-import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
+import { SupportedProvider, Web3Wrapper, ZeroExProvider } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
@@ -21,6 +21,7 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
+    public readonly web3Wrapper: Web3Wrapper;
     public readonly chainId: number;
 
     private readonly _contractAddresses: ContractAddresses;
@@ -31,13 +32,21 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         contractAddresses: ContractAddresses,
         options: Partial<SwapQuoteConsumerOpts> = {},
     ) {
-        const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        const { chainId, jsonRpcIdNameSpace } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         assert.isNumber('chainId', chainId);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
+        this.web3Wrapper = new Web3Wrapper(this.provider, undefined, jsonRpcIdNameSpace);
         this.chainId = chainId;
         this._contractAddresses = contractAddresses;
-        this._forwarder = new ForwarderContract(contractAddresses.forwarder, supportedProvider);
+        this._forwarder = new ForwarderContract(
+            contractAddresses.forwarder,
+            supportedProvider,
+            undefined,
+            undefined,
+            undefined,
+            jsonRpcIdNameSpace,
+        );
     }
 
     /**
@@ -120,7 +129,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         const signatures = orders.map(o => o.signature);
 
         // get taker address
-        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
+        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.web3Wrapper, opts);
         // if no ethAmount is provided, default to the worst totalTakerAssetAmount
         const ethAmountWithFees =
             providedEthAmount ||

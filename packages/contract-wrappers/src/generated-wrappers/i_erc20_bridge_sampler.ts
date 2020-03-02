@@ -945,6 +945,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = IERC20BridgeSamplerContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'IERC20BridgeSampler',
@@ -954,6 +955,7 @@ export class IERC20BridgeSamplerContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         IERC20BridgeSamplerContract.ABI().forEach((item, index) => {

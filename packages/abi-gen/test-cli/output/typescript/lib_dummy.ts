@@ -233,6 +233,7 @@ export class LibDummyContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = LibDummyContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'LibDummy',
@@ -242,6 +243,7 @@ export class LibDummyContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         LibDummyContract.ABI().forEach((item, index) => {

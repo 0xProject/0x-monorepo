@@ -159,13 +159,27 @@ export class SwapQuoter {
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
-        this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
+        this._devUtilsContract = new DevUtilsContract(
+            this._contractAddresses.devUtils,
+            provider,
+            undefined,
+            undefined,
+            undefined,
+            options.jsonRpcIdNameSpace,
+        );
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         const sampler = new DexOrderSampler(
-            new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
-                gas: samplerGasLimit,
-            }),
+            new IERC20BridgeSamplerContract(
+                this._contractAddresses.erc20BridgeSampler,
+                this.provider,
+                {
+                    gas: samplerGasLimit,
+                },
+                undefined,
+                undefined,
+                options.jsonRpcIdNameSpace,
+            ),
         );
         this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
             chainId,

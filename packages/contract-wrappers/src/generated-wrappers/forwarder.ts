@@ -1329,6 +1329,7 @@ export class ForwarderContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = ForwarderContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'Forwarder',
@@ -1338,6 +1339,7 @@ export class ForwarderContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<ForwarderEventArgs, ForwarderEvents>(

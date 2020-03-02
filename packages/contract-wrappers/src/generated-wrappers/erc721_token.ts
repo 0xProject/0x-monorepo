@@ -1000,6 +1000,7 @@ export class ERC721TokenContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = ERC721TokenContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'ERC721Token',
@@ -1009,6 +1010,7 @@ export class ERC721TokenContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>(

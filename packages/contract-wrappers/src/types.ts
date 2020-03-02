@@ -31,6 +31,7 @@ export interface ContractWrappersConfig {
     gasPrice?: BigNumber;
     contractAddresses?: ContractAddresses;
     blockPollingIntervalMs?: number;
+    jsonRpcIdNameSpace?: string;
 }
 
 export interface OrderInfo {

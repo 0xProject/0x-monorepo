@@ -989,6 +989,7 @@ export class WETH9Contract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = WETH9Contract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'WETH9',
@@ -998,6 +999,7 @@ export class WETH9Contract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<WETH9EventArgs, WETH9Events>(

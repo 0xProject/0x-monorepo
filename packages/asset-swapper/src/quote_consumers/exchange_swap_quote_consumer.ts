@@ -1,7 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ExchangeContract } from '@0x/contract-wrappers';
 import { providerUtils } from '@0x/utils';
-import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
+import { SupportedProvider, Web3Wrapper, ZeroExProvider } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
@@ -19,6 +19,7 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
 export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
+    public readonly web3Wrapper: Web3Wrapper;
     public readonly chainId: number;
 
     private readonly _exchangeContract: ExchangeContract;
@@ -28,12 +29,20 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
         contractAddresses: ContractAddresses,
         options: Partial<SwapQuoteConsumerOpts> = {},
     ) {
-        const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        const { chainId, jsonRpcIdNameSpace } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         assert.isNumber('chainId', chainId);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
+        this.web3Wrapper = new Web3Wrapper(this.provider, undefined, jsonRpcIdNameSpace);
         this.chainId = chainId;
-        this._exchangeContract = new ExchangeContract(contractAddresses.exchange, supportedProvider);
+        this._exchangeContract = new ExchangeContract(
+            contractAddresses.exchange,
+            supportedProvider,
+            undefined,
+            undefined,
+            undefined,
+            jsonRpcIdNameSpace,
+        );
     }
 
     public async getCalldataOrThrowAsync(
@@ -82,7 +91,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
         const { orders, gasPrice } = quote;
         const signatures = orders.map(o => o.signature);
 
-        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
+        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.web3Wrapper, opts);
         const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
         let txHash: string;
         if (quote.type === MarketOperation.Buy) {

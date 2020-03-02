@@ -56,6 +56,7 @@ export class Web3Wrapper {
     // Raw provider passed in. Do not use. Only here to return the unmodified provider passed in via `getProvider()`
     private readonly _supportedProvider: SupportedProvider;
     private readonly _callAndTxnDefaults: Partial<CallData> | undefined;
+    private _jsonRpcRequestNameSpace: string;
     private _jsonRpcRequestId: number;
     /**
      * Check if an address is a valid Ethereum address
@@ -149,12 +150,17 @@ export class Web3Wrapper {
      * @param   callAndTxnDefaults  Override Call and Txn Data defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
-    constructor(supportedProvider: SupportedProvider, callAndTxnDefaults: Partial<CallData> = {}) {
+    constructor(
+        supportedProvider: SupportedProvider,
+        callAndTxnDefaults: Partial<CallData> = {},
+        jsonRpcIdNameSpace: string = '',
+    ) {
         this.abiDecoder = new AbiDecoder([]);
         this._supportedProvider = supportedProvider;
         this._provider = providerUtils.standardizeOrThrow(supportedProvider);
         this._callAndTxnDefaults = callAndTxnDefaults;
         this._jsonRpcRequestId = 1;
+        this._jsonRpcRequestNameSpace = jsonRpcIdNameSpace;
     }
     /**
      * Get the contract defaults set to the Web3Wrapper instance
@@ -679,7 +685,7 @@ export class Web3Wrapper {
     public async sendRawPayloadAsync<A>(payload: Partial<JSONRPCRequestPayload>): Promise<A> {
         const sendAsync = this._provider.sendAsync.bind(this._provider);
         const payloadWithDefaults = {
-            id: this._jsonRpcRequestId++,
+            id: `${this._jsonRpcRequestNameSpace}.${this._jsonRpcRequestId++}`,
             params: [],
             jsonrpc: '2.0',
             ...payload,

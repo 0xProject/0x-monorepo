@@ -1686,6 +1686,7 @@ export class StakingProxyContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = StakingProxyContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'StakingProxy',
@@ -1695,6 +1696,7 @@ export class StakingProxyContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<StakingProxyEventArgs, StakingProxyEvents>(

@@ -3,8 +3,7 @@ import { WETH9Contract } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
-import { Provider } from 'ethereum-types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
@@ -21,10 +20,10 @@ import { assert } from './assert';
 
 export const swapQuoteConsumerUtils = {
     async getTakerAddressOrThrowAsync(
-        provider: SupportedProvider,
+        web3Wrapper: Web3Wrapper,
         opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
-        const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
+        const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(web3Wrapper, opts);
         if (takerAddress === undefined) {
             throw new Error(SwapQuoteConsumerError.NoAddressAvailable);
         } else {
@@ -32,13 +31,12 @@ export const swapQuoteConsumerUtils = {
         }
     },
     async getTakerAddressAsync(
-        provider: SupportedProvider,
+        web3Wrapper: Web3Wrapper,
         opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string | undefined> {
         if (opts.takerAddress !== undefined) {
             return opts.takerAddress;
         } else {
-            const web3Wrapper = new Web3Wrapper(provider);
             const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
             const firstAvailableAddress = _.head(availableAddresses);
             if (firstAvailableAddress !== undefined) {
@@ -49,12 +47,11 @@ export const swapQuoteConsumerUtils = {
         }
     },
     async getEthAndWethBalanceAsync(
-        provider: SupportedProvider,
+        web3Wrapper: Web3Wrapper,
         contractAddresses: ContractAddresses,
         takerAddress: string,
     ): Promise<[BigNumber, BigNumber]> {
-        const weth = new WETH9Contract(contractAddresses.etherToken, provider);
-        const web3Wrapper = new Web3Wrapper(provider);
+        const weth = new WETH9Contract(contractAddresses.etherToken, web3Wrapper.getProvider());
         const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
         const wethBalance = await weth.balanceOf(takerAddress).callAsync();
         return [ethBalance, wethBalance];
@@ -71,7 +68,7 @@ export const swapQuoteConsumerUtils = {
     async getExtensionContractTypeForSwapQuoteAsync(
         quote: SwapQuote,
         contractAddresses: ContractAddresses,
-        provider: Provider,
+        web3Wrapper: Web3Wrapper,
         opts: Partial<GetExtensionContractTypeOpts>,
     ): Promise<ExtensionContractType> {
         const wethAssetData = assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken);
@@ -82,10 +79,14 @@ export const swapQuoteConsumerUtils = {
             const ethAmount =
                 opts.ethAmount ||
                 quote.worstCaseQuoteInfo.takerAssetAmount.plus(quote.worstCaseQuoteInfo.protocolFeeInWeiAmount);
-            const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
+            const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(web3Wrapper, opts);
             const takerEthAndWethBalance =
                 takerAddress !== undefined
-                    ? await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(provider, contractAddresses, takerAddress)
+                    ? await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(
+                          web3Wrapper,
+                          contractAddresses,
+                          takerAddress,
+                      )
                     : [constants.ZERO_AMOUNT, constants.ZERO_AMOUNT];
             // TODO(david): when considering if there is enough Eth balance, should account for gas costs.
             const isEnoughEthAndWethBalance = _.map(takerEthAndWethBalance, (balance: BigNumber) =>

@@ -63,7 +63,7 @@ export class ContractWrappers {
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
+        this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults, config.jsonRpcIdNameSpace);
         const contractsArray = [
             CoordinatorContract,
             DevUtilsContract,

@@ -6012,6 +6012,7 @@ export class ExchangeContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = ExchangeContract.deployedBytecode,
+        jsonRpcIdNameSpace?: string,
     ) {
         super(
             'Exchange',
@@ -6021,6 +6022,7 @@ export class ExchangeContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
             deployedBytecode,
+            jsonRpcIdNameSpace,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<ExchangeEventArgs, ExchangeEvents>(
