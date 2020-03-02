@@ -1,8 +1,7 @@
-import { constants } from 'zlib';
-
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { BatchedOperation, DexSample } from './types';
+import { constants } from '../../constants';
 
 /**
  * Composable operations that can be batched in a single transaction,
