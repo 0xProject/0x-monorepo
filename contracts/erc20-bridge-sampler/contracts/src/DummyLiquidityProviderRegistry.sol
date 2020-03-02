@@ -8,6 +8,7 @@ contract DummyLiquidityProviderRegistry
 
     constructor()
         public
+    // solhint-disable-next-line no-empty-blocks
     {}
 
     mapping (address => mapping (address => address)) internal _gAddressBook;
