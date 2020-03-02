@@ -98,7 +98,9 @@ export class CreateOrderUtils {
                 return this._contractAddress.curveBridge;
             case ERC20BridgeSource.LiquidityProvider:
                 if (liquidityPoolAddress === undefined) {
-                    throw new Error('Cannot create a LiquidityProvider order without a LiquidityProvider pool address.');
+                    throw new Error(
+                        'Cannot create a LiquidityProvider order without a LiquidityProvider pool address.',
+                    );
                 }
                 assert.isETHAddressHex('liquidityPoolAddress', liquidityPoolAddress);
                 return liquidityPoolAddress;

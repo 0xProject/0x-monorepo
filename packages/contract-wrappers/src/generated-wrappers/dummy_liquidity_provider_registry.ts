@@ -33,8 +33,6 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-
-
 /* istanbul ignore next */
 // tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
@@ -43,14 +41,14 @@ export class DummyLiquidityProviderRegistryContract extends BaseContract {
     /**
      * @ignore
      */
-public static deployedBytecode: string | undefined;
-public static contractName = 'DummyLiquidityProviderRegistry';
+    public static deployedBytecode: string | undefined;
+    public static contractName = 'DummyLiquidityProviderRegistry';
     private readonly _methodABIIndex: { [name: string]: number } = {};
-public static async deployFrom0xArtifactAsync(
+    public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<DummyLiquidityProviderRegistryContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -69,7 +67,13 @@ public static async deployFrom0xArtifactAsync(
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return DummyLiquidityProviderRegistryContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
+        return DummyLiquidityProviderRegistryContract.deployAsync(
+            bytecode,
+            abi,
+            provider,
+            txDefaults,
+            logDecodeDependenciesAbiOnly,
+        );
     }
 
     public static async deployWithLibrariesFrom0xArtifactAsync(
@@ -77,7 +81,7 @@ public static async deployFrom0xArtifactAsync(
         libraryArtifacts: { [libraryName: string]: ContractArtifact },
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<DummyLiquidityProviderRegistryContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -99,13 +103,16 @@ public static async deployFrom0xArtifactAsync(
             artifact,
             libraryArtifacts,
             new Web3Wrapper(provider),
-            txDefaults
+            txDefaults,
         );
-        const bytecode = linkLibrariesInBytecode(
-            artifact,
-            libraryAddresses,
+        const bytecode = linkLibrariesInBytecode(artifact, libraryAddresses);
+        return DummyLiquidityProviderRegistryContract.deployAsync(
+            bytecode,
+            abi,
+            provider,
+            txDefaults,
+            logDecodeDependenciesAbiOnly,
         );
-        return DummyLiquidityProviderRegistryContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
     }
 
     public static async deployAsync(
@@ -123,11 +130,7 @@ public static async deployFrom0xArtifactAsync(
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
@@ -143,7 +146,12 @@ public static async deployFrom0xArtifactAsync(
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DummyLiquidityProviderRegistry successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new DummyLiquidityProviderRegistryContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        const contractInstance = new DummyLiquidityProviderRegistryContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -153,16 +161,14 @@ public static async deployFrom0xArtifactAsync(
      */
     public static ABI(): ContractAbi {
         const abi = [
-            { 
-                inputs: [
-                ],
-                outputs: [
-                ],
+            {
+                inputs: [],
+                outputs: [],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'constructor',
             },
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
@@ -185,7 +191,7 @@ public static async deployFrom0xArtifactAsync(
                 stateMutability: 'view',
                 type: 'function',
             },
-            { 
+            {
                 constant: false,
                 inputs: [
                     {
@@ -202,8 +208,7 @@ public static async deployFrom0xArtifactAsync(
                     },
                 ],
                 name: 'setLiquidityProviderForMarket',
-                outputs: [
-                ],
+                outputs: [],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
@@ -238,10 +243,7 @@ public static async deployFrom0xArtifactAsync(
                         libraryAddresses,
                     );
                     // Deploy this library.
-                    const linkedLibraryBytecode = linkLibrariesInBytecode(
-                        libraryArtifact,
-                        libraryAddresses,
-                    );
+                    const linkedLibraryBytecode = linkLibrariesInBytecode(libraryArtifact, libraryAddresses);
                     const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
                         {
                             data: linkedLibraryBytecode,
@@ -292,56 +294,50 @@ public static async deployFrom0xArtifactAsync(
 
     /**
      * Returns the address of pool for a market given market (xAsset, yAsset), or reverts if pool does not exist.
-      * @param takerToken First asset managed by pool.
-      * @param makerToken Second asset managed by pool.
-    * @returns Address of pool.
+     * @param takerToken First asset managed by pool.
+     * @param makerToken Second asset managed by pool.
+     * @returns Address of pool.
      */
-    public getLiquidityProviderForMarket(
-            takerToken: string,
-            makerToken: string,
-    ): ContractFunctionObj<string
-> {
-        const self = this as any as DummyLiquidityProviderRegistryContract;
-            assert.isString('takerToken', takerToken);
-            assert.isString('makerToken', makerToken);
+    public getLiquidityProviderForMarket(takerToken: string, makerToken: string): ContractFunctionObj<string> {
+        const self = (this as any) as DummyLiquidityProviderRegistryContract;
+        assert.isString('takerToken', takerToken);
+        assert.isString('makerToken', makerToken);
         const functionSignature = 'getLiquidityProviderForMarket(address,address)';
 
         return {
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<string
-            > {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<string
-            >(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [takerToken.toLowerCase(),
-            makerToken.toLowerCase()
-            ]);
+                return self._strictEncodeArguments(functionSignature, [
+                    takerToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                ]);
             },
-        }
-    };
+        };
+    }
     /**
      * Sets address of pool for a market given market (xAsset, yAsset).
-      * @param takerToken First asset managed by pool.
-      * @param makerToken Second asset managed by pool.
-      * @param poolAddress Address of pool.
+     * @param takerToken First asset managed by pool.
+     * @param makerToken Second asset managed by pool.
+     * @param poolAddress Address of pool.
      */
     public setLiquidityProviderForMarket(
-            takerToken: string,
-            makerToken: string,
-            poolAddress: string,
-    ): ContractTxFunctionObj<void
-> {
-        const self = this as any as DummyLiquidityProviderRegistryContract;
-            assert.isString('takerToken', takerToken);
-            assert.isString('makerToken', makerToken);
-            assert.isString('poolAddress', poolAddress);
+        takerToken: string,
+        makerToken: string,
+        poolAddress: string,
+    ): ContractTxFunctionObj<void> {
+        const self = (this as any) as DummyLiquidityProviderRegistryContract;
+        assert.isString('takerToken', takerToken);
+        assert.isString('makerToken', makerToken);
+        assert.isString('poolAddress', poolAddress);
         const functionSignature = 'setLiquidityProviderForMarket(address,address,address)';
 
         return {
@@ -364,36 +360,32 @@ public static async deployFrom0xArtifactAsync(
             ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
                 return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
             },
-            async estimateGasAsync(
-                txData?: Partial<TxData> | undefined,
-            ): Promise<number> {
-                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
-                    { ...txData, data: this.getABIEncodedTransactionData() }
-                );
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<void
-            > {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<void
-            >(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [takerToken.toLowerCase(),
-            makerToken.toLowerCase(),
-            poolAddress.toLowerCase()
-            ]);
+                return self._strictEncodeArguments(functionSignature, [
+                    takerToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                    poolAddress.toLowerCase(),
+                ]);
             },
-        }
-    };
-
-
+        };
+    }
 
     constructor(
         address: string,
@@ -402,9 +394,17 @@ public static async deployFrom0xArtifactAsync(
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = DummyLiquidityProviderRegistryContract.deployedBytecode,
     ) {
-        super('DummyLiquidityProviderRegistry', DummyLiquidityProviderRegistryContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
+        super(
+            'DummyLiquidityProviderRegistry',
+            DummyLiquidityProviderRegistryContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-DummyLiquidityProviderRegistryContract.ABI().forEach((item, index) => {
+        DummyLiquidityProviderRegistryContract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;

@@ -33,8 +33,6 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-
-
 /* istanbul ignore next */
 // tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
@@ -43,14 +41,14 @@ export class DummyLiquidityProviderContract extends BaseContract {
     /**
      * @ignore
      */
-public static deployedBytecode: string | undefined;
-public static contractName = 'DummyLiquidityProvider';
+    public static deployedBytecode: string | undefined;
+    public static contractName = 'DummyLiquidityProvider';
     private readonly _methodABIIndex: { [name: string]: number } = {};
-public static async deployFrom0xArtifactAsync(
+    public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<DummyLiquidityProviderContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -69,7 +67,13 @@ public static async deployFrom0xArtifactAsync(
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return DummyLiquidityProviderContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
+        return DummyLiquidityProviderContract.deployAsync(
+            bytecode,
+            abi,
+            provider,
+            txDefaults,
+            logDecodeDependenciesAbiOnly,
+        );
     }
 
     public static async deployWithLibrariesFrom0xArtifactAsync(
@@ -77,7 +81,7 @@ public static async deployFrom0xArtifactAsync(
         libraryArtifacts: { [libraryName: string]: ContractArtifact },
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<DummyLiquidityProviderContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -99,13 +103,16 @@ public static async deployFrom0xArtifactAsync(
             artifact,
             libraryArtifacts,
             new Web3Wrapper(provider),
-            txDefaults
+            txDefaults,
         );
-        const bytecode = linkLibrariesInBytecode(
-            artifact,
-            libraryAddresses,
+        const bytecode = linkLibrariesInBytecode(artifact, libraryAddresses);
+        return DummyLiquidityProviderContract.deployAsync(
+            bytecode,
+            abi,
+            provider,
+            txDefaults,
+            logDecodeDependenciesAbiOnly,
         );
-        return DummyLiquidityProviderContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
     }
 
     public static async deployAsync(
@@ -123,11 +130,7 @@ public static async deployFrom0xArtifactAsync(
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
@@ -143,7 +146,12 @@ public static async deployFrom0xArtifactAsync(
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DummyLiquidityProvider successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new DummyLiquidityProviderContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        const contractInstance = new DummyLiquidityProviderContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -153,16 +161,14 @@ public static async deployFrom0xArtifactAsync(
      */
     public static ABI(): ContractAbi {
         const abi = [
-            { 
-                inputs: [
-                ],
-                outputs: [
-                ],
+            {
+                inputs: [],
+                outputs: [],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'constructor',
             },
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
@@ -189,7 +195,7 @@ public static async deployFrom0xArtifactAsync(
                 stateMutability: 'view',
                 type: 'function',
             },
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
@@ -246,10 +252,7 @@ public static async deployFrom0xArtifactAsync(
                         libraryAddresses,
                     );
                     // Deploy this library.
-                    const linkedLibraryBytecode = linkLibrariesInBytecode(
-                        libraryArtifact,
-                        libraryAddresses,
-                    );
+                    const linkedLibraryBytecode = linkLibrariesInBytecode(libraryArtifact, libraryAddresses);
                     const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
                         {
                             data: linkedLibraryBytecode,
@@ -300,88 +303,74 @@ public static async deployFrom0xArtifactAsync(
 
     /**
      * Quotes the amount of `takerToken` that would need to be sold in
- * order to obtain `buyAmount` of `makerToken`.
-      * @param takerToken Address of the taker token (what to sell).
-      * @param makerToken Address of the maker token (what to buy).
-      * @param buyAmount Amount of `makerToken` to buy.
-    * @returns takerTokenAmount Amount of &#x60;takerToken&#x60; that would need to be sold.
+     * order to obtain `buyAmount` of `makerToken`.
+     * @param takerToken Address of the taker token (what to sell).
+     * @param makerToken Address of the maker token (what to buy).
+     * @param buyAmount Amount of `makerToken` to buy.
+     * @returns takerTokenAmount Amount of &#x60;takerToken&#x60; that would need to be sold.
      */
-    public getBuyQuote(
-            takerToken: string,
-            makerToken: string,
-            buyAmount: BigNumber,
-    ): ContractFunctionObj<BigNumber
-> {
-        const self = this as any as DummyLiquidityProviderContract;
-            assert.isString('takerToken', takerToken);
-            assert.isString('makerToken', makerToken);
-            assert.isBigNumber('buyAmount', buyAmount);
+    public getBuyQuote(takerToken: string, makerToken: string, buyAmount: BigNumber): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as DummyLiquidityProviderContract;
+        assert.isString('takerToken', takerToken);
+        assert.isString('makerToken', makerToken);
+        assert.isBigNumber('buyAmount', buyAmount);
         const functionSignature = 'getBuyQuote(address,address,uint256)';
 
         return {
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<BigNumber
-            > {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<BigNumber
-            >(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [takerToken.toLowerCase(),
-            makerToken.toLowerCase(),
-            buyAmount
-            ]);
+                return self._strictEncodeArguments(functionSignature, [
+                    takerToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                    buyAmount,
+                ]);
             },
-        }
-    };
+        };
+    }
     /**
      * Quotes the amount of `makerToken` that would be obtained by
- * selling `sellAmount` of `takerToken`.
-      * @param takerToken Address of the taker token (what to sell).
-      * @param makerToken Address of the maker token (what to buy).
-      * @param sellAmount Amount of `takerToken` to sell.
-    * @returns makerTokenAmount Amount of &#x60;makerToken&#x60; that would be obtained.
+     * selling `sellAmount` of `takerToken`.
+     * @param takerToken Address of the taker token (what to sell).
+     * @param makerToken Address of the maker token (what to buy).
+     * @param sellAmount Amount of `takerToken` to sell.
+     * @returns makerTokenAmount Amount of &#x60;makerToken&#x60; that would be obtained.
      */
-    public getSellQuote(
-            takerToken: string,
-            makerToken: string,
-            sellAmount: BigNumber,
-    ): ContractFunctionObj<BigNumber
-> {
-        const self = this as any as DummyLiquidityProviderContract;
-            assert.isString('takerToken', takerToken);
-            assert.isString('makerToken', makerToken);
-            assert.isBigNumber('sellAmount', sellAmount);
+    public getSellQuote(takerToken: string, makerToken: string, sellAmount: BigNumber): ContractFunctionObj<BigNumber> {
+        const self = (this as any) as DummyLiquidityProviderContract;
+        assert.isString('takerToken', takerToken);
+        assert.isString('makerToken', makerToken);
+        assert.isBigNumber('sellAmount', sellAmount);
         const functionSignature = 'getSellQuote(address,address,uint256)';
 
         return {
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<BigNumber
-            > {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<BigNumber
-            >(rawCallResult);
+                return abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [takerToken.toLowerCase(),
-            makerToken.toLowerCase(),
-            sellAmount
-            ]);
+                return self._strictEncodeArguments(functionSignature, [
+                    takerToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                    sellAmount,
+                ]);
             },
-        }
-    };
-
-
+        };
+    }
 
     constructor(
         address: string,
@@ -390,9 +379,17 @@ public static async deployFrom0xArtifactAsync(
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
         deployedBytecode: string | undefined = DummyLiquidityProviderContract.deployedBytecode,
     ) {
-        super('DummyLiquidityProvider', DummyLiquidityProviderContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
+        super(
+            'DummyLiquidityProvider',
+            DummyLiquidityProviderContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-DummyLiquidityProviderContract.ABI().forEach((item, index) => {
+        DummyLiquidityProviderContract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;

@@ -144,11 +144,13 @@ export class SwapQuoter {
      * @return  An instance of SwapQuoter
      */
     constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
-        const { chainId, expiryBufferMs, permittedOrderFeeTypes, samplerGasLimit, liquidityProviderRegistryAddress } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTER_OPTS,
-            options,
-        );
+        const {
+            chainId,
+            expiryBufferMs,
+            permittedOrderFeeTypes,
+            samplerGasLimit,
+            liquidityProviderRegistryAddress,
+        } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
         assert.isNumber('chainId', chainId);

@@ -73,13 +73,24 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, liquidityPoolAddress, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [
+            fillableAmounts,
+            liquidityPoolAddress,
+            ethToMakerAssetRate,
+            dexQuotes,
+        ] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
-            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._liquidityProviderRegistry, takerToken, makerToken),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(
+                this._liquidityProviderRegistry,
+                takerToken,
+                makerToken,
+            ),
             makerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._liquidityPoolSourceIfAvailable()),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                          this._liquidityPoolSourceIfAvailable(),
+                      ),
                       makerToken,
                       this._wethAddress,
                       ONE_ETHER,
@@ -160,13 +171,24 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, liquidityPoolAddress, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [
+            fillableAmounts,
+            liquidityPoolAddress,
+            ethToTakerAssetRate,
+            dexQuotes,
+        ] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
-            DexOrderSampler.ops.getLiquidityProviderFromRegistry(this._liquidityProviderRegistry, takerToken, makerToken),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(
+                this._liquidityProviderRegistry,
+                takerToken,
+                makerToken,
+            ),
             takerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(this._liquidityPoolSourceIfAvailable()),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                          this._liquidityPoolSourceIfAvailable(),
+                      ),
                       takerToken,
                       this._wethAddress,
                       ONE_ETHER,

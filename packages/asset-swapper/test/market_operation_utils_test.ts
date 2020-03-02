@@ -393,7 +393,9 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(args.sources.sort()).to.deep.eq(SELL_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort());
+                expect(args.sources.sort()).to.deep.eq(
+                    SELL_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort(),
+                );
                 expect(args.liquidityProviderAddress).to.eql(registryAddress);
             });
 
@@ -687,7 +689,9 @@ describe('MarketOperationUtils tests', () => {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
-                expect(args.sources.sort()).to.deep.eq(BUY_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort());
+                expect(args.sources.sort()).to.deep.eq(
+                    BUY_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort(),
+                );
                 expect(args.liquidityProviderAddress).to.eql(registryAddress);
             });
 
