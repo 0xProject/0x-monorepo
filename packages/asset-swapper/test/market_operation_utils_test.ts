@@ -204,6 +204,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.CurveUsdcDai]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdt]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.CurveUsdcDaiUsdtBusd]: _.times(NUM_SAMPLES, () => 0),
     };
 
     function findSourceWithMaxOutput(rates: RatesBySource): ERC20BridgeSource {
@@ -274,11 +275,7 @@ describe('MarketOperationUtils tests', () => {
                 runLimit: 0,
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
-                excludedSources: [
-                    ERC20BridgeSource.CurveUsdcDai,
-                    ERC20BridgeSource.CurveUsdcDaiUsdt,
-                    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
-                ],
+                excludedSources: Object.keys(assetSwapperConstants.DEFAULT_CURVE_OPTS) as ERC20BridgeSource[],
             };
 
             beforeEach(() => {
@@ -545,11 +542,7 @@ describe('MarketOperationUtils tests', () => {
                 numSamples: NUM_SAMPLES,
                 runLimit: 0,
                 sampleDistributionBase: 1,
-                excludedSources: [
-                    ERC20BridgeSource.CurveUsdcDai,
-                    ERC20BridgeSource.CurveUsdcDaiUsdt,
-                    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
-                ],
+                excludedSources: Object.keys(assetSwapperConstants.DEFAULT_CURVE_OPTS) as ERC20BridgeSource[],
             };
 
             beforeEach(() => {
