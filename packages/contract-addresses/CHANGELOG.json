@@ -6,7 +6,8 @@
                 "note": "Redeploy `ERC20BridgeSampler`",
                 "pr": 2503
             }
-        ]
+        ],
+        "timestamp": 1583220306
     },
     {
         "version": "4.8.0",

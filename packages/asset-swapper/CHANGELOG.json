@@ -18,7 +18,8 @@
                 "note": "Updated `Compound` Curve address",
                 "pr": 2506
             }
-        ]
+        ],
+        "timestamp": 1583220306
     },
     {
         "version": "4.3.2",
