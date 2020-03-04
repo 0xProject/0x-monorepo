@@ -23,7 +23,8 @@
         "diff_docs": "git diff --exit-code ./docs",
         "s3:sync_md_docs": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
+        "publish:private": "yarn build && gitpkg publish"
     },
     "config": {
         "postpublish": {
@@ -40,6 +41,9 @@
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
     "homepage": "https://0x.org/asset-swapper",
+    "gitpkg": {
+        "registry": "git@github.com:0xProject/gitpkg-registry.git"
+    },
     "dependencies": {
         "@0x/assert": "^3.0.7",
         "@0x/contract-addresses": "^4.9.0",
@@ -71,6 +75,7 @@
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
         "ethereum-types": "^3.1.0",
+        "gitpkg": "https://github.com/0xProject/gitpkg.git",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
