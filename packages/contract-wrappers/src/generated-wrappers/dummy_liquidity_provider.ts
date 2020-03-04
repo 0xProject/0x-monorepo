@@ -162,21 +162,14 @@ export class DummyLiquidityProviderContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                inputs: [],
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'constructor',
-            },
-            {
                 constant: true,
                 inputs: [
                     {
-                        name: 'takerToken',
+                        name: 'index_0',
                         type: 'address',
                     },
                     {
-                        name: 'makerToken',
+                        name: 'index_1',
                         type: 'address',
                     },
                     {
@@ -199,11 +192,11 @@ export class DummyLiquidityProviderContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
-                        name: 'takerToken',
+                        name: 'index_0',
                         type: 'address',
                     },
                     {
-                        name: 'makerToken',
+                        name: 'index_1',
                         type: 'address',
                     },
                     {
@@ -304,15 +297,13 @@ export class DummyLiquidityProviderContract extends BaseContract {
     /**
      * Quotes the amount of `takerToken` that would need to be sold in
      * order to obtain `buyAmount` of `makerToken`.
-     * @param takerToken Address of the taker token (what to sell).
-     * @param makerToken Address of the maker token (what to buy).
      * @param buyAmount Amount of `makerToken` to buy.
      * @returns takerTokenAmount Amount of &#x60;takerToken&#x60; that would need to be sold.
      */
-    public getBuyQuote(takerToken: string, makerToken: string, buyAmount: BigNumber): ContractFunctionObj<BigNumber> {
+    public getBuyQuote(index_0: string, index_1: string, buyAmount: BigNumber): ContractFunctionObj<BigNumber> {
         const self = (this as any) as DummyLiquidityProviderContract;
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
+        assert.isString('index_0', index_0);
+        assert.isString('index_1', index_1);
         assert.isBigNumber('buyAmount', buyAmount);
         const functionSignature = 'getBuyQuote(address,address,uint256)';
 
@@ -329,8 +320,8 @@ export class DummyLiquidityProviderContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
+                    index_0.toLowerCase(),
+                    index_1.toLowerCase(),
                     buyAmount,
                 ]);
             },
@@ -339,15 +330,13 @@ export class DummyLiquidityProviderContract extends BaseContract {
     /**
      * Quotes the amount of `makerToken` that would be obtained by
      * selling `sellAmount` of `takerToken`.
-     * @param takerToken Address of the taker token (what to sell).
-     * @param makerToken Address of the maker token (what to buy).
      * @param sellAmount Amount of `takerToken` to sell.
      * @returns makerTokenAmount Amount of &#x60;makerToken&#x60; that would be obtained.
      */
-    public getSellQuote(takerToken: string, makerToken: string, sellAmount: BigNumber): ContractFunctionObj<BigNumber> {
+    public getSellQuote(index_0: string, index_1: string, sellAmount: BigNumber): ContractFunctionObj<BigNumber> {
         const self = (this as any) as DummyLiquidityProviderContract;
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
+        assert.isString('index_0', index_0);
+        assert.isString('index_1', index_1);
         assert.isBigNumber('sellAmount', sellAmount);
         const functionSignature = 'getSellQuote(address,address,uint256)';
 
@@ -364,8 +353,8 @@ export class DummyLiquidityProviderContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
+                    index_0.toLowerCase(),
+                    index_1.toLowerCase(),
                     sellAmount,
                 ]);
             },

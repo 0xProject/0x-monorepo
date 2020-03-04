@@ -162,21 +162,14 @@ export class DummyLiquidityProviderRegistryContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                inputs: [],
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'constructor',
-            },
-            {
                 constant: true,
                 inputs: [
                     {
-                        name: 'takerToken',
+                        name: 'xToken',
                         type: 'address',
                     },
                     {
-                        name: 'makerToken',
+                        name: 'yToken',
                         type: 'address',
                     },
                 ],
@@ -195,11 +188,11 @@ export class DummyLiquidityProviderRegistryContract extends BaseContract {
                 constant: false,
                 inputs: [
                     {
-                        name: 'takerToken',
+                        name: 'xToken',
                         type: 'address',
                     },
                     {
-                        name: 'makerToken',
+                        name: 'yToken',
                         type: 'address',
                     },
                     {
@@ -294,14 +287,14 @@ export class DummyLiquidityProviderRegistryContract extends BaseContract {
 
     /**
      * Returns the address of pool for a market given market (xAsset, yAsset), or reverts if pool does not exist.
-     * @param takerToken First asset managed by pool.
-     * @param makerToken Second asset managed by pool.
+     * @param xToken First asset managed by pool.
+     * @param yToken Second asset managed by pool.
      * @returns Address of pool.
      */
-    public getLiquidityProviderForMarket(takerToken: string, makerToken: string): ContractFunctionObj<string> {
+    public getLiquidityProviderForMarket(xToken: string, yToken: string): ContractFunctionObj<string> {
         const self = (this as any) as DummyLiquidityProviderRegistryContract;
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
+        assert.isString('xToken', xToken);
+        assert.isString('yToken', yToken);
         const functionSignature = 'getLiquidityProviderForMarket(address,address)';
 
         return {
@@ -316,27 +309,24 @@ export class DummyLiquidityProviderRegistryContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
-                ]);
+                return self._strictEncodeArguments(functionSignature, [xToken.toLowerCase(), yToken.toLowerCase()]);
             },
         };
     }
     /**
      * Sets address of pool for a market given market (xAsset, yAsset).
-     * @param takerToken First asset managed by pool.
-     * @param makerToken Second asset managed by pool.
+     * @param xToken First asset managed by pool.
+     * @param yToken Second asset managed by pool.
      * @param poolAddress Address of pool.
      */
     public setLiquidityProviderForMarket(
-        takerToken: string,
-        makerToken: string,
+        xToken: string,
+        yToken: string,
         poolAddress: string,
     ): ContractTxFunctionObj<void> {
         const self = (this as any) as DummyLiquidityProviderRegistryContract;
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
+        assert.isString('xToken', xToken);
+        assert.isString('yToken', yToken);
         assert.isString('poolAddress', poolAddress);
         const functionSignature = 'setLiquidityProviderForMarket(address,address,address)';
 
@@ -379,8 +369,8 @@ export class DummyLiquidityProviderRegistryContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
+                    xToken.toLowerCase(),
+                    yToken.toLowerCase(),
                     poolAddress.toLowerCase(),
                 ]);
             },
