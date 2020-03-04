@@ -33,6 +33,7 @@ export enum ERC20BridgeSource {
     CurveUsdcDaiUsdt = 'Curve_USDC_DAI_USDT',
     CurveUsdcDaiUsdtTusd = 'Curve_USDC_DAI_USDT_TUSD',
     LiquidityProvider = 'LiquidityProvider',
+    CurveUsdcDaiUsdtBusd = 'Curve_USDC_DAI_USDT_BUSD',
 }
 
 // Internal `fillData` field for `Fill` objects.

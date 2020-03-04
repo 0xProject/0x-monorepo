@@ -262,11 +262,7 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
-                } else if (
-                    source === ERC20BridgeSource.CurveUsdcDai ||
-                    source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
-                    source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
-                ) {
+                } else if (Object.keys(constants.DEFAULT_CURVE_OPTS).includes(source)) {
                     const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[source];
                     const fromTokenIdx = tokens.indexOf(takerToken);
                     const toTokenIdx = tokens.indexOf(makerToken);

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.9.0 - _March 3, 2020_
+
+    * Redeploy `ERC20BridgeSampler` (#2503)
+
 ## v4.8.0 - _February 27, 2020_
 
     * Added Broker, GodsUnchainedValidator, ChainlinkStopLimit to index.ts (#2498)

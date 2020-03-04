@@ -1,6 +1,7 @@
 import { assert } from '@0x/assert';
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { constants } from '../../constants';
@@ -20,6 +21,22 @@ const { INFINITE_TIMESTAMP_SEC, WALLET_SIGNATURE } = marketOperationUtilConstant
 
 export class CreateOrderUtils {
     private readonly _contractAddress: ContractAddresses;
+
+    // utility function for asset-swapper to ignore market operation utils for specific asset types
+    public static convertNativeOrderToFullyFillableOptimizedOrders(order: SignedOrder): OptimizedMarketOrder {
+        return {
+            ...order,
+            fillableMakerAssetAmount: order.makerAssetAmount,
+            fillableTakerAssetAmount: order.takerAssetAmount,
+            fillableTakerFeeAmount: order.takerFee,
+            fill: {
+                source: ERC20BridgeSource.Native,
+                totalMakerAssetAmount: order.makerAssetAmount,
+                totalTakerAssetAmount: order.takerAssetAmount,
+                subFills: [],
+            },
+        };
+    }
 
     constructor(contractAddress: ContractAddresses) {
         this._contractAddress = contractAddress;
@@ -95,6 +112,7 @@ export class CreateOrderUtils {
             case ERC20BridgeSource.CurveUsdcDai:
             case ERC20BridgeSource.CurveUsdcDaiUsdt:
             case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
+            case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
                 return this._contractAddress.curveBridge;
             case ERC20BridgeSource.LiquidityProvider:
                 if (liquidityProviderAddress === undefined) {
@@ -121,11 +139,7 @@ function createBridgeOrder(
     isBuy: boolean = false,
 ): OptimizedMarketOrder {
     let makerAssetData;
-    if (
-        fill.source === ERC20BridgeSource.CurveUsdcDai ||
-        fill.source === ERC20BridgeSource.CurveUsdcDaiUsdt ||
-        fill.source === ERC20BridgeSource.CurveUsdcDaiUsdtTusd
-    ) {
+    if (Object.keys(constants.DEFAULT_CURVE_OPTS).includes(fill.source)) {
         const { curveAddress, tokens, version } = constants.DEFAULT_CURVE_OPTS[fill.source];
         const fromTokenIdx = tokens.indexOf(takerToken);
         const toTokenIdx = tokens.indexOf(makerToken);

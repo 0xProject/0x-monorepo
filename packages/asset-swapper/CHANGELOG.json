@@ -1,5 +1,27 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Add support for ERC721 assets",
+                "pr": 2491
+            },
+            {
+                "note": "Add destroy for gas heartbeat",
+                "pr": 2492
+            },
+            {
+                "note": "Added `BUSD` Curve",
+                "pr": 2506
+            },
+            {
+                "note": "Updated `Compound` Curve address",
+                "pr": 2506
+            }
+        ],
+        "timestamp": 1583220306
+    },
+    {
         "version": "4.3.2",
         "changes": [
             {

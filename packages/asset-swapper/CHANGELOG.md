@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0 - _March 3, 2020_
+
+    * Add support for ERC721 assets (#2491)
+    * Add destroy for gas heartbeat (#2492)
+    * Added `BUSD` Curve (#2506)
+    * Updated `Compound` Curve address (#2506)
+
 ## v4.3.2 - _February 27, 2020_
 
     * Fix order native pruning by fill amount (#2500)
