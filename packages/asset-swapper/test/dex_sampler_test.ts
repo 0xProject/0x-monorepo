@@ -431,9 +431,9 @@ describe('DexSampler tests', () => {
                 }
 
                 expect(sellQuotes.length).to.eql(1);
-                const iquidityPoolSellQuotes: DexSample[] = sellQuotes[0];
-                expect(iquidityPoolSellQuotes.length).to.eql(3);
-                for (const quote of iquidityPoolSellQuotes) {
+                const liquidityPoolSellQuotes: DexSample[] = sellQuotes[0];
+                expect(liquidityPoolSellQuotes.length).to.eql(3);
+                for (const quote of liquidityPoolSellQuotes) {
                     expect(quote.source).to.bignumber.eql(ERC20BridgeSource.LiquidityProvider);
                     expect(quote.input.minus(1)).to.bignumber.eql(quote.output);
                 }

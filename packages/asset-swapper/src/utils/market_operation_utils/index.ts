@@ -173,7 +173,7 @@ export class MarketOperationUtils {
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
         const [
             fillableAmounts,
-            liquidityPoolAddress,
+            liquidityProviderAddress,
             ethToTakerAssetRate,
             dexQuotes,
         ] = await this._sampler.executeAsync(
@@ -209,7 +209,7 @@ export class MarketOperationUtils {
             dexQuotes,
             ethToTakerAssetRate,
             _opts,
-            liquidityPoolAddress,
+            liquidityProviderAddress,
         );
         if (!signedOrderWithFillableAmounts) {
             throw new Error(AggregationError.NoOptimalPath);
@@ -286,7 +286,7 @@ export class MarketOperationUtils {
         dexQuotes: DexSample[][],
         ethToTakerAssetRate: BigNumber,
         opts: GetMarketOrdersOpts,
-        liquidityPoolAddress?: string | undefined,
+        liquidityProviderAddress?: string,
     ): OptimizedMarketOrder[] | undefined {
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
@@ -329,7 +329,7 @@ export class MarketOperationUtils {
             outputToken,
             collapsePath(optimalPath, true),
             opts.bridgeSlippage,
-            liquidityPoolAddress,
+            liquidityProviderAddress,
         );
     }
 }
