@@ -1,5 +1,13 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Add `LibERC20Token.approveIfBelowMax()`"
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "3.1.5",
         "changes": [

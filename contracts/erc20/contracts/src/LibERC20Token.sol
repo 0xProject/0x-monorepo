@@ -47,6 +47,23 @@ library LibERC20Token {
         _callWithOptionalBooleanResult(token, callData);
     }
 
+    /// @dev Calls `IERC20Token(token).approve()` and sets the allowance to the
+    ///      maximum if the current approval is not already set to the maximum.
+    ///      Reverts if `false` is returned or if the return
+    ///      data length is nonzero and not 32 bytes.
+    /// @param token The address of the token contract.
+    /// @param spender The address that receives an allowance.
+    function approveIfBelowMax(
+        address token,
+        address spender
+    )
+        internal
+    {
+        if (IERC20Token(token).allowance(address(this), spender) != uint256(-1)) {
+            approve(token, spender, uint256(-1));
+        }
+    }
+
     /// @dev Calls `IERC20Token(token).transfer()`.
     ///      Reverts if `false` is returned or if the return
     ///      data length is nonzero and not 32 bytes.

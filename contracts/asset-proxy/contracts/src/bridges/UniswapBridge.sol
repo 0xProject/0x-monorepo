@@ -168,7 +168,7 @@ contract UniswapBridge is
     function _grantExchangeAllowance(IUniswapExchange exchange, address tokenAddress)
         private
     {
-        LibERC20Token.approve(tokenAddress, address(exchange), uint256(-1));
+        LibERC20Token.approveIfBelowMax(tokenAddress, address(exchange));
     }
 
     /// @dev Retrieves the uniswap exchange for a given token pair.

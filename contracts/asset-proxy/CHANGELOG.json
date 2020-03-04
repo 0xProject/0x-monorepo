@@ -1,5 +1,13 @@
 [
     {
+        "version": "3.3.0",
+        "changes": [
+            {
+                "note": "Use `approveIfBelowMax()` in DEX bridges for for approvals."
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "3.2.5",
         "changes": [

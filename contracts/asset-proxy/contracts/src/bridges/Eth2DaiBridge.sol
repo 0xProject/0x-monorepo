@@ -57,7 +57,7 @@ contract Eth2DaiBridge is
 
         IEth2Dai exchange = IEth2Dai(_getEth2DaiAddress());
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        LibERC20Token.approve(fromTokenAddress, address(exchange), uint256(-1));
+        LibERC20Token.approveIfBelowMax(fromTokenAddress, address(exchange));
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
         uint256 boughtAmount = exchange.sellAllAmount(

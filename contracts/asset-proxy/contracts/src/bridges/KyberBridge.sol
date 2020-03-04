@@ -109,7 +109,7 @@ contract KyberBridge is
         } else if (state.fromTokenAddress != address(state.weth)) {
             // If the input token is not WETH, grant an allowance to the exchange
             // to spend them.
-            LibERC20Token.approve(state.fromTokenAddress, address(state.kyber), uint256(-1));
+            LibERC20Token.approveIfBelowMax(state.fromTokenAddress, address(state.kyber));
         } else {
             // If the input token is WETH, unwrap it and attach it to the call.
             state.fromTokenAddress = KYBER_ETH_ADDRESS;
