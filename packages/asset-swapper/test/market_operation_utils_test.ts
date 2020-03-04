@@ -141,7 +141,7 @@ describe('MarketOperationUtils tests', () => {
         makerToken: string,
         takerToken: string,
         fillAmounts: BigNumber[],
-        liquidityProviderAddress?: string | undefined,
+        liquidityProviderAddress?: string,
     ) => DexSample[][];
 
     function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
@@ -169,7 +169,7 @@ describe('MarketOperationUtils tests', () => {
             makerToken: string,
             takerToken: string,
             fillAmounts: BigNumber[],
-            liquidityProviderAddress: string | undefined,
+            liquidityProviderAddress?: string,
         ) => {
             liquidityPoolParams.liquidityProviderAddress = liquidityProviderAddress;
             liquidityPoolParams.sources = sources;
@@ -195,7 +195,7 @@ describe('MarketOperationUtils tests', () => {
         makerToken: string,
         takerToken: string,
         fillAmounts: BigNumber[],
-        liquidityProviderAddress?: string | undefined,
+        liquidityProviderAddress?: string,
     ) => BigNumber;
 
     type GetLiquidityProviderFromRegistryOperation = (

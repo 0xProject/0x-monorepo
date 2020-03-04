@@ -6,40 +6,36 @@ contract DummyLiquidityProviderRegistry
 {
     address private constant NULL_ADDRESS = address(0x0);
 
-    constructor()
-        public
-    // solhint-disable-next-line no-empty-blocks
-    {}
-
     mapping (address => mapping (address => address)) internal _gAddressBook;
 
     /// @dev Sets address of pool for a market given market (xAsset, yAsset).
-    /// @param takerToken First asset managed by pool.
-    /// @param makerToken Second asset managed by pool.
+    /// @param xToken First asset managed by pool.
+    /// @param yToken Second asset managed by pool.
     /// @param poolAddress Address of pool.
     function setLiquidityProviderForMarket(
-        address takerToken,
-        address makerToken,
+        address xToken,
+        address yToken,
         address poolAddress
-    ) external
+    )
+        external
     {
-        _gAddressBook[takerToken][makerToken] = poolAddress;
-        _gAddressBook[makerToken][takerToken] = poolAddress;
+        _gAddressBook[xToken][yToken] = poolAddress;
+        _gAddressBook[yToken][xToken] = poolAddress;
     }
 
     /// @dev Returns the address of pool for a market given market (xAsset, yAsset), or reverts if pool does not exist.
-    /// @param takerToken First asset managed by pool.
-    /// @param makerToken Second asset managed by pool.
+    /// @param xToken First asset managed by pool.
+    /// @param yToken Second asset managed by pool.
     /// @return Address of pool.
     function getLiquidityProviderForMarket(
-        address takerToken,
-        address makerToken
+        address xToken,
+        address yToken
     )
         external
         view
         returns (address poolAddress)
     {
-        poolAddress = _gAddressBook[takerToken][makerToken];
+        poolAddress = _gAddressBook[xToken][yToken];
         require(
             poolAddress != NULL_ADDRESS,
             "Registry/MARKET_PAIR_NOT_SET"

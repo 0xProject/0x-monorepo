@@ -4,11 +4,6 @@ pragma experimental ABIEncoderV2;
 
 contract DummyLiquidityProvider
 {
-    constructor()
-        public
-    // solhint-disable-next-line no-empty-blocks
-    {}
-
     /// @dev Quotes the amount of `makerToken` that would be obtained by
     ///      selling `sellAmount` of `takerToken`.
     /// @param sellAmount Amount of `takerToken` to sell.
@@ -20,9 +15,10 @@ contract DummyLiquidityProvider
     )
         external
         view
-        returns (uint256 makerTokenAmount) {
-            makerTokenAmount = sellAmount - 1;
-        }
+        returns (uint256 makerTokenAmount)
+    {
+        makerTokenAmount = sellAmount - 1;
+    }
 
     /// @dev Quotes the amount of `takerToken` that would need to be sold in
     ///      order to obtain `buyAmount` of `makerToken`.
@@ -35,7 +31,8 @@ contract DummyLiquidityProvider
     )
         external
         view
-        returns (uint256 takerTokenAmount) {
-            takerTokenAmount = buyAmount + 1;
-        }
+        returns (uint256 takerTokenAmount)
+    {
+        takerTokenAmount = buyAmount + 1;
+    }
 }
