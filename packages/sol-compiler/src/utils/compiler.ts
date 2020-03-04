@@ -232,9 +232,17 @@ export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffe
     if (dependencies.length === 0) {
         return sourceHash;
     } else {
-        const dependencySourceTreeHashes = _.map(dependencies, (dependency: string) =>
-            getSourceTreeHash(resolver, dependency),
-        );
+        const dependencySourceTreeHashes = _.map(dependencies, (dependency: string) => {
+            try {
+                return getSourceTreeHash(resolver, dependency);
+            } catch (e) {
+                if (/Error when trying to resolve dependencies for/.test((e as Error).message)) {
+                    throw e;
+                } else {
+                    throw Error(`Error when trying to resolve dependencies for ${importPath}: ${(e as Error).message}`);
+                }
+            }
+        });
         const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
         const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
         return sourceTreeHash;
