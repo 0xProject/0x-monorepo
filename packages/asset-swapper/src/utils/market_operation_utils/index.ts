@@ -89,7 +89,7 @@ export class MarketOperationUtils {
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
                       difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                          this._liquidityProviderSourceIfAvailable(),
+                          this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
                       ),
                       makerToken,
                       this._wethAddress,
@@ -97,7 +97,9 @@ export class MarketOperationUtils {
                       this._liquidityProviderRegistry,
                   ),
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES, _opts.excludedSources).concat(this._liquidityProviderSourceIfAvailable()),
+                difference(SELL_SOURCES, _opts.excludedSources).concat(
+                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                ),
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
@@ -187,7 +189,7 @@ export class MarketOperationUtils {
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
                       difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                          this._liquidityProviderSourceIfAvailable(),
+                          this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
                       ),
                       takerToken,
                       this._wethAddress,
@@ -195,7 +197,9 @@ export class MarketOperationUtils {
                       this._liquidityProviderRegistry,
                   ),
             DexOrderSampler.ops.getBuyQuotes(
-                difference(BUY_SOURCES, _opts.excludedSources).concat(this._liquidityProviderSourceIfAvailable()),
+                difference(BUY_SOURCES, _opts.excludedSources).concat(
+                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                ),
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
@@ -275,8 +279,11 @@ export class MarketOperationUtils {
         );
     }
 
-    private _liquidityProviderSourceIfAvailable(): ERC20BridgeSource[] {
-        return this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [];
+    private _liquidityProviderSourceIfAvailable(excludedSources: ERC20BridgeSource[]): ERC20BridgeSource[] {
+        return this._liquidityProviderRegistry !== NULL_ADDRESS &&
+            !excludedSources.includes(ERC20BridgeSource.LiquidityProvider)
+            ? [ERC20BridgeSource.LiquidityProvider]
+            : [];
     }
 
     private _createBuyOrdersPathFromSamplerResultIfExists(
