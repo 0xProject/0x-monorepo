@@ -66,13 +66,14 @@ contract KyberBridge is
     ///      to the `KyberNetworkProxy` contract, then transfers the bought
     ///      tokens to `to`.
     /// @param toTokenAddress The token to give to `to`.
+    /// @param from The maker (this contract).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
     /// @param bridgeData The abi-encoeded "from" token address.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
         address toTokenAddress,
-        address /* from */,
+        address from,
         address to,
         uint256 amount,
         bytes calldata bridgeData
@@ -143,6 +144,16 @@ contract KyberBridge is
             state.weth.deposit.value(boughtAmount)();
             state.weth.transfer(to, boughtAmount);
         }
+
+        emit ERC20BridgeTransfer(
+            address(this),
+            state.fromTokenAddress == KYBER_ETH_ADDRESS ? address(state.weth) : state.fromTokenAddress,
+            toTokenAddress,
+            state.fromTokenBalance,
+            boughtAmount,
+            from,
+            to
+        );
         return BRIDGE_SUCCESS;
     }
 

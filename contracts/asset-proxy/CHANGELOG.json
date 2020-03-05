@@ -3,7 +3,12 @@
         "version": "3.3.0",
         "changes": [
             {
-                "note": "Use `approveIfBelowMax()` in DEX bridges for for approvals."
+                "note": "Use `approveIfBelowMax()` in DEX bridges for for approvals.",
+                "pr": 2512
+            },
+            {
+                "note": "Emit `ERC20BridgeTransfer` events in bridges.",
+                "pr": 2512
             }
         ]
     },

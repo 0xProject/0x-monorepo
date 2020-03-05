@@ -38,10 +38,11 @@ contract UniswapBridge is
 {
     // Struct to hold `bridgeTransferFrom()` local variables in memory and to avoid
     // stack overflows.
-    struct WithdrawToState {
+    struct TransferState {
         IUniswapExchange exchange;
         uint256 fromTokenBalance;
         IEtherToken weth;
+        uint256 boughtAmount;
     }
 
     // solhint-disable no-empty-blocks
@@ -55,13 +56,14 @@ contract UniswapBridge is
     ///      `toTokenAddress` tokens by selling the entirety of the `fromTokenAddress`
     ///      token encoded in the bridge data.
     /// @param toTokenAddress The token to buy and transfer to `to`.
+    /// @param from The maker (this contract).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
     /// @param bridgeData The abi-encoded "from" token address.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
         address toTokenAddress,
-        address /* from */,
+        address from,
         address to,
         uint256 amount,
         bytes calldata bridgeData
@@ -70,7 +72,7 @@ contract UniswapBridge is
         returns (bytes4 success)
     {
         // State memory object to avoid stack overflows.
-        WithdrawToState memory state;
+        TransferState memory state;
         // Decode the bridge data to get the `fromTokenAddress`.
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
 
@@ -96,7 +98,7 @@ contract UniswapBridge is
             state.weth.withdraw(state.fromTokenBalance);
             // Buy as much of `toTokenAddress` token with ETH as possible and
             // transfer it to `to`.
-            state.exchange.ethToTokenTransferInput.value(state.fromTokenBalance)(
+            state.boughtAmount = state.exchange.ethToTokenTransferInput.value(state.fromTokenBalance)(
                 // Minimum buy amount.
                 amount,
                 // Expires after this block.
@@ -110,7 +112,7 @@ contract UniswapBridge is
             // Grant the exchange an allowance.
             _grantExchangeAllowance(state.exchange, fromTokenAddress);
             // Buy as much ETH with `fromTokenAddress` token as possible.
-            uint256 ethBought = state.exchange.tokenToEthSwapInput(
+            state.boughtAmount = state.exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
                 state.fromTokenBalance,
                 // Minimum buy amount.
@@ -119,9 +121,9 @@ contract UniswapBridge is
                 block.timestamp
             );
             // Wrap the ETH.
-            state.weth.deposit.value(ethBought)();
+            state.weth.deposit.value(state.boughtAmount)();
             // Transfer the WETH to `to`.
-            IEtherToken(toTokenAddress).transfer(to, ethBought);
+            IEtherToken(toTokenAddress).transfer(to, state.boughtAmount);
 
         // Convert from one token to another.
         } else {
@@ -129,7 +131,7 @@ contract UniswapBridge is
             _grantExchangeAllowance(state.exchange, fromTokenAddress);
             // Buy as much `toTokenAddress` token with `fromTokenAddress` token
             // and transfer it to `to`.
-            state.exchange.tokenToTokenTransferInput(
+            state.boughtAmount = state.exchange.tokenToTokenTransferInput(
                 // Sell all tokens we hold.
                 state.fromTokenBalance,
                 // Minimum buy amount.
@@ -144,6 +146,16 @@ contract UniswapBridge is
                 toTokenAddress
             );
         }
+
+        emit ERC20BridgeTransfer(
+            address(this),
+            fromTokenAddress,
+            toTokenAddress,
+            state.fromTokenBalance,
+            state.boughtAmount,
+            from,
+            to
+        );
         return BRIDGE_SUCCESS;
     }
 

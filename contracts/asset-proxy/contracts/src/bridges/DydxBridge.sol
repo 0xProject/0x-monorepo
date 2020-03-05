@@ -44,13 +44,14 @@ contract DydxBridge is
     ///         5. Withdrawals from dydx are made to the `to` address.
     ///         6. Calling this function must always withdraw at least `amount`,
     ///            otherwise the `ERC20Bridge` will revert.
+    /// @param toTokenAddress The token to be withdrawn.
     /// @param from The sender of the tokens and owner of the dydx account.
     /// @param to The recipient of the tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to deposit or withdraw.
     /// @param encodedBridgeData An abi-encoded `BridgeData` struct.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
-        address,
+        address toTokenAddress,
         address from,
         address to,
         uint256 amount,
@@ -81,6 +82,18 @@ contract DydxBridge is
 
         // Run operation. This will revert on failure.
         IDydx(_getDydxAddress()).operate(accounts, actions);
+
+        emit ERC20BridgeTransfer(
+            address(this),
+            // The from token isn't necessarily clear since we can have zero
+            // or more deposits.
+            address(0),
+            toTokenAddress,
+            0,
+            amount,
+            from,
+            to
+        );
         return BRIDGE_SUCCESS;
     }
 

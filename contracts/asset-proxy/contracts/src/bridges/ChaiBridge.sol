@@ -70,6 +70,16 @@ contract ChaiBridge is
         // This will never fail if the `draw` call was successful
         IERC20Token(_getDaiAddress()).transfer(to, amount);
 
+        emit ERC20BridgeTransfer(
+            address(this),
+            _getChaiAddress(),
+            _getDaiAddress(),
+            // draw() can change the rate so this is tricky to compute.
+            0,
+            amount,
+            from,
+            to
+        );
         return BRIDGE_SUCCESS;
     }
 }
