@@ -8,9 +8,11 @@ import { ContractArtifact } from 'ethereum-types';
 import * as LibAssetDataTransfer from '../generated-artifacts/LibAssetDataTransfer.json';
 import * as LibAssetDataTransferRichErrors from '../generated-artifacts/LibAssetDataTransferRichErrors.json';
 import * as LibWethUtilsRichErrors from '../generated-artifacts/LibWethUtilsRichErrors.json';
+import * as MaximumGasPrice from '../generated-artifacts/MaximumGasPrice.json';
 import * as MixinWethUtils from '../generated-artifacts/MixinWethUtils.json';
 export const artifacts = {
     LibAssetDataTransfer: LibAssetDataTransfer as ContractArtifact,
+    MaximumGasPrice: MaximumGasPrice as ContractArtifact,
     MixinWethUtils: MixinWethUtils as ContractArtifact,
     LibAssetDataTransferRichErrors: LibAssetDataTransferRichErrors as ContractArtifact,
     LibWethUtilsRichErrors: LibWethUtilsRichErrors as ContractArtifact,

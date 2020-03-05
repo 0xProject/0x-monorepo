@@ -29,3 +29,4 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+export * from './max_gas_price_utils';

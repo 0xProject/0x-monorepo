@@ -6,4 +6,5 @@
 export * from '../generated-wrappers/lib_asset_data_transfer';
 export * from '../generated-wrappers/lib_asset_data_transfer_rich_errors';
 export * from '../generated-wrappers/lib_weth_utils_rich_errors';
+export * from '../generated-wrappers/maximum_gas_price';
 export * from '../generated-wrappers/mixin_weth_utils';
