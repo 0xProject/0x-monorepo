@@ -110,7 +110,7 @@ contract UniswapBridge is
         // Convert from a token to WETH.
         } else if (toTokenAddress == address(state.weth)) {
             // Grant the exchange an allowance.
-            _grantExchangeAllowance(state.exchange, fromTokenAddress);
+            _grantExchangeAllowance(state.exchange, fromTokenAddress, state.fromTokenBalance);
             // Buy as much ETH with `fromTokenAddress` token as possible.
             state.boughtAmount = state.exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
@@ -128,7 +128,7 @@ contract UniswapBridge is
         // Convert from one token to another.
         } else {
             // Grant the exchange an allowance.
-            _grantExchangeAllowance(state.exchange, fromTokenAddress);
+            _grantExchangeAllowance(state.exchange, fromTokenAddress, state.fromTokenBalance);
             // Buy as much `toTokenAddress` token with `fromTokenAddress` token
             // and transfer it to `to`.
             state.boughtAmount = state.exchange.tokenToTokenTransferInput(
@@ -177,10 +177,19 @@ contract UniswapBridge is
     ///      on behalf of this contract.
     /// @param exchange The Uniswap token exchange.
     /// @param tokenAddress The token address for the exchange.
-    function _grantExchangeAllowance(IUniswapExchange exchange, address tokenAddress)
+    /// @param minimumAllowance The minimum necessary allowance.
+    function _grantExchangeAllowance(
+        IUniswapExchange exchange,
+        address tokenAddress,
+        uint256 minimumAllowance
+    )
         private
     {
-        LibERC20Token.approveIfBelowMax(tokenAddress, address(exchange));
+        LibERC20Token.approveIfBelow(
+            tokenAddress,
+            address(exchange),
+            minimumAllowance
+        );
     }
 
     /// @dev Retrieves the uniswap exchange for a given token pair.

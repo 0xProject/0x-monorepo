@@ -67,9 +67,9 @@ contract CurveBridge is
 
         address fromTokenAddress = ICurve(data.curveAddress).underlying_coins(data.fromCoinIdx);
         require(toTokenAddress != fromTokenAddress, "CurveBridge/INVALID_PAIR");
-        // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        LibERC20Token.approveIfBelowMax(fromTokenAddress, data.curveAddress);
         uint256 fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
+        // Grant an allowance to the exchange to spend `fromTokenAddress` token.
+        LibERC20Token.approveIfBelow(fromTokenAddress, data.curveAddress, fromTokenBalance);
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
         if (data.version == 0) {

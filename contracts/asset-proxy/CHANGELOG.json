@@ -3,7 +3,7 @@
         "version": "3.3.0",
         "changes": [
             {
-                "note": "Use `approveIfBelowMax()` in DEX bridges for for approvals.",
+                "note": "Use `LibERC20Token.approveIfBelow()` in DEX bridges for for approvals.",
                 "pr": 2512
             },
             {
