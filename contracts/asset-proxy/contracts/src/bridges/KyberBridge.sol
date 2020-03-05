@@ -150,7 +150,6 @@ contract KyberBridge is
         }
 
         emit ERC20BridgeTransfer(
-            address(this),
             state.fromTokenAddress == KYBER_ETH_ADDRESS ? address(state.weth) : state.fromTokenAddress,
             toTokenAddress,
             state.fromTokenBalance,

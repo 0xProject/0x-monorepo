@@ -22,7 +22,6 @@ pragma solidity ^0.5.9;
 contract IERC20Bridge {
 
     /// @dev Emitted when a bridge transfer is completed.
-    /// @param bridge The bridge address.
     /// @param fromToken The address of the "from" token.
     /// @param toToken The address of the "to" token.
     /// @param fromTokenAmount The "from" token amount consumed.
@@ -30,7 +29,6 @@ contract IERC20Bridge {
     /// @param from Supplier of "fromToken".
     /// @param to Receiver of "toToken".
     event ERC20BridgeTransfer(
-        address indexed bridge,
         address fromToken,
         address toToken,
         uint256 fromTokenAmount,

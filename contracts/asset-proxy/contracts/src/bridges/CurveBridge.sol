@@ -99,7 +99,6 @@ contract CurveBridge is
         LibERC20Token.transfer(toTokenAddress, to, toTokenBalance);
 
         emit ERC20BridgeTransfer(
-            address(this),
             fromTokenAddress,
             toTokenAddress,
             fromTokenBalance,

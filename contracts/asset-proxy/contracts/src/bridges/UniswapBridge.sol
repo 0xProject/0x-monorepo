@@ -148,7 +148,6 @@ contract UniswapBridge is
         }
 
         emit ERC20BridgeTransfer(
-            address(this),
             fromTokenAddress,
             toTokenAddress,
             state.fromTokenBalance,

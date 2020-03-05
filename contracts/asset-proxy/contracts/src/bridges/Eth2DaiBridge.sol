@@ -72,7 +72,6 @@ contract Eth2DaiBridge is
         LibERC20Token.transfer(toTokenAddress, to, boughtAmount);
 
         emit ERC20BridgeTransfer(
-            address(this),
             fromTokenAddress,
             toTokenAddress,
             fromTokenBalance,
