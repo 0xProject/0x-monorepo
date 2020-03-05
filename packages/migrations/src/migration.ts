@@ -307,6 +307,7 @@ export async function runMigrationsAsync(
         godsUnchainedValidator: constants.NULL_ADDRESS,
         broker: constants.NULL_ADDRESS,
         chainlinkStopLimit: constants.NULL_ADDRESS,
+        maximumGasPrice: constants.NULL_ADDRESS,
     };
     return contractAddresses;
 }

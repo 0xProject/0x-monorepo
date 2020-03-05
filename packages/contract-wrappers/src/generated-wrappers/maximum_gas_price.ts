@@ -37,20 +37,19 @@ import * as ethers from 'ethers';
 // tslint:disable:array-type
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
-export class GodsUnchainedValidatorContract extends BaseContract {
+export class MaximumGasPriceContract extends BaseContract {
     /**
      * @ignore
      */
     public static deployedBytecode: string | undefined;
-    public static contractName = 'GodsUnchainedValidator';
+    public static contractName = 'MaximumGasPrice';
     private readonly _methodABIIndex: { [name: string]: number } = {};
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        _godsUnchained: string,
-    ): Promise<GodsUnchainedValidatorContract> {
+    ): Promise<MaximumGasPriceContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -68,14 +67,7 @@ export class GodsUnchainedValidatorContract extends BaseContract {
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return GodsUnchainedValidatorContract.deployAsync(
-            bytecode,
-            abi,
-            provider,
-            txDefaults,
-            logDecodeDependenciesAbiOnly,
-            _godsUnchained,
-        );
+        return MaximumGasPriceContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
 
     public static async deployWithLibrariesFrom0xArtifactAsync(
@@ -84,8 +76,7 @@ export class GodsUnchainedValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        _godsUnchained: string,
-    ): Promise<GodsUnchainedValidatorContract> {
+    ): Promise<MaximumGasPriceContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -102,21 +93,14 @@ export class GodsUnchainedValidatorContract extends BaseContract {
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        const libraryAddresses = await GodsUnchainedValidatorContract._deployLibrariesAsync(
+        const libraryAddresses = await MaximumGasPriceContract._deployLibrariesAsync(
             artifact,
             libraryArtifacts,
             new Web3Wrapper(provider),
             txDefaults,
         );
         const bytecode = linkLibrariesInBytecode(artifact, libraryAddresses);
-        return GodsUnchainedValidatorContract.deployAsync(
-            bytecode,
-            abi,
-            provider,
-            txDefaults,
-            logDecodeDependenciesAbiOnly,
-            _godsUnchained,
-        );
+        return MaximumGasPriceContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
 
     public static async deployAsync(
@@ -125,8 +109,7 @@ export class GodsUnchainedValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-        _godsUnchained: string,
-    ): Promise<GodsUnchainedValidatorContract> {
+    ): Promise<MaximumGasPriceContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -135,14 +118,10 @@ export class GodsUnchainedValidatorContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_godsUnchained] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [_godsUnchained],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_godsUnchained]);
+        const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToContractTxDataAsync(
             {
@@ -154,14 +133,14 @@ export class GodsUnchainedValidatorContract extends BaseContract {
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`GodsUnchainedValidator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new GodsUnchainedValidatorContract(
+        logUtils.log(`MaximumGasPrice successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new MaximumGasPriceContract(
             txReceipt.contractAddress as string,
             provider,
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [_godsUnchained];
+        contractInstance.constructorArgs = [];
         return contractInstance;
     }
 
@@ -171,30 +150,23 @@ export class GodsUnchainedValidatorContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                inputs: [
-                    {
-                        name: '_godsUnchained',
-                        type: 'address',
-                    },
-                ],
+                constant: true,
+                inputs: [],
+                name: 'checkGasPrice',
                 outputs: [],
                 payable: false,
-                stateMutability: 'nonpayable',
-                type: 'constructor',
+                stateMutability: 'view',
+                type: 'function',
             },
             {
                 constant: true,
                 inputs: [
                     {
-                        name: 'tokenId',
+                        name: 'maxGasPrice',
                         type: 'uint256',
                     },
-                    {
-                        name: 'propertyData',
-                        type: 'bytes',
-                    },
                 ],
-                name: 'checkBrokerAsset',
+                name: 'checkGasPrice',
                 outputs: [],
                 payable: false,
                 stateMutability: 'view',
@@ -222,7 +194,7 @@ export class GodsUnchainedValidatorContract extends BaseContract {
                         throw new Error(`Missing artifact for linked library "${libraryName}"`);
                     }
                     // Deploy any dependent libraries used by this library.
-                    await GodsUnchainedValidatorContract._deployLibrariesAsync(
+                    await MaximumGasPriceContract._deployLibrariesAsync(
                         libraryArtifact,
                         libraryArtifacts,
                         web3Wrapper,
@@ -251,14 +223,14 @@ export class GodsUnchainedValidatorContract extends BaseContract {
 
     public getFunctionSignature(methodName: string): string {
         const index = this._methodABIIndex[methodName];
-        const methodAbi = GodsUnchainedValidatorContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
+        const methodAbi = MaximumGasPriceContract.ABI()[index] as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
         const functionSignature = methodAbiToFunctionSignature(methodAbi);
         return functionSignature;
     }
 
     public getABIDecodedTransactionData<T>(methodName: string, callData: string): T {
         const functionSignature = this.getFunctionSignature(methodName);
-        const self = (this as any) as GodsUnchainedValidatorContract;
+        const self = (this as any) as MaximumGasPriceContract;
         const abiEncoder = self._lookupAbiEncoder(functionSignature);
         const abiDecodedCallData = abiEncoder.strictDecode<T>(callData);
         return abiDecodedCallData;
@@ -266,7 +238,7 @@ export class GodsUnchainedValidatorContract extends BaseContract {
 
     public getABIDecodedReturnData<T>(methodName: string, callData: string): T {
         const functionSignature = this.getFunctionSignature(methodName);
-        const self = (this as any) as GodsUnchainedValidatorContract;
+        const self = (this as any) as MaximumGasPriceContract;
         const abiEncoder = self._lookupAbiEncoder(functionSignature);
         const abiDecodedCallData = abiEncoder.strictDecodeReturnValue<T>(callData);
         return abiDecodedCallData;
@@ -274,23 +246,18 @@ export class GodsUnchainedValidatorContract extends BaseContract {
 
     public getSelector(methodName: string): string {
         const functionSignature = this.getFunctionSignature(methodName);
-        const self = (this as any) as GodsUnchainedValidatorContract;
+        const self = (this as any) as MaximumGasPriceContract;
         const abiEncoder = self._lookupAbiEncoder(functionSignature);
         return abiEncoder.getSelector();
     }
 
     /**
-     * Checks that the given card (encoded as assetData) has the proto and quality encoded in `propertyData`.
-     * Reverts if the card doesn't match the specified proto and quality.
-     * @param tokenId The ERC721 tokenId of the card to check.
-     * @param propertyData Encoded proto and quality that the card is expected to
-     *     have.
+     * Checks that the current transaction's gas price is less than
+     * the default maximum value of 20 Gwei.
      */
-    public checkBrokerAsset(tokenId: BigNumber, propertyData: string): ContractFunctionObj<void> {
-        const self = (this as any) as GodsUnchainedValidatorContract;
-        assert.isBigNumber('tokenId', tokenId);
-        assert.isString('propertyData', propertyData);
-        const functionSignature = 'checkBrokerAsset(uint256,bytes)';
+    public checkGasPrice1(): ContractFunctionObj<void> {
+        const self = (this as any) as MaximumGasPriceContract;
+        const functionSignature = 'checkGasPrice()';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -304,7 +271,34 @@ export class GodsUnchainedValidatorContract extends BaseContract {
                 return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             },
             getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [tokenId, propertyData]);
+                return self._strictEncodeArguments(functionSignature, []);
+            },
+        };
+    }
+    /**
+     * Checks that the current transaction's gas price is less than
+     * the specified maximum value.
+     * @param maxGasPrice The maximum gas price allowed for the current
+     *     transaction.
+     */
+    public checkGasPrice2(maxGasPrice: BigNumber): ContractFunctionObj<void> {
+        const self = (this as any) as MaximumGasPriceContract;
+        assert.isBigNumber('maxGasPrice', maxGasPrice);
+        const functionSignature = 'checkGasPrice(uint256)';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [maxGasPrice]);
             },
         };
     }
@@ -314,11 +308,11 @@ export class GodsUnchainedValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string | undefined = GodsUnchainedValidatorContract.deployedBytecode,
+        deployedBytecode: string | undefined = MaximumGasPriceContract.deployedBytecode,
     ) {
         super(
-            'GodsUnchainedValidator',
-            GodsUnchainedValidatorContract.ABI(),
+            'MaximumGasPrice',
+            MaximumGasPriceContract.ABI(),
             address,
             supportedProvider,
             txDefaults,
@@ -326,7 +320,7 @@ export class GodsUnchainedValidatorContract extends BaseContract {
             deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-        GodsUnchainedValidatorContract.ABI().forEach((item, index) => {
+        MaximumGasPriceContract.ABI().forEach((item, index) => {
             if (item.type === 'function') {
                 const methodAbi = item as MethodAbi;
                 this._methodABIIndex[methodAbi.name] = index;

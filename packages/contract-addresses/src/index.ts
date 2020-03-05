@@ -30,6 +30,7 @@ export interface ContractAddresses {
     godsUnchainedValidator: string;
     broker: string;
     chainlinkStopLimit: string;
+    maximumGasPrice: string;
 }
 
 export enum ChainId {
