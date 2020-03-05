@@ -17,7 +17,6 @@
 */
 
 pragma solidity ^0.5.16;
-pragma experimental ABIEncoderV2;
 
 
 contract MaximumGasPrice {
@@ -38,12 +37,11 @@ contract MaximumGasPrice {
 
     /// @dev Checks that the current transaction's gas price is less than
     ///      the specified maximum value.
-    /// @param data Encodes the maximum gas price.
-    function checkGasPrice(bytes calldata data)
+    /// @param maxGasPrice The maximum gas price allowed for the current transaction.
+    function checkGasPrice(uint256 maxGasPrice)
         external
         view
     {
-        (uint256 maxGasPrice) = abi.decode(data, (uint256));
         require(
             tx.gasprice <= maxGasPrice,
             "MaximumGasPrice/GAS_PRICE_EXCEEDS_MAXIMUM"
