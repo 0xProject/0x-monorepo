@@ -5,6 +5,18 @@
             {
                 "note": "Add support for private liquidity providers",
                 "pr": 2505
+            },
+            {
+                "note": "Big refactor of market operation utils",
+                "pr": 2513
+            },
+            {
+                "note": "Revamp fill optimization algorithm",
+                "pr": 2513
+            },
+            {
+                "note": "Add fallback orders to quotes",
+                "pr": 2513
             }
         ]
     },

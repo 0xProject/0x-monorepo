@@ -2,17 +2,17 @@ import { BigNumber } from '@0x/utils';
 
 import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } from '../types';
 
-import { utils } from './utils';
+import { isOrderTakerFeePayableWithMakerAsset, isOrderTakerFeePayableWithTakerAsset } from './utils';
 
 export const calculateLiquidity = (
     prunedOrders: SignedOrderWithFillableAmounts[],
 ): LiquidityForTakerMakerAssetDataPair => {
     const liquidityInBigNumbers = prunedOrders.reduce(
         (acc, order) => {
-            const fillableMakerAssetAmount = utils.isOrderTakerFeePayableWithMakerAsset(order)
+            const fillableMakerAssetAmount = isOrderTakerFeePayableWithMakerAsset(order)
                 ? order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount)
                 : order.fillableMakerAssetAmount;
-            const fillableTakerAssetAmount = utils.isOrderTakerFeePayableWithTakerAsset(order)
+            const fillableTakerAssetAmount = isOrderTakerFeePayableWithTakerAsset(order)
                 ? order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount)
                 : order.fillableTakerAssetAmount;
             return {

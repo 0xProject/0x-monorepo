@@ -9,7 +9,7 @@ import 'mocha';
 import { constants } from '../src/constants';
 import { CalculateSwapQuoteOpts, SignedOrderWithFillableAmounts } from '../src/types';
 import { DexOrderSampler, MarketOperationUtils } from '../src/utils/market_operation_utils/';
-import { constants as marketOperationUtilConstants } from '../src/utils/market_operation_utils/constants';
+import { DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_SOURCES } from '../src/utils/market_operation_utils/constants';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 import { SwapQuoteCalculator } from '../src/utils/swap_quote_calculator';
 
@@ -32,8 +32,6 @@ const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 //     testOrders.SIGNED_ORDERS_WITH_FILLABLE_AMOUNTS_FEE_IN_TAKER_ASSET,
 // );
 const TESTRPC_CHAIN_ID = devConstants.TESTRPC_CHAIN_ID;
-
-const { DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_SOURCES } = marketOperationUtilConstants;
 
 // Excludes all non native sources
 const CALCULATE_SWAP_QUOTE_OPTS: CalculateSwapQuoteOpts = {
