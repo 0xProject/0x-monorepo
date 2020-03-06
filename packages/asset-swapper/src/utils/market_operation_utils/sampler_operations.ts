@@ -66,8 +66,8 @@ export const samplerOperations = {
     },
     getLiquidityProviderSellQuotes(
         liquidityProviderRegistryAddress: string,
-        takerToken: string,
         makerToken: string,
+        takerToken: string,
         takerFillAmounts: BigNumber[],
     ): BatchedOperation<BigNumber[]> {
         return {
@@ -91,8 +91,8 @@ export const samplerOperations = {
     },
     getLiquidityProviderBuyQuotes(
         liquidityProviderRegistryAddress: string,
-        takerToken: string,
         makerToken: string,
+        takerToken: string,
         makerFillAmounts: BigNumber[],
     ): BatchedOperation<BigNumber[]> {
         return {
@@ -282,8 +282,8 @@ export const samplerOperations = {
                     }
                     batchedOperation = samplerOperations.getLiquidityProviderSellQuotes(
                         liquidityProviderRegistryAddress,
-                        takerToken,
                         makerToken,
+                        takerToken,
                         takerFillAmounts,
                     );
                 } else {
@@ -337,8 +337,8 @@ export const samplerOperations = {
                 }
                 return samplerOperations.getLiquidityProviderBuyQuotes(
                     liquidityProviderRegistryAddress,
-                    takerToken,
                     makerToken,
+                    takerToken,
                     makerFillAmounts,
                 );
             } else {

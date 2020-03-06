@@ -11,7 +11,7 @@ import {
 import { Web3Wrapper } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
-import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
+import { BigNumber, hexUtils, NULL_ADDRESS, fromTokenUnitAmount } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants as assetSwapperConstants } from '../src/constants';
@@ -873,7 +873,7 @@ describe('MarketOperationUtils tests', () => {
                 const liquidityProviderAddress = randomAddress();
                 const xAsset = randomAddress();
                 const yAsset = randomAddress();
-                const toSell = Web3Wrapper.toBaseUnitAmount(10, 18);
+                const toSell = fromTokenUnitAmount(10);
 
                 const [getSellQuotesParams, getSellQuotesFn] = callTradeOperationAndRetainLiquidityProviderParams(
                     createGetMultipleSellQuotesOperationFromRates,
