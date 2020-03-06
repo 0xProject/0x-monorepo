@@ -211,6 +211,7 @@ export const samplerOperations = {
                 }
                 const flatSortedSamples = samples
                     .reduce((acc, v) => acc.concat(...v))
+                    .filter(v => !v.output.isZero())
                     .sort((a, b) => a.output.comparedTo(b.output));
                 if (flatSortedSamples.length === 0) {
                     return new BigNumber(0);
