@@ -613,6 +613,62 @@ describe('MarketOperationUtils tests', () => {
                 const expectedSources = [ERC20BridgeSource.Native, ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber];
                 expect(orderSources).to.deep.eq(expectedSources);
             });
+
+            it('is able to create a order from LiquidityProvider', async () => {
+                const registryAddress = randomAddress();
+                const liquidityProviderAddress = randomAddress();
+                const xAsset = randomAddress();
+                const yAsset = randomAddress();
+                const toSell = fromTokenUnitAmount(10);
+
+                const [getSellQuotesParams, getSellQuotesFn] = callTradeOperationAndRetainLiquidityProviderParams(
+                    createGetMultipleSellQuotesOperationFromRates,
+                    {
+                        [ERC20BridgeSource.LiquidityProvider]: createDecreasingRates(5),
+                    },
+                );
+                const [
+                    getLiquidityProviderParams,
+                    getLiquidityProviderFn,
+                ] = getLiquidityProviderFromRegistryAndReturnCallParameters(liquidityProviderAddress);
+                replaceSamplerOps({
+                    getOrderFillableTakerAmounts: () => [constants.ZERO_AMOUNT],
+                    getSellQuotes: getSellQuotesFn,
+                    getLiquidityProviderFromRegistry: getLiquidityProviderFn,
+                });
+
+                const sampler = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    registryAddress,
+                );
+                const result = await sampler.getMarketSellOrdersAsync(
+                    [
+                        createOrder({
+                            makerAssetData: assetDataUtils.encodeERC20AssetData(xAsset),
+                            takerAssetData: assetDataUtils.encodeERC20AssetData(yAsset),
+                        }),
+                    ],
+                    Web3Wrapper.toBaseUnitAmount(10, 18),
+                    { excludedSources: SELL_SOURCES, numSamples: 4 },
+                );
+                expect(result.length).to.eql(1);
+                expect(result[0].makerAddress).to.eql(liquidityProviderAddress);
+
+                // tslint:disable-next-line:no-unnecessary-type-assertion
+                const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(
+                    result[0].makerAssetData,
+                ) as ERC20BridgeAssetData;
+                expect(decodedAssetData.assetProxyId).to.eql(AssetProxyId.ERC20Bridge);
+                expect(decodedAssetData.bridgeAddress).to.eql(liquidityProviderAddress);
+                expect(result[0].takerAssetAmount).to.bignumber.eql(toSell);
+                expect(getSellQuotesParams.sources).contains(ERC20BridgeSource.LiquidityProvider);
+                expect(getSellQuotesParams.liquidityProviderAddress).is.eql(registryAddress);
+                expect(getLiquidityProviderParams.registryAddress).is.eql(registryAddress);
+                expect(getLiquidityProviderParams.makerToken).is.eql(xAsset);
+                expect(getLiquidityProviderParams.takerToken).is.eql(yAsset);
+            });
         });
 
         describe('getMarketBuyOrdersAsync()', () => {
@@ -866,62 +922,6 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.Uniswap,
                 ];
                 expect(orderSources).to.deep.eq(expectedSources);
-            });
-
-            it('is able to create a order from LiquidityProvider', async () => {
-                const registryAddress = randomAddress();
-                const liquidityProviderAddress = randomAddress();
-                const xAsset = randomAddress();
-                const yAsset = randomAddress();
-                const toSell = fromTokenUnitAmount(10);
-
-                const [getSellQuotesParams, getSellQuotesFn] = callTradeOperationAndRetainLiquidityProviderParams(
-                    createGetMultipleSellQuotesOperationFromRates,
-                    {
-                        [ERC20BridgeSource.LiquidityProvider]: createDecreasingRates(5),
-                    },
-                );
-                const [
-                    getLiquidityProviderParams,
-                    getLiquidityProviderFn,
-                ] = getLiquidityProviderFromRegistryAndReturnCallParameters(liquidityProviderAddress);
-                replaceSamplerOps({
-                    getOrderFillableTakerAmounts: () => [constants.ZERO_AMOUNT],
-                    getSellQuotes: getSellQuotesFn,
-                    getLiquidityProviderFromRegistry: getLiquidityProviderFn,
-                });
-
-                const sampler = new MarketOperationUtils(
-                    MOCK_SAMPLER,
-                    contractAddresses,
-                    ORDER_DOMAIN,
-                    registryAddress,
-                );
-                const result = await sampler.getMarketSellOrdersAsync(
-                    [
-                        createOrder({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(xAsset),
-                            takerAssetData: assetDataUtils.encodeERC20AssetData(yAsset),
-                        }),
-                    ],
-                    Web3Wrapper.toBaseUnitAmount(10, 18),
-                    { excludedSources: SELL_SOURCES, numSamples: 4 },
-                );
-                expect(result.length).to.eql(1);
-                expect(result[0].makerAddress).to.eql(liquidityProviderAddress);
-
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(
-                    result[0].makerAssetData,
-                ) as ERC20BridgeAssetData;
-                expect(decodedAssetData.assetProxyId).to.eql(AssetProxyId.ERC20Bridge);
-                expect(decodedAssetData.bridgeAddress).to.eql(liquidityProviderAddress);
-                expect(result[0].takerAssetAmount).to.bignumber.eql(toSell);
-                expect(getSellQuotesParams.sources).contains(ERC20BridgeSource.LiquidityProvider);
-                expect(getSellQuotesParams.liquidityProviderAddress).is.eql(registryAddress);
-                expect(getLiquidityProviderParams.registryAddress).is.eql(registryAddress);
-                expect(getLiquidityProviderParams.makerToken).is.eql(xAsset);
-                expect(getLiquidityProviderParams.takerToken).is.eql(yAsset);
             });
         });
     });
