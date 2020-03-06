@@ -15,6 +15,19 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "registryAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" }
+                ],
+                "name": "getLiquidityProviderFromRegistry",
+                "outputs": [{ "internalType": "address", "name": "providerAddress", "type": "address" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     {
                         "components": [
                             { "internalType": "address", "name": "makerAddress", "type": "address" },
@@ -96,6 +109,20 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "registryAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromLiquidityProviderRegistry",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
                     { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
@@ -149,6 +176,20 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "registryAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromLiquidityProviderRegistry",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
                     { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
@@ -166,6 +207,14 @@
                     "details": "Call multiple public functions on this contract in a single transaction.",
                     "params": { "callDatas": "ABI-encoded call data for each function call." },
                     "return": "callResults ABI-encoded results data for each call."
+                },
+                "getLiquidityProviderFromRegistry(address,address,address)": {
+                    "details": "Returns the address of a liquidity provider for the given market      (takerToken, makerToken), from a registry of liquidity providers.      Returns address(0) if no such provider exists in the registry.",
+                    "params": {
+                        "makerToken": "Maker asset managed by liquidity provider.",
+                        "takerToken": "Taker asset managed by liquidity provider."
+                    },
+                    "return": "providerAddress Address of the liquidity provider."
                 },
                 "getOrderFillableMakerAssetAmounts((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])": {
                     "details": "Queries the fillable maker asset amounts of native orders.",
@@ -189,6 +238,16 @@
                         "makerToken": "Address of the maker token (what to buy).",
                         "takerToken": "Address of the taker token (what to sell).",
                         "takerTokenAmounts": "Maker token sell amount for each sample."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleBuysFromLiquidityProviderRegistry(address,address,address,uint256[])": {
+                    "details": "Sample buy quotes from an arbitrary on-chain liquidity provider.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "registryAddress": "Address of the liquidity provider registry contract.",
+                        "takerToken": "Address of the taker token (what to sell)."
                     },
                     "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
                 },
@@ -224,6 +283,16 @@
                     "details": "Sample sell quotes from Kyber.",
                     "params": {
                         "makerToken": "Address of the maker token (what to buy).",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromLiquidityProviderRegistry(address,address,address,uint256[])": {
+                    "details": "Sample sell quotes from an arbitrary on-chain liquidity provider.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "registryAddress": "Address of the liquidity provider registry contract.",
                         "takerToken": "Address of the taker token (what to sell).",
                         "takerTokenAmounts": "Taker token sell amount for each sample."
                     },

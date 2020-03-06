@@ -1,3 +1,4 @@
+import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
 import { SignedOrderWithFillableAmounts } from '../../types';
@@ -31,6 +32,7 @@ export enum ERC20BridgeSource {
     CurveUsdcDai = 'Curve_USDC_DAI',
     CurveUsdcDaiUsdt = 'Curve_USDC_DAI_USDT',
     CurveUsdcDaiUsdtTusd = 'Curve_USDC_DAI_USDT_TUSD',
+    LiquidityProvider = 'LiquidityProvider',
     CurveUsdcDaiUsdtBusd = 'Curve_USDC_DAI_USDT_BUSD',
 }
 
@@ -61,6 +63,7 @@ export enum FillFlags {
     SourceUniswap = 0x2,
     SourceEth2Dai = 0x4,
     SourceKyber = 0x8,
+    SourceLiquidityPool = 0x10,
 }
 
 /**
@@ -174,4 +177,12 @@ export interface GetMarketOrdersOpts {
      * Fees for each liquidity source, expressed in gas.
      */
     fees: { [source: string]: BigNumber };
+}
+
+/**
+ * A composable operation the be run in `DexOrderSampler.executeAsync()`.
+ */
+export interface BatchedOperation<TResult> {
+    encodeCall(contract: IERC20BridgeSamplerContract): string;
+    handleCallResultsAsync(contract: IERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
 }

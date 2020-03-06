@@ -1,4 +1,11 @@
-import { constants, expect, getRandomFloat, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
+import {
+    constants,
+    expect,
+    getRandomFloat,
+    getRandomInteger,
+    randomAddress,
+    toBaseUnitAmount,
+} from '@0x/contracts-test-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
@@ -132,6 +139,72 @@ describe('DexSampler tests', () => {
                 ),
             );
             expect(fillableAmounts).to.deep.eq(expectedMakerFillAmounts);
+        });
+
+        it('getLiquidityProviderSellQuotes()', async () => {
+            const expectedMakerToken = randomAddress();
+            const expectedTakerToken = randomAddress();
+            const registry = randomAddress();
+            const sampler = new MockSamplerContract({
+                sampleSellsFromLiquidityProviderRegistry: (registryAddress, takerToken, makerToken, fillAmounts) => {
+                    expect(registryAddress).to.eq(registry);
+                    expect(takerToken).to.eq(expectedTakerToken);
+                    expect(makerToken).to.eq(expectedMakerToken);
+                    return [toBaseUnitAmount(1001)];
+                },
+            });
+            const dexOrderSampler = new DexOrderSampler(sampler);
+            const [result] = await dexOrderSampler.executeAsync(
+                DexOrderSampler.ops.getSellQuotes(
+                    [ERC20BridgeSource.LiquidityProvider],
+                    expectedMakerToken,
+                    expectedTakerToken,
+                    [toBaseUnitAmount(1000)],
+                    registry,
+                ),
+            );
+            expect(result).to.deep.equal([
+                [
+                    {
+                        source: 'LiquidityProvider',
+                        output: toBaseUnitAmount(1001),
+                        input: toBaseUnitAmount(1000),
+                    },
+                ],
+            ]);
+        });
+
+        it('getLiquidityProviderBuyQuotes()', async () => {
+            const expectedMakerToken = randomAddress();
+            const expectedTakerToken = randomAddress();
+            const registry = randomAddress();
+            const sampler = new MockSamplerContract({
+                sampleBuysFromLiquidityProviderRegistry: (registryAddress, takerToken, makerToken, fillAmounts) => {
+                    expect(registryAddress).to.eq(registry);
+                    expect(takerToken).to.eq(expectedTakerToken);
+                    expect(makerToken).to.eq(expectedMakerToken);
+                    return [toBaseUnitAmount(999)];
+                },
+            });
+            const dexOrderSampler = new DexOrderSampler(sampler);
+            const [result] = await dexOrderSampler.executeAsync(
+                DexOrderSampler.ops.getBuyQuotes(
+                    [ERC20BridgeSource.LiquidityProvider],
+                    expectedMakerToken,
+                    expectedTakerToken,
+                    [toBaseUnitAmount(1000)],
+                    registry,
+                ),
+            );
+            expect(result).to.deep.equal([
+                [
+                    {
+                        source: 'LiquidityProvider',
+                        output: toBaseUnitAmount(999),
+                        input: toBaseUnitAmount(1000),
+                    },
+                ],
+            ]);
         });
 
         it('getEth2DaiSellQuotes()', async () => {

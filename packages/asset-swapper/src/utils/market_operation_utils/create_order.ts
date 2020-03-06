@@ -1,3 +1,4 @@
+import { assert } from '@0x/assert';
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
@@ -48,6 +49,7 @@ export class CreateOrderUtils {
         outputToken: string,
         path: CollapsedFill[],
         bridgeSlippage: number,
+        liquidityProviderAddress?: string,
     ): OptimizedMarketOrder[] {
         const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
@@ -58,7 +60,7 @@ export class CreateOrderUtils {
                     createBridgeOrder(
                         orderDomain,
                         fill,
-                        this._getBridgeAddressFromSource(fill.source),
+                        this._getBridgeAddressFromSource(fill.source, liquidityProviderAddress),
                         outputToken,
                         inputToken,
                         bridgeSlippage,
@@ -76,6 +78,7 @@ export class CreateOrderUtils {
         outputToken: string,
         path: CollapsedFill[],
         bridgeSlippage: number,
+        liquidityProviderAddress?: string,
     ): OptimizedMarketOrder[] {
         const orders: OptimizedMarketOrder[] = [];
         for (const fill of path) {
@@ -86,7 +89,7 @@ export class CreateOrderUtils {
                     createBridgeOrder(
                         orderDomain,
                         fill,
-                        this._getBridgeAddressFromSource(fill.source),
+                        this._getBridgeAddressFromSource(fill.source, liquidityProviderAddress),
                         inputToken,
                         outputToken,
                         bridgeSlippage,
@@ -98,7 +101,7 @@ export class CreateOrderUtils {
         return orders;
     }
 
-    private _getBridgeAddressFromSource(source: ERC20BridgeSource): string {
+    private _getBridgeAddressFromSource(source: ERC20BridgeSource, liquidityProviderAddress?: string): string {
         switch (source) {
             case ERC20BridgeSource.Eth2Dai:
                 return this._contractAddress.eth2DaiBridge;
@@ -111,6 +114,14 @@ export class CreateOrderUtils {
             case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
             case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
                 return this._contractAddress.curveBridge;
+            case ERC20BridgeSource.LiquidityProvider:
+                if (liquidityProviderAddress === undefined) {
+                    throw new Error(
+                        'Cannot create a LiquidityProvider order without a LiquidityProvider pool address.',
+                    );
+                }
+                assert.isETHAddressHex('liquidityProviderAddress', liquidityProviderAddress);
+                return liquidityProviderAddress;
             default:
                 break;
         }

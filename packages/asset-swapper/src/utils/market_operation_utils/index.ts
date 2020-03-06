@@ -1,7 +1,7 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, orderCalculationUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
 import { constants } from '../../constants';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
@@ -46,6 +46,7 @@ export class MarketOperationUtils {
         private readonly _sampler: DexOrderSampler,
         contractAddresses: ContractAddresses,
         private readonly _orderDomain: OrderDomain,
+        private readonly _liquidityProviderRegistry: string = NULL_ADDRESS,
     ) {
         this._createOrderUtils = new CreateOrderUtils(contractAddresses);
         this._wethAddress = contractAddresses.etherToken;
@@ -72,23 +73,40 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, ethToMakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [
+            fillableAmounts,
+            liquidityProviderAddress,
+            ethToMakerAssetRate,
+            dexQuotes,
+        ] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(
+                this._liquidityProviderRegistry,
+                takerToken,
+                makerToken,
+            ),
             makerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                          this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                      ),
                       makerToken,
                       this._wethAddress,
                       ONE_ETHER,
+                      this._liquidityProviderRegistry,
                   ),
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES, _opts.excludedSources),
+                difference(SELL_SOURCES, _opts.excludedSources).concat(
+                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                ),
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+                this._liquidityProviderRegistry,
             ),
         );
+
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
             fillableAmounts,
@@ -130,6 +148,7 @@ export class MarketOperationUtils {
             makerToken,
             collapsePath(optimalPath, false),
             _opts.bridgeSlippage,
+            liquidityProviderAddress,
         );
     }
 
@@ -154,21 +173,37 @@ export class MarketOperationUtils {
             ...opts,
         };
         const [makerToken, takerToken] = getOrderTokens(nativeOrders[0]);
-        const [fillableAmounts, ethToTakerAssetRate, dexQuotes] = await this._sampler.executeAsync(
+        const [
+            fillableAmounts,
+            liquidityProviderAddress,
+            ethToTakerAssetRate,
+            dexQuotes,
+        ] = await this._sampler.executeAsync(
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
+            DexOrderSampler.ops.getLiquidityProviderFromRegistry(
+                this._liquidityProviderRegistry,
+                takerToken,
+                makerToken,
+            ),
             takerToken.toLowerCase() === this._wethAddress.toLowerCase()
                 ? DexOrderSampler.ops.constant(new BigNumber(1))
                 : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                          this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                      ),
                       takerToken,
                       this._wethAddress,
                       ONE_ETHER,
+                      this._liquidityProviderRegistry,
                   ),
             DexOrderSampler.ops.getBuyQuotes(
-                difference(BUY_SOURCES, _opts.excludedSources),
+                difference(BUY_SOURCES, _opts.excludedSources).concat(
+                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                ),
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+                this._liquidityProviderRegistry,
             ),
         );
         const signedOrderWithFillableAmounts = this._createBuyOrdersPathFromSamplerResultIfExists(
@@ -178,6 +213,7 @@ export class MarketOperationUtils {
             dexQuotes,
             ethToTakerAssetRate,
             _opts,
+            liquidityProviderAddress,
         );
         if (!signedOrderWithFillableAmounts) {
             throw new Error(AggregationError.NoOptimalPath);
@@ -188,6 +224,9 @@ export class MarketOperationUtils {
     /**
      * gets the orders required for a batch of market buy operations by (potentially) merging native orders with
      * generated bridge orders.
+     *
+     * NOTE: Currently `getBatchMarketBuyOrdersAsync()` does not support external liquidity providers.
+     *
      * @param batchNativeOrders Batch of Native orders.
      * @param makerAmounts Array amount of maker asset to buy for each batch.
      * @param opts Options object.
@@ -240,6 +279,13 @@ export class MarketOperationUtils {
         );
     }
 
+    private _liquidityProviderSourceIfAvailable(excludedSources: ERC20BridgeSource[]): ERC20BridgeSource[] {
+        return this._liquidityProviderRegistry !== NULL_ADDRESS &&
+            !excludedSources.includes(ERC20BridgeSource.LiquidityProvider)
+            ? [ERC20BridgeSource.LiquidityProvider]
+            : [];
+    }
+
     private _createBuyOrdersPathFromSamplerResultIfExists(
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
@@ -247,6 +293,7 @@ export class MarketOperationUtils {
         dexQuotes: DexSample[][],
         ethToTakerAssetRate: BigNumber,
         opts: GetMarketOrdersOpts,
+        liquidityProviderAddress?: string,
     ): OptimizedMarketOrder[] | undefined {
         const nativeOrdersWithFillableAmounts = createSignedOrdersWithFillableAmounts(
             nativeOrders,
@@ -289,6 +336,7 @@ export class MarketOperationUtils {
             outputToken,
             collapsePath(optimalPath, true),
             opts.bridgeSlippage,
+            liquidityProviderAddress,
         );
     }
 }
@@ -469,6 +517,9 @@ function sourceToFillFlags(source: ERC20BridgeSource): number {
     }
     if (source === ERC20BridgeSource.Uniswap) {
         return FillFlags.SourceUniswap;
+    }
+    if (source === ERC20BridgeSource.LiquidityProvider) {
+        return FillFlags.SourceLiquidityPool;
     }
     return FillFlags.SourceNative;
 }

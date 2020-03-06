@@ -21,8 +21,9 @@ import {
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
-import { DexOrderSampler, MarketOperationUtils } from './utils/market_operation_utils';
+import { MarketOperationUtils } from './utils/market_operation_utils';
 import { dummyOrderUtils } from './utils/market_operation_utils/dummy_order_utils';
+import { DexOrderSampler } from './utils/market_operation_utils/sampler';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -144,11 +145,13 @@ export class SwapQuoter {
      * @return  An instance of SwapQuoter
      */
     constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
-        const { chainId, expiryBufferMs, permittedOrderFeeTypes, samplerGasLimit } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTER_OPTS,
-            options,
-        );
+        const {
+            chainId,
+            expiryBufferMs,
+            permittedOrderFeeTypes,
+            samplerGasLimit,
+            liquidityProviderRegistryAddress,
+        } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
         assert.isNumber('chainId', chainId);
@@ -167,10 +170,15 @@ export class SwapQuoter {
                 gas: samplerGasLimit,
             }),
         );
-        this._marketOperationUtils = new MarketOperationUtils(sampler, this._contractAddresses, {
-            chainId,
-            exchangeAddress: this._contractAddresses.exchange,
-        });
+        this._marketOperationUtils = new MarketOperationUtils(
+            sampler,
+            this._contractAddresses,
+            {
+                chainId,
+                exchangeAddress: this._contractAddresses.exchange,
+            },
+            liquidityProviderRegistryAddress,
+        );
         this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
     }
 

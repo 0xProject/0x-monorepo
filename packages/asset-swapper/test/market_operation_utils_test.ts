@@ -8,10 +8,10 @@ import {
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-
+import { Web3Wrapper } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
-import { BigNumber, hexUtils } from '@0x/utils';
+import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
+import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants as assetSwapperConstants } from '../src/constants';
@@ -141,6 +141,7 @@ describe('MarketOperationUtils tests', () => {
         makerToken: string,
         takerToken: string,
         fillAmounts: BigNumber[],
+        liquidityProviderAddress?: string,
     ) => DexSample[][];
 
     function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
@@ -153,6 +154,28 @@ describe('MarketOperationUtils tests', () => {
                 })),
             );
         };
+    }
+
+    function callTradeOperationAndRetainLiquidityProviderParams(
+        tradeOperation: (rates: RatesBySource) => GetMultipleQuotesOperation,
+        rates: RatesBySource,
+    ): [{ sources: ERC20BridgeSource[]; liquidityProviderAddress?: string }, GetMultipleQuotesOperation] {
+        const liquidityPoolParams: { sources: ERC20BridgeSource[]; liquidityProviderAddress?: string } = {
+            sources: [],
+            liquidityProviderAddress: undefined,
+        };
+        const fn = (
+            sources: ERC20BridgeSource[],
+            makerToken: string,
+            takerToken: string,
+            fillAmounts: BigNumber[],
+            liquidityProviderAddress?: string,
+        ) => {
+            liquidityPoolParams.liquidityProviderAddress = liquidityProviderAddress;
+            liquidityPoolParams.sources = sources;
+            return tradeOperation(rates)(sources, makerToken, takerToken, fillAmounts, liquidityProviderAddress);
+        };
+        return [liquidityPoolParams, fn];
     }
 
     function createGetMultipleBuyQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
@@ -172,12 +195,45 @@ describe('MarketOperationUtils tests', () => {
         makerToken: string,
         takerToken: string,
         fillAmounts: BigNumber[],
+        liquidityProviderAddress?: string,
     ) => BigNumber;
+
+    type GetLiquidityProviderFromRegistryOperation = (
+        registryAddress: string,
+        takerToken: string,
+        makerToken: string,
+    ) => string;
 
     function createGetMedianSellRate(rate: Numberish): GetMedianRateOperation {
         return (sources: ERC20BridgeSource[], makerToken: string, takerToken: string, fillAmounts: BigNumber[]) => {
             return new BigNumber(rate);
         };
+    }
+
+    function getLiquidityProviderFromRegistry(): GetLiquidityProviderFromRegistryOperation {
+        return (registryAddress: string, takerToken: string, makerToken: string): string => {
+            return NULL_ADDRESS;
+        };
+    }
+
+    function getLiquidityProviderFromRegistryAndReturnCallParameters(
+        liquidityProviderAddress: string = NULL_ADDRESS,
+    ): [
+        { registryAddress?: string; takerToken?: string; makerToken?: string },
+        GetLiquidityProviderFromRegistryOperation
+    ] {
+        const callArgs: { registryAddress?: string; takerToken?: string; makerToken?: string } = {
+            registryAddress: undefined,
+            takerToken: undefined,
+            makerToken: undefined,
+        };
+        const fn = (registryAddress: string, takerToken: string, makerToken: string): string => {
+            callArgs.makerToken = makerToken;
+            callArgs.takerToken = takerToken;
+            callArgs.registryAddress = registryAddress;
+            return liquidityProviderAddress;
+        };
+        return [callArgs, fn];
     }
 
     function createDecreasingRates(count: number): BigNumber[] {
@@ -205,6 +261,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.CurveUsdcDaiUsdt]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdtBusd]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
     };
 
     function findSourceWithMaxOutput(rates: RatesBySource): ERC20BridgeSource {
@@ -239,6 +296,7 @@ describe('MarketOperationUtils tests', () => {
         getSellQuotes: createGetMultipleSellQuotesOperationFromRates(DEFAULT_RATES),
         getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(DEFAULT_RATES),
         getMedianSellRate: createGetMedianSellRate(1),
+        getLiquidityProviderFromRegistry: getLiquidityProviderFromRegistry(),
     };
 
     function replaceSamplerOps(ops: Partial<typeof DEFAULT_OPS> = {}): void {
@@ -311,6 +369,31 @@ describe('MarketOperationUtils tests', () => {
                     excludedSources: [],
                 });
                 expect(sourcesPolled.sort()).to.deep.eq(SELL_SOURCES.slice().sort());
+            });
+
+            it('polls the liquidity provider when the registry is provided in the arguments', async () => {
+                const [args, fn] = callTradeOperationAndRetainLiquidityProviderParams(
+                    createGetMultipleSellQuotesOperationFromRates,
+                    DEFAULT_RATES,
+                );
+                replaceSamplerOps({
+                    getSellQuotes: fn,
+                });
+                const registryAddress = randomAddress();
+                const newMarketOperationUtils = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    registryAddress,
+                );
+                await newMarketOperationUtils.getMarketSellOrdersAsync(ORDERS, FILL_AMOUNT, {
+                    ...DEFAULT_OPTS,
+                    excludedSources: [],
+                });
+                expect(args.sources.sort()).to.deep.eq(
+                    SELL_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort(),
+                );
+                expect(args.liquidityProviderAddress).to.eql(registryAddress);
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {
@@ -530,6 +613,62 @@ describe('MarketOperationUtils tests', () => {
                 const expectedSources = [ERC20BridgeSource.Native, ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber];
                 expect(orderSources).to.deep.eq(expectedSources);
             });
+
+            it('is able to create a order from LiquidityProvider', async () => {
+                const registryAddress = randomAddress();
+                const liquidityProviderAddress = randomAddress();
+                const xAsset = randomAddress();
+                const yAsset = randomAddress();
+                const toSell = fromTokenUnitAmount(10);
+
+                const [getSellQuotesParams, getSellQuotesFn] = callTradeOperationAndRetainLiquidityProviderParams(
+                    createGetMultipleSellQuotesOperationFromRates,
+                    {
+                        [ERC20BridgeSource.LiquidityProvider]: createDecreasingRates(5),
+                    },
+                );
+                const [
+                    getLiquidityProviderParams,
+                    getLiquidityProviderFn,
+                ] = getLiquidityProviderFromRegistryAndReturnCallParameters(liquidityProviderAddress);
+                replaceSamplerOps({
+                    getOrderFillableTakerAmounts: () => [constants.ZERO_AMOUNT],
+                    getSellQuotes: getSellQuotesFn,
+                    getLiquidityProviderFromRegistry: getLiquidityProviderFn,
+                });
+
+                const sampler = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    registryAddress,
+                );
+                const result = await sampler.getMarketSellOrdersAsync(
+                    [
+                        createOrder({
+                            makerAssetData: assetDataUtils.encodeERC20AssetData(xAsset),
+                            takerAssetData: assetDataUtils.encodeERC20AssetData(yAsset),
+                        }),
+                    ],
+                    Web3Wrapper.toBaseUnitAmount(10, 18),
+                    { excludedSources: SELL_SOURCES, numSamples: 4 },
+                );
+                expect(result.length).to.eql(1);
+                expect(result[0].makerAddress).to.eql(liquidityProviderAddress);
+
+                // tslint:disable-next-line:no-unnecessary-type-assertion
+                const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(
+                    result[0].makerAssetData,
+                ) as ERC20BridgeAssetData;
+                expect(decodedAssetData.assetProxyId).to.eql(AssetProxyId.ERC20Bridge);
+                expect(decodedAssetData.bridgeAddress).to.eql(liquidityProviderAddress);
+                expect(result[0].takerAssetAmount).to.bignumber.eql(toSell);
+                expect(getSellQuotesParams.sources).contains(ERC20BridgeSource.LiquidityProvider);
+                expect(getSellQuotesParams.liquidityProviderAddress).is.eql(registryAddress);
+                expect(getLiquidityProviderParams.registryAddress).is.eql(registryAddress);
+                expect(getLiquidityProviderParams.makerToken).is.eql(xAsset);
+                expect(getLiquidityProviderParams.takerToken).is.eql(yAsset);
+            });
         });
 
         describe('getMarketBuyOrdersAsync()', () => {
@@ -578,6 +717,31 @@ describe('MarketOperationUtils tests', () => {
                     excludedSources: [],
                 });
                 expect(sourcesPolled).to.deep.eq(BUY_SOURCES);
+            });
+
+            it('polls the liquidity provider when the registry is provided in the arguments', async () => {
+                const [args, fn] = callTradeOperationAndRetainLiquidityProviderParams(
+                    createGetMultipleBuyQuotesOperationFromRates,
+                    DEFAULT_RATES,
+                );
+                replaceSamplerOps({
+                    getBuyQuotes: fn,
+                });
+                const registryAddress = randomAddress();
+                const newMarketOperationUtils = new MarketOperationUtils(
+                    MOCK_SAMPLER,
+                    contractAddresses,
+                    ORDER_DOMAIN,
+                    registryAddress,
+                );
+                await newMarketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                    ...DEFAULT_OPTS,
+                    excludedSources: [],
+                });
+                expect(args.sources.sort()).to.deep.eq(
+                    BUY_SOURCES.concat([ERC20BridgeSource.LiquidityProvider]).sort(),
+                );
+                expect(args.liquidityProviderAddress).to.eql(registryAddress);
             });
 
             it('does not poll DEXes in `excludedSources`', async () => {

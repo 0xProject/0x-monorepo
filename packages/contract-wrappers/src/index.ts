@@ -1,3 +1,5 @@
+export { ERC20BridgeSamplerContract } from './generated-wrappers/erc20_bridge_sampler';
+
 export { ContractAddresses } from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
