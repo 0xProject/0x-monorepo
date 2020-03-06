@@ -10,10 +10,12 @@ import { Order } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { DummyLiquidityProviderContract, DummyLiquidityProviderRegistryContract } from '../src';
-
 import { artifacts } from './artifacts';
-import { TestERC20BridgeSamplerContract } from './wrappers';
+import {
+    DummyLiquidityProviderContract,
+    DummyLiquidityProviderRegistryContract,
+    TestERC20BridgeSamplerContract,
+} from './wrappers';
 
 blockchainTests('erc20-bridge-sampler', env => {
     let testContract: TestERC20BridgeSamplerContract;
@@ -718,7 +720,7 @@ blockchainTests('erc20-bridge-sampler', env => {
         });
     });
 
-    blockchainTests.resets('getLiquidityProviderFromRegistry', () => {
+    describe('getLiquidityProviderFromRegistry', () => {
         const xAsset = randomAddress();
         const yAsset = randomAddress();
         const sampleAmounts = getSampleAmounts(yAsset);
@@ -726,9 +728,6 @@ blockchainTests('erc20-bridge-sampler', env => {
         let registryContract: DummyLiquidityProviderRegistryContract;
 
         before(async () => {
-            await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync()
-                .txHashPromise;
-
             liquidityProvider = await DummyLiquidityProviderContract.deployFrom0xArtifactAsync(
                 artifacts.DummyLiquidityProvider,
                 env.provider,
@@ -744,7 +743,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             );
             await registryContract
                 .setLiquidityProviderForMarket(xAsset, yAsset, liquidityProvider.address)
-                .awaitTransactionSuccessAsync().txHashPromise;
+                .awaitTransactionSuccessAsync();
         });
 
         it('should be able to get the liquidity provider', async () => {

@@ -1,5 +1,3 @@
-export { DummyLiquidityProviderContract } from './generated-wrappers/dummy_liquidity_provider';
-export { DummyLiquidityProviderRegistryContract } from './generated-wrappers/dummy_liquidity_provider_registry';
 export { ERC20BridgeSamplerContract } from './generated-wrappers/erc20_bridge_sampler';
 
 export { ContractAddresses } from '@0x/contract-addresses';
