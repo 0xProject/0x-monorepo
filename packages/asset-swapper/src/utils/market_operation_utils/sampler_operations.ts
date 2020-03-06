@@ -1,6 +1,6 @@
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
-import { constants } from '../../constants';
 
+import { DEFAULT_CURVE_OPTS } from './constants';
 import { BatchedOperation, DexSample } from './types';
 
 /**
@@ -233,8 +233,8 @@ export const samplerOperations = {
     },
     getLiquidityProviderFromRegistry(
         registryAddress: string,
-        takerToken: string,
         makerToken: string,
+        takerToken: string,
     ): BatchedOperation<string> {
         return {
             encodeCall: contract => {
@@ -263,8 +263,8 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
-                } else if (Object.keys(constants.DEFAULT_CURVE_OPTS).includes(source)) {
-                    const { curveAddress, tokens } = constants.DEFAULT_CURVE_OPTS[source];
+                } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
+                    const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
                     const fromTokenIdx = tokens.indexOf(takerToken);
                     const toTokenIdx = tokens.indexOf(makerToken);
                     if (fromTokenIdx !== -1 && toTokenIdx !== -1) {

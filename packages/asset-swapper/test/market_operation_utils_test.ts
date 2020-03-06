@@ -652,7 +652,7 @@ describe('MarketOperationUtils tests', () => {
                         }),
                     ],
                     Web3Wrapper.toBaseUnitAmount(10, 18),
-                    { excludedSources: SELL_SOURCES, numSamples: 4 },
+                    { excludedSources: SELL_SOURCES, numSamples: 4, bridgeSlippage: 0 },
                 );
                 expect(result.length).to.eql(1);
                 expect(result[0].makerAddress).to.eql(liquidityProviderAddress);
@@ -667,8 +667,8 @@ describe('MarketOperationUtils tests', () => {
                 expect(getSellQuotesParams.sources).contains(ERC20BridgeSource.LiquidityProvider);
                 expect(getSellQuotesParams.liquidityProviderAddress).is.eql(registryAddress);
                 expect(getLiquidityProviderParams.registryAddress).is.eql(registryAddress);
-                expect(getLiquidityProviderParams.makerToken).is.eql(xAsset);
-                expect(getLiquidityProviderParams.takerToken).is.eql(yAsset);
+                expect(getLiquidityProviderParams.makerToken).is.eql(yAsset);
+                expect(getLiquidityProviderParams.takerToken).is.eql(xAsset);
             });
         });
 

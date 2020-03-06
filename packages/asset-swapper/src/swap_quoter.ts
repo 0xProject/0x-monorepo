@@ -21,8 +21,9 @@ import {
 } from './types';
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
-import { DexOrderSampler, MarketOperationUtils } from './utils/market_operation_utils';
+import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
+import { DexOrderSampler } from './utils/market_operation_utils/sampler';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';

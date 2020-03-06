@@ -30,7 +30,7 @@ const RATE_DECIMALS = 8;
 function hillClimbToOptimalPath(paths: Fill[][], targetInput: BigNumber): Fill[] {
     // Flatten and sort path fills by descending ADJUSTED rate.
     const fills = paths
-        .reduce((acc, p) => acc.concat(p))
+        .reduce((acc, p) => acc.concat(p), [])
         .sort((a, b) => b.adjustedRate.dp(RATE_DECIMALS).comparedTo(a.adjustedRate.dp(RATE_DECIMALS)));
     // Build up a path by picking the next best, valid fill until we meet our input target.
     const path: Fill[] = [];

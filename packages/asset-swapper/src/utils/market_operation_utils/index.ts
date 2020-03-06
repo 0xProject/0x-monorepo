@@ -20,8 +20,6 @@ import {
     OrderDomain,
 } from './types';
 
-export { DexOrderSampler } from './sampler';
-
 export class MarketOperationUtils {
     private readonly _wethAddress: string;
 
@@ -298,6 +296,7 @@ export class MarketOperationUtils {
             orderDomain: this._orderDomain,
             contractAddresses: this.contractAddresses,
             bridgeSlippage: opts.bridgeSlippage || 0,
+            liquidityProviderAddress: opts.liquidityProviderAddress,
         });
     }
 

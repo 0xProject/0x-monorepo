@@ -119,6 +119,7 @@ export interface CreateOrderFromPathOpts {
     orderDomain: OrderDomain;
     contractAddresses: ContractAddresses;
     bridgeSlippage: number;
+    liquidityProviderAddress?: string;
 }
 
 // Convert sell fills into orders.
@@ -135,19 +136,24 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
     return orders;
 }
 
-function getBridgeAddressFromSource(source: ERC20BridgeSource, contractAddresses: ContractAddresses): string {
+function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrderFromPathOpts): string {
     switch (source) {
         case ERC20BridgeSource.Eth2Dai:
-            return contractAddresses.eth2DaiBridge;
+            return opts.contractAddresses.eth2DaiBridge;
         case ERC20BridgeSource.Kyber:
-            return contractAddresses.kyberBridge;
+            return opts.contractAddresses.kyberBridge;
         case ERC20BridgeSource.Uniswap:
-            return contractAddresses.uniswapBridge;
+            return opts.contractAddresses.uniswapBridge;
         case ERC20BridgeSource.CurveUsdcDai:
         case ERC20BridgeSource.CurveUsdcDaiUsdt:
         case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
         case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
-            return contractAddresses.curveBridge;
+            return opts.contractAddresses.curveBridge;
+        case ERC20BridgeSource.LiquidityProvider:
+            if (opts.liquidityProviderAddress === undefined) {
+                throw new Error('Cannot create a LiquidityProvider order without a LiquidityProvider pool address.');
+            }
+            return opts.liquidityProviderAddress;
         default:
             break;
     }
@@ -157,7 +163,7 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, contractAddresses
 function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
     const takerToken = opts.side === MarketOperation.Sell ? opts.inputToken : opts.outputToken;
     const makerToken = opts.side === MarketOperation.Sell ? opts.outputToken : opts.inputToken;
-    const bridgeAddress = getBridgeAddressFromSource(fill.source, opts.contractAddresses);
+    const bridgeAddress = getBridgeAddressFromSource(fill.source, opts);
 
     let makerAssetData;
     if (Object.keys(DEFAULT_CURVE_OPTS).includes(fill.source)) {

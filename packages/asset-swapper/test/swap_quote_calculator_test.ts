@@ -8,8 +8,9 @@ import 'mocha';
 
 import { constants } from '../src/constants';
 import { CalculateSwapQuoteOpts, SignedOrderWithFillableAmounts } from '../src/types';
-import { DexOrderSampler, MarketOperationUtils } from '../src/utils/market_operation_utils/';
+import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { DEFAULT_GET_MARKET_ORDERS_OPTS, SELL_SOURCES } from '../src/utils/market_operation_utils/constants';
+import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 import { SwapQuoteCalculator } from '../src/utils/swap_quote_calculator';
 
