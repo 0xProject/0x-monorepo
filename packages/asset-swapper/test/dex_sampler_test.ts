@@ -1,27 +1,18 @@
 import {
-    DummyLiquidityProviderContract,
-    DummyLiquidityProviderRegistryContract,
-    ERC20BridgeSamplerContract,
-    IERC20BridgeSamplerContract,
-} from '@0x/contract-wrappers';
-import { artifacts as erc20BridgeSamplerArtifacts } from '@0x/contracts-erc20-bridge-sampler/lib/src/artifacts';
-import {
     constants,
     expect,
     getRandomFloat,
     getRandomInteger,
-    provider,
     randomAddress,
     toBaseUnitAmount,
-    txDefaults,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
+import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { DexOrderSampler, getSampleAmounts } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
 import { MockSamplerContract } from './utils/mock_sampler_contract';
 
@@ -407,104 +398,6 @@ describe('DexSampler tests', () => {
                 })),
             );
             expect(quotes).to.deep.eq(expectedQuotes);
-        });
-
-        describe('LiquidityProvider Operations', () => {
-            const xAsset = randomAddress();
-            const yAsset = randomAddress();
-            const zAsset = randomAddress();
-            const liquidityPool1 = randomAddress();
-            const liquidityPool2 = randomAddress();
-
-            let registryContract: DummyLiquidityProviderRegistryContract;
-            let samplerContract: ERC20BridgeSamplerContract;
-            beforeEach(async () => {
-                registryContract = await DummyLiquidityProviderRegistryContract.deployFrom0xArtifactAsync(
-                    erc20BridgeSamplerArtifacts.DummyLiquidityProviderRegistry,
-                    provider,
-                    txDefaults,
-                    {},
-                );
-                samplerContract = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
-                    erc20BridgeSamplerArtifacts.ERC20BridgeSampler,
-                    provider,
-                    txDefaults,
-                    {},
-                );
-            });
-            it('getLiquidityProviderFromRegistry()', async () => {
-                // Deploy Registry
-                // Write 2 new liquidity pools
-                await registryContract
-                    .setLiquidityProviderForMarket(xAsset, yAsset, liquidityPool1)
-                    .awaitTransactionSuccessAsync().txHashPromise;
-                await registryContract
-                    .setLiquidityProviderForMarket(xAsset, zAsset, liquidityPool2)
-                    .awaitTransactionSuccessAsync().txHashPromise;
-
-                // Deploy the sampler
-
-                // Test multiple combinations: 2 pools that are present, 1 pool that is not present.
-                const dexOrderSampler = new DexOrderSampler(
-                    new IERC20BridgeSamplerContract(samplerContract.address, provider),
-                );
-                const [xyPool, xzPool, yzPool, nullPool] = await dexOrderSampler.executeBatchAsync([
-                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, yAsset),
-                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, xAsset, zAsset),
-                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(registryContract.address, yAsset, zAsset),
-                    DexOrderSampler.ops.getLiquidityProviderFromRegistry(NULL_ADDRESS, yAsset, zAsset),
-                ]);
-                expect(xyPool).to.eql(liquidityPool1);
-                expect(xzPool).to.eql(liquidityPool2);
-                expect(yzPool).to.eql(NULL_ADDRESS);
-                expect(nullPool).to.eql(NULL_ADDRESS);
-            });
-            it('is able to sample DEX liquidity from LiquidityProvider', async () => {
-                const fakeLiquidityPool = await DummyLiquidityProviderContract.deployFrom0xArtifactAsync(
-                    erc20BridgeSamplerArtifacts.DummyLiquidityProvider,
-                    provider,
-                    txDefaults,
-                    {},
-                );
-                await registryContract
-                    .setLiquidityProviderForMarket(xAsset, yAsset, fakeLiquidityPool.address)
-                    .awaitTransactionSuccessAsync().txHashPromise;
-
-                const dexOrderSampler = new DexOrderSampler(
-                    new IERC20BridgeSamplerContract(samplerContract.address, provider),
-                );
-                const [buyQuotes, sellQuotes] = await dexOrderSampler.executeBatchAsync([
-                    DexOrderSampler.ops.getBuyQuotes(
-                        [ERC20BridgeSource.LiquidityProvider],
-                        xAsset,
-                        yAsset,
-                        [new BigNumber(10), new BigNumber(100)],
-                        registryContract.address,
-                    ),
-                    DexOrderSampler.ops.getSellQuotes(
-                        [ERC20BridgeSource.LiquidityProvider],
-                        xAsset,
-                        yAsset,
-                        [new BigNumber(10), new BigNumber(100), new BigNumber(500)],
-                        registryContract.address,
-                    ),
-                ]);
-                expect(buyQuotes.length).to.eql(1);
-                const liquidityPoolBuyQuotes: DexSample[] = buyQuotes[0];
-                expect(liquidityPoolBuyQuotes.length).to.eql(2);
-                for (const quote of liquidityPoolBuyQuotes) {
-                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.LiquidityProvider);
-                    expect(quote.input.plus(1)).to.bignumber.eql(quote.output);
-                }
-
-                expect(sellQuotes.length).to.eql(1);
-                const liquidityPoolSellQuotes: DexSample[] = sellQuotes[0];
-                expect(liquidityPoolSellQuotes.length).to.eql(3);
-                for (const quote of liquidityPoolSellQuotes) {
-                    expect(quote.source).to.bignumber.eql(ERC20BridgeSource.LiquidityProvider);
-                    expect(quote.input.minus(1)).to.bignumber.eql(quote.output);
-                }
-            });
         });
     });
 
