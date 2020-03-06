@@ -1,4 +1,5 @@
 export { artifacts } from './artifacts';
+export { MaximumGasPriceContract } from './wrappers';
 export { LibAssetDataTransferRevertErrors, MixinWethUtilsRevertErrors } from '@0x/utils';
 export {
     ContractArtifact,

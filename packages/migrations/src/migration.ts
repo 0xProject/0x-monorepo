@@ -19,6 +19,7 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } f
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
+import { artifacts as extensionArtifacts, MaximumGasPriceContract } from '@0x/contracts-extensions';
 import {
     artifacts as stakingArtifacts,
     StakingProxyContract,
@@ -277,6 +278,14 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
+    // MaximumGasPrice
+    const maximumGasPrice = await MaximumGasPriceContract.deployFrom0xArtifactAsync(
+        extensionArtifacts.MaximumGasPrice,
+        provider,
+        txDefaults,
+        extensionArtifacts,
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -307,7 +316,7 @@ export async function runMigrationsAsync(
         godsUnchainedValidator: constants.NULL_ADDRESS,
         broker: constants.NULL_ADDRESS,
         chainlinkStopLimit: constants.NULL_ADDRESS,
-        maximumGasPrice: constants.NULL_ADDRESS,
+        maximumGasPrice: maximumGasPrice.address,
     };
     return contractAddresses;
 }
