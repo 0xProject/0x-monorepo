@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.10.0",
+        "changes": [
+            {
+                "note": "Added MaximumGasPrice addresses",
+                "pr": 2511
+            },
+            {
+                "note": "Redeploy `KyberBridge`, `UniswapBridge`, `Eth2DaiBridge`, `CurveBridge`, `DydxBridge` on mainnet and kovan",
+                "pr": 2512
+            }
+        ]
+    },
+    {
         "version": "4.9.0",
         "changes": [
             {

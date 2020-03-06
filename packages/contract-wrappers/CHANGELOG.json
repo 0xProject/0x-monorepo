@@ -1,5 +1,18 @@
 [
     {
+        "version": "13.7.0",
+        "changes": [
+            {
+                "note": "Regenerated wrappers for Broker and GodsUnchainedValidator",
+                "pr": 2511
+            },
+            {
+                "note": "Added wrapper for MaximumGasPrice",
+                "pr": 2511
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "13.6.3",
         "changes": [

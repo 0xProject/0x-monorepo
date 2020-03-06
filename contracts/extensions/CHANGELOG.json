@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.2.0",
+        "changes": [
+            {
+                "note": "Add MaximumGasPrice contract, tooling, and unit tests",
+                "pr": 2511
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "6.1.5",
         "changes": [
