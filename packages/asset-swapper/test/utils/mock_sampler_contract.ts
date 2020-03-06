@@ -21,6 +21,12 @@ export type SampleBuysHandler = (
     makerToken: string,
     makerTokenAmounts: BigNumber[],
 ) => SampleResults;
+export type SampleSellsLPHandler = (
+    registryAddress: string,
+    takerToken: string,
+    makerToken: string,
+    takerTokenAmounts: BigNumber[],
+) => SampleResults;
 
 const DUMMY_PROVIDER = {
     sendAsync: (...args: any[]): any => {
@@ -32,10 +38,12 @@ interface Handlers {
     getOrderFillableMakerAssetAmounts: GetOrderFillableAssetAmountHandler;
     getOrderFillableTakerAssetAmounts: GetOrderFillableAssetAmountHandler;
     sampleSellsFromKyberNetwork: SampleSellsHandler;
+    sampleSellsFromLiquidityProviderRegistry: SampleSellsLPHandler;
     sampleSellsFromEth2Dai: SampleSellsHandler;
     sampleSellsFromUniswap: SampleSellsHandler;
     sampleBuysFromEth2Dai: SampleBuysHandler;
     sampleBuysFromUniswap: SampleBuysHandler;
+    sampleBuysFromLiquidityProviderRegistry: SampleSellsLPHandler;
 }
 
 export class MockSamplerContract extends IERC20BridgeSamplerContract {
@@ -113,6 +121,22 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
         return this._wrapCall(
             super.sampleSellsFromUniswap,
             this._handlers.sampleSellsFromUniswap,
+            takerToken,
+            makerToken,
+            takerAssetAmounts,
+        );
+    }
+
+    public sampleSellsFromLiquidityProviderRegistry(
+        registryAddress: string,
+        takerToken: string,
+        makerToken: string,
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromLiquidityProviderRegistry,
+            this._handlers.sampleSellsFromLiquidityProviderRegistry,
+            registryAddress,
             takerToken,
             makerToken,
             takerAssetAmounts,
