@@ -10,6 +10,8 @@ import { Order } from '@0x/types';
 import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { DummyLiquidityProviderContract, DummyLiquidityProviderRegistryContract } from '../src';
+
 import { artifacts } from './artifacts';
 import { TestERC20BridgeSamplerContract } from './wrappers';
 
@@ -713,6 +715,93 @@ blockchainTests('erc20-bridge-sampler', env => {
                 .sampleBuysFromUniswap(nonExistantToken, MAKER_TOKEN, sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
+        });
+    });
+
+    blockchainTests.resets('getLiquidityProviderFromRegistry', () => {
+        const xAsset = randomAddress();
+        const yAsset = randomAddress();
+        const sampleAmounts = getSampleAmounts(yAsset);
+        let liquidityProvider: DummyLiquidityProviderContract;
+        let registryContract: DummyLiquidityProviderRegistryContract;
+
+        before(async () => {
+            await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync()
+                .txHashPromise;
+
+            liquidityProvider = await DummyLiquidityProviderContract.deployFrom0xArtifactAsync(
+                artifacts.DummyLiquidityProvider,
+                env.provider,
+                env.txDefaults,
+                {},
+            );
+
+            registryContract = await DummyLiquidityProviderRegistryContract.deployFrom0xArtifactAsync(
+                artifacts.DummyLiquidityProviderRegistry,
+                env.provider,
+                env.txDefaults,
+                {},
+            );
+            await registryContract
+                .setLiquidityProviderForMarket(xAsset, yAsset, liquidityProvider.address)
+                .awaitTransactionSuccessAsync().txHashPromise;
+        });
+
+        it('should be able to get the liquidity provider', async () => {
+            const xyLiquidityProvider = await testContract
+                .getLiquidityProviderFromRegistry(registryContract.address, xAsset, yAsset)
+                .callAsync();
+            const yxLiquidityProvider = await testContract
+                .getLiquidityProviderFromRegistry(registryContract.address, yAsset, xAsset)
+                .callAsync();
+            const unknownLiquidityProvider = await testContract
+                .getLiquidityProviderFromRegistry(registryContract.address, yAsset, randomAddress())
+                .callAsync();
+
+            expect(xyLiquidityProvider).to.eq(liquidityProvider.address);
+            expect(yxLiquidityProvider).to.eq(liquidityProvider.address);
+            expect(unknownLiquidityProvider).to.eq(constants.NULL_ADDRESS);
+        });
+
+        it('should be able to query sells from the liquidity provider', async () => {
+            const result = await testContract
+                .sampleSellsFromLiquidityProviderRegistry(registryContract.address, yAsset, xAsset, sampleAmounts)
+                .callAsync();
+            result.forEach((value, idx) => {
+                expect(value).is.bignumber.eql(sampleAmounts[idx].minus(1));
+            });
+        });
+
+        it('should be able to query buys from the liquidity provider', async () => {
+            const result = await testContract
+                .sampleBuysFromLiquidityProviderRegistry(registryContract.address, yAsset, xAsset, sampleAmounts)
+                .callAsync();
+            result.forEach((value, idx) => {
+                expect(value).is.bignumber.eql(sampleAmounts[idx].plus(1));
+            });
+        });
+
+        it('should just return zeros if the liquidity provider cannot be found', async () => {
+            const result = await testContract
+                .sampleBuysFromLiquidityProviderRegistry(
+                    registryContract.address,
+                    yAsset,
+                    randomAddress(),
+                    sampleAmounts,
+                )
+                .callAsync();
+            result.forEach(value => {
+                expect(value).is.bignumber.eql(constants.ZERO_AMOUNT);
+            });
+        });
+
+        it('should just return zeros if the registry does not exist', async () => {
+            const result = await testContract
+                .sampleBuysFromLiquidityProviderRegistry(randomAddress(), yAsset, xAsset, sampleAmounts)
+                .callAsync();
+            result.forEach(value => {
+                expect(value).is.bignumber.eql(constants.ZERO_AMOUNT);
+            });
         });
     });
 
