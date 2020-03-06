@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.0",
+        "changes": [
+            {
+                "note": "Add support for private liquidity providers",
+                "pr": 2505
+            }
+        ]
+    },
+    {
         "version": "4.4.0",
         "changes": [
             {
