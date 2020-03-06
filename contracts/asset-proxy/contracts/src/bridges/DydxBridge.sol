@@ -50,7 +50,7 @@ contract DydxBridge is
     /// @param encodedBridgeData An abi-encoded `BridgeData` struct.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
-        address,
+        address, /* toTokenAddress */
         address from,
         address to,
         uint256 amount,
@@ -81,6 +81,7 @@ contract DydxBridge is
 
         // Run operation. This will revert on failure.
         IDydx(_getDydxAddress()).operate(accounts, actions);
+
         return BRIDGE_SUCCESS;
     }
 

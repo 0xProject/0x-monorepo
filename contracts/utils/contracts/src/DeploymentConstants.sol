@@ -49,7 +49,7 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the 0x DevUtils contract.
     address constant private DEV_UTILS_ADDRESS = 0x74134CF88b21383713E096a5ecF59e297dc7f547;
     // /// @dev Kovan address of the 0x DevUtils contract.
-    // address constant private DEV_UTILS_ADDRESS = 0x161793Cdca4fF9E766A706c2C49c36AC1340bbcd;
+    // address constant private DEV_UTILS_ADDRESS = 0x9402639A828BdF4E9e4103ac3B69E1a6E522eB59;
     /// @dev Kyber ETH pseudo-address.
     address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     /// @dev Mainnet address of the dYdX contract.

@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.3.0",
+        "changes": [
+            {
+                "note": "Use `LibERC20Token.approveIfBelow()` in DEX bridges for for approvals.",
+                "pr": 2512
+            },
+            {
+                "note": "Emit `ERC20BridgeTransfer` events in bridges.",
+                "pr": 2512
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "3.2.5",
         "changes": [

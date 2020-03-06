@@ -38,13 +38,14 @@ contract Eth2DaiBridge is
     ///      (DAI or WETH) to the Eth2Dai contract, then transfers the bought
     ///      tokens to `to`.
     /// @param toTokenAddress The token to give to `to` (either DAI or WETH).
+    /// @param from The maker (this contract).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
     /// @param bridgeData The abi-encoeded "from" token address.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
         address toTokenAddress,
-        address /* from */,
+        address from,
         address to,
         uint256 amount,
         bytes calldata bridgeData
@@ -56,18 +57,28 @@ contract Eth2DaiBridge is
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
 
         IEth2Dai exchange = IEth2Dai(_getEth2DaiAddress());
+        uint256 fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        LibERC20Token.approve(fromTokenAddress, address(exchange), uint256(-1));
+        LibERC20Token.approveIfBelow(fromTokenAddress, address(exchange), fromTokenBalance);
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
         uint256 boughtAmount = exchange.sellAllAmount(
             fromTokenAddress,
-            IERC20Token(fromTokenAddress).balanceOf(address(this)),
+            fromTokenBalance,
             toTokenAddress,
             amount
         );
         // Transfer the converted `toToken`s to `to`.
         LibERC20Token.transfer(toTokenAddress, to, boughtAmount);
+
+        emit ERC20BridgeTransfer(
+            fromTokenAddress,
+            toTokenAddress,
+            fromTokenBalance,
+            boughtAmount,
+            from,
+            to
+        );
         return BRIDGE_SUCCESS;
     }
 

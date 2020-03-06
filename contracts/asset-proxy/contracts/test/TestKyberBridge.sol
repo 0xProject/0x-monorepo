@@ -110,6 +110,10 @@ contract TestToken {
         return _testContract.wethDeposit.value(msg.value)(msg.sender);
     }
 
+    function allowance(address, address) external view returns (uint256) {
+        return 0;
+    }
+
     function balanceOf(address owner)
         external
         view

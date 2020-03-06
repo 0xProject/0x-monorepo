@@ -110,6 +110,10 @@ contract TestToken {
         return true;
     }
 
+    function allowance(address, address) external view returns (uint256) {
+        return 0;
+    }
+
     /// @dev Retrieve the balance for `owner`.
     function balanceOf(address owner)
         external
