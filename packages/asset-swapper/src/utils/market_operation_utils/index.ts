@@ -248,13 +248,16 @@ export class MarketOperationUtils {
         const sources = difference(BUY_SOURCES, _opts.excludedSources);
         const ops = [
             ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
-            ...batchNativeOrders.map(orders =>
-                DexOrderSampler.ops.getMedianSellRate(
+            ...batchNativeOrders.map(orders => {
+                return getOrderTokens(orders[0])[1].toLowerCase() === this._wethAddress.toLowerCase() ?
+                    DexOrderSampler.ops.constant(new BigNumber(1)) :
+                    DexOrderSampler.ops.getMedianSellRate(
                     difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
                     this._wethAddress,
                     getOrderTokens(orders[0])[1],
                     ONE_ETHER,
-                ),
+                );
+            },
             ),
             ...batchNativeOrders.map((orders, i) =>
                 DexOrderSampler.ops.getBuyQuotes(sources, getOrderTokens(orders[0])[0], getOrderTokens(orders[0])[1], [

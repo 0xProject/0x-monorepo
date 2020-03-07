@@ -5,6 +5,10 @@
             {
                 "note": "Add support for private liquidity providers",
                 "pr": 2505
+            },
+            {
+                "note": "Fix bug with batchMarketBuy",
+                "pr": 2517
             }
         ]
     },
