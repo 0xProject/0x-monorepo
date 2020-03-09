@@ -11,11 +11,15 @@
                 "pr": 2513
             },
             {
+                "note": "Remove `dustFractionThreshold`, `noConflicts` options.",
+                "pr": 2513
+            },
+            {
                 "note": "Revamp fill optimization algorithm",
                 "pr": 2513
             },
             {
-                "note": "Add fallback orders to quotes",
+                "note": "Add fallback orders to quotes via `allowFallback` option.",
                 "pr": 2513
             }
         ]

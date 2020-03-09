@@ -41,14 +41,12 @@ export class SwapQuoteCalculator {
     public async calculateMarketSellSwapQuoteAsync(
         prunedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
-        slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<MarketSellSwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
-            slippagePercentage,
             gasPrice,
             MarketOperation.Sell,
             opts,
@@ -58,14 +56,12 @@ export class SwapQuoteCalculator {
     public async calculateMarketBuySwapQuoteAsync(
         prunedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
-        slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<MarketBuySwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
-            slippagePercentage,
             gasPrice,
             MarketOperation.Buy,
             opts,
@@ -75,14 +71,12 @@ export class SwapQuoteCalculator {
     public async calculateBatchMarketBuySwapQuoteAsync(
         batchPrunedOrders: SignedOrder[][],
         takerAssetFillAmounts: BigNumber[],
-        slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<Array<MarketBuySwapQuote | undefined>> {
         return (await this._calculateBatchBuySwapQuoteAsync(
             batchPrunedOrders,
             takerAssetFillAmounts,
-            slippagePercentage,
             gasPrice,
             MarketOperation.Buy,
             opts,
@@ -92,17 +86,13 @@ export class SwapQuoteCalculator {
     private async _calculateBatchBuySwapQuoteAsync(
         batchPrunedOrders: SignedOrder[][],
         assetFillAmounts: BigNumber[],
-        slippagePercentage: number,
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
     ): Promise<Array<SwapQuote | undefined>> {
-        const assetFillAmountsWithSlippage = assetFillAmounts.map(a =>
-            a.plus(a.multipliedBy(slippagePercentage).integerValue()),
-        );
         const batchSignedOrders = await this._marketOperationUtils.getBatchMarketBuyOrdersAsync(
             batchPrunedOrders,
-            assetFillAmountsWithSlippage,
+            assetFillAmounts,
             opts,
         );
         const batchSwapQuotes = await Promise.all(
@@ -127,7 +117,6 @@ export class SwapQuoteCalculator {
     private async _calculateSwapQuoteAsync(
         prunedOrders: SignedOrder[],
         assetFillAmount: BigNumber,
-        slippagePercentage: number,
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
@@ -138,7 +127,6 @@ export class SwapQuoteCalculator {
         }
         // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
 
-        const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
         let resultOrders: OptimizedMarketOrder[] = [];
 
         {
@@ -159,13 +147,13 @@ export class SwapQuoteCalculator {
                 if (operation === MarketOperation.Buy) {
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
-                        assetFillAmount.plus(slippageBufferAmount),
+                        assetFillAmount,
                         _opts,
                     );
                 } else {
                     resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
-                        assetFillAmount.plus(slippageBufferAmount),
+                        assetFillAmount,
                         _opts,
                     );
                 }

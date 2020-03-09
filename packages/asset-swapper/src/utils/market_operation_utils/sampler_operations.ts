@@ -191,6 +191,9 @@ export const samplerOperations = {
         takerFillAmount: BigNumber,
         liquidityProviderRegistryAddress?: string | undefined,
     ): BatchedOperation<BigNumber> {
+        if (makerToken.toLowerCase() === takerToken.toLowerCase()) {
+            return samplerOperations.constant(new BigNumber(1));
+        }
         const getSellQuotes = samplerOperations.getSellQuotes(
             sources,
             makerToken,

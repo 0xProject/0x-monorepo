@@ -25,6 +25,7 @@ export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
+    runLimit: 2 ** 15,
     excludedSources: [],
     bridgeSlippage: 0.005,
     numSamples: 20,

@@ -190,7 +190,6 @@ export interface SwapQuoteOrdersBreakdown {
  * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
 export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
-    slippagePercentage: number;
     gasPrice?: BigNumber;
 }
 

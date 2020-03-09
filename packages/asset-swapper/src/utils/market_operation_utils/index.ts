@@ -260,6 +260,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[];
         orderFillableAmounts: BigNumber[];
         dexQuotes: DexSample[][];
+        runLimit?: number;
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
         excludedSources?: ERC20BridgeSource[];
@@ -274,20 +275,21 @@ export class MarketOperationUtils {
             // Augment native orders with their fillable amounts.
             orders: createSignedOrdersWithFillableAmounts(side, opts.nativeOrders, opts.orderFillableAmounts),
             dexQuotes: opts.dexQuotes,
+            targetInput: inputAmount,
             ethToOutputRate: opts.ethToOutputRate,
             excludedSources: opts.excludedSources,
             fees: opts.fees,
         });
         // Find the optimal path.
-        const optimalPath = findOptimalPath(side, paths, inputAmount);
-        // console.log(JSON.stringify(paths, null, '  '));
+        const optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit);
         if (!optimalPath) {
             throw new Error(AggregationError.NoOptimalPath);
         }
         // Find a fallback path from sources not used in the first path.
         let fallbackPath: Fill[] = [];
         if (opts.allowFallback) {
-            fallbackPath = findOptimalPath(side, getUnusedSourcePaths(optimalPath, paths), inputAmount) || [];
+            fallbackPath =
+                findOptimalPath(side, getUnusedSourcePaths(optimalPath, paths), inputAmount, opts.runLimit) || [];
         }
         return createOrdersFromPath([...optimalPath, ...fallbackPath], {
             side,

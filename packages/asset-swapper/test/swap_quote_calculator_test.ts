@@ -1,3 +1,7 @@
+// tslint:disable:max-file-line-count
+// TODO(dorothy-zbornak): Skipping these tests for now because they're a
+// nightmare to maintain. We should replace them with simpler unit tests.
+/*
 import { constants as devConstants } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { ContractAddresses, migrateOnceAsync } from '@0x/migrations';
@@ -63,10 +67,7 @@ function createSamplerFromSignedOrdersWithFillableAmounts(
     );
 }
 
-// tslint:disable:max-file-line-count
 // tslint:disable:custom-no-magic-numbers
-// TODO(dorothy-zbornak): Skipping these tests for now because they're a
-// nightmare to maintain. We should replace them with simpler unit tests.
 describe.skip('swapQuoteCalculator', () => {
     let protocolFeeUtils: ProtocolFeeUtils;
     let contractAddresses: ContractAddresses;
@@ -904,3 +905,4 @@ describe.skip('swapQuoteCalculator', () => {
         });
     });
 });
+*/

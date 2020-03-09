@@ -242,11 +242,7 @@ export class SwapQuoter {
     ): Promise<Array<MarketBuySwapQuote | undefined>> {
         makerAssetBuyAmount.map((a, i) => assert.isBigNumber(`makerAssetBuyAmount[${i}]`, a));
         let gasPrice: BigNumber;
-        const { slippagePercentage, ...calculateSwapQuoteOpts } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
-            options,
-        );
+        const calculateSwapQuoteOpts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         if (!!options.gasPrice) {
             gasPrice = options.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
@@ -278,7 +274,6 @@ export class SwapQuoter {
         const swapQuotes = await this._swapQuoteCalculator.calculateBatchMarketBuySwapQuoteAsync(
             allPrunedOrders,
             makerAssetBuyAmount,
-            slippagePercentage,
             gasPrice,
             calculateSwapQuoteOpts,
         );
@@ -517,14 +512,9 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { slippagePercentage, ...calculateSwapQuoteOpts } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
-            options,
-        );
+        const calculateSwapQuoteOpts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        assert.isNumber('slippagePercentage', slippagePercentage);
         let gasPrice: BigNumber;
         if (!!options.gasPrice) {
             gasPrice = options.gasPrice;
@@ -547,7 +537,6 @@ export class SwapQuoter {
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 prunedOrders,
                 assetFillAmount,
-                slippagePercentage,
                 gasPrice,
                 calculateSwapQuoteOpts,
             );
@@ -555,7 +544,6 @@ export class SwapQuoter {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                 prunedOrders,
                 assetFillAmount,
-                slippagePercentage,
                 gasPrice,
                 calculateSwapQuoteOpts,
             );

@@ -2,7 +2,8 @@ import { BigNumber } from '@0x/utils';
 
 import { MarketOperation } from '../../types';
 
-import { getPathAdjustedSize, getPathSize, isValidPath } from './fills';
+import { ZERO_AMOUNT } from './constants';
+import { getPathSize, isValidPath } from './fills';
 import { Fill } from './types';
 
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
@@ -11,92 +12,64 @@ import { Fill } from './types';
  * Find the optimal mixture of paths that maximizes (for sells) or minimizes
  * (for buys) output, while meeting the input requirement.
  */
-export function findOptimalPath(side: MarketOperation, paths: Fill[][], targetInput: BigNumber): Fill[] | undefined {
-    // Get all convex and concave rate paths.
-    const [convexPaths, concavePaths] = splitPathsByRateConvexity(paths);
-    // Hill climb convex paths.
-    let optimalPath = hillClimbToOptimalPath(convexPaths, targetInput);
-    // Attempt to splice in concave paths.
-    for (const path of concavePaths) {
-        // TODO(dorothy-zbornak): This will probably not be optimal if we are dealing
-        // more than one concave path. Right now there's just Kyber.
-        optimalPath = prependConcavePath(side, optimalPath, path, targetInput);
+export function findOptimalPath(
+    side: MarketOperation,
+    paths: Fill[][],
+    targetInput: BigNumber,
+    runLimit?: number,
+): Fill[] | undefined {
+    let optimalPath = paths[0] || [];
+    // TODO(dorothy-zbornak): Convex paths (like kyber) should technically always be
+    // inserted at the front of the path because a partial fill can invalidate them.
+    for (const path of paths.slice(1)) {
+        optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit);
     }
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
 }
 
-const RATE_DECIMALS = 8;
-
-function hillClimbToOptimalPath(paths: Fill[][], targetInput: BigNumber): Fill[] {
-    // Flatten and sort path fills by descending ADJUSTED rate.
-    const fills = paths
-        .reduce((acc, p) => acc.concat(p), [])
-        .sort((a, b) => b.adjustedRate.dp(RATE_DECIMALS).comparedTo(a.adjustedRate.dp(RATE_DECIMALS)));
-    // Build up a path by picking the next best, valid fill until we meet our input target.
-    const path: Fill[] = [];
-    while (!isPathComplete(path, targetInput)) {
-        let wasAdded = false;
-        for (const fill of fills) {
-            // If we can just legally append this fill to the path, do that.
-            if (isValidPath([...path, fill])) {
-                path.push(fill);
-                wasAdded = true;
-                break;
-            } else if (fill.parent && !path.includes(fill)) {
-                // If the fill's parent is in the path, we can insert it right
-                // after it.
-                for (let i = 0; i < path.length; ++i) {
-                    if (path[i] === fill.parent) {
-                        path.splice(i + 1, 0, fill);
-                        wasAdded = true;
-                        break;
-                    }
-                }
-                if (wasAdded) {
+function mixPaths(
+    side: MarketOperation,
+    pathA: Fill[],
+    pathB: Fill[],
+    targetInput: BigNumber,
+    maxSteps: number = 2 ** 15,
+): Fill[] {
+    const allFills = [...pathA, ...pathB].sort((a, b) => b.rate.comparedTo(a.rate));
+    let bestPath: Fill[] = [];
+    let bestPathInput = ZERO_AMOUNT;
+    let bestPathRate = ZERO_AMOUNT;
+    let steps = 0;
+    const _isBetterPath = (input: BigNumber, rate: BigNumber) => {
+        if (bestPathInput.lt(targetInput)) {
+            return input.gt(bestPathInput);
+        } else if (input.gte(bestPathInput)) {
+            return rate.gt(bestPathRate);
+        }
+        return false;
+    };
+    const _walk = (path: Fill[], input: BigNumber, output: BigNumber) => {
+        steps += 1;
+        const rate = getRate(side, input, output);
+        if (_isBetterPath(input, rate)) {
+            bestPath = path;
+            bestPathInput = input;
+            bestPathRate = rate;
+        }
+        if (input.lt(targetInput)) {
+            for (const fill of allFills) {
+                if (steps >= maxSteps) {
                     break;
                 }
+                const childPath = [...path, fill];
+                if (!isValidPath(childPath)) {
+                    continue;
+                }
+                _walk(childPath, input.plus(fill.input), output.plus(fill.adjustedOutput));
             }
         }
-        if (!wasAdded) {
-            break;
-        }
-    }
-    return path;
-}
-
-function prependConcavePath(
-    side: MarketOperation,
-    convexPath: Fill[],
-    concavePath: Fill[],
-    targetInput: BigNumber,
-): Fill[] {
-    // Try to prepend increasing lenths of the the concave path, keeping track
-    // of the best path.
-    // HACK(dorothy-zbornak): We prepend because placing it at the end has the
-    // possibility of turning it into a partial fill, which can invalidate the
-    // quote for Kyber.
-    let bestPath = convexPath;
-    for (let i = 0; i < convexPath.length; ++i) {
-        const path = concavePath.slice(0, i);
-        const [concaveInput] = getPathSize(path);
-        if (concaveInput.lt(targetInput)) {
-            const remainingInput = targetInput.minus(concaveInput);
-            // We sub-optimize the fills from the original path.
-            const tailPath = hillClimbToOptimalPath(getSubPaths(convexPath), remainingInput);
-            path.push(...tailPath);
-        }
-        bestPath = findBestCompletePath(side, [bestPath, path], targetInput) || bestPath;
-    }
+    };
+    _walk(bestPath, ZERO_AMOUNT, ZERO_AMOUNT);
     return bestPath;
-}
-
-function getSubPaths(path: Fill[]): Fill[][] {
-    const fillsBySource: { [source: string]: Fill[] } = {};
-    for (const fill of path) {
-        fillsBySource[fill.source] = fillsBySource[fill.source] || [];
-        fillsBySource[fill.source].push(fill);
-    }
-    return Object.values(fillsBySource);
 }
 
 function isPathComplete(path: Fill[], targetInput: BigNumber): boolean {
@@ -104,52 +77,12 @@ function isPathComplete(path: Fill[], targetInput: BigNumber): boolean {
     return input.gte(targetInput);
 }
 
-function findBestCompletePath(side: MarketOperation, paths: Fill[][], targetInput: BigNumber): Fill[] | undefined {
-    let bestPath: Fill[] | undefined;
-    for (const path of paths) {
-        const [input, output] = getPathAdjustedSize(path, targetInput);
-        if (input.gte(targetInput)) {
-            continue;
-        }
-        if (bestPath) {
-            const [, bestPathOutput] = getPathAdjustedSize(bestPath, targetInput);
-            if (side === MarketOperation.Sell) {
-                if (output.lt(bestPathOutput)) {
-                    continue;
-                }
-            } else {
-                if (output.gt(bestPathOutput)) {
-                    continue;
-                }
-            }
-        }
-        bestPath = path;
+function getRate(side: MarketOperation, input: BigNumber, output: BigNumber): BigNumber {
+    if (input.eq(0) || output.eq(0)) {
+        return ZERO_AMOUNT;
     }
-    return bestPath;
-}
-
-function splitPathsByRateConvexity(paths: Fill[][]): [Fill[][], Fill[][]] {
-    const convexPaths: Fill[][] = [];
-    const concavePaths: Fill[][] = [];
-    for (const path of paths) {
-        if (isPathConvex(path)) {
-            convexPaths.push(path);
-        } else {
-            concavePaths.push(path);
-        }
+    if (side === MarketOperation.Sell) {
+        return output.div(input);
     }
-    return [convexPaths, concavePaths];
-}
-
-function isPathConvex(path: Fill[]): boolean {
-    // Convex paths have descending prices.
-    // HACK(dorothy-zbornak): We use the the `rate` instead of the `adjustedRate`
-    // because the `adjustedRate` can make paths appear artificially concave
-    // due to the fee incurred on the first fill.
-    for (let i = 1; i < path.length; ++i) {
-        if (path[i - 1].rate.dp(RATE_DECIMALS).lt(path[i].rate.dp(RATE_DECIMALS))) {
-            return false;
-        }
-    }
-    return true;
+    return input.div(output);
 }

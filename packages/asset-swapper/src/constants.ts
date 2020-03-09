@@ -58,9 +58,6 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts = {
 const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
-    ...{
-        slippagePercentage: 0.05, // 5% slippage protection,
-    },
     ...DEFAULT_GET_MARKET_ORDERS_OPTS,
 };
 
