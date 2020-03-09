@@ -7,12 +7,11 @@ import 'mocha';
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
 
+import {constants as compilerConstants} from '../src/utils/constants';
+
 import { exchange_binary } from './fixtures/exchange_bin';
 import { chaiSetup } from './util/chai_setup';
 import { constants } from './util/constants';
-import { constants as compilerConstants } from '../src/utils/constants';
-
-import * as uuid from 'uuid';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -123,18 +122,15 @@ describe('#Compiler', function(): void {
             await fsWrapper.removeFileAsync(join(artifactsDir, artifact));
         }
 
-        const solcBinariesDir = '/tmp/' + uuid();
-        // remove all binaries cached
-        for (const solcBinary of await fsWrapper.readdirAsync(solcBinariesDir)) {
-            await fsWrapper.removeFileAsync(join(solcBinariesDir, solcBinary));
-        }
+        const solcBinariesDir = '/tmp/solc_bin';
 
         // compile EmptyContract
         compilerOpts.contracts = ['EmptyContract'];
+        compilerOpts.solcBinariesDir = solcBinariesDir;
         await new Compiler(compilerOpts).compileAsync();
 
-        const solcBinaryPath = join(solcBinariesDir, compilerConstants.SOLC_BIN_PATHS['0.4.14']);
-        expect(await fsWrapper.doesFileExistAsync(solcBinaryPath)).to.be.true;
+        const downloadedFiles = await fsWrapper.readdirAsync(solcBinariesDir);
+        expect(downloadedFiles.length).to.equal(1);
 
         // remove all binaries cached
         for (const solcBinary of await fsWrapper.readdirAsync(solcBinariesDir)) {
