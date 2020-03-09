@@ -340,15 +340,20 @@ function recursivelyGatherDependencySources(
  * Gets the solidity compiler instance. If the compiler is already cached - gets it from FS,
  * otherwise - fetches it and caches it.
  * @param solcVersion The compiler version. e.g. 0.5.0
+ * @param solcBinariesDir Solc binaries dir flag
  * @param isOfflineMode Offline mode flag
  */
-export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean): Promise<solc.SolcInstance> {
+export async function getSolcJSAsync(
+    solcVersion: string,
+    solcBinariesDir: string,
+    isOfflineMode: boolean,
+): Promise<solc.SolcInstance> {
     const solcJSReleases = await getSolcJSReleasesAsync(isOfflineMode);
     const fullSolcVersion = solcJSReleases[solcVersion];
     if (fullSolcVersion === undefined) {
         throw new Error(`${solcVersion} is not a known compiler version`);
     }
-    const compilerBinFilename = path.join(constants.SOLC_BIN_DIR, fullSolcVersion);
+    const compilerBinFilename = path.join(solcBinariesDir, fullSolcVersion);
     let solcjs: string;
     if (await fsWrapper.doesFileExistAsync(compilerBinFilename)) {
         solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();

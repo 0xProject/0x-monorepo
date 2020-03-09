@@ -731,6 +731,7 @@ export interface Source {
  * specified directory.
  * useDockerisedSolc: If set to true - sol-compiler will try calling a dockerized installations of solc to achieve faster compilation times. Otherwise and by default - solcjs will be used. Defaults to false.
  * isOfflineMode: If set to true - sol-compiler will not fetch the list of solc releases from github. It will use the hardcoded list. Defaults to false.
+ * solcBinariesDir: Directory containing solc binaries, if a binary is missing it will be downloaded into this directory.
  * solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
  * contracts to compile with the the version specified here.
  * shouldSaveStandardInput: Write the standard JSON input in ${contractsDir}/${contractName}.input.json
@@ -742,6 +743,7 @@ export interface CompilerOptions {
     contracts?: string[] | '*';
     useDockerisedSolc?: boolean;
     isOfflineMode?: boolean;
+    solcBinariesDir?: string;
     solcVersion?: string;
     shouldSaveStandardInput?: boolean;
 }

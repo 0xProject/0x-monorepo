@@ -49,6 +49,7 @@ const DEFAULT_CONTRACTS_DIR = path.resolve('contracts');
 const DEFAULT_ARTIFACTS_DIR = path.resolve('artifacts');
 const DEFAULT_USE_DOCKERISED_SOLC = false;
 const DEFAULT_IS_OFFLINE_MODE = false;
+const DEFAULT_SOLC_BIN_DIR = constants.SOLC_BIN_DEFAULT_DIR;
 const DEFAULT_SHOULD_SAVE_STANDARD_INPUT = false;
 
 // Solc compiler settings cannot be configured from the commandline.
@@ -97,6 +98,7 @@ export class Compiler {
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
     private readonly _useDockerisedSolc: boolean;
     private readonly _isOfflineMode: boolean;
+    private readonly _solcBinariesDir: string;
     private readonly _shouldSaveStandardInput: boolean;
     /**
      * Instantiates a new instance of the Compiler class.
@@ -126,6 +128,7 @@ export class Compiler {
         this._useDockerisedSolc =
             passedOpts.useDockerisedSolc || config.useDockerisedSolc || DEFAULT_USE_DOCKERISED_SOLC;
         this._isOfflineMode = passedOpts.isOfflineMode || config.isOfflineMode || DEFAULT_IS_OFFLINE_MODE;
+        this._solcBinariesDir = passedOpts.solcBinariesDir || config.solcBinariesDir || DEFAULT_SOLC_BIN_DIR;
         this._shouldSaveStandardInput =
             passedOpts.shouldSaveStandardInput || config.shouldSaveStandardInput || DEFAULT_SHOULD_SAVE_STANDARD_INPUT;
         this._nameResolver = new NameResolver(this._contractsDir);
@@ -142,7 +145,7 @@ export class Compiler {
      */
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
-        await createDirIfDoesNotExistAsync(constants.SOLC_BIN_DIR);
+        await createDirIfDoesNotExistAsync(this._solcBinariesDir);
         await this._compileContractsAsync(this.getContractNamesToCompile(), true);
     }
     /**
@@ -306,7 +309,7 @@ export class Compiler {
                 const solcInstance =
                     process.env.SOLCJS_PATH !== undefined
                         ? getSolcJSFromPath(process.env.SOLCJS_PATH)
-                        : await getSolcJSAsync(solcVersion, this._isOfflineMode);
+                        : await getSolcJSAsync(solcVersion, this._solcBinariesDir, this._isOfflineMode);
                 compilerOutput = await compileSolcJSAsync(solcInstance, input.standardInput);
             }
             if (compilerOutput.errors !== undefined) {

@@ -10,6 +10,9 @@ import { fsWrapper } from '../src/utils/fs_wrapper';
 import { exchange_binary } from './fixtures/exchange_bin';
 import { chaiSetup } from './util/chai_setup';
 import { constants } from './util/constants';
+import { constants as compilerConstants } from '../src/utils/constants';
+
+import * as uuid from 'uuid';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -112,6 +115,30 @@ describe('#Compiler', function(): void {
         // make sure the artifacts dir only contains EmptyContract.json
         for (const artifact of await fsWrapper.readdirAsync(artifactsDir)) {
             expect(artifact).to.equal('EmptyContract.json');
+        }
+    });
+    it('should download binary to designated path by solcBinariesDir', async () => {
+        // remove all artifacts
+        for (const artifact of await fsWrapper.readdirAsync(artifactsDir)) {
+            await fsWrapper.removeFileAsync(join(artifactsDir, artifact));
+        }
+
+        const solcBinariesDir = '/tmp/' + uuid();
+        // remove all binaries cached
+        for (const solcBinary of await fsWrapper.readdirAsync(solcBinariesDir)) {
+            await fsWrapper.removeFileAsync(join(solcBinariesDir, solcBinary));
+        }
+
+        // compile EmptyContract
+        compilerOpts.contracts = ['EmptyContract'];
+        await new Compiler(compilerOpts).compileAsync();
+
+        const solcBinaryPath = join(solcBinariesDir, compilerConstants.SOLC_BIN_PATHS['0.4.14']);
+        expect(await fsWrapper.doesFileExistAsync(solcBinaryPath)).to.be.true;
+
+        // remove all binaries cached
+        for (const solcBinary of await fsWrapper.readdirAsync(solcBinariesDir)) {
+            await fsWrapper.removeFileAsync(join(solcBinariesDir, solcBinary));
         }
     });
 });
