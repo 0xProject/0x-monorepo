@@ -117,7 +117,7 @@
         "erc20BridgeProxy": "0xfb2dd2a1366de37f7241c83d47da58fd503e2c64",
         "uniswapBridge": "0x0e85f89f29998df65402391478e5924700c0079d",
         "eth2DaiBridge": "0x2d47147429b474d2e4f83e658015858a1312ed5b",
-        "erc20BridgeSampler": "0x4f1556e5fe03a0da39091260f78d2cf765baa091",
+        "erc20BridgeSampler": "0xd3fccc4af0732e99290a57bbc2cc2afcbd08283f",
         "kyberBridge": "0xaecfa25920f892b6eb496e1f6e84037f59da7f44",
         "chaiBridge": "0x0000000000000000000000000000000000000000",
         "dydxBridge": "0x080e183c0193b4765d504e402db2f5621d4567e4",
