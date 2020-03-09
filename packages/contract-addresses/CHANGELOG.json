@@ -3,6 +3,10 @@
         "version": "4.10.0",
         "changes": [
             {
+                "note": "Updated Kovan's ERC20BridgeSampler address",
+                "pr": 2519
+            },
+            {
                 "note": "Added MaximumGasPrice addresses",
                 "pr": 2511
             },
