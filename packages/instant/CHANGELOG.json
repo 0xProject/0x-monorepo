@@ -9,6 +9,10 @@
             {
                 "note": "Fix ERC721 asset support",
                 "pr": 2491
+            },
+            {
+                "note": "Remove `bridgeSlippage` SwapQuoter config.",
+                "pr": 2513
             }
         ]
     },

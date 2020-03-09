@@ -4,7 +4,6 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Dispatch } from 'redux';
 
-import { ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE, ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { Asset, QuoteFetchOrigin } from '../types';
 
@@ -37,10 +36,6 @@ export const swapQuoteUpdater = {
         }
         const wethAssetData = await swapQuoter.getEtherTokenAssetDataOrThrowAsync();
         let newSwapQuote: MarketBuySwapQuote | undefined;
-        const slippagePercentage =
-            asset.metaData.assetProxyId === AssetProxyId.ERC20
-                ? ERC20_SWAP_QUOTE_SLIPPAGE_PERCENTAGE
-                : ERC721_SWAP_QUOTE_SLIPPAGE_PERCENTAGE;
         try {
             const gasInfo = await gasPriceEstimator.getGasInfoAsync();
             newSwapQuote = await swapQuoter.getMarketBuySwapQuoteForAssetDataAsync(
@@ -48,7 +43,6 @@ export const swapQuoteUpdater = {
                 wethAssetData,
                 baseUnitValue,
                 {
-                    slippagePercentage,
                     gasPrice: gasInfo.gasPriceInWei,
                     // Only use native orders
                     // excludedSources: [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Kyber, ERC20BridgeSource.Uniswap],
