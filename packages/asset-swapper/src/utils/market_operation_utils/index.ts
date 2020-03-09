@@ -66,17 +66,15 @@ export class MarketOperationUtils {
                 takerToken,
             ),
             // Get ETH -> maker token price.
-            makerToken === this._wethAddress
-                ? DexOrderSampler.ops.constant(new BigNumber(1))
-                : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                          this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                      ),
-                      makerToken,
-                      this._wethAddress,
-                      ONE_ETHER,
-                      this._liquidityProviderRegistry,
+            DexOrderSampler.ops.getMedianSellRate(
+                  difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                      this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
                   ),
+                  makerToken,
+                  this._wethAddress,
+                  ONE_ETHER,
+                  this._liquidityProviderRegistry,
+              ),
             // Get sell quotes for taker -> maker.
             DexOrderSampler.ops.getSellQuotes(
                 difference(SELL_SOURCES, _opts.excludedSources).concat(
@@ -139,17 +137,15 @@ export class MarketOperationUtils {
                 takerToken,
             ),
             // Get ETH -> taker token price.
-            takerToken === this._wethAddress
-                ? DexOrderSampler.ops.constant(new BigNumber(1))
-                : DexOrderSampler.ops.getMedianSellRate(
-                      difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                          this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                      ),
-                      takerToken,
-                      this._wethAddress,
-                      ONE_ETHER,
-                      this._liquidityProviderRegistry,
+            DexOrderSampler.ops.getMedianSellRate(
+                  difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                      this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
                   ),
+                  takerToken,
+                  this._wethAddress,
+                  ONE_ETHER,
+                  this._liquidityProviderRegistry,
+              ),
             // Get buy quotes for taker -> maker.
             DexOrderSampler.ops.getBuyQuotes(
                 difference(BUY_SOURCES, _opts.excludedSources).concat(
