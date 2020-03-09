@@ -7,8 +7,6 @@ import 'mocha';
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
 
-import {constants as compilerConstants} from '../src/utils/constants';
-
 import { exchange_binary } from './fixtures/exchange_bin';
 import { chaiSetup } from './util/chai_setup';
 import { constants } from './util/constants';
