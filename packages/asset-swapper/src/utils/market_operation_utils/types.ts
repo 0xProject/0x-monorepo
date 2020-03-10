@@ -167,7 +167,11 @@ export interface GetMarketOrdersOpts {
     /**
      * Fees for each liquidity source, expressed in gas.
      */
-    fees: { [source: string]: BigNumber };
+    feeSchedule: { [source: string]: BigNumber };
+    /**
+     * Estimated gas consumed by each liquidity source.
+     */
+    gasSchedule: { [source: string]: number };
     /**
      * Whether to pad the quote with a redundant fallback quote using different
      * sources.

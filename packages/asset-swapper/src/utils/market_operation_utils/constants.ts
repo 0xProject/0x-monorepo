@@ -30,7 +30,8 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     bridgeSlippage: 0.005,
     numSamples: 20,
     sampleDistributionBase: 1.05,
-    fees: {},
+    feeSchedule: {},
+    gasSchedule: {},
     allowFallback: true,
 };
 

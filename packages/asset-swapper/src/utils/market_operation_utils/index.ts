@@ -98,7 +98,7 @@ export class MarketOperationUtils {
             ethToOutputRate: ethToMakerAssetRate,
             bridgeSlippage: _opts.bridgeSlippage,
             excludedSources: _opts.excludedSources,
-            fees: _opts.fees,
+            feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
         });
     }
@@ -170,7 +170,7 @@ export class MarketOperationUtils {
             ethToOutputRate: ethToTakerAssetRate,
             bridgeSlippage: _opts.bridgeSlippage,
             excludedSources: _opts.excludedSources,
-            fees: _opts.fees,
+            feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
         });
     }
@@ -242,7 +242,7 @@ export class MarketOperationUtils {
                 ethToOutputRate: ethToTakerAssetRate,
                 bridgeSlippage: _opts.bridgeSlippage,
                 excludedSources: _opts.excludedSources,
-                fees: _opts.fees,
+                feeSchedule: _opts.feeSchedule,
                 allowFallback: _opts.allowFallback,
             });
         });
@@ -260,7 +260,7 @@ export class MarketOperationUtils {
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
         excludedSources?: ERC20BridgeSource[];
-        fees?: { [source: string]: BigNumber };
+        feeSchedule?: { [source: string]: BigNumber };
         allowFallback?: boolean;
         liquidityProviderAddress?: string;
     }): OptimizedMarketOrder[] {
@@ -274,7 +274,7 @@ export class MarketOperationUtils {
             targetInput: inputAmount,
             ethToOutputRate: opts.ethToOutputRate,
             excludedSources: opts.excludedSources,
-            fees: opts.fees,
+            feeSchedule: opts.feeSchedule,
         });
         // Find the optimal path.
         const optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit);

@@ -25,6 +25,7 @@ export async function getFullyFillableSwapQuoteWithNoFeesAsync(
         takerAssetAmount: totalTakerAssetAmount,
         totalTakerAssetAmount,
         protocolFeeInWeiAmount: await protocolFeeUtils.calculateWorstCaseProtocolFeeAsync(orders, gasPrice),
+        gas: 200e3,
     };
 
     const breakdown = {

@@ -26,18 +26,18 @@ export function createFillPaths(opts: {
     targetInput?: BigNumber;
     ethToOutputRate?: BigNumber;
     excludedSources?: ERC20BridgeSource[];
-    fees?: { [source: string]: BigNumber };
+    feeSchedule?: { [source: string]: BigNumber };
 }): Fill[][] {
     const { side } = opts;
     const excludedSources = opts.excludedSources || [];
-    const fees = opts.fees || {};
+    const feeSchedule = opts.feeSchedule || {};
     const orders = opts.orders || [];
     const dexQuotes = opts.dexQuotes || [];
     const ethToOutputRate = opts.ethToOutputRate || ZERO_AMOUNT;
     // Create native fill paths.
-    const nativePath = nativeOrdersToPath(side, orders, ethToOutputRate, fees);
+    const nativePath = nativeOrdersToPath(side, orders, ethToOutputRate, feeSchedule);
     // Create DEX fill paths.
-    const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, fees);
+    const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, feeSchedule);
     return filterPaths([...dexPaths, nativePath].map(p => clipPathToInput(p, opts.targetInput)), excludedSources);
 }
 

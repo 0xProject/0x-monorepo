@@ -486,7 +486,7 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai]: [0.95, 0.1, 0.1, 0.1],
                     [ERC20BridgeSource.Kyber]: [0.1, 0.1, 0.1, 0.1],
                 };
-                const fees = {
+                const feeSchedule = {
                     [ERC20BridgeSource.Native]: FILL_AMOUNT.div(4)
                         .times(nativeFeeRate)
                         .dividedToIntegerBy(ETH_TO_MAKER_RATE),
@@ -498,7 +498,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, fees },
+                    { ...DEFAULT_OPTS, numSamples: 4, feeSchedule },
                 );
                 const orderSources = improvedOrders.map(o => o.fill.source);
                 const expectedSources = [
@@ -521,7 +521,7 @@ describe('MarketOperationUtils tests', () => {
                     // Effectively [0.8, ~0.5, ~0, ~0]
                     [ERC20BridgeSource.Uniswap]: [1, 0.7, 0.2, 0.2],
                 };
-                const fees = {
+                const feeSchedule = {
                     [ERC20BridgeSource.Uniswap]: FILL_AMOUNT.div(4)
                         .times(uniswapFeeRate)
                         .dividedToIntegerBy(ETH_TO_MAKER_RATE),
@@ -533,7 +533,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, fees },
+                    { ...DEFAULT_OPTS, numSamples: 4, feeSchedule },
                 );
                 const orderSources = improvedOrders.map(o => o.fill.source);
                 const expectedSources = [
@@ -828,7 +828,7 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai]: [0.95, 0.1, 0.1, 0.1],
                     [ERC20BridgeSource.Kyber]: [0.1, 0.1, 0.1, 0.1],
                 };
-                const fees = {
+                const feeSchedule = {
                     [ERC20BridgeSource.Native]: FILL_AMOUNT.div(4)
                         .times(nativeFeeRate)
                         .dividedToIntegerBy(ETH_TO_TAKER_RATE),
@@ -840,7 +840,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, fees },
+                    { ...DEFAULT_OPTS, numSamples: 4, feeSchedule },
                 );
                 const orderSources = improvedOrders.map(o => o.fill.source);
                 const expectedSources = [
@@ -862,7 +862,7 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Uniswap]: [1, 0.7, 0.2, 0.2],
                     [ERC20BridgeSource.Eth2Dai]: [0.92, 0.1, 0.1, 0.1],
                 };
-                const fees = {
+                const feeSchedule = {
                     [ERC20BridgeSource.Uniswap]: FILL_AMOUNT.div(4)
                         .times(uniswapFeeRate)
                         .dividedToIntegerBy(ETH_TO_TAKER_RATE),
@@ -874,7 +874,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, fees },
+                    { ...DEFAULT_OPTS, numSamples: 4, feeSchedule },
                 );
                 const orderSources = improvedOrders.map(o => o.fill.source);
                 const expectedSources = [

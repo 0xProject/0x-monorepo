@@ -106,6 +106,7 @@ export class SwapQuoteCalculator {
                         operation,
                         assetFillAmounts[i],
                         gasPrice,
+                        opts.gasSchedule,
                     );
                 } else {
                     return undefined;
@@ -133,7 +134,7 @@ export class SwapQuoteCalculator {
             // Scale fees by gas price.
             const _opts = {
                 ...opts,
-                fees: _.mapValues(opts.fees, (v, k) => v.times(gasPrice)),
+                fees: _.mapValues(opts.feeSchedule, v => v.times(gasPrice)),
             };
 
             const firstOrderMakerAssetData = !!prunedOrders[0]
@@ -169,6 +170,7 @@ export class SwapQuoteCalculator {
             operation,
             assetFillAmount,
             gasPrice,
+            opts.gasSchedule,
         );
     }
     private async _createSwapQuoteAsync(
@@ -178,17 +180,20 @@ export class SwapQuoteCalculator {
         operation: MarketOperation,
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
+        gasSchedule: { [source: string]: number },
     ): Promise<SwapQuote> {
         const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             resultOrders,
             assetFillAmount,
             gasPrice,
+            gasSchedule,
             operation,
         );
         const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             resultOrders,
             assetFillAmount,
             gasPrice,
+            gasSchedule,
             operation,
             true,
         );
@@ -226,14 +231,16 @@ export class SwapQuoteCalculator {
         orders: OptimizedMarketOrder[],
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
+        gasSchedule: { [source: string]: number },
         operation: MarketOperation,
         worstCase: boolean = false,
     ): Promise<SwapQuoteInfo> {
-        if (operation === MarketOperation.Buy) {
-            return this._calculateMarketBuyQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase);
-        } else {
-            return this._calculateMarketSellQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase);
-        }
+        return {
+            ...(operation === MarketOperation.Buy
+                ? await this._calculateMarketBuyQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase)
+                : await this._calculateMarketSellQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase)),
+            gas: getGasUsedByOrders(orders, gasSchedule),
+        };
     }
 
     private async _calculateMarketSellQuoteInfoAsync(
@@ -327,6 +334,7 @@ export class SwapQuoteCalculator {
             totalTakerAssetAmount: totalFeeTakerAssetAmount.plus(totalTakerAssetAmount),
             makerAssetAmount: totalMakerAssetAmount,
             protocolFeeInWeiAmount,
+            gas: 0,
         };
     }
 
@@ -416,6 +424,7 @@ export class SwapQuoteCalculator {
             totalTakerAssetAmount: totalFeeTakerAssetAmount.plus(totalTakerAssetAmount),
             makerAssetAmount: totalMakerAssetAmount,
             protocolFeeInWeiAmount,
+            gas: 0,
         };
     }
 
@@ -485,3 +494,12 @@ function getTakerAssetAmountBreakDown(
         takerAssetAmount: takerAssetAmountWithFees,
     };
 }
+
+function getGasUsedByOrders(orders: OptimizedMarketOrder[], gasSchedule: { [source: string]: number }): number {
+    let totalUsage = 0;
+    for (const order of orders) {
+        totalUsage += gasSchedule[order.fill.source] || 0;
+    }
+    return totalUsage;
+}
+// tslint:disable: max-file-line-count
