@@ -153,6 +153,12 @@ export interface GetMarketOrdersOpts {
      */
     bridgeSlippage: number;
     /**
+     * The maximum price slippage allowed in the fallback quote. If the slippage
+     * between the optimal quote and the fallback quote is greater than this
+     * percentage, no fallback quote will be provided.
+     */
+    maxFallbackSlippage: number;
+    /**
      * Number of samples to take for each DEX quote.
      */
     numSamples: number;

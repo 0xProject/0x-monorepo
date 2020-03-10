@@ -188,7 +188,6 @@ export interface SwapQuoteOrdersBreakdown {
 }
 
 /**
- * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
 export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {

@@ -21,6 +21,10 @@
             {
                 "note": "Add fallback orders to quotes via `allowFallback` option.",
                 "pr": 2513
+            },
+            {
+                "note": "Add `maxFallbackSlippage` option.",
+                "pr": 2513
             }
         ]
     },

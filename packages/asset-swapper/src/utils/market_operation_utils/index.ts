@@ -6,7 +6,13 @@ import { MarketOperation } from '../../types';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
-import { createFillPaths, getFallbackSourcePaths, getPathSize } from './fills';
+import {
+    createFillPaths,
+    getFallbackSourcePaths,
+    getPathAdjustedRate,
+    getPathAdjustedSlippage,
+    getPathSize,
+} from './fills';
 import { createOrdersFromPath, createSignedOrdersWithFillableAmounts, getNativeOrderTokens } from './orders';
 import { findOptimalPath } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
@@ -97,6 +103,7 @@ export class MarketOperationUtils {
             inputAmount: takerAmount,
             ethToOutputRate: ethToMakerAssetRate,
             bridgeSlippage: _opts.bridgeSlippage,
+            maxFallbackSlippage: _opts.maxFallbackSlippage,
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
@@ -169,6 +176,7 @@ export class MarketOperationUtils {
             inputAmount: makerAmount,
             ethToOutputRate: ethToTakerAssetRate,
             bridgeSlippage: _opts.bridgeSlippage,
+            maxFallbackSlippage: _opts.maxFallbackSlippage,
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
@@ -241,6 +249,7 @@ export class MarketOperationUtils {
                 inputAmount: makerAmount,
                 ethToOutputRate: ethToTakerAssetRate,
                 bridgeSlippage: _opts.bridgeSlippage,
+                maxFallbackSlippage: _opts.maxFallbackSlippage,
                 excludedSources: _opts.excludedSources,
                 feeSchedule: _opts.feeSchedule,
                 allowFallback: _opts.allowFallback,
@@ -259,12 +268,14 @@ export class MarketOperationUtils {
         runLimit?: number;
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
+        maxFallbackSlippage?: number;
         excludedSources?: ERC20BridgeSource[];
         feeSchedule?: { [source: string]: BigNumber };
         allowFallback?: boolean;
         liquidityProviderAddress?: string;
     }): OptimizedMarketOrder[] {
         const { inputToken, outputToken, side, inputAmount } = opts;
+        const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
         // Convert native orders and dex quotes into fill paths.
         const paths = createFillPaths({
             side,
@@ -277,8 +288,10 @@ export class MarketOperationUtils {
             feeSchedule: opts.feeSchedule,
         });
         // Find the optimal path.
-        const optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit);
-        if (!optimalPath) {
+        const optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit) || [];
+        // TODO(dorothy-zbornak): Ensure the slippage on the optimal path is <= maxFallbackSlippage
+        // once we decide on a good baseline.
+        if (optimalPath.length === 0) {
             throw new Error(AggregationError.NoOptimalPath);
         }
         // Generate a fallback path if native orders are in the optimal paath.
@@ -290,6 +303,15 @@ export class MarketOperationUtils {
             fallbackPath =
                 findOptimalPath(side, getFallbackSourcePaths(optimalPath, paths), fallbackInputAmount, opts.runLimit) ||
                 [];
+            const fallbackSlippage = getPathAdjustedSlippage(
+                side,
+                fallbackPath,
+                fallbackInputAmount,
+                getPathAdjustedRate(side, optimalPath, inputAmount),
+            );
+            if (fallbackSlippage > maxFallbackSlippage) {
+                fallbackPath = [];
+            }
         }
         return createOrdersFromPath([...optimalPath, ...fallbackPath], {
             side,

@@ -296,6 +296,7 @@ describe('MarketOperationUtils tests', () => {
                 numSamples: NUM_SAMPLES,
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
+                maxFallbackSlippage: 100,
                 excludedSources: Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[],
                 allowFallback: false,
             };
@@ -574,7 +575,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Native] = [0.9, 0.8, 0.5, 0.5];
                 rates[ERC20BridgeSource.Uniswap] = [0.6, 0.05, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.4, 0.3, 0.01, 0.01];
-                // Won't be included because of conflicts.
                 rates[ERC20BridgeSource.Kyber] = [0.35, 0.2, 0.01, 0.01];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
@@ -592,6 +592,27 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.Uniswap,
                 ];
                 const secondSources = [ERC20BridgeSource.Eth2Dai];
+                expect(orderSources.slice(0, firstSources.length).sort()).to.deep.eq(firstSources.sort());
+                expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
+            });
+
+            it('does not create a fallback if below maxFallbackSlippage', async () => {
+                const rates: RatesBySource = {};
+                rates[ERC20BridgeSource.Native] = [1, 1, 0.01, 0.01];
+                rates[ERC20BridgeSource.Uniswap] = [1, 1, 0.01, 0.01];
+                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.49, 0.49, 0.49];
+                rates[ERC20BridgeSource.Kyber] = [0.35, 0.2, 0.01, 0.01];
+                replaceSamplerOps({
+                    getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
+                });
+                const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
+                    createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
+                    FILL_AMOUNT,
+                    { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.5 },
+                );
+                const orderSources = improvedOrders.map(o => o.fill.source);
+                const firstSources = [ERC20BridgeSource.Native, ERC20BridgeSource.Native, ERC20BridgeSource.Uniswap];
+                const secondSources: ERC20BridgeSource[] = [];
                 expect(orderSources.slice(0, firstSources.length).sort()).to.deep.eq(firstSources.sort());
                 expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
             });
@@ -662,6 +683,8 @@ describe('MarketOperationUtils tests', () => {
             const DEFAULT_OPTS = {
                 numSamples: NUM_SAMPLES,
                 sampleDistributionBase: 1,
+                bridgeSlippage: 0,
+                maxFallbackSlippage: 100,
                 excludedSources: Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[],
                 allowFallback: false,
             };
@@ -906,6 +929,26 @@ describe('MarketOperationUtils tests', () => {
                     ERC20BridgeSource.Uniswap,
                 ];
                 const secondSources = [ERC20BridgeSource.Eth2Dai];
+                expect(orderSources.slice(0, firstSources.length).sort()).to.deep.eq(firstSources.sort());
+                expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
+            });
+
+            it('does not create a fallback if below maxFallbackSlippage', async () => {
+                const rates: RatesBySource = {};
+                rates[ERC20BridgeSource.Native] = [1, 1, 0.01, 0.01];
+                rates[ERC20BridgeSource.Uniswap] = [1, 1, 0.01, 0.01];
+                rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.49, 0.49, 0.49];
+                replaceSamplerOps({
+                    getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
+                });
+                const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
+                    createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
+                    FILL_AMOUNT,
+                    { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.5 },
+                );
+                const orderSources = improvedOrders.map(o => o.fill.source);
+                const firstSources = [ERC20BridgeSource.Native, ERC20BridgeSource.Native, ERC20BridgeSource.Uniswap];
+                const secondSources: ERC20BridgeSource[] = [];
                 expect(orderSources.slice(0, firstSources.length).sort()).to.deep.eq(firstSources.sort());
                 expect(orderSources.slice(firstSources.length).sort()).to.deep.eq(secondSources.sort());
             });

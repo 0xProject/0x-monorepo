@@ -169,7 +169,7 @@ export function getPathSize(path: Fill[], targetInput: BigNumber = POSITIVE_INF)
     let output = ZERO_AMOUNT;
     for (const fill of path) {
         if (input.plus(fill.input).gte(targetInput)) {
-            const di = targetInput.minus(input).div(fill.input);
+            const di = targetInput.minus(input);
             input = input.plus(di);
             output = output.plus(fill.output.times(di.div(fill.input)));
             break;
@@ -186,7 +186,7 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
     let output = ZERO_AMOUNT;
     for (const fill of path) {
         if (input.plus(fill.input).gte(targetInput)) {
-            const di = targetInput.minus(input).div(fill.input);
+            const di = targetInput.minus(input);
             input = input.plus(di);
             output = output.plus(fill.adjustedOutput.times(di.div(fill.input)));
             break;
@@ -280,4 +280,26 @@ export function getFallbackSourcePaths(optimalPath: Fill[], allPaths: Fill[][]):
         fallbackPaths.push(path);
     }
     return fallbackPaths;
+}
+
+export function getPathAdjustedRate(side: MarketOperation, path: Fill[], targetInput: BigNumber): BigNumber {
+    const [input, output] = getPathAdjustedSize(path, targetInput);
+    if (input.eq(0) || output.eq(0)) {
+        return ZERO_AMOUNT;
+    }
+    return side === MarketOperation.Sell ? output.div(input) : input.div(output);
+}
+
+export function getPathAdjustedSlippage(
+    side: MarketOperation,
+    path: Fill[],
+    inputAmount: BigNumber,
+    maxRate: BigNumber,
+): number {
+    if (maxRate.eq(0)) {
+        return 0;
+    }
+    const totalRate = getPathAdjustedRate(side, path, inputAmount);
+    const rateChange = maxRate.minus(totalRate);
+    return rateChange.div(maxRate).toNumber();
 }
