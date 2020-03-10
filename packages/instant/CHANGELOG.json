@@ -11,7 +11,7 @@
                 "pr": 2491
             },
             {
-                "note": "Remove `bridgeSlippage` SwapQuoter config.",
+                "note": "Remove `slippagePercentage` SwapQuoter config.",
                 "pr": 2513
             }
         ]
