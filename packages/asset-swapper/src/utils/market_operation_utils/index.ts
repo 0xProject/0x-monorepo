@@ -6,7 +6,7 @@ import { MarketOperation } from '../../types';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
-import { createFillPaths, getUnusedSourcePaths } from './fills';
+import { createFillPaths, getFallbackSourcePaths, getPathSize } from './fills';
 import { createOrdersFromPath, createSignedOrdersWithFillableAmounts, getNativeOrderTokens } from './orders';
 import { findOptimalPath } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
@@ -67,14 +67,14 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> maker token price.
             DexOrderSampler.ops.getMedianSellRate(
-                  difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                      this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                  ),
-                  makerToken,
-                  this._wethAddress,
-                  ONE_ETHER,
-                  this._liquidityProviderRegistry,
-              ),
+                difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                ),
+                makerToken,
+                this._wethAddress,
+                ONE_ETHER,
+                this._liquidityProviderRegistry,
+            ),
             // Get sell quotes for taker -> maker.
             DexOrderSampler.ops.getSellQuotes(
                 difference(SELL_SOURCES, _opts.excludedSources).concat(
@@ -138,14 +138,14 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> taker token price.
             DexOrderSampler.ops.getMedianSellRate(
-                  difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                      this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                  ),
-                  takerToken,
-                  this._wethAddress,
-                  ONE_ETHER,
-                  this._liquidityProviderRegistry,
-              ),
+                difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
+                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                ),
+                takerToken,
+                this._wethAddress,
+                ONE_ETHER,
+                this._liquidityProviderRegistry,
+            ),
             // Get buy quotes for taker -> maker.
             DexOrderSampler.ops.getBuyQuotes(
                 difference(BUY_SOURCES, _opts.excludedSources).concat(
@@ -281,11 +281,15 @@ export class MarketOperationUtils {
         if (!optimalPath) {
             throw new Error(AggregationError.NoOptimalPath);
         }
-        // Find a fallback path from sources not used in the first path.
+        // Generate a fallback path if native orders are in the optimal paath.
         let fallbackPath: Fill[] = [];
-        if (opts.allowFallback) {
+        const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
+        if (opts.allowFallback && nativeSubPath.length !== 0) {
+            // The fallback path is only as large as the native path.
+            const [nativeInputAmount] = getPathSize(nativeSubPath, inputAmount);
             fallbackPath =
-                findOptimalPath(side, getUnusedSourcePaths(optimalPath, paths), inputAmount, opts.runLimit) || [];
+                findOptimalPath(side, getFallbackSourcePaths(optimalPath, paths), nativeInputAmount, opts.runLimit) ||
+                [];
         }
         return createOrdersFromPath([...optimalPath, ...fallbackPath], {
             side,

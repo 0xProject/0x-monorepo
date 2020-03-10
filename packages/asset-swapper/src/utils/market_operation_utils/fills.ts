@@ -259,7 +259,25 @@ export function collapsePath(side: MarketOperation, path: Fill[]): CollapsedFill
     return collapsed;
 }
 
-export function getUnusedSourcePaths(usedPath: Fill[], allPaths: Fill[][]): Fill[][] {
-    const usedSources = usedPath.map(f => f.source);
-    return allPaths.filter(p => !usedSources.includes(p[0].source));
+export function getFallbackSourcePaths(optimalPath: Fill[], allPaths: Fill[][]): Fill[][] {
+    let optimalPathFlags = 0;
+    const optimalSources: ERC20BridgeSource[] = [];
+    for (const fill of optimalPath) {
+        optimalPathFlags |= fill.flags;
+        if (!optimalSources.includes(fill.source)) {
+            optimalSources.push(fill.source);
+        }
+    }
+    const conflictFlags = FillFlags.Kyber | FillFlags.ConflictsWithKyber;
+    const fallbackPaths: Fill[][] = [];
+    for (const path of allPaths) {
+        if (((optimalPathFlags | path[0].flags) & conflictFlags) === conflictFlags) {
+            continue;
+        }
+        if (optimalSources.includes(path[0].source)) {
+            continue;
+        }
+        fallbackPaths.push(path);
+    }
+    return fallbackPaths;
 }
