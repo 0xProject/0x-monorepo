@@ -260,23 +260,23 @@ export function collapsePath(side: MarketOperation, path: Fill[]): CollapsedFill
 }
 
 export function getFallbackSourcePaths(optimalPath: Fill[], allPaths: Fill[][]): Fill[][] {
-    let optimalPathFlags = 0;
     const optimalSources: ERC20BridgeSource[] = [];
     for (const fill of optimalPath) {
-        optimalPathFlags |= fill.flags;
         if (!optimalSources.includes(fill.source)) {
             optimalSources.push(fill.source);
         }
     }
-    const conflictFlags = FillFlags.Kyber | FillFlags.ConflictsWithKyber;
     const fallbackPaths: Fill[][] = [];
     for (const path of allPaths) {
-        if (((optimalPathFlags | path[0].flags) & conflictFlags) === conflictFlags) {
-            continue;
-        }
         if (optimalSources.includes(path[0].source)) {
             continue;
         }
+        // HACK(dorothy-zbornak): We *should* be filtering out paths that
+        // conflict with the optimal path (i.e., Kyber conflicts), but in
+        // practice we often end up not being able to find a fallback path
+        // because we've lost 2 major liquiduty sources. The end result is
+        // we end up with many more reverts than what would be actually caused
+        // by conflicts.
         fallbackPaths.push(path);
     }
     return fallbackPaths;

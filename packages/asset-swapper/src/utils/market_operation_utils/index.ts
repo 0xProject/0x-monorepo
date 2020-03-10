@@ -285,10 +285,10 @@ export class MarketOperationUtils {
         let fallbackPath: Fill[] = [];
         const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
         if (opts.allowFallback && nativeSubPath.length !== 0) {
-            // The fallback path is only as large as the native path.
-            const [nativeInputAmount] = getPathSize(nativeSubPath, inputAmount);
+            // The fallback path is, at most, as large as the native path.
+            const fallbackInputAmount = BigNumber.min(inputAmount, getPathSize(nativeSubPath, inputAmount)[0]);
             fallbackPath =
-                findOptimalPath(side, getFallbackSourcePaths(optimalPath, paths), nativeInputAmount, opts.runLimit) ||
+                findOptimalPath(side, getFallbackSourcePaths(optimalPath, paths), fallbackInputAmount, opts.runLimit) ||
                 [];
         }
         return createOrdersFromPath([...optimalPath, ...fallbackPath], {

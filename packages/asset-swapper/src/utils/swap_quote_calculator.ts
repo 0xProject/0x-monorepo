@@ -198,7 +198,7 @@ export class SwapQuoteCalculator {
             true,
         );
 
-        const breakdown = this._getSwapQuoteOrdersBreakdown(resultOrders, operation);
+        const breakdown = getSwapQuoteOrdersBreakdown(resultOrders, operation);
 
         const quoteBase: SwapQuoteBase = {
             takerAssetData,
@@ -427,36 +427,27 @@ export class SwapQuoteCalculator {
             gas: 0,
         };
     }
+}
 
-    // tslint:disable-next-line: prefer-function-over-method
-    private _getSwapQuoteOrdersBreakdown(
-        orders: OptimizedMarketOrder[],
-        operation: MarketOperation,
-    ): SwapQuoteOrdersBreakdown {
-        // HACK: to shut up linter
-        const breakdown: SwapQuoteOrdersBreakdown = {};
-
-        // total asset amount (accounting for slippage protection)
-        const totalAssetAmount = BigNumber.sum(
-            ...[
-                constants.ZERO_AMOUNT,
-                ...orders.map(o => (operation === MarketOperation.Buy ? o.makerAssetAmount : o.takerAssetAmount)),
-            ],
-        );
-
-        return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
-            const assetAmount = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
-            const { source } = order.fill;
-            return {
-                ...acc,
-                ...{
-                    [source]: !!acc[source]
-                        ? acc[source].plus(assetAmount.dividedBy(totalAssetAmount))
-                        : assetAmount.dividedBy(totalAssetAmount),
-                },
-            };
-        }, breakdown);
+function getSwapQuoteOrdersBreakdown(
+    orders: OptimizedMarketOrder[],
+    operation: MarketOperation,
+): SwapQuoteOrdersBreakdown {
+    const orderAmounts =
+        operation === MarketOperation.Buy
+            ? orders.map(o => o.fill.totalMakerAssetAmount)
+            : orders.map(o => o.fill.totalTakerAssetAmount);
+    const amountsBySource: SwapQuoteOrdersBreakdown = {};
+    orders.forEach((o, i) => {
+        const source = o.fill.source;
+        amountsBySource[source] = orderAmounts[i].plus(amountsBySource[source] || 0);
+    });
+    const totalAmount = BigNumber.sum(0, ...orderAmounts);
+    const breakdown: SwapQuoteOrdersBreakdown = {};
+    for (const [source, amount] of Object.entries(amountsBySource)) {
+        breakdown[source] = amount.div(totalAmount);
     }
+    return breakdown;
 }
 
 function getTakerAssetAmountBreakDown(
