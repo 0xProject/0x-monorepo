@@ -94,8 +94,8 @@ function nativeOrdersToPath(
             fillData: { order },
         });
     }
-    // Sort by descending rate.
-    path = path.sort((a, b) => b.rate.comparedTo(a.rate));
+    // Sort by descending adjusted rate.
+    path = path.sort((a, b) => b.adjustedRate.comparedTo(a.adjustedRate));
     // Re-index fills.
     for (let i = 0; i < path.length; ++i) {
         path[i].parent = i === 0 ? undefined : path[i - 1];
