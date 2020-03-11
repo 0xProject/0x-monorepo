@@ -221,7 +221,7 @@ function createCommonBridgeOrderFields(fill: CollapsedFill, opts: CreateOrderFro
             ? fill.totalMakerAssetAmount.times(1 - opts.bridgeSlippage).integerValue(BigNumber.ROUND_DOWN)
             : fill.totalMakerAssetAmount;
     const takerAssetAmountAdjustedWithSlippage =
-        opts.side === MarketOperation.Buy
+        opts.side === MarketOperation.Sell
             ? fill.totalTakerAssetAmount
             : fill.totalTakerAssetAmount.times(opts.bridgeSlippage + 1).integerValue(BigNumber.ROUND_UP);
     return {
