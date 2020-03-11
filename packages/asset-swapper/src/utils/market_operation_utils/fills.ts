@@ -87,9 +87,9 @@ function nativeOrdersToPath(
             rate,
             adjustedRate,
             adjustedOutput,
-            index: path.length,
             flags: 0,
-            parent: path.length !== 0 ? path[path.length - 1] : undefined,
+            index: 0, // TBD
+            parent: undefined, // TBD
             source: ERC20BridgeSource.Native,
             fillData: { order },
         });
@@ -131,8 +131,7 @@ function dexQuotesToPaths(
                     : ZERO_AMOUNT;
             const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
             const rate = side === MarketOperation.Sell ? output.div(input) : input.div(output);
-            const adjustedRate =
-                side === MarketOperation.Sell ? output.minus(penalty).div(input) : input.div(output.plus(penalty));
+            const adjustedRate = side === MarketOperation.Sell ? adjustedOutput.div(input) : input.div(adjustedOutput);
 
             path.push({
                 input,
