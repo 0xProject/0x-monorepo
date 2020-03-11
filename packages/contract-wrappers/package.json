@@ -17,6 +17,7 @@
         "build": "tsc -b",
         "rebuild": "yarn wrappers:clean && yarn wrappers:generate && yarn wrappers:prettier && yarn build",
         "build:ci": "yarn build",
+        "publish:private": "yarn rebuild && gitpkg publish",
         "lint": "tslint --format stylish --project . --exclude **/lib/**/*",
         "fix": "tslint --fix --format stylish --project . --exclude **/lib/**/*",
         "prettier": "prettier --write **/* --config ../../.prettierrc",
@@ -33,6 +34,9 @@
     "config": {
         "abis": "../contract-artifacts/artifacts/@(DevUtils|ERC20Token|ERC721Token|Exchange|Forwarder|IAssetData|LibTransactionDecoder|WETH9|Coordinator|Staking|StakingProxy|IERC20BridgeSampler|ERC20BridgeSampler|GodsUnchainedValidator|Broker|ILiquidityProvider|ILiquidityProviderRegistry|MaximumGasPrice).json"
     },
+    "gitpkg": {
+        "registry": "git@github.com:0xProject/gitpkg-registry.git"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/0xProject/0x-monorepo.git"
@@ -47,7 +51,8 @@
         "@0x/tslint-config": "^4.0.0",
         "tslint": "5.11.0",
         "typedoc": "^0.15.0",
-        "typescript": "3.0.1"
+        "typescript": "3.0.1",
+        "gitpkg": "https://github.com/0xProject/gitpkg.git"
     },
     "dependencies": {
         "@0x/assert": "^3.0.7",
