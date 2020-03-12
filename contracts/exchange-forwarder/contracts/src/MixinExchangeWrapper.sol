@@ -73,6 +73,12 @@ contract MixinExchangeWrapper {
         EXCHANGE_V2 = IExchangeV2(_exchangeV2);
     }
 
+    struct SellFillResults {
+        uint256 wethSpentAmount;
+        uint256 makerAssetAcquiredAmount;
+        uint256 protocolFeePaid;
+    }
+
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
@@ -115,10 +121,7 @@ contract MixinExchangeWrapper {
         uint256 remainingTakerAssetFillAmount
     )
         internal
-        returns (
-            uint256 wethSpentAmount,
-            uint256 makerAssetAcquiredAmount
-        )
+        returns (SellFillResults memory sellFillResults)
     {
         // No taker fee or percentage fee
         if (
@@ -132,11 +135,11 @@ contract MixinExchangeWrapper {
                 signature
             );
 
-            wethSpentAmount = singleFillResults.takerAssetFilledAmount
-                .safeAdd(singleFillResults.protocolFeePaid);
+            sellFillResults.wethSpentAmount = singleFillResults.takerAssetFilledAmount;
+            sellFillResults.protocolFeePaid = singleFillResults.protocolFeePaid;
 
             // Subtract fee from makerAssetFilledAmount for the net amount acquired.
-            makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount
+            sellFillResults.makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount
                 .safeSub(singleFillResults.takerFeePaid);
 
         // WETH fee
@@ -157,19 +160,19 @@ contract MixinExchangeWrapper {
             );
 
             // WETH is also spent on the taker fee, so we add it here.
-            wethSpentAmount = singleFillResults.takerAssetFilledAmount
-                .safeAdd(singleFillResults.takerFeePaid)
-                .safeAdd(singleFillResults.protocolFeePaid);
-
-            makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
+            sellFillResults.wethSpentAmount = singleFillResults.takerAssetFilledAmount
+                .safeAdd(singleFillResults.takerFeePaid);
+            sellFillResults.makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
+            sellFillResults.protocolFeePaid = singleFillResults.protocolFeePaid;
 
         // Unsupported fee
         } else {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
         }
 
-        return (wethSpentAmount, makerAssetAcquiredAmount);
+        return sellFillResults;
     }
+
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of WETH has been sold by taker.
     /// @param orders Array of order specifications.
@@ -211,10 +214,7 @@ contract MixinExchangeWrapper {
                 balanceBefore = IERC20Token(tokenAddress).balanceOf(address(this));
             }
 
-            (
-                uint256 wethSpentAmount,
-                uint256 makerAssetAcquiredAmount
-            ) = _marketSellSingleOrder(
+            SellFillResults memory sellFillResults = _marketSellSingleOrder(
                 orders[i],
                 signatures[i],
                 remainingTakerAssetFillAmount
@@ -223,24 +223,96 @@ contract MixinExchangeWrapper {
             // Account for the ERC20Bridge transfering more of the maker asset than expected.
             if (makerAssetProxyId == erc20BridgeProxyId) {
                 uint256 balanceAfter = IERC20Token(tokenAddress).balanceOf(address(this));
-                makerAssetAcquiredAmount = LibSafeMath.max256(
+                sellFillResults.makerAssetAcquiredAmount = LibSafeMath.max256(
                     balanceAfter.safeSub(balanceBefore),
-                    makerAssetAcquiredAmount
+                    sellFillResults.makerAssetAcquiredAmount
                 );
             }
 
-            orders[i].makerAssetData.transferOut(makerAssetAcquiredAmount);
+            orders[i].makerAssetData.transferOut(sellFillResults.makerAssetAcquiredAmount);
 
             totalWethSpentAmount = totalWethSpentAmount
-                .safeAdd(wethSpentAmount);
+                .safeAdd(sellFillResults.wethSpentAmount)
+                .safeAdd(sellFillResults.protocolFeePaid);
             totalMakerAssetAcquiredAmount = totalMakerAssetAcquiredAmount
-                .safeAdd(makerAssetAcquiredAmount);
+                .safeAdd(sellFillResults.makerAssetAcquiredAmount);
 
             // Stop execution if the entire amount of WETH has been sold
             if (totalWethSpentAmount >= wethSellAmount) {
                 break;
             }
         }
+    }
+
+    /// @dev Synchronously executes multiple calls of fillOrder until total amount of WETH (exclusive of protocol fee)
+    ///      has been sold by taker.
+    /// @param orders Array of order specifications.
+    /// @param wethSellAmount Desired amount of WETH to sell.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
+    /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
+    function _marketSellExactAmountNoThrow(
+        LibOrder.Order[] memory orders,
+        uint256 wethSellAmount,
+        bytes[] memory signatures
+    )
+        internal
+        returns (
+            uint256 totalWethSpentAmount,
+            uint256 totalMakerAssetAcquiredAmount
+        )
+    {
+        bytes4 erc20BridgeProxyId = IAssetData(address(0)).ERC20Bridge.selector;
+        uint256 totalProtocolFeePaid;
+
+        for (uint256 i = 0; i != orders.length; i++) {
+            // Preemptively skip to avoid division by zero in _marketSellSingleOrder
+            if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
+                continue;
+            }
+
+            // The remaining amount of WETH to sell
+            uint256 remainingTakerAssetFillAmount = wethSellAmount
+                .safeSub(totalWethSpentAmount);
+
+            // If the maker asset is ERC20Bridge, take a snapshot of the Forwarder contract's balance.
+            bytes4 makerAssetProxyId = orders[i].makerAssetData.readBytes4(0);
+            address tokenAddress;
+            uint256 balanceBefore;
+            if (makerAssetProxyId == erc20BridgeProxyId) {
+                tokenAddress = orders[i].makerAssetData.readAddress(16);
+                balanceBefore = IERC20Token(tokenAddress).balanceOf(address(this));
+            }
+
+            SellFillResults memory sellFillResults = _marketSellSingleOrder(
+                orders[i],
+                signatures[i],
+                remainingTakerAssetFillAmount
+            );
+
+            // Account for the ERC20Bridge transfering more of the maker asset than expected.
+            if (makerAssetProxyId == erc20BridgeProxyId) {
+                uint256 balanceAfter = IERC20Token(tokenAddress).balanceOf(address(this));
+                sellFillResults.makerAssetAcquiredAmount = LibSafeMath.max256(
+                    balanceAfter.safeSub(balanceBefore),
+                    sellFillResults.makerAssetAcquiredAmount
+                );
+            }
+
+            orders[i].makerAssetData.transferOut(sellFillResults.makerAssetAcquiredAmount);
+
+            totalWethSpentAmount = totalWethSpentAmount
+                .safeAdd(sellFillResults.wethSpentAmount);
+            totalMakerAssetAcquiredAmount = totalMakerAssetAcquiredAmount
+                .safeAdd(sellFillResults.makerAssetAcquiredAmount);
+            totalProtocolFeePaid = totalProtocolFeePaid.safeAdd(sellFillResults.protocolFeePaid);
+
+            // Stop execution if the entire amount of WETH has been sold
+            if (totalWethSpentAmount >= wethSellAmount) {
+                break;
+            }
+        }
+        totalWethSpentAmount = totalWethSpentAmount.safeAdd(totalProtocolFeePaid);
     }
 
     /// @dev Executes a single call of fillOrder according to the makerAssetBuyAmount and

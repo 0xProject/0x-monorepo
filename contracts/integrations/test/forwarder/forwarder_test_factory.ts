@@ -146,6 +146,51 @@ export class ForwarderTestFactory {
             await this._checkResultsAsync(txReceipt, orders, expectedOrderStatuses, expectedBalances);
         }
     }
+    public async marketSellAmountTestAsync(
+        orders: SignedOrder[],
+        ethSellAmount: BigNumber,
+        fractionalNumberOfOrdersToFill: number,
+        options: Partial<MarketSellOptions> = {},
+    ): Promise<void> {
+        const orderInfoBefore = await Promise.all(
+            orders.map(order => this._deployment.exchange.getOrderInfo(order).callAsync()),
+        );
+        const expectedOrderStatuses = orderInfoBefore.map((orderInfo, i) =>
+            fractionalNumberOfOrdersToFill >= i + 1 && !(options.noopOrders || []).includes(i)
+                ? OrderStatus.FullyFilled
+                : orderInfo.orderStatus,
+        );
+
+        const { balances: expectedBalances, wethSpentAmount } = await this._simulateForwarderFillAsync(
+            orders,
+            orderInfoBefore,
+            fractionalNumberOfOrdersToFill,
+            options,
+        );
+
+        const forwarderFeeAmounts = options.forwarderFeeAmounts || [];
+        const forwarderFeeRecipientAddresses = options.forwarderFeeRecipientAddresses || [];
+
+        const tx = this._forwarder
+            .marketSellAmountWithEth(
+                orders,
+                ethSellAmount,
+                orders.map(signedOrder => signedOrder.signature),
+                forwarderFeeAmounts,
+                forwarderFeeRecipientAddresses,
+            )
+            .awaitTransactionSuccessAsync({
+                value: wethSpentAmount.plus(BigNumber.sum(0, ...forwarderFeeAmounts)),
+                from: this._taker.address,
+            });
+
+        if (options.revertError !== undefined) {
+            await expect(tx).to.revertWith(options.revertError);
+        } else {
+            const txReceipt = await tx;
+            await this._checkResultsAsync(txReceipt, orders, expectedOrderStatuses, expectedBalances);
+        }
+    }
 
     private async _checkResultsAsync(
         txReceipt: TransactionReceiptWithDecodedLogs,

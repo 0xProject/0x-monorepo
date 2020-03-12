@@ -151,6 +151,72 @@ contract Forwarder is
         _unwrapAndTransferEth(wethRemaining);
     }
 
+    /// @dev Purchases as much of orders' makerAssets as possible by selling the specified amount of ETH
+    ///      accounting for order and forwarder fees. This functions throws if ethSellAmount was not reached.
+    /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+    /// @param ethSellAmount Desired amount of ETH to sell.
+    /// @param signatures Proofs that orders have been created by makers.
+    /// @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to corresponding feeRecipients.
+    /// @param feeRecipients Addresses that will receive ETH when orders are filled.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    function marketSellAmountWithEth(
+        LibOrder.Order[] memory orders,
+        uint256 ethSellAmount,
+        bytes[] memory signatures,
+        uint256[] memory ethFeeAmounts,
+        address payable[] memory feeRecipients
+    )
+        public
+        payable
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount
+        )
+    {
+        if (ethSellAmount > msg.value) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.CompleteSellFailedError(
+                ethSellAmount,
+                msg.value
+            ));
+        }
+        // Pay ETH affiliate fees to all feeRecipient addresses
+        uint256 wethRemaining = _transferEthFeesAndWrapRemaining(
+            ethFeeAmounts,
+            feeRecipients
+        );
+        // Need enough remaining to ensure we can sell ethSellAmount
+        if (wethRemaining < ethSellAmount) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.OverspentWethError(
+                wethRemaining,
+                ethSellAmount
+            ));
+        }
+        // Spends up to ethSellAmount to fill orders, transfers purchased assets to msg.sender,
+        // and pays WETH order fees.
+        (
+            wethSpentAmount,
+            makerAssetAcquiredAmount
+        ) = _marketSellExactAmountNoThrow(
+            orders,
+            ethSellAmount,
+            signatures
+        );
+        // Ensure we sold the specified amount (note: wethSpentAmount includes fees)
+        if (wethSpentAmount < ethSellAmount) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.CompleteSellFailedError(
+                ethSellAmount,
+                wethSpentAmount
+            ));
+        }
+
+        // Calculate amount of WETH that hasn't been spent.
+        wethRemaining = wethRemaining.safeSub(wethSpentAmount);
+
+        // Refund remaining ETH to msg.sender.
+        _unwrapAndTransferEth(wethRemaining);
+    }
+
     /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
     ///      The Forwarder may *fill* more than makerAssetBuyAmount of the makerAsset so that it can
     ///      pay takerFees where takerFeeAssetData == makerAssetData (i.e. percentage fees).

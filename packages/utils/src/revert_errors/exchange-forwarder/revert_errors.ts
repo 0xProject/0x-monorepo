@@ -22,6 +22,19 @@ export class CompleteBuyFailedError extends RevertError {
     }
 }
 
+export class CompleteSellFailedError extends RevertError {
+    constructor(
+        expectedAssetSellAmount?: BigNumber | number | string,
+        actualAssetSellAmount?: BigNumber | number | string,
+    ) {
+        super(
+            'CompleteSellFailedError',
+            'CompleteSellFailedError(uint256 expectedAssetSellAmount, uint256 actualAssetSellAmount)',
+            { expectedAssetSellAmount, actualAssetSellAmount },
+        );
+    }
+}
+
 export class UnsupportedFeeError extends RevertError {
     constructor(takerFeeAssetData?: string) {
         super('UnsupportedFeeError', 'UnsupportedFeeError(bytes takerFeeAssetData)', { takerFeeAssetData });
@@ -46,6 +59,7 @@ export class MsgValueCannotEqualZeroError extends RevertError {
 const types = [
     UnregisteredAssetProxyError,
     CompleteBuyFailedError,
+    CompleteSellFailedError,
     UnsupportedFeeError,
     OverspentWethError,
     MsgValueCannotEqualZeroError,
