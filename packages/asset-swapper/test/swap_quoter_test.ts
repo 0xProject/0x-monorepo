@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 
 import { ISwapQuoter, SwapQuoter } from '../src';
 import { constants } from '../src/constants';
-import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } from '../src/types';
+import { LiquidityForTakerMakerAssetDataPair, /*MarketSellSwapQuote,*/ SignedOrderWithFillableAmounts } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { mockAvailableAssetDatas, mockedSwapQuoterWithFillableAmounts, orderbookMock } from './utils/mocks';
@@ -273,5 +273,52 @@ describe('SwapQuoter', () => {
                 await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
         });
+    });
+
+    describe('_getSwapQuoteAsync()', () => {
+        const mockWeb3Provider = TypeMoq.Mock.ofType(Web3ProviderEngine);
+        // const mockOrderbook = orderbookMock();
+
+        beforeEach(() => {
+            mockWeb3Provider.reset();
+            // mockOrderbook.reset();
+        });
+
+        afterEach(() => {
+            mockWeb3Provider.verifyAll();
+            // mockOrderbook.verifyAll();
+        });
+
+        it('enables RFQ-T when indicated and whitelisted', async () => {
+            // mock out sampler to return nothing, and mock out QuoteRequestor
+            // to return an RFQ-T quote.
+
+            const swapQuoter: ISwapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
+                mockWeb3Provider.object,
+                FAKE_SRA_URL,
+                {
+                    rfqtTakerApiKeyWhitelist: ['koolApiKey1'],
+                    rfqtMakerEndpoints: ['http://localhost:3000'],
+                },
+            );
+
+            expect(
+                swapQuoter.getMarketSellSwapQuoteForAssetDataAsync(
+                    WETH_ASSET_DATA,
+                    DAI_ASSET_DATA,
+                    new BigNumber(1), // takerAssetSellAmount
+                    {
+                        enableRfqt: true,
+                        intentOnFilling: true,
+                        apiKey: 'koolApiKey1',
+                        takerAddress: '0x0000000000000000000000000000000000000000',
+                    },
+                ),
+            ).to.be.true();
+        });
+        // things to permute in order to generate test cases:
+        // - enableRfqt
+        // - apiKey
+        // - intentOnFilling
     });
 });
