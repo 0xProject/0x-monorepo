@@ -19,10 +19,14 @@ import {
 
 import { fillableAmountsUtils } from './fillable_amounts_utils';
 import { MarketOperationUtils } from './market_operation_utils';
-import { CreateOrderUtils } from './market_operation_utils/create_order';
+import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
 import { ERC20BridgeSource, OptimizedMarketOrder } from './market_operation_utils/types';
 import { ProtocolFeeUtils } from './protocol_fee_utils';
-import { utils } from './utils';
+import {
+    isOrderTakerFeePayableWithMakerAsset,
+    isOrderTakerFeePayableWithTakerAsset,
+    isSupportedAssetDataInOrders,
+} from './utils';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
 export class SwapQuoteCalculator {
@@ -37,14 +41,12 @@ export class SwapQuoteCalculator {
     public async calculateMarketSellSwapQuoteAsync(
         prunedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
-        slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<MarketSellSwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
-            slippagePercentage,
             gasPrice,
             MarketOperation.Sell,
             opts,
@@ -54,14 +56,12 @@ export class SwapQuoteCalculator {
     public async calculateMarketBuySwapQuoteAsync(
         prunedOrders: SignedOrder[],
         takerAssetFillAmount: BigNumber,
-        slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<MarketBuySwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
-            slippagePercentage,
             gasPrice,
             MarketOperation.Buy,
             opts,
@@ -71,14 +71,12 @@ export class SwapQuoteCalculator {
     public async calculateBatchMarketBuySwapQuoteAsync(
         batchPrunedOrders: SignedOrder[][],
         takerAssetFillAmounts: BigNumber[],
-        slippagePercentage: number,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<Array<MarketBuySwapQuote | undefined>> {
         return (await this._calculateBatchBuySwapQuoteAsync(
             batchPrunedOrders,
             takerAssetFillAmounts,
-            slippagePercentage,
             gasPrice,
             MarketOperation.Buy,
             opts,
@@ -88,17 +86,13 @@ export class SwapQuoteCalculator {
     private async _calculateBatchBuySwapQuoteAsync(
         batchPrunedOrders: SignedOrder[][],
         assetFillAmounts: BigNumber[],
-        slippagePercentage: number,
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
     ): Promise<Array<SwapQuote | undefined>> {
-        const assetFillAmountsWithSlippage = assetFillAmounts.map(a =>
-            a.plus(a.multipliedBy(slippagePercentage).integerValue()),
-        );
         const batchSignedOrders = await this._marketOperationUtils.getBatchMarketBuyOrdersAsync(
             batchPrunedOrders,
-            assetFillAmountsWithSlippage,
+            assetFillAmounts,
             opts,
         );
         const batchSwapQuotes = await Promise.all(
@@ -112,6 +106,7 @@ export class SwapQuoteCalculator {
                         operation,
                         assetFillAmounts[i],
                         gasPrice,
+                        opts.gasSchedule,
                     );
                 } else {
                     return undefined;
@@ -123,25 +118,23 @@ export class SwapQuoteCalculator {
     private async _calculateSwapQuoteAsync(
         prunedOrders: SignedOrder[],
         assetFillAmount: BigNumber,
-        slippagePercentage: number,
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
     ): Promise<SwapQuote> {
         // checks if maker asset is ERC721 or ERC20 and taker asset is ERC20
-        if (!utils.isSupportedAssetDataInOrders(prunedOrders)) {
+        if (!isSupportedAssetDataInOrders(prunedOrders)) {
             throw Error(SwapQuoterError.AssetDataUnsupported);
         }
         // since prunedOrders do not have fillState, we will add a buffer of fillable orders to consider that some native are orders are partially filled
 
-        const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
         let resultOrders: OptimizedMarketOrder[] = [];
 
         {
             // Scale fees by gas price.
             const _opts = {
                 ...opts,
-                fees: _.mapValues(opts.fees, (v, k) => v.times(gasPrice)),
+                fees: _.mapValues(opts.feeSchedule, v => v.times(gasPrice)),
             };
 
             const firstOrderMakerAssetData = !!prunedOrders[0]
@@ -150,20 +143,18 @@ export class SwapQuoteCalculator {
 
             if (firstOrderMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
                 // HACK: to conform ERC721 orders to the output of market operation utils, assumes complete fillable
-                resultOrders = prunedOrders.map(o =>
-                    CreateOrderUtils.convertNativeOrderToFullyFillableOptimizedOrders(o),
-                );
+                resultOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
             } else {
                 if (operation === MarketOperation.Buy) {
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
-                        assetFillAmount.plus(slippageBufferAmount),
+                        assetFillAmount,
                         _opts,
                     );
                 } else {
                     resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
-                        assetFillAmount.plus(slippageBufferAmount),
+                        assetFillAmount,
                         _opts,
                     );
                 }
@@ -179,6 +170,7 @@ export class SwapQuoteCalculator {
             operation,
             assetFillAmount,
             gasPrice,
+            opts.gasSchedule,
         );
     }
     private async _createSwapQuoteAsync(
@@ -188,22 +180,25 @@ export class SwapQuoteCalculator {
         operation: MarketOperation,
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
+        gasSchedule: { [source: string]: number },
     ): Promise<SwapQuote> {
         const bestCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             resultOrders,
             assetFillAmount,
             gasPrice,
+            gasSchedule,
             operation,
         );
         const worstCaseQuoteInfo = await this._calculateQuoteInfoAsync(
             resultOrders,
             assetFillAmount,
             gasPrice,
+            gasSchedule,
             operation,
             true,
         );
 
-        const breakdown = this._getSwapQuoteOrdersBreakdown(resultOrders, operation);
+        const breakdown = getSwapQuoteOrdersBreakdown(resultOrders, operation);
 
         const quoteBase: SwapQuoteBase = {
             takerAssetData,
@@ -236,14 +231,16 @@ export class SwapQuoteCalculator {
         orders: OptimizedMarketOrder[],
         assetFillAmount: BigNumber,
         gasPrice: BigNumber,
+        gasSchedule: { [source: string]: number },
         operation: MarketOperation,
         worstCase: boolean = false,
     ): Promise<SwapQuoteInfo> {
-        if (operation === MarketOperation.Buy) {
-            return this._calculateMarketBuyQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase);
-        } else {
-            return this._calculateMarketSellQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase);
-        }
+        return {
+            ...(operation === MarketOperation.Buy
+                ? await this._calculateMarketBuyQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase)
+                : await this._calculateMarketSellQuoteInfoAsync(orders, assetFillAmount, gasPrice, worstCase)),
+            gas: getGasUsedByOrders(orders, gasSchedule),
+        };
     }
 
     private async _calculateMarketSellQuoteInfoAsync(
@@ -337,6 +334,7 @@ export class SwapQuoteCalculator {
             totalTakerAssetAmount: totalFeeTakerAssetAmount.plus(totalTakerAssetAmount),
             makerAssetAmount: totalMakerAssetAmount,
             protocolFeeInWeiAmount,
+            gas: 0,
         };
     }
 
@@ -426,45 +424,37 @@ export class SwapQuoteCalculator {
             totalTakerAssetAmount: totalFeeTakerAssetAmount.plus(totalTakerAssetAmount),
             makerAssetAmount: totalMakerAssetAmount,
             protocolFeeInWeiAmount,
+            gas: 0,
         };
     }
+}
 
-    // tslint:disable-next-line: prefer-function-over-method
-    private _getSwapQuoteOrdersBreakdown(
-        orders: OptimizedMarketOrder[],
-        operation: MarketOperation,
-    ): SwapQuoteOrdersBreakdown {
-        // HACK: to shut up linter
-        const breakdown: SwapQuoteOrdersBreakdown = {};
-
-        // total asset amount (accounting for slippage protection)
-        const totalAssetAmount = BigNumber.sum(
-            ...[
-                constants.ZERO_AMOUNT,
-                ...orders.map(o => (operation === MarketOperation.Buy ? o.makerAssetAmount : o.takerAssetAmount)),
-            ],
-        );
-
-        return orders.reduce((acc: SwapQuoteOrdersBreakdown, order: OptimizedMarketOrder): SwapQuoteOrdersBreakdown => {
-            const assetAmount = operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount;
-            const { source } = order.fill;
-            return {
-                ...acc,
-                ...{
-                    [source]: !!acc[source]
-                        ? acc[source].plus(assetAmount.dividedBy(totalAssetAmount))
-                        : assetAmount.dividedBy(totalAssetAmount),
-                },
-            };
-        }, breakdown);
+function getSwapQuoteOrdersBreakdown(
+    orders: OptimizedMarketOrder[],
+    operation: MarketOperation,
+): SwapQuoteOrdersBreakdown {
+    const orderAmounts =
+        operation === MarketOperation.Buy
+            ? orders.map(o => o.fill.totalMakerAssetAmount)
+            : orders.map(o => o.fill.totalTakerAssetAmount);
+    const amountsBySource: SwapQuoteOrdersBreakdown = {};
+    orders.forEach((o, i) => {
+        const source = o.fill.source;
+        amountsBySource[source] = orderAmounts[i].plus(amountsBySource[source] || 0);
+    });
+    const totalAmount = BigNumber.sum(0, ...orderAmounts);
+    const breakdown: SwapQuoteOrdersBreakdown = {};
+    for (const [source, amount] of Object.entries(amountsBySource)) {
+        breakdown[source] = amount.div(totalAmount);
     }
+    return breakdown;
 }
 
 function getTakerAssetAmountBreakDown(
     order: SignedOrderWithFillableAmounts,
     takerAssetAmountWithFees: BigNumber,
 ): { feeTakerAssetAmount: BigNumber; takerAssetAmount: BigNumber } {
-    if (utils.isOrderTakerFeePayableWithTakerAsset(order)) {
+    if (isOrderTakerFeePayableWithTakerAsset(order)) {
         const adjustedTakerAssetAmount = order.takerAssetAmount.plus(order.takerFee);
         const filledRatio = takerAssetAmountWithFees.div(adjustedTakerAssetAmount);
         const takerAssetAmount = filledRatio.multipliedBy(order.takerAssetAmount).integerValue(BigNumber.ROUND_CEIL);
@@ -472,7 +462,7 @@ function getTakerAssetAmountBreakDown(
             takerAssetAmount,
             feeTakerAssetAmount: takerAssetAmountWithFees.minus(takerAssetAmount),
         };
-    } else if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
+    } else if (isOrderTakerFeePayableWithMakerAsset(order)) {
         if (takerAssetAmountWithFees.isZero()) {
             return {
                 takerAssetAmount: constants.ZERO_AMOUNT,
@@ -495,3 +485,12 @@ function getTakerAssetAmountBreakDown(
         takerAssetAmount: takerAssetAmountWithFees,
     };
 }
+
+function getGasUsedByOrders(orders: OptimizedMarketOrder[], gasSchedule: { [source: string]: number }): number {
+    let totalUsage = 0;
+    for (const order of orders) {
+        totalUsage += gasSchedule[order.fill.source] || 0;
+    }
+    return totalUsage;
+}
+// tslint:disable: max-file-line-count

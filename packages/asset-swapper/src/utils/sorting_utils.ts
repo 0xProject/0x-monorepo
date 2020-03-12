@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { utils } from './utils';
+import { getAdjustedMakerAndTakerAmountsFromTakerFees } from './utils';
 
 export const sortingUtils = {
     sortOrders<T extends Order>(orders: T[]): T[] {
@@ -21,9 +21,7 @@ export const sortingUtils = {
 };
 
 function getTakerFeeAdjustedRateOfOrder(order: Order): BigNumber {
-    const [adjustedMakerAssetAmount, adjustedTakerAssetAmount] = utils.getAdjustedMakerAndTakerAmountsFromTakerFees(
-        order,
-    );
+    const [adjustedMakerAssetAmount, adjustedTakerAssetAmount] = getAdjustedMakerAndTakerAmountsFromTakerFees(order);
     const rate = adjustedTakerAssetAmount.div(adjustedMakerAssetAmount);
     return rate;
 }

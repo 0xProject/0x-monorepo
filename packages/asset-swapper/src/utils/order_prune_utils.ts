@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { OrderPrunerPermittedFeeTypes } from '../types';
-import { utils } from '../utils/utils';
+import { isOrderTakerFeePayableWithMakerAsset, isOrderTakerFeePayableWithTakerAsset } from '../utils/utils';
 
 export const orderPrunerUtils = {
     pruneForUsableSignedOrders(
@@ -19,9 +19,9 @@ export const orderPrunerUtils = {
                 ((permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.NoFees) &&
                     order.takerFee.eq(constants.ZERO_AMOUNT)) ||
                     (permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.TakerDenominatedTakerFee) &&
-                        utils.isOrderTakerFeePayableWithTakerAsset(order)) ||
+                        isOrderTakerFeePayableWithTakerAsset(order)) ||
                     (permittedOrderFeeTypes.has(OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee) &&
-                        utils.isOrderTakerFeePayableWithMakerAsset(order)))
+                        isOrderTakerFeePayableWithMakerAsset(order)))
             );
         });
         return result;

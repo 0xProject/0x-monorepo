@@ -6,7 +6,12 @@ import * as _ from 'lodash';
 
 import { MarketOperation, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
 
-import { utils } from './utils';
+import {
+    isAssetDataEquivalent,
+    isExactAssetData,
+    isOrderTakerFeePayableWithMakerAsset,
+    isOrderTakerFeePayableWithTakerAsset,
+} from './utils';
 
 export const assert = {
     ...sharedAssert,
@@ -36,13 +41,13 @@ export const assert = {
     ): void {
         _.every(orders, (order: SignedOrder, index: number) => {
             assert.assert(
-                utils.isAssetDataEquivalent(takerAssetData, order.takerAssetData),
+                isAssetDataEquivalent(takerAssetData, order.takerAssetData),
                 `Expected ${variableName}[${index}].takerAssetData to be ${takerAssetData} but found ${
                     order.takerAssetData
                 }`,
             );
             assert.assert(
-                utils.isAssetDataEquivalent(makerAssetData, order.makerAssetData),
+                isAssetDataEquivalent(makerAssetData, order.makerAssetData),
                 `Expected ${variableName}[${index}].makerAssetData to be ${makerAssetData} but found ${
                     order.makerAssetData
                 }`,
@@ -53,8 +58,8 @@ export const assert = {
         _.every(orders, (order: T, index: number) => {
             assert.assert(
                 order.takerFee.isZero() ||
-                    utils.isOrderTakerFeePayableWithTakerAsset(order) ||
-                    utils.isOrderTakerFeePayableWithMakerAsset(order),
+                    isOrderTakerFeePayableWithTakerAsset(order) ||
+                    isOrderTakerFeePayableWithMakerAsset(order),
                 `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} or ${
                     order.takerAssetData
                 } but found ${order.takerFeeAssetData}`,
@@ -72,11 +77,12 @@ export const assert = {
     },
     isValidForwarderSignedOrder(variableName: string, order: SignedOrder, wethAssetData: string): void {
         assert.assert(
-            utils.isExactAssetData(order.takerAssetData, wethAssetData),
+            isExactAssetData(order.takerAssetData, wethAssetData),
             `Expected ${variableName} to have takerAssetData set as ${wethAssetData}, but is ${order.takerAssetData}`,
         );
     },
     isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
+        sharedAssert.isNumber(`${variableName}.gas`, swapQuoteInfo.gas);
         sharedAssert.isBigNumber(`${variableName}.feeTakerAssetAmount`, swapQuoteInfo.feeTakerAssetAmount);
         sharedAssert.isBigNumber(`${variableName}.totalTakerAssetAmount`, swapQuoteInfo.totalTakerAssetAmount);
         sharedAssert.isBigNumber(`${variableName}.takerAssetAmount`, swapQuoteInfo.takerAssetAmount);

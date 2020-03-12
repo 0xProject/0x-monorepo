@@ -169,6 +169,7 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
  * totalTakerAssetAmount: The total amount of takerAsset required to complete the swap (filling orders, and paying takerFees).
  * makerAssetAmount: The amount of makerAsset that will be acquired through the swap.
  * protocolFeeInWeiAmount: The amount of ETH to pay (in WEI) as protocol fee to perform the swap for desired asset.
+ * gas: Amount of estimated gas needed to fill the quote.
  */
 export interface SwapQuoteInfo {
     feeTakerAssetAmount: BigNumber;
@@ -176,6 +177,7 @@ export interface SwapQuoteInfo {
     totalTakerAssetAmount: BigNumber;
     makerAssetAmount: BigNumber;
     protocolFeeInWeiAmount: BigNumber;
+    gas: number;
 }
 
 /**
@@ -186,11 +188,9 @@ export interface SwapQuoteOrdersBreakdown {
 }
 
 /**
- * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
 export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
-    slippagePercentage: number;
     gasPrice?: BigNumber;
 }
 

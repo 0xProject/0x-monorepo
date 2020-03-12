@@ -5,6 +5,26 @@
             {
                 "note": "Add support for private liquidity providers",
                 "pr": 2505
+            },
+            {
+                "note": "Big refactor of market operation utils",
+                "pr": 2513
+            },
+            {
+                "note": "Remove `dustFractionThreshold`, `noConflicts` options.",
+                "pr": 2513
+            },
+            {
+                "note": "Revamp fill optimization algorithm",
+                "pr": 2513
+            },
+            {
+                "note": "Add fallback orders to quotes via `allowFallback` option.",
+                "pr": 2513
+            },
+            {
+                "note": "Add `maxFallbackSlippage` option.",
+                "pr": 2513
             }
         ]
     },
