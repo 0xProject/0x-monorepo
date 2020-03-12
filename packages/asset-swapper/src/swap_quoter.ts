@@ -523,10 +523,10 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
-        let prunedOrders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
+        let orders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
-        if (prunedOrders.length === 0) {
-            prunedOrders = [
+        if (orders.length === 0) {
+            orders = [
                 createDummyOrderForSampler(makerAssetData, takerAssetData, this._contractAddresses.uniswapBridge),
             ];
         }
@@ -535,14 +535,14 @@ export class SwapQuoter {
 
         if (marketOperation === MarketOperation.Buy) {
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
-                prunedOrders,
+                orders,
                 assetFillAmount,
                 gasPrice,
                 calculateSwapQuoteOpts,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
-                prunedOrders,
+                orders,
                 assetFillAmount,
                 gasPrice,
                 calculateSwapQuoteOpts,
