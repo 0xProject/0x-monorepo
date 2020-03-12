@@ -192,6 +192,10 @@ export interface SwapQuoteOrdersBreakdown {
  */
 export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
     gasPrice?: BigNumber;
+    takerAddress?: string;
+    apiKey?: string;
+    enableRfqt?: boolean;
+    intentOnFilling?: boolean;
 }
 
 /**
@@ -213,6 +217,8 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
     liquidityProviderRegistryAddress?: string;
+    rfqtTakerApiKeyWhitelist: string[];
+    rfqtMakerEndpoints?: string[];
 }
 
 /**

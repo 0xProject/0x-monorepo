@@ -27,6 +27,7 @@ import { DexOrderSampler } from './utils/market_operation_utils/sampler';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
+import { QuoteRequestor } from './utils/quote_requestor';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
 
@@ -36,12 +37,15 @@ export class SwapQuoter {
     public readonly expiryBufferMs: number;
     public readonly chainId: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
+    public readonly rfqtTakerApiKeyWhitelist: string[];
+    public readonly rfqtMakerEndpoints: string[];
     private readonly _contractAddresses: ContractAddresses;
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _swapQuoteCalculator: SwapQuoteCalculator;
     private readonly _devUtilsContract: DevUtilsContract;
     private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
+    private readonly _quoteRequestor: QuoteRequestor;
 
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -144,7 +148,12 @@ export class SwapQuoter {
      *
      * @return  An instance of SwapQuoter
      */
-    constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
+    constructor(
+        supportedProvider: SupportedProvider,
+        orderbook: Orderbook,
+        options: Partial<SwapQuoterOpts> = {},
+        quoteRequestor?: QuoteRequestor,
+    ) {
         const {
             chainId,
             expiryBufferMs,
@@ -161,10 +170,13 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
+        this.rfqtTakerApiKeyWhitelist = options.rfqtTakerApiKeyWhitelist || [];
+        this.rfqtMakerEndpoints = options.rfqtMakerEndpoints || [];
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
+        this._quoteRequestor = quoteRequestor || new QuoteRequestor(this.rfqtMakerEndpoints);
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
                 gas: samplerGasLimit,
@@ -524,6 +536,25 @@ export class SwapQuoter {
         }
         // get the relevant orders for the makerAsset
         let orders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
+        if (options.intentOnFilling && options.apiKey) {
+            if (!this.rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
+                throw new Error('API key not permissioned for RFQ-T');
+            }
+            if (!options.takerAddress || options.takerAddress === '0x0000000000000000000000000000000000000000') {
+                throw new Error('RFQ-T requests must specify a taker address');
+            }
+            orders = orders.concat(
+                await this._quoteRequestor.requestRfqtFirmQuotesAsync(
+                    makerAssetData,
+                    takerAssetData,
+                    assetFillAmount,
+                    marketOperation,
+                    options.intentOnFilling,
+                    options.apiKey,
+                    options.takerAddress,
+                ),
+            );
+        }
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (orders.length === 0) {
             orders = [

@@ -43,6 +43,8 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     },
     ...DEFAULT_ORDER_PRUNER_OPTS,
     samplerGasLimit: 250e6,
+    rfqtTakerApiKeyWhitelist: [],
+    rfqtMakerEndpoints: [],
 };
 
 const DEFAULT_FORWARDER_EXTENSION_CONTRACT_OPTS: ForwarderExtensionContractOpts = {
