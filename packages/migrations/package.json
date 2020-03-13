@@ -11,7 +11,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib ${npm_package_config_snapshot_name} ${npm_package_config_snapshot_name}-*.zip",
-        "lint": "tslint --format stylish --project .",
+        "lint": "tslint --format stylish --project . && prettier --check 'src/**/*.{ts,tsx,json,md}' --config ../../.prettierrc",
         "fix": "tslint --fix --format stylish --project .",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test",
