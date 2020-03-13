@@ -54,6 +54,10 @@ contract DeploymentConstants {
     address constant internal KYBER_ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     /// @dev Mainnet address of the dYdX contract.
     address constant private DYDX_ADDRESS = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
+    /// @dev Mainnet address of the GST2 contract
+    address constant private GST_ADDRESS = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
+    // /// @dev Kovan address of the GST2 contract
+    // address constant private GST_ADDRESS = address(0);
 
     /// @dev Overridable way to get the `KyberNetworkProxy` address.
     /// @return kyberAddress The `IKyberNetworkProxy` address.
@@ -143,5 +147,15 @@ contract DeploymentConstants {
         returns (address dydxAddress)
     {
         return DYDX_ADDRESS;
+    }
+
+    /// @dev An overridable way to retrieve the GST2 contract address.
+    /// @return gst The GST contract.
+    function _getGstAddress()
+        internal
+        view
+        returns (address gst)
+    {
+        return GST_ADDRESS;
     }
 }
