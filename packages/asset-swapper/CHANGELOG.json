@@ -25,6 +25,10 @@
             {
                 "note": "Add `maxFallbackSlippage` option.",
                 "pr": 2513
+            },
+            {
+                "note": "Fix fee schedule not being scaled by gas price.",
+                "pr": 2522
             }
         ]
     },

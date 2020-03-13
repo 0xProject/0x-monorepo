@@ -20,7 +20,7 @@ import {
 import { fillableAmountsUtils } from './fillable_amounts_utils';
 import { MarketOperationUtils } from './market_operation_utils';
 import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_operation_utils/orders';
-import { ERC20BridgeSource, OptimizedMarketOrder } from './market_operation_utils/types';
+import { ERC20BridgeSource, GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
 import { ProtocolFeeUtils } from './protocol_fee_utils';
 import {
     isOrderTakerFeePayableWithMakerAsset,
@@ -132,9 +132,9 @@ export class SwapQuoteCalculator {
 
         {
             // Scale fees by gas price.
-            const _opts = {
+            const _opts: GetMarketOrdersOpts = {
                 ...opts,
-                fees: _.mapValues(opts.feeSchedule, v => v.times(gasPrice)),
+                feeSchedule: _.mapValues(opts.feeSchedule, v => v.times(gasPrice)),
             };
 
             const firstOrderMakerAssetData = !!prunedOrders[0]
