@@ -29,7 +29,7 @@
             {
                 "note": "Fix fee schedule not being scaled by gas price.",
                 "pr": 2522
-            },
+            }
         ]
     },
     {
