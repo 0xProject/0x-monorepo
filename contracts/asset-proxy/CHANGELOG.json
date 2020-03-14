@@ -9,6 +9,10 @@
             {
                 "note": "Emit `ERC20BridgeTransfer` events in bridges.",
                 "pr": 2512
+            },
+            {
+                "note": "Change names of `ERC20BridgeTransfer` args to be less ambiguous.",
+                "pr": 2524
             }
         ]
     },
