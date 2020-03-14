@@ -21,24 +21,24 @@ pragma solidity ^0.5.9;
 
 contract IERC20Bridge {
 
-    /// @dev Emitted when a bridge transfer is completed.
-    /// @param fromToken The address of the "from" token.
-    /// @param toToken The address of the "to" token.
-    /// @param fromTokenAmount The "from" token amount consumed.
-    /// @param toTokenAmount The "to" token amount transferred.
-    /// @param from Supplier of "fromToken".
-    /// @param to Receiver of "toToken".
+    /// @dev Result of a successful bridge call.
+    bytes4 constant internal BRIDGE_SUCCESS = 0xdc1600f3;
+
+    /// @dev Emitted when a trade occurs.
+    /// @param inputToken The token the bridge is converting from.
+    /// @param outputToken The token the bridge is converting to.
+    /// @param inputTokenAmount Amount of input token.
+    /// @param outputTokenAmount Amount of output token.
+    /// @param from The `from` address in `bridgeTransferFrom()`
+    /// @param to The `to` address in `bridgeTransferFrom()`
     event ERC20BridgeTransfer(
-        address fromToken,
-        address toToken,
-        uint256 fromTokenAmount,
-        uint256 toTokenAmount,
+        address inputToken,
+        address outputToken,
+        uint256 inputTokenAmount,
+        uint256 outputTokenAmount,
         address from,
         address to
     );
-
-    /// @dev Result of a successful bridge call.
-    bytes4 constant internal BRIDGE_SUCCESS = 0xdc1600f3;
 
     /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.
     /// @param tokenAddress The address of the ERC20 token to transfer.
