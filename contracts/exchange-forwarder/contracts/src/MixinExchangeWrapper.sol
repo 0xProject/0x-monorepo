@@ -192,7 +192,6 @@ contract MixinExchangeWrapper {
         return sellFillResults;
     }
 
-
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of WETH has been sold by taker.
     /// @param orders Array of order specifications.
     /// @param wethSellAmount Desired amount of WETH to sell.
