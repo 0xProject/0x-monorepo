@@ -157,7 +157,7 @@ blockchainTests('Forwarder integration tests', env => {
             );
         });
     });
-    blockchainTests.resets.only('marketSellOrdersWithEth without extra fees', () => {
+    blockchainTests.resets('marketSellOrdersWithEth without extra fees', () => {
         it('should fill a single order without a taker fee', async () => {
             const orderWithoutFee = await maker.signOrderAsync();
             await testFactory.marketSellTestAsync([orderWithoutFee], 0.78);
@@ -449,13 +449,12 @@ blockchainTests('Forwarder integration tests', env => {
         });
     });
     blockchainTests.resets('marketSellAmountWithEth', () => {
-        const protocolFee = new BigNumber(150000).times(DeploymentManager.gasPrice);
         it('should fail if the supplied amount is not sold', async () => {
             const order = await maker.signOrderAsync();
             const ethSellAmount = order.takerAssetAmount;
             const revertError = new ExchangeForwarderRevertErrors.CompleteSellFailedError(
                 ethSellAmount,
-                order.takerAssetAmount.times(0.5).plus(protocolFee),
+                order.takerAssetAmount.times(0.5).plus(DeploymentManager.protocolFee),
             );
             await testFactory.marketSellAmountTestAsync([order], ethSellAmount, 0.5, {
                 revertError,
