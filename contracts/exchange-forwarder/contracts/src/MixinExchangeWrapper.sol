@@ -220,8 +220,15 @@ contract MixinExchangeWrapper {
 
             // The remaining amount of WETH to sell
             uint256 remainingTakerAssetFillAmount = wethSellAmount
-                .safeSub(totalWethSpentAmount)
-                .safeSub(_isV2Order(orders[i]) ? 0 : protocolFee);
+                .safeSub(totalWethSpentAmount);
+            uint256 currentProtocolFee = _isV2Order(orders[i]) ? 0 : protocolFee;
+            if (remainingTakerAssetFillAmount > currentProtocolFee) {
+                // Do not count the protocol fee as part of the fill amount.
+                remainingTakerAssetFillAmount = remainingTakerAssetFillAmount.safeSub(currentProtocolFee);
+            } else {
+                // Stop if we don't have at least enough ETH to pay another protocol fee.
+                break;
+            }
 
             SellFillResults memory sellFillResults = _marketSellSingleOrder(
                 orders[i],
