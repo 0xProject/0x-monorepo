@@ -30,7 +30,35 @@ import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
 
-export class SwapQuoter {
+export interface ISwapQuoter {
+    getMarketBuySwapQuoteAsync(
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        makerAssetBuyAmount: BigNumber,
+        options?: Partial<SwapQuoteRequestOpts>,
+    ): Promise<MarketBuySwapQuote>;
+
+    getMarketSellSwapQuoteAsync(
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        takerAssetSellAmount: BigNumber,
+        options?: Partial<SwapQuoteRequestOpts>,
+    ): Promise<MarketSellSwapQuote>;
+
+    getBatchMarketBuySwapQuoteForAssetDataAsync(
+        makerAssetDatas: string[],
+        takerAssetData: string,
+        makerAssetBuyAmount: BigNumber[],
+        options?: Partial<SwapQuoteRequestOpts>,
+    ): Promise<Array<MarketBuySwapQuote | undefined>>;
+
+    getLiquidityForMakerTakerAssetDataPairAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+    ): Promise<LiquidityForTakerMakerAssetDataPair>;
+}
+
+export class SwapQuoter implements ISwapQuoter {
     public readonly provider: ZeroExProvider;
     public readonly orderbook: Orderbook;
     public readonly expiryBufferMs: number;

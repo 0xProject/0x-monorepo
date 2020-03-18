@@ -6,7 +6,7 @@ import * as chai from 'chai';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 
-import { SwapQuoter } from '../src';
+import { ISwapQuoter, SwapQuoter } from '../src';
 import { constants } from '../src/constants';
 import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } from '../src/types';
 
@@ -95,7 +95,7 @@ describe('SwapQuoter', () => {
 
         describe('validation', () => {
             it('should ensure takerAssetData is a string', async () => {
-                const swapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
+                const swapQuoter: ISwapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
                     mockWeb3Provider.object,
                     FAKE_SRA_URL,
                 );
@@ -105,7 +105,7 @@ describe('SwapQuoter', () => {
                 ).to.be.rejectedWith('Expected takerAssetData to be of type string, encountered: false');
             });
             it('should ensure makerAssetData is a string', async () => {
-                const swapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
+                const swapQuoter: ISwapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
                     mockWeb3Provider.object,
                     FAKE_SRA_URL,
                 );
@@ -120,7 +120,7 @@ describe('SwapQuoter', () => {
             it('should return 0s when no asset pair are supported', async () => {
                 mockAvailableAssetDatas(mockOrderbook, []);
 
-                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderbook.object);
+                const swapQuoter: ISwapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderbook.object);
                 const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
                     FAKE_MAKER_ASSET_DATA,
                     FAKE_TAKER_ASSET_DATA,
@@ -134,7 +134,7 @@ describe('SwapQuoter', () => {
             it('should return 0s when only other asset pair supported', async () => {
                 mockAvailableAssetDatas(mockOrderbook, assetsToAssetPairItems(FAKE_MAKER_ASSET_DATA, DAI_ASSET_DATA));
 
-                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderbook.object);
+                const swapQuoter: ISwapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderbook.object);
                 const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
                     FAKE_MAKER_ASSET_DATA,
                     FAKE_TAKER_ASSET_DATA,

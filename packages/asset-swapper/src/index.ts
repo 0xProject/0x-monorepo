@@ -34,7 +34,7 @@ export {
 } from 'ethereum-types';
 export { InsufficientAssetLiquidityError } from './errors';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
-export { SwapQuoter } from './swap_quoter';
+export { ISwapQuoter, SwapQuoter } from './swap_quoter';
 export {
     CalldataInfo,
     ExtensionContractType,
