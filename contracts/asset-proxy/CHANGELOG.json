@@ -17,6 +17,10 @@
             {
                 "note": "Added `MixinGasToken` allowing Gas Tokens to be freed",
                 "pr": 2523
+            },
+            {
+                "note": "Add `DexForwaderBridge` bridge contract.",
+                "pr": 2525
             }
         ]
     },

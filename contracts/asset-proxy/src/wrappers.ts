@@ -5,6 +5,7 @@
  */
 export * from '../generated-wrappers/chai_bridge';
 export * from '../generated-wrappers/curve_bridge';
+export * from '../generated-wrappers/dex_forwarder_bridge';
 export * from '../generated-wrappers/dydx_bridge';
 export * from '../generated-wrappers/erc1155_proxy';
 export * from '../generated-wrappers/erc20_bridge_proxy';
@@ -33,6 +34,7 @@ export * from '../generated-wrappers/multi_asset_proxy';
 export * from '../generated-wrappers/ownable';
 export * from '../generated-wrappers/static_call_proxy';
 export * from '../generated-wrappers/test_chai_bridge';
+export * from '../generated-wrappers/test_dex_forwarder_bridge';
 export * from '../generated-wrappers/test_dydx_bridge';
 export * from '../generated-wrappers/test_erc20_bridge';
 export * from '../generated-wrappers/test_eth2_dai_bridge';

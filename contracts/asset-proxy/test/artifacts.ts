@@ -7,6 +7,7 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
 import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
+import * as DexForwarderBridge from '../test/generated-artifacts/DexForwarderBridge.json';
 import * as DydxBridge from '../test/generated-artifacts/DydxBridge.json';
 import * as ERC1155Proxy from '../test/generated-artifacts/ERC1155Proxy.json';
 import * as ERC20BridgeProxy from '../test/generated-artifacts/ERC20BridgeProxy.json';
@@ -35,6 +36,7 @@ import * as MultiAssetProxy from '../test/generated-artifacts/MultiAssetProxy.js
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../test/generated-artifacts/StaticCallProxy.json';
 import * as TestChaiBridge from '../test/generated-artifacts/TestChaiBridge.json';
+import * as TestDexForwarderBridge from '../test/generated-artifacts/TestDexForwarderBridge.json';
 import * as TestDydxBridge from '../test/generated-artifacts/TestDydxBridge.json';
 import * as TestERC20Bridge from '../test/generated-artifacts/TestERC20Bridge.json';
 import * as TestEth2DaiBridge from '../test/generated-artifacts/TestEth2DaiBridge.json';
@@ -54,6 +56,7 @@ export const artifacts = {
     StaticCallProxy: StaticCallProxy as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
     CurveBridge: CurveBridge as ContractArtifact,
+    DexForwarderBridge: DexForwarderBridge as ContractArtifact,
     DydxBridge: DydxBridge as ContractArtifact,
     Eth2DaiBridge: Eth2DaiBridge as ContractArtifact,
     KyberBridge: KyberBridge as ContractArtifact,
@@ -74,6 +77,7 @@ export const artifacts = {
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
     TestChaiBridge: TestChaiBridge as ContractArtifact,
+    TestDexForwarderBridge: TestDexForwarderBridge as ContractArtifact,
     TestDydxBridge: TestDydxBridge as ContractArtifact,
     TestERC20Bridge: TestERC20Bridge as ContractArtifact,
     TestEth2DaiBridge: TestEth2DaiBridge as ContractArtifact,

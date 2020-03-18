@@ -88,3 +88,4 @@ export {
 } from './asset_data';
 
 export * from './dydx_bridge_encoder';
+export * from './dex_forwarder_bridge';
