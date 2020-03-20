@@ -197,7 +197,7 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
     return [input.integerValue(), output.integerValue()];
 }
 
-export function isValidPath(path: Fill[]): boolean {
+export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): boolean {
     let flags = 0;
     for (let i = 0; i < path.length; ++i) {
         // Fill must immediately follow its parent.
@@ -206,10 +206,12 @@ export function isValidPath(path: Fill[]): boolean {
                 return false;
             }
         }
-        // Fill must not be duplicated.
-        for (let j = 0; j < i; ++j) {
-            if (path[i] === path[j]) {
-                return false;
+        if (!skipDuplicateCheck) {
+            // Fill must not be duplicated.
+            for (let j = 0; j < i; ++j) {
+                if (path[i] === path[j]) {
+                    return false;
+                }
             }
         }
         flags |= path[i].flags;

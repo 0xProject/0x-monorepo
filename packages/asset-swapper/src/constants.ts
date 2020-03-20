@@ -29,8 +29,8 @@ const DEFAULT_ORDER_PRUNER_OPTS: OrderPrunerOpts = {
     ]), // Default asset-swapper for CFL oriented fee types
 };
 
-// 15 seconds polling interval
-const PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS = 15000;
+// 6 seconds polling interval
+const PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS = 6000;
 const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
 
 // default 50% buffer for selecting native orders to be aggregated with other sources

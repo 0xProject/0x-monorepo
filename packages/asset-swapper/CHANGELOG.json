@@ -29,6 +29,10 @@
             {
                 "note": "Fix fee schedule not being scaled by gas price.",
                 "pr": 2522
+            },
+            {
+                "note": "Fix quote optimizer bug not properly accounting for fees.",
+                "pr": 2526
             }
         ]
     },
