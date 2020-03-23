@@ -24,12 +24,14 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IERC20Bridge.sol";
 
 
 // solhint-disable space-after-comma
-/// @dev A bridge that converts WETH to ETH and transfers it to the
-///      recipient. This contract also doubles as a minimal ERC20 token that
+/// @dev A bridge that converts the taker's WETH to ETH in-place.
+///      An order should use this bridge in the maker asset data with a no-op
+///      taker asset. This contract also doubles as a pseudo-ERC20 token that
 ///      implements a `balanceOf()` function, which echoes the ETH balance of
 ///      an address, for the ERC20BridgeProxy to check.
 contract WethUnwrapBridge is
@@ -37,6 +39,8 @@ contract WethUnwrapBridge is
     IWallet,
     DeploymentConstants
 {
+    using LibSafeMath for uint256;
+
     // solhint-disable no-empty-blocks
     /// @dev Payable fallback to receive ETH from the WETH contract.
     function ()
@@ -44,34 +48,45 @@ contract WethUnwrapBridge is
         payable
     {}
 
-    /// @dev Converts this contract's WETH to ETH and transfers
-    ///      that ETH to `to`.
+    /// @dev Converts `to`'s WETH to ETH. `to` must have previously set a
+    ///      WETH allowance for this contract. Only callable by the ERC20BridgeProxy.
     /// @param from The maker (this contract).
     /// @param to The recipient of the bought tokens.
-    /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
+    /// @param bridgeData The abi-encoded maximum amount to unwrap.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
         address /* outputTokenAddress */,
         address from,
         address to,
-        uint256 amount,
-        bytes calldata /* bridgeData*/
+        uint256 /* amount */,
+        bytes calldata bridgeData
     )
         external
         returns (bytes4 success)
     {
+        // Must be called by the `ERC20BridgeProxy`.
+        require(msg.sender == _getERC20BridgeProxyAddress(), "WethUnwrapBridge/INVALID_CALLER");
+        // `from` (maker) must be this contract.
+        require(from == address(this), "WethUnwrapBridge/INVALID_FROM");
+
+        uint256 maxUnwrapAmount = abi.decode(bridgeData, (uint256));
         IEtherToken weth = IEtherToken(_getWethAddress());
-        // Claim ETH.
-        weth.withdraw(amount);
-        // Transfer to the recipient.
-        address(uint160(to)).transfer(amount);
+
+        // Determine how much to unwrap.
+        uint256 unwrapAmount = LibSafeMath.min256(maxUnwrapAmount, weth.balanceOf(to));
+        // Transfer WETH from the owner into this contract.
+        weth.transferFrom(to, address(this), unwrapAmount);
+        // Convert to ETH.
+        weth.withdraw(unwrapAmount);
+        // Transfer ETH to the owner.
+        address(uint160(to)).transfer(unwrapAmount);
 
         emit ERC20BridgeTransfer(
             address(weth),
             address(0),
-            amount,
-            amount,
-            from,
+            unwrapAmount,
+            unwrapAmount,
+            to,
             to
         );
         return BRIDGE_SUCCESS;
