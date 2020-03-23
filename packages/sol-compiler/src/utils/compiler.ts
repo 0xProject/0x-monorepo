@@ -145,7 +145,7 @@ export async function compileSolcJSAsync(
     standardInput: solc.StandardInput,
 ): Promise<solc.StandardOutput> {
     const standardInputStr = JSON.stringify(standardInput);
-    const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr);
+    const standardOutputStr = solcInstance.compile(standardInputStr);
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
     return compiled;
 }
