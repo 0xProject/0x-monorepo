@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.0",
+        "changes": [
+            {
+                "note": "Added `GST_ADDRESS` and `GST_COLLECTOR_ADDRESS`",
+                "pr": 2523
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "4.4.3",
         "changes": [
