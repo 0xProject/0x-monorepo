@@ -62,7 +62,7 @@ contract CurveBridge is
         bytes calldata bridgeData
     )
         external
-        burnsGasTokens
+        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         // Decode the bridge data to get the Curve metadata.

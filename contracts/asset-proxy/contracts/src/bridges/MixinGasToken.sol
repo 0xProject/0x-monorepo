@@ -24,18 +24,32 @@ import "../interfaces/IGasToken.sol";
 
 contract MixinGasToken is
     DeploymentConstants
- {
+{
 
-    /// @dev Burns gas tokens based on the amount of gas consumed in the function
-    modifier burnsGasTokens {
+    /// @dev Frees gas tokens based on the amount of gas consumed in the function
+    modifier freesGasTokens {
         uint256 gasBefore = gasleft();
         _;
         IGasToken gst = IGasToken(_getGstAddress());
-        if (address(gst) != address(0) && msg.sender == _getERC20BridgeProxyAddress()) {
+        if (address(gst) != address(0)) {
             // (gasUsed + FREE_BASE) / (2 * REIMBURSE - FREE_TOKEN)
-            //            14154             2400        6870
+            //            14154             24000        6870
             uint256 value = (gasBefore - gasleft() + 14154) / 41130;
             gst.freeUpTo(value);
+        }
+    }
+
+    /// @dev Frees gas tokens using the balance of `from`. Amount freed is based
+    ///     on the gas consumed in the function
+    modifier freesGasTokensFromCollector() {
+        uint256 gasBefore = gasleft();
+        _;
+        IGasToken gst = IGasToken(_getGstAddress());
+        if (address(gst) != address(0)) {
+            // (gasUsed + FREE_BASE) / (2 * REIMBURSE - FREE_TOKEN)
+            //            14154             24000        6870
+            uint256 value = (gasBefore - gasleft() + 14154) / 41130;
+            gst.freeFromUpTo(_getGstCollectorAddress(), value);
         }
     }
 }
