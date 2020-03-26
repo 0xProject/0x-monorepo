@@ -17,6 +17,10 @@
             {
                 "note": "Redeploy `KyberBridge`, `UniswapBridge`, `Eth2DaiBridge`, `CurveBridge`, `DydxBridge` on mainnet and kovan",
                 "pr": 2529
+            },
+            {
+                "note": "Redeploy `CurveBridge` with GST support",
+                "pr": 2530
             }
         ]
     },
