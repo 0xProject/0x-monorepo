@@ -62,10 +62,11 @@ contract DexForwarderBridge is
         uint256 outputTokenAmount
     );
 
-    /// @dev Executes a series of calls, forwarding .
+    /// @dev Spends this contract's entire balance of input tokens by forwarding
+    /// them to other bridges. Reverts if the entire balance is not spent.
     /// @param outputToken The token being bought.
     /// @param to The recipient of the bought tokens.
-    /// @param bridgeData The abi-encoeded input token address.
+    /// @param bridgeData The abi-encoded input token address.
     /// @return success The magic bytes if successful.
     function bridgeTransferFrom(
         address outputToken,
@@ -103,6 +104,8 @@ contract DexForwarderBridge is
                 call.outputTokenAmount
             );
 
+            // Execute the call in a new context so we can recoup transferred
+            // funds by reverting.
             (bool didSucceed, ) = address(this)
                 .call(abi.encodeWithSelector(
                     this.executeBridgeCall.selector,
@@ -134,7 +137,7 @@ contract DexForwarderBridge is
         // Revert if we were not able to sell our entire input token balance.
         require(
             state.totalInputTokenSold >= state.initialInputTokenBalance,
-            "DexForwaderBridge/INCOMPLETE_FILL"
+            "DexForwarderBridge/INCOMPLETE_FILL"
         );
         // Always succeed.
         return BRIDGE_SUCCESS;
@@ -163,9 +166,9 @@ contract DexForwarderBridge is
         external
     {
         // Must be called through `bridgeTransferFrom()`.
-        require(msg.sender == address(this), "DexForwaderBridge/ONLY_SELF");
+        require(msg.sender == address(this), "DexForwarderBridge/ONLY_SELF");
         // `bridge` must not be this contract.
-        require(bridge != address(this), "DexForwaderBridge/ILLEGAL_BRIDGE");
+        require(bridge != address(this), "DexForwarderBridge/ILLEGAL_BRIDGE");
 
         // Get the starting balance of output tokens for `to`.
         uint256 initialRecipientBalance = IERC20Token(outputToken).balanceOf(to);
