@@ -25,14 +25,14 @@ import {
 
 const { ZERO_AMOUNT } = constants;
 
-blockchainTests.resets('DexForwaderBridge unit tests', env => {
+blockchainTests.resets('DexForwarderBridge unit tests', env => {
     let testContract: TestDexForwarderBridgeContract;
     let inputToken: string;
     let outputToken: string;
     const BRIDGE_SUCCESS = '0xdc1600f3';
     const BRIDGE_FAILURE = '0xffffffff';
     const BRIDGE_REVERT_ERROR = 'oopsie';
-    const INCOMPLETE_FILL_REVERT = 'DexForwaderBridge/INCOMPLETE_FILL';
+    const INCOMPLETE_FILL_REVERT = 'DexForwarderBridge/INCOMPLETE_FILL';
     const DEFAULTS = {
         toAddress: randomAddress(),
     };
