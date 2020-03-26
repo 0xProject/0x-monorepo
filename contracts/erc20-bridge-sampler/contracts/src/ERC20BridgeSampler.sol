@@ -93,6 +93,7 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory orderFillableTakerAssetAmounts)
     {
         orderFillableTakerAssetAmounts = new uint256[](orders.length);
+        address devUtilsAddress = _devUtilsAddress;
         for (uint256 i = 0; i != orders.length; i++) {
             // Ignore orders with no signature or empty maker/taker amounts.
             if (orderSignatures[i].length == 0 ||
@@ -103,11 +104,11 @@ contract ERC20BridgeSampler is
             }
             // solhint-disable indent
             (bool didSucceed, bytes memory resultData) =
-                _devUtilsAddress
+                devUtilsAddress
                     .staticcall
                     .gas(DEV_UTILS_CALL_GAS)
                     (abi.encodeWithSelector(
-                       IDevUtils(_devUtilsAddress).getOrderRelevantState.selector,
+                       IDevUtils(devUtilsAddress).getOrderRelevantState.selector,
                        orders[i],
                        orderSignatures[i]
                     ));
