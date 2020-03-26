@@ -7,7 +7,8 @@
                 "pr": 2523
             },
             {
-                "note": "Set GST Collector address in `DeploymentConstants`"
+                "note": "Set GST Collector address in `DeploymentConstants`",
+                "pr": 2530
             }
         ]
     },
