@@ -5,6 +5,9 @@
             {
                 "note": "Added `GST_ADDRESS` and `GST_COLLECTOR_ADDRESS`",
                 "pr": 2523
+            },
+            {
+                "note": "Set GST Collector address in `DeploymentConstants`"
             }
         ]
     },

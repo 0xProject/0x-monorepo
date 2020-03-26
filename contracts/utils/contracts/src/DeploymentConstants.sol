@@ -57,7 +57,7 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the GST2 contract
     address constant private GST_ADDRESS = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     /// @dev Mainnet address of the GST Collector
-    address constant private GST_COLLECTOR_ADDRESS = address(0);
+    address constant private GST_COLLECTOR_ADDRESS = 0x000000D3b08566BE75A6DB803C03C85C0c1c5B96;
     // /// @dev Kovan address of the GST2 contract
     // address constant private GST_ADDRESS = address(0);
     // /// @dev Kovan address of the GST Collector
