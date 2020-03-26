@@ -26,6 +26,7 @@ import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/ICurve.sol";
+import "./MixinGasToken.sol";
 
 
 // solhint-disable not-rely-on-time
@@ -33,7 +34,8 @@ import "../interfaces/ICurve.sol";
 contract CurveBridge is
     IERC20Bridge,
     IWallet,
-    DeploymentConstants
+    DeploymentConstants,
+    MixinGasToken
 {
     struct CurveBridgeData {
         address curveAddress;
@@ -60,6 +62,7 @@ contract CurveBridge is
         bytes calldata bridgeData
     )
         external
+        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         // Decode the bridge data to get the Curve metadata.
