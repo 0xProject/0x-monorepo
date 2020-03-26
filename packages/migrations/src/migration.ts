@@ -16,6 +16,7 @@ import {
 import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc1155Artifacts, ERC1155MintableContract } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
+import { artifacts as erc20BridgeSamplerArtifacts, ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
@@ -277,6 +278,13 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
+    const erc20BridgeSampler = await ERC20BridgeSamplerContract.deployFrom0xArtifactAsync(
+        erc20BridgeSamplerArtifacts.ERC20BridgeSampler,
+        provider,
+        txDefaults,
+        {},
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -300,7 +308,7 @@ export async function runMigrationsAsync(
         uniswapBridge: constants.NULL_ADDRESS,
         eth2DaiBridge: constants.NULL_ADDRESS,
         kyberBridge: constants.NULL_ADDRESS,
-        erc20BridgeSampler: constants.NULL_ADDRESS,
+        erc20BridgeSampler: erc20BridgeSampler.address,
         chaiBridge: constants.NULL_ADDRESS,
         dydxBridge: constants.NULL_ADDRESS,
         curveBridge: constants.NULL_ADDRESS,
