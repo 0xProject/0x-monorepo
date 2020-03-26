@@ -7,17 +7,15 @@ import {
     getRandomInteger,
     randomAddress,
     shortZip,
-    verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
 import { BigNumber, hexUtils } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DexForwaderBridgeCall, dexForwarderBridgeDataEncoder } from '../src/dex_forwarder_bridge';
+import { DexForwarderBridgeCall, dexForwarderBridgeDataEncoder } from '../src/dex_forwarder_bridge';
 
 import { artifacts } from './artifacts';
 import {
-    DexForwarderBridgeEvents,
     TestDexForwarderBridgeBridgeTransferFromCalledEventArgs as BtfCalledEventArgs,
     TestDexForwarderBridgeContract,
     TestDexForwarderBridgeEvents as TestEvents,
@@ -59,8 +57,8 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
 
     function getRandomBridgeCall(
         bridgeAddress: string,
-        fields: Partial<DexForwaderBridgeCall> = {},
-    ): DexForwaderBridgeCall {
+        fields: Partial<DexForwarderBridgeCall> = {},
+    ): DexForwarderBridgeCall {
         return {
             target: bridgeAddress,
             inputTokenAmount: getRandomInteger(1, '100e18'),
@@ -71,10 +69,10 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
     }
 
     describe('bridgeTransferFrom()', () => {
-        let goodBridgeCalls: DexForwaderBridgeCall[];
-        let revertingBridgeCall: DexForwaderBridgeCall;
-        let failingBridgeCall: DexForwaderBridgeCall;
-        let allBridgeCalls: DexForwaderBridgeCall[];
+        let goodBridgeCalls: DexForwarderBridgeCall[];
+        let revertingBridgeCall: DexForwarderBridgeCall;
+        let failingBridgeCall: DexForwarderBridgeCall;
+        let allBridgeCalls: DexForwarderBridgeCall[];
         let totalFillableOutputAmount: BigNumber;
         let totalFillableInputAmount: BigNumber;
         let recipientOutputBalance: BigNumber;
@@ -109,10 +107,10 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
             opts: Partial<{
                 returnCode: string;
                 revertError: string;
-                callFields: Partial<DexForwaderBridgeCall>;
+                callFields: Partial<DexForwarderBridgeCall>;
                 outputFillAmount: BigNumber;
             }>,
-        ): Promise<DexForwaderBridgeCall> {
+        ): Promise<DexForwarderBridgeCall> {
             const { returnCode, revertError, callFields, outputFillAmount } = {
                 returnCode: BRIDGE_SUCCESS,
                 revertError: '',
@@ -232,26 +230,6 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
             expect(currentRecipientOutputBalance).to.bignumber.eq(totalFillableOutputAmount);
         });
 
-        it('emits failure events for failing bridge calls', async () => {
-            const calls = [revertingBridgeCall, failingBridgeCall, ...goodBridgeCalls];
-            const bridgeData = dexForwarderBridgeDataEncoder.encode({
-                inputToken,
-                calls,
-            });
-            const logs = await callBridgeTransferFromAsync({ bridgeData });
-            verifyEventsFromLogs(
-                logs,
-                [revertingBridgeCall, failingBridgeCall].map(c => ({
-                    inputToken,
-                    outputToken,
-                    target: c.target,
-                    inputTokenAmount: c.inputTokenAmount,
-                    outputTokenAmount: c.outputTokenAmount,
-                })),
-                DexForwarderBridgeEvents.DexForwarderBridgeCallFailed,
-            );
-        });
-
         it("transfers only up to each call's input amount to each bridge", async () => {
             const calls = goodBridgeCalls;
             const bridgeData = dexForwarderBridgeDataEncoder.encode({
@@ -302,19 +280,6 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
                 calls,
             });
             const logs = await callBridgeTransferFromAsync({ bridgeData });
-            verifyEventsFromLogs(
-                logs,
-                [
-                    {
-                        inputToken,
-                        outputToken,
-                        target: badCall.target,
-                        inputTokenAmount: badCall.inputTokenAmount,
-                        outputTokenAmount: badCall.outputTokenAmount,
-                    },
-                ],
-                TestEvents.DexForwarderBridgeCallFailed,
-            );
             const btfs = filterLogsToArguments<BtfCalledEventArgs>(logs, TestEvents.BridgeTransferFromCalled);
             expect(btfs).to.be.length(goodBridgeCalls.length);
         });
@@ -332,19 +297,6 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
                 calls,
             });
             const logs = await callBridgeTransferFromAsync({ bridgeData });
-            verifyEventsFromLogs(
-                logs,
-                [
-                    {
-                        inputToken,
-                        outputToken,
-                        target: badCall.target,
-                        inputTokenAmount: badCall.inputTokenAmount,
-                        outputTokenAmount: badCall.outputTokenAmount,
-                    },
-                ],
-                TestEvents.DexForwarderBridgeCallFailed,
-            );
             const btfs = filterLogsToArguments<BtfCalledEventArgs>(logs, TestEvents.BridgeTransferFromCalled);
             expect(btfs).to.be.length(goodBridgeCalls.length);
         });
@@ -365,19 +317,6 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
                 calls,
             });
             const logs = await callBridgeTransferFromAsync({ bridgeData });
-            verifyEventsFromLogs(
-                logs,
-                [
-                    {
-                        inputToken,
-                        outputToken,
-                        target: badCall.target,
-                        inputTokenAmount: badCall.inputTokenAmount,
-                        outputTokenAmount: badCall.outputTokenAmount,
-                    },
-                ],
-                TestEvents.DexForwarderBridgeCallFailed,
-            );
             const btfs = filterLogsToArguments<BtfCalledEventArgs>(logs, TestEvents.BridgeTransferFromCalled);
             expect(btfs).to.be.length(goodBridgeCalls.length);
         });

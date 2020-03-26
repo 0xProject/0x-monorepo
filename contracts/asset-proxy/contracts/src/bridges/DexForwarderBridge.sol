@@ -54,14 +54,6 @@ contract DexForwarderBridge is
         BridgeCall[] calls;
     }
 
-    event DexForwarderBridgeCallFailed(
-        address indexed target,
-        address inputToken,
-        address outputToken,
-        uint256 inputTokenAmount,
-        uint256 outputTokenAmount
-    );
-
     /// @dev Spends this contract's entire balance of input tokens by forwarding
     /// them to other bridges. Reverts if the entire balance is not spent.
     /// @param outputToken The token being bought.
@@ -118,16 +110,7 @@ contract DexForwarderBridge is
                     call.bridgeData
                 ));
 
-            if (!didSucceed) {
-                // Log errors.
-                emit DexForwarderBridgeCallFailed(
-                    call.target,
-                    state.inputToken,
-                    outputToken,
-                    state.callInputTokenAmount,
-                    state.callOutputTokenAmount
-                );
-            } else {
+            if (didSucceed) {
                 // Increase the amount of tokens sold.
                 state.totalInputTokenSold = state.totalInputTokenSold.safeAdd(
                     state.callInputTokenAmount
@@ -168,7 +151,7 @@ contract DexForwarderBridge is
         // Must be called through `bridgeTransferFrom()`.
         require(msg.sender == address(this), "DexForwarderBridge/ONLY_SELF");
         // `bridge` must not be this contract.
-        require(bridge != address(this), "DexForwarderBridge/ILLEGAL_BRIDGE");
+        require(bridge != address(this));
 
         // Get the starting balance of output tokens for `to`.
         uint256 initialRecipientBalance = IERC20Token(outputToken).balanceOf(to);

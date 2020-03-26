@@ -1,6 +1,6 @@
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
-export interface DexForwaderBridgeCall {
+export interface DexForwarderBridgeCall {
     target: string;
     inputTokenAmount: BigNumber;
     outputTokenAmount: BigNumber;
@@ -9,7 +9,7 @@ export interface DexForwaderBridgeCall {
 
 export interface DexForwaderBridgeData {
     inputToken: string;
-    calls: DexForwaderBridgeCall[];
+    calls: DexForwarderBridgeCall[];
 }
 
 export const dexForwarderBridgeDataEncoder = AbiEncoder.create([
