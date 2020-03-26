@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.5.2",
+        "changes": [
+            {
+                "note": "Update `ERC20BridgeSampler` tests",
+                "pr": 2531
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "2.5.1",
         "changes": [
