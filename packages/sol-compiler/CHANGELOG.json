@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Refactor + add solidity 0.6 support",
+                "pr": 2532
+            }
+        ]
+    },
+    {
         "timestamp": 1582623685,
         "version": "4.0.8",
         "changes": [

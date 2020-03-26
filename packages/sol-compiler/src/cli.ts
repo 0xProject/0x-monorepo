@@ -36,13 +36,16 @@ const SEPARATOR = ',';
             : argv.contracts === DEFAULT_CONTRACTS_LIST
             ? DEFAULT_CONTRACTS_LIST
             : argv.contracts.split(SEPARATOR);
-    const opts = {
-        contractsDir: argv.contractsDir,
-        artifactsDir: argv.artifactsDir,
-        contracts,
-        isOfflineMode: process.env.SOLC_OFFLINE ? true : undefined,
-    };
-    const compiler = new Compiler(opts);
+    const opts = _.omitBy(
+        {
+            contractsDir: argv.contractsDir,
+            artifactsDir: argv.artifactsDir,
+            contracts,
+            isOfflineMode: process.env.SOLC_OFFLINE ? true : undefined,
+        },
+        v => v === undefined,
+    );
+    const compiler = new Compiler(await Compiler.getCompilerOptionsAsync(opts));
     if (argv.watch) {
         await compiler.watchAsync();
     } else {

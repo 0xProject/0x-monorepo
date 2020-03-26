@@ -1,13 +1,14 @@
 import { ContractSource, Resolver } from '@0x/sol-resolver';
 import { fetchAsync, logUtils } from '@0x/utils';
 import chalk from 'chalk';
-import { execSync } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { ContractArtifact } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as requireFromString from 'require-from-string';
 import * as solc from 'solc';
+import { promisify } from 'util';
 
 import { constants } from './constants';
 import { fsWrapper } from './fs_wrapper';
@@ -152,18 +153,42 @@ export async function compileSolcJSAsync(
 
 /**
  * Compiles the contracts and prints errors/warnings
- * @param solcVersion Version of a solc compiler
+ * @param solidityVersion Solidity version
  * @param standardInput Solidity standard JSON input
  */
 export async function compileDockerAsync(
-    solcVersion: string,
+    solidityVersion: string,
     standardInput: solc.StandardInput,
 ): Promise<solc.StandardOutput> {
     const standardInputStr = JSON.stringify(standardInput, null, 2);
-    const dockerCommand = `docker run -i -a stdin -a stdout -a stderr ethereum/solc:${solcVersion} solc --standard-json`;
-    const standardOutputStr = execSync(dockerCommand, { input: standardInputStr }).toString();
-    const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
-    return compiled;
+    const dockerArgs = [
+        'run',
+        '-i',
+        '-a',
+        'stdin',
+        '-a',
+        'stdout',
+        '-a',
+        'stderr',
+        `ethereum/solc:${solidityVersion}`,
+        'solc',
+        '--standard-json',
+    ];
+    return new Promise<solc.StandardOutput>((accept, reject) => {
+        const p = spawn('docker', dockerArgs, { shell: true, stdio: ['pipe', 'inherit', 'inherit'] });
+        p.stdin.write(standardInputStr);
+        p.stdin.end();
+        let fullOutput = '';
+        p.stdout.on('data', (chunk: string) => {
+            fullOutput += chunk;
+        });
+        p.on('close', code => {
+            if (code !== 0) {
+                reject('Compilation failed');
+            }
+            accept(JSON.parse(fullOutput));
+        });
+    });
 }
 
 /**
@@ -250,43 +275,57 @@ export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffe
 }
 
 /**
- * For the given @param contractPath, populates JSON objects to be used in the ContractVersionData interface's
- * properties `sources` (source code file names mapped to ID numbers) and `sourceCodes` (source code content of
- * contracts) for that contract.  The source code pointed to by contractPath is read and parsed directly (via
- * `resolver.resolve().source`), as are its imports, recursively.  The ID numbers for @return `sources` are
- * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
- * disk (via the aforementioned `resolver.source`).
+ * Mapping of absolute contract path to compilation ID and source code.
+ */
+export interface CompiledSources {
+    [sourcePath: string]: { id: number; content: string };
+}
+
+/**
+ * Contract sources by import path.
+ */
+export interface CompiledImports {
+    [importPath: string]: { id: number; content: string };
+}
+
+/**
+ * Recursively parses imports from sources starting from `contractPath`.
+ * @return Sources required by imports.
  */
 export function getSourcesWithDependencies(
-    resolver: Resolver,
     contractPath: string,
-    fullSources: { [sourceName: string]: { id: number } },
-): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
-    const sources = { [contractPath]: fullSources[contractPath] };
-    const sourceCodes = { [contractPath]: resolver.resolve(contractPath).source };
+    sourcesByAbsolutePath: CompiledSources,
+    importRemappings: { [prefix: string]: string },
+): CompiledImports {
+    const compiledImports = { [`./${path.basename(contractPath)}`]: sourcesByAbsolutePath[contractPath] };
     recursivelyGatherDependencySources(
-        resolver,
         contractPath,
-        sourceCodes[contractPath],
-        fullSources,
-        sources,
-        sourceCodes,
+        path.dirname(contractPath),
+        sourcesByAbsolutePath,
+        importRemappings,
+        compiledImports,
     );
-    return { sourceCodes, sources };
+    return compiledImports;
 }
 
 function recursivelyGatherDependencySources(
-    resolver: Resolver,
     contractPath: string,
-    contractSource: string,
-    fullSources: { [sourceName: string]: { id: number } },
-    sourcesToAppendTo: { [sourceName: string]: { id: number } },
-    sourceCodesToAppendTo: { [sourceName: string]: string },
+    rootDir: string,
+    sourcesByAbsolutePath: CompiledSources,
+    importRemappings: { [prefix: string]: string },
+    compiledImports: CompiledImports,
+    visitedAbsolutePaths: { [absPath: string]: boolean } = {},
 ): void {
+    if (visitedAbsolutePaths[contractPath]) {
+        return;
+    }
+    const contractSource = sourcesByAbsolutePath[contractPath].content;
     const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
     if (importStatementMatches === null) {
         return;
     }
+    const lastPathSeparatorPos = contractPath.lastIndexOf('/');
+    const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
     for (const importStatementMatch of importStatementMatches) {
         const importPathMatches = importStatementMatch.match(/\"([^\"]*)\"/);
         if (importPathMatches === null || importPathMatches.length === 0) {
@@ -294,59 +333,48 @@ function recursivelyGatherDependencySources(
         }
 
         let importPath = importPathMatches[1];
-        // HACK(albrow): We have, e.g.:
-        //
-        //      importPath   = "../../utils/LibBytes/LibBytes.sol"
-        //      contractPath = "2.0.0/protocol/AssetProxyOwner/AssetProxyOwner.sol"
-        //
-        // Resolver doesn't understand "../" so we want to pass
-        // "2.0.0/utils/LibBytes/LibBytes.sol" to resolver.
-        //
-        // This hack involves using path.resolve. But path.resolve returns
-        // absolute directories by default. We trick it into thinking that
-        // contractPath is a root directory by prepending a '/' and then
-        // removing the '/' the end.
-        //
-        //      path.resolve("/a/b/c", ""../../d/e") === "/a/d/e"
-        //
-        const lastPathSeparatorPos = contractPath.lastIndexOf('/');
-        const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
+        let absPath = importPath;
         if (importPath.startsWith('.')) {
-            /**
-             * Some imports path are relative ("../Token.sol", "./Wallet.sol")
-             * while others are absolute ("Token.sol", "@0x/contracts/Wallet.sol")
-             * And we need to append the base path for relative imports.
-             */
-            importPath = path.resolve(`/${contractFolder}`, importPath).replace('/', '');
+            absPath = path.join(contractFolder, importPath);
+            // Express relative imports paths as paths from the root directory.
+            importPath = path.relative(rootDir, absPath);
+            if (!importPath.startsWith('.')) {
+                importPath = `./${importPath}`;
+            }
+        } else {
+            for (const [prefix, replacement] of Object.entries(importRemappings)) {
+                if (importPath.startsWith(prefix)) {
+                    absPath = `${replacement}${importPath.substr(prefix.length)}`;
+                    break;
+                }
+            }
         }
 
-        if (sourcesToAppendTo[importPath] === undefined) {
-            sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
-            sourceCodesToAppendTo[importPath] = resolver.resolve(importPath).source;
+        compiledImports[importPath] = sourcesByAbsolutePath[absPath];
+        visitedAbsolutePaths[absPath] = true;
 
-            recursivelyGatherDependencySources(
-                resolver,
-                importPath,
-                resolver.resolve(importPath).source,
-                fullSources,
-                sourcesToAppendTo,
-                sourceCodesToAppendTo,
-            );
-        }
+        recursivelyGatherDependencySources(
+            absPath,
+            rootDir,
+            sourcesByAbsolutePath,
+            importRemappings,
+            compiledImports,
+            visitedAbsolutePaths,
+        );
     }
 }
 
 /**
  * Gets the solidity compiler instance. If the compiler is already cached - gets it from FS,
  * otherwise - fetches it and caches it.
- * @param solcVersion The compiler version. e.g. 0.5.0
+ * @param solidityVersion The solidity version. e.g. 0.5.0
  * @param isOfflineMode Offline mode flag
  */
-export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean): Promise<solc.SolcInstance> {
+export async function getSolcJSAsync(solidityVersion: string, isOfflineMode: boolean): Promise<solc.SolcInstance> {
     const solcJSReleases = await getSolcJSReleasesAsync(isOfflineMode);
-    const fullSolcVersion = solcJSReleases[solcVersion];
+    const fullSolcVersion = solcJSReleases[solidityVersion];
     if (fullSolcVersion === undefined) {
-        throw new Error(`${solcVersion} is not a known compiler version`);
+        throw new Error(`${solidityVersion} is not a known compiler version`);
     }
     const compilerBinFilename = path.join(constants.SOLC_BIN_DIR, fullSolcVersion);
     let solcjs: string;
@@ -383,7 +411,7 @@ export function getSolcJSFromPath(modulePath: string): solc.SolcInstance {
  * @param path The path to the solc module.
  */
 export function getSolcJSVersionFromPath(modulePath: string): string {
-    return require(modulePath).version();
+    return normalizeSolcVersion(require(modulePath).version());
 }
 
 /**
@@ -437,3 +465,47 @@ export function getDependencyNameToPackagePath(
     });
     return dependencyNameToPath;
 }
+
+/**
+ * Extract the solidity version (e.g., '0.5.9') from a solc version (e.g., `0.5.9+commit.34d3134f`).
+ */
+export function getSolidityVersionFromSolcVersion(solcVersion: string): string {
+    const m = /(\d+\.\d+\.\d+)\+commit\.[a-f0-9]{8}/.exec(solcVersion);
+    if (!m) {
+        throw new Error(`Unable to parse solc version string "${solcVersion}"`);
+    }
+    return m[1];
+}
+
+/**
+ * Strips any extra characters before and after the version + commit hash of a solc version string.
+ */
+export function normalizeSolcVersion(fullSolcVersion: string): string {
+    const m = /\d+\.\d+\.\d+\+commit\.[a-f0-9]{8}/.exec(fullSolcVersion);
+    if (!m) {
+        throw new Error(`Unable to parse solc version string "${fullSolcVersion}"`);
+    }
+    return m[0];
+}
+
+/**
+ * Gets the full version string of a dockerized solc.
+ */
+export async function getDockerFullSolcVersionAsync(solidityVersion: string): Promise<string> {
+    const dockerCommand = `docker run ethereum/solc:${solidityVersion} --version`;
+    const versionCommandOutput = (await promisify(exec)(dockerCommand)).stdout.toString();
+    const versionCommandOutputParts = versionCommandOutput.split(' ');
+    return normalizeSolcVersion(versionCommandOutputParts[versionCommandOutputParts.length - 1].trim());
+}
+
+/**
+ * Gets the full version string of a JS module solc.
+ */
+export async function getJSFullSolcVersionAsync(
+    solidityVersion: string,
+    isOfflineMode: boolean = false,
+): Promise<string> {
+    return normalizeSolcVersion((await getSolcJSAsync(solidityVersion, isOfflineMode)).version());
+}
+
+// tslint:disable-next-line: max-file-line-count
