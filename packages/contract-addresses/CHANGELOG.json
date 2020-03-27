@@ -21,6 +21,10 @@
             {
                 "note": "Redeploy `CurveBridge` with GST support",
                 "pr": 2530
+            },
+            {
+                "note": "Add `dexForwarderBridge` addresses",
+                "pr": 2525
             }
         ]
     },
