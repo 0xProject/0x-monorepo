@@ -29,7 +29,8 @@
         "broker": "0xd4690a51044db77d91d7aa8f7a3a5ad5da331af0",
         "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53",
         "curveBridge": "0x1cf6ccc7e15d0d99a9498f37e16ba65b5c54bdd0",
-        "maximumGasPrice": "0xe2bfd35306495d11e3c9db0d8de390cda24563cf"
+        "maximumGasPrice": "0xe2bfd35306495d11e3c9db0d8de390cda24563cf",
+        "dexForwarderBridge": "0xa96844087062acf8556ca06a27702c6d19f87e57"
     },
     "3": {
         "erc20Proxy": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
@@ -61,7 +62,8 @@
         "broker": "0x4aa817c6f383c8e8ae77301d18ce48efb16fd2be",
         "chainlinkStopLimit": "0x67a094cf028221ffdd93fc658f963151d05e2a74",
         "curveBridge": "0x0000000000000000000000000000000000000000",
-        "maximumGasPrice": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a"
+        "maximumGasPrice": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a",
+        "dexForwarderBridge": "0x3be8e59038d8c4e8d8776ca40ef2f024bad95ad1"
     },
     "4": {
         "exchangeV2": "0xbff9493f92a3df4b0429b6d00743b3cfb4c85831",
@@ -93,7 +95,8 @@
         "broker": "0x0000000000000000000000000000000000000000",
         "chainlinkStopLimit": "0x407b4128e9ecad8769b2332312a9f655cb9f5f3a",
         "curveBridge": "0x0000000000000000000000000000000000000000",
-        "maximumGasPrice": "0x47697b44bd89051e93b4d5857ba8e024800a74ac"
+        "maximumGasPrice": "0x47697b44bd89051e93b4d5857ba8e024800a74ac",
+        "dexForwarderBridge": "0x0000000000000000000000000000000000000000"
     },
     "42": {
         "erc20Proxy": "0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
@@ -125,7 +128,8 @@
         "broker": "0x0000000000000000000000000000000000000000",
         "chainlinkStopLimit": "0x0000000000000000000000000000000000000000",
         "curveBridge": "0x90c62c91a9f655f4f739e6cee85c84f9ccf47323",
-        "maximumGasPrice": "0x67a094cf028221ffdd93fc658f963151d05e2a74"
+        "maximumGasPrice": "0x67a094cf028221ffdd93fc658f963151d05e2a74",
+        "dexForwarderBridge": "0x6cce442a48ab07635462a40594054f34f44195ff"
     },
     "1337": {
         "erc20Proxy": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
@@ -157,6 +161,7 @@
         "broker": "0x0000000000000000000000000000000000000000",
         "chainlinkStopLimit": "0x0000000000000000000000000000000000000000",
         "curveBridge": "0x0000000000000000000000000000000000000000",
-        "maximumGasPrice": "0x0000000000000000000000000000000000000000"
+        "maximumGasPrice": "0x0000000000000000000000000000000000000000",
+        "dexForwarderBridge": "0x0000000000000000000000000000000000000000"
     }
 }

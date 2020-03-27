@@ -1,5 +1,14 @@
 [
     {
+        "version": "6.3.0",
+        "changes": [
+            {
+                "note": "Add `dexForwarderBridge` to migration output",
+                "pr": 2525
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "6.2.4",
         "changes": [

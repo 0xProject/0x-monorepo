@@ -308,6 +308,7 @@ export async function runMigrationsAsync(
         broker: constants.NULL_ADDRESS,
         chainlinkStopLimit: constants.NULL_ADDRESS,
         maximumGasPrice: constants.NULL_ADDRESS,
+        dexForwarderBridge: constants.NULL_ADDRESS,
     };
     return contractAddresses;
 }

@@ -324,15 +324,18 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
 
     describe('executeBridgeCall()', () => {
         it('cannot be called externally', async () => {
-            return expect(testContract.executeBridgeCall(
-                    randomAddress(),
-                    randomAddress(),
-                    randomAddress(),
-                    randomAddress(),
-                    new BigNumber(1),
-                    new BigNumber(1),
-                    constants.NULL_BYTES,
-                ).callAsync(),
+            return expect(
+                testContract
+                    .executeBridgeCall(
+                        randomAddress(),
+                        randomAddress(),
+                        randomAddress(),
+                        randomAddress(),
+                        new BigNumber(1),
+                        new BigNumber(1),
+                        constants.NULL_BYTES,
+                    )
+                    .callAsync(),
             ).to.revertWith('DexForwarderBridge/ONLY_SELF');
         });
     });
