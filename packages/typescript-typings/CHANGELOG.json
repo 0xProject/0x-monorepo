@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Add `version()` to `SolcInstance`",
+                "pr": 2532
+            }
+        ]
+    },
+    {
         "timestamp": 1581204851,
         "version": "5.0.2",
         "changes": [
