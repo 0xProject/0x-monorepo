@@ -26,7 +26,7 @@ describe('#Compiler', function(): void {
     it('should create a Compiler with empty opts', async () => {
         const _compiler = new Compiler(); // tslint:disable-line no-unused-variable
     });
-    it.only('should create an Exchange artifact with the correct unlinked binary', async () => {
+    it('should create an Exchange artifact with the correct unlinked binary', async () => {
         compilerOpts.contracts = ['Exchange'];
 
         const exchangeArtifactPath = `${artifactsDir}/Exchange.json`;
