@@ -239,21 +239,27 @@ export class MarketOperationUtils {
             const ethToTakerAssetRate = batchEthToTakerAssetRate[i];
             const dexQuotes = batchDexQuotes[i];
             const makerAmount = makerAmounts[i];
-            return this._generateOptimizedOrders({
-                orderFillableAmounts,
-                nativeOrders,
-                dexQuotes,
-                inputToken: makerToken,
-                outputToken: takerToken,
-                side: MarketOperation.Buy,
-                inputAmount: makerAmount,
-                ethToOutputRate: ethToTakerAssetRate,
-                bridgeSlippage: _opts.bridgeSlippage,
-                maxFallbackSlippage: _opts.maxFallbackSlippage,
-                excludedSources: _opts.excludedSources,
-                feeSchedule: _opts.feeSchedule,
-                allowFallback: _opts.allowFallback,
-            });
+            try {
+                return this._generateOptimizedOrders({
+                    orderFillableAmounts,
+                    nativeOrders,
+                    dexQuotes,
+                    inputToken: makerToken,
+                    outputToken: takerToken,
+                    side: MarketOperation.Buy,
+                    inputAmount: makerAmount,
+                    ethToOutputRate: ethToTakerAssetRate,
+                    bridgeSlippage: _opts.bridgeSlippage,
+                    maxFallbackSlippage: _opts.maxFallbackSlippage,
+                    excludedSources: _opts.excludedSources,
+                    feeSchedule: _opts.feeSchedule,
+                    allowFallback: _opts.allowFallback,
+                });
+            } catch (e) {
+                // It's possible for one of the pairs to have no path
+                // rather than throw NO_OPTIMAL_PATH we return undefined
+                return undefined;
+            }
         });
     }
 
