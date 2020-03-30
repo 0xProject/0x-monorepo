@@ -307,7 +307,7 @@ contract TestERC20BridgeSampler is
 
     uint8 private constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED) + 1;
 
-    constructor() public {
+    constructor() public ERC20BridgeSampler(address(this)) {
         uniswap = new TestERC20BridgeSamplerUniswapExchangeFactory();
         eth2Dai = new TestERC20BridgeSamplerEth2Dai();
         kyber = new TestERC20BridgeSamplerKyberNetwork();
@@ -327,6 +327,7 @@ contract TestERC20BridgeSampler is
         bytes memory
     )
         public
+        pure
         returns (
             LibOrder.OrderInfo memory orderInfo,
             uint256 fillableTakerAssetAmount,
@@ -355,15 +356,6 @@ contract TestERC20BridgeSampler is
         returns (uint8 decimals)
     {
         return LibDeterministicQuotes.getDeterministicTokenDecimals(tokenAddress);
-    }
-
-    // Overriden to point to a this contract.
-    function _getDevUtilsAddress()
-        internal
-        view
-        returns (address devUtilAddress)
-    {
-        return address(this);
     }
 
     // Overriden to point to a custom contract.

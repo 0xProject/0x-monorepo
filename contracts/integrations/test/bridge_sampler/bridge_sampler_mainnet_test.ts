@@ -1,5 +1,5 @@
 import { artifacts, ERC20BridgeSamplerContract } from '@0x/contracts-erc20-bridge-sampler';
-import { blockchainTests, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect, toBaseUnitAmount } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
@@ -10,6 +10,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
             env.provider,
             { ...env.txDefaults, from: '0x6cc5f688a315f3dc28a7781717a9a798a59fda7b' },
             {},
+            constants.NULL_ADDRESS,
         );
     });
 

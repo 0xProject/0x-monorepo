@@ -53,6 +53,12 @@ contract ERC20BridgeSampler is
     /// @dev Default gas limit for liquidity provider calls.
     uint256 constant internal DEFAULT_CALL_GAS = 200e3; // 200k
 
+    address private _devUtilsAddress;
+
+    constructor(address devUtilsAddress) public {
+        _devUtilsAddress = devUtilsAddress;
+    }
+
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
     /// @return callResults ABI-encoded results data for each call.
@@ -87,6 +93,7 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory orderFillableTakerAssetAmounts)
     {
         orderFillableTakerAssetAmounts = new uint256[](orders.length);
+        address devUtilsAddress = _devUtilsAddress;
         for (uint256 i = 0; i != orders.length; i++) {
             // Ignore orders with no signature or empty maker/taker amounts.
             if (orderSignatures[i].length == 0 ||
@@ -97,11 +104,11 @@ contract ERC20BridgeSampler is
             }
             // solhint-disable indent
             (bool didSucceed, bytes memory resultData) =
-                _getDevUtilsAddress()
+                devUtilsAddress
                     .staticcall
                     .gas(DEV_UTILS_CALL_GAS)
                     (abi.encodeWithSelector(
-                       IDevUtils(_getDevUtilsAddress()).getOrderRelevantState.selector,
+                       IDevUtils(devUtilsAddress).getOrderRelevantState.selector,
                        orders[i],
                        orderSignatures[i]
                     ));
