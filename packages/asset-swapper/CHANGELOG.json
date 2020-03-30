@@ -33,6 +33,10 @@
             {
                 "note": "Fix quote optimizer bug not properly accounting for fees.",
                 "pr": 2526
+            },
+            {
+                "note": "Fix `getBatchMarketBuyOrdersAsync` throwing NO_OPTIMAL_PATH",
+                "pr": 2533
             }
         ]
     },
