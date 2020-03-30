@@ -374,7 +374,7 @@ export class Compiler {
         currentArtifactIfExists: ContractArtifact | void,
         sourceTreeHashHex: string,
         contractName: string,
-        fullSolcVersion: string,
+        solcVersion: string,
         sourcesByPath: ContractContentsByPath,
         compilerInput: StandardInput,
         compilerOutput: StandardOutput,
@@ -401,7 +401,7 @@ export class Compiler {
             sourceCodes: _.mapValues(usedSources, ({ content }) => content),
             compiler: {
                 name: 'solc',
-                version: fullSolcVersion,
+                version: solcVersion,
                 settings: compilerInput.settings,
             },
         };
@@ -430,7 +430,14 @@ export class Compiler {
         if (this._shouldSaveStandardInput) {
             await fsWrapper.writeFileAsync(
                 `${this._artifactsDir}/${contractName}.input.json`,
-                utils.stringifyWithFormatting(compilerInput),
+                utils.stringifyWithFormatting({
+                    ...compilerInput,
+                    // Insert solcVersion into input.
+                    settings: {
+                        ...compilerInput.settings,
+                        version: solcVersion,
+                    },
+                }),
             );
             logUtils.warn(`${contractName} input artifact saved!`);
         }
