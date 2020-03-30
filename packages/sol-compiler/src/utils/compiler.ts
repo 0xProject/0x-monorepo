@@ -315,9 +315,12 @@ function recursivelyGatherDependencySources(
     importRemappings: { [prefix: string]: string },
     compiledImports: CompiledImports,
     visitedAbsolutePaths: { [absPath: string]: boolean } = {},
+    importRootDir?: string,
 ): void {
     if (visitedAbsolutePaths[contractPath]) {
         return;
+    } else {
+        visitedAbsolutePaths[contractPath] = true;
     }
     const contractSource = sourcesByAbsolutePath[contractPath].content;
     const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
@@ -334,25 +337,30 @@ function recursivelyGatherDependencySources(
 
         let importPath = importPathMatches[1];
         let absPath = importPath;
+        let _importRootDir = importRootDir;
         if (importPath.startsWith('.')) {
             absPath = path.join(contractFolder, importPath);
-            // Express relative imports paths as paths from the root directory.
-            importPath = path.relative(rootDir, absPath);
-            if (!importPath.startsWith('.')) {
-                importPath = `./${importPath}`;
+            if (_importRootDir) {
+                // If there's an `_importRootDir`, we're in a package, so express
+                // the import path as within the package.
+                importPath = path.join(_importRootDir, importPath);
+            } else {
+                // Express relative imports paths as paths from the root directory.
+                importPath = path.relative(rootDir, absPath);
+                if (!importPath.startsWith('.')) {
+                    importPath = `./${importPath}`;
+                }
             }
         } else {
             for (const [prefix, replacement] of Object.entries(importRemappings)) {
                 if (importPath.startsWith(prefix)) {
                     absPath = `${replacement}${importPath.substr(prefix.length)}`;
+                    _importRootDir = path.dirname(importPath);
                     break;
                 }
             }
         }
-
         compiledImports[importPath] = sourcesByAbsolutePath[absPath];
-        visitedAbsolutePaths[absPath] = true;
-
         recursivelyGatherDependencySources(
             absPath,
             rootDir,
@@ -360,6 +368,7 @@ function recursivelyGatherDependencySources(
             importRemappings,
             compiledImports,
             visitedAbsolutePaths,
+            _importRootDir,
         );
     }
 }

@@ -26,7 +26,7 @@ describe('#Compiler', function(): void {
     it('should create a Compiler with empty opts', async () => {
         const _compiler = new Compiler(); // tslint:disable-line no-unused-variable
     });
-    it('should create an Exchange artifact with the correct unlinked binary', async () => {
+    it.only('should create an Exchange artifact with the correct unlinked binary', async () => {
         compilerOpts.contracts = ['Exchange'];
 
         const exchangeArtifactPath = `${artifactsDir}/Exchange.json`;
@@ -113,5 +113,23 @@ describe('#Compiler', function(): void {
         for (const artifact of await fsWrapper.readdirAsync(artifactsDir)) {
             expect(artifact).to.equal('EmptyContract.json');
         }
+    });
+    it('should compile a V0.6 contract', async () => {
+        compilerOpts.contracts = ['V6Contract'];
+
+        const artifactPath = `${artifactsDir}/V6Contract.json`;
+        if (fsWrapper.doesPathExistSync(artifactPath)) {
+            await fsWrapper.removeFileAsync(artifactPath);
+        }
+
+        await new Compiler(compilerOpts).compileAsync();
+
+        const opts = {
+            encoding: 'utf8',
+        };
+        const exchangeArtifactString = await fsWrapper.readFileAsync(artifactPath, opts);
+        const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
+        const bin = exchangeArtifact.compilerOutput.evm.bytecode.object;
+        expect(bin.slice(2)).to.length.to.be.gt(0);
     });
 });
