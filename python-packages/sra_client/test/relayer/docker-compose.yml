@@ -2,13 +2,11 @@
 version: '3'
 services:
     ganache:
-        image: "0xorg/ganache-cli:6.0.0"
+        image: 0xorg/ganache-cli
         ports:
             - "8545:8545"
-        environment:
-            - VERSION=6.0.0
     mesh:
-        image: 0xorg/mesh:0xV3
+        image: 0xorg/mesh
         depends_on:
             - ganache
         environment:
@@ -22,7 +20,7 @@ services:
         command: |
             sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && ./mesh"
     launch-kit-backend:
-        image: "0xorg/launch-kit-backend:v3"
+        image: 0xorg/launch-kit-backend
         depends_on:
             - ganache
             - mesh
