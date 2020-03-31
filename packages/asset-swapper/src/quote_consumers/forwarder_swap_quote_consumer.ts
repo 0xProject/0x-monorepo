@@ -76,7 +76,13 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
                 .getABIEncodedTransactionData();
         } else {
             calldataHexString = this._forwarder
-                .marketSellOrdersWithEth(orders, signatures, [feeAmount], [normalizedFeeRecipientAddress])
+                .marketSellAmountWithEth(
+                    orders,
+                    quote.takerAssetFillAmount,
+                    signatures,
+                    [feeAmount],
+                    [normalizedFeeRecipientAddress],
+                )
                 .getABIEncodedTransactionData();
         }
 
@@ -139,7 +145,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
                 });
         } else {
             txHash = await this._forwarder
-                .marketSellOrdersWithEth(orders, signatures, [feeAmount], [feeRecipient])
+                .marketSellAmountWithEth(orders, quote.takerAssetFillAmount, signatures, [feeAmount], [feeRecipient])
                 .sendTransactionAsync({
                     from: finalTakerAddress,
                     gas: gasLimit,

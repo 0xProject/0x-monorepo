@@ -5,6 +5,10 @@
             {
                 "note": "Added `MaximumGasPrice` artifact",
                 "pr": 2511
+            },
+            {
+                "note": "Added `Forwarder.marketSellAmountWithEth`",
+                "pr": 2521
             }
         ]
     },

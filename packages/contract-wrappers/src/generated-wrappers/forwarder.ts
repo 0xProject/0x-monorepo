@@ -458,6 +458,103 @@ export class ForwarderContract extends BaseContract {
                         ],
                     },
                     {
+                        name: 'ethSellAmount',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'signatures',
+                        type: 'bytes[]',
+                    },
+                    {
+                        name: 'ethFeeAmounts',
+                        type: 'uint256[]',
+                    },
+                    {
+                        name: 'feeRecipients',
+                        type: 'address[]',
+                    },
+                ],
+                name: 'marketSellAmountWithEth',
+                outputs: [
+                    {
+                        name: 'wethSpentAmount',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'makerAssetAcquiredAmount',
+                        type: 'uint256',
+                    },
+                ],
+                payable: true,
+                stateMutability: 'payable',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'orders',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
                         name: 'signatures',
                         type: 'bytes[]',
                     },
@@ -884,6 +981,100 @@ export class ForwarderContract extends BaseContract {
                 return self._strictEncodeArguments(functionSignature, [
                     orders,
                     makerAssetBuyAmount,
+                    signatures,
+                    ethFeeAmounts,
+                    feeRecipients,
+                ]);
+            },
+        };
+    }
+    /**
+     * Purchases as much of orders' makerAssets as possible by selling the specified amount of ETH
+     * accounting for order and forwarder fees. This functions throws if ethSellAmount was not reached.
+     * @param orders Array of order specifications used containing desired
+     *     makerAsset and WETH as takerAsset.
+     * @param ethSellAmount Desired amount of ETH to sell.
+     * @param signatures Proofs that orders have been created by makers.
+     * @param ethFeeAmounts Amounts of ETH, denominated in Wei, that are paid to
+     *     corresponding feeRecipients.
+     * @param feeRecipients Addresses that will receive ETH when orders are filled.
+     * @returns wethSpentAmount Amount of WETH spent on the given set of orders.makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+     */
+    public marketSellAmountWithEth(
+        orders: Array<{
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+            makerFeeAssetData: string;
+            takerFeeAssetData: string;
+        }>,
+        ethSellAmount: BigNumber,
+        signatures: string[],
+        ethFeeAmounts: BigNumber[],
+        feeRecipients: string[],
+    ): ContractTxFunctionObj<[BigNumber, BigNumber]> {
+        const self = (this as any) as ForwarderContract;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('ethSellAmount', ethSellAmount);
+        assert.isArray('signatures', signatures);
+        assert.isArray('ethFeeAmounts', ethFeeAmounts);
+        assert.isArray('feeRecipients', feeRecipients);
+        const functionSignature =
+            'marketSellAmountWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[],uint256[],address[])';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<[BigNumber, BigNumber]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    orders,
+                    ethSellAmount,
                     signatures,
                     ethFeeAmounts,
                     feeRecipients,

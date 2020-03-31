@@ -29,6 +29,10 @@ library LibForwarderRichErrors {
     bytes4 internal constant COMPLETE_BUY_FAILED_ERROR_SELECTOR =
         0x91353a0c;
 
+    // bytes4(keccak256("CompleteSellFailedError(uint256,uint256)"))
+    bytes4 internal constant COMPLETE_SELL_FAILED_ERROR_SELECTOR =
+        0x450a0219;
+
     // bytes4(keccak256("UnsupportedFeeError(bytes)"))
     bytes4 internal constant UNSUPPORTED_FEE_ERROR_SELECTOR =
         0x31360af1;
@@ -58,6 +62,21 @@ library LibForwarderRichErrors {
             COMPLETE_BUY_FAILED_ERROR_SELECTOR,
             expectedAssetBuyAmount,
             actualAssetBuyAmount
+        );
+    }
+
+    function CompleteSellFailedError(
+        uint256 expectedAssetSellAmount,
+        uint256 actualAssetSellAmount
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            COMPLETE_SELL_FAILED_ERROR_SELECTOR,
+            expectedAssetSellAmount,
+            actualAssetSellAmount
         );
     }
 

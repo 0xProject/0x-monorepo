@@ -9,6 +9,10 @@
             {
                 "note": "Added wrapper for MaximumGasPrice",
                 "pr": 2511
+            },
+            {
+                "note": "Added `Forwarder.marketSellAmountWithEth`",
+                "pr": 2521
             }
         ]
     },

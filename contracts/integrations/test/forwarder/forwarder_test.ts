@@ -448,6 +448,24 @@ blockchainTests('Forwarder integration tests', env => {
             });
         });
     });
+    blockchainTests.resets('marketSellAmountWithEth', () => {
+        it('should fail if the supplied amount is not sold', async () => {
+            const order = await maker.signOrderAsync();
+            const ethSellAmount = order.takerAssetAmount;
+            const revertError = new ExchangeForwarderRevertErrors.CompleteSellFailedError(
+                ethSellAmount,
+                order.takerAssetAmount.times(0.5).plus(DeploymentManager.protocolFee),
+            );
+            await testFactory.marketSellAmountTestAsync([order], ethSellAmount, 0.5, {
+                revertError,
+            });
+        });
+        it('should sell the supplied amount', async () => {
+            const order = await maker.signOrderAsync();
+            const ethSellAmount = order.takerAssetAmount;
+            await testFactory.marketSellAmountTestAsync([order], ethSellAmount, 1);
+        });
+    });
     blockchainTests.resets('marketBuyOrdersWithEth without extra fees', () => {
         it('should buy the exact amount of makerAsset in a single order', async () => {
             const order = await maker.signOrderAsync({

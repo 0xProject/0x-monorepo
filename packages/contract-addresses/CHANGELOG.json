@@ -25,6 +25,10 @@
             {
                 "note": "Add `dexForwarderBridge` addresses",
                 "pr": 2525
+            },
+            {
+                "note": "Redeploy `Forwarder` on all networks",
+                "pr": 2521
             }
         ]
     },
