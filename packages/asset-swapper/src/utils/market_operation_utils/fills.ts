@@ -233,27 +233,25 @@ export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_
     return clipped;
 }
 
-export function collapsePath(side: MarketOperation, path: Fill[]): CollapsedFill[] {
+export function collapsePath(path: Fill[]): CollapsedFill[] {
     const collapsed: Array<CollapsedFill | NativeCollapsedFill> = [];
     for (const fill of path) {
-        const makerAssetAmount = side === MarketOperation.Sell ? fill.output : fill.input;
-        const takerAssetAmount = side === MarketOperation.Sell ? fill.input : fill.output;
         const source = fill.source;
         if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {
             const prevFill = collapsed[collapsed.length - 1];
             // If the last fill is from the same source, merge them.
             if (prevFill.source === source) {
-                prevFill.totalMakerAssetAmount = prevFill.totalMakerAssetAmount.plus(makerAssetAmount);
-                prevFill.totalTakerAssetAmount = prevFill.totalTakerAssetAmount.plus(takerAssetAmount);
-                prevFill.subFills.push({ makerAssetAmount, takerAssetAmount });
+                prevFill.input = prevFill.input.plus(fill.input);
+                prevFill.output = prevFill.output.plus(fill.output);
+                prevFill.subFills.push(fill);
                 continue;
             }
         }
         collapsed.push({
             source: fill.source,
-            totalMakerAssetAmount: makerAssetAmount,
-            totalTakerAssetAmount: takerAssetAmount,
-            subFills: [{ makerAssetAmount, takerAssetAmount }],
+            input: fill.input,
+            output: fill.output,
+            subFills: [fill],
             nativeOrder: fill.source === ERC20BridgeSource.Native ? (fill.fillData as NativeFillData).order : undefined,
         });
     }

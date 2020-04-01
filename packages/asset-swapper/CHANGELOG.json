@@ -37,6 +37,10 @@
             {
                 "note": "Fix `getBatchMarketBuyOrdersAsync` throwing NO_OPTIMAL_PATH",
                 "pr": 2533
+            },
+            {
+                "note": "Add DFB support + refactor swap quote calculator utils",
+                "pr": 2536
             }
         ]
     },
