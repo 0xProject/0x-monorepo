@@ -132,7 +132,6 @@ jobs:
             - run: yarn wsrun test:circleci @0x/subproviders
             - run: yarn wsrun test:circleci @0x/web3-wrapper
             - run: yarn wsrun test:circleci @0x/utils
-            - run: yarn wsrun test:circleci @0x/instant
             - save_cache:
                   key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
