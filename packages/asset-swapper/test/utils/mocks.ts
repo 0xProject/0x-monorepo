@@ -58,10 +58,6 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
 
 class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
     // tslint:disable-next-line:prefer-function-over-method
-    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        return new BigNumber(PROTOCOL_FEE_MULTIPLIER);
-    }
-    // tslint:disable-next-line:prefer-function-over-method
     public async getGasPriceEstimationOrThrowAsync(_shouldHardRefresh?: boolean): Promise<BigNumber> {
         return new BigNumber(devConstants.DEFAULT_GAS_PRICE);
     }

@@ -11,7 +11,6 @@ import 'mocha';
 import { SwapQuote, SwapQuoteConsumer } from '../src';
 import { constants } from '../src/constants';
 import { ExtensionContractType, MarketOperation, SignedOrderWithFillableAmounts } from '../src/types';
-import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
@@ -69,7 +68,6 @@ const PARTIAL_LARGE_PRUNED_SIGNED_ORDERS: Array<Partial<SignedOrderWithFillableA
 
 describe('swapQuoteConsumerUtils', () => {
     let wethContract: WETH9Contract;
-    let protocolFeeUtils: ProtocolFeeUtils;
     let userAddresses: string[];
     let makerAddress: string;
     let takerAddress: string;
@@ -119,7 +117,6 @@ describe('swapQuoteConsumerUtils', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS, new BigNumber(1));
         forwarderOrderFactory = new OrderFactory(privateKey, defaultForwarderOrderParams);
 
         swapQuoteConsumer = new SwapQuoteConsumer(provider, {
@@ -128,7 +125,6 @@ describe('swapQuoteConsumerUtils', () => {
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
-        await protocolFeeUtils.destroyAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -182,7 +178,6 @@ describe('swapQuoteConsumerUtils', () => {
                 forwarderOrders,
                 MarketOperation.Sell,
                 GAS_PRICE,
-                protocolFeeUtils,
             );
 
             largeForwarderSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
@@ -191,7 +186,6 @@ describe('swapQuoteConsumerUtils', () => {
                 largeForwarderOrders,
                 MarketOperation.Sell,
                 GAS_PRICE,
-                protocolFeeUtils,
             );
 
             exchangeSwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
@@ -200,7 +194,6 @@ describe('swapQuoteConsumerUtils', () => {
                 exchangeOrders,
                 MarketOperation.Sell,
                 GAS_PRICE,
-                protocolFeeUtils,
             );
         });
 

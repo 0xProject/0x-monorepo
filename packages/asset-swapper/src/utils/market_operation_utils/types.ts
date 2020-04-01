@@ -97,19 +97,19 @@ export interface CollapsedFill {
      */
     source: ERC20BridgeSource;
     /**
-     * Total maker asset amount.
+     * Total input amount (sum of `subFill`s)
      */
-    totalMakerAssetAmount: BigNumber;
+    input: BigNumber;
     /**
-     * Total taker asset amount.
+     * Total output amount (sum of `subFill`s)
      */
-    totalTakerAssetAmount: BigNumber;
+    output: BigNumber;
     /**
-     * All the fill asset amounts that were collapsed into this node.
+     * Quantities of all the fills that were collapsed.
      */
     subFills: Array<{
-        makerAssetAmount: BigNumber;
-        takerAssetAmount: BigNumber;
+        input: BigNumber;
+        output: BigNumber;
     }>;
 }
 
@@ -127,7 +127,7 @@ export interface OptimizedMarketOrder extends SignedOrderWithFillableAmounts {
     /**
      * The optimized fills that generated this order.
      */
-    fill: CollapsedFill;
+    fills: CollapsedFill[];
 }
 
 /**
@@ -180,9 +180,14 @@ export interface GetMarketOrdersOpts {
     gasSchedule: { [source: string]: number };
     /**
      * Whether to pad the quote with a redundant fallback quote using different
-     * sources.
+     * sources. Defaults to `true`.
      */
     allowFallback: boolean;
+    /**
+     * Whether to combine contiguous bridge orders into a single DexForwarderBridge
+     * order. Defaults to `true`.
+     */
+    shouldBatchBridgeOrders: boolean;
 }
 
 /**
