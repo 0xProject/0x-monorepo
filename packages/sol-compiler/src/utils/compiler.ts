@@ -161,18 +161,15 @@ export async function compileDockerAsync(
     standardInput: solc.StandardInput,
 ): Promise<solc.StandardOutput> {
     const standardInputStr = JSON.stringify(standardInput, null, 2);
+    // prettier-ignore
     const dockerArgs = [
         'run',
         '-i',
-        '-a',
-        'stdin',
-        '-a',
-        'stdout',
-        '-a',
-        'stderr',
+        '-a', 'stdin',
+        '-a', 'stdout',
+        '-a', 'stderr',
         `ethereum/solc:${solidityVersion}`,
-        'solc',
-        '--standard-json',
+        'solc', '--standard-json',
     ];
     return new Promise<solc.StandardOutput>((accept, reject) => {
         const p = spawn('docker', dockerArgs, { shell: true, stdio: ['pipe', 'inherit', 'inherit'] });
@@ -479,7 +476,7 @@ export function getDependencyNameToPackagePath(
  * Extract the solidity version (e.g., '0.5.9') from a solc version (e.g., `0.5.9+commit.34d3134f`).
  */
 export function getSolidityVersionFromSolcVersion(solcVersion: string): string {
-    const m = /(\d+\.\d+\.\d+)\+commit\.[a-f0-9]{8}/.exec(solcVersion);
+    const m = /(\d+\.\d+\.\d+)\+commit\.[a-fA-F0-9]{8}/.exec(solcVersion);
     if (!m) {
         throw new Error(`Unable to parse solc version string "${solcVersion}"`);
     }
@@ -490,7 +487,7 @@ export function getSolidityVersionFromSolcVersion(solcVersion: string): string {
  * Strips any extra characters before and after the version + commit hash of a solc version string.
  */
 export function normalizeSolcVersion(fullSolcVersion: string): string {
-    const m = /\d+\.\d+\.\d+\+commit\.[a-f0-9]{8}/.exec(fullSolcVersion);
+    const m = /\d+\.\d+\.\d+\+commit\.[a-fA-F0-9]{8}/.exec(fullSolcVersion);
     if (!m) {
         throw new Error(`Unable to parse solc version string "${fullSolcVersion}"`);
     }

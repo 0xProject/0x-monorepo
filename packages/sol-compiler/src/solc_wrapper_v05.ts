@@ -32,14 +32,8 @@ export const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
 export class SolcWrapperV05 extends SolcWrapper {
     protected readonly _compilerSettings: solc.CompilerSettings;
 
-    public static normalizeOutput(
-        output: StandardOutput,
-        importRemappings: ImportPrefixRemappings,
-        opts: CompilerOptions,
-    ): StandardOutput {
+    public static normalizeOutput(output: StandardOutput): StandardOutput {
         const _output = _.cloneDeep(output);
-        // _output.sources = makeContractPathsRelative(_output.sources, opts.contractsDir!, importRemappings);
-        // _output.contracts = makeContractPathsRelative(_output.contracts, opts.contractsDir!, importRemappings);
         // tslint:disable-next-line forin
         for (const contractPath in _output.contracts) {
             // tslint:disable-next-line forin
@@ -94,7 +88,7 @@ export class SolcWrapperV05 extends SolcWrapper {
         }
         return {
             input,
-            output: SolcWrapperV05.normalizeOutput(output, importRemappings, this._opts),
+            output: SolcWrapperV05.normalizeOutput(output),
         };
     }
 
