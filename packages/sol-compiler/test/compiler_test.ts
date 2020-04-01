@@ -1,18 +1,21 @@
-import { join } from 'path';
-
+import { hexUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import 'mocha';
+import { join } from 'path';
 
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
 
 import { exchange_binary } from './fixtures/exchange_bin';
+import { v6_contract_binary } from './fixtures/v6_contract_bin';
 import { chaiSetup } from './util/chai_setup';
 import { constants } from './util/constants';
 
 chaiSetup.configure();
 const expect = chai.expect;
+
+const METADATA_SIZE = 43;
 
 describe('#Compiler', function(): void {
     this.timeout(constants.timeoutMs); // tslint:disable-line:no-invalid-this
@@ -41,14 +44,12 @@ describe('#Compiler', function(): void {
         };
         const exchangeArtifactString = await fsWrapper.readFileAsync(exchangeArtifactPath, opts);
         const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
-        // The last 43 bytes of the binaries are metadata which may not be equivalent
-        const metadataByteLength = 43;
-        const metadataHexLength = metadataByteLength * 2;
-        const unlinkedBinaryWithoutMetadata = exchangeArtifact.compilerOutput.evm.bytecode.object.slice(
-            2,
-            -metadataHexLength,
+        const unlinkedBinaryWithoutMetadata = hexUtils.slice(
+            exchangeArtifact.compilerOutput.evm.bytecode.object,
+            0,
+            -METADATA_SIZE,
         );
-        const exchangeBinaryWithoutMetadata = exchange_binary.slice(0, -metadataHexLength);
+        const exchangeBinaryWithoutMetadata = hexUtils.slice(exchange_binary, 0, -METADATA_SIZE);
         expect(unlinkedBinaryWithoutMetadata).to.equal(exchangeBinaryWithoutMetadata);
     });
     it("should throw when Whatever.sol doesn't contain a Whatever contract", async () => {
@@ -113,5 +114,28 @@ describe('#Compiler', function(): void {
         for (const artifact of await fsWrapper.readdirAsync(artifactsDir)) {
             expect(artifact).to.equal('EmptyContract.json');
         }
+    });
+    it('should compile a V0.6 contract', async () => {
+        compilerOpts.contracts = ['V6Contract'];
+
+        const artifactPath = `${artifactsDir}/V6Contract.json`;
+        if (fsWrapper.doesPathExistSync(artifactPath)) {
+            await fsWrapper.removeFileAsync(artifactPath);
+        }
+
+        await new Compiler(compilerOpts).compileAsync();
+
+        const opts = {
+            encoding: 'utf8',
+        };
+        const exchangeArtifactString = await fsWrapper.readFileAsync(artifactPath, opts);
+        const exchangeArtifact: ContractArtifact = JSON.parse(exchangeArtifactString);
+        const actualBinaryWithoutMetadata = hexUtils.slice(
+            exchangeArtifact.compilerOutput.evm.bytecode.object,
+            0,
+            -METADATA_SIZE,
+        );
+        const expectedBinaryWithoutMetadata = hexUtils.slice(v6_contract_binary, 0, -METADATA_SIZE);
+        expect(actualBinaryWithoutMetadata).to.eq(expectedBinaryWithoutMetadata);
     });
 });

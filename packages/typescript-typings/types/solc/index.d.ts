@@ -105,6 +105,7 @@ declare module 'solc' {
             findImports: (importPath: string) => ImportContents,
         ): CompilationResult;
         compileStandardWrapper(input: string, findImports?: (importPath: string) => ImportContents): string;
+        version(): string;
     }
     export function loadRemoteVersion(
         versionName: string,
