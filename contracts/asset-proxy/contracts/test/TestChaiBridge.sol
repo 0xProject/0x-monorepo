@@ -20,13 +20,18 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/bridges/ChaiBridge.sol";
-import "@0x/contracts-erc20/contracts/src/ERC20Token.sol";
+import "@0x/contracts-erc20/contracts/test/DummyERC20Token.sol";
 
 
 contract TestChaiDai is
-    ERC20Token
+    DummyERC20Token
 {
     address private constant ALWAYS_REVERT_ADDRESS = address(1);
+
+    constructor()
+        public
+        DummyERC20Token("TestChaiDai", "TCHAI", 18, 0)
+    {} // solhint disable-line no-empty-blocks
 
     function draw(
         address from,

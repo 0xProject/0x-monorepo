@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 
-import { ERC20BridgeProxyContract, TestERC20BridgeContract } from './wrappers';
+import { ERC20BridgeProxyContract, IAssetDataContract, TestERC20BridgeContract } from './wrappers';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     const PROXY_ID = AssetProxyId.ERC20Bridge;
@@ -24,6 +24,27 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     let assetProxy: ERC20BridgeProxyContract;
     let bridgeContract: TestERC20BridgeContract;
     let testTokenAddress: string;
+
+    // FIXME(jalextowle): I've been using this test to generate ChaiBridge asset data
+    // because it was a pretty easy way to do it. I will remove it once the test passes
+    // in Mesh.
+    it.only('encode ChaiBridge asset data', async () => {
+        const assetDataEncoder = await IAssetDataContract.deployFrom0xArtifactAsync(
+            artifacts.IAssetData,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+        );
+        console.log(
+            assetDataEncoder
+                .ERC20Bridge(
+                    '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                    '0x2c530e4ecc573f11bd72cf5fdf580d134d25f15f',
+                    '0x',
+                )
+                .getABIEncodedTransactionData(),
+        );
+    });
 
     before(async () => {
         [owner, badCaller] = await env.getAccountAddressesAsync();
@@ -74,6 +95,15 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             },
             opts,
         );
+    }
+
+    function encodeAssetDataTest(tokenAddress: string, bridgeAddress: string, bridgeData: string): string {
+        const encoder = AbiEncoder.createMethod('ERC20BridgeProxy', [
+            { name: 'tokenAddress', type: 'address' },
+            { name: 'bridgeAddress', type: 'address' },
+            { name: 'bridgeData', type: 'bytes' },
+        ]);
+        return encoder.encode([tokenAddress, bridgeAddress, bridgeData]);
     }
 
     function encodeAssetData(opts: AssetDataOpts): string {

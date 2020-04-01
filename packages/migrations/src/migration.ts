@@ -7,6 +7,7 @@ import {
     ERC721ProxyContract,
     MultiAssetProxyContract,
     StaticCallProxyContract,
+    TestChaiBridgeContract,
 } from '@0x/contracts-asset-proxy';
 import {
     artifacts as coordinatorArtifacts,
@@ -27,7 +28,7 @@ import {
 } from '@0x/contracts-staking';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { SupportedProvider, TxData } from 'ethereum-types';
+import { ContractArtifact, SupportedProvider, TxData } from 'ethereum-types';
 
 import { constants } from './utils/constants';
 import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
@@ -277,6 +278,28 @@ export async function runMigrationsAsync(
         etherToken.address,
     );
 
+    // Only deploy the test setup for the ChaiBridge if the chainId is the Ganache ChainId.
+    let chaiBridge;
+    // tslint:disable-next-line:custom-no-magic-numbers
+    if (chainId.isEqualTo(1337)) {
+        // ChaiBridge
+        chaiBridge = await TestChaiBridgeContract.deployFrom0xArtifactAsync(
+            assetProxyArtifacts.TestChaiBridge,
+            provider,
+            txDefaults,
+            allArtifacts,
+        );
+
+        // Mint chai tokens for the mesh maker address
+        const chaiTokenAddress = await chaiBridge.testChaiDai().callAsync();
+        const chaiToken = new DummyERC20TokenContract(chaiTokenAddress, provider);
+        const ganacheAccount1 = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
+        const mintAmount = new BigNumber(10000000000000000000000);
+        await chaiToken.mint(mintAmount).awaitTransactionSuccessAsync({ from: ganacheAccount1 });
+        await chaiToken.approve(chaiBridge.address, mintAmount).awaitTransactionSuccessAsync({ from: ganacheAccount1 });
+    }
+    const chaiBridgeAddress = chaiBridge === undefined ? constants.NULL_ADDRESS : chaiBridge.address;
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -301,7 +324,7 @@ export async function runMigrationsAsync(
         eth2DaiBridge: constants.NULL_ADDRESS,
         kyberBridge: constants.NULL_ADDRESS,
         erc20BridgeSampler: constants.NULL_ADDRESS,
-        chaiBridge: constants.NULL_ADDRESS,
+        chaiBridge: chaiBridgeAddress,
         dydxBridge: constants.NULL_ADDRESS,
         curveBridge: constants.NULL_ADDRESS,
         godsUnchainedValidator: constants.NULL_ADDRESS,
