@@ -37,10 +37,12 @@ interface IntermediateQuoteFillResult {
     input: BigNumber;
     // Output tokens filled. Maker asset for sells, taker asset for buys.
     output: BigNumber;
-    // Taker fees that can be paid with the output token.
-    outputFee: BigNumber;
     // Taker fees that can be paid with the input token.
+    // Positive for sells, negative for buys.
     inputFee: BigNumber;
+    // Taker fees that can be paid with the output token.
+    // Negative for sells, positive for buys.
+    outputFee: BigNumber;
     // Protocol fees paid.
     protocolFee: BigNumber;
     // (Estimated) gas used.
@@ -78,14 +80,16 @@ const DEFAULT_SIMULATED_FILL_QUOTE_INFO_OPTS: QuoteFillInfoOpts = {
 
 export interface QuoteFillOrderCall {
     order: OptimizedMarketOrder;
-    // Fillable input amount defined in the order.
-    fillableOrderInput: BigNumber;
-    // Fillable fees payable with input token.
+    // Total input amount defined in the order.
+    totalOrderInput: BigNumber;
+    // Total output amount defined in the order.
+    totalOrderOutput: BigNumber;
+    // Total fees payable with input token, defined in the order.
     // Positive for sells, negative for buys.
-    fillableOrderInputFee: BigNumber;
-    // Fillable fees payable with output token.
+    totalOrderInputFee: BigNumber;
+    // Total fees payable with output token, defined in the order.
     // Negative for sells, positive for buys.
-    fillableOrderOutputFee: BigNumber;
+    totalOrderOutputFee: BigNumber;
 }
 
 // Simulates filling a quote in the best case.
@@ -95,6 +99,7 @@ export function simulateBestCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult 
         ...quoteInfo.opts,
     };
     const result = fillQuoteOrders(
+        quoteInfo.side,
         createBestCaseFillOrderCalls(quoteInfo),
         quoteInfo.fillAmount,
         quoteInfo.gasPrice.times(opts.protocolFeeMultiplier),
@@ -112,6 +117,7 @@ export function simulateWorstCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult
     const protocolFeePerFillOrder = quoteInfo.gasPrice.times(opts.protocolFeeMultiplier);
     const result = {
         ...fillQuoteOrders(
+            quoteInfo.side,
             createWorstCaseFillOrderCalls(quoteInfo),
             quoteInfo.fillAmount,
             protocolFeePerFillOrder,
@@ -128,6 +134,7 @@ export function simulateWorstCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult
 }
 
 export function fillQuoteOrders(
+    side: MarketOperation,
     fillOrders: QuoteFillOrderCall[],
     inputAmount: BigNumber,
     protocolFeePerFillOrder: BigNumber,
@@ -159,23 +166,23 @@ export function fillQuoteOrders(
                 const filledInput = solveForInputFillAmount(
                     remainingInput,
                     subFill.input,
-                    fo.fillableOrderInput,
-                    fo.fillableOrderInputFee,
+                    fo.totalOrderInput,
+                    fo.totalOrderInputFee,
                 );
                 const filledOutput = subFill.output.times(filledInput.div(subFill.input));
+                const filledInputFee = filledInput.div(fo.totalOrderInput).times(fo.totalOrderInputFee);
+                const filledOutputFee = filledOutput.div(fo.totalOrderOutput).times(fo.totalOrderOutputFee);
 
                 result.inputBySource[source] = result.inputBySource[source].plus(filledInput);
                 result.input = result.input
                     .plus(filledInput);
-                result.output = result.input
+                result.output = result.output
                     .plus(filledOutput);
-                const orderFillFrac = filledInput.div(fo.fillableOrderInput);
                 result.inputFee = result.inputFee
-                    .plus(orderFillFrac.times(fo.fillableOrderInputFee));
+                    .plus(filledInputFee);
                 result.outputFee = result.outputFee
-                    .plus(orderFillFrac.times(fo.fillableOrderOutputFee));
-                remainingInput = inputAmount
-                    .minus(result.input.plus(result.inputFee));
+                    .plus(filledOutputFee);
+                remainingInput = remainingInput.minus(filledInput.plus(filledInputFee));
             }
         }
         result.protocolFee = result.protocolFee.plus(protocolFeePerFillOrder);
@@ -186,8 +193,8 @@ export function fillQuoteOrders(
 function solveForInputFillAmount(
     remainingInput: BigNumber,
     fillableInput: BigNumber,
-    fillableOrderInput: BigNumber,
-    fillableOrderInputFee: BigNumber,
+    totalOrderInput: BigNumber,
+    totalOrderInputFee: BigNumber,
 ): BigNumber {
     // When accounting for input token taker fees, the effective input amount is
     // given by:
@@ -195,20 +202,23 @@ function solveForInputFillAmount(
     // where:
     //   i' - The effective input amount, including fees
     //   i  - An input amount
-    //   f  - fillableOrderInputFee
-    //   o  - fillableOrderInput
+    //   f  - totalOrderInputFee
+    //   o  - totalOrderInput
     // Solving for i we get:
     //   i = (i' * o) / (f + o)
-    const denom = fillableOrderInput.plus(fillableOrderInputFee);
-    if (denom.lte(0)) {
+    const denom = totalOrderInput.plus(totalOrderInputFee);
+    if (denom.eq(0)) {
         // A zero denominator would imply an order whose fees are >= the input
         // token amount.
         // For sells, takerFeeAmount >= takerAssetAmount (technically OK but really undesirable).
         // For buys, takerFeeAmount >= makerAssetAmount (losing all your returns to fees).
-        throw new Error(`Cannot solve for input amount with order input ${fillableOrderInput} and order fee ${fillableOrderInputFee}.`);
+        return fillableInput;
     }
-    // i' = remainingInput
-    return BigNumber.min(fillableInput, remainingInput.times(fillableOrderInput).div(denom));
+    return BigNumber.min(
+        fillableInput,
+        // let i' = remainingInput
+        remainingInput.times(totalOrderInput).div(denom),
+    );
 }
 
 function createBestCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrderCall[] {
@@ -217,22 +227,24 @@ function createBestCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrderC
         order: o,
         ...(side === MarketOperation.Sell
             ? {
-                fillableOrderInput: o.fillableTakerAssetAmount,
-                fillableOrderInputFee: isOrderTakerFeePayableWithTakerAsset(o)
-                    ? o.fillableTakerFeeAmount
+                totalOrderInput: o.takerAssetAmount,
+                totalOrderOutput: o.makerAssetAmount,
+                totalOrderInputFee: isOrderTakerFeePayableWithTakerAsset(o)
+                    ? o.takerFee
                     : ZERO_AMOUNT,
-                fillableOrderOutputFee: isOrderTakerFeePayableWithMakerAsset(o)
-                    ? o.fillableTakerFeeAmount.negated()
+                totalOrderOutputFee: isOrderTakerFeePayableWithMakerAsset(o)
+                    ? o.takerFee.negated()
                     : ZERO_AMOUNT,
             }
             // Buy
             : {
-                fillableOrderInput: o.fillableMakerAssetAmount,
-                fillableOrderInputFee: isOrderTakerFeePayableWithMakerAsset(o)
-                    ? o.fillableTakerFeeAmount.negated()
+                totalOrderInput: o.makerAssetAmount,
+                totalOrderOutput: o.takerAssetAmount,
+                totalOrderInputFee: isOrderTakerFeePayableWithMakerAsset(o)
+                    ? o.takerFee.negated()
                     : ZERO_AMOUNT,
-                fillableOrderOutputFee: isOrderTakerFeePayableWithTakerAsset(o)
-                    ? o.fillableTakerFeeAmount
+                totalOrderOutputFee: isOrderTakerFeePayableWithTakerAsset(o)
+                    ? o.takerFee
                     : ZERO_AMOUNT,
             }
         ),
@@ -257,11 +269,11 @@ function getSlippedOrderFills(order: OptimizedMarketOrder, side: MarketOperation
     const totalInput = BigNumber.sum(...order.fills.map(f => f.input));
     const totalOutput = BigNumber.sum(...order.fills.map(f => f.output));
     const inputScaling = side === MarketOperation.Sell
-        ? order.fillableTakerAssetAmount.div(totalInput) // Should be 1
-        : order.fillableMakerAssetAmount.div(totalOutput);
+        ? order.fillableTakerAssetAmount.div(totalInput)
+        : order.fillableMakerAssetAmount.div(totalInput);
     const outputScaling = side === MarketOperation.Sell
         ? order.fillableMakerAssetAmount.div(totalOutput)
-        : order.fillableTakerAssetAmount.div(totalInput); // Should be 1
+        : order.fillableTakerAssetAmount.div(totalOutput);
     return order.fills.map(f => ({
         ...f,
         input: f.input.times(inputScaling),
@@ -274,29 +286,39 @@ function getSlippedOrderFills(order: OptimizedMarketOrder, side: MarketOperation
     }));
 }
 
-function fromIntermediateQuoteFillResult(
+function roundInputAmount(amount: BigNumber, side: MarketOperation): BigNumber {
+    return amount.integerValue(side === MarketOperation.Sell ? ROUND_UP : ROUND_DOWN);
+}
+
+function roundOutputAmount(amount: BigNumber, side: MarketOperation): BigNumber {
+    return amount.integerValue(side === MarketOperation.Sell ? ROUND_DOWN : ROUND_UP);
+}
+
+function roundIntermediateFillResult(
     ir: IntermediateQuoteFillResult,
-    quoteInfo: QuoteFillInfo,
-): QuoteFillResult {
-    const { side } = quoteInfo;
-    // Round to integers.
-    const inputRounding = side === MarketOperation.Sell
-        ? ROUND_UP : ROUND_DOWN;
-    const outputRounding = side === MarketOperation.Sell
-        ? ROUND_DOWN : ROUND_UP;
-    const _ir = {
-        input: ir.input.integerValue(inputRounding),
-        output: ir.output.integerValue(outputRounding),
-        inputFee: ir.inputFee.integerValue(inputRounding),
-        outputFee: ir.outputFee.integerValue(outputRounding),
+    side: MarketOperation,
+): IntermediateQuoteFillResult {
+    return {
+        input: roundInputAmount(ir.input, side),
+        output: roundOutputAmount(ir.output, side),
+        inputFee: roundInputAmount(ir.inputFee, side),
+        outputFee: roundOutputAmount(ir.outputFee, side),
         protocolFee: ir.protocolFee.integerValue(ROUND_UP),
         gas: Math.ceil(ir.gas),
         inputBySource: Object.assign(
             {},
             ...Object.entries(ir.inputBySource)
-                .map(([k, v]) => ({ [k]: v.integerValue(inputRounding) })),
+                .map(([k, v]) => ({ [k]: roundInputAmount(v, side) })),
         ),
     };
+}
+
+function fromIntermediateQuoteFillResult(
+    ir: IntermediateQuoteFillResult,
+    quoteInfo: QuoteFillInfo,
+): QuoteFillResult {
+    const { side } = quoteInfo;
+    const _ir = roundIntermediateFillResult(ir, side);
     return {
         ...(side === MarketOperation.Sell
             // Sell
@@ -306,7 +328,7 @@ function fromIntermediateQuoteFillResult(
                 takerFeeMakerAssetAmount: _ir.outputFee,
                 takerFeeTakerAssetAmount: _ir.inputFee,
                 totalMakerAssetAmount: _ir.output.plus(_ir.outputFee),
-                totalTakerAssetAmount: _ir.input,
+                totalTakerAssetAmount: _ir.input.plus(_ir.inputFee),
             }
             // Buy
             : {
@@ -314,7 +336,7 @@ function fromIntermediateQuoteFillResult(
                 takerAssetAmount: _ir.output,
                 takerFeeMakerAssetAmount: _ir.inputFee,
                 takerFeeTakerAssetAmount: _ir.outputFee,
-                totalMakerAssetAmount: _ir.input,
+                totalMakerAssetAmount: _ir.input.plus(_ir.inputFee),
                 totalTakerAssetAmount: _ir.output.plus(_ir.outputFee),
             }
         ),
