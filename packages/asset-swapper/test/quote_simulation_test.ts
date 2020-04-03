@@ -19,16 +19,16 @@ import {
 } from '../src/utils/quote_simulation';
 
 // tslint:disable: custom-no-magic-numbers
-const { NULL_ADDRESS } = constants;
-const ZERO = new BigNumber(0);
-const ONE = new BigNumber(1);
 
 describe('quote_simulation tests', async () => {
+    const { NULL_ADDRESS } = constants;
+    const ZERO = new BigNumber(0);
+    const ONE = new BigNumber(1);
     const MAKER_TOKEN = randomAddress();
     const TAKER_TOKEN = randomAddress();
     const DEFAULT_MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
     const DEFAULT_TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
-    const EPS = 1e6;
+    const EPS = 1e7; // Some precision lost when crafting these orders.
     const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: 1 };
 
     function createQuoteFillOrders(
