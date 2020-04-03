@@ -892,8 +892,6 @@ describe('quote_simulation tests', async () => {
                 outputFeeRate,
                 side,
             }).map(fo => fo.order);
-            const signedOutputFeeRate = side === MarketOperation.Sell ? -outputFeeRate : outputFeeRate;
-            const totalFillableOutput = fillableOutput.times(signedOutputFeeRate + 1).integerValue();
             const inputFillAmount = fillableInput.times(2 / 3).integerValue();
             const result = simulateBestCaseFill({
                 orders,
@@ -947,4 +945,4 @@ describe('quote_simulation tests', async () => {
             }
         });
     });
-});
+}); // tslint:disable: max-file-line-count

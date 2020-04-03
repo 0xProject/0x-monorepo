@@ -692,7 +692,7 @@ describe('MarketOperationUtils tests', () => {
                         excludedSources: [
                             ERC20BridgeSource.Kyber,
                             ..._.without(DEFAULT_OPTS.excludedSources, ERC20BridgeSource.CurveUsdcDai),
-                        ] as ERC20BridgeSource[],
+                        ],
                         shouldBatchBridgeOrders: true,
                     },
                 );
