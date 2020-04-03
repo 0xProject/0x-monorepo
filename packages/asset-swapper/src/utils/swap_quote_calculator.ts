@@ -196,12 +196,12 @@ function createSwapQuote(
     const quoteBase: SwapQuoteBase = {
         takerAssetData,
         makerAssetData,
-        // Remove fill metadata.
-        orders: resultOrders.map(o => _.omit(o, 'fills')) as SignedOrderWithFillableAmounts[],
+        gasPrice,
         bestCaseQuoteInfo: fillResultsToQuoteInfo(bestCaseFillResult),
         worstCaseQuoteInfo: fillResultsToQuoteInfo(worstCaseFillResult),
-        gasPrice,
         sourceBreakdown: getSwapQuoteOrdersBreakdown(bestCaseFillResult.fillAmountBySource),
+        // Remove fill metadata.
+        orders: resultOrders.map(o => _.omit(o, 'fills')) as SignedOrderWithFillableAmounts[],
     };
 
     if (operation === MarketOperation.Buy) {
