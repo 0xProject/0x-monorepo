@@ -174,14 +174,10 @@ export function fillQuoteOrders(
                 const filledOutputFee = filledOutput.div(fo.totalOrderOutput).times(fo.totalOrderOutputFee);
 
                 result.inputBySource[source] = result.inputBySource[source].plus(filledInput);
-                result.input = result.input
-                    .plus(filledInput);
-                result.output = result.output
-                    .plus(filledOutput);
-                result.inputFee = result.inputFee
-                    .plus(filledInputFee);
-                result.outputFee = result.outputFee
-                    .plus(filledOutputFee);
+                result.input = result.input.plus(filledInput);
+                result.output = result.output.plus(filledOutput);
+                result.inputFee = result.inputFee.plus(filledInputFee);
+                result.outputFee = result.outputFee.plus(filledOutputFee);
                 remainingInput = remainingInput.minus(filledInput.plus(filledInputFee));
             }
         }
@@ -227,53 +223,48 @@ function createBestCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrderC
         order: o,
         ...(side === MarketOperation.Sell
             ? {
-                totalOrderInput: o.takerAssetAmount,
-                totalOrderOutput: o.makerAssetAmount,
-                totalOrderInputFee: isOrderTakerFeePayableWithTakerAsset(o)
-                    ? o.takerFee
-                    : ZERO_AMOUNT,
-                totalOrderOutputFee: isOrderTakerFeePayableWithMakerAsset(o)
-                    ? o.takerFee.negated()
-                    : ZERO_AMOUNT,
-            }
-            // Buy
-            : {
-                totalOrderInput: o.makerAssetAmount,
-                totalOrderOutput: o.takerAssetAmount,
-                totalOrderInputFee: isOrderTakerFeePayableWithMakerAsset(o)
-                    ? o.takerFee.negated()
-                    : ZERO_AMOUNT,
-                totalOrderOutputFee: isOrderTakerFeePayableWithTakerAsset(o)
-                    ? o.takerFee
-                    : ZERO_AMOUNT,
-            }
-        ),
+                  totalOrderInput: o.takerAssetAmount,
+                  totalOrderOutput: o.makerAssetAmount,
+                  totalOrderInputFee: isOrderTakerFeePayableWithTakerAsset(o) ? o.takerFee : ZERO_AMOUNT,
+                  totalOrderOutputFee: isOrderTakerFeePayableWithMakerAsset(o) ? o.takerFee.negated() : ZERO_AMOUNT,
+              }
+            : // Buy
+              {
+                  totalOrderInput: o.makerAssetAmount,
+                  totalOrderOutput: o.takerAssetAmount,
+                  totalOrderInputFee: isOrderTakerFeePayableWithMakerAsset(o) ? o.takerFee.negated() : ZERO_AMOUNT,
+                  totalOrderOutputFee: isOrderTakerFeePayableWithTakerAsset(o) ? o.takerFee : ZERO_AMOUNT,
+              }),
     }));
 }
 
 function createWorstCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrderCall[] {
     // Reuse best case fill orders.
-    return createBestCaseFillOrderCalls(quoteInfo).map(fo => ({
-        ...fo,
-        order: {
-            ...fo.order,
-            // Apply slippage to order fills and reverse them.
-            fills: getSlippedOrderFills(fo.order, quoteInfo.side).reverse(),
-        },
-    // Reverse the orders.
-    })).reverse();
+    return createBestCaseFillOrderCalls(quoteInfo)
+        .map(fo => ({
+            ...fo,
+            order: {
+                ...fo.order,
+                // Apply slippage to order fills and reverse them.
+                fills: getSlippedOrderFills(fo.order, quoteInfo.side).reverse(),
+            },
+            // Reverse the orders.
+        }))
+        .reverse();
 }
 
 // Apply order slippage to its fill paths.
 function getSlippedOrderFills(order: OptimizedMarketOrder, side: MarketOperation): CollapsedFill[] {
     const totalInput = BigNumber.sum(...order.fills.map(f => f.input));
     const totalOutput = BigNumber.sum(...order.fills.map(f => f.output));
-    const inputScaling = side === MarketOperation.Sell
-        ? order.fillableTakerAssetAmount.div(totalInput)
-        : order.fillableMakerAssetAmount.div(totalInput);
-    const outputScaling = side === MarketOperation.Sell
-        ? order.fillableMakerAssetAmount.div(totalOutput)
-        : order.fillableTakerAssetAmount.div(totalOutput);
+    const inputScaling =
+        side === MarketOperation.Sell
+            ? order.fillableTakerAssetAmount.div(totalInput)
+            : order.fillableMakerAssetAmount.div(totalInput);
+    const outputScaling =
+        side === MarketOperation.Sell
+            ? order.fillableMakerAssetAmount.div(totalOutput)
+            : order.fillableTakerAssetAmount.div(totalOutput);
     return order.fills.map(f => ({
         ...f,
         input: f.input.times(inputScaling),
@@ -307,39 +298,34 @@ function roundIntermediateFillResult(
         gas: Math.ceil(ir.gas),
         inputBySource: Object.assign(
             {},
-            ...Object.entries(ir.inputBySource)
-                .map(([k, v]) => ({ [k]: roundInputAmount(v, side) })),
+            ...Object.entries(ir.inputBySource).map(([k, v]) => ({ [k]: roundInputAmount(v, side) })),
         ),
     };
 }
 
-function fromIntermediateQuoteFillResult(
-    ir: IntermediateQuoteFillResult,
-    quoteInfo: QuoteFillInfo,
-): QuoteFillResult {
+function fromIntermediateQuoteFillResult(ir: IntermediateQuoteFillResult, quoteInfo: QuoteFillInfo): QuoteFillResult {
     const { side } = quoteInfo;
     const _ir = roundIntermediateFillResult(ir, side);
     return {
         ...(side === MarketOperation.Sell
-            // Sell
-            ? {
-                makerAssetAmount: _ir.output,
-                takerAssetAmount: _ir.input,
-                takerFeeMakerAssetAmount: _ir.outputFee,
-                takerFeeTakerAssetAmount: _ir.inputFee,
-                totalMakerAssetAmount: _ir.output.plus(_ir.outputFee),
-                totalTakerAssetAmount: _ir.input.plus(_ir.inputFee),
-            }
-            // Buy
-            : {
-                makerAssetAmount: _ir.input,
-                takerAssetAmount: _ir.output,
-                takerFeeMakerAssetAmount: _ir.inputFee,
-                takerFeeTakerAssetAmount: _ir.outputFee,
-                totalMakerAssetAmount: _ir.input.plus(_ir.inputFee),
-                totalTakerAssetAmount: _ir.output.plus(_ir.outputFee),
-            }
-        ),
+            ? // Sell
+              {
+                  makerAssetAmount: _ir.output,
+                  takerAssetAmount: _ir.input,
+                  takerFeeMakerAssetAmount: _ir.outputFee,
+                  takerFeeTakerAssetAmount: _ir.inputFee,
+                  totalMakerAssetAmount: _ir.output.plus(_ir.outputFee),
+                  totalTakerAssetAmount: _ir.input.plus(_ir.inputFee),
+              }
+            : // Buy
+              {
+                  makerAssetAmount: _ir.input,
+                  takerAssetAmount: _ir.output,
+                  takerFeeMakerAssetAmount: _ir.inputFee,
+                  takerFeeTakerAssetAmount: _ir.outputFee,
+                  totalMakerAssetAmount: _ir.input.plus(_ir.inputFee),
+                  totalTakerAssetAmount: _ir.output.plus(_ir.outputFee),
+              }),
         protocolFeeAmount: _ir.protocolFee,
         gas: _ir.gas,
         fillAmountBySource: _ir.inputBySource,
@@ -354,10 +340,7 @@ export function getFlattenedFillsFromOrders(orders: OptimizedMarketOrder[]): Col
     return fills;
 }
 
-function getTotalGasUsedBySources(
-    sources: ERC20BridgeSource[],
-    gasSchedule: { [source: string]: number },
-): number {
+function getTotalGasUsedBySources(sources: ERC20BridgeSource[], gasSchedule: { [source: string]: number }): number {
     let gasUsed = 0;
     for (const s of sources) {
         gasUsed += gasSchedule[s] || 0;

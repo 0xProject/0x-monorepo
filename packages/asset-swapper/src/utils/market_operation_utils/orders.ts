@@ -123,7 +123,7 @@ export interface CreateOrderFromPathOpts {
 export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder[] {
     const collapsedPath = collapsePath(path);
     const orders: OptimizedMarketOrder[] = [];
-    for (let i = 0; i < collapsedPath.length;) {
+    for (let i = 0; i < collapsedPath.length; ) {
         if (collapsedPath[i].source === ERC20BridgeSource.Native) {
             orders.push(createNativeOrder(collapsedPath[i]));
             ++i;
@@ -219,8 +219,9 @@ function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromP
         const bridgeOrder = createBridgeOrder(fill, opts);
         totalMakerAssetAmount = totalMakerAssetAmount.plus(bridgeOrder.makerAssetAmount);
         totalTakerAssetAmount = totalTakerAssetAmount.plus(bridgeOrder.takerAssetAmount);
-        const { bridgeAddress, bridgeData: orderBridgeData } =
-            assetDataUtils.decodeAssetDataOrThrow(bridgeOrder.makerAssetData) as ERC20BridgeAssetData;
+        const { bridgeAddress, bridgeData: orderBridgeData } = assetDataUtils.decodeAssetDataOrThrow(
+            bridgeOrder.makerAssetData,
+        ) as ERC20BridgeAssetData;
         batchedBridgeData.calls.push({
             target: bridgeAddress,
             bridgeData: orderBridgeData,
@@ -290,7 +291,7 @@ type CommonBridgeOrderFields = Pick<
     OptimizedMarketOrder,
     Exclude<
         keyof OptimizedMarketOrder,
-        'fills'
+        | 'fills'
         | 'makerAddress'
         | 'makerAssetData'
         | 'takerAssetData'
