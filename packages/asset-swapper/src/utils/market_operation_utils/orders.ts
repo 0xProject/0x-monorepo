@@ -1,6 +1,6 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, generatePseudoRandomSalt, orderCalculationUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
@@ -26,7 +26,7 @@ import {
     OrderDomain,
 } from './types';
 
-// tslint:disable completed-docs
+// tslint:disable completed-docs no-unnecessary-type-assertion
 
 interface DexForwaderBridgeData {
     inputToken: string;
@@ -244,7 +244,7 @@ function createBatchedBridgeOrder(fills: CollapsedFill[], opts: CreateOrderFromP
         totalTakerAssetAmount = totalTakerAssetAmount.plus(bridgeOrder.takerAssetAmount);
         const { bridgeAddress, bridgeData: orderBridgeData } = assetDataUtils.decodeAssetDataOrThrow(
             bridgeOrder.makerAssetData,
-        );
+        ) as ERC20BridgeAssetData;
         batchedBridgeData.calls.push({
             target: bridgeAddress,
             bridgeData: orderBridgeData,
