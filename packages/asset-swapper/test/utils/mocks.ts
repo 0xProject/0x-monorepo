@@ -9,8 +9,6 @@ import { SwapQuoter } from '../../src/swap_quoter';
 import { SignedOrderWithFillableAmounts } from '../../src/types';
 import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
 
-const PROTOCOL_FEE_MULTIPLIER = 150000;
-
 // tslint:disable: max-classes-per-file
 
 class OrderbookClass extends Orderbook {

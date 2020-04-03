@@ -9,6 +9,8 @@ import { isOrderTakerFeePayableWithMakerAsset, isOrderTakerFeePayableWithTakerAs
 const { PROTOCOL_FEE_MULTIPLIER, ZERO_AMOUNT } = constants;
 const { ROUND_DOWN, ROUND_UP } = BigNumber;
 
+// tslint:disable completed-docs
+
 export interface QuoteFillResult {
     // Maker asset bought.
     makerAssetAmount: BigNumber;
