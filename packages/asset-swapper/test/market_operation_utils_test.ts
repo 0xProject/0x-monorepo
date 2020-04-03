@@ -701,10 +701,7 @@ describe('MarketOperationUtils tests', () => {
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.Uniswap],
                     [ERC20BridgeSource.Native],
-                    [
-                        ERC20BridgeSource.Eth2Dai,
-                        ERC20BridgeSource.CurveUsdcDai,
-                    ],
+                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.CurveUsdcDai],
                 ]);
             });
         });
@@ -1010,10 +1007,7 @@ describe('MarketOperationUtils tests', () => {
                 const orderFillSources = improvedOrders.map(o => o.fills.map(f => f.source));
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.Native],
-                    [
-                        ERC20BridgeSource.Eth2Dai,
-                        ERC20BridgeSource.Uniswap,
-                    ],
+                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
                 ]);
             });
         });

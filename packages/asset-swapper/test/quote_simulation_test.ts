@@ -11,7 +11,12 @@ import * as _ from 'lodash';
 
 import { MarketOperation } from '../src/types';
 import { CollapsedFill, ERC20BridgeSource, OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
-import { fillQuoteOrders, QuoteFillOrderCall, simulateBestCaseFill, simulateWorstCaseFill } from '../src/utils/quote_simulation';
+import {
+    fillQuoteOrders,
+    QuoteFillOrderCall,
+    simulateBestCaseFill,
+    simulateWorstCaseFill,
+} from '../src/utils/quote_simulation';
 
 // tslint:disable: custom-no-magic-numbers
 const { NULL_ADDRESS } = constants;
@@ -19,7 +24,6 @@ const ZERO = new BigNumber(0);
 const ONE = new BigNumber(1);
 
 describe('quote_simulation tests', async () => {
-
     const MAKER_TOKEN = randomAddress();
     const TAKER_TOKEN = randomAddress();
     const DEFAULT_MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
@@ -27,15 +31,17 @@ describe('quote_simulation tests', async () => {
     const EPS = 1e6;
     const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: 1 };
 
-    function createQuoteFillOrders(opts: Partial<{
-        fillableInput: BigNumber;
-        fillableOutput: BigNumber;
-        inputFeeRate: number;
-        outputFeeRate: number;
-        count: number;
-        fillsCount: number;
-        side: MarketOperation;
-    }> = {}): QuoteFillOrderCall[] {
+    function createQuoteFillOrders(
+        opts: Partial<{
+            fillableInput: BigNumber;
+            fillableOutput: BigNumber;
+            inputFeeRate: number;
+            outputFeeRate: number;
+            count: number;
+            fillsCount: number;
+            side: MarketOperation;
+        }> = {},
+    ): QuoteFillOrderCall[] {
         const { fillableInput, fillableOutput, inputFeeRate, outputFeeRate, count, fillsCount, side } = {
             fillableInput: getRandomOrderSize(),
             fillableOutput: getRandomOrderSize(),
@@ -46,12 +52,10 @@ describe('quote_simulation tests', async () => {
             side: MarketOperation.Sell,
             ...opts,
         };
-        const _inputFeeRate = side === MarketOperation.Sell
-            ? inputFeeRate : -inputFeeRate;
-        const _outputFeeRate = side === MarketOperation.Sell
-            ? -outputFeeRate : outputFeeRate;
+        const _inputFeeRate = side === MarketOperation.Sell ? inputFeeRate : -inputFeeRate;
+        const _outputFeeRate = side === MarketOperation.Sell ? -outputFeeRate : outputFeeRate;
 
-        const fillableInputs =  subdivideAmount(fillableInput, count);
+        const fillableInputs = subdivideAmount(fillableInput, count);
         const fillableOutputs = subdivideAmount(fillableOutput, count);
         const filledInputs = subdivideAmount(fillableInput.times(0.5), count);
         const filledOutputs: BigNumber[] = [];
@@ -61,10 +65,7 @@ describe('quote_simulation tests', async () => {
         const outputFees: BigNumber[] = [];
         _.times(count).forEach(i => {
             const f = filledInputs[i].div(fillableInputs[i]);
-            filledOutputs.push(fillableOutputs[i]
-                .times(f)
-                .integerValue(BigNumber.ROUND_DOWN),
-            );
+            filledOutputs.push(fillableOutputs[i].times(f).integerValue(BigNumber.ROUND_DOWN));
             totalInputs.push(fillableInputs[i].plus(filledInputs[i]));
             totalOutputs.push(fillableOutputs[i].plus(filledOutputs[i]));
             inputFees.push(totalInputs[i].times(_inputFeeRate).integerValue());
@@ -72,17 +73,13 @@ describe('quote_simulation tests', async () => {
         });
         return _.times(count, i => {
             return {
-                order: createQuoteFillOrderOrder(
-                    totalInputs[i],
-                    totalOutputs[i],
-                    {
-                        side,
-                        fillsCount,
-                        filledInput: filledInputs[i],
-                        takerInputFee: inputFees[i].abs(),
-                        takerOutputFee: outputFees[i].abs(),
-                    },
-                ),
+                order: createQuoteFillOrderOrder(totalInputs[i], totalOutputs[i], {
+                    side,
+                    fillsCount,
+                    filledInput: filledInputs[i],
+                    takerInputFee: inputFees[i].abs(),
+                    takerOutputFee: outputFees[i].abs(),
+                }),
                 totalOrderInput: totalInputs[i],
                 totalOrderOutput: totalOutputs[i],
                 totalOrderInputFee: inputFees[i],
@@ -100,14 +97,9 @@ describe('quote_simulation tests', async () => {
             side: MarketOperation;
             takerInputFee: BigNumber;
             takerOutputFee: BigNumber;
-        }> = {}): OptimizedMarketOrder {
-        const {
-            filledInput,
-            fillsCount,
-            side,
-            takerInputFee,
-            takerOutputFee,
-        } = {
+        }> = {},
+    ): OptimizedMarketOrder {
+        const { filledInput, fillsCount, side, takerInputFee, takerOutputFee } = {
             side: MarketOperation.Sell,
             filledInput: ZERO,
             fillsCount: 3,
@@ -115,25 +107,22 @@ describe('quote_simulation tests', async () => {
             takerOutputFee: ZERO,
             ...opts,
         };
-        const filledOutput = filledInput.div(input).times(output).integerValue(BigNumber.ROUND_DOWN);
+        const filledOutput = filledInput
+            .div(input)
+            .times(output)
+            .integerValue(BigNumber.ROUND_DOWN);
         const fillableInput = input.minus(filledInput);
         const fillableOutput = output.minus(filledOutput);
-        const makerAssetAmount = side === MarketOperation.Sell
-            ? output : input;
-        const takerAssetAmount = side === MarketOperation.Sell
-            ? input : output;
-        const fillableMakerAssetAmount = side === MarketOperation.Sell
-            ? fillableOutput : fillableInput;
-        const fillableTakerAssetAmount = side === MarketOperation.Sell
-            ? fillableInput : fillableOutput;
+        const makerAssetAmount = side === MarketOperation.Sell ? output : input;
+        const takerAssetAmount = side === MarketOperation.Sell ? input : output;
+        const fillableMakerAssetAmount = side === MarketOperation.Sell ? fillableOutput : fillableInput;
+        const fillableTakerAssetAmount = side === MarketOperation.Sell ? fillableInput : fillableOutput;
         const takerFee = BigNumber.max(takerInputFee, takerOutputFee);
         let takerFeeAssetData = '0x';
         if (!takerInputFee.eq(0)) {
-            takerFeeAssetData = side === MarketOperation.Sell
-                ? DEFAULT_TAKER_ASSET_DATA : DEFAULT_MAKER_ASSET_DATA;
+            takerFeeAssetData = side === MarketOperation.Sell ? DEFAULT_TAKER_ASSET_DATA : DEFAULT_MAKER_ASSET_DATA;
         } else if (!takerOutputFee.eq(0)) {
-            takerFeeAssetData = side === MarketOperation.Sell
-                ? DEFAULT_MAKER_ASSET_DATA : DEFAULT_TAKER_ASSET_DATA;
+            takerFeeAssetData = side === MarketOperation.Sell ? DEFAULT_MAKER_ASSET_DATA : DEFAULT_TAKER_ASSET_DATA;
         }
         const fillableTakerFeeAmount = fillableTakerAssetAmount
             .div(takerAssetAmount)
@@ -164,11 +153,7 @@ describe('quote_simulation tests', async () => {
         };
     }
 
-    function createOrderCollapsedFills(
-        input: BigNumber,
-        output: BigNumber,
-        count: number,
-    ): CollapsedFill[] {
+    function createOrderCollapsedFills(input: BigNumber, output: BigNumber, count: number): CollapsedFill[] {
         const inputs = subdivideAmount(input, count);
         const outputs = subdivideAmount(output, count);
         return _.times(count, i => {
@@ -189,12 +174,12 @@ describe('quote_simulation tests', async () => {
     function countCollapsedFills(fillOrders: QuoteFillOrderCall[] | OptimizedMarketOrder[]): number {
         let count = 0;
         if ((fillOrders as any)[0].fills) {
-            const orders = fillOrders as any as OptimizedMarketOrder[];
+            const orders = (fillOrders as any) as OptimizedMarketOrder[];
             for (const o of orders) {
                 count += o.fills.length;
             }
         } else {
-            const orders = fillOrders as any as QuoteFillOrderCall[];
+            const orders = (fillOrders as any) as QuoteFillOrderCall[];
             for (const fo of orders) {
                 count += fo.order.fills.length;
             }
@@ -215,8 +200,9 @@ describe('quote_simulation tests', async () => {
     }
 
     function assertEqualRates(actual: number | BigNumber, expected: number | BigNumber): void {
-        expect(new BigNumber(actual).times(1e4).integerValue())
-            .to.bignumber.eq(new BigNumber(expected).times(1e4).integerValue());
+        expect(new BigNumber(actual).times(1e4).integerValue()).to.bignumber.eq(
+            new BigNumber(expected).times(1e4).integerValue(),
+        );
     }
 
     function subdivideAmount(amount: BigNumber, count: number): BigNumber[] {
