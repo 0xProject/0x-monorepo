@@ -8,7 +8,7 @@ import {
     randomAddress,
     shortZip,
 } from '@0x/contracts-test-utils';
-import { BigNumber, hexUtils } from '@0x/utils';
+import { BigNumber, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -31,6 +31,7 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
     const BRIDGE_FAILURE = '0xffffffff';
     const BRIDGE_REVERT_ERROR = 'oopsie';
     const INCOMPLETE_FILL_REVERT = 'DexForwarderBridge/INCOMPLETE_FILL';
+    const NOT_AUTHORIZED_REVERT = 'DexForwarderBridge/SENDER_NOT_AUTHORIZED';
     const DEFAULTS = {
         toAddress: randomAddress(),
     };
@@ -47,6 +48,7 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
             await callAndTransactAsync(testContract.createToken()),
             await callAndTransactAsync(testContract.createToken()),
         ];
+        await callAndTransactAsync(testContract.setAuthorized(env.txDefaults.from as string));
     });
 
     async function callAndTransactAsync<TResult>(fnCall: ContractTxFunctionObj<TResult>): Promise<TResult> {
@@ -184,6 +186,18 @@ blockchainTests.resets('DexForwarderBridge unit tests', env => {
                     sellAmount: totalFillableInputAmount.plus(1),
                 }),
             ).to.revertWith(INCOMPLETE_FILL_REVERT);
+        });
+
+        it('fails if not authorized', async () => {
+            const calls = goodBridgeCalls.slice(0, 1);
+            const bridgeData = dexForwarderBridgeDataEncoder.encode({
+                inputToken,
+                calls,
+            });
+            await callAndTransactAsync(testContract.setAuthorized(NULL_ADDRESS));
+            return expect(callBridgeTransferFromAsync({ bridgeData, sellAmount: new BigNumber(1) })).to.revertWith(
+                NOT_AUTHORIZED_REVERT,
+            );
         });
 
         it('succeeds with one bridge call', async () => {
