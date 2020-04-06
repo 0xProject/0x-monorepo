@@ -23,15 +23,19 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
+import "@0x/contracts-utils/contracts/src/DeploymentConstants.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IERC20Bridge.sol";
+import "./MixinGasToken.sol";
 
 
 // solhint-disable space-after-comma, indent
 contract DexForwarderBridge is
     IERC20Bridge,
-    IWallet
+    IWallet,
+    DeploymentConstants,
+    MixinGasToken
 {
     using LibSafeMath for uint256;
 
@@ -68,6 +72,7 @@ contract DexForwarderBridge is
         bytes calldata bridgeData
     )
         external
+        freesGasTokensFromCollector
         returns (bytes4 success)
     {
         TransferFromState memory state;
@@ -84,16 +89,15 @@ contract DexForwarderBridge is
                 break;
             }
 
-            BridgeCall memory call = state.calls[i];
             // Compute token amounts.
             state.callInputTokenAmount = LibSafeMath.min256(
-                call.inputTokenAmount,
+                state.calls[i].inputTokenAmount,
                 state.initialInputTokenBalance.safeSub(state.totalInputTokenSold)
             );
             state.callOutputTokenAmount = LibMath.getPartialAmountFloor(
                 state.callInputTokenAmount,
-                call.inputTokenAmount,
-                call.outputTokenAmount
+                state.calls[i].inputTokenAmount,
+                state.calls[i].outputTokenAmount
             );
 
             // Execute the call in a new context so we can recoup transferred
@@ -101,13 +105,13 @@ contract DexForwarderBridge is
             (bool didSucceed, ) = address(this)
                 .call(abi.encodeWithSelector(
                     this.executeBridgeCall.selector,
-                    call.target,
+                    state.calls[i].target,
                     to,
                     state.inputToken,
                     outputToken,
                     state.callInputTokenAmount,
                     state.callOutputTokenAmount,
-                    call.bridgeData
+                    state.calls[i].bridgeData
                 ));
 
             if (didSucceed) {
