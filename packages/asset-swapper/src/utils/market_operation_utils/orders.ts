@@ -152,10 +152,19 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
             ++i;
             continue;
         }
+        // Liquidity Provider must be called by ERC20BridgeProxy
+        if (collapsedPath[i].source === ERC20BridgeSource.LiquidityProvider) {
+            orders.push(createBridgeOrder(collapsedPath[i], opts));
+            ++i;
+            continue;
+        }
         // If there are contiguous bridge orders, we can batch them together.
         const contiguousBridgeFills = [collapsedPath[i]];
         for (let j = i + 1; j < collapsedPath.length; ++j) {
-            if (collapsedPath[j].source === ERC20BridgeSource.Native) {
+            if (
+                collapsedPath[j].source === ERC20BridgeSource.Native ||
+                collapsedPath[j].source === ERC20BridgeSource.LiquidityProvider
+            ) {
                 break;
             }
             contiguousBridgeFills.push(collapsedPath[j]);

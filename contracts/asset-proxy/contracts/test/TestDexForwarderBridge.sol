@@ -156,6 +156,7 @@ contract TestDexForwarderBridge is
     ITestDexForwarderBridge,
     DexForwarderBridge
 {
+
     function createBridge(
         bytes4 returnCode,
         string memory revertError
@@ -216,5 +217,13 @@ contract TestDexForwarderBridge is
 
     function balanceOf(address token, address owner) public view returns (uint256) {
         return TestDexForwarderBridgeTestToken(token).balanceOf(owner);
+    }
+
+    function _getGstAddress()
+        internal
+        view
+        returns (address gst)
+    {
+        return address(0);
     }
 }

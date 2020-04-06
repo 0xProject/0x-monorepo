@@ -29,6 +29,12 @@
             {
                 "note": "Redeploy `Forwarder` on all networks",
                 "pr": 2521
+            },
+            {
+                "note": "Redeploy `DexForwarderBridge` on Mainnet with Gas Token freeing"
+            },
+            {
+                "note": "Revert to older Curve Bridge (without Gas Tokens)"
             }
         ]
     },
