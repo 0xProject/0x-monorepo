@@ -75,6 +75,7 @@ contract DexForwarderBridge is
         freesGasTokensFromCollector
         returns (bytes4 success)
     {
+        require(msg.sender == _getERC20BridgeProxyAddress(), "DexForwarderBridge/SENDER_NOT_AUTHORIZED");
         TransferFromState memory state;
         (
             state.inputToken,
