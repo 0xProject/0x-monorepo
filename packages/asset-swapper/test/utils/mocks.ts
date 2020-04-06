@@ -47,7 +47,27 @@ export const mockAvailableAssetDatas = (
         .verifiable(TypeMoq.Times.atLeast(0));
 };
 
-const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orderbook): TypeMoq.IMock<SwapQuoter> => {
+export const prepMockOrderbookToGetOrders = (
+    mockOrderbook: TypeMoq.IMock<OrderbookClass>,
+    assetDataA: string,
+    assetDataB: string,
+    orders: APIOrder[],
+) => {
+    mockOrderbook
+        .setup(op => op.getOrdersAsync(assetDataA, assetDataB))
+        .returns(async () => orders)
+        .verifiable(TypeMoq.Times.atLeast(1));
+    mockOrderbook
+        .setup(o => (o as any)._orderProvider)
+        .returns(() => undefined)
+        .verifiable(TypeMoq.Times.atLeast(0));
+    mockOrderbook
+        .setup(o => (o as any)._orderStore)
+        .returns(() => undefined)
+        .verifiable(TypeMoq.Times.atLeast(0));
+};
+
+export const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orderbook): TypeMoq.IMock<SwapQuoter> => {
     const rawSwapQuoter = new SwapQuoter(provider, orderbook);
     const mockedSwapQuoter = TypeMoq.Mock.ofInstance(rawSwapQuoter, TypeMoq.MockBehavior.Loose, false);
     mockedSwapQuoter.callBase = true;

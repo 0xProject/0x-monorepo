@@ -11,7 +11,13 @@ import { constants } from '../src/constants';
 import { LiquidityForTakerMakerAssetDataPair, SignedOrderWithFillableAmounts } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import { mockAvailableAssetDatas, mockedSwapQuoterWithFillableAmounts, orderbookMock } from './utils/mocks';
+import {
+    mockAvailableAssetDatas,
+    mockedSwapQuoterWithFillableAmounts,
+    orderbookMock,
+    partiallyMockedSwapQuoter,
+    prepMockOrderbookToGetOrders,
+} from './utils/mocks';
 import { testOrderFactory } from './utils/test_order_factory';
 import { baseUnitAmount } from './utils/utils';
 
@@ -273,5 +279,93 @@ describe('SwapQuoter', () => {
                 await expectLiquidityResult(mockWeb3Provider.object, mockOrderbook.object, orders, expectedResult);
             });
         });
+    });
+
+    describe('getMarketSellSqapQuoteForAssetDataAsync()', () => {
+        const mockWeb3Provider = TypeMoq.Mock.ofType(Web3ProviderEngine);
+        const mockOrderbook = orderbookMock();
+
+        beforeEach(() => {
+            mockWeb3Provider.reset();
+            mockOrderbook.reset();
+        });
+
+        afterEach(() => {
+            mockWeb3Provider.verifyAll();
+            mockOrderbook.verifyAll();
+        });
+
+        it('returns orders from the orderbook', async () => {
+            /*
+            mockAvailableAssetDatas(
+                mockOrderbook,
+                assetsToAssetPairItems(FAKE_MAKER_ASSET_DATA, FAKE_TAKER_ASSET_DATA),
+            );
+            */
+            prepMockOrderbookToGetOrders(
+                mockOrderbook,
+                FAKE_MAKER_ASSET_DATA,
+                FAKE_TAKER_ASSET_DATA,
+                [{
+                    order: testOrderFactory.generateTestSignedOrder({}),
+                    metaData: {},
+                }],
+            );
+
+            const swapQuoter = partiallyMockedSwapQuoter(mockWeb3Provider.object, mockOrderbook.object).object;
+            try {
+                const marketSellSwapQuote = await swapQuoter.getMarketSellSwapQuoteForAssetDataAsync(
+                    FAKE_MAKER_ASSET_DATA,
+                    FAKE_TAKER_ASSET_DATA,
+                    new BigNumber(1), // takerAssetSellAmount
+                    {
+                        rfqt: {
+                            intentOnFilling: true,
+                            takerAddress: '0x0000000000000000000000000000000000000000',
+                        },
+                        gasPrice: new BigNumber(10), // for ProtocolFeeUtils.getGasPriceEstimationOrThrowAsync()
+                    },
+                );
+                expect(marketSellSwapQuote).to.deep.equal({});
+            } catch (e) {
+                console.log(e);
+            }
+        });
+
+        // it('works even with RFQ-T misconfigured', async () => {});
+
+        /*
+        it('enables RFQ-T when indicated and whitelisted', async () => {
+            // mock out sampler to return nothing, and mock out QuoteRequestor
+            // to return an RFQ-T quote.
+
+            const swapQuoter: ISwapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
+                mockWeb3Provider.object,
+                FAKE_SRA_URL,
+                {
+                    rfqtTakerApiKeyWhitelist: ['koolApiKey1'],
+                    rfqtMakerEndpoints: ['http://localhost:3000'],
+                },
+            );
+
+            expect(
+                swapQuoter.getMarketSellSwapQuoteForAssetDataAsync(
+                    WETH_ASSET_DATA,
+                    DAI_ASSET_DATA,
+                    new BigNumber(1), // takerAssetSellAmount
+                    {
+                        enableRfqt: true,
+                        intentOnFilling: true,
+                        apiKey: 'koolApiKey1',
+                        takerAddress: '0x0000000000000000000000000000000000000000',
+                    },
+                ),
+            ).to.be.true();
+        });
+        */
+        // things to permute in order to generate test cases:
+        // - enableRfqt
+        // - apiKey
+        // - intentOnFilling
     });
 });
