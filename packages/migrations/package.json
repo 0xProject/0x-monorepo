@@ -1,6 +1,6 @@
 {
     "name": "@0x/migrations",
-    "version": "6.2.4",
+    "version": "6.2.4-test-alex",
     "engines": {
         "node": ">=6.12"
     },
