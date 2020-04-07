@@ -23,7 +23,8 @@
                 "pr": 2525
             },
             {
-                "note": "Add Gas Token freeing to `DexForwaderBridge` contract."
+                "note": "Add Gas Token freeing to `DexForwaderBridge` contract.",
+                "pr": 2536
             }
         ]
     },
