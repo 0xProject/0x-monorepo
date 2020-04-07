@@ -225,7 +225,7 @@ setup(
             "pydocstyle",
             "pylint",
             "pytest",
-            "sphinx",
+            "sphinx==2.4.4",  # pinned because of https://github.com/sphinx-doc/sphinx/issues/7429
             "sphinx-autodoc-typehints",
             "tox",
             "twine",
