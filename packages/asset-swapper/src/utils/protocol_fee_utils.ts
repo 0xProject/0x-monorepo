@@ -1,4 +1,3 @@
-import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as heartbeats from 'heartbeats';
 
@@ -13,12 +12,6 @@ export class ProtocolFeeUtils {
         this._gasPriceHeart = heartbeats.createHeart(gasPricePollingIntervalInMs);
         this.gasPriceEstimation = initialGasPrice;
         this._initializeHeartBeat();
-    }
-
-    // TODO(dave4506) at some point, we should add a heart beat to the multiplier, or some RPC call to fetch latest multiplier.
-    // tslint:disable-next-line:prefer-function-over-method
-    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        return constants.PROTOCOL_FEE_MULTIPLIER;
     }
 
     public async getGasPriceEstimationOrThrowAsync(shouldHardRefresh?: boolean): Promise<BigNumber> {
@@ -37,18 +30,6 @@ export class ProtocolFeeUtils {
      */
     public async destroyAsync(): Promise<void> {
         this._gasPriceHeart.kill();
-    }
-
-    /**
-     * Calculates protocol fee with protofol fee multiplier for each fill.
-     */
-    public async calculateWorstCaseProtocolFeeAsync<T extends Order>(
-        orders: T[],
-        gasPrice: BigNumber,
-    ): Promise<BigNumber> {
-        const protocolFeeMultiplier = await this.getProtocolFeeMultiplierAsync();
-        const protocolFee = new BigNumber(orders.length).times(protocolFeeMultiplier).times(gasPrice);
-        return protocolFee;
     }
 
     // tslint:disable-next-line: prefer-function-over-method

@@ -156,6 +156,14 @@ contract TestDexForwarderBridge is
     ITestDexForwarderBridge,
     DexForwarderBridge
 {
+    address private AUTHORIZED_ADDRESS; // solhint-disable-line var-name-mixedcase
+
+    function setAuthorized(address authorized)
+        public
+    {
+        AUTHORIZED_ADDRESS = authorized;
+    }
+
     function createBridge(
         bytes4 returnCode,
         string memory revertError
@@ -216,5 +224,21 @@ contract TestDexForwarderBridge is
 
     function balanceOf(address token, address owner) public view returns (uint256) {
         return TestDexForwarderBridgeTestToken(token).balanceOf(owner);
+    }
+
+    function _getGstAddress()
+        internal
+        view
+        returns (address gst)
+    {
+        return address(0);
+    }
+
+    function _getERC20BridgeProxyAddress()
+        internal
+        view
+        returns (address erc20BridgeProxyAddress)
+    {
+        return AUTHORIZED_ADDRESS;
     }
 }

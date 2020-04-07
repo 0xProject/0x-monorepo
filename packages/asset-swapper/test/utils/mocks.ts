@@ -9,8 +9,6 @@ import { SwapQuoter } from '../../src/swap_quoter';
 import { SignedOrderWithFillableAmounts } from '../../src/types';
 import { ProtocolFeeUtils } from '../../src/utils/protocol_fee_utils';
 
-const PROTOCOL_FEE_MULTIPLIER = 150000;
-
 // tslint:disable: max-classes-per-file
 
 class OrderbookClass extends Orderbook {
@@ -57,10 +55,6 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
 };
 
 class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
-    // tslint:disable-next-line:prefer-function-over-method
-    public async getProtocolFeeMultiplierAsync(): Promise<BigNumber> {
-        return new BigNumber(PROTOCOL_FEE_MULTIPLIER);
-    }
     // tslint:disable-next-line:prefer-function-over-method
     public async getGasPriceEstimationOrThrowAsync(_shouldHardRefresh?: boolean): Promise<BigNumber> {
         return new BigNumber(devConstants.DEFAULT_GAS_PRICE);

@@ -12,7 +12,6 @@ import { SwapQuote } from '../src';
 import { constants } from '../src/constants';
 import { ExchangeSwapQuoteConsumer } from '../src/quote_consumers/exchange_swap_quote_consumer';
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../src/types';
-import { ProtocolFeeUtils } from '../src/utils/protocol_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { getFullyFillableSwapQuoteWithNoFeesAsync } from './utils/swap_quote';
@@ -60,7 +59,6 @@ const expectMakerAndTakerBalancesAsyncFactory = (
 };
 
 describe('ExchangeSwapQuoteConsumer', () => {
-    let protocolFeeUtils: ProtocolFeeUtils;
     let userAddresses: string[];
     let erc20MakerTokenContract: ERC20TokenContract;
     let erc20TakerTokenContract: ERC20TokenContract;
@@ -123,7 +121,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS, new BigNumber(1));
         expectMakerAndTakerBalancesForTakerAssetAsync = expectMakerAndTakerBalancesAsyncFactory(
             erc20TakerTokenContract,
             makerAddress,
@@ -156,7 +153,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
             orders,
             MarketOperation.Sell,
             GAS_PRICE,
-            protocolFeeUtils,
         );
 
         marketBuySwapQuote = await getFullyFillableSwapQuoteWithNoFeesAsync(
@@ -165,7 +161,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
             orders,
             MarketOperation.Buy,
             GAS_PRICE,
-            protocolFeeUtils,
         );
 
         swapQuoteConsumer = new ExchangeSwapQuoteConsumer(provider, contractAddresses, {

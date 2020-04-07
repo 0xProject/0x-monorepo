@@ -107,6 +107,7 @@ export class MarketOperationUtils {
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
+            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
     }
 
@@ -180,6 +181,7 @@ export class MarketOperationUtils {
             excludedSources: _opts.excludedSources,
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
+            shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
         });
     }
 
@@ -254,6 +256,7 @@ export class MarketOperationUtils {
                     excludedSources: _opts.excludedSources,
                     feeSchedule: _opts.feeSchedule,
                     allowFallback: _opts.allowFallback,
+                    shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
                 });
             } catch (e) {
                 // It's possible for one of the pairs to have no path
@@ -278,6 +281,7 @@ export class MarketOperationUtils {
         excludedSources?: ERC20BridgeSource[];
         feeSchedule?: { [source: string]: BigNumber };
         allowFallback?: boolean;
+        shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
     }): OptimizedMarketOrder[] {
         const { inputToken, outputToken, side, inputAmount } = opts;
@@ -327,6 +331,7 @@ export class MarketOperationUtils {
             contractAddresses: this.contractAddresses,
             bridgeSlippage: opts.bridgeSlippage || 0,
             liquidityProviderAddress: opts.liquidityProviderAddress,
+            shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
     }
 
