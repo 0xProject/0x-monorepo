@@ -9,6 +9,10 @@
             {
                 "note": "Set GST Collector address in `DeploymentConstants`",
                 "pr": 2530
+            },
+            {
+                "note": "Add solidity 0.6 contracts",
+                "pr": 2540
             }
         ]
     },
