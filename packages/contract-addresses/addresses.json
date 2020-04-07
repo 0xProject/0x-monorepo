@@ -30,7 +30,7 @@
         "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53",
         "curveBridge": "0x6dc7950423ada9f56fb2c93a23edb787f1e29088",
         "maximumGasPrice": "0xe2bfd35306495d11e3c9db0d8de390cda24563cf",
-        "dexForwarderBridge": "0x2b135c732110be20db72e44ab2a4b149fa213599"
+        "dexForwarderBridge": "0x5591360f8c7640fea5771c9682d6b5ecb776e1f8"
     },
     "3": {
         "erc20Proxy": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
