@@ -38,17 +38,7 @@ jobs:
                   path: ~/repo/packages/abi-gen/test-cli/output
             - store_artifacts:
                   path: ~/repo/packages/contract-wrappers/generated_docs
-    test-contracts-ganache:
-        resource_class: medium+
-        docker:
-            - image: nikolaik/python-nodejs:python3.7-nodejs8
-        working_directory: ~/repo
-        steps:
-            - restore_cache:
-                  keys:
-                      - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-staking
-    test-exchange-ganache-3.0:
+    test-exchange-ganache:
         resource_class: medium+
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -58,7 +48,7 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-exchange
-    test-integrations-ganache-3.0:
+    test-integrations-ganache:
         resource_class: medium+
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -68,7 +58,7 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-integrations
-    test-contracts-rest-ganache-3.0:
+    test-contracts-staking-ganache:
         resource_class: medium+
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -77,11 +67,17 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-staking @0x/contracts-coordinator @0x/contracts-erc20-bridge-sampler
-            # TODO(dorothy-zbornak): Re-enable after updating this package for
-            # 3.0. At that time, also remove exclusion from monorepo
-            # package.json's test script.
-            # - run: yarn wsrun test:circleci @0x/contracts-extensions
+            - run: yarn wsrun test:circleci @0x/contracts-staking
+    test-contracts-rest-ganache:
+        resource_class: medium+
+        docker:
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-erc20-bridge-sampler @0x/contracts-zero-ex
     test-publish:
         resource_class: medium+
         docker:
@@ -419,13 +415,16 @@ workflows:
     main:
         jobs:
             - build
-            - test-exchange-ganache-3.0:
+            - test-exchange-ganache:
                   requires:
                       - build
-            - test-integrations-ganache-3.0:
+            - test-integrations-ganache:
                   requires:
                       - build
-            - test-contracts-rest-ganache-3.0:
+            - test-contracts-staking-ganache:
+                  requires:
+                      - build
+            - test-contracts-rest-ganache:
                   requires:
                       - build
             - test-rest:
@@ -442,8 +441,9 @@ workflows:
                       - build
             - submit-coverage:
                   requires:
-                      - test-contracts-rest-ganache-3.0
-                      - test-exchange-ganache-3.0
+                      - test-contracts-rest-ganache
+                      - test-contracts-staking-ganache
+                      - test-exchange-ganache
                       - test-rest
                       - static-tests
             - test-python:
