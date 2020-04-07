@@ -31,10 +31,12 @@
                 "pr": 2521
             },
             {
-                "note": "Redeploy `DexForwarderBridge` on Mainnet with Gas Token freeing"
+                "note": "Redeploy `DexForwarderBridge` on Mainnet with Gas Token freeing",
+                "pr": 2536
             },
             {
-                "note": "Revert to older Curve Bridge (without Gas Tokens)"
+                "note": "Revert to older Curve Bridge (without Gas Tokens)",
+                "pr": 2536
             }
         ]
     },
