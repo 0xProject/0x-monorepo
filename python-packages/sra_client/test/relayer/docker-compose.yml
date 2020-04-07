@@ -5,6 +5,8 @@ services:
         image: "0xorg/ganache-cli:6.0.0"
         ports:
             - "8545:8545"
+        environment:
+            - VERSION=6.0.0
     mesh:
         image: 0xorg/mesh:0xV3
         depends_on:
