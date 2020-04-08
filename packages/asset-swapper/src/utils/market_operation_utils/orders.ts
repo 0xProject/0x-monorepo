@@ -38,7 +38,7 @@ interface DexForwaderBridgeData {
     }>;
 }
 
-const dexForwarderBridgeDataEncoder = AbiEncoder.create([
+export const dexForwarderBridgeDataEncoder = AbiEncoder.create([
     { name: 'inputToken', type: 'address' },
     {
         name: 'calls',
@@ -169,7 +169,8 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
             }
             contiguousBridgeFills.push(collapsedPath[j]);
         }
-        if (contiguousBridgeFills.length === 1 || !opts.shouldBatchBridgeOrders) {
+        // Always use DexForwarderBridge unless configured not to
+        if (!opts.shouldBatchBridgeOrders) {
             orders.push(createBridgeOrder(contiguousBridgeFills[0], opts));
             i += 1;
         } else {

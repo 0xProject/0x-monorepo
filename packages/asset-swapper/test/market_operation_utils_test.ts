@@ -16,6 +16,7 @@ import * as _ from 'lodash';
 
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BUY_SOURCES, DEFAULT_CURVE_OPTS, SELL_SOURCES } from '../src/utils/market_operation_utils/constants';
+import { dexForwarderBridgeDataEncoder } from '../src/utils/market_operation_utils/orders';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { DexSample, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
 
@@ -27,6 +28,7 @@ describe('MarketOperationUtils tests', () => {
     const KYBER_BRIDGE_ADDRESS = contractAddresses.kyberBridge;
     const UNISWAP_BRIDGE_ADDRESS = contractAddresses.uniswapBridge;
     const CURVE_BRIDGE_ADDRESS = contractAddresses.curveBridge;
+    const DEX_FORWARDER_BRIDGE_ADDRESS = contractAddresses.dexForwarderBridge;
 
     const MAKER_TOKEN = randomAddress();
     const TAKER_TOKEN = randomAddress();
@@ -69,7 +71,17 @@ describe('MarketOperationUtils tests', () => {
         if (assetData.length === 74) {
             return ERC20BridgeSource.Native;
         }
-        const bridgeAddress = hexUtils.slice(assetData, 48, 68).toLowerCase();
+        const bridgeData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        if (!assetDataUtils.isERC20BridgeAssetData(bridgeData)) {
+            throw new Error('AssetData is not ERC20BridgeAssetData');
+        }
+        let { bridgeAddress } = bridgeData;
+        // If this is a DexForwarderBridge encoding, use the first address for testing
+        if (bridgeData.bridgeAddress === DEX_FORWARDER_BRIDGE_ADDRESS.toLowerCase()) {
+            const dexForwarderBridgeData = dexForwarderBridgeDataEncoder.decodeAsArray(bridgeData.bridgeData);
+            const [, bridgeCallDatas] = dexForwarderBridgeData;
+            bridgeAddress = bridgeCallDatas[0].target;
+        }
         switch (bridgeAddress) {
             case KYBER_BRIDGE_ADDRESS.toLowerCase():
                 return ERC20BridgeSource.Kyber;
