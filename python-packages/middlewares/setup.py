@@ -180,7 +180,6 @@ setup(
             "pylint",
             "pytest",
             "sphinx",
-            "sphinx-autodoc-typehints",
             "tox",
             "twine",
         ]
