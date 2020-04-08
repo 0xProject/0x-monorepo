@@ -195,7 +195,6 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
     gasPrice?: BigNumber;
     takerAddress?: string;
     apiKey?: string;
-    enableRfqt?: boolean;
     intentOnFilling?: boolean;
 }
 
