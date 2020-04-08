@@ -6,9 +6,9 @@ services:
         ports:
             - "8545:8545"
         environment:
-            - VERSION=6.0.0
+            - VERSION=6.2.4-test-alex
     mesh:
-        image: 0xorg/mesh:0xV3
+        image: "fabioberger123/mesh:updateContractWrapper"
         depends_on:
             - ganache
         environment:
@@ -20,9 +20,9 @@ services:
             - '60557:60557'
         network_mode: "host" # to connect to ganache
         command: |
-            sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && ./mesh"
+            sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && sleep 15 && ./mesh"
     launch-kit-backend:
-        image: "0xorg/launch-kit-backend:v3"
+        image: 0xorg/launch-kit-backend
         depends_on:
             - ganache
             - mesh

@@ -195,8 +195,8 @@ jobs:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/ganache-cli:6.0.0
               environment:
-                  VERSION: '6.0.0'
-            - image: 0xorg/mesh:0xV3
+                  VERSION: '6.2.4-test-alex'
+            - image: "fabioberger123/mesh:updateContractWrapper"
               environment:
                   ETHEREUM_RPC_URL: 'http://localhost:8545'
                   ETHEREUM_CHAIN_ID: '1337'
@@ -204,8 +204,8 @@ jobs:
                   BLOCK_POLLING_INTERVAL: '50ms'
                   ETHEREUM_RPC_MAX_REQUESTS_PER_24_HR_UTC: '1778000'
               command: |
-                  sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && ./mesh"
-            - image: 0xorg/launch-kit-backend:v3
+                  sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && sleep 15 && ./mesh"
+            - image: 0xorg/launch-kit-backend
               environment:
                   RPC_URL: 'http://localhost:8545'
                   CHAIN_ID: 1337
