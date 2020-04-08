@@ -193,10 +193,10 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
-            - image: 0xorg/ganache-cli:6.0.0
+            - image: 0xorg/ganache-cli:6.2.4-test-alex
               environment:
                   VERSION: '6.0.0'
-            - image: 0xorg/mesh:0xV3
+            - image: fabioberger123/mesh:updateContractWrapper
               environment:
                   ETHEREUM_RPC_URL: 'http://localhost:8545'
                   ETHEREUM_CHAIN_ID: '1337'
