@@ -5,6 +5,10 @@
             {
                 "note": "Refactor + add solidity 0.6 support",
                 "pr": 2532
+            },
+            {
+                "note": "Filter `receive` functions from 0.6 ABIs",
+                "pr": 2540
             }
         ]
     },

@@ -32,18 +32,6 @@ export const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
 export class SolcWrapperV05 extends SolcWrapper {
     protected readonly _compilerSettings: solc.CompilerSettings;
 
-    public static normalizeOutput(output: StandardOutput): StandardOutput {
-        const _output = _.cloneDeep(output);
-        // tslint:disable-next-line forin
-        for (const contractPath in _output.contracts) {
-            // tslint:disable-next-line forin
-            for (const contract of Object.values(_output.contracts[contractPath])) {
-                addHexPrefixToContractBytecode(contract);
-            }
-        }
-        return _output;
-    }
-
     constructor(protected readonly _solcVersion: string, protected readonly _opts: CompilerOptions) {
         super();
         this._compilerSettings = {
@@ -88,7 +76,7 @@ export class SolcWrapperV05 extends SolcWrapper {
         }
         return {
             input,
-            output: SolcWrapperV05.normalizeOutput(output),
+            output: this._normalizeOutput(output),
         };
     }
 
@@ -98,5 +86,18 @@ export class SolcWrapperV05 extends SolcWrapper {
         }
         const solcInstance = await getSolcJSAsync(this.solidityVersion, !!this._opts.isOfflineMode);
         return compileSolcJSAsync(solcInstance, input);
+    }
+
+    // tslint:disable-next-line: prefer-function-over-method
+    protected _normalizeOutput(output: StandardOutput): StandardOutput {
+        const _output = _.cloneDeep(output);
+        // tslint:disable-next-line forin
+        for (const contractPath in _output.contracts) {
+            // tslint:disable-next-line forin
+            for (const contract of Object.values(_output.contracts[contractPath])) {
+                addHexPrefixToContractBytecode(contract);
+            }
+        }
+        return _output;
     }
 }
