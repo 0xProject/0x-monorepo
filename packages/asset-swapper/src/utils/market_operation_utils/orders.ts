@@ -38,7 +38,7 @@ interface DexForwaderBridgeData {
     }>;
 }
 
-export const dexForwarderBridgeDataEncoder = AbiEncoder.create([
+const dexForwarderBridgeDataEncoder = AbiEncoder.create([
     { name: 'inputToken', type: 'address' },
     {
         name: 'calls',
