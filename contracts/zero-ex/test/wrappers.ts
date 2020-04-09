@@ -5,12 +5,14 @@
  */
 export * from '../test/generated-wrappers/allowance_target';
 export * from '../test/generated-wrappers/bootstrap';
+export * from '../test/generated-wrappers/fill_quote_transformer';
 export * from '../test/generated-wrappers/fixin_common';
 export * from '../test/generated-wrappers/flash_wallet';
 export * from '../test/generated-wrappers/full_migration';
 export * from '../test/generated-wrappers/i_allowance_target';
 export * from '../test/generated-wrappers/i_bootstrap';
 export * from '../test/generated-wrappers/i_erc20_transformer';
+export * from '../test/generated-wrappers/i_exchange';
 export * from '../test/generated-wrappers/i_feature';
 export * from '../test/generated-wrappers/i_flash_wallet';
 export * from '../test/generated-wrappers/i_ownable';
@@ -49,8 +51,12 @@ export * from '../test/generated-wrappers/test_simple_function_registry_feature_
 export * from '../test/generated-wrappers/test_token_spender';
 export * from '../test/generated-wrappers/test_token_spender_erc20_token';
 export * from '../test/generated-wrappers/test_transform_erc20';
+export * from '../test/generated-wrappers/test_transformer_host';
+export * from '../test/generated-wrappers/test_weth';
+export * from '../test/generated-wrappers/test_weth_transformer_host';
 export * from '../test/generated-wrappers/test_zero_ex_feature';
 export * from '../test/generated-wrappers/token_spender';
 export * from '../test/generated-wrappers/token_spender_puppet';
 export * from '../test/generated-wrappers/transform_erc20';
+export * from '../test/generated-wrappers/weth_transformer';
 export * from '../test/generated-wrappers/zero_ex';

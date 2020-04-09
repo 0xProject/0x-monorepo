@@ -10,6 +10,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { AbiEncoder, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 
+import { ETH_TOKEN_ADDRESS } from '../../src/constants';
 import { getRLPEncodedAccountNonceAsync } from '../../src/nonce_utils';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
@@ -205,8 +206,6 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 TestMintTokenERC20TransformerEvents.MintTransform,
             );
         });
-
-        const ETH_TOKEN_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
         it("succeeds if taker's output token balance increases by exactly minOutputTokenAmount, with ETH", async () => {
             const startingInputTokenBalance = getRandomInteger(0, '100e18');
