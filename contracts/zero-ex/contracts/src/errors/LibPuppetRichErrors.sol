@@ -19,28 +19,50 @@
 pragma solidity ^0.6.5;
 
 
-library LibCommonRichErrors {
+library LibPuppetRichErrors {
 
     // solhint-disable func-name-mixedcase
 
-    function OnlyCallableBySelfError(address sender)
+    function PuppetExecuteFailedError(
+        address puppet,
+        address callTarget,
+        bytes memory callData,
+        uint256 callValue,
+        bytes memory errorData
+    )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("OnlyCallableBySelfError(address)")),
-            sender
+            bytes4(keccak256("PuppetExecuteFailedError(address,address,bytes,uint256,bytes)")),
+            puppet,
+            callTarget,
+            callData,
+            callValue,
+            errorData
         );
     }
 
-    function IllegalReentrancyError()
+    function InvalidPuppetInstanceError(address puppet)
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("IllegalReentrancyError()"))
+            bytes4(keccak256("InvalidPuppetInstanceError(address)")),
+            puppet
+        );
+    }
+
+    function PuppetNotAcquiredError(address puppet)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("PuppetNotAcquiredError(address)")),
+            puppet
         );
     }
 }

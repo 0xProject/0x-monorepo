@@ -28,10 +28,13 @@ library LibStorage {
     uint256 private constant STORAGE_SLOT_EXP = 128;
 
     /// @dev Storage IDs for feature storage buckets.
+    ///      WARNING: APPEND-ONLY.
     enum StorageId {
         Proxy,
         SimpleFunctionRegistry,
-        Ownable
+        Ownable,
+        TokenSpender,
+        PuppetPool
     }
 
     /// @dev Get the storage slot given a storage ID. We assign unique, well-spaced

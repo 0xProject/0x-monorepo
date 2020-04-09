@@ -19,28 +19,28 @@
 pragma solidity ^0.6.5;
 
 
-library LibCommonRichErrors {
+library LibSpenderRichErrors {
 
     // solhint-disable func-name-mixedcase
 
-    function OnlyCallableBySelfError(address sender)
+    function SpenderERC20TransferFromFailedError(
+        address token,
+        address owner,
+        address to,
+        uint256 amount,
+        bytes memory errorData
+    )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("OnlyCallableBySelfError(address)")),
-            sender
-        );
-    }
-
-    function IllegalReentrancyError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("IllegalReentrancyError()"))
+            bytes4(keccak256("SpenderERC20TransferFromFailedError(address,address,address,uint256,bytes)")),
+            token,
+            owner,
+            to,
+            amount,
+            errorData
         );
     }
 }

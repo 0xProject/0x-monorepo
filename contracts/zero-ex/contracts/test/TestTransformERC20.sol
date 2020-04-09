@@ -17,30 +17,15 @@
 */
 
 pragma solidity ^0.6.5;
+pragma experimental ABIEncoderV2;
+
+import "../src/features/TransformERC20.sol";
 
 
-library LibCommonRichErrors {
-
-    // solhint-disable func-name-mixedcase
-
-    function OnlyCallableBySelfError(address sender)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("OnlyCallableBySelfError(address)")),
-            sender
-        );
-    }
-
-    function IllegalReentrancyError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("IllegalReentrancyError()"))
-        );
+contract TestTransformERC20 is
+    TransformERC20
+{
+    modifier onlySelf() override {
+        _;
     }
 }

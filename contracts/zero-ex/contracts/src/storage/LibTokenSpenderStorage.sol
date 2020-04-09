@@ -17,30 +17,26 @@
 */
 
 pragma solidity ^0.6.5;
+pragma experimental ABIEncoderV2;
+
+import "./LibStorage.sol";
+import "../puppets/IPuppet.sol";
 
 
-library LibCommonRichErrors {
+/// @dev Storage helpers for the `TokenSpender` feature.
+library LibTokenSpenderStorage {
 
-    // solhint-disable func-name-mixedcase
-
-    function OnlyCallableBySelfError(address sender)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("OnlyCallableBySelfError(address)")),
-            sender
-        );
+    /// @dev Storage bucket for this feature.
+    struct Storage {
+        // Spender puppet contract. The target of allowances.
+        IPuppet spender;
     }
 
-    function IllegalReentrancyError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("IllegalReentrancyError()"))
+    /// @dev Get the storage bucket for this contract.
+    function getStorage() internal pure returns (Storage storage stor) {
+        uint256 storageOffset = LibStorage.getStorageOffset(
+            LibStorage.StorageId.TokenSpender
         );
+        assembly { stor_slot := storageOffset }
     }
 }
