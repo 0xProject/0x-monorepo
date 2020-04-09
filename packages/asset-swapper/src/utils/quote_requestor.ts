@@ -51,25 +51,29 @@ export class QuoteRequestor {
         // as a placeholder for failed requests.
 
         const responsesIfDefined: Array<void | AxiosResponse<SignedOrder>> = await Promise.all(
-            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint =>
-                Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
-                    headers: { '0x-api-key': takerApiKey },
-                    params: {
-                        sellToken,
-                        buyToken,
-                        buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
-                        sellAmount: marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
-                        takerAddress,
-                    },
-                    timeout: makerEndpointMaxResponseTimeMs,
-                }).catch(err => {
+            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
+                try {
+                    return Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
+                        headers: { '0x-api-key': takerApiKey },
+                        params: {
+                            sellToken,
+                            buyToken,
+                            buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
+                            sellAmount:
+                                marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
+                            takerAddress,
+                        },
+                        timeout: makerEndpointMaxResponseTimeMs,
+                    });
+                } catch (err) {
                     logUtils.warn(
                         `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}: ${JSON.stringify(
                             err,
                         )}`,
                     );
-                }),
-            ),
+                    return undefined;
+                }
+            }),
         );
 
         const responses: Array<AxiosResponse<SignedOrder>> = responsesIfDefined.filter(
