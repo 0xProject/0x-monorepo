@@ -535,7 +535,9 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
         // get the relevant orders for the makerAsset
-        let orders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
+        const orderPromises: Array<Promise<SignedOrder[]>> = [
+            this._getSignedOrdersAsync(makerAssetData, takerAssetData),
+        ];
         if (options.intentOnFilling && options.apiKey) {
             if (!this.rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
                 throw new Error('API key not permissioned for RFQ-T');
@@ -543,8 +545,8 @@ export class SwapQuoter {
             if (!options.takerAddress || options.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
-            orders.push(
-                ...(await this._quoteRequestor.requestRfqtFirmQuotesAsync(
+            orderPromises.push(
+                this._quoteRequestor.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
                     assetFillAmount,
@@ -552,14 +554,15 @@ export class SwapQuoter {
                     options.intentOnFilling,
                     options.apiKey,
                     options.takerAddress,
-                )),
+                ),
             );
         }
+        const orders: SignedOrder[] = ([] as SignedOrder[]).concat(...(await Promise.all(orderPromises)));
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (orders.length === 0) {
-            orders = [
+            orders.push(
                 createDummyOrderForSampler(makerAssetData, takerAssetData, this._contractAddresses.uniswapBridge),
-            ];
+            );
         }
 
         let swapQuote: SwapQuote;
