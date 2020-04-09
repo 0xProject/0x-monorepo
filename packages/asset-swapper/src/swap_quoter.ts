@@ -532,10 +532,12 @@ export class SwapQuoter {
         const orderPromises: Array<Promise<SignedOrder[]>> = [
             this._getSignedOrdersAsync(makerAssetData, takerAssetData),
         ];
-        if (options.rfqt && options.rfqt.intentOnFilling && options.apiKey) {
-            if (!this._rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
-                throw new Error('API key not permissioned for RFQ-T');
-            }
+        if (
+            options.rfqt &&
+            options.rfqt.intentOnFilling &&
+            options.apiKey &&
+            this._rfqtTakerApiKeyWhitelist.includes(options.apiKey)
+        ) {
             if (!options.rfqt.takerAddress || options.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
