@@ -50,10 +50,9 @@ export class QuoteRequestor {
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
 
-        const responsePromises: Array<Promise<AxiosResponse<SignedOrder> | undefined>> = [];
-        for (const rfqtMakerEndpoint of this._rfqtMakerEndpoints) {
-            responsePromises.push(
-                Axios.get(`${rfqtMakerEndpoint}/quote`, {
+        const responsesIfDefined: Array<void | AxiosResponse<SignedOrder>> = await Promise.all(
+            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint =>
+                Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
                     headers: { '0x-api-key': takerApiKey },
                     params: {
                         sellToken,
@@ -69,12 +68,9 @@ export class QuoteRequestor {
                             err,
                         )}`,
                     );
-                    return undefined;
                 }),
-            );
-        }
-
-        const responsesIfDefined: Array<AxiosResponse<SignedOrder> | undefined> = await Promise.all(responsePromises);
+            ),
+        );
 
         const responses: Array<AxiosResponse<SignedOrder>> = responsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<SignedOrder> => respIfDefd !== undefined,
