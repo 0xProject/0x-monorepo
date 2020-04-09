@@ -37,7 +37,6 @@ export class SwapQuoter {
     public readonly expiryBufferMs: number;
     public readonly chainId: number;
     public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
-    public readonly rfqtTakerApiKeyWhitelist: string[];
     private readonly _contractAddresses: ContractAddresses;
     private readonly _protocolFeeUtils: ProtocolFeeUtils;
     private readonly _swapQuoteCalculator: SwapQuoteCalculator;
@@ -45,6 +44,7 @@ export class SwapQuoter {
     private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
     private readonly _quoteRequestor: QuoteRequestor;
+    private readonly _rfqtTakerApiKeyWhitelist: string[];
 
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -164,7 +164,7 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this.rfqtTakerApiKeyWhitelist = options.rfqt ? options.rfqt.takerApiKeyWhitelist || [] : [];
+        this._rfqtTakerApiKeyWhitelist = options.rfqt ? options.rfqt.takerApiKeyWhitelist || [] : [];
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
@@ -533,7 +533,7 @@ export class SwapQuoter {
             this._getSignedOrdersAsync(makerAssetData, takerAssetData),
         ];
         if (options.intentOnFilling && options.apiKey) {
-            if (!this.rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
+            if (!this._rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
                 throw new Error('API key not permissioned for RFQ-T');
             }
             if (!options.takerAddress || options.takerAddress === constants.NULL_ADDRESS) {
