@@ -37,7 +37,6 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        intentOnFilling: boolean,
         takerApiKey: string,
         takerAddress: string,
     ): Promise<SignedOrder[]> {

@@ -546,7 +546,6 @@ export class SwapQuoter {
                     takerAssetData,
                     assetFillAmount,
                     marketOperation,
-                    options.intentOnFilling,
                     options.apiKey,
                     options.takerAddress,
                 ),
