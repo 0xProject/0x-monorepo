@@ -69,7 +69,11 @@ describe('MarketOperationUtils tests', () => {
         if (assetData.length === 74) {
             return ERC20BridgeSource.Native;
         }
-        const bridgeAddress = hexUtils.slice(assetData, 48, 68).toLowerCase();
+        const bridgeData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        if (!assetDataUtils.isERC20BridgeAssetData(bridgeData)) {
+            throw new Error('AssetData is not ERC20BridgeAssetData');
+        }
+        const { bridgeAddress } = bridgeData;
         switch (bridgeAddress) {
             case KYBER_BRIDGE_ADDRESS.toLowerCase():
                 return ERC20BridgeSource.Kyber;
