@@ -165,8 +165,8 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this.rfqtTakerApiKeyWhitelist = options.rfqtTakerApiKeyWhitelist || [];
-        this.rfqtMakerEndpoints = options.rfqtMakerEndpoints || [];
+        this.rfqtTakerApiKeyWhitelist = options.rfqt ? options.rfqt.takerApiKeyWhitelist || [] : [];
+        this.rfqtMakerEndpoints = options.rfqt ? options.rfqt.makerEndpoints || [] : [];
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
