@@ -273,3 +273,7 @@ export enum OrderPrunerPermittedFeeTypes {
     MakerDenominatedTakerFee = 'MAKER_DENOMINATED_TAKER_FEE',
     TakerDenominatedTakerFee = 'TAKER_DENOMINATED_TAKER_FEE',
 }
+
+export interface RfqtFirmQuoteRequestOpts {
+    makerEndpointMaxResponseTimeMs?: number;
+}

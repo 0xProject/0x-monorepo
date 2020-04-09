@@ -44,6 +44,7 @@ export {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
+    RfqtFirmQuoteRequestOpts,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,

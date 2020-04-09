@@ -2,8 +2,10 @@ import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
+import * as _ from 'lodash';
 
-import { MarketOperation } from '../types';
+import { constants } from '../constants';
+import { MarketOperation, RfqtFirmQuoteRequestOpts } from '../types';
 
 /**
  * Request quotes from RFQ-T providers
@@ -22,8 +24,9 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         takerApiKey: string,
         takerAddress: string,
+        options?: Partial<RfqtFirmQuoteRequestOpts>,
     ): Promise<SignedOrder[]> {
-        const makerEndpointMaxResponseTimeMs = 1000;
+        const { makerEndpointMaxResponseTimeMs } = _.merge({}, constants.DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS, options);
 
         const getTokenAddressOrThrow = (assetData: string): string => {
             const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
