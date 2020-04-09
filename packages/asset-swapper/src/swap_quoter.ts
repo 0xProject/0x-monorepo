@@ -532,11 +532,11 @@ export class SwapQuoter {
         const orderPromises: Array<Promise<SignedOrder[]>> = [
             this._getSignedOrdersAsync(makerAssetData, takerAssetData),
         ];
-        if (options.intentOnFilling && options.apiKey) {
+        if (options.rfqt && options.rfqt.intentOnFilling && options.apiKey) {
             if (!this._rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
                 throw new Error('API key not permissioned for RFQ-T');
             }
-            if (!options.takerAddress || options.takerAddress === constants.NULL_ADDRESS) {
+            if (!options.rfqt.takerAddress || options.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
             orderPromises.push(
@@ -546,7 +546,7 @@ export class SwapQuoter {
                     assetFillAmount,
                     marketOperation,
                     options.apiKey,
-                    options.takerAddress,
+                    options.rfqt.takerAddress,
                 ),
             );
         }
