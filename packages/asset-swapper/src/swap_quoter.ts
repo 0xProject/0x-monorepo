@@ -540,7 +540,7 @@ export class SwapQuoter {
             if (!this.rfqtTakerApiKeyWhitelist.includes(options.apiKey)) {
                 throw new Error('API key not permissioned for RFQ-T');
             }
-            if (!options.takerAddress || options.takerAddress === '0x0000000000000000000000000000000000000000') {
+            if (!options.takerAddress || options.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
             orders = orders.concat(
