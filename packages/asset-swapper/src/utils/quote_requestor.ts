@@ -10,6 +10,23 @@ import { MarketOperation, RfqtFirmQuoteRequestOpts } from '../types';
 /**
  * Request quotes from RFQ-T providers
  */
+
+function getTokenAddressOrThrow(assetData: string): string {
+    const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+    if (decodedAssetData.hasOwnProperty('tokenAddress')) {
+        // type cast necessary here as decodeAssetDataOrThrow returns
+        // an AssetData object, which doesn't necessarily contain a
+        // token address.  (it could possibly be a StaticCallAssetData,
+        // which lacks an address.)  so we'll just assume it's a token
+        // here.  should be safe, with the enclosing guard condition
+        // and subsequent error.
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        return (decodedAssetData as ERC20AssetData).tokenAddress;
+    } else {
+        throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
+    }
+}
+
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
 
@@ -27,24 +44,6 @@ export class QuoteRequestor {
         options?: Partial<RfqtFirmQuoteRequestOpts>,
     ): Promise<SignedOrder[]> {
         const { makerEndpointMaxResponseTimeMs } = _.merge({}, constants.DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS, options);
-
-        const getTokenAddressOrThrow = (assetData: string): string => {
-            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-            if (decodedAssetData.hasOwnProperty('tokenAddress')) {
-                // type cast necessary here as decodeAssetDataOrThrow returns
-                // an AssetData object, which doesn't necessarily contain a
-                // token address.  (it could possibly be a StaticCallAssetData,
-                // which lacks an address.)  so we'll just assume it's a token
-                // here.  should be safe, with the enclosing guard condition
-                // and subsequent error.
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                return (decodedAssetData as ERC20AssetData).tokenAddress;
-            } else {
-                throw new Error(
-                    `Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`,
-                );
-            }
-        };
 
         const buyToken = getTokenAddressOrThrow(makerAssetData);
         const sellToken = getTokenAddressOrThrow(takerAssetData);
