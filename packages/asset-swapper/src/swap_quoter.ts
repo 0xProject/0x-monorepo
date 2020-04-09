@@ -543,8 +543,8 @@ export class SwapQuoter {
             if (!options.takerAddress || options.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
-            orders = orders.concat(
-                await this._quoteRequestor.requestRfqtFirmQuotesAsync(
+            orders.push(
+                ...(await this._quoteRequestor.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
                     assetFillAmount,
@@ -552,7 +552,7 @@ export class SwapQuoter {
                     options.intentOnFilling,
                     options.apiKey,
                     options.takerAddress,
-                ),
+                )),
             );
         }
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
