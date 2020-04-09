@@ -3,6 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
+import { QuoteRequestor } from './utils/quote_requestor';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -219,6 +220,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     liquidityProviderRegistryAddress?: string;
     rfqtTakerApiKeyWhitelist?: string[];
     rfqtMakerEndpoints?: string[];
+    quoteRequestor?: QuoteRequestor;
 }
 
 /**

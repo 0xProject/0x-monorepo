@@ -148,12 +148,7 @@ export class SwapQuoter {
      *
      * @return  An instance of SwapQuoter
      */
-    constructor(
-        supportedProvider: SupportedProvider,
-        orderbook: Orderbook,
-        options: Partial<SwapQuoterOpts> = {},
-        quoteRequestor?: QuoteRequestor,
-    ) {
+    constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
         const {
             chainId,
             expiryBufferMs,
@@ -176,7 +171,7 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._quoteRequestor = quoteRequestor || new QuoteRequestor(this.rfqtMakerEndpoints);
+        this._quoteRequestor = options.quoteRequestor || new QuoteRequestor(this.rfqtMakerEndpoints);
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
                 gas: samplerGasLimit,
