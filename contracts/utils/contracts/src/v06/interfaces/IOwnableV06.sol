@@ -21,10 +21,6 @@ pragma solidity ^0.6.5;
 
 interface IOwnableV06 {
 
-    /// @dev The owner of this contract.
-    /// @return ownerAddress The owner address.
-    function owner() external view returns (address ownerAddress);
-
     /// @dev Emitted by Ownable when ownership is transferred.
     /// @param previousOwner The previous owner of the contract.
     /// @param newOwner The new owner of the contract.
