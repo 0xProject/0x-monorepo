@@ -192,6 +192,7 @@ export interface SwapQuoteOrdersBreakdown {
  */
 export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
     gasPrice?: BigNumber;
+    apiKey?: string;
 }
 
 /**
