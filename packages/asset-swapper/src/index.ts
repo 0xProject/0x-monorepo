@@ -66,3 +66,4 @@ export {
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
+export { rfqtMocker } from '../test/utils/rfqt_mocker';

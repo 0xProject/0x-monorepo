@@ -62,16 +62,15 @@ export class QuoteRequestor {
                     params: {
                         sellToken,
                         buyToken,
-                        sellAmount: marketOperation === assetFillAmount.toString(),
+                        sellAmount: assetFillAmount.toString(),
                         takerAddress,
                     },
                     timeout: makerEndpointMaxResponseTimeMs,
                 }).catch(err => {
                     logUtils.warn(
-                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}: ${JSON.stringify(
-                            err,
-                        )}`,
+                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}`,
                     );
+                    logUtils.warn(err);
                 }),
             ),
         );
