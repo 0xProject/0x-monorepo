@@ -54,7 +54,7 @@ export class QuoteRequestor {
         const responsesIfDefined: Array<void | AxiosResponse<SignedOrder>> = await Promise.all(
             this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
                 try {
-                    return Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
+                    return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
                         headers: { '0x-api-key': takerApiKey },
                         params: {
                             sellToken,
