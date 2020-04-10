@@ -7,9 +7,9 @@ import 'mocha';
 
 import { MarketOperation } from '../src/types';
 import { QuoteRequestor } from '../src/utils/quote_requestor';
+import { MockedRfqtFirmQuoteResponse, rfqtMocker } from '../src/utils/rfqt_mocker';
 
 import { chaiSetup } from './utils/chai_setup';
-import { MockedRfqtFirmQuoteResponse, rfqtMocker } from './utils/rfqt_mocker';
 import { testOrderFactory } from './utils/test_order_factory';
 
 chaiSetup.configure();
@@ -32,6 +32,7 @@ describe('QuoteRequestor', async () => {
                 sellToken: takerToken,
                 buyToken: makerToken,
                 sellAmount: '10000',
+                buyAmount: undefined,
                 takerAddress,
             };
             // Successful response

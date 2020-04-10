@@ -43,11 +43,6 @@ export class QuoteRequestor {
         takerAddress: string,
         options?: Partial<RfqtFirmQuoteRequestOpts>,
     ): Promise<SignedOrder[]> {
-        // RFQ-T providers only support sells
-        if (marketOperation !== MarketOperation.Sell) {
-            return [];
-        }
-
         const { makerEndpointMaxResponseTimeMs } = _.merge({}, constants.DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS, options);
 
         const buyToken = getTokenAddressOrThrow(makerAssetData);
@@ -64,7 +59,9 @@ export class QuoteRequestor {
                         params: {
                             sellToken,
                             buyToken,
-                            sellAmount: assetFillAmount.toString(),
+                            buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
+                            sellAmount:
+                                marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
                             takerAddress,
                         },
                         timeout: makerEndpointMaxResponseTimeMs,
