@@ -24,6 +24,11 @@ export class QuoteRequestor {
         takerApiKey: string,
         takerAddress: string,
     ): Promise<SignedOrder[]> {
+        if (marketOperation !== MarketOperation.Sell) {
+            // Only sell operations are supported by RFQT makers right now
+            return [];
+        }
+
         const makerEndpointMaxResponseTimeMs = 1000;
 
         const getTokenAddressOrThrow = (assetData: string): string => {
@@ -57,8 +62,7 @@ export class QuoteRequestor {
                     params: {
                         sellToken,
                         buyToken,
-                        buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
-                        sellAmount: marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
+                        sellAmount: marketOperation === assetFillAmount.toString(),
                         takerAddress,
                     },
                     timeout: makerEndpointMaxResponseTimeMs,
