@@ -44,6 +44,7 @@ export {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
+    MockedRfqtFirmQuoteResponse,
     RfqtFirmQuoteRequestOpts,
     SwapQuote,
     SwapQuoteConsumerBase,

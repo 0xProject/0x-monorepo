@@ -1,15 +1,7 @@
 import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
 
-export interface MockedRfqtFirmQuoteResponse {
-    endpoint: string;
-    requestApiKey: string;
-    requestParams: {
-        [key: string]: string | undefined;
-    };
-    responseData: any;
-    responseCode: number;
-}
+import { MockedRfqtFirmQuoteResponse } from '../types';
 
 /**
  * A helper utility for testing which mocks out
