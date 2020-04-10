@@ -5,9 +5,9 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { MarketOperation } from '../src/types';
+import { MarketOperation, MockedRfqtFirmQuoteResponse } from '../src/types';
 import { QuoteRequestor } from '../src/utils/quote_requestor';
-import { MockedRfqtFirmQuoteResponse, rfqtMocker } from '../src/utils/rfqt_mocker';
+import { rfqtMocker } from '../src/utils/rfqt_mocker';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';
