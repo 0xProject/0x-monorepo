@@ -43,6 +43,11 @@ export class QuoteRequestor {
         takerAddress: string,
         options?: Partial<RfqtFirmQuoteRequestOpts>,
     ): Promise<SignedOrder[]> {
+        // RFQ-T providers only support sells
+        if (marketOperation !== MarketOperation.Sell) {
+            return [];
+        }
+
         const { makerEndpointMaxResponseTimeMs } = _.merge({}, constants.DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS, options);
 
         const buyToken = getTokenAddressOrThrow(makerAssetData);
@@ -59,19 +64,16 @@ export class QuoteRequestor {
                         params: {
                             sellToken,
                             buyToken,
-                            buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
-                            sellAmount:
-                                marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
+                            sellAmount: assetFillAmount.toString(),
                             takerAddress,
                         },
                         timeout: makerEndpointMaxResponseTimeMs,
                     });
                 } catch (err) {
                     logUtils.warn(
-                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}: ${JSON.stringify(
-                            err,
-                        )}`,
+                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}`,
                     );
+                    logUtils.warn(err);
                     return undefined;
                 }
             }),
