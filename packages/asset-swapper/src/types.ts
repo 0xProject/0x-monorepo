@@ -277,3 +277,16 @@ export enum OrderPrunerPermittedFeeTypes {
 export interface RfqtFirmQuoteRequestOpts {
     makerEndpointMaxResponseTimeMs?: number;
 }
+
+/**
+ * Represents a mocked RFQT maker responses.
+ */
+export interface MockedRfqtFirmQuoteResponse {
+    endpoint: string;
+    requestApiKey: string;
+    requestParams: {
+        [key: string]: string | undefined;
+    };
+    responseData: any;
+    responseCode: number;
+}
