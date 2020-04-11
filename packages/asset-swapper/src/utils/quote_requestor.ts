@@ -1,3 +1,4 @@
+import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
@@ -28,6 +29,7 @@ function getTokenAddressOrThrow(assetData: string): string {
 
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
+    private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
 
     constructor(rfqtMakerEndpoints: string[]) {
         this._rfqtMakerEndpoints = rfqtMakerEndpoints;
@@ -81,7 +83,11 @@ export class QuoteRequestor {
 
         const ordersWithStringInts = responses.map(response => response.data); // not yet BigNumber
 
-        const orders: SignedOrder[] = ordersWithStringInts.map(orderWithStringInts => {
+        const validatedOrdersWithStringInts = ordersWithStringInts.filter(order =>
+            this._schemaValidator.isValid(order, schemas.orderSchema),
+        );
+
+        const orders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
             return {
                 ...orderWithStringInts,
                 makerAssetAmount: new BigNumber(orderWithStringInts.makerAssetAmount),
