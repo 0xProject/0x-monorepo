@@ -528,10 +528,9 @@ export class SwapQuoter {
         } else {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
-        // get the relevant orders for the makerAsset
-        const orderPromises: Array<Promise<SignedOrder[]>> = [
-            this._getSignedOrdersAsync(makerAssetData, takerAssetData),
-        ];
+        // get batches of orders from different sources, awaiting sources in parallel
+        const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
+        orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
         if (
             options.rfqt &&
             options.rfqt.intentOnFilling &&
@@ -541,7 +540,7 @@ export class SwapQuoter {
             if (!options.rfqt.takerAddress || options.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
-            orderPromises.push(
+            orderBatchPromises.push(
                 this._quoteRequestor.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -552,7 +551,8 @@ export class SwapQuoter {
                 ),
             );
         }
-        const orders: SignedOrder[] = ([] as SignedOrder[]).concat(...(await Promise.all(orderPromises)));
+        const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
+        const orders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (orders.length === 0) {
             orders.push(
