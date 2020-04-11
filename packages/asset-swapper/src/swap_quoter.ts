@@ -504,8 +504,7 @@ export class SwapQuoter {
             this.permittedOrderFeeTypes,
             this.expiryBufferMs,
         );
-        const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
-        return sortedPrunedOrders;
+        return prunedOrders;
     }
 
     /**
@@ -551,8 +550,13 @@ export class SwapQuoter {
                 ),
             );
         }
+
         const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
-        const orders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
+
+        const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
+
+        const orders = sortingUtils.sortOrders(unsortedOrders);
+
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (orders.length === 0) {
             orders.push(
