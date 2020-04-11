@@ -22,9 +22,8 @@ function getTokenAddressOrThrow(assetData: string): string {
         // and subsequent error.
         // tslint:disable-next-line:no-unnecessary-type-assertion
         return (decodedAssetData as ERC20AssetData).tokenAddress;
-    } else {
-        throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
     }
+    throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
 }
 
 export class QuoteRequestor {
