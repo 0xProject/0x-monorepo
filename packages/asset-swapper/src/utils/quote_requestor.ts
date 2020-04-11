@@ -77,7 +77,7 @@ export class QuoteRequestor {
             }),
         );
 
-        const responses: Array<AxiosResponse<SignedOrder>> = responsesIfDefined.filter(
+        const responses = responsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<SignedOrder> => respIfDefd !== undefined,
         );
 
