@@ -50,7 +50,7 @@ export class QuoteRequestor {
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
 
-        const responsesIfDefined: Array<void | AxiosResponse<SignedOrder>> = await Promise.all(
+        const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
             this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
                 try {
                     return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
