@@ -26,6 +26,7 @@ import {
     TransactionReceiptWithDecodedLogs,
     TxData,
     TxDataPayable,
+    StateOverrideSet,
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, hexUtils, logUtils, providerUtils } from '@0x/utils';
@@ -990,7 +991,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'acceptsAnArrayOfBytes(bytes[])';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -999,6 +1004,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1016,7 +1022,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'acceptsBytes(bytes)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1025,6 +1035,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1057,6 +1068,7 @@ export class AbiGenDummyContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
             ): Promise<{
                 input: { foo: BigNumber; bar: string; car: string };
                 lorem: string;
@@ -1071,6 +1083,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1107,7 +1120,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'ecrecoverFn(bytes32,uint8,bytes32,bytes32)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1116,6 +1133,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1158,11 +1176,16 @@ export class AbiGenDummyContract extends BaseContract {
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
+                    stateOverride,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
@@ -1186,7 +1209,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'methodAcceptingArrayOfArrayOfStructs((bytes,uint32,bytes[],string)[][])';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1195,6 +1222,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1219,7 +1247,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'methodAcceptingArrayOfStructs((bytes,uint32,bytes[],string)[])';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1228,6 +1260,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1249,6 +1282,7 @@ export class AbiGenDummyContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
             ): Promise<
                 Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
             > {
@@ -1260,6 +1294,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1278,7 +1313,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'methodReturningMultipleValues()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[BigNumber, string]> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<[BigNumber, string]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1287,6 +1326,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1308,6 +1348,7 @@ export class AbiGenDummyContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
             ): Promise<{ innerStruct: { aField: BigNumber } }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
@@ -1317,6 +1358,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1346,6 +1388,7 @@ export class AbiGenDummyContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
             ): Promise<[string, string, string]> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
@@ -1355,6 +1398,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1380,7 +1424,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'nestedStructInput(((bytes,uint32,bytes[],string),string))';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1389,6 +1437,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1411,6 +1460,7 @@ export class AbiGenDummyContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
             ): Promise<{
                 innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
                 description: string;
@@ -1423,6 +1473,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1450,7 +1501,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'noInputNoOutput()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1459,6 +1514,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1478,7 +1534,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'noInputSimpleOutput()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1487,6 +1547,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1529,11 +1590,16 @@ export class AbiGenDummyContract extends BaseContract {
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
+                    stateOverride,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
@@ -1575,11 +1641,16 @@ export class AbiGenDummyContract extends BaseContract {
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
+                    stateOverride,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
@@ -1596,7 +1667,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'overloadedMethod(string)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1605,6 +1680,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1622,7 +1698,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'overloadedMethod(int256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1631,6 +1711,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1647,7 +1728,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'pureFunctionWithConstant()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1656,6 +1741,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1672,7 +1758,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'requireWithConstant()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1681,6 +1771,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1697,7 +1788,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'revertWithConstant()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1706,6 +1801,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1726,7 +1822,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'simpleInputNoOutput(uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1735,6 +1835,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1755,7 +1856,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'simpleInputSimpleOutput(uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1764,6 +1869,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1780,7 +1886,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'simplePureFunction()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1789,6 +1899,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1806,7 +1917,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'simplePureFunctionWithInput(uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1815,6 +1930,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1831,7 +1947,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'simpleRequire()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1840,6 +1960,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1856,7 +1977,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'simpleRevert()';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1865,6 +1990,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1887,7 +2013,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'structInput((bytes,uint32,bytes[],string))';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1896,6 +2026,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1924,6 +2055,7 @@ export class AbiGenDummyContract extends BaseContract {
             async callAsync(
                 callData: Partial<CallData> = {},
                 defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
             ): Promise<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
@@ -1933,6 +2065,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -1965,7 +2098,11 @@ export class AbiGenDummyContract extends BaseContract {
         const functionSignature = 'withAddressInput(address,uint256,uint256,address,uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<string> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -1974,6 +2111,7 @@ export class AbiGenDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -2017,11 +2155,16 @@ export class AbiGenDummyContract extends BaseContract {
                 });
                 return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             },
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<void> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 const rawCallResult = await self._performCallAsync(
                     { ...callData, data: this.getABIEncodedTransactionData() },
                     defaultBlock,
+                    stateOverride,
                 );
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
                 BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);

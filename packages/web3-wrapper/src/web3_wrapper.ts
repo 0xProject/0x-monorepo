@@ -12,6 +12,7 @@ import {
     JSONRPCResponsePayload,
     LogEntry,
     RawLogEntry,
+    StateOverrideSet,
     SupportedProvider,
     TraceParams,
     Transaction,
@@ -530,7 +531,11 @@ export class Web3Wrapper {
      * @param defaultBlock Block height at which to make the call. Defaults to `latest`
      * @returns The raw call result
      */
-    public async callAsync(callData: CallData, defaultBlock?: BlockParam): Promise<string> {
+    public async callAsync(
+        callData: CallData,
+        defaultBlock?: BlockParam,
+        stateOverride?: StateOverrideSet,
+    ): Promise<string> {
         assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -541,9 +546,10 @@ export class Web3Wrapper {
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
         const callDataHex = marshaller.marshalCallData(callData);
+        const marshalledStateOverride = marshaller.marshalStateOverrideSet(stateOverride);
         const rawCallResult = await this.sendRawPayloadAsync<string>({
             method: 'eth_call',
-            params: [callDataHex, marshalledDefaultBlock],
+            params: [callDataHex, marshalledDefaultBlock, marshalledStateOverride],
         });
         return rawCallResult;
     }

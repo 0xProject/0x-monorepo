@@ -750,3 +750,28 @@ export interface BlockRange {
     fromBlock: BlockParam;
     toBlock: BlockParam;
 } // tslint:disable-line:max-file-line-count
+
+/**
+ * The state override set is an optional address-to-state mapping, where each
+ * entry specifies some state to be ephemerally overridden prior to executing
+ * the call.
+ * https://geth.ethereum.org/docs/rpc/ns-eth#3-object---state-override-set
+ */
+export interface StateOverrideSet {
+    [key: string]: StateOverrideParams;
+}
+
+/**
+ * balance: Fake balance to set for the account before executing the call.
+ * nonce: Fake nonce to set for the account before executing the call.
+ * code: Fake EVM bytecode to inject into the account before executing the call.
+ * state: Fake key-value mapping to override _all_ slots in the account storage before executing the call.
+ * stateDiff: Fake key-value mapping to override _individual_ slots in the account storage before executing the call.
+ */
+export interface StateOverrideParams {
+    balance?: number | string | BigNumber;
+    nonce?: number;
+    code?: string;
+    state?: any;
+    stateDiff?: any;
+}

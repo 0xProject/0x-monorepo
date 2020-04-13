@@ -77,6 +77,18 @@ export interface CallTxDataBaseRPC {
     nonce?: string;
 }
 
+export interface StateOverrideParamsRPC {
+    balance?: string;
+    nonce?: string;
+    code?: string;
+    state?: string;
+    stateDiff: string;
+}
+
+export interface StateOverrideSetRPC {
+    [key: string]: StateOverrideParamsRPC;
+}
+
 export interface TxDataRPC extends CallTxDataBaseRPC {
     from: string;
 }

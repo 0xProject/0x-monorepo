@@ -1,6 +1,7 @@
 async callAsync(
     callData: Partial<CallData> = {},
     defaultBlock?: BlockParam,
+    stateOverride?: StateOverrideSet,
 ): Promise<{{> return_type outputs=outputs}}> {
     BaseContract._assertCallParams(callData, defaultBlock);
     {{#ifEquals this.stateMutability "pure" }}
@@ -8,10 +9,10 @@ async callAsync(
     if (self._deployedBytecodeIfExists) {
         rawCallResult = await self._evmExecAsync(this.getABIEncodedTransactionData());
     } else {
-        rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+        rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock, stateOverride);
     }
     {{else}}
-    const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock);
+    const rawCallResult = await self._performCallAsync({ ...callData, data: this.getABIEncodedTransactionData() }, defaultBlock, stateOverride);
     {{/ifEquals}}
     const abiEncoder = self._lookupAbiEncoder(functionSignature);
     BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);

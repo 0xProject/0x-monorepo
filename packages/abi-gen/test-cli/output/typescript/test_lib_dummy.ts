@@ -24,6 +24,7 @@ import {
     TransactionReceiptWithDecodedLogs,
     TxData,
     TxDataPayable,
+    StateOverrideSet,
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, hexUtils, logUtils, providerUtils } from '@0x/utils';
@@ -273,7 +274,11 @@ export class TestLibDummyContract extends BaseContract {
         const functionSignature = 'publicAddConstant(uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -282,6 +287,7 @@ export class TestLibDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);
@@ -299,7 +305,11 @@ export class TestLibDummyContract extends BaseContract {
         const functionSignature = 'publicAddOne(uint256)';
 
         return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+            async callAsync(
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+                stateOverride?: StateOverrideSet,
+            ): Promise<BigNumber> {
                 BaseContract._assertCallParams(callData, defaultBlock);
                 let rawCallResult;
                 if (self._deployedBytecodeIfExists) {
@@ -308,6 +318,7 @@ export class TestLibDummyContract extends BaseContract {
                     rawCallResult = await self._performCallAsync(
                         { ...callData, data: this.getABIEncodedTransactionData() },
                         defaultBlock,
+                        stateOverride,
                     );
                 }
                 const abiEncoder = self._lookupAbiEncoder(functionSignature);

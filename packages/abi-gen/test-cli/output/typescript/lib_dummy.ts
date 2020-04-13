@@ -24,6 +24,7 @@ import {
     TransactionReceiptWithDecodedLogs,
     TxData,
     TxDataPayable,
+    StateOverrideSet,
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, hexUtils, logUtils, providerUtils } from '@0x/utils';

@@ -20,6 +20,7 @@ import {
     ContractAbi,
     DataItem,
     MethodAbi,
+    StateOverrideSet,
     SupportedProvider,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -299,7 +300,11 @@ export class BaseContract {
         BaseContract._throwIfCallResultIsRevertError(rawCallResult);
         return rawCallResult;
     }
-    protected async _performCallAsync(callData: Partial<CallData>, defaultBlock?: BlockParam): Promise<string> {
+    protected async _performCallAsync(
+        callData: Partial<CallData>,
+        defaultBlock?: BlockParam,
+        stateOverride?: StateOverrideSet,
+    ): Promise<string> {
         const callDataWithDefaults = await this._applyDefaultsToTxDataAsync(callData);
         let rawCallResult: string;
         try {

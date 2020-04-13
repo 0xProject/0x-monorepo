@@ -8,9 +8,11 @@ import {
     CallTxDataBase,
     LogEntry,
     RawLogEntry,
+    StateOverrideSet,
     Transaction,
     TransactionReceipt,
     TxData,
+    StateOverrideParams,
 } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
@@ -22,6 +24,8 @@ import {
     BlockWithTransactionDataRPC,
     CallDataRPC,
     CallTxDataBaseRPC,
+    StateOverrideSetRPC,
+    StateOverrideParamsRPC,
     TransactionReceiptRPC,
     TransactionRPC,
     TxDataRPC,
@@ -190,6 +194,41 @@ export const marshaller = {
         }
         const encodedBlockParam = _.isNumber(blockParam) ? utils.numberToHex(blockParam) : blockParam;
         return encodedBlockParam;
+    },
+    /**
+     * Marshall state override set
+     * @param stateOverride State Override Set to marshall
+     * @return marshalled StateOverrideSet
+     */
+    marshalStateOverrideSet(stateOverride: StateOverrideSet | undefined): Partial<StateOverrideSetRPC> {
+        if (stateOverride === undefined) {
+            return {};
+        }
+
+        return Object.assign(
+            {},
+            ...Object.entries(stateOverride).map(([key, value]) => {
+                return { [key]: marshaller.marshalStateOverrideParam(value) };
+            }),
+        );
+    },
+    /**
+     * Marshall state override set params
+     * @param stateOverrideParams State Override Set parameters to marshall
+     * @return marshalled state override parameters
+     */
+    marshalStateOverrideParam(stateOverrideParams: StateOverrideParams): Partial<StateOverrideParamsRPC> {
+        return {
+            ...stateOverrideParams,
+            balance:
+                stateOverrideParams.balance === undefined
+                    ? undefined
+                    : utils.encodeAmountAsHexString(stateOverrideParams.balance),
+            nonce:
+                stateOverrideParams.nonce === undefined
+                    ? undefined
+                    : utils.encodeAmountAsHexString(stateOverrideParams.nonce),
+        };
     },
     /**
      * Unmarshall log
