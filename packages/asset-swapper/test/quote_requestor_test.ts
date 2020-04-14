@@ -16,7 +16,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('QuoteRequestor', async () => {
-    const [makerToken, takerToken] = tokenUtils.getDummyERC20TokenAddresses();
+    const [makerToken, takerToken, otherToken1, otherToken2] = tokenUtils.getDummyERC20TokenAddresses();
     const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(takerToken);
 
@@ -60,6 +60,30 @@ describe('QuoteRequestor', async () => {
                 responseData: { makerAssetData: '123' },
                 responseCode: StatusCodes.Success,
             });
+            // A successful response code and valid order, but for wrong maker asset data
+            const mockedOrder4 = testOrderFactory.generateTestSignedOrder({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
+                takerAssetData,
+            });
+            mockedRequests.push({
+                endpoint: 'https://422.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: mockedOrder4,
+                responseCode: StatusCodes.Success,
+            });
+            // A successful response code and valid order, but for wrong taker asset data
+            const mockedOrder5 = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
+            });
+            mockedRequests.push({
+                endpoint: 'https://423.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: mockedOrder5,
+                responseCode: StatusCodes.Success,
+            });
 
             // Another Successful response
             const mockedOrder3 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
@@ -76,6 +100,8 @@ describe('QuoteRequestor', async () => {
                     'https://1337.0.0.1',
                     'https://420.0.0.1',
                     'https://421.0.0.1',
+                    'https://422.0.0.1',
+                    'https://423.0.0.1',
                     'https://37.0.0.1',
                 ]);
                 const resp = await qr.requestRfqtFirmQuotesAsync(

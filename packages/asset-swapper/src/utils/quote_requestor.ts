@@ -84,12 +84,19 @@ export class QuoteRequestor {
 
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
             const hasValidSchema = this._schemaValidator.isValid(order, schemas.orderSchema);
-
             if (!hasValidSchema) {
                 logUtils.warn(`Invalid RFQ-t order received, filtering out: ${JSON.stringify(order)}`);
+                return false;
             }
 
-            return hasValidSchema;
+            const hasExpectedMakerAssetData = order.makerAssetData.toLowerCase() === makerAssetData.toLowerCase();
+            const hasExpectedTakerAssetData = order.takerAssetData.toLowerCase() === takerAssetData.toLowerCase();
+            if (!hasExpectedMakerAssetData || !hasExpectedTakerAssetData) {
+                logUtils.warn(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+
+            return true;
         });
 
         const orders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
