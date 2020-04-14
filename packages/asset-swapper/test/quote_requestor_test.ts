@@ -36,12 +36,16 @@ describe('QuoteRequestor', async () => {
                 takerAddress,
             };
             // Successful response
-            const mockedOrder1 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
+            const successfulOrder1 = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                feeRecipientAddress: '0x0000000000000000000000000000000000000001',
+            });
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
                 requestApiKey: takerApiKey,
                 requestParams: expectedParams,
-                responseData: mockedOrder1,
+                responseData: successfulOrder1,
                 responseCode: StatusCodes.Success,
             });
             // Test out a bad response code, ensure it doesnt cause throw
@@ -61,7 +65,7 @@ describe('QuoteRequestor', async () => {
                 responseCode: StatusCodes.Success,
             });
             // A successful response code and valid order, but for wrong maker asset data
-            const mockedOrder4 = testOrderFactory.generateTestSignedOrder({
+            const wrongMakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
                 takerAssetData,
             });
@@ -69,11 +73,11 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://422.0.0.1',
                 requestApiKey: takerApiKey,
                 requestParams: expectedParams,
-                responseData: mockedOrder4,
+                responseData: wrongMakerAssetDataOrder,
                 responseCode: StatusCodes.Success,
             });
             // A successful response code and valid order, but for wrong taker asset data
-            const mockedOrder5 = testOrderFactory.generateTestSignedOrder({
+            const wrongTakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
                 takerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
             });
@@ -81,17 +85,31 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://423.0.0.1',
                 requestApiKey: takerApiKey,
                 requestParams: expectedParams,
-                responseData: mockedOrder5,
+                responseData: wrongTakerAssetDataOrder,
+                responseCode: StatusCodes.Success,
+            });
+            // A successful response code and good order but its unsigned
+            const unsignedOrder = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                feeRecipientAddress: '0x0000000000000000000000000000000000000002',
+            });
+            delete unsignedOrder.signature;
+            mockedRequests.push({
+                endpoint: 'https://424.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: unsignedOrder,
                 responseCode: StatusCodes.Success,
             });
 
             // Another Successful response
-            const mockedOrder3 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
+            const successfulOrder2 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
                 requestApiKey: takerApiKey,
                 requestParams: expectedParams,
-                responseData: mockedOrder3,
+                responseData: successfulOrder2,
                 responseCode: StatusCodes.Success,
             });
 
@@ -102,6 +120,7 @@ describe('QuoteRequestor', async () => {
                     'https://421.0.0.1',
                     'https://422.0.0.1',
                     'https://423.0.0.1',
+                    'https://424.0.0.1',
                     'https://37.0.0.1',
                 ]);
                 const resp = await qr.requestRfqtFirmQuotesAsync(
@@ -112,7 +131,7 @@ describe('QuoteRequestor', async () => {
                     takerApiKey,
                     takerAddress,
                 );
-                expect(resp.sort()).to.eql([mockedOrder1, mockedOrder3].sort());
+                expect(resp.sort()).to.eql([successfulOrder1, successfulOrder2].sort());
             });
         });
     });
