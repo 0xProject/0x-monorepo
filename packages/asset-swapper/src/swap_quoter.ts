@@ -517,12 +517,12 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const calculateSwapQuoteOpts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
+        const opts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         let gasPrice: BigNumber;
-        if (!!options.gasPrice) {
-            gasPrice = options.gasPrice;
+        if (!!opts.gasPrice) {
+            gasPrice = opts.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
         } else {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
@@ -531,12 +531,12 @@ export class SwapQuoter {
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
         orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
         if (
-            options.rfqt &&
-            options.rfqt.intentOnFilling &&
-            options.apiKey &&
-            this._rfqtTakerApiKeyWhitelist.includes(options.apiKey)
+            opts.rfqt &&
+            opts.rfqt.intentOnFilling &&
+            opts.apiKey &&
+            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
         ) {
-            if (!options.rfqt.takerAddress || options.rfqt.takerAddress === constants.NULL_ADDRESS) {
+            if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
             orderBatchPromises.push(
@@ -545,8 +545,8 @@ export class SwapQuoter {
                     takerAssetData,
                     assetFillAmount,
                     marketOperation,
-                    options.apiKey,
-                    options.rfqt.takerAddress,
+                    opts.apiKey,
+                    opts.rfqt.takerAddress,
                 ),
             );
         }
@@ -571,14 +571,14 @@ export class SwapQuoter {
                 orders,
                 assetFillAmount,
                 gasPrice,
-                calculateSwapQuoteOpts,
+                opts,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                 orders,
                 assetFillAmount,
                 gasPrice,
-                calculateSwapQuoteOpts,
+                opts,
             );
         }
 
