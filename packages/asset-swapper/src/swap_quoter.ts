@@ -24,6 +24,7 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
+import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -533,8 +534,8 @@ export class SwapQuoter {
         if (
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
-            opts.apiKey &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
+            opts.rfqt.apiKey &&
+            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey)
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
@@ -545,8 +546,7 @@ export class SwapQuoter {
                     takerAssetData,
                     assetFillAmount,
                     marketOperation,
-                    opts.apiKey,
-                    opts.rfqt.takerAddress,
+                    opts.rfqt,
                 ),
             );
         }

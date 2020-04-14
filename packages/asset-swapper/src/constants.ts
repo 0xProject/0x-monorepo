@@ -5,7 +5,7 @@ import {
     ForwarderExtensionContractOpts,
     OrderPrunerOpts,
     OrderPrunerPermittedFeeTypes,
-    RfqtFirmQuoteRequestOpts,
+    RfqtRequestOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
     SwapQuoteRequestOpts,
@@ -66,7 +66,7 @@ const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     ...DEFAULT_GET_MARKET_ORDERS_OPTS,
 };
 
-const DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS: RfqtFirmQuoteRequestOpts = {
+const DEFAULT_RFQT_REQUEST_OPTS: Partial<RfqtRequestOpts> = {
     makerEndpointMaxResponseTimeMs: 1000,
 };
 
@@ -86,7 +86,7 @@ export const constants = {
     DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     DEFAULT_PER_PAGE,
-    DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS,
+    DEFAULT_RFQT_REQUEST_OPTS,
     NULL_ERC20_ASSET_DATA,
     PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
     MARKET_UTILS_AMOUNT_BUFFER_PERCENTAGE,
