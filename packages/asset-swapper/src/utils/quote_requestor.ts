@@ -83,7 +83,7 @@ export class QuoteRequestor {
         const ordersWithStringInts = responses.map(response => response.data); // not yet BigNumber
 
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
-            const hasValidSchema = this._schemaValidator.isValid(order, schemas.orderSchema);
+            const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
             if (!hasValidSchema) {
                 logUtils.warn(`Invalid RFQ-t order received, filtering out: ${JSON.stringify(order)}`);
                 return false;
