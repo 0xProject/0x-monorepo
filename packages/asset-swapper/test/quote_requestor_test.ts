@@ -36,7 +36,7 @@ describe('QuoteRequestor', async () => {
                 takerAddress,
             };
             // Successful response
-            const mockedOrder1 = testOrderFactory.generateTestSignedOrder({});
+            const mockedOrder1 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
                 requestApiKey: takerApiKey,
@@ -52,8 +52,17 @@ describe('QuoteRequestor', async () => {
                 responseData: { error: 'bad request' },
                 responseCode: StatusCodes.InternalError,
             });
+            // Test out a successful response code but an invalid order
+            mockedRequests.push({
+                endpoint: 'https://421.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: { makerAssetData: '123' },
+                responseCode: StatusCodes.Success,
+            });
+
             // Another Successful response
-            const mockedOrder3 = testOrderFactory.generateTestSignedOrder({});
+            const mockedOrder3 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
                 requestApiKey: takerApiKey,
@@ -63,7 +72,12 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtFirmQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor(['https://1337.0.0.1', 'https://420.0.0.1', 'https://37.0.0.1']);
+                const qr = new QuoteRequestor([
+                    'https://1337.0.0.1',
+                    'https://420.0.0.1',
+                    'https://421.0.0.1',
+                    'https://37.0.0.1',
+                ]);
                 const resp = await qr.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
