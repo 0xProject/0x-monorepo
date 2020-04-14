@@ -1,6 +1,6 @@
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
-import { DEFAULT_CURVE_OPTS } from './constants';
+import { DEFAULT_CURVE_OPTS, NULL_ADDRESS } from './constants';
 import { BatchedOperation, DexSample } from './types';
 
 /**
@@ -16,7 +16,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('getOrderFillableTakerAssetAmounts', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('getOrderFillableTakerAssetAmounts', callResults)
+                    .map((amt, i) => (orders[i].takerAddress === NULL_ADDRESS ? amt : orders[i].takerAssetAmount));
             },
         };
     },
@@ -28,7 +30,9 @@ export const samplerOperations = {
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('getOrderFillableMakerAssetAmounts', callResults);
+                return contract
+                    .getABIDecodedReturnData<BigNumber[]>('getOrderFillableMakerAssetAmounts', callResults)
+                    .map((amt, i) => (orders[i].takerAddress === NULL_ADDRESS ? amt : orders[i].makerAssetAmount));
             },
         };
     },
