@@ -188,16 +188,19 @@ export interface SwapQuoteOrdersBreakdown {
     [source: string]: BigNumber;
 }
 
+export interface RfqtRequestOpts {
+    takerAddress: string;
+    apiKey: string;
+    intentOnFilling?: boolean;
+    makerEndpointMaxResponseTimeMs?: number;
+}
+
 /**
  * gasPrice: gas price to determine protocolFee amount, default to ethGasStation fast amount
  */
 export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
     gasPrice?: BigNumber;
-    apiKey?: string;
-    rfqt?: {
-        takerAddress: string;
-        intentOnFilling: boolean;
-    };
+    rfqt?: RfqtRequestOpts;
 }
 
 /**
@@ -272,10 +275,6 @@ export enum OrderPrunerPermittedFeeTypes {
     NoFees = 'NO_FEES',
     MakerDenominatedTakerFee = 'MAKER_DENOMINATED_TAKER_FEE',
     TakerDenominatedTakerFee = 'TAKER_DENOMINATED_TAKER_FEE',
-}
-
-export interface RfqtFirmQuoteRequestOpts {
-    makerEndpointMaxResponseTimeMs?: number;
 }
 
 /**

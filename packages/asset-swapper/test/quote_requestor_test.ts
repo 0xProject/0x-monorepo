@@ -23,7 +23,7 @@ describe('QuoteRequestor', async () => {
     describe('requestRfqtFirmQuotesAsync', async () => {
         it('should return successful RFQT requests', async () => {
             const takerAddress = '0xd209925defc99488e3afff1174e48b4fa628302a';
-            const takerApiKey = 'my-ko0l-api-key';
+            const apiKey = 'my-ko0l-api-key';
 
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
@@ -43,7 +43,7 @@ describe('QuoteRequestor', async () => {
             });
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: successfulOrder1,
                 responseCode: StatusCodes.Success,
@@ -51,7 +51,7 @@ describe('QuoteRequestor', async () => {
             // Test out a bad response code, ensure it doesnt cause throw
             mockedRequests.push({
                 endpoint: 'https://420.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: { error: 'bad request' },
                 responseCode: StatusCodes.InternalError,
@@ -59,7 +59,7 @@ describe('QuoteRequestor', async () => {
             // Test out a successful response code but an invalid order
             mockedRequests.push({
                 endpoint: 'https://421.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: { makerAssetData: '123' },
                 responseCode: StatusCodes.Success,
@@ -71,7 +71,7 @@ describe('QuoteRequestor', async () => {
             });
             mockedRequests.push({
                 endpoint: 'https://422.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: wrongMakerAssetDataOrder,
                 responseCode: StatusCodes.Success,
@@ -83,7 +83,7 @@ describe('QuoteRequestor', async () => {
             });
             mockedRequests.push({
                 endpoint: 'https://423.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: wrongTakerAssetDataOrder,
                 responseCode: StatusCodes.Success,
@@ -97,7 +97,7 @@ describe('QuoteRequestor', async () => {
             delete unsignedOrder.signature;
             mockedRequests.push({
                 endpoint: 'https://424.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: unsignedOrder,
                 responseCode: StatusCodes.Success,
@@ -107,7 +107,7 @@ describe('QuoteRequestor', async () => {
             const successfulOrder2 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
-                requestApiKey: takerApiKey,
+                requestApiKey: apiKey,
                 requestParams: expectedParams,
                 responseData: successfulOrder2,
                 responseCode: StatusCodes.Success,
@@ -128,8 +128,11 @@ describe('QuoteRequestor', async () => {
                     takerAssetData,
                     new BigNumber(10000),
                     MarketOperation.Sell,
-                    takerApiKey,
-                    takerAddress,
+                    {
+                        apiKey,
+                        takerAddress,
+                        intentOnFilling: true,
+                    },
                 );
                 expect(resp.sort()).to.eql([successfulOrder1, successfulOrder2].sort());
             });

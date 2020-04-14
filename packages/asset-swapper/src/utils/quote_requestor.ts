@@ -6,7 +6,7 @@ import Axios, { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { MarketOperation, RfqtFirmQuoteRequestOpts } from '../types';
+import { MarketOperation, RfqtRequestOpts } from '../types';
 
 /**
  * Request quotes from RFQ-T providers
@@ -27,6 +27,17 @@ function getTokenAddressOrThrow(assetData: string): string {
     throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
 }
 
+function assertTakerAddressOrThrow(takerAddress: string | undefined): void {
+    if (
+        takerAddress === undefined ||
+        takerAddress === '' ||
+        takerAddress === '0x' ||
+        takerAddress === constants.NULL_ADDRESS
+    ) {
+        throw new Error('RFQ-T requires the presence of a taker address');
+    }
+}
+
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
@@ -40,11 +51,10 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        takerApiKey: string,
-        takerAddress: string,
-        options?: Partial<RfqtFirmQuoteRequestOpts>,
+        options?: Partial<RfqtRequestOpts>,
     ): Promise<SignedOrder[]> {
-        const { makerEndpointMaxResponseTimeMs } = _.merge({}, constants.DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS, options);
+        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        assertTakerAddressOrThrow(_opts.takerAddress);
 
         const buyToken = getTokenAddressOrThrow(makerAssetData);
         const sellToken = getTokenAddressOrThrow(takerAssetData);
@@ -55,20 +65,22 @@ export class QuoteRequestor {
             this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
                 try {
                     return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
-                        headers: { '0x-api-key': takerApiKey },
+                        headers: { '0x-api-key': _opts.apiKey },
                         params: {
                             sellToken,
                             buyToken,
                             buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
                             sellAmount:
                                 marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
-                            takerAddress,
+                            takerAddress: _opts.takerAddress,
                         },
-                        timeout: makerEndpointMaxResponseTimeMs,
+                        timeout: _opts.makerEndpointMaxResponseTimeMs,
                     });
                 } catch (err) {
                     logUtils.warn(
-                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}`,
+                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
+                            _opts.apiKey
+                        } for taker address ${_opts.takerAddress}`,
                     );
                     logUtils.warn(err);
                     return undefined;
