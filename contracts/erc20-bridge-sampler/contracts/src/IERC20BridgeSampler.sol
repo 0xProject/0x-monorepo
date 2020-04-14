@@ -106,7 +106,7 @@ interface IERC20BridgeSampler {
     /// @dev Sample buy quotes from Uniswap.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
-    /// @param makerTokenAmounts Maker token sell amount for each sample.
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromUniswap(
@@ -121,7 +121,7 @@ interface IERC20BridgeSampler {
     /// @dev Sample buy quotes from Eth2Dai/Oasis.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
-    /// @param takerTokenAmounts Maker token sell amount for each sample.
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromEth2Dai(
@@ -149,6 +149,23 @@ interface IERC20BridgeSampler {
         external
         view
         returns (uint256[] memory makerTokenAmounts);
+
+    /// @dev Sample buy quotes from Curve.
+    /// @param curveAddress Address of the Curve contract.
+    /// @param fromTokenIdx Index of the taker token (what to sell).
+    /// @param toTokenIdx Index of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromCurve(
+        address curveAddress,
+        int128 fromTokenIdx,
+        int128 toTokenIdx,
+        uint256[] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory takerTokenAmounts);
 
     /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
     /// @param registryAddress Address of the liquidity provider registry contract.

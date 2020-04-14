@@ -21,7 +21,15 @@ export const SELL_SOURCES = [
 /**
  * Valid sources for market buy.
  */
-export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
+export const BUY_SOURCES = [
+    ERC20BridgeSource.Uniswap,
+    ERC20BridgeSource.Eth2Dai,
+    // All Curve sources
+    ERC20BridgeSource.CurveUsdcDai,
+    ERC20BridgeSource.CurveUsdcDaiUsdt,
+    ERC20BridgeSource.CurveUsdcDaiUsdtBusd,
+    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers

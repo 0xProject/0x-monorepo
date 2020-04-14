@@ -152,6 +152,28 @@ export const samplerOperations = {
             },
         };
     },
+    getCurveBuyQuotes(
+        curveAddress: string,
+        fromTokenIdx: number,
+        toTokenIdx: number,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromCurve(
+                        curveAddress,
+                        new BigNumber(fromTokenIdx),
+                        new BigNumber(toTokenIdx),
+                        makerFillAmounts,
+                    )
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromCurve', callResults);
+            },
+        };
+    },
     getUniswapBuyQuotes(
         makerToken: string,
         takerToken: string,
@@ -328,42 +350,63 @@ export const samplerOperations = {
         makerFillAmounts: BigNumber[],
         liquidityProviderRegistryAddress?: string | undefined,
     ): BatchedOperation<DexSample[][]> {
-        const subOps = sources.map(source => {
-            if (source === ERC20BridgeSource.Eth2Dai) {
-                return samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
-            } else if (source === ERC20BridgeSource.Uniswap) {
-                return samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
-            } else if (source === ERC20BridgeSource.LiquidityProvider) {
-                if (liquidityProviderRegistryAddress === undefined) {
-                    throw new Error(
-                        'Cannot sample liquidity from a LiquidityProvider liquidity pool, if a registry is not provided.',
+        const subOps = sources
+            .map(source => {
+                let batchedOperation;
+                if (source === ERC20BridgeSource.Eth2Dai) {
+                    batchedOperation = samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                } else if (source === ERC20BridgeSource.Uniswap) {
+                    batchedOperation = samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
+                    const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
+                    const fromTokenIdx = tokens.indexOf(takerToken);
+                    const toTokenIdx = tokens.indexOf(makerToken);
+                    if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
+                        batchedOperation = samplerOperations.getCurveSellQuotes(
+                            curveAddress,
+                            fromTokenIdx,
+                            toTokenIdx,
+                            makerFillAmounts,
+                        );
+                    }
+                } else if (source === ERC20BridgeSource.LiquidityProvider) {
+                    if (liquidityProviderRegistryAddress === undefined) {
+                        throw new Error(
+                            'Cannot sample liquidity from a LiquidityProvider liquidity pool, if a registry is not provided.',
+                        );
+                    }
+                    batchedOperation = samplerOperations.getLiquidityProviderBuyQuotes(
+                        liquidityProviderRegistryAddress,
+                        makerToken,
+                        takerToken,
+                        makerFillAmounts,
                     );
+                } else {
+                    throw new Error(`Unsupported buy sample source: ${source}`);
                 }
-                return samplerOperations.getLiquidityProviderBuyQuotes(
-                    liquidityProviderRegistryAddress,
-                    makerToken,
-                    takerToken,
-                    makerFillAmounts,
-                );
-            } else {
-                throw new Error(`Unsupported buy sample source: ${source}`);
-            }
-        });
+                return { source, batchedOperation };
+            })
+            .filter(op => op.batchedOperation) as Array<{
+            batchedOperation: BatchedOperation<BigNumber[]>;
+            source: ERC20BridgeSource;
+        }>;
         return {
             encodeCall: contract => {
-                const subCalls = subOps.map(op => op.encodeCall(contract));
+                const subCalls = subOps.map(op => op.batchedOperation.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
                 const samples = await Promise.all(
-                    subOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    subOps.map(async (op, i) =>
+                        op.batchedOperation.handleCallResultsAsync(contract, rawSubCallResults[i]),
+                    ),
                 );
-                return sources.map((source, i) => {
+                return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
-                        source,
+                        source: op.source,
                         output,
-                        input: makerFillAmounts[j],
+                        input: makerFillAmounts[i],
                     }));
                 });
             },

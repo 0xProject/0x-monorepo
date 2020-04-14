@@ -5,6 +5,9 @@
             {
                 "note": "Pass in `DevUtils` address as a constructor parameter",
                 "pr": 2531
+            },
+            {
+                "note": "Sample `Curve` by buy amounts"
             }
         ]
     },

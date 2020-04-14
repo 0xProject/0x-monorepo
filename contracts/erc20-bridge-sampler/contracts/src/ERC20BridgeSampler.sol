@@ -442,6 +442,43 @@ contract ERC20BridgeSampler is
             makerTokenAmounts[i] = buyAmount;
         }
     }
+    /// @dev Sample buy quotes from Curve.
+    /// @param curveAddress Address of the Curve contract.
+    /// @param fromTokenIdx Index of the taker token (what to sell).
+    /// @param toTokenIdx Index of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromCurve(
+        address curveAddress,
+        int128 fromTokenIdx,
+        int128 toTokenIdx,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                curveAddress.staticcall.gas(CURVE_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        ICurve(0).get_dx_underlying.selector,
+                        fromTokenIdx,
+                        toTokenIdx,
+                        makerTokenAmounts[i]
+                    ));
+            uint256 sellAmount = 0;
+            if (didSucceed) {
+                sellAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            takerTokenAmounts[i] = sellAmount;
+        }
+    }
 
     /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
     /// @param registryAddress Address of the liquidity provider registry contract.
