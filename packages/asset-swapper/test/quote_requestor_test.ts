@@ -16,7 +16,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('QuoteRequestor', async () => {
-    const [makerToken, takerToken, otherToken1, otherToken2] = tokenUtils.getDummyERC20TokenAddresses();
+    const [makerToken, takerToken, otherToken1] = tokenUtils.getDummyERC20TokenAddresses();
     const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(takerToken);
 
