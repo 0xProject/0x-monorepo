@@ -1,4 +1,3 @@
-import { BlockParamLiteral } from '@0x/ethereum-types';
 import { RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import * as chai from 'chai';
 import 'mocha';
@@ -35,7 +34,7 @@ describe('Web3Integration tests', () => {
                     to: '0xebe8efa441b9302a0d7eaecc277c09d20d684540',
                     data: '0x45848dfc',
                 },
-                BlockParamLiteral.Latest,
+                undefined,
             );
 
             expect(res).to.be.equal(expectedReturnData);
@@ -49,7 +48,7 @@ describe('Web3Integration tests', () => {
                     to: '0xebe8efa441b9302a0d7eaecc277c09d20d684540',
                     data: '0x0be5b6ba',
                 },
-                BlockParamLiteral.Latest,
+                undefined,
             );
 
             expect(res).to.not.be.equal(expectedReturnData);
@@ -60,7 +59,7 @@ describe('Web3Integration tests', () => {
                     to: '0xebe8efa441b9302a0d7eaecc277c09d20d684540',
                     data: '0x0be5b6ba',
                 },
-                BlockParamLiteral.Latest,
+                undefined,
                 {
                     '0xebe8efa441b9302a0d7eaecc277c09d20d684540': {
                         code:

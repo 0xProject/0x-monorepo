@@ -33,7 +33,6 @@
     "devDependencies": {
         "@0x/contract-wrappers": "^13.6.3",
         "@0x/contracts-test-utils": "^5.3.2",
-        "@0x/ethereum-types": "^3.1.0",
         "@0x/dev-utils": "^3.2.1",
         "@0x/migrations": "^6.2.4",
         "@0x/order-utils": "^10.2.4",
