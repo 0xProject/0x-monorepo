@@ -185,7 +185,7 @@ export class SwapQuoter {
             },
             liquidityProviderRegistryAddress,
         );
-        this._swapQuoteCalculator = new SwapQuoteCalculator(this._protocolFeeUtils, this._marketOperationUtils);
+        this._swapQuoteCalculator = new SwapQuoteCalculator(this._marketOperationUtils);
     }
 
     /**

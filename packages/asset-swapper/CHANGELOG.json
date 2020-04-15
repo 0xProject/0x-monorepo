@@ -39,6 +39,10 @@
                 "pr": 2533
             },
             {
+                "note": "Add DFB support + refactor swap quote calculator utils",
+                "pr": 2536
+            },
+            {
                 "note": "Add support for RFQ-T, querying maker-hosted endpoints for quotes to be submitted by the taker",
                 "pr": 2541
             }

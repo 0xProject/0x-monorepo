@@ -12,7 +12,7 @@ export {
     SRAPollingOrderProviderOpts,
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
-export { APIOrder, Asset, AssetPairsItem, Order, SignedOrder } from '@0x/types';
+export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
     DataItem,

@@ -28,9 +28,9 @@
         "godsUnchainedValidator": "0x09a379ef7218bcfd8913faa8b281ebc5a2e0bc04",
         "broker": "0xd4690a51044db77d91d7aa8f7a3a5ad5da331af0",
         "chainlinkStopLimit": "0xeb27220f95f364e1d9531992c48613f231839f53",
-        "curveBridge": "0x1cf6ccc7e15d0d99a9498f37e16ba65b5c54bdd0",
+        "curveBridge": "0x6dc7950423ada9f56fb2c93a23edb787f1e29088",
         "maximumGasPrice": "0xe2bfd35306495d11e3c9db0d8de390cda24563cf",
-        "dexForwarderBridge": "0xa96844087062acf8556ca06a27702c6d19f87e57"
+        "dexForwarderBridge": "0x5591360f8c7640fea5771c9682d6b5ecb776e1f8"
     },
     "3": {
         "erc20Proxy": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
