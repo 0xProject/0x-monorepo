@@ -93,7 +93,6 @@ export class SolcWrapperV05 extends SolcWrapper {
         const _output = _.cloneDeep(output);
         // tslint:disable-next-line forin
         for (const contractPath in _output.contracts) {
-            // tslint:disable-next-line forin
             for (const contract of Object.values(_output.contracts[contractPath])) {
                 addHexPrefixToContractBytecode(contract);
             }
