@@ -15,6 +15,8 @@ describe('Web3Integration tests', () => {
     const providerEngine = new Web3ProviderEngine();
     const providerURL = process.env.ETH_RPC_URL_RINKEBY;
     if (providerURL === undefined) {
+        // tslint:disable-next-line:no-console
+        console.warn('skipping Web3Integration tests because ETH_RPC_URL_RINKEBY environment variable is not set.');
         return;
     }
     providerEngine.addProvider(new RPCSubprovider(providerURL));
