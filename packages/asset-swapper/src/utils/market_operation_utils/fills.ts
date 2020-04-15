@@ -2,6 +2,7 @@ import { BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../../utils/fillable_amounts_utils';
+import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 
 import { POSITIVE_INF, ZERO_AMOUNT } from './constants';
 import {
@@ -12,6 +13,8 @@ import {
     FillFlags,
     NativeCollapsedFill,
     NativeFillData,
+    RfqtCollapsedFill,
+    RfqtFillData,
 } from './types';
 
 // tslint:disable: prefer-for-of no-bitwise completed-docs
@@ -23,6 +26,7 @@ export function createFillPaths(opts: {
     side: MarketOperation;
     orders?: SignedOrderWithFillableAmounts[];
     dexQuotes?: DexSample[][];
+    rfqtIndicativeQuotes?: RfqtIndicativeQuoteResponse[];
     targetInput?: BigNumber;
     ethToOutputRate?: BigNumber;
     excludedSources?: ERC20BridgeSource[];
@@ -33,12 +37,23 @@ export function createFillPaths(opts: {
     const feeSchedule = opts.feeSchedule || {};
     const orders = opts.orders || [];
     const dexQuotes = opts.dexQuotes || [];
+    const rfqtIndicativeQuotes = opts.rfqtIndicativeQuotes || [];
     const ethToOutputRate = opts.ethToOutputRate || ZERO_AMOUNT;
     // Create native fill paths.
     const nativePath = nativeOrdersToPath(side, orders, ethToOutputRate, feeSchedule);
     // Create DEX fill paths.
     const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, feeSchedule);
-    return filterPaths([...dexPaths, nativePath].map(p => clipPathToInput(p, opts.targetInput)), excludedSources);
+    // Create RFQ-T indicative quote fill paths
+    const rfqtIndicativeQuotePath = rfqtIndicativeQuotesToPath(
+        side,
+        rfqtIndicativeQuotes,
+        ethToOutputRate,
+        feeSchedule,
+    );
+    return filterPaths(
+        [...dexPaths, nativePath, rfqtIndicativeQuotePath].map(p => clipPathToInput(p, opts.targetInput)),
+        excludedSources,
+    );
 }
 
 function filterPaths(paths: Fill[][], excludedSources: ERC20BridgeSource[]): Fill[][] {
@@ -150,6 +165,54 @@ function dexQuotesToPaths(
     return paths;
 }
 
+function rfqtIndicativeQuotesToPath(
+    side: MarketOperation,
+    quotes: RfqtIndicativeQuoteResponse[],
+    ethToOutputRate: BigNumber,
+    fees: { [source: string]: BigNumber },
+): Fill[] {
+    // Create a single path from all orders.
+    let path: Fill[] = [];
+    for (const quote of quotes) {
+        const makerAmount = quote.makerAssetAmount;
+        const takerAmount = quote.takerAssetAmount;
+        const input = side === MarketOperation.Sell ? takerAmount : makerAmount;
+        const output = side === MarketOperation.Sell ? makerAmount : takerAmount;
+        const penalty = 0;
+        const rate = makerAmount.div(takerAmount);
+        const adjustedRate =
+            side === MarketOperation.Sell
+                ? makerAmount.minus(penalty).div(takerAmount)
+                : makerAmount.div(takerAmount.plus(penalty));
+        // Skip orders with rates that are <= 0.
+        if (adjustedRate.lte(0)) {
+            continue;
+        }
+        path.push({
+            input,
+            output,
+            rate,
+            adjustedRate,
+            adjustedOutput: output,
+            flags: 0,
+            index: 0, // TBD
+            parent: undefined, // TBD
+            source: ERC20BridgeSource.Rfqt,
+            fillData: { quote, side },
+        });
+    }
+    // Sort by descending adjusted rate.
+    path = path.sort((a, b) => b.adjustedRate.comparedTo(a.adjustedRate));
+    /* copy-pasted the following from nativeOrdersToPath(). not really sure i need it.
+    // Re-index fills.
+    for (let i = 0; i < path.length; ++i) {
+        path[i].parent = i === 0 ? undefined : path[i - 1];
+        path[i].index = i;
+    }
+    */
+    return path;
+}
+
 function sourceToFillFlags(source: ERC20BridgeSource): number {
     if (source === ERC20BridgeSource.Kyber) {
         return FillFlags.Kyber;
@@ -234,7 +297,7 @@ export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_
 }
 
 export function collapsePath(path: Fill[]): CollapsedFill[] {
-    const collapsed: Array<CollapsedFill | NativeCollapsedFill> = [];
+    const collapsed: Array<CollapsedFill | NativeCollapsedFill | RfqtCollapsedFill> = [];
     for (const fill of path) {
         const source = fill.source;
         if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {
@@ -253,6 +316,7 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
             output: fill.output,
             subFills: [fill],
             nativeOrder: fill.source === ERC20BridgeSource.Native ? (fill.fillData as NativeFillData).order : undefined,
+            quote: fill.source === ERC20BridgeSource.Rfqt ? (fill.fillData as RfqtFillData).quote : undefined,
         });
     }
     return collapsed;

@@ -287,3 +287,16 @@ export interface MockedRfqtFirmQuoteResponse {
     responseData: any;
     responseCode: number;
 }
+
+/**
+ * Represents a mocked RFQT maker responses.
+ */
+export interface MockedRfqtIndicativeQuoteResponse {
+    endpoint: string;
+    requestApiKey: string;
+    requestParams: {
+        [key: string]: string | undefined;
+    };
+    responseData: any;
+    responseCode: number;
+}

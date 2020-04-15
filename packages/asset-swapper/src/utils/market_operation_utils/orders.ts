@@ -24,6 +24,7 @@ import {
     NativeCollapsedFill,
     OptimizedMarketOrder,
     OrderDomain,
+    RfqtCollapsedFill,
 } from './types';
 
 // tslint:disable completed-docs no-unnecessary-type-assertion
@@ -155,6 +156,11 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
         // Liquidity Provider must be called by ERC20BridgeProxy
         if (collapsedPath[i].source === ERC20BridgeSource.LiquidityProvider) {
             orders.push(createBridgeOrder(collapsedPath[i], opts));
+            ++i;
+            continue;
+        }
+        if (collapsedPath[i].source === ERC20BridgeSource.Rfqt) {
+            orders.push(createRfqtOrder(collapsedPath[i], opts));
             ++i;
             continue;
         }
@@ -357,4 +363,28 @@ function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
         fills: [fill],
         ...(fill as NativeCollapsedFill).nativeOrder,
     };
+}
+
+function createRfqtOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): OptimizedMarketOrder {
+    const quote = (fill as RfqtCollapsedFill).quote;
+    const marketOrder = {
+        fills: [fill],
+        fillableMakerAssetAmount: quote.makerAssetAmount,
+        fillableTakerAssetAmount: quote.takerAssetAmount,
+        takerAddress: NULL_ADDRESS,
+        makerAddress: NULL_ADDRESS,
+        senderAddress: NULL_ADDRESS,
+        feeRecipientAddress: NULL_ADDRESS,
+        salt: generatePseudoRandomSalt(),
+        expirationTimeSeconds: new BigNumber(Math.floor(Date.now() / ONE_SECOND_MS) + ONE_HOUR_IN_SECONDS),
+        makerFeeAssetData: NULL_BYTES,
+        takerFeeAssetData: NULL_BYTES,
+        makerFee: ZERO_AMOUNT,
+        takerFee: ZERO_AMOUNT,
+        fillableTakerFeeAmount: ZERO_AMOUNT,
+        signature: WALLET_SIGNATURE,
+        ...(fill as RfqtCollapsedFill).quote,
+        ...opts.orderDomain,
+    };
+    return marketOrder;
 }

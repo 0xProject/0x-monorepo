@@ -34,4 +34,25 @@ export const rfqtMocker = {
             mockedAxios.restore();
         }
     },
+    withMockedRfqtIndicativeQuotes: async (
+        mockedResponses: MockedRfqtFirmQuoteResponse[],
+        performFn: () => Promise<void>,
+    ) => {
+        const mockedAxios = new AxiosMockAdapter(axios);
+        try {
+            // Mock out RFQT responses
+            for (const mockedResponse of mockedResponses) {
+                const { endpoint, requestApiKey, requestParams, responseData, responseCode } = mockedResponse;
+                const requestHeaders = { Accept: 'application/json, text/plain, */*', '0x-api-key': requestApiKey };
+                mockedAxios
+                    .onGet(`${endpoint}/price`, { params: requestParams }, requestHeaders)
+                    .replyOnce(responseCode, responseData);
+            }
+
+            await performFn();
+        } finally {
+            // Ensure we always restore axios afterwards
+            mockedAxios.restore();
+        }
+    },
 };
