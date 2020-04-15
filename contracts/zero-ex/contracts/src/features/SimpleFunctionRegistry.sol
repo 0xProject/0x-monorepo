@@ -50,12 +50,16 @@ contract SimpleFunctionRegistry is
         _extend(this.extendSelf.selector, impl);
         // Register the rollback function.
         _extend(this.rollback.selector, impl);
+        // Register getters.
+        _extend(this.getRollbackLength.selector, impl);
+        _extend(this.getRollbackEntryAtIndex.selector, impl);
     }
 
-    /// @dev Roll back to the last implementation of a function.
+    /// @dev Roll back to a prior implementation of a function.
     ///      Only directly callable by an authority.
     /// @param selector The function selector.
-    function rollback(bytes4 selector)
+    /// @param targetImpl The address of an older implementation of the function.
+    function rollback(bytes4 selector, address targetImpl)
         external
         override
         onlyOwner
@@ -65,17 +69,31 @@ contract SimpleFunctionRegistry is
             LibProxyStorage.Storage storage proxyStor
         ) = _getStorages();
 
+        address currentImpl = proxyStor.impls[selector];
+        if (currentImpl == targetImpl) {
+            // Do nothing if already at targetImpl.
+            return;
+        }
+        // Walk history backwards until we find the target implementation.
         address[] storage history = stor.implHistory[selector];
-        if (history.length == 0) {
+        uint256 i = history.length;
+        for (; i > 0; --i) {
+            address impl = history[i - 1];
+            history.pop();
+            if (impl == targetImpl) {
+                break;
+            }
+        }
+        if (i == 0) {
             _rrevert(
-                LibSimpleFunctionRegistryRichErrors.NoRollbackHistoryError(selector)
+                LibSimpleFunctionRegistryRichErrors.NotInRollbackHistoryError(
+                    selector,
+                    targetImpl
+                )
             );
         }
-        address impl = history[history.length - 1];
-        address oldImpl = proxyStor.impls[selector];
-        proxyStor.impls[selector] = impl;
-        history.pop();
-        emit ProxyFunctionUpdated(selector, oldImpl, impl);
+        proxyStor.impls[selector] = targetImpl;
+        emit ProxyFunctionUpdated(selector, currentImpl, targetImpl);
     }
 
     /// @dev Register or replace a function.
@@ -100,6 +118,33 @@ contract SimpleFunctionRegistry is
         onlySelf
     {
         _extend(selector, impl);
+    }
+
+    /// @dev Retrieve the length of the rollback history for a function.
+    /// @param selector The function selector.
+    /// @return rollbackLength The number of items in the rollback history for
+    ///         the function.
+    function getRollbackLength(bytes4 selector)
+        external
+        override
+        view
+        returns (uint256 rollbackLength)
+    {
+        return LibSimpleFunctionRegistryStorage.getStorage().implHistory[selector].length;
+    }
+
+    /// @dev Retrieve an entry in the rollback history for a function.
+    /// @param selector The function selector.
+    /// @param idx The index in the rollback history.
+    /// @return impl An implementation address for the function at
+    ///         index `idx`.
+    function getRollbackEntryAtIndex(bytes4 selector, uint256 idx)
+        external
+        override
+        view
+        returns (address impl)
+    {
+        return LibSimpleFunctionRegistryStorage.getStorage().implHistory[selector][idx];
     }
 
     /// @dev Register or replace a function.

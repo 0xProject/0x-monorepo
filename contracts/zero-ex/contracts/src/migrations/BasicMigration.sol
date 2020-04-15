@@ -42,7 +42,7 @@ contract BasicMigration {
 
         // Disable the `extendSelf()` function by rolling it back to zero.
         ISimpleFunctionRegistry(address(zeroEx))
-            .rollback(ISimpleFunctionRegistry.extendSelf.selector);
+            .rollback(ISimpleFunctionRegistry.extendSelf.selector, address(0));
 
         // Call the _postInitialize hook.
         _postInitialize(zeroEx);

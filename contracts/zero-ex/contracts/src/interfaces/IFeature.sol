@@ -19,8 +19,6 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IZeroExBootstrapper.sol";
-
 
 /// @dev Basic interface for a feature contract.
 interface IFeature {

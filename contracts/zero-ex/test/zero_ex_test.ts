@@ -50,13 +50,13 @@ blockchainTests.resets('ZeroEx contract', env => {
     });
 
     it('can attach ether to a call', async () => {
-        const wei = Math.floor(Math.random() * 100);
+        const wei = Math.floor(Math.random() * 100 + 1);
         const receipt = await testFeature.payableFn().awaitTransactionSuccessAsync({ value: wei });
         verifyEventsFromLogs(receipt.logs, [{ value: new BigNumber(wei) }], TestZeroExFeatureEvents.PayableFnCalled);
     });
 
     it('reverts when attaching ether to a non-payable function', async () => {
-        const wei = Math.floor(Math.random() * 100);
+        const wei = Math.floor(Math.random() * 100 + 1);
         const tx = testFeature.notPayableFn().awaitTransactionSuccessAsync({ value: wei });
         // This will cause an empty revert.
         return expect(tx).to.be.rejectedWith('revert');

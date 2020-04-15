@@ -23,16 +23,15 @@ library LibSimpleFunctionRegistryRichErrors {
 
     // solhint-disable func-name-mixedcase
 
-    function NoRollbackHistoryError(
-        bytes4 selector
-    )
+    function NotInRollbackHistoryError(bytes4 selector, address targetImpl)
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("NoRollbackHistoryError(bytes4)")),
-            selector
+            bytes4(keccak256("NotInRollbackHistoryError(bytes4,address)")),
+            selector,
+            targetImpl
         );
     }
 }
