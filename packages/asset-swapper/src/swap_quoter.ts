@@ -27,6 +27,7 @@ import { DexOrderSampler } from './utils/market_operation_utils/sampler';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
+import { QuoteRequestor } from './utils/quote_requestor';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
 
@@ -42,6 +43,8 @@ export class SwapQuoter {
     private readonly _devUtilsContract: DevUtilsContract;
     private readonly _marketOperationUtils: MarketOperationUtils;
     private readonly _orderStateUtils: OrderStateUtils;
+    private readonly _quoteRequestor: QuoteRequestor;
+    private readonly _rfqtTakerApiKeyWhitelist: string[];
 
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -161,10 +164,13 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
+        this._rfqtTakerApiKeyWhitelist = options.rfqt ? options.rfqt.takerApiKeyWhitelist || [] : [];
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
+        this._quoteRequestor =
+            options.quoteRequestor || new QuoteRequestor(options.rfqt ? options.rfqt.makerEndpoints || [] : []);
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
                 gas: samplerGasLimit,
@@ -498,8 +504,7 @@ export class SwapQuoter {
             this.permittedOrderFeeTypes,
             this.expiryBufferMs,
         );
-        const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
-        return sortedPrunedOrders;
+        return prunedOrders;
     }
 
     /**
@@ -512,40 +517,68 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const calculateSwapQuoteOpts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
+        const opts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         let gasPrice: BigNumber;
-        if (!!options.gasPrice) {
-            gasPrice = options.gasPrice;
+        if (!!opts.gasPrice) {
+            gasPrice = opts.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
         } else {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
-        // get the relevant orders for the makerAsset
-        let prunedOrders = await this._getSignedOrdersAsync(makerAssetData, takerAssetData);
+        // get batches of orders from different sources, awaiting sources in parallel
+        const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
+        orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
+        if (
+            opts.rfqt &&
+            opts.rfqt.intentOnFilling &&
+            opts.apiKey &&
+            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
+        ) {
+            if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
+                throw new Error('RFQ-T requests must specify a taker address');
+            }
+            orderBatchPromises.push(
+                this._quoteRequestor.requestRfqtFirmQuotesAsync(
+                    makerAssetData,
+                    takerAssetData,
+                    assetFillAmount,
+                    marketOperation,
+                    opts.apiKey,
+                    opts.rfqt.takerAddress,
+                ),
+            );
+        }
+
+        const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
+
+        const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
+
+        const orders = sortingUtils.sortOrders(unsortedOrders);
+
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
-        if (prunedOrders.length === 0) {
-            prunedOrders = [
+        if (orders.length === 0) {
+            orders.push(
                 createDummyOrderForSampler(makerAssetData, takerAssetData, this._contractAddresses.uniswapBridge),
-            ];
+            );
         }
 
         let swapQuote: SwapQuote;
 
         if (marketOperation === MarketOperation.Buy) {
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
-                prunedOrders,
+                orders,
                 assetFillAmount,
                 gasPrice,
-                calculateSwapQuoteOpts,
+                opts,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
-                prunedOrders,
+                orders,
                 assetFillAmount,
                 gasPrice,
-                calculateSwapQuoteOpts,
+                opts,
             );
         }
 

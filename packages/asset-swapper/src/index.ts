@@ -42,7 +42,10 @@ export {
     GetExtensionContractTypeOpts,
     LiquidityForTakerMakerAssetDataPair,
     MarketBuySwapQuote,
+    MarketOperation,
     MarketSellSwapQuote,
+    MockedRfqtFirmQuoteResponse,
+    RfqtFirmQuoteRequestOpts,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
@@ -64,3 +67,5 @@ export {
 } from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
+export { QuoteRequestor } from './utils/quote_requestor';
+export { rfqtMocker } from './utils/rfqt_mocker';

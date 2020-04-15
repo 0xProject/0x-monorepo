@@ -11,7 +11,8 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib ${npm_package_config_snapshot_name} ${npm_package_config_snapshot_name}-*.zip",
-        "lint": "tslint --format stylish --project .",
+        "prettier": "prettier --check 'src/**/*.{ts,tsx,json,md}' --config ../../.prettierrc",
+        "lint": "tslint --format stylish --project . && yarn prettier",
         "fix": "tslint --fix --format stylish --project .",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test",
@@ -28,7 +29,8 @@
         "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
         "publish:snapshot": "aws s3 cp ${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket} && aws s3 cp ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-latest.zip",
         "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest && docker push ${npm_package_config_docker_snapshot_name}:${npm_package_version}",
-        "test_contract_configs": "node ./lib/test_contract_configs.js"
+        "test_contract_configs": "node ./lib/test_contract_configs.js",
+        "publish:private": "yarn build && gitpkg publish"
     },
     "config": {
         "s3_snapshot_bucket": "s3://ganache-snapshots.0x.org",
@@ -42,6 +44,9 @@
         "0x-migrate": "bin/0x-migrate.js"
     },
     "license": "Apache-2.0",
+    "gitpkg": {
+        "registry": "git@github.com:0xProject/gitpkg-registry.git"
+    },
     "devDependencies": {
         "@0x/dev-utils": "^3.2.1",
         "@0x/ts-doc-gen": "^0.0.22",
@@ -50,6 +55,7 @@
         "@types/yargs": "^11.0.0",
         "chai": "^4.0.1",
         "dirty-chai": "^2.0.1",
+        "gitpkg": "https://github.com/0xProject/gitpkg.git",
         "make-promises-safe": "^1.1.0",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
@@ -69,6 +75,7 @@
         "@0x/contracts-dev-utils": "^1.3.3",
         "@0x/contracts-erc1155": "^2.1.5",
         "@0x/contracts-erc20": "^3.1.5",
+        "@0x/contracts-erc20-bridge-sampler": "^1.5.1",
         "@0x/contracts-erc721": "^3.1.5",
         "@0x/contracts-exchange": "^3.2.5",
         "@0x/contracts-exchange-forwarder": "^4.2.5",

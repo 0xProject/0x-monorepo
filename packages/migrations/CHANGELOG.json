@@ -5,6 +5,10 @@
             {
                 "note": "Add `dexForwarderBridge` to migration output",
                 "pr": 2525
+            },
+            {
+                "note": "Add `ERC20BridgeSampler` deployment",
+                "pr": 2541
             }
         ]
     },

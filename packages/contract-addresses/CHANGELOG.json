@@ -37,6 +37,10 @@
             {
                 "note": "Revert to older Curve Bridge (without Gas Tokens)",
                 "pr": 2536
+            },
+            {
+                "note": "Updated Ganache's ERC20BridgeSampler address",
+                "pr": 2541
             }
         ]
     },
