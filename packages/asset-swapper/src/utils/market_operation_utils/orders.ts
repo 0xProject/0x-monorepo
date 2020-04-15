@@ -4,6 +4,7 @@ import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
+import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 
 import {
     DEFAULT_CURVE_OPTS,
@@ -357,4 +358,33 @@ function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
         fills: [fill],
         ...(fill as NativeCollapsedFill).nativeOrder,
     };
+}
+
+export function createSignedOrdersFromRfqtIndicativeQuotes(
+    quotes: RfqtIndicativeQuoteResponse[],
+): SignedOrderWithFillableAmounts[] {
+    return quotes.map(quote => {
+        return {
+            fillableMakerAssetAmount: quote.makerAssetAmount,
+            fillableTakerAssetAmount: quote.takerAssetAmount,
+            makerAssetAmount: quote.makerAssetAmount,
+            takerAssetAmount: quote.takerAssetAmount,
+            makerAssetData: quote.makerAssetData,
+            takerAssetData: quote.takerAssetData,
+            takerAddress: NULL_ADDRESS,
+            makerAddress: NULL_ADDRESS,
+            senderAddress: NULL_ADDRESS,
+            feeRecipientAddress: NULL_ADDRESS,
+            salt: ZERO_AMOUNT, // generatePseudoRandomSalt(),
+            expirationTimeSeconds: new BigNumber(Math.floor(Date.now() / ONE_SECOND_MS) + ONE_HOUR_IN_SECONDS),
+            makerFeeAssetData: NULL_BYTES,
+            takerFeeAssetData: NULL_BYTES,
+            makerFee: ZERO_AMOUNT,
+            takerFee: ZERO_AMOUNT,
+            fillableTakerFeeAmount: ZERO_AMOUNT,
+            signature: WALLET_SIGNATURE,
+            chainId: 0, // HACK !!!!!!!!! how can we get at this from this context?
+            exchangeAddress: NULL_ADDRESS, // HACK !!!!!!!!! how can we get at this from this context?
+        };
+    });
 }

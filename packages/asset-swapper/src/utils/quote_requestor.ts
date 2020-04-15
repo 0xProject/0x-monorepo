@@ -12,6 +12,13 @@ import { MarketOperation, RfqtRequestOpts } from '../types';
  * Request quotes from RFQ-T providers
  */
 
+export interface RfqtIndicativeQuoteResponse {
+    makerAssetData: string;
+    makerAssetAmount: BigNumber;
+    takerAssetData: string;
+    takerAssetAmount: BigNumber;
+}
+
 function getTokenAddressOrThrow(assetData: string): string {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
     if (decodedAssetData.hasOwnProperty('tokenAddress')) {
@@ -140,5 +147,82 @@ export class QuoteRequestor {
         });
 
         return orders;
+    }
+
+    public async requestRfqtIndicativeQuotesAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+        assetFillAmount: BigNumber,
+        marketOperation: MarketOperation,
+        options: RfqtRequestOpts,
+    ): Promise<RfqtIndicativeQuoteResponse[]> {
+        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        assertTakerAddressOrThrow(_opts.takerAddress);
+
+        const axiosResponsesIfDefined: Array<
+            undefined | AxiosResponse<RfqtIndicativeQuoteResponse>
+        > = await Promise.all(
+            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
+                try {
+                    return await Axios.get<RfqtIndicativeQuoteResponse>(`${rfqtMakerEndpoint}/price`, {
+                        headers: { '0x-api-key': options.apiKey },
+                        params: {
+                            takerAddress: options.takerAddress,
+                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+                        },
+                        timeout: options.makerEndpointMaxResponseTimeMs,
+                    });
+                } catch (err) {
+                    logUtils.warn(
+                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
+                            options.apiKey
+                        } for taker address ${options.takerAddress}`,
+                    );
+                    logUtils.warn(err);
+                    return undefined;
+                }
+            }),
+        );
+
+        const axiosResponses = axiosResponsesIfDefined.filter(
+            (respIfDefd): respIfDefd is AxiosResponse<RfqtIndicativeQuoteResponse> => respIfDefd !== undefined,
+        );
+
+        const responsesWithStringInts = axiosResponses.map(response => response.data); // not yet BigNumber
+
+        const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
+            if (this._isValidRfqtIndicativeQuoteResponse(response)) {
+                return true;
+            }
+            logUtils.warn(`Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`);
+            return false;
+        });
+
+        const responses = validResponsesWithStringInts.map(response => {
+            return {
+                ...response,
+                makerAssetAmount: new BigNumber(response.makerAssetAmount),
+                takerAssetAmount: new BigNumber(response.takerAssetAmount),
+            };
+        });
+
+        return responses;
+    }
+
+    private _isValidRfqtIndicativeQuoteResponse(response: RfqtIndicativeQuoteResponse): boolean {
+        const hasValidMakerAssetAmount = this._schemaValidator.isValid(
+            response.makerAssetAmount,
+            schemas.wholeNumberSchema,
+        );
+        const hasValidTakerAssetAmount = this._schemaValidator.isValid(
+            response.takerAssetAmount,
+            schemas.wholeNumberSchema,
+        );
+        const hasValidMakerAssetData = this._schemaValidator.isValid(response.makerAssetData, schemas.hexSchema);
+        const hasValidTakerAssetData = this._schemaValidator.isValid(response.takerAssetData, schemas.hexSchema);
+        if (hasValidMakerAssetAmount && hasValidTakerAssetAmount && hasValidMakerAssetData && hasValidTakerAssetData) {
+            return true;
+        }
+        return false;
     }
 }

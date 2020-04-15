@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 
 import { constants } from './constants';
 import {
+    CalculateSwapQuoteOpts,
     LiquidityForTakerMakerAssetDataPair,
     MarketBuySwapQuote,
     MarketOperation,
@@ -24,7 +25,6 @@ import { calculateLiquidity } from './utils/calculate_liquidity';
 import { MarketOperationUtils } from './utils/market_operation_utils';
 import { createDummyOrderForSampler } from './utils/market_operation_utils/orders';
 import { DexOrderSampler } from './utils/market_operation_utils/sampler';
-import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
@@ -565,19 +565,30 @@ export class SwapQuoter {
 
         let swapQuote: SwapQuote;
 
+        const calcOpts: CalculateSwapQuoteOpts = opts;
+        if (
+            // we should request indicative quotes:
+            calcOpts.rfqt &&
+            !calcOpts.rfqt.intentOnFilling &&
+            calcOpts.rfqt.apiKey &&
+            this._rfqtTakerApiKeyWhitelist.includes(calcOpts.rfqt.apiKey)
+        ) {
+            calcOpts.rfqt.quoteRequestor = this._quoteRequestor;
+        }
+
         if (marketOperation === MarketOperation.Buy) {
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 orders,
                 assetFillAmount,
                 gasPrice,
-                opts,
+                calcOpts,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                 orders,
                 assetFillAmount,
                 gasPrice,
-                opts,
+                calcOpts,
             );
         }
 

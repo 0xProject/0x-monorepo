@@ -3,6 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
 import { MarketOperation } from '../../types';
+import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
@@ -13,7 +14,12 @@ import {
     getPathAdjustedSlippage,
     getPathSize,
 } from './fills';
-import { createOrdersFromPath, createSignedOrdersWithFillableAmounts, getNativeOrderTokens } from './orders';
+import {
+    createOrdersFromPath,
+    createSignedOrdersFromRfqtIndicativeQuotes,
+    createSignedOrdersWithFillableAmounts,
+    getNativeOrderTokens,
+} from './orders';
 import { findOptimalPath } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
 import {
@@ -57,12 +63,7 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         // Call the sampler contract.
-        const [
-            orderFillableAmounts,
-            liquidityProviderAddress,
-            ethToMakerAssetRate,
-            dexQuotes,
-        ] = await this._sampler.executeAsync(
+        const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
             // Get the custom liquidity provider from registry.
@@ -92,10 +93,25 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
+        const rfqtPromise =
+            _opts !== undefined && _opts.rfqt !== undefined && _opts.rfqt.quoteRequestor !== undefined
+                ? _opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
+                      nativeOrders[0].makerAssetData,
+                      nativeOrders[0].takerAssetData,
+                      takerAmount,
+                      MarketOperation.Sell,
+                      _opts.rfqt,
+                  )
+                : Promise.resolve<RfqtIndicativeQuoteResponse[]>([]);
+        const [
+            [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
+            rfqtIndicativeQuotes,
+        ] = await Promise.all([samplerPromise, rfqtPromise]);
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes,
+            rfqtIndicativeQuotes,
             liquidityProviderAddress,
             inputToken: takerToken,
             outputToken: makerToken,
@@ -130,12 +146,7 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         // Call the sampler contract.
-        const [
-            orderFillableAmounts,
-            liquidityProviderAddress,
-            ethToTakerAssetRate,
-            dexQuotes,
-        ] = await this._sampler.executeAsync(
+        const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
             // Get the custom liquidity provider from registry.
@@ -165,11 +176,26 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
+        const rfqtPromise =
+            opts !== undefined && _opts.rfqt !== undefined && _opts.rfqt.quoteRequestor !== undefined
+                ? _opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
+                      nativeOrders[0].makerAssetData,
+                      nativeOrders[0].takerAssetData,
+                      makerAmount,
+                      MarketOperation.Buy,
+                      _opts.rfqt,
+                  )
+                : [];
+        const [
+            [orderFillableAmounts, liquidityProviderAddress, ethToTakerAssetRate, dexQuotes],
+            rfqtIndicativeQuotes,
+        ] = await Promise.all([samplerPromise, rfqtPromise]);
 
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes,
+            rfqtIndicativeQuotes,
             liquidityProviderAddress,
             inputToken: makerToken,
             outputToken: takerToken,
@@ -246,6 +272,7 @@ export class MarketOperationUtils {
                     orderFillableAmounts,
                     nativeOrders,
                     dexQuotes,
+                    rfqtIndicativeQuotes: [],
                     inputToken: makerToken,
                     outputToken: takerToken,
                     side: MarketOperation.Buy,
@@ -274,6 +301,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[];
         orderFillableAmounts: BigNumber[];
         dexQuotes: DexSample[][];
+        rfqtIndicativeQuotes: RfqtIndicativeQuoteResponse[];
         runLimit?: number;
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
@@ -290,7 +318,10 @@ export class MarketOperationUtils {
         const paths = createFillPaths({
             side,
             // Augment native orders with their fillable amounts.
-            orders: createSignedOrdersWithFillableAmounts(side, opts.nativeOrders, opts.orderFillableAmounts),
+            orders: [
+                ...createSignedOrdersWithFillableAmounts(side, opts.nativeOrders, opts.orderFillableAmounts),
+                ...createSignedOrdersFromRfqtIndicativeQuotes(opts.rfqtIndicativeQuotes),
+            ],
             dexQuotes: opts.dexQuotes,
             targetInput: inputAmount,
             ethToOutputRate: opts.ethToOutputRate,
