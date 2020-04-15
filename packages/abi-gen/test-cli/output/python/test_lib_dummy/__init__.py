@@ -71,12 +71,7 @@ class PublicAddConstantMethod(ContractMethod):
         x = int(x)
         return x
 
-    def call(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-        state_override: Optional[StateOverride] = None,
-    ) -> int:
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -119,12 +114,7 @@ class PublicAddOneMethod(ContractMethod):
         x = int(x)
         return x
 
-    def call(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-        state_override: Optional[StateOverride] = None,
-    ) -> int:
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
