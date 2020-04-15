@@ -170,8 +170,7 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._quoteRequestor =
-            options.quoteRequestor || new QuoteRequestor(options.rfqt ? options.rfqt.makerEndpoints || [] : []);
+        this._quoteRequestor = new QuoteRequestor(options.rfqt ? options.rfqt.makerEndpoints || [] : []);
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
                 gas: samplerGasLimit,
