@@ -4,7 +4,7 @@ import { BlockParamLiteral } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { Web3Wrapper } from '../src/web3_wrapper';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { chaiSetup } from './utils/chai_setup';
 chaiSetup.configure();
