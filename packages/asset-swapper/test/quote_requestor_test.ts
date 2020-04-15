@@ -16,7 +16,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('QuoteRequestor', async () => {
-    const [makerToken, takerToken] = tokenUtils.getDummyERC20TokenAddresses();
+    const [makerToken, takerToken, otherToken1] = tokenUtils.getDummyERC20TokenAddresses();
     const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken);
     const takerAssetData = assetDataUtils.encodeERC20AssetData(takerToken);
 
@@ -36,12 +36,16 @@ describe('QuoteRequestor', async () => {
                 takerAddress,
             };
             // Successful response
-            const mockedOrder1 = testOrderFactory.generateTestSignedOrder({});
+            const successfulOrder1 = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                feeRecipientAddress: '0x0000000000000000000000000000000000000001',
+            });
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
                 requestApiKey: takerApiKey,
                 requestParams: expectedParams,
-                responseData: mockedOrder1,
+                responseData: successfulOrder1,
                 responseCode: StatusCodes.Success,
             });
             // Test out a bad response code, ensure it doesnt cause throw
@@ -52,18 +56,73 @@ describe('QuoteRequestor', async () => {
                 responseData: { error: 'bad request' },
                 responseCode: StatusCodes.InternalError,
             });
+            // Test out a successful response code but an invalid order
+            mockedRequests.push({
+                endpoint: 'https://421.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: { makerAssetData: '123' },
+                responseCode: StatusCodes.Success,
+            });
+            // A successful response code and valid order, but for wrong maker asset data
+            const wrongMakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
+                takerAssetData,
+            });
+            mockedRequests.push({
+                endpoint: 'https://422.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: wrongMakerAssetDataOrder,
+                responseCode: StatusCodes.Success,
+            });
+            // A successful response code and valid order, but for wrong taker asset data
+            const wrongTakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
+            });
+            mockedRequests.push({
+                endpoint: 'https://423.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: wrongTakerAssetDataOrder,
+                responseCode: StatusCodes.Success,
+            });
+            // A successful response code and good order but its unsigned
+            const unsignedOrder = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                feeRecipientAddress: '0x0000000000000000000000000000000000000002',
+            });
+            delete unsignedOrder.signature;
+            mockedRequests.push({
+                endpoint: 'https://424.0.0.1',
+                requestApiKey: takerApiKey,
+                requestParams: expectedParams,
+                responseData: unsignedOrder,
+                responseCode: StatusCodes.Success,
+            });
+
             // Another Successful response
-            const mockedOrder3 = testOrderFactory.generateTestSignedOrder({});
+            const successfulOrder2 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
                 requestApiKey: takerApiKey,
                 requestParams: expectedParams,
-                responseData: mockedOrder3,
+                responseData: successfulOrder2,
                 responseCode: StatusCodes.Success,
             });
 
             return rfqtMocker.withMockedRfqtFirmQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor(['https://1337.0.0.1', 'https://420.0.0.1', 'https://37.0.0.1']);
+                const qr = new QuoteRequestor([
+                    'https://1337.0.0.1',
+                    'https://420.0.0.1',
+                    'https://421.0.0.1',
+                    'https://422.0.0.1',
+                    'https://423.0.0.1',
+                    'https://424.0.0.1',
+                    'https://37.0.0.1',
+                ]);
                 const resp = await qr.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -72,7 +131,7 @@ describe('QuoteRequestor', async () => {
                     takerApiKey,
                     takerAddress,
                 );
-                expect(resp.sort()).to.eql([mockedOrder1, mockedOrder3].sort());
+                expect(resp.sort()).to.eql([successfulOrder1, successfulOrder2].sort());
             });
         });
     });

@@ -51,7 +51,6 @@ export class QuoteRequestor {
 
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
-
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
             this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
                 try {
@@ -83,9 +82,22 @@ export class QuoteRequestor {
 
         const ordersWithStringInts = responses.map(response => response.data); // not yet BigNumber
 
-        const validatedOrdersWithStringInts = ordersWithStringInts.filter(order =>
-            this._schemaValidator.isValid(order, schemas.orderSchema),
-        );
+        const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
+            const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
+            if (!hasValidSchema) {
+                logUtils.warn(`Invalid RFQ-t order received, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+
+            const hasExpectedMakerAssetData = order.makerAssetData.toLowerCase() === makerAssetData.toLowerCase();
+            const hasExpectedTakerAssetData = order.takerAssetData.toLowerCase() === takerAssetData.toLowerCase();
+            if (!hasExpectedMakerAssetData || !hasExpectedTakerAssetData) {
+                logUtils.warn(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+
+            return true;
+        });
 
         const orders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
             return {
