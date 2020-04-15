@@ -37,6 +37,10 @@
             {
                 "note": "Fix `getBatchMarketBuyOrdersAsync` throwing NO_OPTIMAL_PATH",
                 "pr": 2533
+            },
+            {
+                "note": "Add support for RFQ-T, querying maker-hosted endpoints for quotes to be submitted by the taker",
+                "pr": 2541
             }
         ]
     },

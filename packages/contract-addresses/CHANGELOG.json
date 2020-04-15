@@ -29,6 +29,10 @@
             {
                 "note": "Redeploy `Forwarder` on all networks",
                 "pr": 2521
+            },
+            {
+                "note": "Updated Ganache's ERC20BridgeSampler address",
+                "pr": 2541
             }
         ]
     },
