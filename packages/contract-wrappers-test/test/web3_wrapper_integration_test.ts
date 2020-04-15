@@ -44,7 +44,7 @@ describe('Web3Integration tests', () => {
     });
     describe('#eth_call with override', () => {
         const expectedReturnData = '0x0000000000000000000000000000000000000000000000000000000000000002';
-        it('it doesnt works for chekpoint oracle without override', async () => {
+        it('it does not work for chekpoint oracle without override', async () => {
             const res = await web3Wrapper.callAsync(
                 {
                     to: '0xebe8efa441b9302a0d7eaecc277c09d20d684540',
@@ -55,7 +55,7 @@ describe('Web3Integration tests', () => {
 
             expect(res).to.not.be.equal(expectedReturnData);
         });
-        it('it doesnt works for chekpoint oracle with override', async () => {
+        it('it does work for chekpoint oracle with override', async () => {
             const res = await web3Wrapper.callAsync(
                 {
                     to: '0xebe8efa441b9302a0d7eaecc277c09d20d684540',
