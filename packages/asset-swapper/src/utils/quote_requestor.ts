@@ -38,6 +38,29 @@ function assertTakerAddressOrThrow(takerAddress: string | undefined): void {
     }
 }
 
+function inferQueryParams(
+    marketOperation: MarketOperation,
+    makerAssetData: string,
+    takerAssetData: string,
+    assetFillAmount: BigNumber,
+): { buyToken: string; sellToken: string; buyAmount: string | undefined; sellAmount: string | undefined } {
+    if (marketOperation === MarketOperation.Buy) {
+        return {
+            buyToken: getTokenAddressOrThrow(makerAssetData),
+            sellToken: getTokenAddressOrThrow(takerAssetData),
+            buyAmount: assetFillAmount.toString(),
+            sellAmount: undefined,
+        };
+    } else {
+        return {
+            buyToken: getTokenAddressOrThrow(makerAssetData),
+            sellToken: getTokenAddressOrThrow(takerAssetData),
+            sellAmount: assetFillAmount.toString(),
+            buyAmount: undefined,
+        };
+    }
+}
+
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
@@ -56,9 +79,6 @@ export class QuoteRequestor {
         const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const buyToken = getTokenAddressOrThrow(makerAssetData);
-        const sellToken = getTokenAddressOrThrow(takerAssetData);
-
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
@@ -67,12 +87,8 @@ export class QuoteRequestor {
                     return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
                         headers: { '0x-api-key': _opts.apiKey },
                         params: {
-                            sellToken,
-                            buyToken,
-                            buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
-                            sellAmount:
-                                marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
                             takerAddress: _opts.takerAddress,
+                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
                         },
                         timeout: _opts.makerEndpointMaxResponseTimeMs,
                     });
