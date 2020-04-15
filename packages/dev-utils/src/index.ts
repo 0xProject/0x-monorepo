@@ -12,6 +12,8 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export {
     SupportedProvider,
     CallData,
+    StateOverrideSet,
+    StateOverrideParams,
     TransactionReceiptWithDecodedLogs,
     BlockParam,
     TxData,
