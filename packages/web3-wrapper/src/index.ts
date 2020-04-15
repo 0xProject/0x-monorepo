@@ -6,6 +6,8 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export {
     BlockParam,
     TxData,
+    StateOverrideParams,
+    StateOverrideSet,
     SupportedProvider,
     TransactionReceipt,
     Transaction,
@@ -62,6 +64,8 @@ export {
     CallDataRPC,
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
+    StateOverrideParamsRPC,
+    StateOverrideSetRPC,
     TransactionReceiptStatusRPC,
     TransactionReceiptRPC,
     LogEntryRPC,

@@ -8,28 +8,27 @@ import {
     CallTxDataBase,
     LogEntry,
     RawLogEntry,
+    StateOverrideParams,
     StateOverrideSet,
     Transaction,
     TransactionReceipt,
     TxData,
-    StateOverrideParams,
 } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
-
-import { utils } from './utils';
 
 import {
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
     CallDataRPC,
     CallTxDataBaseRPC,
-    StateOverrideSetRPC,
     StateOverrideParamsRPC,
+    StateOverrideSetRPC,
     TransactionReceiptRPC,
     TransactionRPC,
     TxDataRPC,
 } from './types';
+import { utils } from './utils';
 
 /**
  * Utils to convert ethereum structures from user-space format to RPC format. (marshall/unmarshall)

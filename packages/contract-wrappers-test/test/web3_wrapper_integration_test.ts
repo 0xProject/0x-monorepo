@@ -1,7 +1,6 @@
+import { BlockParamLiteral } from '@0x/ethereum-types';
 import { RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
-import * as _ from 'lodash';
 import 'mocha';
 
 import { Web3Wrapper } from '@0x/web3-wrapper';
