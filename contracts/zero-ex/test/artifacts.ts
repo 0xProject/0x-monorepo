@@ -5,24 +5,32 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as BasicMigration from '../test/generated-artifacts/BasicMigration.json';
+import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FixinOwnable from '../test/generated-artifacts/FixinOwnable.json';
+import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
 import * as IFeature from '../test/generated-artifacts/IFeature.json';
+import * as IMigrate from '../test/generated-artifacts/IMigrate.json';
+import * as InitialMigration from '../test/generated-artifacts/InitialMigration.json';
 import * as IOwnable from '../test/generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../test/generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
-import * as IZeroExBootstrapper from '../test/generated-artifacts/IZeroExBootstrapper.json';
+import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
+import * as LibMigrate from '../test/generated-artifacts/LibMigrate.json';
+import * as LibMigrateRichErrors from '../test/generated-artifacts/LibMigrateRichErrors.json';
+import * as LibMigrateStorage from '../test/generated-artifacts/LibMigrateStorage.json';
 import * as LibOwnableRichErrors from '../test/generated-artifacts/LibOwnableRichErrors.json';
 import * as LibOwnableStorage from '../test/generated-artifacts/LibOwnableStorage.json';
 import * as LibProxyRichErrors from '../test/generated-artifacts/LibProxyRichErrors.json';
 import * as LibProxyStorage from '../test/generated-artifacts/LibProxyStorage.json';
 import * as LibSimpleFunctionRegistryRichErrors from '../test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json';
 import * as LibSimpleFunctionRegistryStorage from '../test/generated-artifacts/LibSimpleFunctionRegistryStorage.json';
+import * as Migrate from '../test/generated-artifacts/Migrate.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as SimpleFunctionRegistry from '../test/generated-artifacts/SimpleFunctionRegistry.json';
-import * as TestBasicMigration from '../test/generated-artifacts/TestBasicMigration.json';
+import * as TestInitialMigration from '../test/generated-artifacts/TestInitialMigration.json';
+import * as TestMigrator from '../test/generated-artifacts/TestMigrator.json';
 import * as TestSimpleFunctionRegistryFeatureImpl1 from '../test/generated-artifacts/TestSimpleFunctionRegistryFeatureImpl1.json';
 import * as TestSimpleFunctionRegistryFeatureImpl2 from '../test/generated-artifacts/TestSimpleFunctionRegistryFeatureImpl2.json';
 import * as TestZeroExFeature from '../test/generated-artifacts/TestZeroExFeature.json';
@@ -30,23 +38,31 @@ import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
     ZeroEx: ZeroEx as ContractArtifact,
     LibCommonRichErrors: LibCommonRichErrors as ContractArtifact,
+    LibMigrateRichErrors: LibMigrateRichErrors as ContractArtifact,
     LibOwnableRichErrors: LibOwnableRichErrors as ContractArtifact,
     LibProxyRichErrors: LibProxyRichErrors as ContractArtifact,
     LibSimpleFunctionRegistryRichErrors: LibSimpleFunctionRegistryRichErrors as ContractArtifact,
+    Bootstrap: Bootstrap as ContractArtifact,
+    IBootstrap: IBootstrap as ContractArtifact,
+    IFeature: IFeature as ContractArtifact,
+    IMigrate: IMigrate as ContractArtifact,
+    IOwnable: IOwnable as ContractArtifact,
+    ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
+    Migrate: Migrate as ContractArtifact,
     Ownable: Ownable as ContractArtifact,
     SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
     FixinOwnable: FixinOwnable as ContractArtifact,
-    IFeature: IFeature as ContractArtifact,
-    IOwnable: IOwnable as ContractArtifact,
-    ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
-    IZeroExBootstrapper: IZeroExBootstrapper as ContractArtifact,
-    BasicMigration: BasicMigration as ContractArtifact,
+    InitialMigration: InitialMigration as ContractArtifact,
+    LibBootstrap: LibBootstrap as ContractArtifact,
+    LibMigrate: LibMigrate as ContractArtifact,
+    LibMigrateStorage: LibMigrateStorage as ContractArtifact,
     LibOwnableStorage: LibOwnableStorage as ContractArtifact,
     LibProxyStorage: LibProxyStorage as ContractArtifact,
     LibSimpleFunctionRegistryStorage: LibSimpleFunctionRegistryStorage as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
-    TestBasicMigration: TestBasicMigration as ContractArtifact,
+    TestInitialMigration: TestInitialMigration as ContractArtifact,
+    TestMigrator: TestMigrator as ContractArtifact,
     TestSimpleFunctionRegistryFeatureImpl1: TestSimpleFunctionRegistryFeatureImpl1 as ContractArtifact,
     TestSimpleFunctionRegistryFeatureImpl2: TestSimpleFunctionRegistryFeatureImpl2 as ContractArtifact,
     TestZeroExFeature: TestZeroExFeature as ContractArtifact,

@@ -2,7 +2,7 @@ import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/co
 import { BigNumber, ZeroExRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
-import { basicMigrateAsync } from './utils/migration';
+import { initialMigrateAsync } from './utils/migration';
 import {
     IFeatureContract,
     IOwnableContract,
@@ -21,7 +21,7 @@ blockchainTests.resets('ZeroEx contract', env => {
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-        zeroEx = await basicMigrateAsync(owner, env.provider, env.txDefaults);
+        zeroEx = await initialMigrateAsync(owner, env.provider, env.txDefaults);
         ownable = new IOwnableContract(zeroEx.address, env.provider, env.txDefaults);
         registry = new ISimpleFunctionRegistryContract(zeroEx.address, env.provider, env.txDefaults);
         testFeature = new TestZeroExFeatureContract(zeroEx.address, env.provider, env.txDefaults);

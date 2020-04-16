@@ -20,7 +20,8 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/LibBytesV06.sol";
-import "./interfaces/IZeroExBootstrapper.sol";
+import "./migrations/LibBootstrap.sol";
+import "./features/Bootstrap.sol";
 import "./storage/LibProxyStorage.sol";
 import "./errors/LibProxyRichErrors.sol";
 
@@ -28,17 +29,23 @@ import "./errors/LibProxyRichErrors.sol";
 /// @dev An extensible proxy contract that serves as a universal entry point for
 ///      interacting with the 0x protocol.
 contract ZeroEx {
-
     // solhint-disable separate-by-one-line-in-contract,indent,var-name-mixedcase
 
     using LibBytesV06 for bytes;
 
-    /// @dev Construct this contract.
-    ///      After constructing this contract, the deployer should call
-    ///      `bootstrap()` to seed the initial feature set.
-    constructor() public {
-        // Set the `bootstrap()` caller to the deployer.
-        LibProxyStorage.getStorage().bootstrapCaller = msg.sender;
+    /// @dev Magic bytes returned by the bootstrapper to indicate success.
+    bytes4 internal constant BOOTSTRAP_SUCCESS = 0xd150751b;
+
+    /// @dev Construct this contract and set the bootstrap migration contract.
+    ///      After constructing this contract, `bootstrap()` should be called
+    ///      to seed the initial feature set.
+    /// @param bootstrapper The bootstrap migration contract.
+    constructor(address bootstrapper) public {
+        // Temporarily create and register the bootstrap feature.
+        // It will deregister itself after `bootstrap()` has been called.
+        Bootstrap bootstrap = new Bootstrap(msg.sender, bootstrapper);
+        LibProxyStorage.getStorage().impls[bootstrap.bootstrap.selector] =
+            address(bootstrap);
     }
 
     // solhint-disable state-visibility
@@ -62,40 +69,6 @@ contract ZeroEx {
     receive() external payable {}
 
     // solhint-enable state-visibility
-
-    /// @dev Bootstrap the initial feature set of this contract.
-    ///      This can only be called once by the deployer of this contract.
-    /// @param bootstrappers Array of bootstrapping contracts to delegatecall into.
-    function bootstrap(IZeroExBootstrapper[] calldata bootstrappers) external {
-        LibProxyStorage.Storage storage stor = LibProxyStorage.getStorage();
-
-        // If `bootstrapCaller` is zero, the contract has already been bootstrapped.
-        address bootstrapCaller = stor.bootstrapCaller;
-        if (bootstrapCaller == address(0)) {
-            _revertWithData(LibProxyRichErrors.AlreadyBootstrappedError());
-        }
-        // Only the deployer caller can call this function.
-        if (bootstrapCaller != msg.sender) {
-            _revertWithData(
-                LibProxyRichErrors.InvalidBootstrapCallerError(msg.sender, bootstrapCaller)
-            );
-        }
-        // Prevent calling `bootstrap()` again.
-        stor.bootstrapCaller = address(0);
-
-        // Call the bootstrap contracts.
-        for (uint256 i = 0; i < bootstrappers.length; ++i) {
-            // Delegatecall into the bootstrap contract.
-            (bool success, bytes memory resultData) = address(bootstrappers[i])
-                .delegatecall(abi.encodeWithSelector(
-                    IZeroExBootstrapper.bootstrap.selector,
-                    address(bootstrappers[i])
-                ));
-            if (!success) {
-                _revertWithData(resultData);
-            }
-        }
-    }
 
     /// @dev Get the implementation contract of a registered function.
     /// @param selector The function selector.

@@ -2,7 +2,7 @@ import { blockchainTests, constants, expect, randomAddress, verifyEventsFromLogs
 import { BigNumber, hexUtils, OwnableRevertErrors, ZeroExRevertErrors } from '@0x/utils';
 
 import { artifacts } from '../artifacts';
-import { basicMigrateAsync } from '../utils/migration';
+import { initialMigrateAsync } from '../utils/migration';
 import {
     ISimpleFunctionRegistryContract,
     ISimpleFunctionRegistryEvents,
@@ -25,7 +25,7 @@ blockchainTests.resets('SimpleFunctionRegistry feature', env => {
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-        zeroEx = await basicMigrateAsync(owner, env.provider, env.txDefaults);
+        zeroEx = await initialMigrateAsync(owner, env.provider, env.txDefaults);
         registry = new ISimpleFunctionRegistryContract(zeroEx.address, env.provider, {
             ...env.txDefaults,
             from: owner,

@@ -20,19 +20,18 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "../fixins/FixinOwnable.sol";
-import "../interfaces/IFeature.sol";
-import "../interfaces/IOwnable.sol";
-import "../interfaces/ISimpleFunctionRegistry.sol";
-import "../interfaces/IZeroExBootstrapper.sol";
 import "../errors/LibOwnableRichErrors.sol";
 import "../storage/LibOwnableStorage.sol";
+import "../migrations/LibBootstrap.sol";
+import "./IFeature.sol";
+import "./IOwnable.sol";
+import "./ISimpleFunctionRegistry.sol";
 
 
 /// @dev Owner management features.
 contract Ownable is
     IFeature,
     IOwnable,
-    IZeroExBootstrapper,
     FixinOwnable
 {
     // solhint-disable const-name-snakecase
@@ -42,15 +41,20 @@ contract Ownable is
     /// @dev Version of this feature.
     uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
 
-    /// @dev Initializes the authority feature.
-    /// @param impl The actual address of this feature contract.
-    function bootstrap(address impl) external override {
+    /// @dev Initializes this feature. The intial owner will be set to this (ZeroEx)
+    ///      to allow the bootstrappers to call `extend()`. Ownership should be
+    ///      transferred to the real owner by the bootstrapper after
+    ///      bootstrapping is complete.
+    /// @param impl the actual address of this feature contract.
+    /// @return success Magic bytes if successful.
+    function bootstrap(address impl) external returns (bytes4 success) {
         // Set the owner.
-        LibOwnableStorage.getStorage().owner = msg.sender;
+        LibOwnableStorage.getStorage().owner = address(this);
 
         // Register feature functions.
-        ISimpleFunctionRegistry(address(this)).extendSelf(this.transferOwnership.selector, impl);
-        ISimpleFunctionRegistry(address(this)).extendSelf(this.getOwner.selector, impl);
+        ISimpleFunctionRegistry(address(this)).extend(this.transferOwnership.selector, impl);
+        ISimpleFunctionRegistry(address(this)).extend(this.getOwner.selector, impl);
+        return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
 
     /// @dev Change the owner of this contract.

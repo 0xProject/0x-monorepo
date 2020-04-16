@@ -2,22 +2,22 @@ import { SupportedProvider } from '@0x/subproviders';
 import { TxData } from 'ethereum-types';
 
 import { artifacts } from '../artifacts';
-import { BasicMigrationContract, ZeroExContract } from '../wrappers';
+import { InitialMigrationContract, ZeroExContract } from '../wrappers';
 
 // tslint:disable: completed-docs
-export async function basicMigrateAsync(
+export async function initialMigrateAsync(
     owner: string,
     provider: SupportedProvider,
     txDefaults: Partial<TxData>,
 ): Promise<ZeroExContract> {
-    const migrator = await BasicMigrationContract.deployFrom0xArtifactAsync(
-        artifacts.BasicMigration,
+    const migrator = await InitialMigrationContract.deployFrom0xArtifactAsync(
+        artifacts.InitialMigration,
         provider,
         txDefaults,
         artifacts,
     );
-    const migrateCall = migrator.migrate(owner);
-    const zeroEx = new ZeroExContract(await migrateCall.callAsync(), provider, {});
-    await migrateCall.awaitTransactionSuccessAsync();
+    const deployCall = migrator.deploy(owner);
+    const zeroEx = new ZeroExContract(await deployCall.callAsync(), provider, {});
+    await deployCall.awaitTransactionSuccessAsync();
     return zeroEx;
 }

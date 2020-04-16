@@ -20,13 +20,12 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 
-/// @dev Interface for a bootstrapping contract that the `ZeroEx` proxy.
-interface IZeroExBootstrapper {
+/// @dev Detachable `bootstrap()` feature.
+interface IBootstrap {
 
-    /// @dev Sets up the initial state of the `ZeroEx` contract.
-    ///      The `ZeroEx` contract will delegatecall this function so the
-    ///      bootstrapper should use this function to register initial
-    ///      features.
-    /// @param impl The implementation contract.
-    function bootstrap(address impl) external;
+    /// @dev Bootstrap the initial feature set of this contract by delegatecalling
+    ///      into `_bootstrapper`. Before exiting the `bootstrap()` function will
+    ///      deregister itself from the proxy to prevent being called again.
+    /// @param callData The call data to execute on `_bootstrapper`.
+    function bootstrap(bytes calldata callData) external;
 }

@@ -5,11 +5,13 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as IMigrate from '../generated-artifacts/IMigrate.json';
 import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ZeroEx from '../generated-artifacts/ZeroEx.json';
 export const artifacts = {
     ZeroEx: ZeroEx as ContractArtifact,
+    IMigrate: IMigrate as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
     ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
 };

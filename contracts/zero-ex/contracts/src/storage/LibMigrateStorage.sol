@@ -20,17 +20,17 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 
-/// @dev Storage helpers for the proxy contract.
-library LibProxyStorage {
+/// @dev Storage helpers for the `Migrate` feature.
+library LibMigrateStorage {
 
     /// @dev Globally unique offset for the storage bucket.
     bytes32 constant internal STORAGE_ID =
-        0xd7434ab6df6fb6431870c66fc3fc3d21ddd20b029595942d9e0ffc950ce32f66;
+        0x0ed67b719caa0e9bebb7147a4de9fdb6f1c82a984b2297d741a9888432214d5c;
 
-    /// @dev Storage bucket for proxy contract.
+    /// @dev Storage bucket for this feature.
     struct Storage {
-        // Mapping of function selector -> function implementation
-        mapping(bytes4 => address) impls;
+        // The owner of this contract prior to the `migrate()` call.
+        address migrationOwner;
     }
 
     /// @dev Get the storage bucket for this contract.

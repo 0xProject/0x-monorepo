@@ -19,20 +19,19 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IFeature.sol";
-import "../interfaces/ISimpleFunctionRegistry.sol";
-import "../interfaces/IZeroExBootstrapper.sol";
 import "../fixins/FixinOwnable.sol";
 import "../storage/LibProxyStorage.sol";
 import "../storage/LibSimpleFunctionRegistryStorage.sol";
 import "../errors/LibSimpleFunctionRegistryRichErrors.sol";
+import "../migrations/LibBootstrap.sol";
+import "./IFeature.sol";
+import "./ISimpleFunctionRegistry.sol";
 
 
 /// @dev Basic registry management features.
 contract SimpleFunctionRegistry is
     IFeature,
     ISimpleFunctionRegistry,
-    IZeroExBootstrapper,
     FixinOwnable
 {
     // solhint-disable const-name-snakecase
@@ -42,17 +41,18 @@ contract SimpleFunctionRegistry is
     /// @dev Version of this feature.
     uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
 
-    /// @dev Initializes the feature implementation registry.
+    /// @dev Initializes this feature.
     /// @param impl The actual address of this feature contract.
-    function bootstrap(address impl) external override {
+    /// @return success Magic bytes if successful.
+    function bootstrap(address impl) external returns (bytes4 success) {
         // Register the registration functions (inception vibes).
         _extend(this.extend.selector, impl);
-        _extend(this.extendSelf.selector, impl);
         // Register the rollback function.
         _extend(this.rollback.selector, impl);
         // Register getters.
         _extend(this.getRollbackLength.selector, impl);
         _extend(this.getRollbackEntryAtIndex.selector, impl);
+        return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
 
     /// @dev Roll back to a prior implementation of a function.
@@ -104,18 +104,6 @@ contract SimpleFunctionRegistry is
         external
         override
         onlyOwner
-    {
-        _extend(selector, impl);
-    }
-
-    /// @dev Register or replace a function.
-    ///      Only callable from within.
-    /// @param selector The function selector.
-    /// @param impl The implementation contract for the function.
-    function extendSelf(bytes4 selector, address impl)
-        external
-        override
-        onlySelf
     {
         _extend(selector, impl);
     }

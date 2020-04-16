@@ -17,17 +17,31 @@
 */
 
 pragma solidity ^0.6.5;
-pragma experimental ABIEncoderV2;
-
-import "../src/migrations/BasicMigration.sol";
-import "../src/interfaces/IZeroExBootstrapper.sol";
 
 
-contract TestBasicMigration is
-    BasicMigration
-{
-    function callBootstrap(ZeroEx zeroEx) external {
-        IZeroExBootstrapper[] memory bootstrappers;
-        zeroEx.bootstrap(bootstrappers);
+library LibMigrateRichErrors {
+
+    // solhint-disable func-name-mixedcase
+
+    function AlreadyMigratingError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("AlreadyMigratingError()"))
+        );
+    }
+
+    function MigrateCallFailedError(address target, bytes memory resultData)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("MigrateCallFailedError(address,bytes)")),
+            target,
+            resultData
+        );
     }
 }

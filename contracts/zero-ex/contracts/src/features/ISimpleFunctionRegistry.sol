@@ -19,8 +19,6 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IZeroExBootstrapper.sol";
-
 
 /// @dev Basic registry management features.
 interface ISimpleFunctionRegistry {
@@ -40,12 +38,6 @@ interface ISimpleFunctionRegistry {
     /// @param selector The function selector.
     /// @param impl The implementation contract for the function.
     function extend(bytes4 selector, address impl) external;
-
-    /// @dev Register or replace a function.
-    ///      Only callable from within.
-    /// @param selector The function selector.
-    /// @param impl The implementation contract for the function.
-    function extendSelf(bytes4 selector, address impl) external;
 
     /// @dev Retrieve the length of the rollback history for a function.
     /// @param selector The function selector.

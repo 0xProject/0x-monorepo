@@ -34,25 +34,39 @@ library LibProxyRichErrors {
         );
     }
 
-    function AlreadyBootstrappedError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("AlreadyBootstrappedError()"))
-        );
-    }
-
-    function InvalidBootstrapCallerError(address caller, address expectedCaller)
+    function InvalidBootstrapCallerError(address actual, address expected)
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
             bytes4(keccak256("InvalidBootstrapCallerError(address,address)")),
-            caller,
-            expectedCaller
+            actual,
+            expected
+        );
+    }
+
+    function InvalidDieCallerError(address actual, address expected)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("InvalidDieCallerError(address,address)")),
+            actual,
+            expected
+        );
+    }
+
+    function BootstrapCallFailedError(address target, bytes memory resultData)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("BootstrapCallFailedError(address,bytes)")),
+            target,
+            resultData
         );
     }
 }
