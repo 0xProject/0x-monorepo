@@ -123,6 +123,19 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromKyberNetwork",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "registryAddress", "type": "address" },
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
@@ -258,6 +271,15 @@
                 },
                 "sampleBuysFromEth2Dai(address,address,uint256[])": {
                     "details": "Sample buy quotes from Eth2Dai/Oasis.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "takerToken": "Address of the taker token (what to sell)."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleBuysFromKyberNetwork(address,address,uint256[])": {
+                    "details": "Sample buy quotes from Kyber.",
                     "params": {
                         "makerToken": "Address of the maker token (what to buy).",
                         "makerTokenAmounts": "Maker token buy amount for each sample.",

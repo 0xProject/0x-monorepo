@@ -24,6 +24,7 @@ export const SELL_SOURCES = [
 export const BUY_SOURCES = [
     ERC20BridgeSource.Uniswap,
     ERC20BridgeSource.Eth2Dai,
+    ERC20BridgeSource.Kyber,
     // All Curve sources
     ERC20BridgeSource.CurveUsdcDai,
     ERC20BridgeSource.CurveUsdcDaiUsdt,

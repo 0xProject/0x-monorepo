@@ -73,6 +73,21 @@ interface IERC20BridgeSampler {
         view
         returns (uint256[] memory makerTokenAmounts);
 
+    /// @dev Sample buy quotes from Kyber.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromKyberNetwork(
+        address takerToken,
+        address makerToken,
+        uint256[] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory takerTokenAmounts);
+
     /// @dev Sample sell quotes from Eth2Dai/Oasis.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).

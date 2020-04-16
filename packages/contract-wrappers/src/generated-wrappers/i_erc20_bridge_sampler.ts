@@ -431,6 +431,33 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
+                        name: 'takerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'makerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'sampleBuysFromKyberNetwork',
+                outputs: [
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
                         name: 'registryAddress',
                         type: 'address',
                     },
@@ -925,6 +952,44 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         assert.isString('makerToken', makerToken);
         assert.isArray('makerTokenAmounts', makerTokenAmounts);
         const functionSignature = 'sampleBuysFromEth2Dai(address,address,uint256[])';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    takerToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                    makerTokenAmounts,
+                ]);
+            },
+        };
+    }
+    /**
+     * Sample buy quotes from Kyber.
+     * @param takerToken Address of the taker token (what to sell).
+     * @param makerToken Address of the maker token (what to buy).
+     * @param makerTokenAmounts Maker token buy amount for each sample.
+     * @returns takerTokenAmounts Taker amounts sold at each maker token         amount.
+     */
+    public sampleBuysFromKyberNetwork(
+        takerToken: string,
+        makerToken: string,
+        makerTokenAmounts: BigNumber[],
+    ): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isString('takerToken', takerToken);
+        assert.isString('makerToken', makerToken);
+        assert.isArray('makerTokenAmounts', makerTokenAmounts);
+        const functionSignature = 'sampleBuysFromKyberNetwork(address,address,uint256[])';
 
         return {
             async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {

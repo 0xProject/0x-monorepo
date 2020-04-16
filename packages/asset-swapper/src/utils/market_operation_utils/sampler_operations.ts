@@ -48,6 +48,22 @@ export const samplerOperations = {
             },
         };
     },
+    getKyberBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromKyberNetwork', callResults);
+            },
+        };
+    },
     getUniswapSellQuotes(
         makerToken: string,
         takerToken: string,
@@ -357,6 +373,8 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
                 } else if (source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                } else if (source === ERC20BridgeSource.Kyber) {
+                    batchedOperation = samplerOperations.getKyberBuyQuotes(makerToken, takerToken, makerFillAmounts);
                 } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
                     const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
                     const fromTokenIdx = tokens.indexOf(takerToken);
