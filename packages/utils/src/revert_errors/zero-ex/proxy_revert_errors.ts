@@ -9,12 +9,6 @@ export class NotImplementedError extends RevertError {
     }
 }
 
-export class AlreadyBootstrappedError extends RevertError {
-    constructor() {
-        super('AlreadyBootstrappedError', 'AlreadyBootstrappedError()', {});
-    }
-}
-
 export class InvalidBootstrapCallerError extends RevertError {
     constructor(caller?: string, expectedCaller?: string) {
         super('InvalidBootstrapCallerError', 'InvalidBootstrapCallerError(address caller, address expectedCaller)', {
@@ -24,7 +18,25 @@ export class InvalidBootstrapCallerError extends RevertError {
     }
 }
 
-const types = [AlreadyBootstrappedError, InvalidBootstrapCallerError, NotImplementedError];
+export class InvalidDieCallerError extends RevertError {
+    constructor(caller?: string, expectedCaller?: string) {
+        super('InvalidDieCallerError', 'InvalidDieCallerError(address caller, address expectedCaller)', {
+            caller,
+            expectedCaller,
+        });
+    }
+}
+
+export class BootstrapCallFailedError extends RevertError {
+    constructor(target?: string, resultData?: string) {
+        super('BootstrapCallFailedError', 'BootstrapCallFailedError(address target, bytes resultData)', {
+            target,
+            resultData,
+        });
+    }
+}
+
+const types = [BootstrapCallFailedError, InvalidBootstrapCallerError, InvalidDieCallerError, NotImplementedError];
 
 // Register the types we've defined.
 for (const type of types) {

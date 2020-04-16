@@ -113,7 +113,9 @@ export abstract class RevertError extends Error {
         const instance = new type();
         try {
             const values = decoder(_bytes);
-            return _.assign(instance, { values });
+            _.assign(instance, { values });
+            instance.message = instance.toString();
+            return instance;
         } catch (err) {
             throw new Error(
                 `Bytes ${_bytes} cannot be decoded as a revert error of type ${instance.signature}: ${err.message}`,

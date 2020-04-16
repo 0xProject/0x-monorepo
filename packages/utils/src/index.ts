@@ -48,4 +48,5 @@ export const ZeroExRevertErrors = {
     Common: require('./revert_errors/zero-ex/common_revert_errors'),
     Proxy: require('./revert_errors/zero-ex/proxy_revert_errors'),
     SimpleFunctionRegistry: require('./revert_errors/zero-ex/simple_function_registry_revert_errors'),
+    Migrate: require('./revert_errors/zero-ex/migrate_revert_errors'),
 };

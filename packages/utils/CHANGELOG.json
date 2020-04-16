@@ -5,6 +5,10 @@
             {
                 "note": "Add `ZeroExRevertErrors`",
                 "pr": 2540
+            },
+            {
+                "note": "Print full revert error in stack traces.",
+                "pr": 2540
             }
         ]
     },
