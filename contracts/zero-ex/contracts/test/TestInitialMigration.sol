@@ -30,7 +30,7 @@ contract TestInitialMigration is
     address public bootstrapFeature;
 
     function callBootstrap(ZeroEx zeroEx) external {
-        IBootstrap(address(zeroEx)).bootstrap(new bytes(0));
+        IBootstrap(address(zeroEx)).bootstrap(address(this), new bytes(0));
     }
 
     function getCodeSizeOf(address target) external view returns (uint256 codeSize) {

@@ -41,13 +41,13 @@ contract InitialMigration {
         require(address(_zeroEx) == address(0), "InitialMigration/ALREADY_DEPLOYED");
 
         // Deploy the ZeroEx contract, setting ourselves as the bootstrapper.
-        zeroEx = _zeroEx = new ZeroEx(address(this));
+        zeroEx = _zeroEx = new ZeroEx();
 
         // Bootstrap the initial feature set.
-        IBootstrap(address(zeroEx)).bootstrap(abi.encodeWithSelector(
-            this.bootstrap.selector,
-            owner
-        ));
+        IBootstrap(address(zeroEx)).bootstrap(
+            address(this),
+            abi.encodeWithSelector(this.bootstrap.selector, owner)
+        );
     }
 
     /// @dev Sets up the initial state of the `ZeroEx` contract.

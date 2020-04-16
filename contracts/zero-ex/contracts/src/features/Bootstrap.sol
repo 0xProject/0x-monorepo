@@ -40,28 +40,24 @@ contract Bootstrap is
     /// @dev The deployer.
     ///      This has to be immutable to persist across delegatecalls.
     address immutable private _bootstrapCaller;
-    /// @dev The bootstrap migrator.
-    ///      This has to be immutable to persist across delegatecalls.
-    address immutable private _bootstrapper;
     // solhint-enable state-visibility,indent
 
     /// @dev Construct this contract and set the bootstrap migration contract.
     ///      After constructing this contract, `bootstrap()` should be called
     ///      to seed the initial feature set.
     /// @param bootstrapCaller The allowed caller of `bootstrap()`.
-    /// @param bootstrapper The bootstrap migration contract.
-    constructor(address bootstrapCaller, address bootstrapper) public {
+    constructor(address bootstrapCaller) public {
         _deployer = msg.sender;
         _implementation = address(this);
         _bootstrapCaller = bootstrapCaller;
-        _bootstrapper = bootstrapper;
     }
 
     /// @dev Bootstrap the initial feature set of this contract by delegatecalling
     ///      into `_bootstrapper`. Before exiting the `bootstrap()` function will
     ///      deregister itself from the proxy to prevent being called again.
+    /// @param target The bootstrapper contract address.
     /// @param callData The call data to execute on `_bootstrapper`.
-    function bootstrap(bytes calldata callData) external override {
+    function bootstrap(address target, bytes calldata callData) external override {
         // Only the bootstrap caller can call this function.
         if (msg.sender != _bootstrapCaller) {
             _rrevert(LibProxyRichErrors.InvalidBootstrapCallerError(
@@ -69,7 +65,7 @@ contract Bootstrap is
                 _bootstrapCaller
             ));
         }
-        LibBootstrap.delegatecallBootstrapFunction(_bootstrapper, callData);
+        LibBootstrap.delegatecallBootstrapFunction(target, callData);
         // Deregister.
         LibProxyStorage.getStorage().impls[this.bootstrap.selector] = address(0);
         // Self-destruct.
@@ -77,7 +73,7 @@ contract Bootstrap is
     }
 
     /// @dev Self-destructs this contract.
-    ///      Can only be called by the ZeroEx contract.
+    ///      Can only be called by the deployer.
     function die() external {
         if (msg.sender != _deployer) {
             _rrevert(LibProxyRichErrors.InvalidDieCallerError(msg.sender, _deployer));
