@@ -169,8 +169,15 @@ blockchainTests('erc20-bridge-sampler', env => {
         for (const source of sources) {
             const sampleOutputs = [];
             for (const amount of sampleAmounts) {
-                if (source === 'Eth2Dai') {
-                    sampleOutputs.push(getDeterministicBuyQuote(ETH2DAI_SALT, sellToken, buyToken, amount));
+                if (source === 'Kyber' || source === 'Eth2Dai') {
+                    sampleOutputs.push(
+                        getDeterministicBuyQuote(
+                            source === 'Kyber' ? KYBER_SALT : ETH2DAI_SALT,
+                            sellToken,
+                            buyToken,
+                            amount,
+                        ),
+                    );
                 } else if (source === 'Uniswap') {
                     sampleOutputs.push(getDeterministicUniswapBuyQuote(sellToken, buyToken, amount));
                 }
@@ -204,7 +211,7 @@ blockchainTests('erc20-bridge-sampler', env => {
 
     function getSampleAmounts(tokenAddress: string, count?: number): BigNumber[] {
         const tokenDecimals = getDeterministicTokenDecimals(tokenAddress);
-        const _upperLimit = getRandomPortion(getRandomInteger(1, 1000).times(10 ** tokenDecimals));
+        const _upperLimit = getRandomPortion(getRandomInteger(1000, 50000).times(10 ** tokenDecimals));
         const _count = count || _.random(1, 16);
         const d = _upperLimit.div(_count);
         return _.times(_count, i => d.times((i + 1) / _count).integerValue());
@@ -383,6 +390,94 @@ blockchainTests('erc20-bridge-sampler', env => {
             await enableFailTriggerAsync();
             const quotes = await testContract
                 .sampleSellsFromKyberNetwork(WETH_ADDRESS, TAKER_TOKEN, sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+    });
+
+    blockchainTests.resets('sampleBuysFromKyberNetwork()', () => {
+        const ACCEPTABLE_SLIPPAGE = 0.0005;
+        before(async () => {
+            await testContract.createTokenExchanges([MAKER_TOKEN, TAKER_TOKEN]).awaitTransactionSuccessAsync();
+        });
+
+        it('throws if tokens are the same', async () => {
+            const tx = testContract.sampleBuysFromKyberNetwork(MAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            return expect(tx).to.revertWith(INVALID_TOKEN_PAIR_ERROR);
+        });
+
+        it('can return no quotes', async () => {
+            const quotes = await testContract.sampleBuysFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, []).callAsync();
+            expect(quotes).to.deep.eq([]);
+        });
+        const expectQuotesWithinRange = (
+            quotes: BigNumber[],
+            expectedQuotes: BigNumber[],
+            maxSlippage: BigNumber | number,
+        ) => {
+            quotes.map((_q, i) => {
+                const slippage = quotes[i]
+                    .dividedBy(expectedQuotes[i])
+                    .minus(1)
+                    .decimalPlaces(4);
+                expect(slippage, `quote[${i}]: ${slippage}`).to.be.bignumber.gte(0);
+                expect(slippage, `quote[${i}] ${slippage}`).to.be.bignumber.lte(new BigNumber(maxSlippage));
+            });
+        };
+
+        it('can quote token - token', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const [expectedQuotes] = getDeterministicBuyQuotes(TAKER_TOKEN, MAKER_TOKEN, ['Kyber'], sampleAmounts);
+            const quotes = await testContract
+                .sampleBuysFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
+                .callAsync();
+            expectQuotesWithinRange(quotes, expectedQuotes, ACCEPTABLE_SLIPPAGE);
+        });
+
+        it('returns zero if token -> token fails', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const expectedQuotes = _.times(sampleAmounts.length, () => constants.ZERO_AMOUNT);
+            await enableFailTriggerAsync();
+            const quotes = await testContract
+                .sampleBuysFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+
+        it('can quote token -> ETH', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const [expectedQuotes] = getDeterministicBuyQuotes(TAKER_TOKEN, WETH_ADDRESS, ['Kyber'], sampleAmounts);
+            const quotes = await testContract
+                .sampleBuysFromKyberNetwork(TAKER_TOKEN, WETH_ADDRESS, sampleAmounts)
+                .callAsync();
+            expectQuotesWithinRange(quotes, expectedQuotes, ACCEPTABLE_SLIPPAGE);
+        });
+
+        it('returns zero if token -> ETH fails', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const expectedQuotes = _.times(sampleAmounts.length, () => constants.ZERO_AMOUNT);
+            await enableFailTriggerAsync();
+            const quotes = await testContract
+                .sampleBuysFromKyberNetwork(TAKER_TOKEN, WETH_ADDRESS, sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+
+        it('can quote ETH -> token', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const [expectedQuotes] = getDeterministicBuyQuotes(WETH_ADDRESS, TAKER_TOKEN, ['Kyber'], sampleAmounts);
+            const quotes = await testContract
+                .sampleBuysFromKyberNetwork(WETH_ADDRESS, TAKER_TOKEN, sampleAmounts)
+                .callAsync();
+            expectQuotesWithinRange(quotes, expectedQuotes, ACCEPTABLE_SLIPPAGE);
+        });
+
+        it('returns zero if ETH -> token fails', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const expectedQuotes = _.times(sampleAmounts.length, () => constants.ZERO_AMOUNT);
+            await enableFailTriggerAsync();
+            const quotes = await testContract
+                .sampleBuysFromKyberNetwork(WETH_ADDRESS, TAKER_TOKEN, sampleAmounts)
                 .callAsync();
             expect(quotes).to.deep.eq(expectedQuotes);
         });

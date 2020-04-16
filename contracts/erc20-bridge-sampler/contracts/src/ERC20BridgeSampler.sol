@@ -213,6 +213,127 @@ contract ERC20BridgeSampler is
         }
     }
 
+    struct FakeBuyContext {
+        uint256 buyAmount;
+        uint256 sellAmount;
+        uint256 rate;
+        uint256 slippageFromTarget;
+    }
+
+    /// @dev Sample buy quotes from Kyber.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromKyberNetwork(
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        if (makerTokenAmounts.length == 0) {
+            return takerTokenAmounts;
+        }
+        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
+        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
+        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
+        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+        takerTokenAmounts = new uint256[](makerTokenAmounts.length);
+        FakeBuyContext memory context;
+        // Quote the first amount selling the makerTokenAmount
+        (bool didSucceed, bytes memory resultData) =
+            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
+                abi.encodeWithSelector(
+                    IKyberNetwork(0).getExpectedRate.selector,
+                    _makerToken,
+                    _takerToken,
+                    makerTokenAmounts[0]
+                ));
+        if (didSucceed) {
+            context.rate = abi.decode(resultData, (uint256));
+        } else {
+            return takerTokenAmounts;
+        }
+        // Calculate the initial sell amount from the rate and the maker token sold
+        context.sellAmount = context.rate * makerTokenAmounts[0] *
+                    10 ** takerTokenDecimals /
+                    10 ** makerTokenDecimals /
+                    10 ** 18;
+
+        (didSucceed, resultData) =
+            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
+                abi.encodeWithSelector(
+                    IKyberNetwork(0).getExpectedRate.selector,
+                    _takerToken,
+                    _makerToken,
+                    context.sellAmount
+                ));
+        if (didSucceed) {
+            context.rate = abi.decode(resultData, (uint256));
+        } else {
+            return takerTokenAmounts;
+        }
+        // Calculate the buy amount from the rate and the amount sold
+        context.buyAmount = context.rate * context.sellAmount *
+                    10 ** makerTokenDecimals /
+                    10 ** takerTokenDecimals /
+                    10 ** 18;
+        for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
+            uint256 iteration = 0;
+            context.slippageFromTarget = 10;
+            do {
+                // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
+                context.sellAmount = LibMath.getPartialAmountCeil(
+                    makerTokenAmounts[i],
+                    context.buyAmount,
+                    context.sellAmount
+                );
+                // JUMP Multiplier by 1.0005
+                context.sellAmount = LibMath.getPartialAmountCeil(
+                    10005,
+                    10000,
+                    context.sellAmount
+                );
+
+                (didSucceed, resultData) =
+                    _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
+                        abi.encodeWithSelector(
+                            IKyberNetwork(0).getExpectedRate.selector,
+                            _takerToken,
+                            _makerToken,
+                            context.sellAmount
+                        ));
+                if (didSucceed) {
+                    context.rate = abi.decode(resultData, (uint256));
+                } else {
+                    break;
+                }
+
+                context.buyAmount = context.rate * context.sellAmount *
+                            10 ** makerTokenDecimals /
+                            10 ** takerTokenDecimals /
+                            10 ** 18;
+                // 0.0005 slippage is the target
+                if (context.buyAmount >= makerTokenAmounts[i]) {
+                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) / (makerTokenAmounts[i] / 10000);
+                }
+            } while ((context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > 5) && ++iteration < 5);
+            // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
+            // if we hit a max iteration limit
+            // We scale the sell amount to get the approximate target
+            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
+                makerTokenAmounts[i],
+                context.buyAmount,
+                context.sellAmount
+            );
+        }
+    }
+
     /// @dev Sample sell quotes from Eth2Dai/Oasis.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
@@ -442,6 +563,7 @@ contract ERC20BridgeSampler is
             makerTokenAmounts[i] = buyAmount;
         }
     }
+
     /// @dev Sample buy quotes from Curve.
     /// @param curveAddress Address of the Curve contract.
     /// @param fromTokenIdx Index of the taker token (what to sell).
@@ -560,28 +682,83 @@ contract ERC20BridgeSampler is
             makerToken
         );
         // If provider doesn't exist, return all zeros.
-        if (providerAddress == address(0)) {
+        if (providerAddress == address(0) || numSamples == 0) {
             return takerTokenAmounts;
         }
 
-        // Otherwise, query liquidity provider for quotes.
-        for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
+        FakeBuyContext memory context;
+        // Quote the first amount selling the makerTokenAmount
+        (bool didSucceed, bytes memory resultData) =
                 providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
                     abi.encodeWithSelector(
-                        ILiquidityProvider(0).getBuyQuote.selector,
+                        ILiquidityProvider(0).getSellQuote.selector,
+                        makerToken,
+                        takerToken,
+                        makerTokenAmounts[0]
+                    ));
+        if (didSucceed) {
+            context.sellAmount = abi.decode(resultData, (uint256));
+        } else {
+            return takerTokenAmounts;
+        }
+
+        (didSucceed, resultData) =
+                providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        ILiquidityProvider(0).getSellQuote.selector,
                         takerToken,
                         makerToken,
-                        makerTokenAmounts[i]
+                        context.sellAmount
                     ));
-            uint256 sellAmount = 0;
-            if (didSucceed) {
-                sellAmount = abi.decode(resultData, (uint256));
-            } else {
-                // Exit early if the amount is too high for the liquidity provider to serve
-                break;
-            }
-            takerTokenAmounts[i] = sellAmount;
+        if (didSucceed) {
+            context.buyAmount = abi.decode(resultData, (uint256));
+        } else {
+            return takerTokenAmounts;
+        }
+
+        for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
+            uint256 iteration = 0;
+            context.slippageFromTarget = 10;
+            do {
+                // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
+                context.sellAmount = LibMath.getPartialAmountCeil(
+                    makerTokenAmounts[i],
+                    context.buyAmount,
+                    context.sellAmount
+                );
+                // JUMP Multiplier by 1.0005
+                context.sellAmount = LibMath.getPartialAmountCeil(
+                    10005,
+                    10000,
+                    context.sellAmount
+                );
+
+                (didSucceed, resultData) =
+                        providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
+                            abi.encodeWithSelector(
+                                ILiquidityProvider(0).getSellQuote.selector,
+                                takerToken,
+                                makerToken,
+                                context.sellAmount
+                            ));
+                if (didSucceed) {
+                    context.buyAmount = abi.decode(resultData, (uint256));
+                } else {
+                    break;
+                }
+                // 0.0005 slippage is the target
+                if (context.buyAmount >= makerTokenAmounts[i]) {
+                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) / (makerTokenAmounts[i] / 10000);
+                }
+            } while ((context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > 5) && ++iteration < 5);
+            // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
+            // if we hit a max iteration limit
+            // We scale the sell amount to get the approximate target
+            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
+                makerTokenAmounts[i],
+                context.buyAmount,
+                context.sellAmount
+            );
         }
     }
 

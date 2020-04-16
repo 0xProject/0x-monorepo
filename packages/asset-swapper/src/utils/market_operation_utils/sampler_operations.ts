@@ -248,10 +248,10 @@ export const samplerOperations = {
     },
     constant<T>(result: T): BatchedOperation<T> {
         return {
-            encodeCall: contract => {
+            encodeCall: _contract => {
                 return '0x';
             },
-            handleCallResultsAsync: async (contract, callResults) => {
+            handleCallResultsAsync: async (_contract, _callResults) => {
                 return result;
             },
         };
@@ -406,7 +406,7 @@ export const samplerOperations = {
                     return samples[i].map((output, j) => ({
                         source: op.source,
                         output,
-                        input: makerFillAmounts[i],
+                        input: makerFillAmounts[j],
                     }));
                 });
             },

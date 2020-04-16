@@ -20,48 +20,75 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
             constants.NULL_ADDRESS,
         );
     });
+    describe('Curve', () => {
+        const CURVE_ADDRESS = '0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56';
+        const DAI_TOKEN_INDEX = new BigNumber(0);
+        const USDC_TOKEN_INDEX = new BigNumber(1);
 
-    const curveAddress = '0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56';
-    const daiTokenIdx = new BigNumber(0);
-    const usdcTokenIdx = new BigNumber(1);
+        describe('sampleSellsFromCurve()', () => {
+            it('samples sells from Curve DAI->USDC', async () => {
+                const samples = await testContract
+                    .sampleSellsFromCurve(CURVE_ADDRESS, DAI_TOKEN_INDEX, USDC_TOKEN_INDEX, [toBaseUnitAmount(1)])
+                    .callAsync();
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
 
-    describe('sampleSellsFromCurve()', () => {
-        it('samples sells from Curve DAI->USDC', async () => {
-            const samples = await testContract
-                .sampleSellsFromCurve(curveAddress, daiTokenIdx, usdcTokenIdx, [toBaseUnitAmount(1)])
-                .callAsync();
-            expect(samples.length).to.be.bignumber.greaterThan(0);
-            expect(samples[0]).to.be.bignumber.greaterThan(0);
+            it('samples sells from Curve USDC->DAI', async () => {
+                const samples = await testContract
+                    .sampleSellsFromCurve(CURVE_ADDRESS, USDC_TOKEN_INDEX, DAI_TOKEN_INDEX, [toBaseUnitAmount(1, 6)])
+                    .callAsync();
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
         });
 
-        it('samples sells from Curve USDC->DAI', async () => {
-            const samples = await testContract
-                .sampleSellsFromCurve(curveAddress, usdcTokenIdx, daiTokenIdx, [toBaseUnitAmount(1, 6)])
-                .callAsync();
-            expect(samples.length).to.be.bignumber.greaterThan(0);
-            expect(samples[0]).to.be.bignumber.greaterThan(0);
+        describe('sampleBuysFromCurve()', () => {
+            it('samples buys from Curve DAI->USDC', async () => {
+                // From DAI to USDC
+                // I want to buy 1 USDC
+                const samples = await testContract
+                    .sampleBuysFromCurve(CURVE_ADDRESS, DAI_TOKEN_INDEX, USDC_TOKEN_INDEX, [toBaseUnitAmount(1, 6)])
+                    .callAsync();
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
+
+            it('samples buys from Curve USDC->DAI', async () => {
+                // From USDC to DAI
+                // I want to buy 1 DAI
+                const samples = await testContract
+                    .sampleBuysFromCurve(CURVE_ADDRESS, USDC_TOKEN_INDEX, DAI_TOKEN_INDEX, [toBaseUnitAmount(1)])
+                    .callAsync();
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
         });
     });
+    describe('Kyber', () => {
+        const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+        const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
-    describe('sampleBuysFromCurve()', () => {
-        it('samples buys from Curve DAI->USDC', async () => {
-            // From DAI to USDC
-            // I want 1 to buy USDC
-            const samples = await testContract
-                .sampleBuysFromCurve(curveAddress, daiTokenIdx, usdcTokenIdx, [toBaseUnitAmount(1, 6)])
-                .callAsync();
-            expect(samples.length).to.be.bignumber.greaterThan(0);
-            expect(samples[0]).to.be.bignumber.greaterThan(0);
-        });
+        describe('sampleBuysFromKyber()', () => {
+            it('samples buys from Kyber WETH->DAI', async () => {
+                // From ETH to DAI
+                // I want to buy 1 DAI
+                const samples = await testContract
+                    .sampleBuysFromKyberNetwork(WETH_ADDRESS, DAI_ADDRESS, [toBaseUnitAmount(1)])
+                    .callAsync();
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
 
-        it('samples buys from Curve USDC->DAI', async () => {
-            // From USDC to DAI
-            // I want 1 to buy 1 DAI
-            const samples = await testContract
-                .sampleBuysFromCurve(curveAddress, usdcTokenIdx, daiTokenIdx, [toBaseUnitAmount(1)])
-                .callAsync();
-            expect(samples.length).to.be.bignumber.greaterThan(0);
-            expect(samples[0]).to.be.bignumber.greaterThan(0);
+            it('samples buys from Kyber DAI->WETH', async () => {
+                // From USDC to DAI
+                // I want to buy 1 WETH
+                const samples = await testContract
+                    .sampleBuysFromKyberNetwork(DAI_ADDRESS, WETH_ADDRESS, [toBaseUnitAmount(1)])
+                    .callAsync();
+                expect(samples.length).to.be.bignumber.greaterThan(0);
+                expect(samples[0]).to.be.bignumber.greaterThan(0);
+            });
         });
     });
 });

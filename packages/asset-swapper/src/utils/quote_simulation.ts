@@ -136,7 +136,7 @@ export function simulateWorstCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult
 }
 
 export function fillQuoteOrders(
-    side: MarketOperation,
+    _side: MarketOperation,
     fillOrders: QuoteFillOrderCall[],
     inputAmount: BigNumber,
     protocolFeePerFillOrder: BigNumber,
@@ -335,7 +335,7 @@ function fromIntermediateQuoteFillResult(ir: IntermediateQuoteFillResult, quoteI
 }
 
 export function getFlattenedFillsFromOrders(orders: OptimizedMarketOrder[]): CollapsedFill[] {
-    const fills = [];
+    const fills: CollapsedFill[] = [];
     for (const o of orders) {
         fills.push(...o.fills);
     }
