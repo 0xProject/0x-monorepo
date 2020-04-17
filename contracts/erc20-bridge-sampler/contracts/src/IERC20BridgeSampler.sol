@@ -24,6 +24,11 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 interface IERC20BridgeSampler {
 
+    struct FakeBuyOptions {
+        uint256 targetSlippageBps;
+        uint256 maxIterations;
+    }
+
     /// @dev Call multiple public functions on this contract in a single transaction.
     /// @param callDatas ABI-encoded call data for each function call.
     /// @return callResults ABI-encoded results data for each call.
@@ -77,12 +82,14 @@ interface IERC20BridgeSampler {
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param opts `FakeBuyOptions` specifying target slippage and max iterations.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromKyberNetwork(
         address takerToken,
         address makerToken,
-        uint256[] calldata makerTokenAmounts
+        uint256[] calldata makerTokenAmounts,
+        FakeBuyOptions calldata opts
     )
         external
         view
@@ -204,13 +211,16 @@ interface IERC20BridgeSampler {
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param opts `FakeBuyOptions` specifying target slippage and max iterations.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromLiquidityProviderRegistry(
         address registryAddress,
         address takerToken,
         address makerToken,
-        uint256[] calldata makerTokenAmounts
+        uint256[] calldata makerTokenAmounts,
+        FakeBuyOptions calldata opts
+
     )
         external
         view

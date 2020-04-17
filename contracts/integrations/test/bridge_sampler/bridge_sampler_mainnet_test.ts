@@ -66,6 +66,10 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
         });
     });
     describe('Kyber', () => {
+        const FAKE_BUY_OPTS = {
+            targetSlippageBps: new BigNumber(5),
+            maxIterations: new BigNumber(5),
+        };
         const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
         const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
@@ -74,7 +78,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
                 // From ETH to DAI
                 // I want to buy 1 DAI
                 const samples = await testContract
-                    .sampleBuysFromKyberNetwork(WETH_ADDRESS, DAI_ADDRESS, [toBaseUnitAmount(1)])
+                    .sampleBuysFromKyberNetwork(WETH_ADDRESS, DAI_ADDRESS, [toBaseUnitAmount(1)], FAKE_BUY_OPTS)
                     .callAsync();
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);
@@ -84,7 +88,7 @@ blockchainTests.fork.resets('Mainnet Sampler Tests', env => {
                 // From USDC to DAI
                 // I want to buy 1 WETH
                 const samples = await testContract
-                    .sampleBuysFromKyberNetwork(DAI_ADDRESS, WETH_ADDRESS, [toBaseUnitAmount(1)])
+                    .sampleBuysFromKyberNetwork(DAI_ADDRESS, WETH_ADDRESS, [toBaseUnitAmount(1)], FAKE_BUY_OPTS)
                     .callAsync();
                 expect(samples.length).to.be.bignumber.greaterThan(0);
                 expect(samples[0]).to.be.bignumber.greaterThan(0);

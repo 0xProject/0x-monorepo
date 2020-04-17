@@ -216,7 +216,6 @@ contract ERC20BridgeSampler is
     struct FakeBuyContext {
         uint256 buyAmount;
         uint256 sellAmount;
-        uint256 rate;
         uint256 slippageFromTarget;
     }
 
@@ -224,12 +223,14 @@ contract ERC20BridgeSampler is
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param opts `FakeBuyOptions` specifying target slippage and max iterations.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromKyberNetwork(
         address takerToken,
         address makerToken,
-        uint256[] memory makerTokenAmounts
+        uint256[] memory makerTokenAmounts,
+        FakeBuyOptions memory opts
     )
         public
         view
@@ -243,6 +244,7 @@ contract ERC20BridgeSampler is
         address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
         uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
         uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+        uint256 rate;
         takerTokenAmounts = new uint256[](makerTokenAmounts.length);
         FakeBuyContext memory context;
         // Quote the first amount selling the makerTokenAmount
@@ -255,12 +257,12 @@ contract ERC20BridgeSampler is
                     makerTokenAmounts[0]
                 ));
         if (didSucceed) {
-            context.rate = abi.decode(resultData, (uint256));
+            rate = abi.decode(resultData, (uint256));
         } else {
             return takerTokenAmounts;
         }
         // Calculate the initial sell amount from the rate and the maker token sold
-        context.sellAmount = context.rate * makerTokenAmounts[0] *
+        context.sellAmount = rate * makerTokenAmounts[0] *
                     10 ** takerTokenDecimals /
                     10 ** makerTokenDecimals /
                     10 ** 18;
@@ -274,18 +276,19 @@ contract ERC20BridgeSampler is
                     context.sellAmount
                 ));
         if (didSucceed) {
-            context.rate = abi.decode(resultData, (uint256));
+            rate = abi.decode(resultData, (uint256));
         } else {
             return takerTokenAmounts;
         }
         // Calculate the buy amount from the rate and the amount sold
-        context.buyAmount = context.rate * context.sellAmount *
+        context.buyAmount = rate * context.sellAmount *
                     10 ** makerTokenDecimals /
                     10 ** takerTokenDecimals /
                     10 ** 18;
         for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
             uint256 iteration = 0;
-            context.slippageFromTarget = 10;
+            // Default to some value higher than our target
+            context.slippageFromTarget = opts.targetSlippageBps + 1;
             do {
                 // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
                 context.sellAmount = LibMath.getPartialAmountCeil(
@@ -295,7 +298,7 @@ contract ERC20BridgeSampler is
                 );
                 // JUMP Multiplier by 1.0005
                 context.sellAmount = LibMath.getPartialAmountCeil(
-                    10005,
+                    (10000 + opts.targetSlippageBps),
                     10000,
                     context.sellAmount
                 );
@@ -309,20 +312,24 @@ contract ERC20BridgeSampler is
                             context.sellAmount
                         ));
                 if (didSucceed) {
-                    context.rate = abi.decode(resultData, (uint256));
+                    rate = abi.decode(resultData, (uint256));
                 } else {
                     break;
                 }
 
-                context.buyAmount = context.rate * context.sellAmount *
+                context.buyAmount = rate * context.sellAmount *
                             10 ** makerTokenDecimals /
                             10 ** takerTokenDecimals /
                             10 ** 18;
                 // 0.0005 slippage is the target
                 if (context.buyAmount >= makerTokenAmounts[i]) {
-                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) / (makerTokenAmounts[i] / 10000);
+                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) /
+                                                (makerTokenAmounts[i] / 10000);
                 }
-            } while ((context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > 5) && ++iteration < 5);
+            } while (
+                (context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > opts.targetSlippageBps) &&
+                ++iteration < opts.maxIterations
+            );
             // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
             // if we hit a max iteration limit
             // We scale the sell amount to get the approximate target
@@ -659,13 +666,15 @@ contract ERC20BridgeSampler is
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param opts `FakeBuyOptions` specifying target slippage and max iterations.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromLiquidityProviderRegistry(
         address registryAddress,
         address takerToken,
         address makerToken,
-        uint256[] memory makerTokenAmounts
+        uint256[] memory makerTokenAmounts,
+        FakeBuyOptions memory opts
     )
         public
         view
@@ -718,7 +727,8 @@ contract ERC20BridgeSampler is
 
         for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
             uint256 iteration = 0;
-            context.slippageFromTarget = 10;
+            // Default to some value higher than our target
+            context.slippageFromTarget = opts.targetSlippageBps + 1;
             do {
                 // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
                 context.sellAmount = LibMath.getPartialAmountCeil(
@@ -728,7 +738,7 @@ contract ERC20BridgeSampler is
                 );
                 // JUMP Multiplier by 1.0005
                 context.sellAmount = LibMath.getPartialAmountCeil(
-                    10005,
+                    (10000 + opts.targetSlippageBps),
                     10000,
                     context.sellAmount
                 );
@@ -748,9 +758,13 @@ contract ERC20BridgeSampler is
                 }
                 // 0.0005 slippage is the target
                 if (context.buyAmount >= makerTokenAmounts[i]) {
-                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) / (makerTokenAmounts[i] / 10000);
+                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) /
+                                                (makerTokenAmounts[i] / 10000);
                 }
-            } while ((context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > 5) && ++iteration < 5);
+            } while (
+                (context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > opts.targetSlippageBps) &&
+                ++iteration < opts.maxIterations
+            );
             // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
             // if we hit a max iteration limit
             // We scale the sell amount to get the approximate target
