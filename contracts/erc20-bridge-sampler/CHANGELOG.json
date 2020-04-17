@@ -7,7 +7,12 @@
                 "pr": 2531
             },
             {
-                "note": "Sample `Curve` by buy amounts"
+                "note": "Sample `Curve` for buy amounts",
+                "pr": 2551
+            },
+            {
+                "note": "Added `sampleBuysFromKyberNetwork` ",
+                "pr": 2551
             }
         ]
     },
