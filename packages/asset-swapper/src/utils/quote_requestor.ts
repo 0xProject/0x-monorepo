@@ -101,7 +101,7 @@ export class QuoteRequestor {
                     });
                 } catch (err) {
                     logUtils.warn(
-                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
+                        `Failed to get RFQ-T firm quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
                             _opts.apiKey
                         } for taker address ${_opts.takerAddress}`,
                     );
@@ -174,7 +174,7 @@ export class QuoteRequestor {
                     });
                 } catch (err) {
                     logUtils.warn(
-                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
+                        `Failed to get RFQ-T indicative quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
                             options.apiKey
                         } for taker address ${options.takerAddress}`,
                     );
