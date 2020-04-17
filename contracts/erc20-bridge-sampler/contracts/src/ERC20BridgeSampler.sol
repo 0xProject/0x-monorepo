@@ -213,12 +213,6 @@ contract ERC20BridgeSampler is
         }
     }
 
-    struct FakeBuyContext {
-        uint256 buyAmount;
-        uint256 sellAmount;
-        uint256 slippageFromTarget;
-    }
-
     /// @dev Sample buy quotes from Kyber.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
@@ -236,109 +230,14 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
-        _assertValidPair(makerToken, takerToken);
-        if (makerTokenAmounts.length == 0) {
-            return takerTokenAmounts;
-        }
-        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
-        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
-        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
-        uint256 rate;
-        takerTokenAmounts = new uint256[](makerTokenAmounts.length);
-        FakeBuyContext memory context;
-        // Quote the first amount selling the makerTokenAmount
-        (bool didSucceed, bytes memory resultData) =
-            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
-                abi.encodeWithSelector(
-                    IKyberNetwork(0).getExpectedRate.selector,
-                    _makerToken,
-                    _takerToken,
-                    makerTokenAmounts[0]
-                ));
-        if (didSucceed) {
-            rate = abi.decode(resultData, (uint256));
-        } else {
-            return takerTokenAmounts;
-        }
-        // Calculate the initial sell amount from the rate and the maker token sold
-        context.sellAmount = rate * makerTokenAmounts[0] *
-                    10 ** takerTokenDecimals /
-                    10 ** makerTokenDecimals /
-                    10 ** 18;
-
-        (didSucceed, resultData) =
-            _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
-                abi.encodeWithSelector(
-                    IKyberNetwork(0).getExpectedRate.selector,
-                    _takerToken,
-                    _makerToken,
-                    context.sellAmount
-                ));
-        if (didSucceed) {
-            rate = abi.decode(resultData, (uint256));
-        } else {
-            return takerTokenAmounts;
-        }
-        // Calculate the buy amount from the rate and the amount sold
-        context.buyAmount = rate * context.sellAmount *
-                    10 ** makerTokenDecimals /
-                    10 ** takerTokenDecimals /
-                    10 ** 18;
-        for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
-            uint256 iteration = 0;
-            // Default to some value higher than our target
-            context.slippageFromTarget = opts.targetSlippageBps + 1;
-            do {
-                // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
-                context.sellAmount = LibMath.getPartialAmountCeil(
-                    makerTokenAmounts[i],
-                    context.buyAmount,
-                    context.sellAmount
-                );
-                // JUMP Multiplier by 1.0005
-                context.sellAmount = LibMath.getPartialAmountCeil(
-                    (10000 + opts.targetSlippageBps),
-                    10000,
-                    context.sellAmount
-                );
-
-                (didSucceed, resultData) =
-                    _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
-                        abi.encodeWithSelector(
-                            IKyberNetwork(0).getExpectedRate.selector,
-                            _takerToken,
-                            _makerToken,
-                            context.sellAmount
-                        ));
-                if (didSucceed) {
-                    rate = abi.decode(resultData, (uint256));
-                } else {
-                    break;
-                }
-
-                context.buyAmount = rate * context.sellAmount *
-                            10 ** makerTokenDecimals /
-                            10 ** takerTokenDecimals /
-                            10 ** 18;
-                // 0.0005 slippage is the target
-                if (context.buyAmount >= makerTokenAmounts[i]) {
-                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) /
-                                                (makerTokenAmounts[i] / 10000);
-                }
-            } while (
-                (context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > opts.targetSlippageBps) &&
-                ++iteration < opts.maxIterations
-            );
-            // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
-            // if we hit a max iteration limit
-            // We scale the sell amount to get the approximate target
-            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
-                makerTokenAmounts[i],
-                context.buyAmount,
-                context.sellAmount
-            );
-        }
+        return _sampleApproximateBuysFromSource(
+            takerToken,
+            makerToken,
+            makerTokenAmounts,
+            opts,
+            this.sampleSellsFromKyberNetwork.selector,
+            address(0) // PLP registry address
+        );
     }
 
     /// @dev Sample sell quotes from Eth2Dai/Oasis.
@@ -680,100 +579,14 @@ contract ERC20BridgeSampler is
         view
         returns (uint256[] memory takerTokenAmounts)
     {
-        // Initialize array of taker token amounts.
-        uint256 numSamples = makerTokenAmounts.length;
-        takerTokenAmounts = new uint256[](numSamples);
-
-        // Query registry for provider address.
-        address providerAddress = getLiquidityProviderFromRegistry(
-            registryAddress,
+        return _sampleApproximateBuysFromSource(
             takerToken,
-            makerToken
+            makerToken,
+            makerTokenAmounts,
+            opts,
+            this.sampleSellsFromLiquidityProviderRegistry.selector,
+            registryAddress
         );
-        // If provider doesn't exist, return all zeros.
-        if (providerAddress == address(0) || numSamples == 0) {
-            return takerTokenAmounts;
-        }
-
-        FakeBuyContext memory context;
-        // Quote the first amount selling the makerTokenAmount
-        (bool didSucceed, bytes memory resultData) =
-                providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        ILiquidityProvider(0).getSellQuote.selector,
-                        makerToken,
-                        takerToken,
-                        makerTokenAmounts[0]
-                    ));
-        if (didSucceed) {
-            context.sellAmount = abi.decode(resultData, (uint256));
-        } else {
-            return takerTokenAmounts;
-        }
-
-        (didSucceed, resultData) =
-                providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        ILiquidityProvider(0).getSellQuote.selector,
-                        takerToken,
-                        makerToken,
-                        context.sellAmount
-                    ));
-        if (didSucceed) {
-            context.buyAmount = abi.decode(resultData, (uint256));
-        } else {
-            return takerTokenAmounts;
-        }
-
-        for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
-            uint256 iteration = 0;
-            // Default to some value higher than our target
-            context.slippageFromTarget = opts.targetSlippageBps + 1;
-            do {
-                // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
-                context.sellAmount = LibMath.getPartialAmountCeil(
-                    makerTokenAmounts[i],
-                    context.buyAmount,
-                    context.sellAmount
-                );
-                // JUMP Multiplier by 1.0005
-                context.sellAmount = LibMath.getPartialAmountCeil(
-                    (10000 + opts.targetSlippageBps),
-                    10000,
-                    context.sellAmount
-                );
-
-                (didSucceed, resultData) =
-                        providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
-                            abi.encodeWithSelector(
-                                ILiquidityProvider(0).getSellQuote.selector,
-                                takerToken,
-                                makerToken,
-                                context.sellAmount
-                            ));
-                if (didSucceed) {
-                    context.buyAmount = abi.decode(resultData, (uint256));
-                } else {
-                    break;
-                }
-                // 0.0005 slippage is the target
-                if (context.buyAmount >= makerTokenAmounts[i]) {
-                    context.slippageFromTarget = (context.buyAmount - makerTokenAmounts[i]) /
-                                                (makerTokenAmounts[i] / 10000);
-                }
-            } while (
-                (context.buyAmount < makerTokenAmounts[i] && context.slippageFromTarget > opts.targetSlippageBps) &&
-                ++iteration < opts.maxIterations
-            );
-            // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
-            // if we hit a max iteration limit
-            // We scale the sell amount to get the approximate target
-            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
-                makerTokenAmounts[i],
-                context.buyAmount,
-                context.sellAmount
-            );
-        }
     }
 
     /// @dev Returns the address of a liquidity provider for the given market
@@ -866,5 +679,134 @@ contract ERC20BridgeSampler is
         pure
     {
         require(makerToken != takerToken, "ERC20BridgeSampler/INVALID_TOKEN_PAIR");
+    }
+
+    function _sampleSellForApproximateBuy(
+        address takerToken,
+        address makerToken,
+        uint256 makerTokenAmount,
+        bytes4 selector,
+        address plpRegistryAddress
+    )
+        private
+        view
+        returns (uint256 takerTokenAmount)
+    {
+        bytes memory callData;
+        uint256[] memory tmpTakerAmounts = new uint256[](1);
+        tmpTakerAmounts[0] = makerTokenAmount;
+        if (selector == this.sampleSellsFromKyberNetwork.selector) {
+            callData = abi.encodeWithSelector(
+                this.sampleSellsFromKyberNetwork.selector,
+                takerToken,
+                makerToken,
+                tmpTakerAmounts
+            );
+        } else {
+            callData = abi.encodeWithSelector(
+                this.sampleSellsFromLiquidityProviderRegistry.selector,
+                plpRegistryAddress,
+                takerToken,
+                makerToken,
+                tmpTakerAmounts
+            );
+        }
+        (bool success, bytes memory resultData) = address(this).staticcall(callData);
+        if (!success) {
+            return 0;
+        }
+        // solhint-disable indent
+        takerTokenAmount = abi.decode(resultData, (uint256[]))[0];
+    }
+
+    function _sampleApproximateBuysFromSource(
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts,
+        FakeBuyOptions memory opts,
+        bytes4 selector,
+        address plpRegistryAddress
+    )
+        private
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        if (makerTokenAmounts.length == 0) {
+            return takerTokenAmounts;
+        }
+        uint256 sellAmount;
+        uint256 buyAmount;
+        uint256 slippageFromTarget;
+        takerTokenAmounts = new uint256[](makerTokenAmounts.length);
+        sellAmount = _sampleSellForApproximateBuy(
+            makerToken,
+            takerToken,
+            makerTokenAmounts[0],
+            selector,
+            plpRegistryAddress
+        );
+
+        if (sellAmount == 0) {
+            return takerTokenAmounts;
+        }
+
+        buyAmount = _sampleSellForApproximateBuy(
+            takerToken,
+            makerToken,
+            sellAmount,
+            selector,
+            plpRegistryAddress
+        );
+        if (buyAmount == 0) {
+            return takerTokenAmounts;
+        }
+
+        for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
+            uint256 iteration = 0;
+            // Default to some value higher than our target
+            slippageFromTarget = opts.targetSlippageBps + 1;
+            do {
+                // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
+                sellAmount = LibMath.getPartialAmountCeil(
+                    makerTokenAmounts[i],
+                    buyAmount,
+                    sellAmount
+                );
+                // JUMP Multiplier by 1.0005
+                sellAmount = LibMath.getPartialAmountCeil(
+                    (10000 + opts.targetSlippageBps),
+                    10000,
+                    sellAmount
+                );
+                buyAmount = _sampleSellForApproximateBuy(
+                    takerToken,
+                    makerToken,
+                    sellAmount,
+                    selector,
+                    plpRegistryAddress
+                );
+                if (buyAmount == 0) {
+                    break;
+                }
+
+                // 0.0005 slippage is the target
+                if (buyAmount >= makerTokenAmounts[i]) {
+                    slippageFromTarget = (buyAmount - makerTokenAmounts[i]) /
+                                        (makerTokenAmounts[i] / 10000);
+                }
+            } while (
+                (buyAmount < makerTokenAmounts[i] && slippageFromTarget > opts.targetSlippageBps) &&
+                ++iteration < opts.maxIterations
+            );
+            // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
+            // if we hit a max iteration limit
+            // We scale the sell amount to get the approximate target
+            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
+                makerTokenAmounts[i],
+                buyAmount,
+                sellAmount
+            );
+        }
     }
 }

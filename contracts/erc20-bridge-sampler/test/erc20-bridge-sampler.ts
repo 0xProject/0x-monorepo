@@ -422,12 +422,24 @@ blockchainTests('erc20-bridge-sampler', env => {
             maxSlippage: BigNumber | number,
         ) => {
             quotes.map((_q, i) => {
+                // If we're within 1 base unit of a low decimal token
+                // then that's as good as we're going to get (and slippage is "high")
+                if (
+                    expectedQuotes[i].isZero() ||
+                    BigNumber.max(expectedQuotes[i], quotes[i])
+                        .minus(BigNumber.min(expectedQuotes[i], quotes[i]))
+                        .eq(1)
+                ) {
+                    return;
+                }
                 const slippage = quotes[i]
                     .dividedBy(expectedQuotes[i])
                     .minus(1)
                     .decimalPlaces(4);
-                expect(slippage, `quote[${i}]: ${slippage}`).to.be.bignumber.gte(0);
-                expect(slippage, `quote[${i}] ${slippage}`).to.be.bignumber.lte(new BigNumber(maxSlippage));
+                expect(slippage, `quote[${i}]: ${slippage} ${quotes[i]} ${expectedQuotes[i]}`).to.be.bignumber.gte(0);
+                expect(slippage, `quote[${i}] ${slippage} ${quotes[i]} ${expectedQuotes[i]}`).to.be.bignumber.lte(
+                    new BigNumber(maxSlippage),
+                );
             });
         };
 
