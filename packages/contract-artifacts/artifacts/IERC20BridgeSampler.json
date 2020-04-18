@@ -125,7 +125,16 @@
                 "inputs": [
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
-                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" },
+                    {
+                        "components": [
+                            { "internalType": "uint256", "name": "targetSlippageBps", "type": "uint256" },
+                            { "internalType": "uint256", "name": "maxIterations", "type": "uint256" }
+                        ],
+                        "internalType": "struct IERC20BridgeSampler.FakeBuyOptions",
+                        "name": "opts",
+                        "type": "tuple"
+                    }
                 ],
                 "name": "sampleBuysFromKyberNetwork",
                 "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
@@ -139,7 +148,16 @@
                     { "internalType": "address", "name": "registryAddress", "type": "address" },
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
-                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" },
+                    {
+                        "components": [
+                            { "internalType": "uint256", "name": "targetSlippageBps", "type": "uint256" },
+                            { "internalType": "uint256", "name": "maxIterations", "type": "uint256" }
+                        ],
+                        "internalType": "struct IERC20BridgeSampler.FakeBuyOptions",
+                        "name": "opts",
+                        "type": "tuple"
+                    }
                 ],
                 "name": "sampleBuysFromLiquidityProviderRegistry",
                 "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
@@ -278,20 +296,22 @@
                     },
                     "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
                 },
-                "sampleBuysFromKyberNetwork(address,address,uint256[])": {
+                "sampleBuysFromKyberNetwork(address,address,uint256[],(uint256,uint256))": {
                     "details": "Sample buy quotes from Kyber.",
                     "params": {
                         "makerToken": "Address of the maker token (what to buy).",
                         "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "opts": "`FakeBuyOptions` specifying target slippage and max iterations.",
                         "takerToken": "Address of the taker token (what to sell)."
                     },
                     "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
                 },
-                "sampleBuysFromLiquidityProviderRegistry(address,address,address,uint256[])": {
+                "sampleBuysFromLiquidityProviderRegistry(address,address,address,uint256[],(uint256,uint256))": {
                     "details": "Sample buy quotes from an arbitrary on-chain liquidity provider.",
                     "params": {
                         "makerToken": "Address of the maker token (what to buy).",
                         "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "opts": "`FakeBuyOptions` specifying target slippage and max iterations.",
                         "registryAddress": "Address of the liquidity provider registry contract.",
                         "takerToken": "Address of the taker token (what to sell)."
                     },

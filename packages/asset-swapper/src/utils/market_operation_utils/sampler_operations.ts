@@ -1,7 +1,7 @@
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
-import { DEFAULT_CURVE_OPTS } from './constants';
-import { BatchedOperation, DexSample } from './types';
+import { DEFAULT_CURVE_OPTS, DEFAULT_FAKE_BUY_OPTS } from './constants';
+import { BatchedOperation, DexSample, FakeBuyOpts } from './types';
 
 /**
  * Composable operations that can be batched in a single transaction,
@@ -52,11 +52,12 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
+        fakeBuyOpts: FakeBuyOpts,
     ): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts)
+                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts, fakeBuyOpts)
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
@@ -110,6 +111,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
+        fakeBuyOpts: FakeBuyOpts,
     ): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
@@ -119,6 +121,7 @@ export const samplerOperations = {
                         takerToken,
                         makerToken,
                         makerFillAmounts,
+                        fakeBuyOpts,
                     )
                     .getABIEncodedTransactionData();
             },
@@ -365,6 +368,7 @@ export const samplerOperations = {
         takerToken: string,
         makerFillAmounts: BigNumber[],
         liquidityProviderRegistryAddress?: string | undefined,
+        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources
             .map(source => {
@@ -374,13 +378,18 @@ export const samplerOperations = {
                 } else if (source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {
-                    batchedOperation = samplerOperations.getKyberBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                    batchedOperation = samplerOperations.getKyberBuyQuotes(
+                        makerToken,
+                        takerToken,
+                        makerFillAmounts,
+                        fakeBuyOpts,
+                    );
                 } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
                     const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
                     const fromTokenIdx = tokens.indexOf(takerToken);
                     const toTokenIdx = tokens.indexOf(makerToken);
                     if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
-                        batchedOperation = samplerOperations.getCurveSellQuotes(
+                        batchedOperation = samplerOperations.getCurveBuyQuotes(
                             curveAddress,
                             fromTokenIdx,
                             toTokenIdx,
@@ -398,6 +407,7 @@ export const samplerOperations = {
                         makerToken,
                         takerToken,
                         makerFillAmounts,
+                        fakeBuyOpts,
                     );
                 } else {
                     throw new Error(`Unsupported buy sample source: ${source}`);
