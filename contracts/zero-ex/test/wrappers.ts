@@ -24,6 +24,7 @@ export * from '../test/generated-wrappers/lib_proxy_rich_errors';
 export * from '../test/generated-wrappers/lib_proxy_storage';
 export * from '../test/generated-wrappers/lib_simple_function_registry_rich_errors';
 export * from '../test/generated-wrappers/lib_simple_function_registry_storage';
+export * from '../test/generated-wrappers/lib_storage';
 export * from '../test/generated-wrappers/migrate';
 export * from '../test/generated-wrappers/ownable';
 export * from '../test/generated-wrappers/simple_function_registry';

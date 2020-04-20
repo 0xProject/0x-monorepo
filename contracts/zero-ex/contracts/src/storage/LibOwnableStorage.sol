@@ -19,13 +19,11 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "./LibStorage.sol";
+
 
 /// @dev Storage helpers for the `Ownable` feature.
 library LibOwnableStorage {
-
-    /// @dev Globally unique offset for the storage bucket.
-    bytes32 constant internal STORAGE_ID =
-        0xeef73acb590dd70cb88ccc8e9832ea7f198de2f3c87ff92d610497d647795b3c;
 
     /// @dev Storage bucket for this feature.
     struct Storage {
@@ -35,7 +33,9 @@ library LibOwnableStorage {
 
     /// @dev Get the storage bucket for this contract.
     function getStorage() internal pure returns (Storage storage stor) {
-        bytes32 storageId = STORAGE_ID;
-        assembly { stor_slot := storageId }
+        uint256 storageOffset = LibStorage.getStorageOffset(
+            LibStorage.StorageId.Ownable
+        );
+        assembly { stor_slot := storageOffset }
     }
 }

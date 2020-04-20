@@ -19,13 +19,11 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "./LibStorage.sol";
+
 
 /// @dev Storage helpers for the `Migrate` feature.
 library LibMigrateStorage {
-
-    /// @dev Globally unique offset for the storage bucket.
-    bytes32 constant internal STORAGE_ID =
-        0x0ed67b719caa0e9bebb7147a4de9fdb6f1c82a984b2297d741a9888432214d5c;
 
     /// @dev Storage bucket for this feature.
     struct Storage {
@@ -35,7 +33,9 @@ library LibMigrateStorage {
 
     /// @dev Get the storage bucket for this contract.
     function getStorage() internal pure returns (Storage storage stor) {
-        bytes32 storageId = STORAGE_ID;
-        assembly { stor_slot := storageId }
+        uint256 storageOffset = LibStorage.getStorageOffset(
+            LibStorage.StorageId.Migrate
+        );
+        assembly { stor_slot := storageOffset }
     }
 }

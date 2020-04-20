@@ -19,13 +19,11 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "./LibStorage.sol";
+
 
 /// @dev Storage helpers for the proxy contract.
 library LibProxyStorage {
-
-    /// @dev Globally unique offset for the storage bucket.
-    bytes32 constant internal STORAGE_ID =
-        0xd7434ab6df6fb6431870c66fc3fc3d21ddd20b029595942d9e0ffc950ce32f66;
 
     /// @dev Storage bucket for proxy contract.
     struct Storage {
@@ -35,7 +33,9 @@ library LibProxyStorage {
 
     /// @dev Get the storage bucket for this contract.
     function getStorage() internal pure returns (Storage storage stor) {
-        bytes32 storageId = STORAGE_ID;
-        assembly { stor_slot := storageId }
+        uint256 storageOffset = LibStorage.getStorageOffset(
+            LibStorage.StorageId.Proxy
+        );
+        assembly { stor_slot := storageOffset }
     }
 }

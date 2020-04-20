@@ -53,7 +53,7 @@ contract Bootstrap is
     }
 
     /// @dev Bootstrap the initial feature set of this contract by delegatecalling
-    ///      into `_bootstrapper`. Before exiting the `bootstrap()` function will
+    ///      into `target`. Before exiting the `bootstrap()` function will
     ///      deregister itself from the proxy to prevent being called again.
     /// @param target The bootstrapper contract address.
     /// @param callData The call data to execute on `_bootstrapper`.
@@ -65,11 +65,12 @@ contract Bootstrap is
                 _bootstrapCaller
             ));
         }
-        LibBootstrap.delegatecallBootstrapFunction(target, callData);
         // Deregister.
         LibProxyStorage.getStorage().impls[this.bootstrap.selector] = address(0);
         // Self-destruct.
         Bootstrap(_implementation).die();
+        // Call the bootstrapper.
+        LibBootstrap.delegatecallBootstrapFunction(target, callData);
     }
 
     /// @dev Self-destructs this contract.

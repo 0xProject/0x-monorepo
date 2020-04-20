@@ -28,6 +28,7 @@
         "test/generated-artifacts/LibProxyStorage.json",
         "test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json",
         "test/generated-artifacts/LibSimpleFunctionRegistryStorage.json",
+        "test/generated-artifacts/LibStorage.json",
         "test/generated-artifacts/Migrate.json",
         "test/generated-artifacts/Ownable.json",
         "test/generated-artifacts/SimpleFunctionRegistry.json",

@@ -19,13 +19,11 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "./LibStorage.sol";
+
 
 /// @dev Storage helpers for the `SimpleFunctionRegistry` feature.
 library LibSimpleFunctionRegistryStorage {
-
-    /// @dev Globally unique offset for the storage bucket.
-    bytes32 constant internal STORAGE_ID =
-        0x9817e79514d088041d4834d6eb535f4fa107927bddb0f3c55c3e6b2bfe43daa5;
 
     /// @dev Storage bucket for this feature.
     struct Storage {
@@ -35,7 +33,9 @@ library LibSimpleFunctionRegistryStorage {
 
     /// @dev Get the storage bucket for this contract.
     function getStorage() internal pure returns (Storage storage stor) {
-        bytes32 storageId = STORAGE_ID;
-        assembly { stor_slot := storageId }
+        uint256 storageOffset = LibStorage.getStorageOffset(
+            LibStorage.StorageId.SimpleFunctionRegistry
+        );
+        assembly { stor_slot := storageOffset }
     }
 }

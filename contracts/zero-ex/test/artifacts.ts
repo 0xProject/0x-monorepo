@@ -26,6 +26,7 @@ import * as LibProxyRichErrors from '../test/generated-artifacts/LibProxyRichErr
 import * as LibProxyStorage from '../test/generated-artifacts/LibProxyStorage.json';
 import * as LibSimpleFunctionRegistryRichErrors from '../test/generated-artifacts/LibSimpleFunctionRegistryRichErrors.json';
 import * as LibSimpleFunctionRegistryStorage from '../test/generated-artifacts/LibSimpleFunctionRegistryStorage.json';
+import * as LibStorage from '../test/generated-artifacts/LibStorage.json';
 import * as Migrate from '../test/generated-artifacts/Migrate.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
 import * as SimpleFunctionRegistry from '../test/generated-artifacts/SimpleFunctionRegistry.json';
@@ -60,6 +61,7 @@ export const artifacts = {
     LibOwnableStorage: LibOwnableStorage as ContractArtifact,
     LibProxyStorage: LibProxyStorage as ContractArtifact,
     LibSimpleFunctionRegistryStorage: LibSimpleFunctionRegistryStorage as ContractArtifact,
+    LibStorage: LibStorage as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestInitialMigration: TestInitialMigration as ContractArtifact,
     TestMigrator: TestMigrator as ContractArtifact,
