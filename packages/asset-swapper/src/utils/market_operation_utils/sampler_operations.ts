@@ -1,6 +1,7 @@
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
+import { getCurveInfo, isCurveSource } from '../source_utils';
 
-import { DEFAULT_CURVE_OPTS, DEFAULT_FAKE_BUY_OPTS } from './constants';
+import { DEFAULT_FAKE_BUY_OPTS } from './constants';
 import { BatchedOperation, DexSample, FakeBuyOpts } from './types';
 
 /**
@@ -52,7 +53,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
-        fakeBuyOpts: FakeBuyOpts,
+        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
@@ -78,6 +79,22 @@ export const samplerOperations = {
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswap', callResults);
+            },
+        };
+    },
+    getUniswapBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromUniswap(takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswap', callResults);
             },
         };
     },
@@ -111,7 +128,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
-        fakeBuyOpts: FakeBuyOpts,
+        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
@@ -146,6 +163,22 @@ export const samplerOperations = {
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromEth2Dai', callResults);
+            },
+        };
+    },
+    getEth2DaiBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromEth2Dai(takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromEth2Dai', callResults);
             },
         };
     },
@@ -190,38 +223,6 @@ export const samplerOperations = {
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromCurve', callResults);
-            },
-        };
-    },
-    getUniswapBuyQuotes(
-        makerToken: string,
-        takerToken: string,
-        makerFillAmounts: BigNumber[],
-    ): BatchedOperation<BigNumber[]> {
-        return {
-            encodeCall: contract => {
-                return contract
-                    .sampleBuysFromUniswap(takerToken, makerToken, makerFillAmounts)
-                    .getABIEncodedTransactionData();
-            },
-            handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswap', callResults);
-            },
-        };
-    },
-    getEth2DaiBuyQuotes(
-        makerToken: string,
-        takerToken: string,
-        makerFillAmounts: BigNumber[],
-    ): BatchedOperation<BigNumber[]> {
-        return {
-            encodeCall: contract => {
-                return contract
-                    .sampleBuysFromEth2Dai(takerToken, makerToken, makerFillAmounts)
-                    .getABIEncodedTransactionData();
-            },
-            handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromEth2Dai', callResults);
             },
         };
     },
@@ -307,10 +308,8 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
-                } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
-                    const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
-                    const fromTokenIdx = tokens.indexOf(takerToken);
-                    const toTokenIdx = tokens.indexOf(makerToken);
+                } else if (isCurveSource(source)) {
+                    const { curveAddress, fromTokenIdx, toTokenIdx } = getCurveInfo(source, takerToken, makerToken);
                     if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
                         batchedOperation = samplerOperations.getCurveSellQuotes(
                             curveAddress,
@@ -384,10 +383,8 @@ export const samplerOperations = {
                         makerFillAmounts,
                         fakeBuyOpts,
                     );
-                } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
-                    const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
-                    const fromTokenIdx = tokens.indexOf(takerToken);
-                    const toTokenIdx = tokens.indexOf(makerToken);
+                } else if (isCurveSource(source)) {
+                    const { curveAddress, fromTokenIdx, toTokenIdx } = getCurveInfo(source, takerToken, makerToken);
                     if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
                         batchedOperation = samplerOperations.getCurveBuyQuotes(
                             curveAddress,

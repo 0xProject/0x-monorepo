@@ -341,7 +341,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             expect(quotes).to.deep.eq([]);
         });
 
-        it('can quote token - token', async () => {
+        it('can quote token -> token', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
             const [expectedQuotes] = getDeterministicSellQuotes(TAKER_TOKEN, MAKER_TOKEN, ['Kyber'], sampleAmounts);
             const quotes = await testContract
@@ -421,7 +421,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             expectedQuotes: BigNumber[],
             maxSlippage: BigNumber | number,
         ) => {
-            quotes.map((_q, i) => {
+            quotes.forEach((_q, i) => {
                 // If we're within 1 base unit of a low decimal token
                 // then that's as good as we're going to get (and slippage is "high")
                 if (
@@ -443,7 +443,7 @@ blockchainTests('erc20-bridge-sampler', env => {
             });
         };
 
-        it('can quote token - token', async () => {
+        it('can quote token -> token', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
             const [expectedQuotes] = getDeterministicBuyQuotes(TAKER_TOKEN, MAKER_TOKEN, ['Kyber'], sampleAmounts);
             const quotes = await testContract

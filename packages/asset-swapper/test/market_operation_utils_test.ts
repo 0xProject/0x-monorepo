@@ -526,7 +526,6 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai]: [0.92, 0.1, 0.1, 0.1],
                     // Effectively [0.8, ~0.5, ~0, ~0]
                     [ERC20BridgeSource.Uniswap]: [1, 0.7, 0.2, 0.2],
-                    [ERC20BridgeSource.Kyber]: [0, 0, 0, 0],
                 };
                 const feeSchedule = {
                     [ERC20BridgeSource.Uniswap]: FILL_AMOUNT.div(4)
@@ -722,7 +721,7 @@ describe('MarketOperationUtils tests', () => {
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
                 maxFallbackSlippage: 100,
-                excludedSources: Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[],
+                excludedSources: [...(Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[]), ERC20BridgeSource.Kyber],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
             };
@@ -859,7 +858,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Native] = [0.4, 0.3, 0.2, 0.1];
                 rates[ERC20BridgeSource.Uniswap] = [0.5, 0.05, 0.05, 0.05];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.6, 0.05, 0.05, 0.05];
-                rates[ERC20BridgeSource.Kyber] = [0, 0, 0, 0]; // Unused
                 replaceSamplerOps({
                     getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
@@ -923,7 +921,6 @@ describe('MarketOperationUtils tests', () => {
                     // Effectively [0.8, ~0.5, ~0, ~0]
                     [ERC20BridgeSource.Uniswap]: [1, 0.7, 0.2, 0.2],
                     [ERC20BridgeSource.Eth2Dai]: [0.92, 0.1, 0.1, 0.1],
-                    [ERC20BridgeSource.Kyber]: [0, 0, 0, 0],
                 };
                 const feeSchedule = {
                     [ERC20BridgeSource.Uniswap]: FILL_AMOUNT.div(4)
@@ -953,7 +950,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Native] = [0.9, 0.8, 0.5, 0.5];
                 rates[ERC20BridgeSource.Uniswap] = [0.6, 0.05, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.4, 0.3, 0.01, 0.01];
-                rates[ERC20BridgeSource.Kyber] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
@@ -979,7 +975,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Native] = [1, 1, 0.01, 0.01];
                 rates[ERC20BridgeSource.Uniswap] = [1, 1, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.49, 0.49, 0.49];
-                rates[ERC20BridgeSource.Kyber] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });
@@ -1000,7 +995,6 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.01, 0.01, 0.01];
                 rates[ERC20BridgeSource.Uniswap] = [0.48, 0.47, 0.01, 0.01];
-                rates[ERC20BridgeSource.Kyber] = [0, 0, 0, 0];
                 replaceSamplerOps({
                     getBuyQuotes: createGetMultipleBuyQuotesOperationFromRates(rates),
                 });

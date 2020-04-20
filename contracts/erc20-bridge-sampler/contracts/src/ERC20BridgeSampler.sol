@@ -684,17 +684,17 @@ contract ERC20BridgeSampler is
     function _sampleSellForApproximateBuy(
         address takerToken,
         address makerToken,
-        uint256 makerTokenAmount,
+        uint256 takerTokenAmount,
         bytes4 selector,
         address plpRegistryAddress
     )
         private
         view
-        returns (uint256 takerTokenAmount)
+        returns (uint256 makerTokenAmount)
     {
         bytes memory callData;
         uint256[] memory tmpTakerAmounts = new uint256[](1);
-        tmpTakerAmounts[0] = makerTokenAmount;
+        tmpTakerAmounts[0] = takerTokenAmount;
         if (selector == this.sampleSellsFromKyberNetwork.selector) {
             callData = abi.encodeWithSelector(
                 this.sampleSellsFromKyberNetwork.selector,
@@ -716,7 +716,7 @@ contract ERC20BridgeSampler is
             return 0;
         }
         // solhint-disable indent
-        takerTokenAmount = abi.decode(resultData, (uint256[]))[0];
+        makerTokenAmount = abi.decode(resultData, (uint256[]))[0];
     }
 
     function _sampleApproximateBuysFromSource(
@@ -763,17 +763,13 @@ contract ERC20BridgeSampler is
         }
 
         for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
-            uint256 iteration = 0;
-            // Default to some value higher than our target
-            slippageFromTarget = opts.targetSlippageBps + 1;
-            do {
+            for (uint256 iter = 0; iter < opts.maxIterations; iter++) {
                 // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
                 sellAmount = LibMath.getPartialAmountCeil(
                     makerTokenAmounts[i],
                     buyAmount,
                     sellAmount
                 );
-                // JUMP Multiplier by 1.0005
                 sellAmount = LibMath.getPartialAmountCeil(
                     (10000 + opts.targetSlippageBps),
                     10000,
@@ -790,15 +786,14 @@ contract ERC20BridgeSampler is
                     break;
                 }
 
-                // 0.0005 slippage is the target
                 if (buyAmount >= makerTokenAmounts[i]) {
-                    slippageFromTarget = (buyAmount - makerTokenAmounts[i]) /
-                                        (makerTokenAmounts[i] / 10000);
+                    uint256 slippageFromTarget = (buyAmount - makerTokenAmounts[i]) * 10000 /
+                                                makerTokenAmounts[i];
+                    if (slippageFromTarget <= opts.targetSlippageBps) {
+                        break;
+                    }
                 }
-            } while (
-                (buyAmount < makerTokenAmounts[i] && slippageFromTarget > opts.targetSlippageBps) &&
-                ++iteration < opts.maxIterations
-            );
+            }
             // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
             // if we hit a max iteration limit
             // We scale the sell amount to get the approximate target
