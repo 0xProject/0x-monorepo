@@ -32,6 +32,26 @@ import {
     OrderDomain,
 } from './types';
 
+async function getRfqtIndicativeQuotesAsync(
+    makerAssetData: string,
+    takerAssetData: string,
+    marketOperation: MarketOperation,
+    assetFillAmount: BigNumber,
+    opts: Partial<GetMarketOrdersOpts>,
+): Promise<RfqtIndicativeQuoteResponse[]> {
+    if (opts.rfqt && opts.rfqt.quoteRequestor) {
+        return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
+            makerAssetData,
+            takerAssetData,
+            assetFillAmount,
+            marketOperation,
+            opts.rfqt,
+        );
+    } else {
+        return Promise.resolve<RfqtIndicativeQuoteResponse[]>([]);
+    }
+}
+
 export class MarketOperationUtils {
     private readonly _wethAddress: string;
 
@@ -93,16 +113,13 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
-        const rfqtPromise =
-            _opts !== undefined && _opts.rfqt !== undefined && _opts.rfqt.quoteRequestor !== undefined
-                ? _opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
-                      nativeOrders[0].makerAssetData,
-                      nativeOrders[0].takerAssetData,
-                      takerAmount,
-                      MarketOperation.Sell,
-                      _opts.rfqt,
-                  )
-                : Promise.resolve<RfqtIndicativeQuoteResponse[]>([]);
+        const rfqtPromise = getRfqtIndicativeQuotesAsync(
+            makerToken,
+            takerToken,
+            MarketOperation.Sell,
+            takerAmount,
+            _opts,
+        );
         const [
             [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
             rfqtIndicativeQuotes,
@@ -176,16 +193,13 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
-        const rfqtPromise =
-            opts !== undefined && _opts.rfqt !== undefined && _opts.rfqt.quoteRequestor !== undefined
-                ? _opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
-                      nativeOrders[0].makerAssetData,
-                      nativeOrders[0].takerAssetData,
-                      makerAmount,
-                      MarketOperation.Buy,
-                      _opts.rfqt,
-                  )
-                : [];
+        const rfqtPromise = getRfqtIndicativeQuotesAsync(
+            makerToken,
+            takerToken,
+            MarketOperation.Buy,
+            makerAmount,
+            _opts,
+        );
         const [
             [orderFillableAmounts, liquidityProviderAddress, ethToTakerAssetRate, dexQuotes],
             rfqtIndicativeQuotes,
