@@ -190,7 +190,7 @@ export interface SwapQuoteOrdersBreakdown {
 export interface RfqtRequestOpts {
     takerAddress: string;
     apiKey: string;
-    intentOnFilling?: boolean;
+    intentOnFilling: boolean;
     makerEndpointMaxResponseTimeMs?: number;
 }
 
