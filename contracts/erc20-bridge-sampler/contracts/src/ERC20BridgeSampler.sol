@@ -775,17 +775,20 @@ contract ERC20BridgeSampler is
                     10000,
                     sellAmount
                 );
-                buyAmount = _sampleSellForApproximateBuy(
+                uint256 _buyAmount = _sampleSellForApproximateBuy(
                     takerToken,
                     makerToken,
                     sellAmount,
                     selector,
                     plpRegistryAddress
                 );
-                if (buyAmount == 0) {
+                if (_buyAmount == 0) {
                     break;
                 }
-
+                // We re-use buyAmount next iteration, only assign if it is
+                // non zero
+                buyAmount = _buyAmount;
+                // If we've reached our goal, exit early
                 if (buyAmount >= makerTokenAmounts[i]) {
                     uint256 slippageFromTarget = (buyAmount - makerTokenAmounts[i]) * 10000 /
                                                 makerTokenAmounts[i];
