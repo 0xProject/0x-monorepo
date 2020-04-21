@@ -114,8 +114,8 @@ export class MarketOperationUtils {
             ),
         );
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
-            makerToken,
-            takerToken,
+            nativeOrders[0].makerAssetData,
+            nativeOrders[0].takerAssetData,
             MarketOperation.Sell,
             takerAmount,
             _opts,
@@ -194,8 +194,8 @@ export class MarketOperationUtils {
             ),
         );
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
-            makerToken,
-            takerToken,
+            nativeOrders[0].makerAssetData,
+            nativeOrders[0].takerAssetData,
             MarketOperation.Buy,
             makerAmount,
             _opts,
