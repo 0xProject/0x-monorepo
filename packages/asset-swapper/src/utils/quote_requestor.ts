@@ -51,7 +51,7 @@ function inferQueryParams(
     makerAssetData: string,
     takerAssetData: string,
     assetFillAmount: BigNumber,
-): { buyToken: string; sellToken: string; buyAmount: string | undefined; sellAmount: string | undefined } {
+): { buyToken: string; sellToken: string; buyAmount?: string; sellAmount?: string } {
     if (marketOperation === MarketOperation.Buy) {
         return {
             buyToken: getTokenAddressOrThrow(makerAssetData),
