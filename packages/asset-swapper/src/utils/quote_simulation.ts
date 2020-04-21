@@ -101,7 +101,6 @@ export function simulateBestCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult 
         ...quoteInfo.opts,
     };
     const result = fillQuoteOrders(
-        quoteInfo.side,
         createBestCaseFillOrderCalls(quoteInfo),
         quoteInfo.fillAmount,
         quoteInfo.gasPrice.times(opts.protocolFeeMultiplier),
@@ -119,7 +118,6 @@ export function simulateWorstCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult
     const protocolFeePerFillOrder = quoteInfo.gasPrice.times(opts.protocolFeeMultiplier);
     const result = {
         ...fillQuoteOrders(
-            quoteInfo.side,
             createWorstCaseFillOrderCalls(quoteInfo),
             quoteInfo.fillAmount,
             protocolFeePerFillOrder,
@@ -136,7 +134,6 @@ export function simulateWorstCaseFill(quoteInfo: QuoteFillInfo): QuoteFillResult
 }
 
 export function fillQuoteOrders(
-    side: MarketOperation,
     fillOrders: QuoteFillOrderCall[],
     inputAmount: BigNumber,
     protocolFeePerFillOrder: BigNumber,
@@ -335,7 +332,7 @@ function fromIntermediateQuoteFillResult(ir: IntermediateQuoteFillResult, quoteI
 }
 
 export function getFlattenedFillsFromOrders(orders: OptimizedMarketOrder[]): CollapsedFill[] {
-    const fills = [];
+    const fills: CollapsedFill[] = [];
     for (const o of orders) {
         fills.push(...o.fills);
     }

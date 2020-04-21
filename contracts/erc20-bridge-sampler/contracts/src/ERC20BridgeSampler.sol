@@ -213,6 +213,33 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample buy quotes from Kyber.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param opts `FakeBuyOptions` specifying target slippage and max iterations.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromKyberNetwork(
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts,
+        FakeBuyOptions memory opts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        return _sampleApproximateBuysFromSource(
+            takerToken,
+            makerToken,
+            makerTokenAmounts,
+            opts,
+            this.sampleSellsFromKyberNetwork.selector,
+            address(0) // PLP registry address
+        );
+    }
+
     /// @dev Sample sell quotes from Eth2Dai/Oasis.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
@@ -443,6 +470,44 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample buy quotes from Curve.
+    /// @param curveAddress Address of the Curve contract.
+    /// @param fromTokenIdx Index of the taker token (what to sell).
+    /// @param toTokenIdx Index of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromCurve(
+        address curveAddress,
+        int128 fromTokenIdx,
+        int128 toTokenIdx,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                curveAddress.staticcall.gas(CURVE_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        ICurve(0).get_dx_underlying.selector,
+                        fromTokenIdx,
+                        toTokenIdx,
+                        makerTokenAmounts[i]
+                    ));
+            uint256 sellAmount = 0;
+            if (didSucceed) {
+                sellAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            takerTokenAmounts[i] = sellAmount;
+        }
+    }
+
     /// @dev Sample sell quotes from an arbitrary on-chain liquidity provider.
     /// @param registryAddress Address of the liquidity provider registry contract.
     /// @param takerToken Address of the taker token (what to sell).
@@ -500,52 +565,28 @@ contract ERC20BridgeSampler is
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).
     /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @param opts `FakeBuyOptions` specifying target slippage and max iterations.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
     function sampleBuysFromLiquidityProviderRegistry(
         address registryAddress,
         address takerToken,
         address makerToken,
-        uint256[] memory makerTokenAmounts
+        uint256[] memory makerTokenAmounts,
+        FakeBuyOptions memory opts
     )
         public
         view
         returns (uint256[] memory takerTokenAmounts)
     {
-        // Initialize array of taker token amounts.
-        uint256 numSamples = makerTokenAmounts.length;
-        takerTokenAmounts = new uint256[](numSamples);
-
-        // Query registry for provider address.
-        address providerAddress = getLiquidityProviderFromRegistry(
-            registryAddress,
+        return _sampleApproximateBuysFromSource(
             takerToken,
-            makerToken
+            makerToken,
+            makerTokenAmounts,
+            opts,
+            this.sampleSellsFromLiquidityProviderRegistry.selector,
+            registryAddress
         );
-        // If provider doesn't exist, return all zeros.
-        if (providerAddress == address(0)) {
-            return takerTokenAmounts;
-        }
-
-        // Otherwise, query liquidity provider for quotes.
-        for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                providerAddress.staticcall.gas(DEFAULT_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        ILiquidityProvider(0).getBuyQuote.selector,
-                        takerToken,
-                        makerToken,
-                        makerTokenAmounts[i]
-                    ));
-            uint256 sellAmount = 0;
-            if (didSucceed) {
-                sellAmount = abi.decode(resultData, (uint256));
-            } else {
-                // Exit early if the amount is too high for the liquidity provider to serve
-                break;
-            }
-            takerTokenAmounts[i] = sellAmount;
-        }
     }
 
     /// @dev Returns the address of a liquidity provider for the given market
@@ -638,5 +679,132 @@ contract ERC20BridgeSampler is
         pure
     {
         require(makerToken != takerToken, "ERC20BridgeSampler/INVALID_TOKEN_PAIR");
+    }
+
+    function _sampleSellForApproximateBuy(
+        address takerToken,
+        address makerToken,
+        uint256 takerTokenAmount,
+        bytes4 selector,
+        address plpRegistryAddress
+    )
+        private
+        view
+        returns (uint256 makerTokenAmount)
+    {
+        bytes memory callData;
+        uint256[] memory tmpTakerAmounts = new uint256[](1);
+        tmpTakerAmounts[0] = takerTokenAmount;
+        if (selector == this.sampleSellsFromKyberNetwork.selector) {
+            callData = abi.encodeWithSelector(
+                this.sampleSellsFromKyberNetwork.selector,
+                takerToken,
+                makerToken,
+                tmpTakerAmounts
+            );
+        } else {
+            callData = abi.encodeWithSelector(
+                this.sampleSellsFromLiquidityProviderRegistry.selector,
+                plpRegistryAddress,
+                takerToken,
+                makerToken,
+                tmpTakerAmounts
+            );
+        }
+        (bool success, bytes memory resultData) = address(this).staticcall(callData);
+        if (!success) {
+            return 0;
+        }
+        // solhint-disable indent
+        makerTokenAmount = abi.decode(resultData, (uint256[]))[0];
+    }
+
+    function _sampleApproximateBuysFromSource(
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts,
+        FakeBuyOptions memory opts,
+        bytes4 selector,
+        address plpRegistryAddress
+    )
+        private
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        if (makerTokenAmounts.length == 0) {
+            return takerTokenAmounts;
+        }
+        uint256 sellAmount;
+        uint256 buyAmount;
+        uint256 slippageFromTarget;
+        takerTokenAmounts = new uint256[](makerTokenAmounts.length);
+        sellAmount = _sampleSellForApproximateBuy(
+            makerToken,
+            takerToken,
+            makerTokenAmounts[0],
+            selector,
+            plpRegistryAddress
+        );
+
+        if (sellAmount == 0) {
+            return takerTokenAmounts;
+        }
+
+        buyAmount = _sampleSellForApproximateBuy(
+            takerToken,
+            makerToken,
+            sellAmount,
+            selector,
+            plpRegistryAddress
+        );
+        if (buyAmount == 0) {
+            return takerTokenAmounts;
+        }
+
+        for (uint256 i = 0; i < makerTokenAmounts.length; i++) {
+            for (uint256 iter = 0; iter < opts.maxIterations; iter++) {
+                // adjustedSellAmount = previousSellAmount * (target/actual) * JUMP_MULTIPLIER
+                sellAmount = LibMath.getPartialAmountCeil(
+                    makerTokenAmounts[i],
+                    buyAmount,
+                    sellAmount
+                );
+                sellAmount = LibMath.getPartialAmountCeil(
+                    (10000 + opts.targetSlippageBps),
+                    10000,
+                    sellAmount
+                );
+                uint256 _buyAmount = _sampleSellForApproximateBuy(
+                    takerToken,
+                    makerToken,
+                    sellAmount,
+                    selector,
+                    plpRegistryAddress
+                );
+                if (_buyAmount == 0) {
+                    break;
+                }
+                // We re-use buyAmount next iteration, only assign if it is
+                // non zero
+                buyAmount = _buyAmount;
+                // If we've reached our goal, exit early
+                if (buyAmount >= makerTokenAmounts[i]) {
+                    uint256 slippageFromTarget = (buyAmount - makerTokenAmounts[i]) * 10000 /
+                                                makerTokenAmounts[i];
+                    if (slippageFromTarget <= opts.targetSlippageBps) {
+                        break;
+                    }
+                }
+            }
+            // We do our best to close in on the requested amount, but we can either over buy or under buy and exit
+            // if we hit a max iteration limit
+            // We scale the sell amount to get the approximate target
+            takerTokenAmounts[i] = LibMath.getPartialAmountCeil(
+                makerTokenAmounts[i],
+                buyAmount,
+                sellAmount
+            );
+        }
     }
 }

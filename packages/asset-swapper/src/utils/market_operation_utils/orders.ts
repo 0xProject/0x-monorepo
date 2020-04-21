@@ -5,9 +5,9 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
+import { getCurveInfo, isCurveSource } from '../source_utils';
 
 import {
-    DEFAULT_CURVE_OPTS,
     ERC20_PROXY_ID,
     NULL_ADDRESS,
     NULL_BYTES,
@@ -211,10 +211,8 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
     const bridgeAddress = getBridgeAddressFromSource(fill.source, opts);
 
     let makerAssetData;
-    if (Object.keys(DEFAULT_CURVE_OPTS).includes(fill.source)) {
-        const { curveAddress, tokens, version } = DEFAULT_CURVE_OPTS[fill.source];
-        const fromTokenIdx = tokens.indexOf(takerToken);
-        const toTokenIdx = tokens.indexOf(makerToken);
+    if (isCurveSource(fill.source)) {
+        const { curveAddress, fromTokenIdx, toTokenIdx, version } = getCurveInfo(fill.source, takerToken, makerToken);
         makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
             makerToken,
             bridgeAddress,
