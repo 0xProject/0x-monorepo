@@ -232,5 +232,50 @@ describe('QuoteRequestor', async () => {
                 expect(resp.sort()).to.eql([successfulQuote1, successfulQuote1].sort());
             });
         });
+        it('should return successful RFQT indicative quote requests', async () => {
+            const takerAddress = '0xd209925defc99488e3afff1174e48b4fa628302a';
+            const apiKey = 'my-ko0l-api-key';
+
+            // Set up RFQT responses
+            // tslint:disable-next-line:array-type
+            const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
+            const expectedParams = {
+                sellToken: takerToken,
+                buyToken: makerToken,
+                buyAmount: '10000',
+                sellAmount: undefined,
+                takerAddress,
+            };
+            // Successful response
+            const successfulQuote1 = {
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount: new BigNumber(expectedParams.buyAmount),
+                takerAssetAmount: new BigNumber(expectedParams.buyAmount),
+            };
+            mockedRequests.push({
+                endpoint: 'https://1337.0.0.1',
+                requestApiKey: apiKey,
+                requestParams: expectedParams,
+                responseData: successfulQuote1,
+                responseCode: StatusCodes.Success,
+            });
+
+            return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
+                const qr = new QuoteRequestor(['https://1337.0.0.1']);
+                const resp = await qr.requestRfqtIndicativeQuotesAsync(
+                    makerAssetData,
+                    takerAssetData,
+                    new BigNumber(10000),
+                    MarketOperation.Buy,
+                    {
+                        apiKey,
+                        takerAddress,
+                        intentOnFilling: true,
+                    },
+                );
+                expect(resp.sort()).to.eql([successfulQuote1].sort());
+            });
+        });
     });
 });
