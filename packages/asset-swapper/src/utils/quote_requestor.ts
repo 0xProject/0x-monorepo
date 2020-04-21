@@ -17,6 +17,7 @@ export interface RfqtIndicativeQuoteResponse {
     makerAssetAmount: BigNumber;
     takerAssetData: string;
     takerAssetAmount: BigNumber;
+    expirationTimeSeconds: BigNumber;
 }
 
 function getTokenAddressOrThrow(assetData: string): string {
@@ -249,7 +250,16 @@ export class QuoteRequestor {
         const hasValidTakerAssetData =
             response.takerAssetData !== undefined &&
             this._schemaValidator.isValid(response.takerAssetData, schemas.hexSchema);
-        if (hasValidMakerAssetAmount && hasValidTakerAssetAmount && hasValidMakerAssetData && hasValidTakerAssetData) {
+        const hasValidExpirationTimeSeconds =
+            response.expirationTimeSeconds !== undefined &&
+            this._schemaValidator.isValid(response.expirationTimeSeconds, schemas.wholeNumberSchema);
+        if (
+            hasValidMakerAssetAmount &&
+            hasValidTakerAssetAmount &&
+            hasValidMakerAssetData &&
+            hasValidTakerAssetData &&
+            hasValidExpirationTimeSeconds
+        ) {
             return true;
         }
         return false;

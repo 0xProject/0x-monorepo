@@ -366,7 +366,7 @@ export function createSignedOrdersFromRfqtIndicativeQuotes(
             senderAddress: NULL_ADDRESS,
             feeRecipientAddress: NULL_ADDRESS,
             salt: ZERO_AMOUNT,
-            expirationTimeSeconds: ZERO_AMOUNT,
+            expirationTimeSeconds: quote.expirationTimeSeconds,
             makerFeeAssetData: NULL_BYTES,
             takerFeeAssetData: NULL_BYTES,
             makerFee: ZERO_AMOUNT,

@@ -15,6 +15,12 @@ import { testOrderFactory } from './utils/test_order_factory';
 chaiSetup.configure();
 const expect = chai.expect;
 
+function makeOneMinuteExpiryJson(): string {
+    const expiry = new Date(Date.now());
+    expiry.setMinutes(expiry.getMinutes() + 1);
+    return Math.round(expiry.valueOf() / constants.ONE_SECOND_MS).toString();
+}
+
 describe('QuoteRequestor', async () => {
     const [makerToken, takerToken, otherToken1] = tokenUtils.getDummyERC20TokenAddresses();
     const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken);
@@ -159,6 +165,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.sellAmount),
                 takerAssetAmount: new BigNumber(expectedParams.sellAmount),
+                expirationTimeSeconds: makeOneMinuteExpiryJson(),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -252,6 +259,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.buyAmount),
                 takerAssetAmount: new BigNumber(expectedParams.buyAmount),
+                expirationTimeSeconds: makeOneMinuteExpiryJson(),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
