@@ -566,13 +566,8 @@ export class SwapQuoter {
         let swapQuote: SwapQuote;
 
         const calcOpts: CalculateSwapQuoteOpts = opts;
-        if (
-            // we should request indicative quotes:
-            calcOpts.rfqt &&
-            !calcOpts.rfqt.intentOnFilling &&
-            calcOpts.rfqt.apiKey &&
-            this._rfqtTakerApiKeyWhitelist.includes(calcOpts.rfqt.apiKey)
-        ) {
+
+        if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt)) {
             calcOpts.rfqt.quoteRequestor = this._quoteRequestor;
         }
 
@@ -593,6 +588,9 @@ export class SwapQuoter {
         }
 
         return swapQuote;
+    }
+    private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt']): boolean {
+        return opts !== undefined && !opts.intentOnFilling && this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey);
     }
 }
 // tslint:disable-next-line: max-file-line-count
