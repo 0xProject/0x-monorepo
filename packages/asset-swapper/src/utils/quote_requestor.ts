@@ -39,6 +39,7 @@ function assertTakerAddressOrThrow(takerAddress: string | undefined): void {
         takerAddress === undefined ||
         takerAddress === '' ||
         takerAddress === '0x' ||
+        !takerAddress ||
         takerAddress === constants.NULL_ADDRESS
     ) {
         throw new Error('RFQ-T requires the presence of a taker address');
