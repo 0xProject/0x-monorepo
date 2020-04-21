@@ -68,6 +68,17 @@ function inferQueryParams(
     }
 }
 
+function hasExpectedAssetData(
+    expectedMakerAssetData: string,
+    expectedTakerAssetData: string,
+    makerAssetDataInQuestion: string,
+    takerAssetDataInQuestion: string,
+): boolean {
+    const hasExpectedMakerAssetData = makerAssetDataInQuestion.toLowerCase() === expectedMakerAssetData.toLowerCase();
+    const hasExpectedTakerAssetData = takerAssetDataInQuestion.toLowerCase() === expectedTakerAssetData.toLowerCase();
+    return hasExpectedMakerAssetData && hasExpectedTakerAssetData;
+}
+
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
@@ -124,9 +135,14 @@ export class QuoteRequestor {
                 return false;
             }
 
-            const hasExpectedMakerAssetData = order.makerAssetData.toLowerCase() === makerAssetData.toLowerCase();
-            const hasExpectedTakerAssetData = order.takerAssetData.toLowerCase() === takerAssetData.toLowerCase();
-            if (!hasExpectedMakerAssetData || !hasExpectedTakerAssetData) {
+            if (
+                !hasExpectedAssetData(
+                    makerAssetData,
+                    takerAssetData,
+                    order.makerAssetData.toLowerCase(),
+                    order.takerAssetData.toLowerCase(),
+                )
+            ) {
                 logUtils.warn(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
                 return false;
             }
@@ -191,11 +207,19 @@ export class QuoteRequestor {
         const responsesWithStringInts = axiosResponses.map(response => response.data); // not yet BigNumber
 
         const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
-            if (this._isValidRfqtIndicativeQuoteResponse(response)) {
-                return true;
+            if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
+                logUtils.warn(`Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`);
+                return false;
             }
-            logUtils.warn(`Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`);
-            return false;
+            if (
+                !hasExpectedAssetData(makerAssetData, takerAssetData, response.makerAssetData, response.takerAssetData)
+            ) {
+                logUtils.warn(
+                    `Unexpected asset data in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
+                );
+                return false;
+            }
+            return true;
         });
 
         const responses = validResponsesWithStringInts.map(response => {
@@ -210,16 +234,18 @@ export class QuoteRequestor {
     }
 
     private _isValidRfqtIndicativeQuoteResponse(response: RfqtIndicativeQuoteResponse): boolean {
-        const hasValidMakerAssetAmount = this._schemaValidator.isValid(
-            response.makerAssetAmount,
-            schemas.wholeNumberSchema,
-        );
-        const hasValidTakerAssetAmount = this._schemaValidator.isValid(
-            response.takerAssetAmount,
-            schemas.wholeNumberSchema,
-        );
-        const hasValidMakerAssetData = this._schemaValidator.isValid(response.makerAssetData, schemas.hexSchema);
-        const hasValidTakerAssetData = this._schemaValidator.isValid(response.takerAssetData, schemas.hexSchema);
+        const hasValidMakerAssetAmount =
+            response.makerAssetAmount !== undefined &&
+            this._schemaValidator.isValid(response.makerAssetAmount, schemas.wholeNumberSchema);
+        const hasValidTakerAssetAmount =
+            response.takerAssetAmount !== undefined &&
+            this._schemaValidator.isValid(response.takerAssetAmount, schemas.wholeNumberSchema);
+        const hasValidMakerAssetData =
+            response.makerAssetData !== undefined &&
+            this._schemaValidator.isValid(response.makerAssetData, schemas.hexSchema);
+        const hasValidTakerAssetData =
+            response.takerAssetData !== undefined &&
+            this._schemaValidator.isValid(response.takerAssetData, schemas.hexSchema);
         if (hasValidMakerAssetAmount && hasValidTakerAssetAmount && hasValidMakerAssetData && hasValidTakerAssetData) {
             return true;
         }
