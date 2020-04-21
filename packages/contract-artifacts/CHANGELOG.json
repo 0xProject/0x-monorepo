@@ -9,6 +9,14 @@
             {
                 "note": "Added `Forwarder.marketSellAmountWithEth`",
                 "pr": 2521
+            },
+            {
+                "note": "Added `ERC20BridgeSampler.sampleBuysFromCurve`",
+                "pr": 2551
+            },
+            {
+                "note": "Added `ERC20BridgeSampler.sampleBuysFromKyberNetwork`",
+                "pr": 2551
             }
         ]
     },

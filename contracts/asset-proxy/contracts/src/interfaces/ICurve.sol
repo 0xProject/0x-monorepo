@@ -65,7 +65,6 @@ interface ICurve {
         returns (uint256 dy);
 
     /// @dev Get the amount of `fromToken` by buying `buyAmount` of `toToken`
-    ///      This function exists on later versions of Curve (USDC/DAI/USDT)
     /// @param i The token index being sold.
     /// @param j The token index being bought.
     /// @param buyAmount The amount of token being bought.

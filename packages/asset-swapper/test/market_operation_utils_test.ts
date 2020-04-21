@@ -721,7 +721,7 @@ describe('MarketOperationUtils tests', () => {
                 sampleDistributionBase: 1,
                 bridgeSlippage: 0,
                 maxFallbackSlippage: 100,
-                excludedSources: Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[],
+                excludedSources: [...(Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[]), ERC20BridgeSource.Kyber],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
             };

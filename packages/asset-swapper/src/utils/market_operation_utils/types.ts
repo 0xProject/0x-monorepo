@@ -197,3 +197,12 @@ export interface BatchedOperation<TResult> {
     encodeCall(contract: IERC20BridgeSamplerContract): string;
     handleCallResultsAsync(contract: IERC20BridgeSamplerContract, callResults: string): Promise<TResult>;
 }
+
+/**
+ * Used in the ERC20BridgeSampler when a source does not natively
+ * support sampling via a specific buy amount.
+ */
+export interface FakeBuyOpts {
+    targetSlippageBps: BigNumber;
+    maxIterations: BigNumber;
+}

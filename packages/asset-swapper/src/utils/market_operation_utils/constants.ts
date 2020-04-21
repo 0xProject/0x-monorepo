@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { ERC20BridgeSource, GetMarketOrdersOpts } from './types';
+import { ERC20BridgeSource, FakeBuyOpts, GetMarketOrdersOpts } from './types';
 
 // tslint:disable: custom-no-magic-numbers
 
@@ -21,7 +21,16 @@ export const SELL_SOURCES = [
 /**
  * Valid sources for market buy.
  */
-export const BUY_SOURCES = [ERC20BridgeSource.Uniswap, ERC20BridgeSource.Eth2Dai];
+export const BUY_SOURCES = [
+    ERC20BridgeSource.Uniswap,
+    ERC20BridgeSource.Eth2Dai,
+    ERC20BridgeSource.Kyber,
+    // All Curve sources
+    ERC20BridgeSource.CurveUsdcDai,
+    ERC20BridgeSource.CurveUsdcDaiUsdt,
+    ERC20BridgeSource.CurveUsdcDaiUsdtBusd,
+    ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     // tslint:disable-next-line: custom-no-magic-numbers
@@ -35,6 +44,11 @@ export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
     gasSchedule: {},
     allowFallback: true,
     shouldBatchBridgeOrders: true,
+};
+
+export const DEFAULT_FAKE_BUY_OPTS: FakeBuyOpts = {
+    targetSlippageBps: new BigNumber(5),
+    maxIterations: new BigNumber(5),
 };
 
 /**

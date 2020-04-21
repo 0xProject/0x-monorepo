@@ -5,6 +5,14 @@
             {
                 "note": "Pass in `DevUtils` address as a constructor parameter",
                 "pr": 2531
+            },
+            {
+                "note": "Sample `Curve` for buy amounts",
+                "pr": 2551
+            },
+            {
+                "note": "Added `sampleBuysFromKyberNetwork` ",
+                "pr": 2551
             }
         ]
     },

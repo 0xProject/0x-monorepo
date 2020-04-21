@@ -1,7 +1,8 @@
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
+import { getCurveInfo, isCurveSource } from '../source_utils';
 
-import { DEFAULT_CURVE_OPTS } from './constants';
-import { BatchedOperation, DexSample } from './types';
+import { DEFAULT_FAKE_BUY_OPTS } from './constants';
+import { BatchedOperation, DexSample, FakeBuyOpts } from './types';
 
 /**
  * Composable operations that can be batched in a single transaction,
@@ -48,6 +49,23 @@ export const samplerOperations = {
             },
         };
     },
+    getKyberBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromKyberNetwork(takerToken, makerToken, makerFillAmounts, fakeBuyOpts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromKyberNetwork', callResults);
+            },
+        };
+    },
     getUniswapSellQuotes(
         makerToken: string,
         takerToken: string,
@@ -61,6 +79,22 @@ export const samplerOperations = {
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswap', callResults);
+            },
+        };
+    },
+    getUniswapBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromUniswap(takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswap', callResults);
             },
         };
     },
@@ -94,6 +128,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
+        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
@@ -103,6 +138,7 @@ export const samplerOperations = {
                         takerToken,
                         makerToken,
                         makerFillAmounts,
+                        fakeBuyOpts,
                     )
                     .getABIEncodedTransactionData();
             },
@@ -130,6 +166,22 @@ export const samplerOperations = {
             },
         };
     },
+    getEth2DaiBuyQuotes(
+        makerToken: string,
+        takerToken: string,
+        makerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromEth2Dai(takerToken, makerToken, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromEth2Dai', callResults);
+            },
+        };
+    },
     getCurveSellQuotes(
         curveAddress: string,
         fromTokenIdx: number,
@@ -152,35 +204,25 @@ export const samplerOperations = {
             },
         };
     },
-    getUniswapBuyQuotes(
-        makerToken: string,
-        takerToken: string,
+    getCurveBuyQuotes(
+        curveAddress: string,
+        fromTokenIdx: number,
+        toTokenIdx: number,
         makerFillAmounts: BigNumber[],
     ): BatchedOperation<BigNumber[]> {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleBuysFromUniswap(takerToken, makerToken, makerFillAmounts)
+                    .sampleBuysFromCurve(
+                        curveAddress,
+                        new BigNumber(fromTokenIdx),
+                        new BigNumber(toTokenIdx),
+                        makerFillAmounts,
+                    )
                     .getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswap', callResults);
-            },
-        };
-    },
-    getEth2DaiBuyQuotes(
-        makerToken: string,
-        takerToken: string,
-        makerFillAmounts: BigNumber[],
-    ): BatchedOperation<BigNumber[]> {
-        return {
-            encodeCall: contract => {
-                return contract
-                    .sampleBuysFromEth2Dai(takerToken, makerToken, makerFillAmounts)
-                    .getABIEncodedTransactionData();
-            },
-            handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromEth2Dai', callResults);
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromCurve', callResults);
             },
         };
     },
@@ -226,10 +268,10 @@ export const samplerOperations = {
     },
     constant<T>(result: T): BatchedOperation<T> {
         return {
-            encodeCall: contract => {
+            encodeCall: _contract => {
                 return '0x';
             },
-            handleCallResultsAsync: async (contract, callResults) => {
+            handleCallResultsAsync: async (_contract, _callResults) => {
                 return result;
             },
         };
@@ -266,10 +308,8 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
-                } else if (Object.keys(DEFAULT_CURVE_OPTS).includes(source)) {
-                    const { curveAddress, tokens } = DEFAULT_CURVE_OPTS[source];
-                    const fromTokenIdx = tokens.indexOf(takerToken);
-                    const toTokenIdx = tokens.indexOf(makerToken);
+                } else if (isCurveSource(source)) {
+                    const { curveAddress, fromTokenIdx, toTokenIdx } = getCurveInfo(source, takerToken, makerToken);
                     if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
                         batchedOperation = samplerOperations.getCurveSellQuotes(
                             curveAddress,
@@ -327,41 +367,69 @@ export const samplerOperations = {
         takerToken: string,
         makerFillAmounts: BigNumber[],
         liquidityProviderRegistryAddress?: string | undefined,
+        fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<DexSample[][]> {
-        const subOps = sources.map(source => {
-            if (source === ERC20BridgeSource.Eth2Dai) {
-                return samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
-            } else if (source === ERC20BridgeSource.Uniswap) {
-                return samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
-            } else if (source === ERC20BridgeSource.LiquidityProvider) {
-                if (liquidityProviderRegistryAddress === undefined) {
-                    throw new Error(
-                        'Cannot sample liquidity from a LiquidityProvider liquidity pool, if a registry is not provided.',
+        const subOps = sources
+            .map(source => {
+                let batchedOperation;
+                if (source === ERC20BridgeSource.Eth2Dai) {
+                    batchedOperation = samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                } else if (source === ERC20BridgeSource.Uniswap) {
+                    batchedOperation = samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                } else if (source === ERC20BridgeSource.Kyber) {
+                    batchedOperation = samplerOperations.getKyberBuyQuotes(
+                        makerToken,
+                        takerToken,
+                        makerFillAmounts,
+                        fakeBuyOpts,
                     );
+                } else if (isCurveSource(source)) {
+                    const { curveAddress, fromTokenIdx, toTokenIdx } = getCurveInfo(source, takerToken, makerToken);
+                    if (fromTokenIdx !== -1 && toTokenIdx !== -1) {
+                        batchedOperation = samplerOperations.getCurveBuyQuotes(
+                            curveAddress,
+                            fromTokenIdx,
+                            toTokenIdx,
+                            makerFillAmounts,
+                        );
+                    }
+                } else if (source === ERC20BridgeSource.LiquidityProvider) {
+                    if (liquidityProviderRegistryAddress === undefined) {
+                        throw new Error(
+                            'Cannot sample liquidity from a LiquidityProvider liquidity pool, if a registry is not provided.',
+                        );
+                    }
+                    batchedOperation = samplerOperations.getLiquidityProviderBuyQuotes(
+                        liquidityProviderRegistryAddress,
+                        makerToken,
+                        takerToken,
+                        makerFillAmounts,
+                        fakeBuyOpts,
+                    );
+                } else {
+                    throw new Error(`Unsupported buy sample source: ${source}`);
                 }
-                return samplerOperations.getLiquidityProviderBuyQuotes(
-                    liquidityProviderRegistryAddress,
-                    makerToken,
-                    takerToken,
-                    makerFillAmounts,
-                );
-            } else {
-                throw new Error(`Unsupported buy sample source: ${source}`);
-            }
-        });
+                return { source, batchedOperation };
+            })
+            .filter(op => op.batchedOperation) as Array<{
+            batchedOperation: BatchedOperation<BigNumber[]>;
+            source: ERC20BridgeSource;
+        }>;
         return {
             encodeCall: contract => {
-                const subCalls = subOps.map(op => op.encodeCall(contract));
+                const subCalls = subOps.map(op => op.batchedOperation.encodeCall(contract));
                 return contract.batchCall(subCalls).getABIEncodedTransactionData();
             },
             handleCallResultsAsync: async (contract, callResults) => {
                 const rawSubCallResults = contract.getABIDecodedReturnData<string[]>('batchCall', callResults);
                 const samples = await Promise.all(
-                    subOps.map(async (op, i) => op.handleCallResultsAsync(contract, rawSubCallResults[i])),
+                    subOps.map(async (op, i) =>
+                        op.batchedOperation.handleCallResultsAsync(contract, rawSubCallResults[i]),
+                    ),
                 );
-                return sources.map((source, i) => {
+                return subOps.map((op, i) => {
                     return samples[i].map((output, j) => ({
-                        source,
+                        source: op.source,
                         output,
                         input: makerFillAmounts[j],
                     }));
