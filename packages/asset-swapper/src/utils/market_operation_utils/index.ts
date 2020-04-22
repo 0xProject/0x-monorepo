@@ -3,6 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
 import { MarketOperation } from '../../types';
+import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
@@ -13,7 +14,12 @@ import {
     getPathAdjustedSlippage,
     getPathSize,
 } from './fills';
-import { createOrdersFromPath, createSignedOrdersWithFillableAmounts, getNativeOrderTokens } from './orders';
+import {
+    createOrdersFromPath,
+    createSignedOrdersFromRfqtIndicativeQuotes,
+    createSignedOrdersWithFillableAmounts,
+    getNativeOrderTokens,
+} from './orders';
 import { findOptimalPath } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
 import {
@@ -25,6 +31,26 @@ import {
     OptimizedMarketOrder,
     OrderDomain,
 } from './types';
+
+async function getRfqtIndicativeQuotesAsync(
+    makerAssetData: string,
+    takerAssetData: string,
+    marketOperation: MarketOperation,
+    assetFillAmount: BigNumber,
+    opts: Partial<GetMarketOrdersOpts>,
+): Promise<RfqtIndicativeQuoteResponse[]> {
+    if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
+        return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
+            makerAssetData,
+            takerAssetData,
+            assetFillAmount,
+            marketOperation,
+            opts.rfqt,
+        );
+    } else {
+        return Promise.resolve<RfqtIndicativeQuoteResponse[]>([]);
+    }
+}
 
 export class MarketOperationUtils {
     private readonly _wethAddress: string;
@@ -57,12 +83,7 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         // Call the sampler contract.
-        const [
-            orderFillableAmounts,
-            liquidityProviderAddress,
-            ethToMakerAssetRate,
-            dexQuotes,
-        ] = await this._sampler.executeAsync(
+        const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableTakerAmounts(nativeOrders),
             // Get the custom liquidity provider from registry.
@@ -92,10 +113,22 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
+        const rfqtPromise = getRfqtIndicativeQuotesAsync(
+            nativeOrders[0].makerAssetData,
+            nativeOrders[0].takerAssetData,
+            MarketOperation.Sell,
+            takerAmount,
+            _opts,
+        );
+        const [
+            [orderFillableAmounts, liquidityProviderAddress, ethToMakerAssetRate, dexQuotes],
+            rfqtIndicativeQuotes,
+        ] = await Promise.all([samplerPromise, rfqtPromise]);
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes,
+            rfqtIndicativeQuotes,
             liquidityProviderAddress,
             inputToken: takerToken,
             outputToken: makerToken,
@@ -130,12 +163,7 @@ export class MarketOperationUtils {
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
         // Call the sampler contract.
-        const [
-            orderFillableAmounts,
-            liquidityProviderAddress,
-            ethToTakerAssetRate,
-            dexQuotes,
-        ] = await this._sampler.executeAsync(
+        const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
             DexOrderSampler.ops.getOrderFillableMakerAmounts(nativeOrders),
             // Get the custom liquidity provider from registry.
@@ -165,11 +193,23 @@ export class MarketOperationUtils {
                 this._liquidityProviderRegistry,
             ),
         );
+        const rfqtPromise = getRfqtIndicativeQuotesAsync(
+            nativeOrders[0].makerAssetData,
+            nativeOrders[0].takerAssetData,
+            MarketOperation.Buy,
+            makerAmount,
+            _opts,
+        );
+        const [
+            [orderFillableAmounts, liquidityProviderAddress, ethToTakerAssetRate, dexQuotes],
+            rfqtIndicativeQuotes,
+        ] = await Promise.all([samplerPromise, rfqtPromise]);
 
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
             dexQuotes,
+            rfqtIndicativeQuotes,
             liquidityProviderAddress,
             inputToken: makerToken,
             outputToken: takerToken,
@@ -246,6 +286,7 @@ export class MarketOperationUtils {
                     orderFillableAmounts,
                     nativeOrders,
                     dexQuotes,
+                    rfqtIndicativeQuotes: [],
                     inputToken: makerToken,
                     outputToken: takerToken,
                     side: MarketOperation.Buy,
@@ -274,6 +315,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[];
         orderFillableAmounts: BigNumber[];
         dexQuotes: DexSample[][];
+        rfqtIndicativeQuotes: RfqtIndicativeQuoteResponse[];
         runLimit?: number;
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
@@ -290,7 +332,10 @@ export class MarketOperationUtils {
         const paths = createFillPaths({
             side,
             // Augment native orders with their fillable amounts.
-            orders: createSignedOrdersWithFillableAmounts(side, opts.nativeOrders, opts.orderFillableAmounts),
+            orders: [
+                ...createSignedOrdersWithFillableAmounts(side, opts.nativeOrders, opts.orderFillableAmounts),
+                ...createSignedOrdersFromRfqtIndicativeQuotes(opts.rfqtIndicativeQuotes),
+            ],
             dexQuotes: opts.dexQuotes,
             targetInput: inputAmount,
             ethToOutputRate: opts.ethToOutputRate,

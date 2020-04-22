@@ -6,11 +6,18 @@ import Axios, { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { MarketOperation, RfqtFirmQuoteRequestOpts } from '../types';
+import { MarketOperation, RfqtRequestOpts } from '../types';
 
 /**
  * Request quotes from RFQ-T providers
  */
+
+export interface RfqtIndicativeQuoteResponse {
+    makerAssetData: string;
+    makerAssetAmount: BigNumber;
+    takerAssetData: string;
+    takerAssetAmount: BigNumber;
+}
 
 function getTokenAddressOrThrow(assetData: string): string {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
@@ -27,6 +34,52 @@ function getTokenAddressOrThrow(assetData: string): string {
     throw new Error(`Decoded asset data (${JSON.stringify(decodedAssetData)}) does not contain a token address`);
 }
 
+function assertTakerAddressOrThrow(takerAddress: string | undefined): void {
+    if (
+        takerAddress === undefined ||
+        takerAddress === '' ||
+        takerAddress === '0x' ||
+        !takerAddress ||
+        takerAddress === constants.NULL_ADDRESS
+    ) {
+        throw new Error('RFQ-T requires the presence of a taker address');
+    }
+}
+
+function inferQueryParams(
+    marketOperation: MarketOperation,
+    makerAssetData: string,
+    takerAssetData: string,
+    assetFillAmount: BigNumber,
+): { buyToken: string; sellToken: string; buyAmount?: string; sellAmount?: string } {
+    if (marketOperation === MarketOperation.Buy) {
+        return {
+            buyToken: getTokenAddressOrThrow(makerAssetData),
+            sellToken: getTokenAddressOrThrow(takerAssetData),
+            buyAmount: assetFillAmount.toString(),
+            sellAmount: undefined,
+        };
+    } else {
+        return {
+            buyToken: getTokenAddressOrThrow(makerAssetData),
+            sellToken: getTokenAddressOrThrow(takerAssetData),
+            sellAmount: assetFillAmount.toString(),
+            buyAmount: undefined,
+        };
+    }
+}
+
+function hasExpectedAssetData(
+    expectedMakerAssetData: string,
+    expectedTakerAssetData: string,
+    makerAssetDataInQuestion: string,
+    takerAssetDataInQuestion: string,
+): boolean {
+    const hasExpectedMakerAssetData = makerAssetDataInQuestion.toLowerCase() === expectedMakerAssetData.toLowerCase();
+    const hasExpectedTakerAssetData = takerAssetDataInQuestion.toLowerCase() === expectedTakerAssetData.toLowerCase();
+    return hasExpectedMakerAssetData && hasExpectedTakerAssetData;
+}
+
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
@@ -40,14 +93,10 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        takerApiKey: string,
-        takerAddress: string,
-        options?: Partial<RfqtFirmQuoteRequestOpts>,
+        options?: Partial<RfqtRequestOpts>,
     ): Promise<SignedOrder[]> {
-        const { makerEndpointMaxResponseTimeMs } = _.merge({}, constants.DEFAULT_RFQT_FIRM_QUOTE_REQUEST_OPTS, options);
-
-        const buyToken = getTokenAddressOrThrow(makerAssetData);
-        const sellToken = getTokenAddressOrThrow(takerAssetData);
+        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        assertTakerAddressOrThrow(_opts.takerAddress);
 
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
@@ -55,20 +104,18 @@ export class QuoteRequestor {
             this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
                 try {
                     return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
-                        headers: { '0x-api-key': takerApiKey },
+                        headers: { '0x-api-key': _opts.apiKey },
                         params: {
-                            sellToken,
-                            buyToken,
-                            buyAmount: marketOperation === MarketOperation.Buy ? assetFillAmount.toString() : undefined,
-                            sellAmount:
-                                marketOperation === MarketOperation.Sell ? assetFillAmount.toString() : undefined,
-                            takerAddress,
+                            takerAddress: _opts.takerAddress,
+                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
                         },
-                        timeout: makerEndpointMaxResponseTimeMs,
+                        timeout: _opts.makerEndpointMaxResponseTimeMs,
                     });
                 } catch (err) {
                     logUtils.warn(
-                        `Failed to get RFQ-T quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${takerApiKey} for taker address ${takerAddress}`,
+                        `Failed to get RFQ-T firm quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
+                            _opts.apiKey
+                        } for taker address ${_opts.takerAddress}`,
                     );
                     logUtils.warn(err);
                     return undefined;
@@ -89,9 +136,14 @@ export class QuoteRequestor {
                 return false;
             }
 
-            const hasExpectedMakerAssetData = order.makerAssetData.toLowerCase() === makerAssetData.toLowerCase();
-            const hasExpectedTakerAssetData = order.takerAssetData.toLowerCase() === takerAssetData.toLowerCase();
-            if (!hasExpectedMakerAssetData || !hasExpectedTakerAssetData) {
+            if (
+                !hasExpectedAssetData(
+                    makerAssetData,
+                    takerAssetData,
+                    order.makerAssetData.toLowerCase(),
+                    order.takerAssetData.toLowerCase(),
+                )
+            ) {
                 logUtils.warn(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
                 return false;
             }
@@ -112,5 +164,92 @@ export class QuoteRequestor {
         });
 
         return orders;
+    }
+
+    public async requestRfqtIndicativeQuotesAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+        assetFillAmount: BigNumber,
+        marketOperation: MarketOperation,
+        options: RfqtRequestOpts,
+    ): Promise<RfqtIndicativeQuoteResponse[]> {
+        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        assertTakerAddressOrThrow(_opts.takerAddress);
+
+        const axiosResponsesIfDefined: Array<
+            undefined | AxiosResponse<RfqtIndicativeQuoteResponse>
+        > = await Promise.all(
+            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
+                try {
+                    return await Axios.get<RfqtIndicativeQuoteResponse>(`${rfqtMakerEndpoint}/price`, {
+                        headers: { '0x-api-key': options.apiKey },
+                        params: {
+                            takerAddress: options.takerAddress,
+                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+                        },
+                        timeout: options.makerEndpointMaxResponseTimeMs,
+                    });
+                } catch (err) {
+                    logUtils.warn(
+                        `Failed to get RFQ-T indicative quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
+                            options.apiKey
+                        } for taker address ${options.takerAddress}`,
+                    );
+                    logUtils.warn(err);
+                    return undefined;
+                }
+            }),
+        );
+
+        const axiosResponses = axiosResponsesIfDefined.filter(
+            (respIfDefd): respIfDefd is AxiosResponse<RfqtIndicativeQuoteResponse> => respIfDefd !== undefined,
+        );
+
+        const responsesWithStringInts = axiosResponses.map(response => response.data); // not yet BigNumber
+
+        const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
+            if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
+                logUtils.warn(`Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`);
+                return false;
+            }
+            if (
+                !hasExpectedAssetData(makerAssetData, takerAssetData, response.makerAssetData, response.takerAssetData)
+            ) {
+                logUtils.warn(
+                    `Unexpected asset data in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
+                );
+                return false;
+            }
+            return true;
+        });
+
+        const responses = validResponsesWithStringInts.map(response => {
+            return {
+                ...response,
+                makerAssetAmount: new BigNumber(response.makerAssetAmount),
+                takerAssetAmount: new BigNumber(response.takerAssetAmount),
+            };
+        });
+
+        return responses;
+    }
+
+    private _isValidRfqtIndicativeQuoteResponse(response: RfqtIndicativeQuoteResponse): boolean {
+        const hasValidMakerAssetAmount =
+            response.makerAssetAmount !== undefined &&
+            this._schemaValidator.isValid(response.makerAssetAmount, schemas.wholeNumberSchema);
+        const hasValidTakerAssetAmount =
+            response.takerAssetAmount !== undefined &&
+            this._schemaValidator.isValid(response.takerAssetAmount, schemas.wholeNumberSchema);
+        const hasValidMakerAssetData =
+            response.makerAssetData !== undefined &&
+            this._schemaValidator.isValid(response.makerAssetData, schemas.hexSchema);
+        const hasValidTakerAssetData =
+            response.takerAssetData !== undefined &&
+            this._schemaValidator.isValid(response.takerAssetData, schemas.hexSchema);
+        if (hasValidMakerAssetAmount && hasValidTakerAssetAmount && hasValidMakerAssetData && hasValidTakerAssetData) {
+            return true;
+        }
+        return false;
     }
 }

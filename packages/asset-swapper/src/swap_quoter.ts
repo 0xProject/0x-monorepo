@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 
 import { constants } from './constants';
 import {
+    CalculateSwapQuoteOpts,
     LiquidityForTakerMakerAssetDataPair,
     MarketBuySwapQuote,
     MarketOperation,
@@ -169,8 +170,7 @@ export class SwapQuoter {
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
-        this._quoteRequestor =
-            options.quoteRequestor || new QuoteRequestor(options.rfqt ? options.rfqt.makerEndpoints || [] : []);
+        this._quoteRequestor = new QuoteRequestor(options.rfqt ? options.rfqt.makerEndpoints || [] : []);
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
                 gas: samplerGasLimit,
@@ -533,8 +533,8 @@ export class SwapQuoter {
         if (
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
-            opts.apiKey &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
+            opts.rfqt.apiKey &&
+            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey)
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
@@ -545,8 +545,7 @@ export class SwapQuoter {
                     takerAssetData,
                     assetFillAmount,
                     marketOperation,
-                    opts.apiKey,
-                    opts.rfqt.takerAddress,
+                    opts.rfqt,
                 ),
             );
         }
@@ -566,23 +565,37 @@ export class SwapQuoter {
 
         let swapQuote: SwapQuote;
 
+        const calcOpts: CalculateSwapQuoteOpts = opts;
+
+        if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt)) {
+            calcOpts.rfqt.quoteRequestor = this._quoteRequestor;
+        }
+
         if (marketOperation === MarketOperation.Buy) {
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 orders,
                 assetFillAmount,
                 gasPrice,
-                opts,
+                calcOpts,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
                 orders,
                 assetFillAmount,
                 gasPrice,
-                opts,
+                calcOpts,
             );
         }
 
         return swapQuote;
+    }
+    private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt']): boolean {
+        return (
+            opts !== undefined &&
+            opts.isIndicative !== undefined &&
+            opts.isIndicative &&
+            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
+        );
     }
 }
 // tslint:disable-next-line: max-file-line-count

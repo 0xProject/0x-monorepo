@@ -45,6 +45,10 @@
             {
                 "note": "Add support for RFQ-T, querying maker-hosted endpoints for quotes to be submitted by the taker",
                 "pr": 2541
+            },
+            {
+                "note": "Add support for indicative (non-committal) quotes via RFQ-T",
+                "pr": 2555
             }
         ]
     },

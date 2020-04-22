@@ -1,7 +1,8 @@
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
-import { SignedOrderWithFillableAmounts } from '../../types';
+import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
+import { QuoteRequestor, RfqtIndicativeQuoteResponse } from '../../utils/quote_requestor';
 
 /**
  * Order domain keys: chainId and exchange
@@ -42,6 +43,10 @@ export interface FillData {}
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
     order: SignedOrderWithFillableAmounts;
+}
+
+export interface RfqtFillData extends FillData {
+    quote: RfqtIndicativeQuoteResponse;
 }
 
 /**
@@ -130,6 +135,10 @@ export interface OptimizedMarketOrder extends SignedOrderWithFillableAmounts {
     fills: CollapsedFill[];
 }
 
+export interface GetMarketOrdersRfqtOpts extends RfqtRequestOpts {
+    quoteRequestor?: QuoteRequestor;
+}
+
 /**
  * Options for `getMarketSellOrdersAsync()` and `getMarketBuyOrdersAsync()`.
  */
@@ -183,6 +192,7 @@ export interface GetMarketOrdersOpts {
      * sources. Defaults to `true`.
      */
     allowFallback: boolean;
+    rfqt?: GetMarketOrdersRfqtOpts;
     /**
      * Whether to combine contiguous bridge orders into a single DexForwarderBridge
      * order. Defaults to `true`.

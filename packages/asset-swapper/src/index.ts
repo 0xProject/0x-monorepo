@@ -45,7 +45,7 @@ export {
     MarketOperation,
     MarketSellSwapQuote,
     MockedRfqtFirmQuoteResponse,
-    RfqtFirmQuoteRequestOpts,
+    RfqtRequestOpts,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
@@ -64,8 +64,9 @@ export {
     CollapsedFill,
     NativeCollapsedFill,
     OptimizedMarketOrder,
+    GetMarketOrdersRfqtOpts,
 } from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
-export { QuoteRequestor } from './utils/quote_requestor';
+export { QuoteRequestor, RfqtIndicativeQuoteResponse } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
