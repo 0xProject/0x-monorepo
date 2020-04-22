@@ -91,9 +91,9 @@ export interface MethodAbi {
     name: string;
     inputs: DataItem[];
     outputs: DataItem[];
-    constant: boolean;
+    constant?: boolean;
     stateMutability: StateMutability;
-    payable: boolean;
+    payable?: boolean;
 }
 
 export interface ConstructorAbi {

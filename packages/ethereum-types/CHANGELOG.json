@@ -5,6 +5,10 @@
             {
                 "note": "Add `linkReferences` to `EvmBytecodeOutput` and `EvmBytecodeOutputLinkReferences` type",
                 "pr": 2462
+            },
+            {
+                "note": "Update `MethodAbi` definition for solidity 0.6",
+                "pr": 2540
             }
         ],
         "timestamp": 1581204851

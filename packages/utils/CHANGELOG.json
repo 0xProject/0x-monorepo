@@ -1,5 +1,18 @@
 [
     {
+        "version": "5.5.0",
+        "changes": [
+            {
+                "note": "Add `ZeroExRevertErrors`",
+                "pr": 2540
+            },
+            {
+                "note": "Print full revert error in stack traces.",
+                "pr": 2540
+            }
+        ]
+    },
+    {
         "version": "5.4.1",
         "changes": [
             {

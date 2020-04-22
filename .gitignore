@@ -111,6 +111,8 @@ contracts/exchange-forwarder/generated-artifacts/
 contracts/exchange-forwarder/test/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
 contracts/dev-utils/test/generated-artifacts/
+contracts/zero-ex/generated-artifacts/
+contracts/zero-ex/test/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
@@ -165,6 +167,8 @@ contracts/exchange-forwarder/generated-wrappers/
 contracts/exchange-forwarder/test/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
 contracts/dev-utils/test/generated-wrappers/
+contracts/zero-ex/generated-wrappers/
+contracts/zero-ex/test/generated-wrappers/
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
 
 # solc-bin in sol-compiler

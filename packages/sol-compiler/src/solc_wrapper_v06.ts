@@ -22,4 +22,15 @@ export class SolcWrapperV06 extends SolcWrapperV05 {
         solcInstance.compileStandardWrapper = solcInstance.compile;
         return compileSolcJSAsync(solcInstance, input);
     }
+
+    protected _normalizeOutput(output: StandardOutput): StandardOutput {
+        const _output = super._normalizeOutput(output);
+        // Filter out 'receive' ABI item types until ethers supports it.
+        for (const contracts of Object.values(_output.contracts)) {
+            for (const contract of Object.values(contracts)) {
+                contract.abi = contract.abi.filter(v => v.type !== 'receive');
+            }
+        }
+        return _output;
+    }
 }
