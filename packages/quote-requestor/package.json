@@ -1,15 +1,40 @@
 {
-  "name": "@0x/quote-requestor",
+  "name": "quote-requestor",
   "version": "0.0.1",
   "description": "UI to inspect RFQ requests",
-  "main": "lib/src/index.js",
-  "author": "Steve Klebanoff",
+  "author": "Steve Klebanoff <steve@0xproject.com>",
+  "homepage": "https://github.com/0xProject/0x-monorepo#readme",
   "license": "Apache-2.0",
+  "main": "lib/src/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.yarnpkg.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xProject/0x-monorepo.git"
+  },
   "scripts": {
     "dev": "parcel ./src/index.html --out-dir lib",
     "build": "parcel build ./src/index.html --out-dir lib",
     "prettier": "prettier --check 'src/**/*.{ts,tsx,json,md}' --config ../../.prettierrc",
     "build:ci": "yarn build",
     "clean": "shx rm -rf lib test_temp generated_docs"
+  },
+  "bugs": {
+    "url": "https://github.com/0xProject/0x-monorepo/issues"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^3.25.0"
   }
 }
