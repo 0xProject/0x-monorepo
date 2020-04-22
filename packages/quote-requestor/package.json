@@ -31,10 +31,15 @@
     "url": "https://github.com/0xProject/0x-monorepo/issues"
   },
   "devDependencies": {
+    "@types/moment-timezone": "^0.5.13",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
     "parcel-bundler": "^1.12.4",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@blueprintjs/core": "^3.25.0"
+    "@blueprintjs/core": "^3.25.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }
