@@ -191,6 +191,7 @@ export interface RfqtRequestOpts {
     takerAddress: string;
     apiKey: string;
     intentOnFilling: boolean;
+    isIndicative?: boolean;
     makerEndpointMaxResponseTimeMs?: number;
 }
 

@@ -39,7 +39,7 @@ async function getRfqtIndicativeQuotesAsync(
     assetFillAmount: BigNumber,
     opts: Partial<GetMarketOrdersOpts>,
 ): Promise<RfqtIndicativeQuoteResponse[]> {
-    if (opts.rfqt && opts.rfqt.quoteRequestor) {
+    if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
         return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
             makerAssetData,
             takerAssetData,

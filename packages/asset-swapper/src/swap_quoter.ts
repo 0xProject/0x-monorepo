@@ -590,7 +590,12 @@ export class SwapQuoter {
         return swapQuote;
     }
     private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt']): boolean {
-        return opts !== undefined && !opts.intentOnFilling && this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey);
+        return (
+            opts !== undefined &&
+            opts.isIndicative !== undefined &&
+            opts.isIndicative &&
+            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
+        );
     }
 }
 // tslint:disable-next-line: max-file-line-count
