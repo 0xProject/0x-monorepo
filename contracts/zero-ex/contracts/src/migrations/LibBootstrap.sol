@@ -26,6 +26,7 @@ import "../errors/LibProxyRichErrors.sol";
 library LibBootstrap {
 
     /// @dev Magic bytes returned by the bootstrapper to indicate success.
+    ///      This is `keccack('BOOTSTRAP_SUCCESS')`.
     bytes4 internal constant BOOTSTRAP_SUCCESS = 0xd150751b;
 
     /// @dev Perform a delegatecall and ensure it returns the magic bytes.

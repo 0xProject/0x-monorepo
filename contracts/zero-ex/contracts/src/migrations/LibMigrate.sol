@@ -26,6 +26,7 @@ import "../errors/LibMigrateRichErrors.sol";
 library LibMigrate {
 
     /// @dev Magic bytes returned by a migrator to indicate success.
+    ///      This is `keccack('MIGRATE_SUCCESS')`.
     bytes4 internal constant MIGRATE_SUCCESS = 0x2c64c5ef;
 
     /// @dev Perform a delegatecall and ensure it returns the magic bytes.

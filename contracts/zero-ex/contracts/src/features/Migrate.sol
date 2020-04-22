@@ -55,7 +55,7 @@ contract Migrate is
 
     /// @dev Execute a migration function in the context of the ZeroEx contract.
     ///      The result of the function being called should be the magic bytes
-    ///      0x2c64c5ef. Only callable by the owner.
+    ///      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.
     ///      The owner will be temporarily set to `address(this)` inside the call.
     ///      The original owner can be retrieved through `getMigrationOwner()`.`
     /// @param target The migrator contract address.

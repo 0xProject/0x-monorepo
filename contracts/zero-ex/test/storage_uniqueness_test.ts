@@ -14,7 +14,7 @@ describe('Storage ID uniqueness test', () => {
         }
     }
 
-    it('all STORAGE_IDs are unique in storage libraries', async () => {
+    it('all StorageId references are unique in storage libraries', async () => {
         const sourcePaths = (await promisify(readdir)(STORAGE_SOURCES_DIR))
             .filter(p => p.endsWith('.sol'))
             .map(p => resolve(STORAGE_SOURCES_DIR, p));
@@ -26,7 +26,7 @@ describe('Storage ID uniqueness test', () => {
             for (let j = 0; j < storageIds.length; ++j) {
                 if (i !== j && storageId === storageIds[j]) {
                     throw new Error(
-                        `Found duplicate STORAGE_ID ${storageId} ` +
+                        `Found duplicate StorageId ${storageId} ` +
                             `in files ${basename(sourcePaths[i])}, ${basename(sourcePaths[j])}`,
                     );
                 }
