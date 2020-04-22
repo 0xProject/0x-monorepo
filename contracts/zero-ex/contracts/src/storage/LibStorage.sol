@@ -30,6 +30,7 @@ library LibStorage {
 
     /// @dev Storage IDs for feature storage buckets.
     enum StorageId {
+        Unused, // Unused buffer for state accidents.
         Proxy,
         SimpleFunctionRegistry,
         Ownable,
@@ -44,7 +45,6 @@ library LibStorage {
         pure
         returns (uint256 offset)
     {
-        // We don't use safeMul here to save gas.
         // This should never overflow with a reasonable `STORAGE_OFFSET_MULTIPLIER`
         // because Solidity will do a range check on `storageId` during the cast.
         return uint256(storageId) * STORAGE_OFFSET_MULTIPLIER;
