@@ -53,6 +53,10 @@
             {
                 "note": "Collapse `LiquidityProvider` into `DexForwarderBridge`",
                 "pr": 2560
+            },
+            {
+                "note": "Added Curve `sUSD`",
+                "pr": 2563
             }
         ]
     },

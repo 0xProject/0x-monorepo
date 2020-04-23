@@ -16,6 +16,7 @@ export const SELL_SOURCES = [
     ERC20BridgeSource.CurveUsdcDaiUsdt,
     ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
     ERC20BridgeSource.CurveUsdcDaiUsdtBusd,
+    ERC20BridgeSource.CurveUsdcDaiUsdtSusd,
 ];
 
 /**
@@ -30,6 +31,7 @@ export const BUY_SOURCES = [
     ERC20BridgeSource.CurveUsdcDaiUsdt,
     ERC20BridgeSource.CurveUsdcDaiUsdtBusd,
     ERC20BridgeSource.CurveUsdcDaiUsdtTusd,
+    ERC20BridgeSource.CurveUsdcDaiUsdtSusd,
 ];
 
 export const DEFAULT_GET_MARKET_ORDERS_OPTS: GetMarketOrdersOpts = {
@@ -92,6 +94,16 @@ export const DEFAULT_CURVE_OPTS: { [source: string]: { version: number; curveAdd
             '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
             '0xdac17f958d2ee523a2206206994597c13d831ec7',
             '0x4fabb145d64652a948d72533023f6e7a623c7c53',
+        ],
+    },
+    [ERC20BridgeSource.CurveUsdcDaiUsdtSusd]: {
+        version: 1,
+        curveAddress: '0xa5407eae9ba41422680e2e00537571bcc53efbfd',
+        tokens: [
+            '0x6b175474e89094c44da98b954eedeac495271d0f',
+            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            '0xdac17f958d2ee523a2206206994597c13d831ec7',
+            '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
         ],
     },
 };
