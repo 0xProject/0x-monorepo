@@ -9,6 +9,10 @@
             {
                 "note": "Print full revert error in stack traces.",
                 "pr": 2540
+            },
+            {
+                "note": "`ZeroExRevertErrors.Migrate` -> `ZeroExRevertErrors.Ownable`",
+                "pr": 2564
             }
         ]
     },
