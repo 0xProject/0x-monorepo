@@ -49,6 +49,10 @@
             {
                 "note": "Add support for indicative (non-committal) quotes via RFQ-T",
                 "pr": 2555
+            },
+            {
+                "note": "Collapse `LiquidityProvider` into `DexForwarderBridge`",
+                "pr": 2560
             }
         ]
     },
