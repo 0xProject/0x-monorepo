@@ -1,10 +1,4 @@
-import {
-    assertIntegerRoughlyEquals,
-    constants,
-    expect,
-    getRandomInteger,
-    randomAddress,
-} from '@0x/contracts-test-utils';
+import { constants, expect, getRandomInteger, randomAddress } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -28,8 +22,17 @@ describe('quote_simulation tests', async () => {
     const TAKER_TOKEN = randomAddress();
     const DEFAULT_MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
     const DEFAULT_TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
-    const EPS = 1e7; // Some precision lost when crafting these orders.
     const GAS_SCHEDULE = { [ERC20BridgeSource.Native]: 1 };
+
+    // Check if two numbers are within `maxError` error rate within each other (default 1 bps).
+    function assertRoughlyEquals(n1: BigNumber, n2: BigNumber, maxError: BigNumber | number = 1e-12): void {
+        // |n2-n1| / max(|n1|, |n2|)
+        const err = n2
+            .minus(n1)
+            .abs()
+            .div(BigNumber.max(n1.abs(), n2.abs()));
+        expect(err).to.bignumber.lt(maxError);
+    }
 
     function createQuoteFillOrders(
         opts: Partial<{
@@ -236,7 +239,7 @@ describe('quote_simulation tests', async () => {
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
                 expect(totalFilledInput).to.bignumber.eq(fillableInput);
-                assertIntegerRoughlyEquals(totalFilledOutput, fillableOutput, EPS);
+                assertRoughlyEquals(totalFilledOutput, fillableOutput);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(fillsCount);
             });
@@ -262,7 +265,7 @@ describe('quote_simulation tests', async () => {
                     .div(fillableInput)
                     .times(fillableOutput)
                     .integerValue();
-                assertIntegerRoughlyEquals(totalFilledOutput, expectedOutputFilledAmount, EPS);
+                assertRoughlyEquals(totalFilledOutput, expectedOutputFilledAmount);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(1);
             });
@@ -307,7 +310,7 @@ describe('quote_simulation tests', async () => {
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
                 expect(totalFilledInput).to.bignumber.eq(fillableInput);
-                assertIntegerRoughlyEquals(totalFilledOutput, fillableOutput, EPS);
+                assertRoughlyEquals(totalFilledOutput, fillableOutput);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(fillsCount);
             });
@@ -331,8 +334,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, totalFillableInput, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, totalFillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, fillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, totalFillableInput);
+                assertRoughlyEquals(totalFilledOutput, fillableOutput);
                 assertEqualRates(result.inputFee.div(result.input), signedInputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(fillsCount);
@@ -358,7 +361,7 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, inputFillAmount, EPS);
+                assertRoughlyEquals(totalFilledInput, inputFillAmount);
                 expect(totalFilledOutput).to.bignumber.lt(fillableOutput);
                 assertEqualRates(result.inputFee.div(result.input), signedInputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(1);
@@ -385,8 +388,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, totalFillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, fillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, totalFillableInput);
+                assertRoughlyEquals(totalFilledOutput, fillableOutput);
                 assertEqualRates(result.inputFee.div(result.input), signedInputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(fillsCount);
@@ -411,8 +414,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, fillableInput, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, fillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, totalFillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, fillableInput);
+                assertRoughlyEquals(totalFilledOutput, totalFillableOutput);
                 assertEqualRates(result.outputFee.div(result.output), signedOutputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(fillsCount);
@@ -438,7 +441,7 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, inputFillAmount, EPS);
+                assertRoughlyEquals(totalFilledInput, inputFillAmount);
                 expect(totalFilledOutput).to.bignumber.lt(totalFillableOutput);
                 assertEqualRates(result.outputFee.div(result.output), signedOutputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(1);
@@ -465,8 +468,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, fillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, totalFillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, fillableInput);
+                assertRoughlyEquals(totalFilledOutput, totalFillableOutput);
                 assertEqualRates(result.outputFee.div(result.output), signedOutputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(1);
                 expect(result.gas).to.eq(fillsCount);
@@ -533,8 +536,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, totalFillableInput, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, totalFillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, fillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, totalFillableInput);
+                assertRoughlyEquals(totalFilledOutput, fillableOutput);
                 assertEqualRates(result.inputFee.div(result.input), signedInputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(fillOrders.length);
                 expect(result.gas).to.eq(countCollapsedFills(fillOrders));
@@ -557,7 +560,7 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, inputFillAmount, EPS);
+                assertRoughlyEquals(totalFilledInput, inputFillAmount);
                 expect(totalFilledOutput).to.bignumber.lt(fillableOutput);
                 assertEqualRates(result.inputFee.div(result.input), signedInputFeeRate);
                 expect(result.protocolFee).to.bignumber.lte(fillOrders.length);
@@ -581,8 +584,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, totalFillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, fillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, totalFillableInput);
+                assertRoughlyEquals(totalFilledOutput, fillableOutput);
                 assertEqualRates(result.inputFee.div(result.input), signedInputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(fillOrders.length);
                 expect(result.gas).to.eq(countCollapsedFills(fillOrders));
@@ -604,8 +607,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, fillableInput, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, fillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, totalFillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, fillableInput);
+                assertRoughlyEquals(totalFilledOutput, totalFillableOutput);
                 assertEqualRates(result.outputFee.div(result.output), signedOutputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(fillOrders.length);
                 expect(result.gas).to.eq(countCollapsedFills(fillOrders));
@@ -628,7 +631,7 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, inputFillAmount, EPS);
+                assertRoughlyEquals(totalFilledInput, inputFillAmount);
                 expect(totalFilledOutput).to.bignumber.lt(totalFillableOutput);
                 assertEqualRates(result.outputFee.div(result.output), signedOutputFeeRate);
                 expect(result.protocolFee).to.bignumber.lte(fillOrders.length);
@@ -652,8 +655,8 @@ describe('quote_simulation tests', async () => {
                 const result = fillQuoteOrders(fillOrders, inputFillAmount, ONE, GAS_SCHEDULE);
                 const totalFilledInput = result.input.plus(result.inputFee);
                 const totalFilledOutput = result.output.plus(result.outputFee);
-                assertIntegerRoughlyEquals(totalFilledInput, fillableInput, EPS);
-                assertIntegerRoughlyEquals(totalFilledOutput, totalFillableOutput, EPS);
+                assertRoughlyEquals(totalFilledInput, fillableInput);
+                assertRoughlyEquals(totalFilledOutput, totalFillableOutput);
                 assertEqualRates(result.outputFee.div(result.output), signedOutputFeeRate);
                 expect(result.protocolFee).to.bignumber.eq(fillOrders.length);
                 expect(result.gas).to.eq(countCollapsedFills(fillOrders));
@@ -790,17 +793,17 @@ describe('quote_simulation tests', async () => {
             expect(result.gas).to.eq(countCollapsedFills(orders));
             expect(result.protocolFeeAmount).to.bignumber.gt(orders.length);
             if (side === MarketOperation.Sell) {
-                assertIntegerRoughlyEquals(result.takerAssetAmount, fillableInput, EPS);
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, totalFillableInput, EPS);
-                assertIntegerRoughlyEquals(result.makerAssetAmount, fillableOutput, EPS);
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, fillableOutput, EPS);
+                assertRoughlyEquals(result.takerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.totalTakerAssetAmount, totalFillableInput);
+                assertRoughlyEquals(result.makerAssetAmount, fillableOutput);
+                assertRoughlyEquals(result.totalMakerAssetAmount, fillableOutput);
                 expect(result.makerAssetAmount).to.bignumber.eq(result.totalMakerAssetAmount);
                 expect(result.takerFeeMakerAssetAmount).to.bignumber.eq(0);
             } else {
-                assertIntegerRoughlyEquals(result.makerAssetAmount, fillableInput, EPS);
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, totalFillableInput, EPS);
-                assertIntegerRoughlyEquals(result.takerAssetAmount, fillableOutput, EPS);
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, fillableOutput, EPS);
+                assertRoughlyEquals(result.makerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.totalMakerAssetAmount, totalFillableInput);
+                assertRoughlyEquals(result.takerAssetAmount, fillableOutput);
+                assertRoughlyEquals(result.totalTakerAssetAmount, fillableOutput);
                 expect(result.takerAssetAmount).to.bignumber.eq(result.totalTakerAssetAmount);
                 expect(result.takerFeeTakerAssetAmount).to.bignumber.eq(0);
             }
@@ -830,12 +833,12 @@ describe('quote_simulation tests', async () => {
             expect(result.gas).to.gt(0);
             expect(result.protocolFeeAmount).to.bignumber.gt(0);
             if (side === MarketOperation.Sell) {
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, inputFillAmount, EPS);
+                assertRoughlyEquals(result.totalTakerAssetAmount, inputFillAmount);
                 expect(result.makerAssetAmount).to.bignumber.lt(fillableOutput);
                 expect(result.makerAssetAmount).to.bignumber.eq(result.totalMakerAssetAmount);
                 expect(result.takerFeeMakerAssetAmount).to.bignumber.eq(0);
             } else {
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, inputFillAmount, EPS);
+                assertRoughlyEquals(result.totalMakerAssetAmount, inputFillAmount);
                 expect(result.takerAssetAmount).to.bignumber.lt(fillableOutput);
                 expect(result.takerAssetAmount).to.bignumber.eq(result.totalTakerAssetAmount);
                 expect(result.takerFeeTakerAssetAmount).to.bignumber.eq(0);
@@ -865,17 +868,17 @@ describe('quote_simulation tests', async () => {
             expect(result.gas).to.eq(countCollapsedFills(orders));
             expect(result.protocolFeeAmount).to.bignumber.gt(orders.length);
             if (side === MarketOperation.Sell) {
-                assertIntegerRoughlyEquals(result.takerAssetAmount, fillableInput, EPS);
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, fillableInput, EPS);
-                assertIntegerRoughlyEquals(result.makerAssetAmount, fillableOutput, EPS);
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, totalFillableOutput, EPS);
+                assertRoughlyEquals(result.takerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.totalTakerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.makerAssetAmount, fillableOutput);
+                assertRoughlyEquals(result.totalMakerAssetAmount, totalFillableOutput);
                 expect(result.takerAssetAmount).to.bignumber.eq(result.totalTakerAssetAmount);
                 expect(result.takerFeeTakerAssetAmount).to.bignumber.eq(0);
             } else {
-                assertIntegerRoughlyEquals(result.makerAssetAmount, fillableInput, EPS);
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, fillableInput, EPS);
-                assertIntegerRoughlyEquals(result.takerAssetAmount, fillableOutput, EPS);
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, totalFillableOutput, EPS);
+                assertRoughlyEquals(result.makerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.totalMakerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.takerAssetAmount, fillableOutput);
+                assertRoughlyEquals(result.totalTakerAssetAmount, totalFillableOutput);
                 expect(result.makerAssetAmount).to.bignumber.eq(result.totalMakerAssetAmount);
                 expect(result.takerFeeMakerAssetAmount).to.bignumber.eq(0);
             }
@@ -903,12 +906,12 @@ describe('quote_simulation tests', async () => {
             expect(result.gas).to.gt(0);
             expect(result.protocolFeeAmount).to.bignumber.gt(0);
             if (side === MarketOperation.Sell) {
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, inputFillAmount, EPS);
+                assertRoughlyEquals(result.totalTakerAssetAmount, inputFillAmount);
                 expect(result.makerAssetAmount).to.bignumber.lt(fillableOutput);
                 expect(result.takerAssetAmount).to.bignumber.eq(result.totalTakerAssetAmount);
                 expect(result.takerFeeTakerAssetAmount).to.bignumber.eq(0);
             } else {
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, inputFillAmount, EPS);
+                assertRoughlyEquals(result.totalMakerAssetAmount, inputFillAmount);
                 expect(result.takerAssetAmount).to.bignumber.lt(fillableOutput);
                 expect(result.makerAssetAmount).to.bignumber.eq(result.totalMakerAssetAmount);
                 expect(result.takerFeeMakerAssetAmount).to.bignumber.eq(0);
@@ -936,12 +939,12 @@ describe('quote_simulation tests', async () => {
             });
             if (side === MarketOperation.Sell) {
                 const slippedOutput = fillableOutput.times(1 - orderSlippage).integerValue();
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, slippedOutput);
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.totalMakerAssetAmount, slippedOutput);
+                assertRoughlyEquals(result.totalTakerAssetAmount, fillableInput);
             } else {
                 const slippedOutput = fillableOutput.times(orderSlippage + 1).integerValue();
-                assertIntegerRoughlyEquals(result.totalMakerAssetAmount, fillableInput);
-                assertIntegerRoughlyEquals(result.totalTakerAssetAmount, slippedOutput);
+                assertRoughlyEquals(result.totalMakerAssetAmount, fillableInput);
+                assertRoughlyEquals(result.totalTakerAssetAmount, slippedOutput);
             }
         });
     });
