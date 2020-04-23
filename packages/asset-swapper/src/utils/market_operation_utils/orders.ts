@@ -185,6 +185,7 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
         case ERC20BridgeSource.CurveUsdcDaiUsdt:
         case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
         case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
+        case ERC20BridgeSource.CurveUsdcDaiUsdtSusd:
             return opts.contractAddresses.curveBridge;
         case ERC20BridgeSource.LiquidityProvider:
             if (opts.liquidityProviderAddress === undefined) {

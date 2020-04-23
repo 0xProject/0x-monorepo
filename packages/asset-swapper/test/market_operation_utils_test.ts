@@ -251,6 +251,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.CurveUsdcDaiUsdt]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdtBusd]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.CurveUsdcDaiUsdtSusd]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
     };
 
