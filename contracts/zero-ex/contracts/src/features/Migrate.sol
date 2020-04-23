@@ -72,7 +72,7 @@ contract Migrate is
             // If the owner is already set to ourselves then we've reentered.
             _rrevert(LibMigrateRichErrors.AlreadyMigratingError());
         }
-        // Temporarily set the owner to ourselves.
+        // Temporarily set the owner to ourselves to enable admin functions.
         ownableStor.owner = address(this);
         stor.migrationOwner = prevOwner;
 

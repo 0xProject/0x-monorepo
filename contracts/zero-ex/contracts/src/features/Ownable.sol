@@ -48,7 +48,7 @@ contract Ownable is
     /// @param impl the actual address of this feature contract.
     /// @return success Magic bytes if successful.
     function bootstrap(address impl) external returns (bytes4 success) {
-        // Set the owner.
+        // Set the owner to ourselves to allow bootstrappers to call `extend()`.
         LibOwnableStorage.getStorage().owner = address(this);
 
         // Register feature functions.
