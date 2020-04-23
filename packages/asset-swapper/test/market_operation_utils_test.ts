@@ -659,7 +659,7 @@ describe('MarketOperationUtils tests', () => {
                         }),
                     ],
                     Web3Wrapper.toBaseUnitAmount(10, 18),
-                    { excludedSources: SELL_SOURCES, numSamples: 4, bridgeSlippage: 0 },
+                    { excludedSources: SELL_SOURCES, numSamples: 4, bridgeSlippage: 0, shouldBatchBridgeOrders: false },
                 );
                 expect(result.length).to.eql(1);
                 expect(result[0].makerAddress).to.eql(liquidityProviderAddress);
