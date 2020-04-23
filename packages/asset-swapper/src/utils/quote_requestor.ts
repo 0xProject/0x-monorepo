@@ -85,7 +85,7 @@ export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
     private readonly _warningLogger: (s: string) => void;
 
-    constructor(rfqtMakerEndpoints: string[], logger: (s: string) => void = logUtils.warn.bind(logUtils)) {
+    constructor(rfqtMakerEndpoints: string[], logger: (s: string) => void = s => logUtils.warn(s)) {
         this._rfqtMakerEndpoints = rfqtMakerEndpoints;
         this._warningLogger = logger;
     }
