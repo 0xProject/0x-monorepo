@@ -1,10 +1,10 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { ERC20ProxyContract, MultiAssetProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingProxyContract, ZrxVaultContract, StakingContract } from '@0x/contracts-staking';
-import { blockchainTests, describe, verifyEvents, expect, provider } from '@0x/contracts-test-utils';
+import { blockchainTests, describe, verifyEvents, constants,expect, provider } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import {AbiDefinition} from 'ethereum-types';
+import {AbiDefinition, LogWithDecodedArgs, DecodedLogArgs} from 'ethereum-types';
 
 import { contractAddresses, getContractwrappers } from './mainnet_fork_utils';
 
@@ -217,6 +217,10 @@ blockchainTests.fork.only('Mainnet configs tests', env => {
     const data = '0x0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000106000000000000000000000000000000000000000000000000000000000000012c000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000240000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000003c000000000000000000000000000000000000000000000000000000000000004800000000000000000000000000000000000000000000000000000000000000540000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000006c000000000000000000000000000000000000000000000000000000000000007800000000000000000000000000000000000000000000000000000000000000840000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000009c00000000000000000000000000000000000000000000000000000000000000a800000000000000000000000000000000000000000000000000000000000000b400000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000cc00000000000000000000000000000000000000000000000000000000000000d800000000000000000000000000000000000000000000000000000000000000e400000000000000000000000000000000000000000000000000000000000000f000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000018a2e271a00000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad560000000000000000000000000000000000000000000000000000000000000000101e28d8400000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad560000000000000000000000000000000000000000000000000000000000000000166615d5600000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad560000000000000000000000000000000000000000000000000000000000000000137b006a600000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000019c3ccc8200000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000093a80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad560000000000000000000000000000000000000000000000000000000000000000142f1181e00000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000017071293900000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000019ad2674400000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad5600000000000000000000000000000000000000000000000000000000000000001f2fde38b00000000000000000000000000000000000000000000000000000000000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000016bf3f9e500000000000000000000000000000000000000000000000000000000000000000000000000000000ba7f8b5fb1b19c1211c5d49550fcd149177a5eaf0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad5600000000000000000000000000000000000000000000000000000000000000001ca5b021800000000000000000000000000000000000000000000000000000000000000000000000000000000ba7f8b5fb1b19c1211c5d49550fcd149177a5eaf0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad560000000000000000000000000000000000000000000000000000000000000000142f1181e00000000000000000000000000000000000000000000000000000000000000000000000000000000ba7f8b5fb1b19c1211c5d49550fcd149177a5eaf0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000017071293900000000000000000000000000000000000000000000000000000000000000000000000000000000ba7f8b5fb1b19c1211c5d49550fcd149177a5eaf0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000019ad2674400000000000000000000000000000000000000000000000000000000000000000000000000000000ba7f8b5fb1b19c1211c5d49550fcd149177a5eaf0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad5600000000000000000000000000000000000000000000000000000000000000001f2fde38b00000000000000000000000000000000000000000000000000000000000000000000000000000000ba7f8b5fb1b19c1211c5d49550fcd149177a5eaf0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad5600000000000000000000000000000000000000000000000000000000000000001c0fa16cc0000000000000000000000000000000000000000000000000000000000000000000000000000000061935cbdd02287b511119ddb11aeb42f1593b7ef0000000000000000000000000000000000000000000000000000000000127500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000084751ad56000000000000000000000000000000000000000000000000000000000000000019331c7420000000000000000000000000000000000000000000000000000000000000000000000000000000061935cbdd02287b511119ddb11aeb42f1593b7ef0000000000000000000000000000000000000000000000000000000000093a800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a49c3ccc820000000000000000000000000000000000000000000000000000000000093a8000000000000000000000000000000000000000000000000000000000000dbba00000000000000000000000000000000000000000000000056bc75e2d63100000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc82713920000000000000000000000007d3455421bbc5ed534a83c88fd80387dc8271392000000000000000000000000a26e80e7dea86279c6d778d702cc413e6cffa7770000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
     describe('this is it', () => {
         it('should be owned by ZeroExGovernor', async () => {
+            const oneWeekInSeconds = 7 * 24 * 60 * 60;;
+            const twoWeeksInSeconds = 2 * oneWeekInSeconds;
+
+
             // Construct mainnet governor contract
             console.log('Constructing Governor...')
             const logDecodeDependencies: {[contractName: string]: AbiDefinition[]} = {};
@@ -244,8 +248,7 @@ blockchainTests.fork.only('Mainnet configs tests', env => {
 
             // Fastforward two weeks.
             console.log('Fast-Forwarding 2 weeks...');
-            const oneWeekInSeconds = 7 * 24 * 60 * 60;;
-            const twoWeeksInSeconds = 2 * oneWeekInSeconds;
+
             await env.web3Wrapper.increaseTimeAsync(twoWeeksInSeconds + 1);
             await env.web3Wrapper.mineBlockAsync();
 
@@ -267,12 +270,10 @@ blockchainTests.fork.only('Mainnet configs tests', env => {
             // Execute transaction
             console.log('Executing tx...');
             const tx2 = await governor.executeTransaction(txId).awaitTransactionSuccessAsync({from: owners[0]});
-            console.log(JSON.stringify(tx2, null, 4));
-
-            // filterLogsToArguments
 
 
             // Validate new staking params from events
+            console.log('Verifying Staking Contract Event...');
             verifyEvents(
                 tx2,
                 [
@@ -284,28 +285,33 @@ blockchainTests.fork.only('Mainnet configs tests', env => {
                 "ParamsSet"
             );
 
-            /*
+
              // Validate new time-locks from events
+             console.log('Verifying Timelocks...');
              const ZERO = new BigNumber(0);
              const selectors = {
-                addExchangeAddress: stakingContract.addExchangeAddress("").getABIEncodedTransactionData().substr(0, 10),
-                removeExchangeAddress: stakingContract.removeExchangeAddress("").getABIEncodedTransactionData().substr(0, 10),
-                attachStakingContract: (new StakingProxyContract("", env.provider)).attachStakingContract("").getABIEncodedTransactionData().substr(0, 10),
-                detachStakingContract: (new StakingProxyContract("", env.provider)).detachStakingContract().getABIEncodedTransactionData().substr(0, 10),
+                 // Staking Proxy
+                addExchangeAddress: stakingContract.addExchangeAddress(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                removeExchangeAddress: stakingContract.removeExchangeAddress(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                attachStakingContract: (new StakingProxyContract(constants.NULL_ADDRESS, env.provider)).attachStakingContract(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                detachStakingContract: (new StakingProxyContract(constants.NULL_ADDRESS, env.provider)).detachStakingContract().getABIEncodedTransactionData().substr(0, 10),
                 setParams: stakingContract.setParams(ZERO, ZERO, ZERO, ZERO, ZERO).getABIEncodedTransactionData().substr(0, 10),
-                addAuthorizedAddress: stakingContract.addAuthorizedAddress("").getABIEncodedTransactionData().substr(0, 10),
-                removeAuthorizedAddress: stakingContract.removeAuthorizedAddress("").getABIEncodedTransactionData().substr(0, 10),
-                removeAuthorizedAddressAtIndex: stakingContract.removeAuthorizedAddressAtIndex("", ZERO).getABIEncodedTransactionData().substr(0, 10),
-                transferOwnership: stakingContract.transferOwnership("").getABIEncodedTransactionData().substr(0, 10),
+
+                // Authorizable
+                addAuthorizedAddress: stakingContract.addAuthorizedAddress(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                removeAuthorizedAddress: stakingContract.removeAuthorizedAddress(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                removeAuthorizedAddressAtIndex: stakingContract.removeAuthorizedAddressAtIndex(constants.NULL_ADDRESS, ZERO).getABIEncodedTransactionData().substr(0, 10),
+                transferOwnership: stakingContract.transferOwnership(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
 
                 // ZrxVaut
-                setStakingProxy: (new ZrxVaultContract("", env.provider)).setStakingProxy("").getABIEncodedTransactionData().substr(0, 10),
-                setZrxProxy: (new ZrxVaultContract("", env.provider)).setZrxProxy("").getABIEncodedTransactionData().substr(0, 10),
+                setStakingProxy: (new ZrxVaultContract(constants.NULL_ADDRESS, env.provider)).setStakingProxy(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                setZrxProxy: (new ZrxVaultContract(constants.NULL_ADDRESS, env.provider)).setZrxProxy(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
 
                 // Exchange
-                setProtocolFeeCollectorAddress: (new ExchangeContract("", env.provider)).setProtocolFeeCollectorAddress("").getABIEncodedTransactionData().substr(0, 10),
-                setProtocolFeeMultiplier: (new ExchangeContract("", env.provider)).setProtocolFeeMultiplier("").getABIEncodedTransactionData().substr(0, 10),
+                setProtocolFeeCollectorAddress: (new ExchangeContract(constants.NULL_ADDRESS, env.provider)).setProtocolFeeCollectorAddress(constants.NULL_ADDRESS).getABIEncodedTransactionData().substr(0, 10),
+                setProtocolFeeMultiplier: (new ExchangeContract(constants.NULL_ADDRESS, env.provider)).setProtocolFeeMultiplier(ZERO).getABIEncodedTransactionData().substr(0, 10),
              };
+
              verifyEvents(
                 tx2,
                 [
@@ -313,75 +319,138 @@ blockchainTests.fork.only('Mainnet configs tests', env => {
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.addExchangeAddress,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        hasCustomTimeLock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.removeExchangeAddress,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.attachStakingContract,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.detachStakingContract,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.setParams,
-                        newTimelockSeconds: new BigNumber(oneWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(oneWeekInSeconds),
+                        hasCustomTimeLock: true,
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.addAuthorizedAddress,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.removeAuthorizedAddress,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
                     {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.removeAuthorizedAddressAtIndex,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
-                     {
+                    {
                         destination: contractWrappers.contractAddresses.stakingProxy,
                         functionSelector: selectors.transferOwnership,
-                        newTimelockSeconds: new BigNumber(twoWeeksInSeconds),
-                        hasCustomTimelock: true,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
                     },
 
                     // ZRX Vault
+                    {
+                        destination: contractWrappers.contractAddresses.zrxVault,
+                        functionSelector: selectors.setStakingProxy,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+                    {
+                        destination: contractWrappers.contractAddresses.zrxVault,
+                        functionSelector: selectors.setZrxProxy,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+                    {
+                        destination: contractWrappers.contractAddresses.zrxVault,
+                        functionSelector: selectors.addAuthorizedAddress,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+                    {
+                        destination: contractWrappers.contractAddresses.zrxVault,
+                        functionSelector: selectors.removeAuthorizedAddress,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+                    {
+                        destination: contractWrappers.contractAddresses.zrxVault,
+                        functionSelector: selectors.removeAuthorizedAddressAtIndex,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+                    {
+                        destination: contractWrappers.contractAddresses.zrxVault,
+                        functionSelector: selectors.transferOwnership,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+
+                    // Exchange
+                    {
+                        destination: contractWrappers.contractAddresses.exchange,
+                        functionSelector: selectors.setProtocolFeeCollectorAddress,
+                        newSecondsTimeLocked: new BigNumber(twoWeeksInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+                    {
+                        destination: contractWrappers.contractAddresses.exchange,
+                        functionSelector: selectors.setProtocolFeeMultiplier,
+                        newSecondsTimeLocked: new BigNumber(oneWeekInSeconds),
+                        hasCustomTimeLock: true,
+                    },
+
                 ],
                 "FunctionCallTimeLockRegistration"
             );
 
+            /*
+
+
+
 
 
             // Fetch Final Staking Params
-            const stakingParamsFinal = await stakingContract.getParams().callAsync();
+            const stakingParamsFinalArray = await stakingContract.getParams().callAsync();
+            const stakingParamsFinal = {
+                epochDurationInSeconds: new BigNumber(stakingParamsFinalArray[0]),
+                rewardDelegatedStakeWeight: new BigNumber(stakingParamsFinalArray[1]),
+                minimumPoolStake: new BigNumber(stakingParamsFinalArray[2]),
+                cobbDouglasAlphaNumerator: new BigNumber(stakingParamsFinalArray[3]),
+                cobbDouglasAlphaDenominator: new BigNumber(stakingParamsFinalArray[4])
+            }
             const epochEndTimeFinal = await stakingContract.getCurrentEpochEarliestEndTimeInSeconds().callAsync();
-            */
+
 
             // Extra sanity check on Updated Staking Params
 
             // Fast-Forward to end of epoch
 
             // Check that epoch can be ended.
+            */
         });
     });
 });
