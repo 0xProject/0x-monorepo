@@ -20,7 +20,7 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
-import "../errors/LibMigrateRichErrors.sol";
+import "../errors/LibOwnableRichErrors.sol";
 
 
 library LibMigrate {
@@ -44,7 +44,7 @@ library LibMigrate {
             abi.decode(resultData, (bytes4)) != MIGRATE_SUCCESS)
         {
             LibRichErrorsV06.rrevert(
-                LibMigrateRichErrors.MigrateCallFailedError(target, resultData)
+                LibOwnableRichErrors.MigrateCallFailedError(target, resultData)
             );
         }
     }

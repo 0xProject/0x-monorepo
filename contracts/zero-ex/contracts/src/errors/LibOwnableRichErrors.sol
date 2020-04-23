@@ -47,4 +47,26 @@ library LibOwnableRichErrors {
             bytes4(keccak256("TransferOwnerToZeroError()"))
         );
     }
+
+    function AlreadyMigratingError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("AlreadyMigratingError()"))
+        );
+    }
+
+    function MigrateCallFailedError(address target, bytes memory resultData)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("MigrateCallFailedError(address,bytes)")),
+            target,
+            resultData
+        );
+    }
 }
