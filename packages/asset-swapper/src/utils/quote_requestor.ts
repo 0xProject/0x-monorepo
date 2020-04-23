@@ -83,9 +83,12 @@ function hasExpectedAssetData(
 export class QuoteRequestor {
     private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
+    private readonly _warningLogger: (s: string) => void;
 
-    constructor(rfqtMakerEndpoints: string[]) {
+    constructor(rfqtMakerEndpoints: string[], logger: (s: string) => void = logUtils.warn.bind(logUtils)) {
         this._rfqtMakerEndpoints = rfqtMakerEndpoints;
+        this._warningLogger = logger;
+        this._warningLogger('inside QuoteRequestor constructor');
     }
 
     public async requestRfqtFirmQuotesAsync(
@@ -95,6 +98,7 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options?: Partial<RfqtRequestOpts>,
     ): Promise<SignedOrder[]> {
+        this._warningLogger('inside firm quotes');
         const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
         assertTakerAddressOrThrow(_opts.takerAddress);
 
@@ -112,12 +116,13 @@ export class QuoteRequestor {
                         timeout: _opts.makerEndpointMaxResponseTimeMs,
                     });
                 } catch (err) {
-                    logUtils.warn(
+                    logUtils.log(`failing`);
+                    this._warningLogger(
                         `Failed to get RFQ-T firm quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
                             _opts.apiKey
                         } for taker address ${_opts.takerAddress}`,
                     );
-                    logUtils.warn(err);
+                    this._warningLogger(err);
                     return undefined;
                 }
             }),
@@ -132,7 +137,7 @@ export class QuoteRequestor {
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
             const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
             if (!hasValidSchema) {
-                logUtils.warn(`Invalid RFQ-t order received, filtering out: ${JSON.stringify(order)}`);
+                this._warningLogger(`Invalid RFQ-t order received, filtering out: ${JSON.stringify(order)}`);
                 return false;
             }
 
@@ -144,7 +149,7 @@ export class QuoteRequestor {
                     order.takerAssetData.toLowerCase(),
                 )
             ) {
-                logUtils.warn(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                this._warningLogger(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
                 return false;
             }
 
@@ -190,12 +195,12 @@ export class QuoteRequestor {
                         timeout: options.makerEndpointMaxResponseTimeMs,
                     });
                 } catch (err) {
-                    logUtils.warn(
+                    this._warningLogger(
                         `Failed to get RFQ-T indicative quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
                             options.apiKey
                         } for taker address ${options.takerAddress}`,
                     );
-                    logUtils.warn(err);
+                    this._warningLogger(err);
                     return undefined;
                 }
             }),
@@ -209,13 +214,15 @@ export class QuoteRequestor {
 
         const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
             if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
-                logUtils.warn(`Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`);
+                this._warningLogger(
+                    `Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`,
+                );
                 return false;
             }
             if (
                 !hasExpectedAssetData(makerAssetData, takerAssetData, response.makerAssetData, response.takerAssetData)
             ) {
-                logUtils.warn(
+                this._warningLogger(
                     `Unexpected asset data in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
                 );
                 return false;

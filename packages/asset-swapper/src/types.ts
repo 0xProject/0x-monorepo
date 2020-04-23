@@ -225,6 +225,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     rfqt?: {
         takerApiKeyWhitelist: string[];
         makerEndpoints: string[];
+        warningLogger?: (s: string) => void;
     };
 }
 
