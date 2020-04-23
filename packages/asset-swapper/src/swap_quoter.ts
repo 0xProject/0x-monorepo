@@ -172,7 +172,7 @@ export class SwapQuoter {
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         this._quoteRequestor = new QuoteRequestor(
             options.rfqt ? options.rfqt.makerEndpoints || [] : [],
-            options.rfqt ? options.rfqt.warningLogger || undefined : undefined,
+            options.rfqt ? options.rfqt.warningLogger : undefined,
         );
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
