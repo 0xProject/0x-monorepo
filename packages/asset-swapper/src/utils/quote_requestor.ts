@@ -88,7 +88,6 @@ export class QuoteRequestor {
     constructor(rfqtMakerEndpoints: string[], logger: (s: string) => void = logUtils.warn.bind(logUtils)) {
         this._rfqtMakerEndpoints = rfqtMakerEndpoints;
         this._warningLogger = logger;
-        this._warningLogger('inside QuoteRequestor constructor');
     }
 
     public async requestRfqtFirmQuotesAsync(
@@ -98,7 +97,6 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options?: Partial<RfqtRequestOpts>,
     ): Promise<SignedOrder[]> {
-        this._warningLogger('inside firm quotes');
         const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
         assertTakerAddressOrThrow(_opts.takerAddress);
 
@@ -116,7 +114,6 @@ export class QuoteRequestor {
                         timeout: _opts.makerEndpointMaxResponseTimeMs,
                     });
                 } catch (err) {
-                    logUtils.log(`failing`);
                     this._warningLogger(
                         `Failed to get RFQ-T firm quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
                             _opts.apiKey
