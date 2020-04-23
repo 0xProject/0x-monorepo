@@ -10,18 +10,22 @@ import * as D18 from '../test/generated-artifacts/D18.json';
 import * as DeploymentConstants from '../test/generated-artifacts/DeploymentConstants.json';
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
 import * as IOwnable from '../test/generated-artifacts/IOwnable.json';
+import * as IOwnableV06 from '../test/generated-artifacts/IOwnableV06.json';
 import * as LibAddress from '../test/generated-artifacts/LibAddress.json';
 import * as LibAddressArray from '../test/generated-artifacts/LibAddressArray.json';
 import * as LibAddressArrayRichErrors from '../test/generated-artifacts/LibAddressArrayRichErrors.json';
 import * as LibAuthorizableRichErrors from '../test/generated-artifacts/LibAuthorizableRichErrors.json';
 import * as LibBytes from '../test/generated-artifacts/LibBytes.json';
 import * as LibBytesRichErrors from '../test/generated-artifacts/LibBytesRichErrors.json';
+import * as LibBytesRichErrorsV06 from '../test/generated-artifacts/LibBytesRichErrorsV06.json';
+import * as LibBytesV06 from '../test/generated-artifacts/LibBytesV06.json';
 import * as LibEIP1271 from '../test/generated-artifacts/LibEIP1271.json';
 import * as LibEIP712 from '../test/generated-artifacts/LibEIP712.json';
 import * as LibFractions from '../test/generated-artifacts/LibFractions.json';
 import * as LibOwnableRichErrors from '../test/generated-artifacts/LibOwnableRichErrors.json';
 import * as LibReentrancyGuardRichErrors from '../test/generated-artifacts/LibReentrancyGuardRichErrors.json';
 import * as LibRichErrors from '../test/generated-artifacts/LibRichErrors.json';
+import * as LibRichErrorsV06 from '../test/generated-artifacts/LibRichErrorsV06.json';
 import * as LibSafeMath from '../test/generated-artifacts/LibSafeMath.json';
 import * as LibSafeMathRichErrors from '../test/generated-artifacts/LibSafeMathRichErrors.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
@@ -63,6 +67,10 @@ export const artifacts = {
     Refundable: Refundable as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
+    LibBytesV06: LibBytesV06 as ContractArtifact,
+    LibBytesRichErrorsV06: LibBytesRichErrorsV06 as ContractArtifact,
+    LibRichErrorsV06: LibRichErrorsV06 as ContractArtifact,
+    IOwnableV06: IOwnableV06 as ContractArtifact,
     TestAuthorizable: TestAuthorizable as ContractArtifact,
     TestLibAddress: TestLibAddress as ContractArtifact,
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
