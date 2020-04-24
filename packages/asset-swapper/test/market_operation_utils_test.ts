@@ -14,12 +14,18 @@ import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { MarketOperation } from '../src';
+import { MarketOperation, SignedOrderWithFillableAmounts } from '../src';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
-import { BUY_SOURCES, DEFAULT_CURVE_OPTS, SELL_SOURCES } from '../src/utils/market_operation_utils/constants';
-import { findOptimalPath } from '../src/utils/market_operation_utils/path_optimizer';
+import {
+    BUY_SOURCES,
+    DEFAULT_CURVE_OPTS,
+    POSITIVE_INF,
+    SELL_SOURCES,
+    ZERO_AMOUNT,
+} from '../src/utils/market_operation_utils/constants';
+import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeSource, Fill } from '../src/utils/market_operation_utils/types';
+import { DexSample, ERC20BridgeSource, NativeFillData } from '../src/utils/market_operation_utils/types';
 
 // tslint:disable: custom-no-magic-numbers
 describe('MarketOperationUtils tests', () => {
@@ -1020,56 +1026,63 @@ describe('MarketOperationUtils tests', () => {
         });
     });
 
-    describe('Path Optimizer', () => {
-        it('optimizes exact native order correctly', () => {
-            const uni1 = {
-                input: new BigNumber('3172086'),
-                output: new BigNumber('16930873680418821'),
-                rate: new BigNumber('5337457332'),
-                adjustedRate: new BigNumber('4202557459'),
-                adjustedOutput: new BigNumber('13330873680418821'),
-                source: ERC20BridgeSource.Uniswap,
-                index: 0,
-                flags: 1,
-            };
-            const uni2 = {
-                input: new BigNumber('3330690'),
-                output: new BigNumber('17777372366091739'),
-                rate: new BigNumber('5337444303'),
-                adjustedRate: new BigNumber('5337444303'),
-                adjustedOutput: new BigNumber('17777372366091739'),
-                source: ERC20BridgeSource.Uniswap,
-                index: 1,
-                parent: uni1,
-                flags: 1,
-            };
-            const uni3 = {
-                input: new BigNumber('3497225'),
-                output: new BigNumber('18666195807975164'),
-                rate: new BigNumber('5337430622'),
-                adjustedRate: new BigNumber('5337430622'),
-                adjustedOutput: new BigNumber('18666195807975164'),
-                source: ERC20BridgeSource.Uniswap,
-                index: 2,
-                parent: uni2,
-                flags: 1,
-            };
-            const nativeOrder = {
-                input: new BigNumber('10000000'),
-                output: new BigNumber('53734694968721595'),
-                rate: new BigNumber('5373469496'),
-                adjustedRate: new BigNumber('5133469496'),
-                adjustedOutput: new BigNumber('51334694968721595'),
-                flags: 0,
-                index: 0,
-                source: ERC20BridgeSource.Native,
-            };
-            const fillPaths = [[uni1, uni2, uni3], [nativeOrder]];
-            const optimalPath = findOptimalPath(MarketOperation.Sell, fillPaths, nativeOrder.input);
-            expect(BigNumber.max(nativeOrder.rate, uni1.rate, uni2.rate, uni3.rate)).to.be.bignumber.eq(
-                nativeOrder.rate,
-            );
-            expect((optimalPath as Fill[])[0].source).to.eq(ERC20BridgeSource.Native);
+    describe('createFillPaths', () => {
+        const takerAssetAmount = new BigNumber(5000000);
+        const ethToOutputRate = new BigNumber(0.5);
+        // tslint:disable-next-line:no-object-literal-type-assertion
+        const smallOrder = {
+            chainId: 1,
+            makerAddress: 'SMALL_ORDER',
+            takerAddress: NULL_ADDRESS,
+            takerAssetAmount,
+            makerAssetAmount: takerAssetAmount.times(2),
+            makerFee: ZERO_AMOUNT,
+            takerFee: ZERO_AMOUNT,
+            makerAssetData: '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+            takerAssetData: '0xf47261b0000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            makerFeeAssetData: '0x',
+            takerFeeAssetData: '0x',
+            fillableTakerAssetAmount: takerAssetAmount,
+            fillableMakerAssetAmount: takerAssetAmount.times(2),
+            fillableTakerFeeAmount: ZERO_AMOUNT,
+        } as SignedOrderWithFillableAmounts;
+        const largeOrder = {
+            ...smallOrder,
+            makerAddress: 'LARGE_ORDER',
+            fillableMakerAssetAmount: smallOrder.fillableMakerAssetAmount.times(2),
+            fillableTakerAssetAmount: smallOrder.fillableTakerAssetAmount.times(2),
+            makerAssetAmount: smallOrder.makerAssetAmount.times(2),
+            takerAssetAmount: smallOrder.takerAssetAmount.times(2),
+        };
+        const orders = [smallOrder, largeOrder];
+        const feeSchedule = {
+            [ERC20BridgeSource.Native]: new BigNumber(2e5),
+        };
+
+        it('penalizes native fill based on target amount when target is smaller', () => {
+            const path = createFillPaths({
+                side: MarketOperation.Sell,
+                orders,
+                dexQuotes: [],
+                targetInput: takerAssetAmount.minus(1),
+                ethToOutputRate,
+                feeSchedule,
+            });
+            expect((path[0][0].fillData as NativeFillData).order.makerAddress).to.eq(smallOrder.makerAddress);
+            expect(path[0][0].input).to.be.bignumber.eq(takerAssetAmount.minus(1));
+        });
+
+        it('penalizes native fill based on available amount when target is larger', () => {
+            const path = createFillPaths({
+                side: MarketOperation.Sell,
+                orders,
+                dexQuotes: [],
+                targetInput: POSITIVE_INF,
+                ethToOutputRate,
+                feeSchedule,
+            });
+            expect((path[0][0].fillData as NativeFillData).order.makerAddress).to.eq(largeOrder.makerAddress);
+            expect((path[0][1].fillData as NativeFillData).order.makerAddress).to.eq(smallOrder.makerAddress);
         });
     });
 });

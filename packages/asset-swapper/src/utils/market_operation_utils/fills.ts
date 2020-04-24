@@ -74,7 +74,7 @@ function nativeOrdersToPath(
         const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.Native] || 0);
         const rate = makerAmount.div(takerAmount);
         // targetInput can be less than the order size
-        // whilst the penalty is constant, it effects the adjusted output
+        // whilst the penalty is constant, it affects the adjusted output
         // only up until the target has been exhausted.
         // A large order and an order at the exact target should be penalized
         // the same.
