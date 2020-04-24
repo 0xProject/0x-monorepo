@@ -92,11 +92,12 @@ function isPathComplete(path: Fill[], targetInput: BigNumber): boolean {
 }
 
 function clipFillAdjustedOutput(fill: Fill, remainingInput: BigNumber): BigNumber {
+    const penalty = fill.adjustedOutput.minus(fill.output);
+    const output = remainingInput.times(fill.rate).plus(penalty);
     if (fill.input.lte(remainingInput)) {
         return fill.adjustedOutput;
     }
-    const penalty = fill.adjustedOutput.minus(fill.output);
-    return fill.output.times(remainingInput.div(fill.input)).plus(penalty);
+    return output;
 }
 
 function getRate(side: MarketOperation, input: BigNumber, output: BigNumber): BigNumber {

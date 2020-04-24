@@ -14,10 +14,12 @@ import { AssetProxyId, ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { BigNumber, fromTokenUnitAmount, hexUtils, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { MarketOperation } from '../src';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import { BUY_SOURCES, DEFAULT_CURVE_OPTS, SELL_SOURCES } from '../src/utils/market_operation_utils/constants';
+import { findOptimalPath } from '../src/utils/market_operation_utils/path_optimizer';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
-import { DexSample, ERC20BridgeSource } from '../src/utils/market_operation_utils/types';
+import { DexSample, ERC20BridgeSource, Fill } from '../src/utils/market_operation_utils/types';
 
 // tslint:disable: custom-no-magic-numbers
 describe('MarketOperationUtils tests', () => {
@@ -1015,6 +1017,59 @@ describe('MarketOperationUtils tests', () => {
                     [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Uniswap],
                 ]);
             });
+        });
+    });
+
+    describe('Path Optimizer', () => {
+        it('optimizes exact native order correctly', () => {
+            const uni1 = {
+                input: new BigNumber('3172086'),
+                output: new BigNumber('16930873680418821'),
+                rate: new BigNumber('5337457332'),
+                adjustedRate: new BigNumber('4202557459'),
+                adjustedOutput: new BigNumber('13330873680418821'),
+                source: ERC20BridgeSource.Uniswap,
+                index: 0,
+                flags: 1,
+            };
+            const uni2 = {
+                input: new BigNumber('3330690'),
+                output: new BigNumber('17777372366091739'),
+                rate: new BigNumber('5337444303'),
+                adjustedRate: new BigNumber('5337444303'),
+                adjustedOutput: new BigNumber('17777372366091739'),
+                source: ERC20BridgeSource.Uniswap,
+                index: 1,
+                parent: uni1,
+                flags: 1,
+            };
+            const uni3 = {
+                input: new BigNumber('3497225'),
+                output: new BigNumber('18666195807975164'),
+                rate: new BigNumber('5337430622'),
+                adjustedRate: new BigNumber('5337430622'),
+                adjustedOutput: new BigNumber('18666195807975164'),
+                source: ERC20BridgeSource.Uniswap,
+                index: 2,
+                parent: uni2,
+                flags: 1,
+            };
+            const nativeOrder = {
+                input: new BigNumber('10000000'),
+                output: new BigNumber('53734694968721595'),
+                rate: new BigNumber('5373469496'),
+                adjustedRate: new BigNumber('5133469496'),
+                adjustedOutput: new BigNumber('51334694968721595'),
+                flags: 0,
+                index: 0,
+                source: ERC20BridgeSource.Native,
+            };
+            const fillPaths = [[uni1, uni2, uni3], [nativeOrder]];
+            const optimalPath = findOptimalPath(MarketOperation.Sell, fillPaths, nativeOrder.input);
+            expect(BigNumber.max(nativeOrder.rate, uni1.rate, uni2.rate, uni3.rate)).to.be.bignumber.eq(
+                nativeOrder.rate,
+            );
+            expect((optimalPath as Fill[])[0].source).to.eq(ERC20BridgeSource.Native);
         });
     });
 });
