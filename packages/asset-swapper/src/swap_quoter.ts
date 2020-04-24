@@ -309,13 +309,12 @@ export class SwapQuoter {
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
+        return this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
             makerAssetBuyAmount,
             options,
         );
-        return swapQuote;
     }
 
     /**
@@ -339,13 +338,12 @@ export class SwapQuoter {
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
+        return this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
             takerAssetSellAmount,
             options,
         );
-        return swapQuote;
     }
 
     /**
