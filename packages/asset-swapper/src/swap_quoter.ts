@@ -2,7 +2,7 @@ import { ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/cont
 import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
-import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
+import { APIOrder, MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -309,7 +309,7 @@ export class SwapQuoter {
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
+        const swapQuote = await this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
             makerAssetBuyAmount,
@@ -339,7 +339,7 @@ export class SwapQuoter {
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
+        const swapQuote = await this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
             takerAssetSellAmount,
