@@ -35,7 +35,7 @@ export function createFillPaths(opts: {
     const dexQuotes = opts.dexQuotes || [];
     const ethToOutputRate = opts.ethToOutputRate || ZERO_AMOUNT;
     // Create native fill paths.
-    const nativePath = nativeOrdersToPath(side, orders, ethToOutputRate, feeSchedule);
+    const nativePath = nativeOrdersToPath(side, orders, opts.targetInput, ethToOutputRate, feeSchedule);
     // Create DEX fill paths.
     const dexPaths = dexQuotesToPaths(side, dexQuotes, ethToOutputRate, feeSchedule);
     return filterPaths([...dexPaths, nativePath].map(p => clipPathToInput(p, opts.targetInput)), excludedSources);
@@ -60,6 +60,7 @@ function filterPaths(paths: Fill[][], excludedSources: ERC20BridgeSource[]): Fil
 function nativeOrdersToPath(
     side: MarketOperation,
     orders: SignedOrderWithFillableAmounts[],
+    targetInput: BigNumber = POSITIVE_INF,
     ethToOutputRate: BigNumber,
     fees: { [source: string]: BigNumber },
 ): Fill[] {
@@ -71,19 +72,26 @@ function nativeOrdersToPath(
         const input = side === MarketOperation.Sell ? takerAmount : makerAmount;
         const output = side === MarketOperation.Sell ? makerAmount : takerAmount;
         const penalty = ethToOutputRate.times(fees[ERC20BridgeSource.Native] || 0);
-        const adjustedOutput = side === MarketOperation.Sell ? output.minus(penalty) : output.plus(penalty);
         const rate = makerAmount.div(takerAmount);
+        // targetInput can be less than the order size
+        // whilst the penalty is constant, it affects the adjusted output
+        // only up until the target has been exhausted.
+        // A large order and an order at the exact target should be penalized
+        // the same.
+        const clippedInput = BigNumber.min(targetInput, input);
+        // scale the clipped output inline with the input
+        const clippedOutput = clippedInput.dividedBy(input).times(output);
+        const adjustedOutput =
+            side === MarketOperation.Sell ? clippedOutput.minus(penalty) : clippedOutput.plus(penalty);
         const adjustedRate =
-            side === MarketOperation.Sell
-                ? makerAmount.minus(penalty).div(takerAmount)
-                : makerAmount.div(takerAmount.plus(penalty));
+            side === MarketOperation.Sell ? adjustedOutput.div(clippedInput) : clippedInput.div(adjustedOutput);
         // Skip orders with rates that are <= 0.
         if (adjustedRate.lte(0)) {
             continue;
         }
         path.push({
-            input,
-            output,
+            input: clippedInput,
+            output: clippedOutput,
             rate,
             adjustedRate,
             adjustedOutput,
@@ -117,7 +125,7 @@ function dexQuotesToPaths(
             const sample = quote[i];
             const prevSample = i === 0 ? undefined : quote[i - 1];
             const source = sample.source;
-            // Stop of the sample has zero output, which can occur if the source
+            // Stop if the sample has zero output, which can occur if the source
             // cannot fill the full amount.
             // TODO(dorothy-zbornak): Sometimes Kyber will dip to zero then pick back up.
             if (sample.output.eq(0)) {

@@ -61,6 +61,10 @@
             {
                 "note": "Fix sporadically failing quote simulation tests",
                 "pr": 2564
+            },
+            {
+                "note": "Apply Native order penalty inline with the target amount",
+                "pr": 2565
             }
         ]
     },

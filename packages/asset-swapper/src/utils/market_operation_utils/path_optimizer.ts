@@ -96,7 +96,7 @@ function clipFillAdjustedOutput(fill: Fill, remainingInput: BigNumber): BigNumbe
         return fill.adjustedOutput;
     }
     const penalty = fill.adjustedOutput.minus(fill.output);
-    return fill.output.times(remainingInput.div(fill.input)).plus(penalty);
+    return remainingInput.times(fill.rate).plus(penalty);
 }
 
 function getRate(side: MarketOperation, input: BigNumber, output: BigNumber): BigNumber {
