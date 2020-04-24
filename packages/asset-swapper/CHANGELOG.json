@@ -57,6 +57,10 @@
             {
                 "note": "Added Curve `sUSD`",
                 "pr": 2563
+            },
+            {
+                "note": "Fix sporadically failing quote simulation tests",
+                "pr": 2564
             }
         ]
     },

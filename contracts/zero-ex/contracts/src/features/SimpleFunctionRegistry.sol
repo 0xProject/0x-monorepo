@@ -34,12 +34,22 @@ contract SimpleFunctionRegistry is
     ISimpleFunctionRegistry,
     FixinOwnable
 {
-    // solhint-disable const-name-snakecase
 
+    // solhint-disable const-name-snakecase
     /// @dev Name of this feature.
     string constant public override FEATURE_NAME = "SimpleFunctionRegistry";
     /// @dev Version of this feature.
     uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
+    // solhint-enable const-name-snakecase
+
+    // solhint-disable
+    /// @dev The deployed address of this contract.
+    address immutable private _implementation;
+    // solhint-enable
+
+    constructor() public {
+        _implementation = address(this);
+    }
 
     /// @dev Initializes this feature.
     /// @param impl The actual address of this feature contract.

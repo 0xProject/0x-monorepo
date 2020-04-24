@@ -23,7 +23,6 @@ import "../ZeroEx.sol";
 import "../features/IBootstrap.sol";
 import "../features/SimpleFunctionRegistry.sol";
 import "../features/Ownable.sol";
-import "../features/Migrate.sol";
 import "./LibBootstrap.sol";
 
 
@@ -70,13 +69,6 @@ contract InitialMigration {
         LibBootstrap.delegatecallBootstrapFunction(
             address(ownable),
             abi.encodeWithSelector(ownable.bootstrap.selector, address(ownable))
-        );
-
-        // Initialize Migrate.
-        Migrate migrate = new Migrate();
-        LibBootstrap.delegatecallBootstrapFunction(
-            address(migrate),
-            abi.encodeWithSelector(migrate.bootstrap.selector, address(migrate))
         );
 
         // Transfer ownership to the real owner.

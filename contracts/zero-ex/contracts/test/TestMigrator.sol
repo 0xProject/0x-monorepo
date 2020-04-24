@@ -21,21 +21,18 @@ pragma experimental ABIEncoderV2;
 
 import "../src/migrations/LibMigrate.sol";
 import "../src/features/IOwnable.sol";
-import "../src/features/IMigrate.sol";
 
 
 contract TestMigrator {
     event TestMigrateCalled(
         bytes callData,
-        address owner,
-        address actualOwner
+        address owner
     );
 
     function succeedingMigrate() external returns (bytes4 success) {
         emit TestMigrateCalled(
             msg.data,
-            IOwnable(address(this)).getOwner(),
-            IMigrate(address(this)).getMigrationOwner()
+            IOwnable(address(this)).getOwner()
         );
         return LibMigrate.MIGRATE_SUCCESS;
     }
@@ -43,8 +40,7 @@ contract TestMigrator {
     function failingMigrate() external returns (bytes4 success) {
         emit TestMigrateCalled(
             msg.data,
-            IOwnable(address(this)).getOwner(),
-            IMigrate(address(this)).getMigrationOwner()
+            IOwnable(address(this)).getOwner()
         );
         return 0xdeadbeef;
     }

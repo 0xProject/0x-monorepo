@@ -33,8 +33,7 @@ library LibStorage {
         Unused, // Unused buffer for state accidents.
         Proxy,
         SimpleFunctionRegistry,
-        Ownable,
-        Migrate
+        Ownable
     }
 
     /// @dev Get the storage offset given a storage ID.
