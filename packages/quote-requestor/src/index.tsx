@@ -28,6 +28,7 @@ const web3Wrapper = constructWeb3Wrapper();
 
 export interface AppState {
     requestState: 'loading' | 'error' | 'done';
+    sellQuote?: MarketSellSwapQuote;
 }
 
 export class App extends React.Component<{}, AppState> {
@@ -53,7 +54,7 @@ export class App extends React.Component<{}, AppState> {
 
         const [sellTokenAddress, sellTokenDecimals] = getTokenInfo(requestInfo.sellToken);
         const [buyTokenAddress, _buyTokenDecimals] = getTokenInfo(requestInfo.buyToken);
-        this.setState({ requestState: 'loading' });
+        this.setState({ requestState: 'loading', sellQuote: undefined });
 
         let sellQuote: MarketSellSwapQuote;
         try {
@@ -68,11 +69,11 @@ export class App extends React.Component<{}, AppState> {
             );
         } catch (e) {
             console.error(e);
-            this.setState({ requestState: 'error' });
+            this.setState({ requestState: 'error', sellQuote: undefined });
             return;
         }
 
-        this.setState({ requestState: 'done' });
+        this.setState({ requestState: 'done', sellQuote });
     }
     render() {
         return (
