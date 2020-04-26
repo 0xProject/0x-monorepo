@@ -8,8 +8,11 @@ interface RequestFormState {
     rfqtUrl: string;
     apiKey: string;
 }
-export class RequestForm extends React.PureComponent<{}, RequestFormState> {
-    constructor(props: {}) {
+interface RequestFormProps {
+    onSubmit: (state: RequestFormState) => any;
+}
+export class RequestForm extends React.PureComponent<RequestFormProps, RequestFormState> {
+    constructor(props: RequestFormProps) {
         super(props);
         this.state = {
             sellToken: 'WETH',
@@ -23,6 +26,7 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
         this.handleBuyTokenChange = this.handleBuyTokenChange.bind(this);
         this.handleRfqtUrlChange = this.handleRfqtUrlChange.bind(this);
         this.handleApiKeyChange = this.handleApiKeyChange.bind(this);
+        this.handleSubmitButton = this.handleSubmitButton.bind(this);
     }
     handleSellAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ sellAmount: parseFloat(event.target.value) });
@@ -38,6 +42,9 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
     }
     handleApiKeyChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ apiKey: event.target.value });
+    }
+    handleSubmitButton() {
+        this.props.onSubmit(this.state);
     }
     public render() {
         return (
@@ -92,6 +99,7 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
                         type="submit"
                         intent="primary"
                         fill={true}
+                        onClick={this.handleSubmitButton}
                         style={{ backgroundColor: 'white', color: 'black' }}
                     >
                         Request
