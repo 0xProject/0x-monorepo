@@ -41,7 +41,11 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
     }
     public render() {
         return (
-            <Card interactive={false} elevation={Elevation.ONE} style={{ height: '355px', width: '250px' }}>
+            <Card
+                interactive={false}
+                elevation={Elevation.ONE}
+                style={{ height: '355px', width: '250px', float: 'left', marginRight: '20px', marginBottom: '20px' }}
+            >
                 <FormGroup label="Sell" inline={false} style={{ float: 'left' }}>
                     <NumericInput
                         id="sell-amount"
