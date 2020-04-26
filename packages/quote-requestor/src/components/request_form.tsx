@@ -7,12 +7,15 @@ interface RequestFormState {
     buyToken: string;
     rfqtUrl: string;
     apiKey: string;
+    takerAddress: string;
 }
 interface RequestFormProps {
     onSubmit: (state: RequestFormState) => any;
 }
 export class RequestForm extends React.PureComponent<RequestFormProps, RequestFormState> {
     constructor(props: RequestFormProps) {
+        console.log(process.env);
+        console.log(process.env.TEST);
         super(props);
         this.state = {
             sellToken: 'WETH',
@@ -20,12 +23,14 @@ export class RequestForm extends React.PureComponent<RequestFormProps, RequestFo
             sellAmount: 1,
             rfqtUrl: '',
             apiKey: '',
+            takerAddress: '',
         };
         this.handleSellAmountChange = this.handleSellAmountChange.bind(this);
         this.handleSellTokenChange = this.handleSellTokenChange.bind(this);
         this.handleBuyTokenChange = this.handleBuyTokenChange.bind(this);
         this.handleRfqtUrlChange = this.handleRfqtUrlChange.bind(this);
         this.handleApiKeyChange = this.handleApiKeyChange.bind(this);
+        this.handleTakerAddressChange = this.handleTakerAddressChange.bind(this);
         this.handleSubmitButton = this.handleSubmitButton.bind(this);
     }
     handleSellAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -43,6 +48,9 @@ export class RequestForm extends React.PureComponent<RequestFormProps, RequestFo
     handleApiKeyChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ apiKey: event.target.value });
     }
+    handleTakerAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ takerAddress: event.target.value });
+    }
     handleSubmitButton() {
         this.props.onSubmit(this.state);
     }
@@ -51,7 +59,7 @@ export class RequestForm extends React.PureComponent<RequestFormProps, RequestFo
             <Card
                 interactive={false}
                 elevation={Elevation.ONE}
-                style={{ height: '355px', width: '250px', float: 'left', marginRight: '20px', marginBottom: '20px' }}
+                style={{ height: '400px', width: '250px', float: 'left', marginRight: '20px', marginBottom: '20px' }}
             >
                 <FormGroup label="Sell" inline={false} style={{ float: 'left' }}>
                     <NumericInput
@@ -84,6 +92,14 @@ export class RequestForm extends React.PureComponent<RequestFormProps, RequestFo
                         placeholder="i.e. http://127.0.0.1:4000"
                         onChange={this.handleRfqtUrlChange}
                         value={this.state.rfqtUrl}
+                    />
+                </FormGroup>
+                <FormGroup label="Taker address" inline={false} style={{ float: 'left' }}>
+                    <InputGroup
+                        id="taker address"
+                        placeholder="i.e. 0x3c96ec79fdd18794909630d147bcff7dd2e4f602"
+                        onChange={this.handleTakerAddressChange}
+                        value={this.state.takerAddress}
                     />
                 </FormGroup>
                 <FormGroup label="API key" inline={false} style={{ float: 'left' }}>
