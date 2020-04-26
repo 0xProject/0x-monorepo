@@ -5,6 +5,8 @@ interface RequestFormState {
     sellToken: string;
     sellAmount: number;
     buyToken: string;
+    rfqtUrl: string;
+    apiKey: string;
 }
 export class RequestForm extends React.PureComponent<{}, RequestFormState> {
     constructor(props: {}) {
@@ -13,10 +15,14 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
             sellToken: 'WETH',
             buyToken: 'USDC',
             sellAmount: 1,
+            rfqtUrl: '',
+            apiKey: '',
         };
         this.handleSellAmountChange = this.handleSellAmountChange.bind(this);
         this.handleSellTokenChange = this.handleSellTokenChange.bind(this);
         this.handleBuyTokenChange = this.handleBuyTokenChange.bind(this);
+        this.handleRfqtUrlChange = this.handleRfqtUrlChange.bind(this);
+        this.handleApiKeyChange = this.handleApiKeyChange.bind(this);
     }
     handleSellAmountChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ sellAmount: parseFloat(event.target.value) });
@@ -26,6 +32,12 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
     }
     handleBuyTokenChange(event: React.ChangeEvent<HTMLSelectElement>) {
         this.setState({ buyToken: event.target.value, sellToken: this.state.buyToken });
+    }
+    handleRfqtUrlChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ rfqtUrl: event.target.value });
+    }
+    handleApiKeyChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ apiKey: event.target.value });
     }
     public render() {
         return (
@@ -56,10 +68,20 @@ export class RequestForm extends React.PureComponent<{}, RequestFormState> {
                     </HTMLSelect>
                 </FormGroup>
                 <FormGroup label="RFQT Server URI" inline={false} style={{ float: 'left' }}>
-                    <InputGroup id="rfqt-url" placeholder="i.e. http://127.0.0.1:4000" />
+                    <InputGroup
+                        id="rfqt-url"
+                        placeholder="i.e. http://127.0.0.1:4000"
+                        onChange={this.handleRfqtUrlChange}
+                        value={this.state.rfqtUrl}
+                    />
                 </FormGroup>
                 <FormGroup label="API key" inline={false} style={{ float: 'left' }}>
-                    <InputGroup id="api-key" placeholder="i.e. vj302-3vbv23r32-505353" />
+                    <InputGroup
+                        id="api-key"
+                        placeholder="i.e. vj302-3vbv23r32-505353"
+                        onChange={this.handleApiKeyChange}
+                        value={this.state.apiKey}
+                    />
                 </FormGroup>
                 <FormGroup inline={false} style={{ clear: 'both' }}>
                     <Button
