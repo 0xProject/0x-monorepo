@@ -87,6 +87,7 @@ export class QuoteRequestor {
     constructor(
         private readonly _rfqtMakerEndpoints: string[],
         private readonly _warningLogger: (s: string) => void = s => logUtils.warn(s),
+        private readonly _infoLogger: (s: string) => void = () => { return; },
     ) {}
 
     public async requestRfqtFirmQuotesAsync(
@@ -101,6 +102,7 @@ export class QuoteRequestor {
 
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
+        const timeBeforeAwait = Date.now();
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
             this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
                 try {
@@ -123,6 +125,7 @@ export class QuoteRequestor {
                 }
             }),
         );
+        this._infoLogger(JSON.stringify({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait }));
 
         const responses = responsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<SignedOrder> => respIfDefd !== undefined,
@@ -177,6 +180,7 @@ export class QuoteRequestor {
         const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
         assertTakerAddressOrThrow(_opts.takerAddress);
 
+        const timeBeforeAwait = Date.now();
         const axiosResponsesIfDefined: Array<
             undefined | AxiosResponse<RfqtIndicativeQuoteResponse>
         > = await Promise.all(
@@ -201,6 +205,7 @@ export class QuoteRequestor {
                 }
             }),
         );
+        this._infoLogger(JSON.stringify({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait }));
 
         const axiosResponses = axiosResponsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<RfqtIndicativeQuoteResponse> => respIfDefd !== undefined,
