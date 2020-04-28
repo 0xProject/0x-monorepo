@@ -49,6 +49,10 @@
             {
                 "note": "Updated Kovan ERC20BridgeSampler address",
                 "pr": 2568
+            },
+            {
+                "note": "Redeploy ERC20BridgeSampler on kovan",
+                "pr": 2570
             }
         ]
     },
