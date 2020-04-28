@@ -41,6 +41,14 @@
             {
                 "note": "Updated Ganache's ERC20BridgeSampler address",
                 "pr": 2541
+            },
+            {
+                "note": "Updated Mainnet ERC20BridgeSampler address",
+                "pr": 2551
+            },
+            {
+                "note": "Updated Kovan ERC20BridgeSampler address",
+                "pr": 2568
             }
         ]
     },
