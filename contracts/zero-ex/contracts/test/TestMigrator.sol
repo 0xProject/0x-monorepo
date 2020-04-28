@@ -32,7 +32,7 @@ contract TestMigrator {
     function succeedingMigrate() external returns (bytes4 success) {
         emit TestMigrateCalled(
             msg.data,
-            IOwnable(address(this)).getOwner()
+            IOwnable(address(this)).owner()
         );
         return LibMigrate.MIGRATE_SUCCESS;
     }
@@ -40,7 +40,7 @@ contract TestMigrator {
     function failingMigrate() external returns (bytes4 success) {
         emit TestMigrateCalled(
             msg.data,
-            IOwnable(address(this)).getOwner()
+            IOwnable(address(this)).owner()
         );
         return 0xdeadbeef;
     }
