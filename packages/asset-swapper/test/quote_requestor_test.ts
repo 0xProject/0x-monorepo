@@ -109,6 +109,17 @@ describe('QuoteRequestor', async () => {
                 responseCode: StatusCodes.Success,
             });
 
+            // Shouldn't ping an RFQ-T provider when they don't support the requested asset pair.
+            // (see how QuoteRequestor constructor parameters below don't list
+            // any supported asset pairs for this maker.)
+            mockedRequests.push({
+                endpoint: 'https://426.0.0.1',
+                requestApiKey: apiKey,
+                requestParams: expectedParams,
+                responseData: successfulOrder1,
+                responseCode: StatusCodes.Success,
+            });
+
             // Another Successful response
             const successfulOrder2 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
             mockedRequests.push({
@@ -120,15 +131,16 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtFirmQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor([
-                    'https://1337.0.0.1',
-                    'https://420.0.0.1',
-                    'https://421.0.0.1',
-                    'https://422.0.0.1',
-                    'https://423.0.0.1',
-                    'https://424.0.0.1',
-                    'https://37.0.0.1',
-                ]);
+                const qr = new QuoteRequestor({
+                    'https://1337.0.0.1': [[makerToken, takerToken]],
+                    'https://420.0.0.1': [[makerToken, takerToken]],
+                    'https://421.0.0.1': [[makerToken, takerToken]],
+                    'https://422.0.0.1': [[makerToken, takerToken]],
+                    'https://423.0.0.1': [[makerToken, takerToken]],
+                    'https://424.0.0.1': [[makerToken, takerToken]],
+                    'https://426.0.0.1': [],
+                    'https://37.0.0.1': [[makerToken, takerToken]],
+                });
                 const resp = await qr.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -216,15 +228,15 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor([
-                    'https://1337.0.0.1',
-                    'https://420.0.0.1',
-                    'https://421.0.0.1',
-                    'https://422.0.0.1',
-                    'https://423.0.0.1',
-                    'https://424.0.0.1',
-                    'https://37.0.0.1',
-                ]);
+                const qr = new QuoteRequestor({
+                    'https://1337.0.0.1': [[makerToken, takerToken]],
+                    'https://420.0.0.1': [[makerToken, takerToken]],
+                    'https://421.0.0.1': [[makerToken, takerToken]],
+                    'https://422.0.0.1': [[makerToken, takerToken]],
+                    'https://423.0.0.1': [[makerToken, takerToken]],
+                    'https://424.0.0.1': [[makerToken, takerToken]],
+                    'https://37.0.0.1': [[makerToken, takerToken]],
+                });
                 const resp = await qr.requestRfqtIndicativeQuotesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -270,7 +282,7 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor(['https://1337.0.0.1']);
+                const qr = new QuoteRequestor({ 'https://1337.0.0.1': [[makerToken, takerToken]] });
                 const resp = await qr.requestRfqtIndicativeQuotesAsync(
                     makerAssetData,
                     takerAssetData,

@@ -46,7 +46,7 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     samplerGasLimit: 250e6,
     rfqt: {
         takerApiKeyWhitelist: [],
-        makerEndpoints: [],
+        makerAssetOfferings: {},
     },
 };
 

@@ -6,7 +6,7 @@ import Axios, { AxiosResponse } from 'axios';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { MarketOperation, RfqtRequestOpts } from '../types';
+import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
 /**
  * Request quotes from RFQ-T providers
@@ -85,7 +85,7 @@ export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
 
     constructor(
-        private readonly _rfqtMakerEndpoints: string[],
+        private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
         private readonly _warningLogger: (s: string) => void = s => logUtils.warn(s),
         private readonly _infoLogger: (s: string) => void = () => { return; },
     ) {}
@@ -104,25 +104,28 @@ export class QuoteRequestor {
         // as a placeholder for failed requests.
         const timeBeforeAwait = Date.now();
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
-            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
-                try {
-                    return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
-                        headers: { '0x-api-key': _opts.apiKey },
-                        params: {
-                            takerAddress: _opts.takerAddress,
-                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                        },
-                        timeout: _opts.makerEndpointMaxResponseTimeMs,
-                    });
-                } catch (err) {
-                    this._warningLogger(
-                        `Failed to get RFQ-T firm quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
-                            _opts.apiKey
-                        } for taker address ${_opts.takerAddress}`,
-                    );
-                    this._warningLogger(err);
-                    return undefined;
+            Object.keys(this._rfqtAssetOfferings).map(async url => {
+                if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                    try {
+                        return await Axios.get<SignedOrder>(`${url}/quote`, {
+                            headers: { '0x-api-key': _opts.apiKey },
+                            params: {
+                                takerAddress: _opts.takerAddress,
+                                ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+                            },
+                            timeout: _opts.makerEndpointMaxResponseTimeMs,
+                        });
+                    } catch (err) {
+                        this._warningLogger(
+                            `Failed to get RFQ-T firm quote from market maker endpoint ${url} for API key ${
+                                _opts.apiKey
+                            } for taker address ${_opts.takerAddress}`,
+                        );
+                        this._warningLogger(err);
+                        return undefined;
+                    }
                 }
+                return undefined;
             }),
         );
         this._infoLogger(JSON.stringify({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait }));
@@ -184,25 +187,28 @@ export class QuoteRequestor {
         const axiosResponsesIfDefined: Array<
             undefined | AxiosResponse<RfqtIndicativeQuoteResponse>
         > = await Promise.all(
-            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
-                try {
-                    return await Axios.get<RfqtIndicativeQuoteResponse>(`${rfqtMakerEndpoint}/price`, {
-                        headers: { '0x-api-key': options.apiKey },
-                        params: {
-                            takerAddress: options.takerAddress,
-                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                        },
-                        timeout: options.makerEndpointMaxResponseTimeMs,
-                    });
-                } catch (err) {
-                    this._warningLogger(
-                        `Failed to get RFQ-T indicative quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
-                            options.apiKey
-                        } for taker address ${options.takerAddress}`,
-                    );
-                    this._warningLogger(err);
-                    return undefined;
+            Object.keys(this._rfqtAssetOfferings).map(async url => {
+                if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                    try {
+                        return await Axios.get<RfqtIndicativeQuoteResponse>(`${url}/price`, {
+                            headers: { '0x-api-key': options.apiKey },
+                            params: {
+                                takerAddress: options.takerAddress,
+                                ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+                            },
+                            timeout: options.makerEndpointMaxResponseTimeMs,
+                        });
+                    } catch (err) {
+                        this._warningLogger(
+                            `Failed to get RFQ-T indicative quote from market maker endpoint ${url} for API key ${
+                                options.apiKey
+                            } for taker address ${options.takerAddress}`,
+                        );
+                        this._warningLogger(err);
+                        return undefined;
+                    }
                 }
+                return undefined;
             }),
         );
         this._infoLogger(JSON.stringify({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait }));
@@ -266,6 +272,20 @@ export class QuoteRequestor {
             hasValidExpirationTimeSeconds
         ) {
             return true;
+        }
+        return false;
+    }
+
+    private _makerSupportsPair(makerUrl: string, makerAssetData: string, takerAssetData: string): boolean {
+        const makerTokenAddress = getTokenAddressOrThrow(makerAssetData);
+        const takerTokenAddress = getTokenAddressOrThrow(takerAssetData);
+        for (const assetPair of this._rfqtAssetOfferings[makerUrl]) {
+            if (
+                (assetPair[0] === makerTokenAddress && assetPair[1] === takerTokenAddress) ||
+                (assetPair[0] === takerTokenAddress && assetPair[1] === makerTokenAddress)
+            ) {
+                return true;
+            }
         }
         return false;
     }

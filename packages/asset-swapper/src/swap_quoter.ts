@@ -171,7 +171,7 @@ export class SwapQuoter {
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         this._quoteRequestor = new QuoteRequestor(
-            options.rfqt ? options.rfqt.makerEndpoints || [] : [],
+            options.rfqt ? options.rfqt.makerAssetOfferings || {} : {},
             options.rfqt ? options.rfqt.warningLogger : undefined,
             options.rfqt ? options.rfqt.infoLogger : undefined,
         );
