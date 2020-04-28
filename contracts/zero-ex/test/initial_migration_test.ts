@@ -45,7 +45,7 @@ blockchainTests.resets('Initial migration', env => {
         });
 
         it('has the correct owner', async () => {
-            const actualOwner = await ownable.getOwner().callAsync();
+            const actualOwner = await ownable.owner().callAsync();
             expect(actualOwner).to.eq(owner);
         });
     });

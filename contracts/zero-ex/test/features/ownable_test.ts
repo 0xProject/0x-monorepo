@@ -51,7 +51,7 @@ blockchainTests.resets('Ownable feature', env => {
                 ],
                 IOwnableEvents.OwnershipTransferred,
             );
-            expect(await ownable.getOwner().callAsync()).to.eq(newOwner);
+            expect(await ownable.owner().callAsync()).to.eq(newOwner);
         });
     });
 
@@ -80,7 +80,7 @@ blockchainTests.resets('Ownable feature', env => {
                 ],
                 TestMigratorEvents.TestMigrateCalled,
             );
-            expect(await ownable.getOwner().callAsync()).to.eq(newOwner);
+            expect(await ownable.owner().callAsync()).to.eq(newOwner);
         });
 
         it('failing migration reverts', async () => {

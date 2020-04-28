@@ -63,7 +63,7 @@ contract Ownable is
 
         // Register feature functions.
         ISimpleFunctionRegistry(address(this)).extend(this.transferOwnership.selector, _implementation);
-        ISimpleFunctionRegistry(address(this)).extend(this.getOwner.selector, _implementation);
+        ISimpleFunctionRegistry(address(this)).extend(this.owner.selector, _implementation);
         ISimpleFunctionRegistry(address(this)).extend(this.migrate.selector, _implementation);
         return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
@@ -119,7 +119,7 @@ contract Ownable is
 
     /// @dev Get the owner of this contract.
     /// @return owner_ The owner of this contract.
-    function getOwner() external override view returns (address owner_) {
+    function owner() external override view returns (address owner_) {
         return LibOwnableStorage.getStorage().owner;
     }
 }
