@@ -30,7 +30,7 @@ interface IOwnableV06 {
     /// @param newOwner The address that will become the owner.
     function transferOwnership(address newOwner) external;
 
-    /// @dev Get the owner of this contract.
-    /// @return owner_ The owner of this contract.
-    function getOwner() external view returns (address owner_);
+    /// @dev The owner of this contract.
+    /// @return ownerAddress The owner address.
+    function owner() external view returns (address ownerAddress);
 }
