@@ -43,10 +43,9 @@ export abstract class AbstractSetDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): SetCalldataBlock {
-        const block =
-            value instanceof Array
-                ? this._generateCalldataBlockFromArray(value, parentBlock)
-                : this._generateCalldataBlockFromObject(value, parentBlock);
+        const block = Array.isArray(value)
+            ? this._generateCalldataBlockFromArray(value, parentBlock)
+            : this._generateCalldataBlockFromObject(value, parentBlock);
         return block;
     }
 

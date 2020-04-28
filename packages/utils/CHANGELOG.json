@@ -13,6 +13,10 @@
             {
                 "note": "`ZeroExRevertErrors.Migrate` -> `ZeroExRevertErrors.Ownable`",
                 "pr": 2564
+            },
+            {
+                "note": "`instanceof Array` => `Array.isArray`",
+                "pr": 2567
             }
         ]
     },
