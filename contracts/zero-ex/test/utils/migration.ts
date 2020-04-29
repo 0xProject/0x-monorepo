@@ -15,6 +15,7 @@ export async function initialMigrateAsync(
         provider,
         txDefaults,
         artifacts,
+        txDefaults.from as string,
     );
     const deployCall = migrator.deploy(owner);
     const zeroEx = new ZeroExContract(await deployCall.callAsync(), provider, {});
