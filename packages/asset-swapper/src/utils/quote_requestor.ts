@@ -81,14 +81,12 @@ function hasExpectedAssetData(
 }
 
 export class QuoteRequestor {
-    private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
-    private readonly _warningLogger: (s: string) => void;
 
-    constructor(rfqtMakerEndpoints: string[], logger: (s: string) => void = s => logUtils.warn(s)) {
-        this._rfqtMakerEndpoints = rfqtMakerEndpoints;
-        this._warningLogger = logger;
-    }
+    constructor(
+        private readonly _rfqtMakerEndpoints: string[],
+        private readonly _warningLogger: (s: string) => void = s => logUtils.warn(s),
+    ) {}
 
     public async requestRfqtFirmQuotesAsync(
         makerAssetData: string,
