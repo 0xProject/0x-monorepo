@@ -87,7 +87,9 @@ export class QuoteRequestor {
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
         private readonly _warningLogger: (s: string) => void = s => logUtils.warn(s),
-        private readonly _infoLogger: (s: string) => void = () => { return; },
+        private readonly _infoLogger: (s: string) => void = () => {
+            return;
+        },
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
     ) {}
 
