@@ -23,7 +23,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
-    "sphinx_autodoc_typehints",
 ]
 
 templates_path = ["doc_templates"]
@@ -54,3 +53,39 @@ htmlhelp_basename = "contract_wrapperspydoc"
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {"https://docs.python.org/": None}
+
+
+def annotate_gend_tuple_docstring(  # pylint: disable=too-many-arguments
+    app,  # pylint: disable=unused-argument
+    what,  # pylint: disable=unused-argument
+    name,  # pylint: disable=unused-argument
+    obj,  # pylint: disable=unused-argument
+    options,  # pylint: disable=unused-argument
+    lines,
+):
+    """Annotate docstrings of generated tuples."""
+    docstring_extensions = {
+        "LibOrderOrder": [
+            "This is the generated class representing `the Order struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order>`_."
+        ],
+        "LibFillResultsFillResults": [
+            "This is the generated class representing `the FillResults struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#fillresults>`_."
+        ],
+        "LibFillResultsMatchedFillResults": [
+            "This is the generated class representing `the MatchedFillResults struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#matchedfillresults>`_."
+        ],
+        "LibOrderOrderInfo": [
+            "This is the generated class representing `the OrderInfo struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#orderinfo>`_."
+        ],
+        "LibZeroExTransactionZeroExTransaction": [
+            "This is the generated class representing `the ZeroExTransaction struct <https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#zeroextransaction>`_."
+        ],
+    }
+    unqualified_name = name.split(".")[-1]
+    if unqualified_name in docstring_extensions:
+        lines.extend(docstring_extensions[unqualified_name])
+
+
+def setup(app):
+    """Install callbacks."""
+    app.connect("autodoc-process-docstring", annotate_gend_tuple_docstring)
