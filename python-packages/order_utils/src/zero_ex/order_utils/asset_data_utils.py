@@ -170,7 +170,7 @@ def decode_erc721_asset_data(asset_data: str) -> ERC721AssetData:
     ):
         raise ValueError(
             "Could not decode ERC721 Asset Data. Expected Asset Proxy Id to be"
-            + f" ERC721 ("
+            + " ERC721 ("
             + f"{abi_utils.method_id('ERC721Token', ['address', 'uint256'])}"
             + f"), but got {asset_proxy_id}"
         )
