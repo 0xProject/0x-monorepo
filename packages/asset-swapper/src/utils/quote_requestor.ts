@@ -155,6 +155,11 @@ export class QuoteRequestor {
                 return false;
             }
 
+            if (order.takerAddress !== _opts.takerAddress) {
+                this._warningLogger(`Unexpected takerAddress in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+
             return true;
         });
 

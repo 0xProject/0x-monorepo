@@ -5,6 +5,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
+import { constants } from '../src/constants';
 import { MarketOperation, MockedRfqtFirmQuoteResponse, MockedRfqtIndicativeQuoteResponse } from '../src/types';
 import { QuoteRequestor } from '../src/utils/quote_requestor';
 import { rfqtMocker } from '../src/utils/rfqt_mocker';
@@ -45,6 +46,7 @@ describe('QuoteRequestor', async () => {
             const successfulOrder1 = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
                 takerAssetData,
+                takerAddress,
                 feeRecipientAddress: '0x0000000000000000000000000000000000000001',
             });
             mockedRequests.push({
@@ -108,6 +110,20 @@ describe('QuoteRequestor', async () => {
                 responseData: unsignedOrder,
                 responseCode: StatusCodes.Success,
             });
+            // A successful response code and good order but for the wrong takerAddress
+            const orderWithNullTaker = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                takerAddress: constants.NULL_ADDRESS,
+                feeRecipientAddress: '0x0000000000000000000000000000000000000002',
+            });
+            mockedRequests.push({
+                endpoint: 'https://425.0.0.1',
+                requestApiKey: apiKey,
+                requestParams: expectedParams,
+                responseData: orderWithNullTaker,
+                responseCode: StatusCodes.Success,
+            });
 
             // Shouldn't ping an RFQ-T provider when they don't support the requested asset pair.
             // (see how QuoteRequestor constructor parameters below don't list
@@ -121,7 +137,11 @@ describe('QuoteRequestor', async () => {
             });
 
             // Another Successful response
-            const successfulOrder2 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
+            const successfulOrder2 = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                takerAddress,
+            });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
                 requestApiKey: apiKey,
@@ -138,6 +158,7 @@ describe('QuoteRequestor', async () => {
                     'https://422.0.0.1': [[makerToken, takerToken]],
                     'https://423.0.0.1': [[makerToken, takerToken]],
                     'https://424.0.0.1': [[makerToken, takerToken]],
+                    'https://425.0.0.1': [[makerToken, takerToken]],
                     'https://426.0.0.1': [],
                     'https://37.0.0.1': [[makerToken, takerToken]],
                 });
