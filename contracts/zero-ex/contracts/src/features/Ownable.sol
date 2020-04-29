@@ -19,7 +19,8 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../fixins/FixinOwnable.sol";
+import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
+import "../fixins/FixinCommon.sol";
 import "../errors/LibOwnableRichErrors.sol";
 import "../storage/LibOwnableStorage.sol";
 import "../migrations/LibBootstrap.sol";
@@ -33,7 +34,7 @@ import "./ISimpleFunctionRegistry.sol";
 contract Ownable is
     IFeature,
     IOwnable,
-    FixinOwnable
+    FixinCommon
 {
 
     // solhint-disable const-name-snakecase
@@ -47,6 +48,8 @@ contract Ownable is
     /// @dev The deployed address of this contract.
     address immutable private _implementation;
     // solhint-enable
+
+    using LibRichErrorsV06 for bytes;
 
     constructor() public {
         _implementation = address(this);
@@ -79,7 +82,7 @@ contract Ownable is
         LibOwnableStorage.Storage storage proxyStor = LibOwnableStorage.getStorage();
 
         if (newOwner == address(0)) {
-            _rrevert(LibOwnableRichErrors.TransferOwnerToZeroError());
+            LibOwnableRichErrors.TransferOwnerToZeroError().rrevert();
         } else {
             proxyStor.owner = newOwner;
             emit OwnershipTransferred(msg.sender, newOwner);
@@ -103,7 +106,7 @@ contract Ownable is
         address prevOwner = stor.owner;
         if (prevOwner == address(this)) {
             // If the owner is already set to ourselves then we've reentered.
-            _rrevert(LibOwnableRichErrors.AlreadyMigratingError());
+            LibOwnableRichErrors.AlreadyMigratingError().rrevert();
         }
         // Temporarily set the owner to ourselves so we can perform admin functions.
         stor.owner = address(this);

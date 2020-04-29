@@ -21,22 +21,40 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibCommonRichErrors.sol";
+import "../errors/LibOwnableRichErrors.sol";
+import "../storage/LibOwnableStorage.sol";
 
 
 /// @dev Common utilities.
 contract FixinCommon {
 
+    using LibRichErrorsV06 for bytes;
+
     /// @dev The caller must be this contract.
     modifier onlySelf() {
         if (msg.sender != address(this)) {
-            _rrevert(LibCommonRichErrors.OnlyCallableBySelfError(msg.sender));
+            LibCommonRichErrors.OnlyCallableBySelfError(msg.sender).rrevert();
         }
         _;
     }
 
-    /// @dev Reverts with arbitrary data `errorData`.
-    /// @param errorData ABI encoded error data.
-    function _rrevert(bytes memory errorData) internal pure {
-        LibRichErrorsV06.rrevert(errorData);
+    /// @dev The caller of this function must be the owner.
+    modifier onlyOwner() {
+        {
+            address owner = _getOwner();
+            if (msg.sender != owner) {
+                LibOwnableRichErrors.OnlyOwnerError(
+                    msg.sender,
+                    owner
+                ).rrevert();
+            }
+        }
+        _;
+    }
+
+    /// @dev Get the owner of this contract.
+    /// @return owner The owner of this contract.
+    function _getOwner() internal view returns (address owner) {
+        return LibOwnableStorage.getStorage().owner;
     }
 }

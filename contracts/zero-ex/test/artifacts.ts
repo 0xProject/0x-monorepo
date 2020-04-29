@@ -7,7 +7,6 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
-import * as FixinOwnable from '../test/generated-artifacts/FixinOwnable.json';
 import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
 import * as IFeature from '../test/generated-artifacts/IFeature.json';
 import * as InitialMigration from '../test/generated-artifacts/InitialMigration.json';
@@ -46,7 +45,6 @@ export const artifacts = {
     Ownable: Ownable as ContractArtifact,
     SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
     FixinCommon: FixinCommon as ContractArtifact,
-    FixinOwnable: FixinOwnable as ContractArtifact,
     InitialMigration: InitialMigration as ContractArtifact,
     LibBootstrap: LibBootstrap as ContractArtifact,
     LibMigrate: LibMigrate as ContractArtifact,

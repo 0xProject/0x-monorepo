@@ -8,7 +8,6 @@
         "generated-artifacts/ZeroEx.json",
         "test/generated-artifacts/Bootstrap.json",
         "test/generated-artifacts/FixinCommon.json",
-        "test/generated-artifacts/FixinOwnable.json",
         "test/generated-artifacts/IBootstrap.json",
         "test/generated-artifacts/IFeature.json",
         "test/generated-artifacts/IOwnable.json",

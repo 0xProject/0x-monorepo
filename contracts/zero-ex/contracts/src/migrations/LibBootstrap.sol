@@ -29,6 +29,8 @@ library LibBootstrap {
     ///      This is `keccack('BOOTSTRAP_SUCCESS')`.
     bytes4 internal constant BOOTSTRAP_SUCCESS = 0xd150751b;
 
+    using LibRichErrorsV06 for bytes;
+
     /// @dev Perform a delegatecall and ensure it returns the magic bytes.
     /// @param target The call target.
     /// @param data The call data.
@@ -43,9 +45,7 @@ library LibBootstrap {
             resultData.length != 32 ||
             abi.decode(resultData, (bytes4)) != BOOTSTRAP_SUCCESS)
         {
-            LibRichErrorsV06.rrevert(
-                LibProxyRichErrors.BootstrapCallFailedError(target, resultData)
-            );
+            LibProxyRichErrors.BootstrapCallFailedError(target, resultData).rrevert();
         }
     }
 }
