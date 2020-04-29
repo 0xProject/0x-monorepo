@@ -155,6 +155,7 @@ export class SwapQuoter {
             permittedOrderFeeTypes,
             samplerGasLimit,
             liquidityProviderRegistryAddress,
+            rfqt,
         } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
@@ -165,15 +166,15 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this._rfqtTakerApiKeyWhitelist = options.rfqt ? options.rfqt.takerApiKeyWhitelist || [] : [];
+        this._rfqtTakerApiKeyWhitelist = rfqt ? rfqt.takerApiKeyWhitelist || [] : [];
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         this._quoteRequestor = new QuoteRequestor(
-            options.rfqt ? options.rfqt.makerAssetOfferings || {} : {},
-            options.rfqt ? options.rfqt.warningLogger : undefined,
-            options.rfqt ? options.rfqt.infoLogger : undefined,
+            rfqt ? rfqt.makerAssetOfferings || {} : {},
+            rfqt ? rfqt.warningLogger : undefined,
+            rfqt ? rfqt.infoLogger : undefined,
         );
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
