@@ -88,6 +88,7 @@ export class QuoteRequestor {
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
         private readonly _warningLogger: (s: string) => void = s => logUtils.warn(s),
         private readonly _infoLogger: (s: string) => void = () => { return; },
+        private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
     ) {}
 
     public async requestRfqtFirmQuotesAsync(
@@ -157,6 +158,16 @@ export class QuoteRequestor {
 
             if (order.takerAddress !== _opts.takerAddress) {
                 this._warningLogger(`Unexpected takerAddress in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+
+            const minExpiry = Math.round((Date.now() + this._expiryBufferMs) / constants.ONE_SECOND_MS);
+            if (new BigNumber(order.expirationTimeSeconds).isLessThan(minExpiry)) {
+                this._warningLogger(
+                    `Expiry too soon (expected at least ${minExpiry}) in RFQ-T order, filtering out: ${JSON.stringify(
+                        order,
+                    )}`,
+                );
                 return false;
             }
 
@@ -236,6 +247,15 @@ export class QuoteRequestor {
             ) {
                 this._warningLogger(
                     `Unexpected asset data in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
+                );
+                return false;
+            }
+            const minExpiry = Math.round((Date.now() + this._expiryBufferMs) / constants.ONE_SECOND_MS);
+            if (new BigNumber(response.expirationTimeSeconds).isLessThan(minExpiry)) {
+                this._warningLogger(
+                    `Expiry too soon (expected at least ${minExpiry}) in RFQ-T indicative quote, filtering out: ${JSON.stringify(
+                        response,
+                    )}`,
                 );
                 return false;
             }

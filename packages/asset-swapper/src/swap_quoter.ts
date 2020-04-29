@@ -179,6 +179,7 @@ export class SwapQuoter {
             rfqt ? rfqt.makerAssetOfferings || {} : {},
             rfqt ? rfqt.warningLogger : undefined,
             rfqt ? rfqt.infoLogger : undefined,
+            expiryBufferMs,
         );
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
