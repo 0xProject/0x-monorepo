@@ -82,7 +82,7 @@ class TestPublishCommand(distutils.command.build_py.build_py):
     """Custom command to publish to test.pypi.org."""
 
     description = (
-        "Publish dist/* to test.pypi.org." "Run sdist & bdist_wheel first."
+        "Publish dist/* to test.pypi.org. Run sdist & bdist_wheel first."
     )
 
     def run(self):
