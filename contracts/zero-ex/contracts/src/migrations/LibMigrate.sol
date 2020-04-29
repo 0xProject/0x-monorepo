@@ -29,6 +29,8 @@ library LibMigrate {
     ///      This is `keccack('MIGRATE_SUCCESS')`.
     bytes4 internal constant MIGRATE_SUCCESS = 0x2c64c5ef;
 
+    using LibRichErrorsV06 for bytes;
+
     /// @dev Perform a delegatecall and ensure it returns the magic bytes.
     /// @param target The call target.
     /// @param data The call data.
@@ -43,9 +45,7 @@ library LibMigrate {
             resultData.length != 32 ||
             abi.decode(resultData, (bytes4)) != MIGRATE_SUCCESS)
         {
-            LibRichErrorsV06.rrevert(
-                LibOwnableRichErrors.MigrateCallFailedError(target, resultData)
-            );
+            LibOwnableRichErrors.MigrateCallFailedError(target, resultData).rrevert();
         }
     }
 }

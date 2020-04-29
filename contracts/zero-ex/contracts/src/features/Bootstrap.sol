@@ -19,16 +19,15 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../migrations/LibBootstrap.sol";
-import "../fixins/FixinCommon.sol";
 import "../storage/LibProxyStorage.sol";
 import "./IBootstrap.sol";
 
 
 /// @dev Detachable `bootstrap()` feature.
 contract Bootstrap is
-    IBootstrap,
-    FixinCommon
+    IBootstrap
 {
     // solhint-disable state-visibility,indent
     /// @dev The ZeroEx contract.
@@ -41,6 +40,8 @@ contract Bootstrap is
     ///      This has to be immutable to persist across delegatecalls.
     address immutable private _bootstrapCaller;
     // solhint-enable state-visibility,indent
+
+    using LibRichErrorsV06 for bytes;
 
     /// @dev Construct this contract and set the bootstrap migration contract.
     ///      After constructing this contract, `bootstrap()` should be called
@@ -60,10 +61,10 @@ contract Bootstrap is
     function bootstrap(address target, bytes calldata callData) external override {
         // Only the bootstrap caller can call this function.
         if (msg.sender != _bootstrapCaller) {
-            _rrevert(LibProxyRichErrors.InvalidBootstrapCallerError(
+            LibProxyRichErrors.InvalidBootstrapCallerError(
                 msg.sender,
                 _bootstrapCaller
-            ));
+            ).rrevert();
         }
         // Deregister.
         LibProxyStorage.getStorage().impls[this.bootstrap.selector] = address(0);
@@ -77,7 +78,7 @@ contract Bootstrap is
     ///      Can only be called by the deployer.
     function die() external {
         if (msg.sender != _deployer) {
-            _rrevert(LibProxyRichErrors.InvalidDieCallerError(msg.sender, _deployer));
+            LibProxyRichErrors.InvalidDieCallerError(msg.sender, _deployer).rrevert();
         }
         selfdestruct(msg.sender);
     }

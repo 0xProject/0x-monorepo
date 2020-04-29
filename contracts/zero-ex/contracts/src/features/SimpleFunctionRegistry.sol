@@ -19,7 +19,8 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../fixins/FixinOwnable.sol";
+import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
+import "../fixins/FixinCommon.sol";
 import "../storage/LibProxyStorage.sol";
 import "../storage/LibSimpleFunctionRegistryStorage.sol";
 import "../errors/LibSimpleFunctionRegistryRichErrors.sol";
@@ -32,7 +33,7 @@ import "./ISimpleFunctionRegistry.sol";
 contract SimpleFunctionRegistry is
     IFeature,
     ISimpleFunctionRegistry,
-    FixinOwnable
+    FixinCommon
 {
 
     // solhint-disable const-name-snakecase
@@ -46,6 +47,8 @@ contract SimpleFunctionRegistry is
     /// @dev The deployed address of this contract.
     address immutable private _implementation;
     // solhint-enable
+
+    using LibRichErrorsV06 for bytes;
 
     constructor() public {
         _implementation = address(this);
@@ -95,12 +98,10 @@ contract SimpleFunctionRegistry is
             }
         }
         if (i == 0) {
-            _rrevert(
-                LibSimpleFunctionRegistryRichErrors.NotInRollbackHistoryError(
-                    selector,
-                    targetImpl
-                )
-            );
+            LibSimpleFunctionRegistryRichErrors.NotInRollbackHistoryError(
+                selector,
+                targetImpl
+            ).rrevert();
         }
         proxyStor.impls[selector] = targetImpl;
         emit ProxyFunctionUpdated(selector, currentImpl, targetImpl);

@@ -5,7 +5,6 @@
  */
 export * from '../test/generated-wrappers/bootstrap';
 export * from '../test/generated-wrappers/fixin_common';
-export * from '../test/generated-wrappers/fixin_ownable';
 export * from '../test/generated-wrappers/i_bootstrap';
 export * from '../test/generated-wrappers/i_feature';
 export * from '../test/generated-wrappers/i_ownable';
