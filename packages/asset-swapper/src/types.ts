@@ -233,6 +233,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     rfqt?: {
         takerApiKeyWhitelist: string[];
         makerAssetOfferings: RfqtMakerAssetOfferings;
+        skipBuyRequests?: boolean;
         warningLogger?: (s: string) => void;
         infoLogger?: (s: string) => void;
     };
