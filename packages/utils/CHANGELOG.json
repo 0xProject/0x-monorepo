@@ -17,6 +17,10 @@
             {
                 "note": "`instanceof Array` => `Array.isArray`",
                 "pr": 2567
+            },
+            {
+                "note": "Add more `ZeroExRevertErrors`",
+                "pr": 2545
             }
         ]
     },

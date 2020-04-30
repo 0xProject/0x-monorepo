@@ -9,7 +9,16 @@ import { BigNumber } from './configured_bignumber';
 
 // tslint:disable: max-classes-per-file
 
-type ArgTypes = string | BigNumber | number | boolean | BigNumber[] | string[] | number[] | boolean[];
+type ArgTypes =
+    | string
+    | BigNumber
+    | number
+    | boolean
+    | BigNumber[]
+    | string[]
+    | number[]
+    | boolean[]
+    | Array<BigNumber | number | string>;
 type ValueMap = ObjectMap<ArgTypes | undefined>;
 type RevertErrorDecoder = (hex: string) => ValueMap;
 
