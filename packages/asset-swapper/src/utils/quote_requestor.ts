@@ -86,10 +86,8 @@ export class QuoteRequestor {
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
-        private readonly _warningLogger: (s: string) => void = s => logUtils.warn(s),
-        private readonly _infoLogger: (s: string) => void = () => {
-            return;
-        },
+        private readonly _warningLogger: (a: any) => void = a => logUtils.warn(a),
+        private readonly _infoLogger: (a: any) => void = () => undefined,
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
     ) {}
 
@@ -131,7 +129,7 @@ export class QuoteRequestor {
                 return undefined;
             }),
         );
-        this._infoLogger(JSON.stringify({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait }));
+        this._infoLogger({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait });
 
         const responses = responsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<SignedOrder> => respIfDefd !== undefined,
@@ -229,7 +227,7 @@ export class QuoteRequestor {
                 return undefined;
             }),
         );
-        this._infoLogger(JSON.stringify({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait }));
+        this._infoLogger({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait });
 
         const axiosResponses = axiosResponsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<RfqtIndicativeQuoteResponse> => respIfDefd !== undefined,
