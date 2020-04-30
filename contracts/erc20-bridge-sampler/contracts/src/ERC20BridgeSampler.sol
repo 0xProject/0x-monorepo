@@ -29,6 +29,7 @@ import "./IDevUtils.sol";
 import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
+import "./IKyberNetworkContract.sol";
 import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
@@ -183,33 +184,18 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory makerTokenAmounts)
     {
         _assertValidPair(makerToken, takerToken);
-        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
-        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
-        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
+        address wethAddress = _getWethAddress();
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IKyberNetwork(0).getExpectedRate.selector,
-                        _takerToken,
-                        _makerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 rate = 0;
-            if (didSucceed) {
-                rate = abi.decode(resultData, (uint256));
+            if (takerToken == wethAddress || makerToken == wethAddress) {
+                makerTokenAmounts[i] = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
             } else {
-                break;
+                uint256 value = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
+                if (value != 0) {
+                    makerTokenAmounts[i] = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
+                }
             }
-            makerTokenAmounts[i] =
-                rate *
-                takerTokenAmounts[i] *
-                10 ** makerTokenDecimals /
-                10 ** takerTokenDecimals /
-                10 ** 18;
         }
     }
 
@@ -805,6 +791,55 @@ contract ERC20BridgeSampler is
                 buyAmount,
                 sellAmount
             );
+        }
+    }
+
+    function _sampleSellFromKyberNetwork(
+        address takerToken,
+        address makerToken,
+        uint256 takerTokenAmount
+    )
+        private
+        view
+        returns (uint256 makerTokenAmount)
+    {
+        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
+        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
+        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
+        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+        (bool didSucceed, bytes memory resultData) = _getKyberNetworkProxyAddress().staticcall.gas(DEFAULT_CALL_GAS)(
+            abi.encodeWithSelector(
+                IKyberNetwork(0).kyberNetworkContract.selector
+            ));
+        if (!didSucceed) {
+            return makerTokenAmount;
+        }
+        address kyberNetworkContract = abi.decode(resultData, (address));
+        (didSucceed, resultData) =
+            kyberNetworkContract.staticcall.gas(KYBER_CALL_GAS)(
+                abi.encodeWithSelector(
+                    IKyberNetworkContract(0).searchBestRate.selector,
+                    _takerToken,
+                    _makerToken,
+                    takerTokenAmount,
+                    false // usePermissionless
+                ));
+        uint256 rate = 0;
+        address reserve;
+        if (didSucceed) {
+            (reserve, rate) = abi.decode(resultData, (address, uint256));
+        } else {
+            return makerTokenAmount;
+        }
+        if (reserve != 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F || // Uniswap
+            reserve != 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f)   // Eth2Dai
+        {
+            makerTokenAmount =
+                rate *
+                takerTokenAmount *
+                10 ** makerTokenDecimals /
+                10 ** takerTokenDecimals /
+                10 ** 18;
         }
     }
 }

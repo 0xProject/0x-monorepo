@@ -13,6 +13,7 @@ import * as IDevUtils from '../test/generated-artifacts/IDevUtils.json';
 import * as IERC20BridgeSampler from '../test/generated-artifacts/IERC20BridgeSampler.json';
 import * as IEth2Dai from '../test/generated-artifacts/IEth2Dai.json';
 import * as IKyberNetwork from '../test/generated-artifacts/IKyberNetwork.json';
+import * as IKyberNetworkContract from '../test/generated-artifacts/IKyberNetworkContract.json';
 import * as ILiquidityProvider from '../test/generated-artifacts/ILiquidityProvider.json';
 import * as ILiquidityProviderRegistry from '../test/generated-artifacts/ILiquidityProviderRegistry.json';
 import * as IUniswapExchangeQuotes from '../test/generated-artifacts/IUniswapExchangeQuotes.json';
@@ -26,6 +27,7 @@ export const artifacts = {
     IERC20BridgeSampler: IERC20BridgeSampler as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
     IKyberNetwork: IKyberNetwork as ContractArtifact,
+    IKyberNetworkContract: IKyberNetworkContract as ContractArtifact,
     ILiquidityProvider: ILiquidityProvider as ContractArtifact,
     ILiquidityProviderRegistry: ILiquidityProviderRegistry as ContractArtifact,
     IUniswapExchangeQuotes: IUniswapExchangeQuotes as ContractArtifact,

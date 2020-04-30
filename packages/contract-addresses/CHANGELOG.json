@@ -53,6 +53,10 @@
             {
                 "note": "Redeploy ERC20BridgeSampler on kovan",
                 "pr": 2570
+            },
+            {
+                "note": "Redeploy ERC20BridgeSampler on Mainnet using `Kyber.searchBestRate`",
+                "pr": 2575
             }
         ]
     },

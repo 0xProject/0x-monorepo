@@ -65,6 +65,10 @@
             {
                 "note": "Apply Native order penalty inline with the target amount",
                 "pr": 2565
+            },
+            {
+                "note": "Remove Kyber exclusion when Uniswap/Eth2Dai is present",
+                "pr": 2575
             }
         ]
     },

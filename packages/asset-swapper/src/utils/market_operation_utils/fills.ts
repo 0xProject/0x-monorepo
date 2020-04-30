@@ -119,18 +119,15 @@ function dexQuotesToPaths(
     fees: { [source: string]: BigNumber },
 ): Fill[][] {
     const paths: Fill[][] = [];
-    for (const quote of dexQuotes) {
+    for (let quote of dexQuotes) {
         const path: Fill[] = [];
+        // Drop any non-zero entries. This can occur if the
+        // first few fills on Kyber were UniswapReserves
+        quote = quote.filter(q => !q.output.isZero());
         for (let i = 0; i < quote.length; i++) {
             const sample = quote[i];
             const prevSample = i === 0 ? undefined : quote[i - 1];
             const source = sample.source;
-            // Stop if the sample has zero output, which can occur if the source
-            // cannot fill the full amount.
-            // TODO(dorothy-zbornak): Sometimes Kyber will dip to zero then pick back up.
-            if (sample.output.eq(0)) {
-                break;
-            }
             const input = sample.input.minus(prevSample ? prevSample.input : 0);
             const output = sample.output.minus(prevSample ? prevSample.output : 0);
             const penalty =
@@ -206,7 +203,6 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
 }
 
 export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): boolean {
-    let flags = 0;
     for (let i = 0; i < path.length; ++i) {
         // Fill must immediately follow its parent.
         if (path[i].parent) {
@@ -222,10 +218,8 @@ export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): 
                 }
             }
         }
-        flags |= path[i].flags;
     }
-    const conflictFlags = FillFlags.Kyber | FillFlags.ConflictsWithKyber;
-    return (flags & conflictFlags) !== conflictFlags;
+    return true;
 }
 
 export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_INF): Fill[] {
