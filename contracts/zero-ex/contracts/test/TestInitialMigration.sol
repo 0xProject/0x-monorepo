@@ -28,6 +28,10 @@ contract TestInitialMigration is
     InitialMigration
 {
     address public bootstrapFeature;
+    address public dieRecipient;
+
+    // solhint-disable-next-line no-empty-blocks
+    constructor(address deployer) public InitialMigration(deployer) {}
 
     function callBootstrap(ZeroEx zeroEx) external {
         IBootstrap(address(zeroEx)).bootstrap(address(this), new bytes(0));
@@ -42,5 +46,9 @@ contract TestInitialMigration is
         // Snoop the bootstrap feature contract.
         bootstrapFeature = ZeroEx(address(uint160(address(this))))
             .getFunctionImplementation(IBootstrap.bootstrap.selector);
+    }
+
+    function die(address payable ethRecipient) public override {
+        dieRecipient = ethRecipient;
     }
 }

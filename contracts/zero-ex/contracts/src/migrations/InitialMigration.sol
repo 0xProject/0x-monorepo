@@ -28,25 +28,42 @@ import "./LibBootstrap.sol";
 
 /// @dev A contract for deploying and configuring a minimal ZeroEx contract.
 contract InitialMigration {
-    /// @dev The deployed ZereEx instance.
-    ZeroEx private _zeroEx;
+
+    /// @dev The allowed caller of `deploy()`. In production, this would be
+    ///      the governor.
+    address public immutable deployer;
+    /// @dev The real address of this contract.
+    address private immutable _implementation;
+
+    /// @dev Instantiate this contract and set the allowed caller of `deploy()`
+    ///      to `deployer_`.
+    /// @param deployer_ The allowed caller of `deploy()`.
+    constructor(address deployer_) public {
+        deployer = deployer_;
+        _implementation = address(this);
+    }
 
     /// @dev Deploy the `ZeroEx` contract with the minimum feature set,
     ///      transfers ownership to `owner`, then self-destructs.
+    ///      Only callable by `deployer` set in the contstructor.
     /// @param owner The owner of the contract.
     /// @return zeroEx The deployed and configured `ZeroEx` contract.
-    function deploy(address owner) public virtual returns (ZeroEx zeroEx) {
-        // Must not have already been run.
-        require(address(_zeroEx) == address(0), "InitialMigration/ALREADY_DEPLOYED");
+    function deploy(address payable owner) public virtual returns (ZeroEx zeroEx) {
+        // Must be called by the allowed deployer.
+        require(msg.sender == deployer, "InitialMigration/INVALID_SENDER");
 
         // Deploy the ZeroEx contract, setting ourselves as the bootstrapper.
-        zeroEx = _zeroEx = new ZeroEx();
+        zeroEx = new ZeroEx();
 
         // Bootstrap the initial feature set.
         IBootstrap(address(zeroEx)).bootstrap(
             address(this),
             abi.encodeWithSelector(this.bootstrap.selector, owner)
         );
+
+        // Self-destruct. This contract should not hold any funds but we send
+        // them to the owner just in case.
+        this.die(owner);
     }
 
     /// @dev Sets up the initial state of the `ZeroEx` contract.
@@ -75,5 +92,12 @@ contract InitialMigration {
         Ownable(address(this)).transferOwnership(owner);
 
         success = LibBootstrap.BOOTSTRAP_SUCCESS;
+    }
+
+    /// @dev Self-destructs this contract. Only callable by this contract.
+    /// @param ethRecipient Who to transfer outstanding ETH to.
+    function die(address payable ethRecipient) public virtual {
+        require(msg.sender == _implementation, "InitialMigration/INVALID_SENDER");
+        selfdestruct(ethRecipient);
     }
 }
