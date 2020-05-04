@@ -4,7 +4,7 @@ import { MarketOperation } from '../../types';
 
 import { ZERO_AMOUNT } from './constants';
 import { getPathSize, isValidPath } from './fills';
-import { Fill, FillFlags } from './types';
+import { Fill } from './types';
 
 // tslint:disable: prefer-for-of custom-no-magic-numbers completed-docs
 
@@ -19,21 +19,9 @@ export function findOptimalPath(
     runLimit?: number,
 ): Fill[] | undefined {
     let optimalPath = paths[0] || [];
-    // TODO(dorothy-zbornak): Convex paths (like kyber) should technically always be
-    // inserted at the front of the path because a partial fill can invalidate them.
     for (const path of paths.slice(1)) {
         optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit);
     }
-    // Sort the path so that sources which conflict with Kyber are filled first
-    optimalPath.sort((a: Fill, b: Fill) => {
-        if (a.flags === FillFlags.ConflictsWithKyber && b.flags === FillFlags.Kyber) {
-            return -1;
-        }
-        if (b.flags === FillFlags.ConflictsWithKyber && a.flags === FillFlags.Kyber) {
-            return 1;
-        }
-        return 0;
-    });
     return isPathComplete(optimalPath, targetInput) ? optimalPath : undefined;
 }
 

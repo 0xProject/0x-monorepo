@@ -599,7 +599,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketSellOrdersAsync(
                     createOrdersFromSellRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.5 },
+                    { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.25 },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
                 const firstSources = [ERC20BridgeSource.Native, ERC20BridgeSource.Native, ERC20BridgeSource.Uniswap];
@@ -967,7 +967,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
-                    { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.5 },
+                    { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.25 },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
                 const firstSources = [ERC20BridgeSource.Native, ERC20BridgeSource.Native, ERC20BridgeSource.Uniswap];

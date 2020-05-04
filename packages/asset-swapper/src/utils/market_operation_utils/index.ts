@@ -7,13 +7,7 @@ import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
-import {
-    createFillPaths,
-    getFallbackSourcePaths,
-    getPathAdjustedRate,
-    getPathAdjustedSlippage,
-    getPathSize,
-} from './fills';
+import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
 import {
     createOrdersFromPath,
     createSignedOrdersFromRfqtIndicativeQuotes,
@@ -26,7 +20,6 @@ import {
     AggregationError,
     DexSample,
     ERC20BridgeSource,
-    Fill,
     GetMarketOrdersOpts,
     OptimizedMarketOrder,
     OrderDomain,
@@ -343,32 +336,38 @@ export class MarketOperationUtils {
             feeSchedule: opts.feeSchedule,
         });
         // Find the optimal path.
-        const optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit) || [];
-        // TODO(dorothy-zbornak): Ensure the slippage on the optimal path is <= maxFallbackSlippage
-        // once we decide on a good baseline.
+        let optimalPath = findOptimalPath(side, paths, inputAmount, opts.runLimit) || [];
         if (optimalPath.length === 0) {
             throw new Error(AggregationError.NoOptimalPath);
         }
         // Generate a fallback path if native orders are in the optimal paath.
-        let fallbackPath: Fill[] = [];
         const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
         if (opts.allowFallback && nativeSubPath.length !== 0) {
-            // The fallback path is, at most, as large as the native path.
-            const fallbackInputAmount = BigNumber.min(inputAmount, getPathSize(nativeSubPath, inputAmount)[0]);
-            fallbackPath =
-                findOptimalPath(side, getFallbackSourcePaths(optimalPath, paths), fallbackInputAmount, opts.runLimit) ||
-                [];
+            const nonNativePaths = paths.filter(p => p.length > 0 && p[0].source !== ERC20BridgeSource.Native);
+            // The fallback path is the entire input amount
+            const nonNativeOptimalPath = findOptimalPath(side, nonNativePaths, inputAmount, opts.runLimit) || [];
             const fallbackSlippage = getPathAdjustedSlippage(
                 side,
-                fallbackPath,
-                fallbackInputAmount,
+                nonNativeOptimalPath,
+                inputAmount,
                 getPathAdjustedRate(side, optimalPath, inputAmount),
             );
-            if (fallbackSlippage > maxFallbackSlippage) {
-                fallbackPath = [];
+            if (fallbackSlippage <= maxFallbackSlippage) {
+                // If the last fill is Native and penultimate is not
+                // then this intention is a partial fill
+                // In this case we drop it as we don't want it to fail
+                // at the end and we don't want to fully fill it
+                // tslint:disable-next-line: no-unused-variable
+                const [last, penultimate, ..._rest] = optimalPath.reverse();
+                const finalNativeFillOrUndefined =
+                    last.source === ERC20BridgeSource.Native && penultimate.source !== ERC20BridgeSource.Native
+                        ? last
+                        : undefined;
+
+                optimalPath = [...nativeSubPath.filter(f => f !== finalNativeFillOrUndefined), ...nonNativeOptimalPath];
             }
         }
-        return createOrdersFromPath([...optimalPath, ...fallbackPath], {
+        return createOrdersFromPath(optimalPath, {
             side,
             inputToken,
             outputToken,
