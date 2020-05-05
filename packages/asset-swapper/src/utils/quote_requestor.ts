@@ -1,5 +1,5 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
-import { assetDataUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
@@ -161,20 +161,10 @@ export class QuoteRequestor {
                 return false;
             }
 
-            const minExpiry = Math.round((Date.now() + this._expiryBufferMs) / constants.ONE_SECOND_MS);
-            if (new BigNumber(order.expirationTimeSeconds).isLessThan(minExpiry)) {
-                this._warningLogger(
-                    `Expiry too soon (expected at least ${minExpiry}) in RFQ-T order, filtering out: ${JSON.stringify(
-                        order,
-                    )}`,
-                );
-                return false;
-            }
-
             return true;
         });
 
-        const orders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
+        const validatedOrders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
             return {
                 ...orderWithStringInts,
                 makerAssetAmount: new BigNumber(orderWithStringInts.makerAssetAmount),
@@ -184,6 +174,14 @@ export class QuoteRequestor {
                 expirationTimeSeconds: new BigNumber(orderWithStringInts.expirationTimeSeconds),
                 salt: new BigNumber(orderWithStringInts.salt),
             };
+        });
+
+        const orders = validatedOrders.filter(order => {
+            if (orderCalculationUtils.willOrderExpire(order, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
+                this._warningLogger(`Expiry too soon in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+            return true;
         });
 
         return orders;
@@ -250,25 +248,26 @@ export class QuoteRequestor {
                 );
                 return false;
             }
-            const minExpiry = Math.round((Date.now() + this._expiryBufferMs) / constants.ONE_SECOND_MS);
-            if (new BigNumber(response.expirationTimeSeconds).isLessThan(minExpiry)) {
-                this._warningLogger(
-                    `Expiry too soon (expected at least ${minExpiry}) in RFQ-T indicative quote, filtering out: ${JSON.stringify(
-                        response,
-                    )}`,
-                );
-                return false;
-            }
             return true;
         });
 
-        const responses = validResponsesWithStringInts.map(response => {
+        const validResponses = validResponsesWithStringInts.map(response => {
             return {
                 ...response,
                 makerAssetAmount: new BigNumber(response.makerAssetAmount),
                 takerAssetAmount: new BigNumber(response.takerAssetAmount),
                 expirationTimeSeconds: new BigNumber(response.expirationTimeSeconds),
             };
+        });
+
+        const responses = validResponses.filter(response => {
+            if (this._isExpirationTooSoon(response.expirationTimeSeconds)) {
+                this._warningLogger(
+                    `Expiry too soon in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
+                );
+                return false;
+            }
+            return true;
         });
 
         return responses;
@@ -314,5 +313,11 @@ export class QuoteRequestor {
             }
         }
         return false;
+    }
+
+    private _isExpirationTooSoon(expirationTimeSeconds: BigNumber): boolean {
+        const expirationTimeMs = expirationTimeSeconds.times(constants.ONE_SECOND_MS);
+        const currentTimeMs = new BigNumber(Date.now());
+        return expirationTimeMs.isLessThan(currentTimeMs.plus(this._expiryBufferMs));
     }
 }
