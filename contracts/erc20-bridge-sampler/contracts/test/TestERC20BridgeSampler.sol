@@ -24,7 +24,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
 import "../src/IEth2Dai.sol";
 import "../src/IDevUtils.sol";
-import "../src/IKyberNetwork.sol";
+import "../src/IKyberNetworkProxy.sol";
 
 
 library LibDeterministicQuotes {
@@ -210,7 +210,7 @@ contract TestERC20BridgeSamplerKyberNetwork is
         return address(this);
     }
 
-    // IKyberNetworkContract not exposed via IKyberNetwork
+    // IKyberNetwork not exposed via IKyberNetworkProxy
     function searchBestRate(
         address fromToken,
         address toToken,
@@ -225,7 +225,7 @@ contract TestERC20BridgeSamplerKyberNetwork is
         return (address(this), expectedRate);
     }
 
-    // Deterministic `IKyberNetwork.getExpectedRate()`.
+    // Deterministic `IKyberNetworkProxy.getExpectedRate()`.
     function getExpectedRate(
         address fromToken,
         address toToken,

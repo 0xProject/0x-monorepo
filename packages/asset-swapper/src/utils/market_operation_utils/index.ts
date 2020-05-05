@@ -8,22 +8,10 @@ import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
 import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
-import {
-    createOrdersFromPath,
-    createSignedOrdersFromRfqtIndicativeQuotes,
-    createSignedOrdersWithFillableAmounts,
-    getNativeOrderTokens,
-} from './orders';
+import { createOrdersFromPath, createSignedOrdersFromRfqtIndicativeQuotes, createSignedOrdersWithFillableAmounts, getNativeOrderTokens } from './orders';
 import { findOptimalPath } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
-import {
-    AggregationError,
-    DexSample,
-    ERC20BridgeSource,
-    GetMarketOrdersOpts,
-    OptimizedMarketOrder,
-    OrderDomain,
-} from './types';
+import { AggregationError, DexSample, ERC20BridgeSource, GetMarketOrdersOpts, OptimizedMarketOrder, OrderDomain } from './types';
 
 async function getRfqtIndicativeQuotesAsync(
     makerAssetData: string,
@@ -343,9 +331,11 @@ export class MarketOperationUtils {
         // Generate a fallback path if native orders are in the optimal paath.
         const nativeSubPath = optimalPath.filter(f => f.source === ERC20BridgeSource.Native);
         if (opts.allowFallback && nativeSubPath.length !== 0) {
+            // We create a fallback path that is exclusive of Native liquidity
+            // This is the optimal on-chain path for the entire input amount
             const nonNativePaths = paths.filter(p => p.length > 0 && p[0].source !== ERC20BridgeSource.Native);
-            // The fallback path is the entire input amount
             const nonNativeOptimalPath = findOptimalPath(side, nonNativePaths, inputAmount, opts.runLimit) || [];
+            // Calculate the slippage of on-chain sources compared to the most optimal path
             const fallbackSlippage = getPathAdjustedSlippage(
                 side,
                 nonNativeOptimalPath,
@@ -353,18 +343,20 @@ export class MarketOperationUtils {
                 getPathAdjustedRate(side, optimalPath, inputAmount),
             );
             if (fallbackSlippage <= maxFallbackSlippage) {
-                // If the last fill is Native and penultimate is not
-                // then this intention is a partial fill
-                // In this case we drop it as we don't want it to fail
-                // at the end and we don't want to fully fill it
-                // tslint:disable-next-line: no-unused-variable
-                const [last, penultimate, ..._rest] = optimalPath.reverse();
-                const finalNativeFillOrUndefined =
-                    last.source === ERC20BridgeSource.Native && penultimate.source !== ERC20BridgeSource.Native
+                // If the last fill is Native and penultimate is not, then the intention was to partial fill
+                // In this case we drop it entirely as we can't handle a failure at the end and we don't
+                // want to fully fill when it gets prepended to the front below
+                const [last, penultimateIfExists] = optimalPath.slice().reverse();
+                const lastNativeFillIfExists =
+                    last.source === ERC20BridgeSource.Native &&
+                    penultimateIfExists &&
+                    penultimateIfExists.source !== ERC20BridgeSource.Native
                         ? last
                         : undefined;
-
-                optimalPath = [...nativeSubPath.filter(f => f !== finalNativeFillOrUndefined), ...nonNativeOptimalPath];
+                // By prepending native paths to the front they cannot split on-chain sources and incur
+                // an additional protocol fee. I.e [Uniswap,Native,Kyber] becomes [Native,Uniswap,Kyber]
+                // In the previous step we dropped any hanging Native partial fills, as to not fully fill
+                optimalPath = [...nativeSubPath.filter(f => f !== lastNativeFillIfExists), ...nonNativeOptimalPath];
             }
         }
         return createOrdersFromPath(optimalPath, {

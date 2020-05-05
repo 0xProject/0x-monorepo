@@ -19,15 +19,16 @@
 pragma solidity ^0.5.9;
 
 
-interface IKyberNetworkContract {
+interface IKyberNetworkProxy {
 
-    function searchBestRate(
+    function kyberNetworkContract() external view returns (address);
+
+    function getExpectedRate(
         address fromToken,
         address toToken,
-        uint256 fromAmount,
-        bool usePermissionless
+        uint256 fromAmount
     )
         external
         view
-        returns (address reserve, uint256 expectedRate);
+        returns (uint256 expectedRate, uint256 slippageRate);
 }

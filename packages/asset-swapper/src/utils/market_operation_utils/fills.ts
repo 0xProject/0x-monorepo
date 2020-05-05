@@ -121,8 +121,10 @@ function dexQuotesToPaths(
     const paths: Fill[][] = [];
     for (let quote of dexQuotes) {
         const path: Fill[] = [];
-        // Drop any non-zero entries. This can occur if the
-        // first few fills on Kyber were UniswapReserves
+        // Drop any non-zero entries. This can occur if the any fills on Kyber were UniswapReserves
+        // We need not worry about Kyber fills going to UniswapReserve as the input amount
+        // we fill is the same as we sampled. I.e we received [0,20,30] output from [1,2,3] input
+        // and we only fill [2,3] on Kyber (as 1 returns 0 output)
         quote = quote.filter(q => !q.output.isZero());
         for (let i = 0; i < quote.length; i++) {
             const sample = quote[i];
@@ -158,12 +160,6 @@ function dexQuotesToPaths(
 function sourceToFillFlags(source: ERC20BridgeSource): number {
     if (source === ERC20BridgeSource.Kyber) {
         return FillFlags.Kyber;
-    }
-    if (source === ERC20BridgeSource.Eth2Dai) {
-        return FillFlags.ConflictsWithKyber;
-    }
-    if (source === ERC20BridgeSource.Uniswap) {
-        return FillFlags.ConflictsWithKyber;
     }
     return 0;
 }
@@ -203,6 +199,7 @@ export function getPathAdjustedSize(path: Fill[], targetInput: BigNumber = POSIT
 }
 
 export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): boolean {
+    let flags = 0;
     for (let i = 0; i < path.length; ++i) {
         // Fill must immediately follow its parent.
         if (path[i].parent) {
@@ -218,8 +215,10 @@ export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): 
                 }
             }
         }
+        flags |= path[i].flags;
     }
-    return true;
+    const conflictFlags = FillFlags.Kyber | FillFlags.ConflictsWithKyber;
+    return (flags & conflictFlags) !== conflictFlags;
 }
 
 export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_INF): Fill[] {
