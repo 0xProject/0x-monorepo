@@ -110,6 +110,23 @@ interface IERC20BridgeSampler {
         view
         returns (uint256[] memory makerTokenAmounts);
 
+    /// @dev Sample sell quotes from Eth2Dai/Oasis via a hop to an intermediate token.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param intermediateToken Address of the intermediate token (what to hop to).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromEth2DaiHop(
+        address takerToken,
+        address makerToken,
+        address intermediateToken,
+        uint256[] calldata takerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory makerTokenAmounts);
+
     /// @dev Sample sell quotes from Uniswap.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).

@@ -263,6 +263,31 @@ contract ERC20BridgeSampler is
         }
     }
 
+    /// @dev Sample sell quotes from Eth2Dai/Oasis using a hop to an intermediate token.
+    ///      I.e WBTC/DAI via ETH or WBTC/ETH via DAI
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param intermediateToken Address of the token to hop to.
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromEth2DaiHop(
+        address takerToken,
+        address makerToken,
+        address intermediateToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        if (makerToken == intermediateToken || takerToken == intermediateToken) {
+            return makerTokenAmounts;
+        }
+        uint256[] memory intermediateAmounts = sampleSellsFromEth2Dai(takerToken, intermediateToken, takerTokenAmounts);
+        makerTokenAmounts = sampleSellsFromEth2Dai(intermediateToken, makerToken, intermediateAmounts);
+    }
+
     /// @dev Sample buy quotes from Eth2Dai/Oasis.
     /// @param takerToken Address of the taker token (what to sell).
     /// @param makerToken Address of the maker token (what to buy).

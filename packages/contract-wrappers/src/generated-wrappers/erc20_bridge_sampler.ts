@@ -631,6 +631,37 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                         type: 'address',
                     },
                     {
+                        name: 'intermediateToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'sampleSellsFromEth2DaiHop',
+                outputs: [
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'takerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'makerToken',
+                        type: 'address',
+                    },
+                    {
                         name: 'takerTokenAmounts',
                         type: 'uint256[]',
                     },
@@ -1226,6 +1257,49 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 return self._strictEncodeArguments(functionSignature, [
                     takerToken.toLowerCase(),
                     makerToken.toLowerCase(),
+                    takerTokenAmounts,
+                ]);
+            },
+        };
+    }
+    /**
+     * Sample sell quotes from Eth2Dai/Oasis using a hop to an intermediate token.
+     * I.e WBTC/DAI via ETH or WBTC/ETH via DAI
+     * @param takerToken Address of the taker token (what to sell).
+     * @param makerToken Address of the maker token (what to buy).
+     * @param intermediateToken Address of the token to hop to.
+     * @param takerTokenAmounts Taker token sell amount for each sample.
+     * @returns makerTokenAmounts Maker amounts bought at each taker token         amount.
+     */
+    public sampleSellsFromEth2DaiHop(
+        takerToken: string,
+        makerToken: string,
+        intermediateToken: string,
+        takerTokenAmounts: BigNumber[],
+    ): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as ERC20BridgeSamplerContract;
+        assert.isString('takerToken', takerToken);
+        assert.isString('makerToken', makerToken);
+        assert.isString('intermediateToken', intermediateToken);
+        assert.isArray('takerTokenAmounts', takerTokenAmounts);
+        const functionSignature = 'sampleSellsFromEth2DaiHop(address,address,address,uint256[])';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    takerToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                    intermediateToken.toLowerCase(),
                     takerTokenAmounts,
                 ]);
             },

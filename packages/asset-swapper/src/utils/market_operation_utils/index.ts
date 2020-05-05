@@ -75,6 +75,10 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+        const hopsBySource = {
+            [ERC20BridgeSource.Eth2DaiHopDai]: '0x6b175474e89094c44da98b954eedeac495271d0f',
+            [ERC20BridgeSource.Eth2DaiHopEth]: this._wethAddress,
+        };
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
@@ -104,6 +108,7 @@ export class MarketOperationUtils {
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
                 this._liquidityProviderRegistry,
+                hopsBySource,
             ),
         );
         const rfqtPromise = getRfqtIndicativeQuotesAsync(

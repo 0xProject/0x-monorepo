@@ -150,6 +150,23 @@ export const samplerOperations = {
             },
         };
     },
+    getEth2DaiHopSellQuotes(
+        makerToken: string,
+        takerToken: string,
+        intermediateToken: string,
+        takerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromEth2DaiHop(takerToken, makerToken, intermediateToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromEth2DaiHop', callResults);
+            },
+        };
+    },
     getEth2DaiSellQuotes(
         makerToken: string,
         takerToken: string,
@@ -298,12 +315,24 @@ export const samplerOperations = {
         takerToken: string,
         takerFillAmounts: BigNumber[],
         liquidityProviderRegistryAddress?: string | undefined,
+        hopsBySource?: { [key in ERC20BridgeSource]?: string },
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources
             .map(source => {
                 let batchedOperation;
                 if (source === ERC20BridgeSource.Eth2Dai) {
                     batchedOperation = samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
+                } else if (source === ERC20BridgeSource.Eth2DaiHopEth || source === ERC20BridgeSource.Eth2DaiHopDai) {
+                    const intermediateToken = hopsBySource ? hopsBySource[source] : undefined;
+                    console.log(hopsBySource, intermediateToken);
+                    if (intermediateToken && makerToken !== intermediateToken && takerToken !== intermediateToken) {
+                        batchedOperation = samplerOperations.getEth2DaiHopSellQuotes(
+                            makerToken,
+                            takerToken,
+                            intermediateToken,
+                            takerFillAmounts,
+                        );
+                    }
                 } else if (source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {

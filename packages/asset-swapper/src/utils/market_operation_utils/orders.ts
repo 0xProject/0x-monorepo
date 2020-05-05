@@ -177,6 +177,9 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
     switch (source) {
         case ERC20BridgeSource.Eth2Dai:
             return opts.contractAddresses.eth2DaiBridge;
+        case ERC20BridgeSource.Eth2DaiHopDai:
+        case ERC20BridgeSource.Eth2DaiHopEth:
+            return NULL_ADDRESS;
         case ERC20BridgeSource.Kyber:
             return opts.contractAddresses.kyberBridge;
         case ERC20BridgeSource.Uniswap:
