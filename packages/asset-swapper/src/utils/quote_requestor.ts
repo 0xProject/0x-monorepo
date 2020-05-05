@@ -3,7 +3,6 @@ import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-ut
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
-import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
@@ -96,9 +95,9 @@ export class QuoteRequestor {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        options?: Partial<RfqtRequestOpts>,
+        options: RfqtRequestOpts,
     ): Promise<SignedOrder[]> {
-        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
         // create an array of promises for quote responses, using "undefined"
@@ -156,7 +155,7 @@ export class QuoteRequestor {
                 return false;
             }
 
-            if (order.takerAddress !== _opts.takerAddress) {
+            if (order.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
                 this._warningLogger(`Unexpected takerAddress in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
                 return false;
             }
@@ -194,7 +193,7 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
     ): Promise<RfqtIndicativeQuoteResponse[]> {
-        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
         const timeBeforeAwait = Date.now();
