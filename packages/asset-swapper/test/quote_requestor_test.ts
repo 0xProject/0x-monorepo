@@ -204,7 +204,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.sellAmount),
                 takerAssetAmount: new BigNumber(expectedParams.sellAmount),
-                expirationTimeSeconds: makeThreeMinuteExpiryJson(),
+                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -298,7 +298,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.buyAmount),
                 takerAssetAmount: new BigNumber(expectedParams.buyAmount),
-                expirationTimeSeconds: makeThreeMinuteExpiryJson(),
+                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',

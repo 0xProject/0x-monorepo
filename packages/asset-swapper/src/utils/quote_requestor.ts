@@ -267,6 +267,7 @@ export class QuoteRequestor {
                 ...response,
                 makerAssetAmount: new BigNumber(response.makerAssetAmount),
                 takerAssetAmount: new BigNumber(response.takerAssetAmount),
+                expirationTimeSeconds: new BigNumber(response.expirationTimeSeconds),
             };
         });
 
