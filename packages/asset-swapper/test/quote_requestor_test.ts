@@ -130,17 +130,6 @@ describe('QuoteRequestor', async () => {
                 responseCode: StatusCodes.Success,
             });
 
-            // Shouldn't ping an RFQ-T provider when they don't support the requested asset pair.
-            // (see how QuoteRequestor constructor parameters below don't list
-            // any supported asset pairs for this maker.)
-            mockedRequests.push({
-                endpoint: 'https://426.0.0.1',
-                requestApiKey: apiKey,
-                requestParams: expectedParams,
-                responseData: successfulOrder1,
-                responseCode: StatusCodes.Success,
-            });
-
             // Another Successful response
             const successfulOrder2 = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
@@ -165,7 +154,10 @@ describe('QuoteRequestor', async () => {
                     'https://423.0.0.1': [[makerToken, takerToken]],
                     'https://424.0.0.1': [[makerToken, takerToken]],
                     'https://425.0.0.1': [[makerToken, takerToken]],
-                    'https://426.0.0.1': [],
+                    'https://426.0.0.1': [] /* Shouldn't ping an RFQ-T
+                    provider when they don't support the requested asset pair.
+                    (see how QuoteRequestor constructor parameters below don't
+                    list any supported asset pairs for this maker.) */,
                     'https://37.0.0.1': [[makerToken, takerToken]],
                 });
                 const resp = await qr.requestRfqtFirmQuotesAsync(
