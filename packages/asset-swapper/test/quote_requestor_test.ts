@@ -16,10 +16,10 @@ import { testOrderFactory } from './utils/test_order_factory';
 chaiSetup.configure();
 const expect = chai.expect;
 
-function makeThreeMinuteExpiryJson(): string {
+function makeThreeMinuteExpiry(): BigNumber {
     const expiry = new Date(Date.now());
     expiry.setMinutes(expiry.getMinutes() + 3);
-    return Math.round(expiry.valueOf() / constants.ONE_SECOND_MS).toString();
+    return new BigNumber(Math.round(expiry.valueOf() / constants.ONE_SECOND_MS));
 }
 
 describe('QuoteRequestor', async () => {
@@ -48,7 +48,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 takerAddress,
                 feeRecipientAddress: '0x0000000000000000000000000000000000000001',
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             });
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -76,7 +76,7 @@ describe('QuoteRequestor', async () => {
             // A successful response code and valid order, but for wrong maker asset data
             const wrongMakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 takerAssetData,
             });
             mockedRequests.push({
@@ -89,7 +89,7 @@ describe('QuoteRequestor', async () => {
             // A successful response code and valid order, but for wrong taker asset data
             const wrongTakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
             });
             mockedRequests.push({
@@ -103,7 +103,7 @@ describe('QuoteRequestor', async () => {
             const unsignedOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
                 takerAssetData,
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 feeRecipientAddress: '0x0000000000000000000000000000000000000002',
             });
             delete unsignedOrder.signature;
@@ -118,7 +118,7 @@ describe('QuoteRequestor', async () => {
             const orderWithNullTaker = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
                 takerAssetData,
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 takerAddress: constants.NULL_ADDRESS,
                 feeRecipientAddress: '0x0000000000000000000000000000000000000002',
             });
@@ -146,7 +146,7 @@ describe('QuoteRequestor', async () => {
                 makerAssetData,
                 takerAssetData,
                 takerAddress,
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
@@ -204,7 +204,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.sellAmount),
                 takerAssetAmount: new BigNumber(expectedParams.sellAmount),
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -298,7 +298,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.buyAmount),
                 takerAssetAmount: new BigNumber(expectedParams.buyAmount),
-                expirationTimeSeconds: new BigNumber(makeThreeMinuteExpiryJson()),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
