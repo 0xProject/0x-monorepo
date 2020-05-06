@@ -7,25 +7,9 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { getCurveInfo, isCurveSource } from '../source_utils';
 
-import {
-    ERC20_PROXY_ID,
-    NULL_ADDRESS,
-    NULL_BYTES,
-    ONE_HOUR_IN_SECONDS,
-    ONE_SECOND_MS,
-    WALLET_SIGNATURE,
-    ZERO_AMOUNT,
-} from './constants';
+import { ERC20_PROXY_ID, NULL_ADDRESS, NULL_BYTES, ONE_HOUR_IN_SECONDS, ONE_SECOND_MS, WALLET_SIGNATURE, ZERO_AMOUNT } from './constants';
 import { collapsePath } from './fills';
-import {
-    AggregationError,
-    CollapsedFill,
-    ERC20BridgeSource,
-    Fill,
-    NativeCollapsedFill,
-    OptimizedMarketOrder,
-    OrderDomain,
-} from './types';
+import { AggregationError, CollapsedFill, ERC20BridgeSource, Fill, NativeCollapsedFill, OptimizedMarketOrder, OrderDomain } from './types';
 
 // tslint:disable completed-docs no-unnecessary-type-assertion
 
@@ -332,7 +316,8 @@ function createCommonBridgeOrderFields(opts: CreateOrderFromPathOpts): CommonBri
         senderAddress: NULL_ADDRESS,
         feeRecipientAddress: NULL_ADDRESS,
         salt: generatePseudoRandomSalt(),
-        expirationTimeSeconds: new BigNumber(Math.floor(Date.now() / ONE_SECOND_MS) + ONE_HOUR_IN_SECONDS),
+        // 2 hours from now
+        expirationTimeSeconds: new BigNumber(Math.floor(Date.now() / ONE_SECOND_MS) + ONE_HOUR_IN_SECONDS * 2),
         makerFeeAssetData: NULL_BYTES,
         takerFeeAssetData: NULL_BYTES,
         makerFee: ZERO_AMOUNT,

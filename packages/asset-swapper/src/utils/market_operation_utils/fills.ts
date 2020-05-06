@@ -119,18 +119,17 @@ function dexQuotesToPaths(
     fees: { [source: string]: BigNumber },
 ): Fill[][] {
     const paths: Fill[][] = [];
-    for (const quote of dexQuotes) {
+    for (let quote of dexQuotes) {
         const path: Fill[] = [];
+        // Drop any non-zero entries. This can occur if the any fills on Kyber were UniswapReserves
+        // We need not worry about Kyber fills going to UniswapReserve as the input amount
+        // we fill is the same as we sampled. I.e we received [0,20,30] output from [1,2,3] input
+        // and we only fill [2,3] on Kyber (as 1 returns 0 output)
+        quote = quote.filter(q => !q.output.isZero());
         for (let i = 0; i < quote.length; i++) {
             const sample = quote[i];
             const prevSample = i === 0 ? undefined : quote[i - 1];
             const source = sample.source;
-            // Stop if the sample has zero output, which can occur if the source
-            // cannot fill the full amount.
-            // TODO(dorothy-zbornak): Sometimes Kyber will dip to zero then pick back up.
-            if (sample.output.eq(0)) {
-                break;
-            }
             const input = sample.input.minus(prevSample ? prevSample.input : 0);
             const output = sample.output.minus(prevSample ? prevSample.output : 0);
             const penalty =
@@ -161,12 +160,6 @@ function dexQuotesToPaths(
 function sourceToFillFlags(source: ERC20BridgeSource): number {
     if (source === ERC20BridgeSource.Kyber) {
         return FillFlags.Kyber;
-    }
-    if (source === ERC20BridgeSource.Eth2Dai) {
-        return FillFlags.ConflictsWithKyber;
-    }
-    if (source === ERC20BridgeSource.Uniswap) {
-        return FillFlags.ConflictsWithKyber;
     }
     return 0;
 }

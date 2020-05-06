@@ -343,7 +343,8 @@ blockchainTests('erc20-bridge-sampler', env => {
 
         it('can quote token -> token', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
-            const [expectedQuotes] = getDeterministicSellQuotes(TAKER_TOKEN, MAKER_TOKEN, ['Kyber'], sampleAmounts);
+            const [takerToEthQuotes] = getDeterministicSellQuotes(TAKER_TOKEN, WETH_ADDRESS, ['Kyber'], sampleAmounts);
+            const [expectedQuotes] = getDeterministicSellQuotes(WETH_ADDRESS, MAKER_TOKEN, ['Kyber'], takerToEthQuotes);
             const quotes = await testContract
                 .sampleSellsFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, sampleAmounts)
                 .callAsync();
@@ -445,7 +446,8 @@ blockchainTests('erc20-bridge-sampler', env => {
 
         it('can quote token -> token', async () => {
             const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
-            const [expectedQuotes] = getDeterministicBuyQuotes(TAKER_TOKEN, MAKER_TOKEN, ['Kyber'], sampleAmounts);
+            const [ethToMakerQuotes] = getDeterministicBuyQuotes(WETH_ADDRESS, MAKER_TOKEN, ['Kyber'], sampleAmounts);
+            const [expectedQuotes] = getDeterministicBuyQuotes(TAKER_TOKEN, WETH_ADDRESS, ['Kyber'], ethToMakerQuotes);
             const quotes = await testContract
                 .sampleBuysFromKyberNetwork(TAKER_TOKEN, MAKER_TOKEN, sampleAmounts, FAKE_BUY_OPTS)
                 .callAsync();
