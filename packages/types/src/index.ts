@@ -331,6 +331,7 @@ export enum RevertReason {
     TokenAndValuesLengthMismatch = 'TOKEN_AND_VALUES_LENGTH_MISMATCH',
     TriedToMintFungibleForNonFungibleToken = 'TRIED_TO_MINT_FUNGIBLE_FOR_NON_FUNGIBLE_TOKEN',
     TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
+    TokenAlreadyExists = 'TOKEN_ALREADY_EXISTS',
     TransferRejected = 'TRANSFER_REJECTED',
     Uint256Underflow = 'UINT256_UNDERFLOW',
     InvalidIdsOffset = 'INVALID_IDS_OFFSET',

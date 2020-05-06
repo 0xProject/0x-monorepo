@@ -66,6 +66,16 @@ export class Erc1155Wrapper {
         await this.mintKnownFungibleTokensAsync(tokenId, beneficiaries, tokenAmounts);
         return tokenId;
     }
+    public async mintFungibleTokensFromUnauthorizedAccountWithTypeAsync(
+        tokenId: BigNumber,
+        unauthorizedAccount: string,
+    ): Promise<BigNumber> {
+        const tokenUri = 'dummyFungibleToken';
+        await this._erc1155Contract.createWithType(tokenId, tokenUri).awaitTransactionSuccessAsync({
+            from: unauthorizedAccount,
+        });
+        return tokenId;
+    }
     public async mintKnownFungibleTokensAsync(
         tokenId: BigNumber,
         beneficiaries: string[],

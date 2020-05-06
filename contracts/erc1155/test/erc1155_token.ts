@@ -29,6 +29,7 @@ describe('ERC1155Token', () => {
     let owner: string;
     let spender: string;
     let delegatedSpender: string;
+    let unauthorizedAccount: string;
     let receiver: string;
     let erc1155Contract: ERC1155MintableContract;
     let erc1155Receiver: DummyERC1155ReceiverContract;
@@ -45,7 +46,7 @@ describe('ERC1155Token', () => {
     before(async () => {
         // deploy erc1155 contract & receiver
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [owner, spender, delegatedSpender] = accounts;
+        [owner, spender, delegatedSpender, unauthorizedAccount] = accounts;
         erc1155Contract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
             artifacts.ERC1155Mintable,
             provider,
@@ -452,6 +453,40 @@ describe('ERC1155Token', () => {
                     .safeBatchTransferFrom(spender, receiver, tokensToTransfer, valuesToTransfer, receiverCallbackData)
                     .awaitTransactionSuccessAsync({ from: delegatedSpender }),
             ).to.revertWith(RevertReason.InsufficientAllowance);
+        });
+    });
+    describe('createWithType', () => {
+        it('should revert if we try to take ownership of an existing token', async () => {
+            // setup test parameters
+            const tokenHolders = [spender, receiver];
+            const tokenToTransfer = fungibleToken;
+            const valueToTransfer = fungibleValueToTransfer;
+            // check balances before transfer
+            const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedInitialBalances);
+
+            // try to create a token with the same type
+            await expect(
+                erc1155Wrapper.mintFungibleTokensFromUnauthorizedAccountWithTypeAsync(
+                    fungibleToken,
+                    unauthorizedAccount,
+                ),
+            ).to.revertWith(RevertReason.TokenAlreadyExists);
+
+            // make sure the original owner can still transfer
+            await erc1155Wrapper.safeTransferFromAsync(
+                spender,
+                receiver,
+                fungibleToken,
+                valueToTransfer,
+                receiverCallbackData,
+            );
+            // check balances after transfer
+            const expectedFinalBalances = [
+                spenderInitialFungibleBalance.minus(valueToTransfer),
+                receiverInitialFungibleBalance.plus(valueToTransfer),
+            ];
+            await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
         });
     });
 });

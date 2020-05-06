@@ -66,6 +66,8 @@ contract ERC1155Mintable is
             type_ = type_ | TYPE_NF_BIT;
         }
 
+        require(creators[type_] == address(0x0), "TOKEN_ALREADY_EXISTS");
+
         // This will allow restricted access to creators.
         creators[type_] = msg.sender;
 
@@ -92,6 +94,8 @@ contract ERC1155Mintable is
     )
         external
     {
+        require(creators[type_] == address(0x0), "TOKEN_ALREADY_EXISTS");
+
         // This will allow restricted access to creators.
         creators[type_] = msg.sender;
 
