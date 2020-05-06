@@ -342,7 +342,7 @@ export class MarketOperationUtils {
                 inputAmount,
                 getPathAdjustedRate(side, optimalPath, inputAmount),
             );
-            if (fallbackSlippage <= maxFallbackSlippage) {
+            if (nativeSubPath.length === optimalPath.length || fallbackSlippage <= maxFallbackSlippage) {
                 // If the last fill is Native and penultimate is not, then the intention was to partial fill
                 // In this case we drop it entirely as we can't handle a failure at the end and we don't
                 // want to fully fill when it gets prepended to the front below
