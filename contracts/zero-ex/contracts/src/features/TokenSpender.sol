@@ -27,7 +27,7 @@ import "../errors/LibSpenderRichErrors.sol";
 import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
 import "../puppets/IPuppet.sol";
-import "../puppets/IPuppet.sol";
+import "../puppets/ITokenSpenderPuppet.sol";
 import "../storage/LibTokenSpenderStorage.sol";
 import "./ITokenSpender.sol";
 import "./IFeature.sol";
@@ -62,10 +62,10 @@ contract TokenSpender is
     ///        allowances, configured to have the ZeroeEx contract as an
     ///        authority.
     /// @return success `MIGRATE_SUCCESS` on success.
-    function migrate(IPuppet puppet) external returns (bytes4 success) {
-        LibTokenSpenderStorage.getStorage().spender = puppet;
+    function migrate(ITokenSpenderPuppet puppet) external returns (bytes4 success) {
+        LibTokenSpenderStorage.getStorage().spenderPuppet = puppet;
         ISimpleFunctionRegistry(address(this))
-            .extend(this.getTokenSpenderPuppet.selector, _impl);
+            .extend(this.getAllowanceTarget.selector, _impl);
         ISimpleFunctionRegistry(address(this))
             .extend(this._spendERC20Tokens.selector, _impl);
         ISimpleFunctionRegistry(address(this))
@@ -73,9 +73,7 @@ contract TokenSpender is
         return LibMigrate.MIGRATE_SUCCESS;
     }
 
-    /// @dev Transfers ERC20 tokens to `to` from allowance granted by `owner`
-    ///      to the puppet spender contract.
-    ///      Only callable from within.
+    /// @dev Transfers ERC20 tokens from `owner` to `to`. Only callable from within.
     /// @param token The token to spend.
     /// @param owner The owner of the tokens.
     /// @param to The recipient of the tokens.
@@ -90,7 +88,7 @@ contract TokenSpender is
         override
         onlySelf
     {
-        IPuppet spender = LibTokenSpenderStorage.getStorage().spender;
+        ITokenSpenderPuppet spender = LibTokenSpenderStorage.getStorage().spenderPuppet;
         // Have the puppet spender execute an ERC20 `transferFrom()`.
         (bool didSucceed, bytes memory resultData) = address(spender).call(
             abi.encodeWithSelector(
@@ -131,20 +129,19 @@ contract TokenSpender is
         returns (uint256 amount)
     {
         return LibSafeMathV06.min256(
-            token.allowance(owner, address(LibTokenSpenderStorage.getStorage().spender)),
+            token.allowance(owner, address(LibTokenSpenderStorage.getStorage().spenderPuppet)),
             token.balanceOf(owner)
         );
     }
 
-    /// @dev Get the instance of the token spender puppet.
-    ///      This should be the target of user allowances.
-    /// @return puppet The token spender puppet.
-    function getTokenSpenderPuppet()
+    /// @dev Get the address of the allowance target.
+    /// @return target The target of token allowances.
+    function getAllowanceTarget()
         external
         override
         view
-        returns (IPuppet puppet)
+        returns (address target)
     {
-        return LibTokenSpenderStorage.getStorage().spender;
+        return address(LibTokenSpenderStorage.getStorage().spenderPuppet);
     }
 }

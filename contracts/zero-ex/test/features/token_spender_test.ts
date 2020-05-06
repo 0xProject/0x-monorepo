@@ -43,7 +43,7 @@ blockchainTests.resets('TokenSpender feature', env => {
             artifacts,
         );
         puppetSpender = new IPuppetContract(
-            await feature.getTokenSpenderPuppet().callAsync(),
+            await feature.getAllowanceTarget().callAsync(),
             env.provider,
             env.txDefaults,
             abis,
@@ -152,9 +152,9 @@ blockchainTests.resets('TokenSpender feature', env => {
         });
     });
 
-    describe('getTokenSpenderPuppet()', () => {
+    describe('getAllowanceTarget()', () => {
         it('returns the puppet spender address', async () => {
-            const puppetSpenderAddress = await feature.getTokenSpenderPuppet().callAsync();
+            const puppetSpenderAddress = await feature.getAllowanceTarget().callAsync();
             expect(puppetSpenderAddress).to.eq(puppetSpender.address);
         });
     });

@@ -127,11 +127,7 @@ blockchainTests.resets('Full migration', env => {
 
         before(async () => {
             const contract = new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults);
-            puppet = new PuppetContract(
-                await contract.getTokenSpenderPuppet().callAsync(),
-                env.provider,
-                env.txDefaults,
-            );
+            puppet = new PuppetContract(await contract.getAllowanceTarget().callAsync(), env.provider, env.txDefaults);
         });
 
         it('is owned by owner', async () => {

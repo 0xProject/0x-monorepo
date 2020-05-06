@@ -10,7 +10,6 @@ import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
 import * as IERC20Transformer from '../test/generated-artifacts/IERC20Transformer.json';
-import * as IExchange from '../test/generated-artifacts/IExchange.json';
 import * as IFeature from '../test/generated-artifacts/IFeature.json';
 import * as InitialMigration from '../test/generated-artifacts/InitialMigration.json';
 import * as IOwnable from '../test/generated-artifacts/IOwnable.json';
@@ -19,6 +18,7 @@ import * as IPuppetPool from '../test/generated-artifacts/IPuppetPool.json';
 import * as ISimpleFunctionRegistry from '../test/generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITestSimpleFunctionRegistryFeature from '../test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json';
 import * as ITokenSpender from '../test/generated-artifacts/ITokenSpender.json';
+import * as ITokenSpenderPuppet from '../test/generated-artifacts/ITokenSpenderPuppet.json';
 import * as ITransformERC20 from '../test/generated-artifacts/ITransformERC20.json';
 import * as LibBootstrap from '../test/generated-artifacts/LibBootstrap.json';
 import * as LibCommonRichErrors from '../test/generated-artifacts/LibCommonRichErrors.json';
@@ -53,6 +53,7 @@ import * as TestTokenSpenderERC20Token from '../test/generated-artifacts/TestTok
 import * as TestTransformERC20 from '../test/generated-artifacts/TestTransformERC20.json';
 import * as TestZeroExFeature from '../test/generated-artifacts/TestZeroExFeature.json';
 import * as TokenSpender from '../test/generated-artifacts/TokenSpender.json';
+import * as TokenSpenderPuppet from '../test/generated-artifacts/TokenSpenderPuppet.json';
 import * as TransformERC20 from '../test/generated-artifacts/TransformERC20.json';
 import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
@@ -83,7 +84,9 @@ export const artifacts = {
     LibBootstrap: LibBootstrap as ContractArtifact,
     LibMigrate: LibMigrate as ContractArtifact,
     IPuppet: IPuppet as ContractArtifact,
+    ITokenSpenderPuppet: ITokenSpenderPuppet as ContractArtifact,
     Puppet: Puppet as ContractArtifact,
+    TokenSpenderPuppet: TokenSpenderPuppet as ContractArtifact,
     LibOwnableStorage: LibOwnableStorage as ContractArtifact,
     LibProxyStorage: LibProxyStorage as ContractArtifact,
     LibPuppetPoolStorage: LibPuppetPoolStorage as ContractArtifact,
@@ -92,7 +95,6 @@ export const artifacts = {
     LibTokenSpenderStorage: LibTokenSpenderStorage as ContractArtifact,
     IERC20Transformer: IERC20Transformer as ContractArtifact,
     LibERC20Transformer: LibERC20Transformer as ContractArtifact,
-    IExchange: IExchange as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestInitialMigration: TestInitialMigration as ContractArtifact,
     TestMigrator: TestMigrator as ContractArtifact,

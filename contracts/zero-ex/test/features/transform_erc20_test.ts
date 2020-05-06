@@ -75,7 +75,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 artifacts,
             );
             spenderAddress = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults, abis)
-                .getTokenSpenderPuppet()
+                .getAllowanceTarget()
                 .callAsync();
         });
 

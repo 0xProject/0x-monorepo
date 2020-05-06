@@ -20,14 +20,12 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
-import "../puppets/IPuppet.sol";
 
 
 /// @dev Feature that allows spending token allowances.
 interface ITokenSpender {
 
-    /// @dev Transfers ERC20 tokens to `to` from allowance granted by `owner`
-    ///      to the puppet spender contract.
+    /// @dev Transfers ERC20 tokens from `owner` to `to`.
     ///      Only callable from within.
     /// @param token The token to spend.
     /// @param owner The owner of the tokens.
@@ -42,7 +40,7 @@ interface ITokenSpender {
         external;
 
     /// @dev Gets the maximum amount of an ERC20 token `token` that can be
-    ///      pulled from `owner` by the token spender.
+    ///      pulled from `owner`.
     /// @param token The token to spend.
     /// @param owner The owner of the tokens.
     /// @return amount The amount of tokens that can be pulled.
@@ -51,8 +49,7 @@ interface ITokenSpender {
         view
         returns (uint256 amount);
 
-    /// @dev Get the instance of the token spender puppet.
-    ///      This should be the target of user allowances.
-    /// @return puppet The token spender puppet.
-    function getTokenSpenderPuppet() external view returns (IPuppet puppet);
+    /// @dev Get the address of the allowance target.
+    /// @return target The target of token allowances.
+    function getAllowanceTarget() external view returns (address target);
 }

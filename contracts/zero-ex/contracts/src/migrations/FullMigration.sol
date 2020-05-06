@@ -24,7 +24,7 @@ import "../features/IOwnable.sol";
 import "../features/TokenSpender.sol";
 import "../features/PuppetPool.sol";
 import "../features/TransformERC20.sol";
-import "../puppets/Puppet.sol";
+import "../puppets/TokenSpenderPuppet.sol";
 import "./InitialMigration.sol";
 
 
@@ -80,17 +80,17 @@ contract FullMigration is
         // TokenSpender
         {
             // Create the puppet spender.
-            Puppet puppetSpender = new Puppet();
+            TokenSpenderPuppet spenderPuppet = new TokenSpenderPuppet();
             // Let the ZeroEx contract use the puppet.
-            puppetSpender.addAuthorizedAddress(address(zeroEx));
+            spenderPuppet.addAuthorizedAddress(address(zeroEx));
             // Transfer ownership of the puppet to the (real) owner.
-            puppetSpender.transferOwnership(owner);
+            spenderPuppet.transferOwnership(owner);
             // Register the feature.
             ownable.migrate(
                 address(features.tokenSpender),
                 abi.encodeWithSelector(
                     TokenSpender.migrate.selector,
-                    puppetSpender
+                    spenderPuppet
                 ),
                 address(this)
             );
