@@ -27,6 +27,7 @@
         "test/generated-artifacts/ISimpleFunctionRegistry.json",
         "test/generated-artifacts/ITestSimpleFunctionRegistryFeature.json",
         "test/generated-artifacts/ITokenSpender.json",
+        "test/generated-artifacts/ITokenSpenderPuppet.json",
         "test/generated-artifacts/ITransformERC20.json",
         "test/generated-artifacts/InitialMigration.json",
         "test/generated-artifacts/LibBootstrap.json",
@@ -60,6 +61,7 @@
         "test/generated-artifacts/TestTransformERC20.json",
         "test/generated-artifacts/TestZeroExFeature.json",
         "test/generated-artifacts/TokenSpender.json",
+        "test/generated-artifacts/TokenSpenderPuppet.json",
         "test/generated-artifacts/TransformERC20.json",
         "test/generated-artifacts/ZeroEx.json"
     ],
