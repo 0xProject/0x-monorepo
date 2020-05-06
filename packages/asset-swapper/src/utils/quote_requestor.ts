@@ -102,12 +102,12 @@ export class QuoteRequestor {
 
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
-        const timeBeforeAwait = Date.now();
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     try {
-                        return await Axios.get<SignedOrder>(`${url}/quote`, {
+                        const timeBeforeAwait = Date.now();
+                        const response = await Axios.get<SignedOrder>(`${url}/quote`, {
                             headers: { '0x-api-key': _opts.apiKey },
                             params: {
                                 takerAddress: _opts.takerAddress,
@@ -115,6 +115,13 @@ export class QuoteRequestor {
                             },
                             timeout: _opts.makerEndpointMaxResponseTimeMs,
                         });
+                        this._infoLogger({
+                            rfqtFirmQuoteMakerResponseTime: {
+                                makerEndpoint: url,
+                                responseTimeMs: Date.now() - timeBeforeAwait,
+                            },
+                        });
+                        return response;
                     } catch (err) {
                         this._warningLogger(
                             `Failed to get RFQ-T firm quote from market maker endpoint ${url} for API key ${
@@ -128,7 +135,6 @@ export class QuoteRequestor {
                 return undefined;
             }),
         );
-        this._infoLogger({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait });
 
         const responses = responsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<SignedOrder> => respIfDefd !== undefined,
@@ -196,14 +202,14 @@ export class QuoteRequestor {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const timeBeforeAwait = Date.now();
         const axiosResponsesIfDefined: Array<
             undefined | AxiosResponse<RfqtIndicativeQuoteResponse>
         > = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     try {
-                        return await Axios.get<RfqtIndicativeQuoteResponse>(`${url}/price`, {
+                        const timeBeforeAwait = Date.now();
+                        const response = await Axios.get<RfqtIndicativeQuoteResponse>(`${url}/price`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: {
                                 takerAddress: options.takerAddress,
@@ -211,6 +217,13 @@ export class QuoteRequestor {
                             },
                             timeout: options.makerEndpointMaxResponseTimeMs,
                         });
+                        this._infoLogger({
+                            rfqtIndicativeQuoteMakerResponseTime: {
+                                makerEndpoint: url,
+                                responseTimeMs: Date.now() - timeBeforeAwait,
+                            },
+                        });
+                        return response;
                     } catch (err) {
                         this._warningLogger(
                             `Failed to get RFQ-T indicative quote from market maker endpoint ${url} for API key ${
@@ -224,7 +237,6 @@ export class QuoteRequestor {
                 return undefined;
             }),
         );
-        this._infoLogger({ aggregatedRfqtLatencyMs: Date.now() - timeBeforeAwait });
 
         const axiosResponses = axiosResponsesIfDefined.filter(
             (respIfDefd): respIfDefd is AxiosResponse<RfqtIndicativeQuoteResponse> => respIfDefd !== undefined,
