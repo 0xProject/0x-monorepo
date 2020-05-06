@@ -155,9 +155,7 @@ describe('QuoteRequestor', async () => {
                     'https://424.0.0.1': [[makerToken, takerToken]],
                     'https://425.0.0.1': [[makerToken, takerToken]],
                     'https://426.0.0.1': [] /* Shouldn't ping an RFQ-T
-                    provider when they don't support the requested asset pair.
-                    (see how QuoteRequestor constructor parameters below don't
-                    list any supported asset pairs for this maker.) */,
+                    provider when they don't support the requested asset pair. */,
                     'https://37.0.0.1': [[makerToken, takerToken]],
                 });
                 const resp = await qr.requestRfqtFirmQuotesAsync(
