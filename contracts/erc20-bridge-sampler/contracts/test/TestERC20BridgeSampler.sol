@@ -24,7 +24,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/ERC20BridgeSampler.sol";
 import "../src/IEth2Dai.sol";
 import "../src/IDevUtils.sol";
-import "../src/IKyberNetwork.sol";
+import "../src/IKyberNetworkProxy.sol";
 
 
 library LibDeterministicQuotes {
@@ -202,7 +202,30 @@ contract TestERC20BridgeSamplerKyberNetwork is
     bytes32 constant private SALT = 0x0ff3ca9d46195c39f9a12afb74207b4970349fb3cfb1e459bbf170298d326bc7;
     address constant public ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-    // Deterministic `IKyberNetwork.getExpectedRate()`.
+    function kyberNetworkContract()
+        external
+        view
+        returns (address)
+    {
+        return address(this);
+    }
+
+    // IKyberNetwork not exposed via IKyberNetworkProxy
+    function searchBestRate(
+        address fromToken,
+        address toToken,
+        uint256 fromAmount,
+        bool  // usePermissionless
+    )
+        external
+        view
+        returns (address reserve, uint256 expectedRate)
+    {
+        (expectedRate, ) = this.getExpectedRate(fromToken, toToken, fromAmount);
+        return (address(this), expectedRate);
+    }
+
+    // Deterministic `IKyberNetworkProxy.getExpectedRate()`.
     function getExpectedRate(
         address fromToken,
         address toToken,

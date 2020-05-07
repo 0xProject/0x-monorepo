@@ -1,8 +1,14 @@
-import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, expect, randomAddress } from '@0x/contracts-test-utils';
 import { ZeroExRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
-import { IBootstrapContract, IOwnableContract, TestInitialMigrationContract, ZeroExContract } from './wrappers';
+import {
+    IBootstrapContract,
+    InitialMigrationContract,
+    IOwnableContract,
+    TestInitialMigrationContract,
+    ZeroExContract,
+} from './wrappers';
 
 blockchainTests.resets('Initial migration', env => {
     let owner: string;
@@ -17,6 +23,7 @@ blockchainTests.resets('Initial migration', env => {
             env.provider,
             env.txDefaults,
             artifacts,
+            env.txDefaults.from as string,
         );
         bootstrapFeature = new IBootstrapContract(
             await migrator.bootstrapFeature().callAsync(),
@@ -29,11 +36,39 @@ blockchainTests.resets('Initial migration', env => {
         await deployCall.awaitTransactionSuccessAsync();
     });
 
+    it('Self-destructs after deployment', async () => {
+        const dieRecipient = await migrator.dieRecipient().callAsync();
+        expect(dieRecipient).to.eq(owner);
+    });
+
+    it('Non-deployer cannot call deploy()', async () => {
+        const notDeployer = randomAddress();
+        const tx = migrator.deploy(owner).callAsync({ from: notDeployer });
+        return expect(tx).to.revertWith('InitialMigration/INVALID_SENDER');
+    });
+
+    it('External contract cannot call die()', async () => {
+        const _migrator = await InitialMigrationContract.deployFrom0xArtifactAsync(
+            artifacts.InitialMigration,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            env.txDefaults.from as string,
+        );
+        const tx = _migrator.die(owner).callAsync();
+        return expect(tx).to.revertWith('InitialMigration/INVALID_SENDER');
+    });
+
     describe('bootstrapping', () => {
         it('Migrator cannot call bootstrap() again', async () => {
             const tx = migrator.callBootstrap(zeroEx.address).awaitTransactionSuccessAsync();
             const selector = bootstrapFeature.getSelector('bootstrap');
             return expect(tx).to.revertWith(new ZeroExRevertErrors.Proxy.NotImplementedError(selector));
+        });
+
+        it('Bootstrap feature self destructs after deployment', async () => {
+            const codeSize = await migrator.getCodeSizeOf(bootstrapFeature.address).callAsync();
+            expect(codeSize).to.bignumber.eq(0);
         });
     });
 
@@ -48,10 +83,5 @@ blockchainTests.resets('Initial migration', env => {
             const actualOwner = await ownable.owner().callAsync();
             expect(actualOwner).to.eq(owner);
         });
-    });
-
-    it('bootstrap feature self destructs after deployment', async () => {
-        const codeSize = await migrator.getCodeSizeOf(bootstrapFeature.address).callAsync();
-        expect(codeSize).to.bignumber.eq(0);
     });
 });

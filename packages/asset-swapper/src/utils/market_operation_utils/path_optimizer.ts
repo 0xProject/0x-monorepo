@@ -19,8 +19,6 @@ export function findOptimalPath(
     runLimit?: number,
 ): Fill[] | undefined {
     let optimalPath = paths[0] || [];
-    // TODO(dorothy-zbornak): Convex paths (like kyber) should technically always be
-    // inserted at the front of the path because a partial fill can invalidate them.
     for (const path of paths.slice(1)) {
         optimalPath = mixPaths(side, optimalPath, path, targetInput, runLimit);
     }

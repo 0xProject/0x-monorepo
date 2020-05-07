@@ -29,6 +29,7 @@ import "./IDevUtils.sol";
 import "./IERC20BridgeSampler.sol";
 import "./IEth2Dai.sol";
 import "./IKyberNetwork.sol";
+import "./IKyberNetworkProxy.sol";
 import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
@@ -52,6 +53,10 @@ contract ERC20BridgeSampler is
     uint256 constant internal CURVE_CALL_GAS = 600e3; // 600k
     /// @dev Default gas limit for liquidity provider calls.
     uint256 constant internal DEFAULT_CALL_GAS = 200e3; // 200k
+    /// @dev The Kyber Uniswap Reserve address
+    address constant internal KYBER_UNIWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
+    /// @dev The Kyber Eth2Dai Reserve address
+    address constant internal KYBER_ETH2DAI_RESERVE = 0x1E158c0e93c30d24e918Ef83d1e0bE23595C3c0f;
 
     address private _devUtilsAddress;
 
@@ -183,33 +188,33 @@ contract ERC20BridgeSampler is
         returns (uint256[] memory makerTokenAmounts)
     {
         _assertValidPair(makerToken, takerToken);
-        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
-        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
-        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
-        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
         uint256 numSamples = takerTokenAmounts.length;
         makerTokenAmounts = new uint256[](numSamples);
+        address wethAddress = _getWethAddress();
+        uint256 value;
+        address reserve;
         for (uint256 i = 0; i < numSamples; i++) {
-            (bool didSucceed, bytes memory resultData) =
-                _getKyberNetworkProxyAddress().staticcall.gas(KYBER_CALL_GAS)(
-                    abi.encodeWithSelector(
-                        IKyberNetwork(0).getExpectedRate.selector,
-                        _takerToken,
-                        _makerToken,
-                        takerTokenAmounts[i]
-                    ));
-            uint256 rate = 0;
-            if (didSucceed) {
-                rate = abi.decode(resultData, (uint256));
+            if (takerToken == wethAddress || makerToken == wethAddress) {
+                // Direct ETH based trade
+                (value, reserve) = _sampleSellFromKyberNetwork(takerToken, makerToken, takerTokenAmounts[i]);
+                // If this fills on an on-chain reserve we remove it as that can introduce collisions
+                if (reserve == KYBER_UNIWAP_RESERVE || reserve == KYBER_ETH2DAI_RESERVE) {
+                    value = 0;
+                }
             } else {
-                break;
+                // Hop to ETH
+                (value, reserve) = _sampleSellFromKyberNetwork(takerToken, wethAddress, takerTokenAmounts[i]);
+                if (value != 0) {
+                    address otherReserve;
+                    (value, otherReserve) = _sampleSellFromKyberNetwork(wethAddress, makerToken, value);
+                    // If this fills on Eth2Dai it is ok as we queried a different market
+                    // If this fills on Uniswap on both legs then this is a hard collision
+                    if (reserve == KYBER_UNIWAP_RESERVE && reserve == otherReserve) {
+                        value = 0;
+                    }
+                }
             }
-            makerTokenAmounts[i] =
-                rate *
-                takerTokenAmounts[i] *
-                10 ** makerTokenDecimals /
-                10 ** takerTokenDecimals /
-                10 ** 18;
+            makerTokenAmounts[i] = value;
         }
     }
 
@@ -275,6 +280,31 @@ contract ERC20BridgeSampler is
             }
             makerTokenAmounts[i] = buyAmount;
         }
+    }
+
+    /// @dev Sample sell quotes from Eth2Dai/Oasis using a hop to an intermediate token.
+    ///      I.e WBTC/DAI via ETH or WBTC/ETH via DAI
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param intermediateToken Address of the token to hop to.
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromEth2DaiHop(
+        address takerToken,
+        address makerToken,
+        address intermediateToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        if (makerToken == intermediateToken || takerToken == intermediateToken) {
+            return makerTokenAmounts;
+        }
+        uint256[] memory intermediateAmounts = sampleSellsFromEth2Dai(takerToken, intermediateToken, takerTokenAmounts);
+        makerTokenAmounts = sampleSellsFromEth2Dai(intermediateToken, makerToken, intermediateAmounts);
     }
 
     /// @dev Sample buy quotes from Eth2Dai/Oasis.
@@ -806,5 +836,52 @@ contract ERC20BridgeSampler is
                 sellAmount
             );
         }
+    }
+
+    function _sampleSellFromKyberNetwork(
+        address takerToken,
+        address makerToken,
+        uint256 takerTokenAmount
+    )
+        private
+        view
+        returns (uint256 makerTokenAmount, address reserve)
+    {
+        address _takerToken = takerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : takerToken;
+        address _makerToken = makerToken == _getWethAddress() ? KYBER_ETH_ADDRESS : makerToken;
+        uint256 takerTokenDecimals = _getTokenDecimals(takerToken);
+        uint256 makerTokenDecimals = _getTokenDecimals(makerToken);
+        (bool didSucceed, bytes memory resultData) = _getKyberNetworkProxyAddress().staticcall.gas(DEFAULT_CALL_GAS)(
+            abi.encodeWithSelector(
+                IKyberNetworkProxy(0).kyberNetworkContract.selector
+            ));
+        if (!didSucceed) {
+            return (0, address(0));
+        }
+        address kyberNetworkContract = abi.decode(resultData, (address));
+        (didSucceed, resultData) =
+            kyberNetworkContract.staticcall.gas(KYBER_CALL_GAS)(
+                abi.encodeWithSelector(
+                    IKyberNetwork(0).searchBestRate.selector,
+                    _takerToken,
+                    _makerToken,
+                    takerTokenAmount,
+                    false // usePermissionless
+                ));
+        uint256 rate = 0;
+        address reserve;
+        if (didSucceed) {
+            (reserve, rate) = abi.decode(resultData, (address, uint256));
+        } else {
+            return (0, address(0));
+        }
+        makerTokenAmount =
+            rate *
+            takerTokenAmount *
+            10 ** makerTokenDecimals /
+            10 ** takerTokenDecimals /
+            10 ** 18;
+
+        return (makerTokenAmount, reserve);
     }
 }
