@@ -209,6 +209,14 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
 
 /**
+ * A mapping from RFQ-T quote provider URLs to the trading pairs they support.
+ * The value type represents an array of supported asset pairs, with each array element encoded as a 2-element array of token addresses.
+ */
+export interface RfqtMakerAssetOfferings {
+    [endpoint: string]: Array<[string, string]>;
+}
+
+/**
  * chainId: The ethereum chain id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -224,8 +232,10 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     liquidityProviderRegistryAddress?: string;
     rfqt?: {
         takerApiKeyWhitelist: string[];
-        makerEndpoints: string[];
+        makerAssetOfferings: RfqtMakerAssetOfferings;
+        skipBuyRequests?: boolean;
         warningLogger?: (s: string) => void;
+        infoLogger?: (s: string) => void;
     };
 }
 

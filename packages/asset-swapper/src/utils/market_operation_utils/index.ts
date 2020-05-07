@@ -8,10 +8,22 @@ import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';
 import { createFillPaths, getPathAdjustedRate, getPathAdjustedSlippage } from './fills';
-import { createOrdersFromPath, createSignedOrdersFromRfqtIndicativeQuotes, createSignedOrdersWithFillableAmounts, getNativeOrderTokens } from './orders';
+import {
+    createOrdersFromPath,
+    createSignedOrdersFromRfqtIndicativeQuotes,
+    createSignedOrdersWithFillableAmounts,
+    getNativeOrderTokens,
+} from './orders';
 import { findOptimalPath } from './path_optimizer';
 import { DexOrderSampler, getSampleAmounts } from './sampler';
-import { AggregationError, DexSample, ERC20BridgeSource, GetMarketOrdersOpts, OptimizedMarketOrder, OrderDomain } from './types';
+import {
+    AggregationError,
+    DexSample,
+    ERC20BridgeSource,
+    GetMarketOrdersOpts,
+    OptimizedMarketOrder,
+    OrderDomain,
+} from './types';
 
 async function getRfqtIndicativeQuotesAsync(
     makerAssetData: string,

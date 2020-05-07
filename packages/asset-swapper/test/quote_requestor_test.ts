@@ -5,6 +5,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
+import { constants } from '../src/constants';
 import { MarketOperation, MockedRfqtFirmQuoteResponse, MockedRfqtIndicativeQuoteResponse } from '../src/types';
 import { QuoteRequestor } from '../src/utils/quote_requestor';
 import { rfqtMocker } from '../src/utils/rfqt_mocker';
@@ -14,6 +15,12 @@ import { testOrderFactory } from './utils/test_order_factory';
 
 chaiSetup.configure();
 const expect = chai.expect;
+
+function makeThreeMinuteExpiry(): BigNumber {
+    const expiry = new Date(Date.now());
+    expiry.setMinutes(expiry.getMinutes() + 3);
+    return new BigNumber(Math.round(expiry.valueOf() / constants.ONE_SECOND_MS));
+}
 
 describe('QuoteRequestor', async () => {
     const [makerToken, takerToken, otherToken1] = tokenUtils.getDummyERC20TokenAddresses();
@@ -39,7 +46,9 @@ describe('QuoteRequestor', async () => {
             const successfulOrder1 = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
                 takerAssetData,
+                takerAddress,
                 feeRecipientAddress: '0x0000000000000000000000000000000000000001',
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             });
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -67,6 +76,7 @@ describe('QuoteRequestor', async () => {
             // A successful response code and valid order, but for wrong maker asset data
             const wrongMakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 takerAssetData,
             });
             mockedRequests.push({
@@ -79,6 +89,7 @@ describe('QuoteRequestor', async () => {
             // A successful response code and valid order, but for wrong taker asset data
             const wrongTakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
             });
             mockedRequests.push({
@@ -92,6 +103,7 @@ describe('QuoteRequestor', async () => {
             const unsignedOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData,
                 takerAssetData,
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
                 feeRecipientAddress: '0x0000000000000000000000000000000000000002',
             });
             delete unsignedOrder.signature;
@@ -102,9 +114,29 @@ describe('QuoteRequestor', async () => {
                 responseData: unsignedOrder,
                 responseCode: StatusCodes.Success,
             });
+            // A successful response code and good order but for the wrong takerAddress
+            const orderWithNullTaker = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
+                takerAddress: constants.NULL_ADDRESS,
+                feeRecipientAddress: '0x0000000000000000000000000000000000000002',
+            });
+            mockedRequests.push({
+                endpoint: 'https://425.0.0.1',
+                requestApiKey: apiKey,
+                requestParams: expectedParams,
+                responseData: orderWithNullTaker,
+                responseCode: StatusCodes.Success,
+            });
 
             // Another Successful response
-            const successfulOrder2 = testOrderFactory.generateTestSignedOrder({ makerAssetData, takerAssetData });
+            const successfulOrder2 = testOrderFactory.generateTestSignedOrder({
+                makerAssetData,
+                takerAssetData,
+                takerAddress,
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
+            });
             mockedRequests.push({
                 endpoint: 'https://37.0.0.1',
                 requestApiKey: apiKey,
@@ -114,15 +146,18 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtFirmQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor([
-                    'https://1337.0.0.1',
-                    'https://420.0.0.1',
-                    'https://421.0.0.1',
-                    'https://422.0.0.1',
-                    'https://423.0.0.1',
-                    'https://424.0.0.1',
-                    'https://37.0.0.1',
-                ]);
+                const qr = new QuoteRequestor({
+                    'https://1337.0.0.1': [[makerToken, takerToken]],
+                    'https://420.0.0.1': [[makerToken, takerToken]],
+                    'https://421.0.0.1': [[makerToken, takerToken]],
+                    'https://422.0.0.1': [[makerToken, takerToken]],
+                    'https://423.0.0.1': [[makerToken, takerToken]],
+                    'https://424.0.0.1': [[makerToken, takerToken]],
+                    'https://425.0.0.1': [[makerToken, takerToken]],
+                    'https://426.0.0.1': [] /* Shouldn't ping an RFQ-T
+                    provider when they don't support the requested asset pair. */,
+                    'https://37.0.0.1': [[makerToken, takerToken]],
+                });
                 const resp = await qr.requestRfqtFirmQuotesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -159,6 +194,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.sellAmount),
                 takerAssetAmount: new BigNumber(expectedParams.sellAmount),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -209,15 +245,15 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor([
-                    'https://1337.0.0.1',
-                    'https://420.0.0.1',
-                    'https://421.0.0.1',
-                    'https://422.0.0.1',
-                    'https://423.0.0.1',
-                    'https://424.0.0.1',
-                    'https://37.0.0.1',
-                ]);
+                const qr = new QuoteRequestor({
+                    'https://1337.0.0.1': [[makerToken, takerToken]],
+                    'https://420.0.0.1': [[makerToken, takerToken]],
+                    'https://421.0.0.1': [[makerToken, takerToken]],
+                    'https://422.0.0.1': [[makerToken, takerToken]],
+                    'https://423.0.0.1': [[makerToken, takerToken]],
+                    'https://424.0.0.1': [[makerToken, takerToken]],
+                    'https://37.0.0.1': [[makerToken, takerToken]],
+                });
                 const resp = await qr.requestRfqtIndicativeQuotesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -252,6 +288,7 @@ describe('QuoteRequestor', async () => {
                 takerAssetData,
                 makerAssetAmount: new BigNumber(expectedParams.buyAmount),
                 takerAssetAmount: new BigNumber(expectedParams.buyAmount),
+                expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({
                 endpoint: 'https://1337.0.0.1',
@@ -262,7 +299,7 @@ describe('QuoteRequestor', async () => {
             });
 
             return rfqtMocker.withMockedRfqtIndicativeQuotes(mockedRequests, async () => {
-                const qr = new QuoteRequestor(['https://1337.0.0.1']);
+                const qr = new QuoteRequestor({ 'https://1337.0.0.1': [[makerToken, takerToken]] });
                 const resp = await qr.requestRfqtIndicativeQuotesAsync(
                     makerAssetData,
                     takerAssetData,

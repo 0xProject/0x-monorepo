@@ -46,6 +46,7 @@ export class SwapQuoter {
     private readonly _orderStateUtils: OrderStateUtils;
     private readonly _quoteRequestor: QuoteRequestor;
     private readonly _rfqtTakerApiKeyWhitelist: string[];
+    private readonly _rfqtSkipBuyRequests: boolean;
 
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
@@ -155,6 +156,7 @@ export class SwapQuoter {
             permittedOrderFeeTypes,
             samplerGasLimit,
             liquidityProviderRegistryAddress,
+            rfqt,
         } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
@@ -165,14 +167,20 @@ export class SwapQuoter {
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
         this.permittedOrderFeeTypes = permittedOrderFeeTypes;
-        this._rfqtTakerApiKeyWhitelist = options.rfqt ? options.rfqt.takerApiKeyWhitelist || [] : [];
+        this._rfqtTakerApiKeyWhitelist = rfqt ? rfqt.takerApiKeyWhitelist || [] : [];
+        this._rfqtSkipBuyRequests =
+            rfqt && rfqt.skipBuyRequests !== undefined
+                ? rfqt.skipBuyRequests
+                : (r => r !== undefined && r.skipBuyRequests === true)(constants.DEFAULT_SWAP_QUOTER_OPTS.rfqt);
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
         this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         this._quoteRequestor = new QuoteRequestor(
-            options.rfqt ? options.rfqt.makerEndpoints || [] : [],
-            options.rfqt ? options.rfqt.warningLogger : undefined,
+            rfqt ? rfqt.makerAssetOfferings || {} : {},
+            rfqt ? rfqt.warningLogger : undefined,
+            rfqt ? rfqt.infoLogger : undefined,
+            expiryBufferMs,
         );
         const sampler = new DexOrderSampler(
             new IERC20BridgeSamplerContract(this._contractAddresses.erc20BridgeSampler, this.provider, {
@@ -535,7 +543,8 @@ export class SwapQuoter {
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
             opts.rfqt.apiKey &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey)
+            this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey) &&
+            !(marketOperation === MarketOperation.Buy && this._rfqtSkipBuyRequests)
         ) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
@@ -568,7 +577,7 @@ export class SwapQuoter {
 
         const calcOpts: CalculateSwapQuoteOpts = opts;
 
-        if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt)) {
+        if (calcOpts.rfqt !== undefined && this._shouldEnableIndicativeRfqt(calcOpts.rfqt, marketOperation)) {
             calcOpts.rfqt.quoteRequestor = this._quoteRequestor;
         }
 
@@ -590,12 +599,13 @@ export class SwapQuoter {
 
         return swapQuote;
     }
-    private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt']): boolean {
+    private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {
         return (
             opts !== undefined &&
             opts.isIndicative !== undefined &&
             opts.isIndicative &&
-            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey)
+            this._rfqtTakerApiKeyWhitelist.includes(opts.apiKey) &&
+            !(op === MarketOperation.Buy && this._rfqtSkipBuyRequests)
         );
     }
 }

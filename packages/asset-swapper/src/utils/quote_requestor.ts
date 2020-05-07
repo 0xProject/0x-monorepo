@@ -1,12 +1,11 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
-import { assetDataUtils, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
-import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { MarketOperation, RfqtRequestOpts } from '../types';
+import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
 /**
  * Request quotes from RFQ-T providers
@@ -17,6 +16,7 @@ export interface RfqtIndicativeQuoteResponse {
     makerAssetAmount: BigNumber;
     takerAssetData: string;
     takerAssetAmount: BigNumber;
+    expirationTimeSeconds: BigNumber;
 }
 
 function getTokenAddressOrThrow(assetData: string): string {
@@ -81,47 +81,58 @@ function hasExpectedAssetData(
 }
 
 export class QuoteRequestor {
-    private readonly _rfqtMakerEndpoints: string[];
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
-    private readonly _warningLogger: (s: string) => void;
 
-    constructor(rfqtMakerEndpoints: string[], logger: (s: string) => void = s => logUtils.warn(s)) {
-        this._rfqtMakerEndpoints = rfqtMakerEndpoints;
-        this._warningLogger = logger;
-    }
+    constructor(
+        private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
+        private readonly _warningLogger: (a: any) => void = a => logUtils.warn(a),
+        private readonly _infoLogger: (a: any) => void = () => undefined,
+        private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
+    ) {}
 
     public async requestRfqtFirmQuotesAsync(
         makerAssetData: string,
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        options?: Partial<RfqtRequestOpts>,
+        options: RfqtRequestOpts,
     ): Promise<SignedOrder[]> {
-        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
-            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
-                try {
-                    return await Axios.get<SignedOrder>(`${rfqtMakerEndpoint}/quote`, {
-                        headers: { '0x-api-key': _opts.apiKey },
-                        params: {
-                            takerAddress: _opts.takerAddress,
-                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                        },
-                        timeout: _opts.makerEndpointMaxResponseTimeMs,
-                    });
-                } catch (err) {
-                    this._warningLogger(
-                        `Failed to get RFQ-T firm quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
-                            _opts.apiKey
-                        } for taker address ${_opts.takerAddress}`,
-                    );
-                    this._warningLogger(err);
-                    return undefined;
+            Object.keys(this._rfqtAssetOfferings).map(async url => {
+                if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                    try {
+                        const timeBeforeAwait = Date.now();
+                        const response = await Axios.get<SignedOrder>(`${url}/quote`, {
+                            headers: { '0x-api-key': _opts.apiKey },
+                            params: {
+                                takerAddress: _opts.takerAddress,
+                                ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+                            },
+                            timeout: _opts.makerEndpointMaxResponseTimeMs,
+                        });
+                        this._infoLogger({
+                            rfqtFirmQuoteMakerResponseTime: {
+                                makerEndpoint: url,
+                                responseTimeMs: Date.now() - timeBeforeAwait,
+                            },
+                        });
+                        return response;
+                    } catch (err) {
+                        this._warningLogger(
+                            `Failed to get RFQ-T firm quote from market maker endpoint ${url} for API key ${
+                                _opts.apiKey
+                            } for taker address ${_opts.takerAddress}`,
+                        );
+                        this._warningLogger(err);
+                        return undefined;
+                    }
                 }
+                return undefined;
             }),
         );
 
@@ -150,10 +161,15 @@ export class QuoteRequestor {
                 return false;
             }
 
+            if (order.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
+                this._warningLogger(`Unexpected takerAddress in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+
             return true;
         });
 
-        const orders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
+        const validatedOrders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
             return {
                 ...orderWithStringInts,
                 makerAssetAmount: new BigNumber(orderWithStringInts.makerAssetAmount),
@@ -163,6 +179,14 @@ export class QuoteRequestor {
                 expirationTimeSeconds: new BigNumber(orderWithStringInts.expirationTimeSeconds),
                 salt: new BigNumber(orderWithStringInts.salt),
             };
+        });
+
+        const orders = validatedOrders.filter(order => {
+            if (orderCalculationUtils.willOrderExpire(order, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
+                this._warningLogger(`Expiry too soon in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                return false;
+            }
+            return true;
         });
 
         return orders;
@@ -175,31 +199,42 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
     ): Promise<RfqtIndicativeQuoteResponse[]> {
-        const _opts = _.merge({}, constants.DEFAULT_RFQT_REQUEST_OPTS, options);
+        const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
         const axiosResponsesIfDefined: Array<
             undefined | AxiosResponse<RfqtIndicativeQuoteResponse>
         > = await Promise.all(
-            this._rfqtMakerEndpoints.map(async rfqtMakerEndpoint => {
-                try {
-                    return await Axios.get<RfqtIndicativeQuoteResponse>(`${rfqtMakerEndpoint}/price`, {
-                        headers: { '0x-api-key': options.apiKey },
-                        params: {
-                            takerAddress: options.takerAddress,
-                            ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                        },
-                        timeout: options.makerEndpointMaxResponseTimeMs,
-                    });
-                } catch (err) {
-                    this._warningLogger(
-                        `Failed to get RFQ-T indicative quote from market maker endpoint ${rfqtMakerEndpoint} for API key ${
-                            options.apiKey
-                        } for taker address ${options.takerAddress}`,
-                    );
-                    this._warningLogger(err);
-                    return undefined;
+            Object.keys(this._rfqtAssetOfferings).map(async url => {
+                if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                    try {
+                        const timeBeforeAwait = Date.now();
+                        const response = await Axios.get<RfqtIndicativeQuoteResponse>(`${url}/price`, {
+                            headers: { '0x-api-key': options.apiKey },
+                            params: {
+                                takerAddress: options.takerAddress,
+                                ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
+                            },
+                            timeout: options.makerEndpointMaxResponseTimeMs,
+                        });
+                        this._infoLogger({
+                            rfqtIndicativeQuoteMakerResponseTime: {
+                                makerEndpoint: url,
+                                responseTimeMs: Date.now() - timeBeforeAwait,
+                            },
+                        });
+                        return response;
+                    } catch (err) {
+                        this._warningLogger(
+                            `Failed to get RFQ-T indicative quote from market maker endpoint ${url} for API key ${
+                                options.apiKey
+                            } for taker address ${options.takerAddress}`,
+                        );
+                        this._warningLogger(err);
+                        return undefined;
+                    }
                 }
+                return undefined;
             }),
         );
 
@@ -227,12 +262,23 @@ export class QuoteRequestor {
             return true;
         });
 
-        const responses = validResponsesWithStringInts.map(response => {
+        const validResponses = validResponsesWithStringInts.map(response => {
             return {
                 ...response,
                 makerAssetAmount: new BigNumber(response.makerAssetAmount),
                 takerAssetAmount: new BigNumber(response.takerAssetAmount),
+                expirationTimeSeconds: new BigNumber(response.expirationTimeSeconds),
             };
+        });
+
+        const responses = validResponses.filter(response => {
+            if (this._isExpirationTooSoon(response.expirationTimeSeconds)) {
+                this._warningLogger(
+                    `Expiry too soon in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
+                );
+                return false;
+            }
+            return true;
         });
 
         return responses;
@@ -251,9 +297,38 @@ export class QuoteRequestor {
         const hasValidTakerAssetData =
             response.takerAssetData !== undefined &&
             this._schemaValidator.isValid(response.takerAssetData, schemas.hexSchema);
-        if (hasValidMakerAssetAmount && hasValidTakerAssetAmount && hasValidMakerAssetData && hasValidTakerAssetData) {
+        const hasValidExpirationTimeSeconds =
+            response.expirationTimeSeconds !== undefined &&
+            this._schemaValidator.isValid(response.expirationTimeSeconds, schemas.wholeNumberSchema);
+        if (
+            hasValidMakerAssetAmount &&
+            hasValidTakerAssetAmount &&
+            hasValidMakerAssetData &&
+            hasValidTakerAssetData &&
+            hasValidExpirationTimeSeconds
+        ) {
             return true;
         }
         return false;
+    }
+
+    private _makerSupportsPair(makerUrl: string, makerAssetData: string, takerAssetData: string): boolean {
+        const makerTokenAddress = getTokenAddressOrThrow(makerAssetData);
+        const takerTokenAddress = getTokenAddressOrThrow(takerAssetData);
+        for (const assetPair of this._rfqtAssetOfferings[makerUrl]) {
+            if (
+                (assetPair[0] === makerTokenAddress && assetPair[1] === takerTokenAddress) ||
+                (assetPair[0] === takerTokenAddress && assetPair[1] === makerTokenAddress)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private _isExpirationTooSoon(expirationTimeSeconds: BigNumber): boolean {
+        const expirationTimeMs = expirationTimeSeconds.times(constants.ONE_SECOND_MS);
+        const currentTimeMs = new BigNumber(Date.now());
+        return expirationTimeMs.isLessThan(currentTimeMs.plus(this._expiryBufferMs));
     }
 }

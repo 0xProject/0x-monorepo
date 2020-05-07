@@ -7,9 +7,25 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { getCurveInfo, isCurveSource } from '../source_utils';
 
-import { ERC20_PROXY_ID, NULL_ADDRESS, NULL_BYTES, ONE_HOUR_IN_SECONDS, ONE_SECOND_MS, WALLET_SIGNATURE, ZERO_AMOUNT } from './constants';
+import {
+    ERC20_PROXY_ID,
+    NULL_ADDRESS,
+    NULL_BYTES,
+    ONE_HOUR_IN_SECONDS,
+    ONE_SECOND_MS,
+    WALLET_SIGNATURE,
+    ZERO_AMOUNT,
+} from './constants';
 import { collapsePath } from './fills';
-import { AggregationError, CollapsedFill, ERC20BridgeSource, Fill, NativeCollapsedFill, OptimizedMarketOrder, OrderDomain } from './types';
+import {
+    AggregationError,
+    CollapsedFill,
+    ERC20BridgeSource,
+    Fill,
+    NativeCollapsedFill,
+    OptimizedMarketOrder,
+    OrderDomain,
+} from './types';
 
 // tslint:disable completed-docs no-unnecessary-type-assertion
 
@@ -351,7 +367,7 @@ export function createSignedOrdersFromRfqtIndicativeQuotes(
             senderAddress: NULL_ADDRESS,
             feeRecipientAddress: NULL_ADDRESS,
             salt: ZERO_AMOUNT,
-            expirationTimeSeconds: ZERO_AMOUNT,
+            expirationTimeSeconds: quote.expirationTimeSeconds,
             makerFeeAssetData: NULL_BYTES,
             takerFeeAssetData: NULL_BYTES,
             makerFee: ZERO_AMOUNT,
