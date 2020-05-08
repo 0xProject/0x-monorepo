@@ -33,9 +33,9 @@ library LibSimpleFunctionRegistryStorage {
 
     /// @dev Get the storage bucket for this contract.
     function getStorage() internal pure returns (Storage storage stor) {
-        uint256 storageOffset = LibStorage.getStorageOffset(
+        uint256 storageSlot = LibStorage.getStorageSlot(
             LibStorage.StorageId.SimpleFunctionRegistry
         );
-        assembly { stor_slot := storageOffset }
+        assembly { stor_slot := storageSlot }
     }
 }
