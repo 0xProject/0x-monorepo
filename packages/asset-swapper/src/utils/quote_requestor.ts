@@ -285,7 +285,10 @@ export class QuoteRequestor {
         const responsesIfDefined: Array<undefined | AxiosResponse<ResponseT>> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
-                    let logEntry;
+                    const partialLogEntry = {
+                        makerEndpoint: url,
+                        quoteType,
+                    };
                     const timeBeforeAwait = Date.now();
                     try {
                         const quotePath = (() => {
@@ -308,16 +311,22 @@ export class QuoteRequestor {
                             },
                             timeout: options.makerEndpointMaxResponseTimeMs,
                         });
-                        logEntry = {
-                            statusCode: response.status,
-                            latency: Date.now() - timeBeforeAwait,
-                        };
+                        this._infoLogger({
+                            rfqtMakerResponse: {
+                                ...partialLogEntry,
+                                statusCode: response.status,
+                                latency: Date.now() - timeBeforeAwait,
+                            },
+                        });
                         return response;
                     } catch (err) {
-                        logEntry = {
-                            statusCode: err.code,
-                            latency: Date.now() - timeBeforeAwait,
-                        };
+                        this._infoLogger({
+                            rfqtMakerResponse: {
+                                ...partialLogEntry,
+                                statusCode: err.code,
+                                latency: Date.now() - timeBeforeAwait,
+                            },
+                        });
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${
@@ -326,7 +335,6 @@ export class QuoteRequestor {
                         );
                         return undefined;
                     }
-                    this._infoLogger({ rfqtMakerResponse: { ...logEntry, makerEndpoint: url, quoteType } });
                 }
                 return undefined;
             }),
