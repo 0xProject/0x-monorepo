@@ -285,14 +285,11 @@ export class QuoteRequestor {
         const responsesIfDefined: Array<undefined | AxiosResponse<ResponseT>> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
-                    const partialLogEntry = {
-                        makerEndpoint: url,
-                        makerAssetData,
-                        takerAssetData,
-                        assetFillAmount,
-                        marketOperation,
-                        quoteType,
+                    const requestParams = {
+                        takerAddress: options.takerAddress,
+                        ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
                     };
+                    const partialLogEntry = { url, quoteType, requestParams };
                     const timeBeforeAwait = Date.now();
                     try {
                         const quotePath = (() => {
@@ -309,26 +306,27 @@ export class QuoteRequestor {
                         })();
                         const response = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
-                            params: {
-                                takerAddress: options.takerAddress,
-                                ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
-                            },
+                            params: requestParams,
                             timeout: options.makerEndpointMaxResponseTimeMs,
                         });
                         this._infoLogger({
-                            rfqtMakerResponse: {
+                            rfqtMakerInteraction: {
                                 ...partialLogEntry,
-                                statusCode: response.status,
-                                latency: Date.now() - timeBeforeAwait,
+                                response: {
+                                    statusCode: response.status,
+                                    latencyMs: Date.now() - timeBeforeAwait,
+                                },
                             },
                         });
                         return response;
                     } catch (err) {
                         this._infoLogger({
-                            rfqtMakerResponse: {
+                            rfqtMakerInteraction: {
                                 ...partialLogEntry,
-                                statusCode: err.code,
-                                latency: Date.now() - timeBeforeAwait,
+                                response: {
+                                    statusCode: err.code,
+                                    latencyMs: Date.now() - timeBeforeAwait,
+                                },
                             },
                         });
                         this._warningLogger(
