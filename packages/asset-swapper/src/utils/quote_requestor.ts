@@ -80,13 +80,25 @@ function hasExpectedAssetData(
     return hasExpectedMakerAssetData && hasExpectedTakerAssetData;
 }
 
+function convertIfAxiosError(error: any): Error {
+    if (error.hasOwnProperty('isAxiosError') && error.isAxiosError && error.hasOwnProperty('toJSON')) {
+        return error.toJSON();
+    } else {
+        return error;
+    }
+}
+
+export type LogFunction = (obj: object, msg?: string, ...args: any[]) => void;
+
 export class QuoteRequestor {
     private readonly _schemaValidator: SchemaValidator = new SchemaValidator();
 
     constructor(
         private readonly _rfqtAssetOfferings: RfqtMakerAssetOfferings,
-        private readonly _warningLogger: (a: any) => void = a => logUtils.warn(a),
-        private readonly _infoLogger: (a: any) => void = () => undefined,
+        private readonly _warningLogger: LogFunction = (obj, msg) =>
+            logUtils.warn(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
+        private readonly _infoLogger: LogFunction = (obj, msg) =>
+            logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
     ) {}
 
@@ -105,8 +117,9 @@ export class QuoteRequestor {
         const responsesIfDefined: Array<undefined | AxiosResponse<SignedOrder>> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
+                    let logEntry;
+                    const timeBeforeAwait = Date.now();
                     try {
-                        const timeBeforeAwait = Date.now();
                         const response = await Axios.get<SignedOrder>(`${url}/quote`, {
                             headers: { '0x-api-key': _opts.apiKey },
                             params: {
@@ -115,22 +128,25 @@ export class QuoteRequestor {
                             },
                             timeout: _opts.makerEndpointMaxResponseTimeMs,
                         });
-                        this._infoLogger({
-                            rfqtFirmQuoteMakerResponseTime: {
-                                makerEndpoint: url,
-                                responseTimeMs: Date.now() - timeBeforeAwait,
-                            },
-                        });
+                        logEntry = {
+                            statusCode: response.status,
+                            latency: Date.now() - timeBeforeAwait,
+                        };
                         return response;
                     } catch (err) {
+                        logEntry = {
+                            statusCode: err.code,
+                            latency: Date.now() - timeBeforeAwait,
+                        };
                         this._warningLogger(
+                            convertIfAxiosError(err),
                             `Failed to get RFQ-T firm quote from market maker endpoint ${url} for API key ${
                                 _opts.apiKey
                             } for taker address ${_opts.takerAddress}`,
                         );
-                        this._warningLogger(err);
                         return undefined;
                     }
+                    this._infoLogger({ rfqtFirmQuoteMakerResponse: { ...logEntry, makerEndpoint: url } });
                 }
                 return undefined;
             }),
@@ -145,7 +161,7 @@ export class QuoteRequestor {
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
             const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
             if (!hasValidSchema) {
-                this._warningLogger(`Invalid RFQ-t order received, filtering out: ${JSON.stringify(order)}`);
+                this._warningLogger(order, 'Invalid RFQ-t order received, filtering out');
                 return false;
             }
 
@@ -157,12 +173,12 @@ export class QuoteRequestor {
                     order.takerAssetData.toLowerCase(),
                 )
             ) {
-                this._warningLogger(`Unexpected asset data in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                this._warningLogger(order, 'Unexpected asset data in RFQ-T order, filtering out');
                 return false;
             }
 
             if (order.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
-                this._warningLogger(`Unexpected takerAddress in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                this._warningLogger(order, 'Unexpected takerAddress in RFQ-T order, filtering out');
                 return false;
             }
 
@@ -183,7 +199,7 @@ export class QuoteRequestor {
 
         const orders = validatedOrders.filter(order => {
             if (orderCalculationUtils.willOrderExpire(order, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
-                this._warningLogger(`Expiry too soon in RFQ-T order, filtering out: ${JSON.stringify(order)}`);
+                this._warningLogger(order, 'Expiry too soon in RFQ-T order, filtering out');
                 return false;
             }
             return true;
@@ -226,11 +242,11 @@ export class QuoteRequestor {
                         return response;
                     } catch (err) {
                         this._warningLogger(
+                            convertIfAxiosError(err),
                             `Failed to get RFQ-T indicative quote from market maker endpoint ${url} for API key ${
                                 options.apiKey
                             } for taker address ${options.takerAddress}`,
                         );
-                        this._warningLogger(err);
                         return undefined;
                     }
                 }
@@ -246,17 +262,13 @@ export class QuoteRequestor {
 
         const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
             if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
-                this._warningLogger(
-                    `Invalid RFQ-T indicative quote received, filtering out: ${JSON.stringify(response)}`,
-                );
+                this._warningLogger(response, 'Invalid RFQ-T indicative quote received, filtering out');
                 return false;
             }
             if (
                 !hasExpectedAssetData(makerAssetData, takerAssetData, response.makerAssetData, response.takerAssetData)
             ) {
-                this._warningLogger(
-                    `Unexpected asset data in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
-                );
+                this._warningLogger(response, 'Unexpected asset data in RFQ-T indicative quote, filtering out');
                 return false;
             }
             return true;
@@ -273,9 +285,7 @@ export class QuoteRequestor {
 
         const responses = validResponses.filter(response => {
             if (this._isExpirationTooSoon(response.expirationTimeSeconds)) {
-                this._warningLogger(
-                    `Expiry too soon in RFQ-T indicative quote, filtering out: ${JSON.stringify(response)}`,
-                );
+                this._warningLogger(response, 'Expiry too soon in RFQ-T indicative quote, filtering out');
                 return false;
             }
             return true;

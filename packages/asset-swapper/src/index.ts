@@ -41,6 +41,7 @@ export {
     ForwarderExtensionContractOpts,
     GetExtensionContractTypeOpts,
     LiquidityForTakerMakerAssetDataPair,
+    LogFunction,
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
