@@ -287,6 +287,10 @@ export class QuoteRequestor {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const partialLogEntry = {
                         makerEndpoint: url,
+                        makerAssetData,
+                        takerAssetData,
+                        assetFillAmount,
+                        marketOperation,
                         quoteType,
                     };
                     const timeBeforeAwait = Date.now();
