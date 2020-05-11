@@ -80,7 +80,7 @@ function hasExpectedAssetData(
     return hasExpectedMakerAssetData && hasExpectedTakerAssetData;
 }
 
-function convertIfAxiosError(error: any): Error {
+function convertIfAxiosError(error: any): Error | object /* axios' .d.ts has AxiosError.toJSON() returning object */ {
     if (error.hasOwnProperty('isAxiosError') && error.isAxiosError && error.hasOwnProperty('toJSON')) {
         return error.toJSON();
     } else {
