@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "../transformers/IERC20Transformer.sol";
+import "../external/IPuppet.sol";
 
 
 /// @dev Feature to composably transform between ERC20 tokens.
@@ -31,11 +32,11 @@ interface ITransformERC20 {
         // The transformation handler.
         // Can receive the entire balance of `tokens`.
         IERC20Transformer transformer;
-        // The tokens to send to `transformer`.
-        IERC20TokenV06[] tokens;
-        // Amount of each token in `tokens` to transfer to the transformer.
-        // `uint256(-1)` will transfer the entire balance of that token.
-        uint256[] amounts;
+        // RLP-encoded deployment nonce of the deployer when `transformer`
+        // was deployed.
+        // This is used to verify that the transformer was deployed
+        // by a contract we trust.
+        bytes rlpNonce;
         // Arbitrary data to pass to the transformer.
         bytes data;
     }
@@ -55,6 +56,14 @@ interface ITransformERC20 {
         uint256 inputTokenAmount,
         uint256 outputTokenAmount
     );
+
+    /// @dev Deploy a new puppet instance and replace the current one with it.
+    ///      Useful if we somehow break the current puppet instance.
+    ///      Anyone can call this.
+    /// @return puppet The new puppet instance.
+    function createTransformPuppet()
+        external
+        returns (IPuppet puppet);
 
     /// @dev Executes a series of transformations to convert an ERC20 `inputToken`
     ///      to an ERC20 `outputToken`.
@@ -80,14 +89,14 @@ interface ITransformERC20 {
     /// @dev Internal version of `transformERC20()`. Only callable from within.
     /// @param callDataHash Hash of the ingress calldata.
     /// @param taker The taker address.
-    /// @param inputToken The token being provided by the sender.
+    /// @param inputToken The token being provided by the taker.
     ///        If `0xeee...`, ETH is implied and should be provided with the call.`
-    /// @param outputToken The token to be acquired by the sender.
+    /// @param outputToken The token to be acquired by the taker.
     ///        `0xeee...` implies ETH.
-    /// @param inputTokenAmount The amount of `inputToken` to take from the sender.
-    /// @param minOutputTokenAmount The minimum amount of `outputToken` the sender
+    /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
+    /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
     ///        must receive for the entire transformation to succeed.
-    /// @return outputTokenAmount The amount of `outputToken` received by the sender.
+    /// @return outputTokenAmount The amount of `outputToken` received by the taker.
     function _transformERC20(
         bytes32 callDataHash,
         address payable taker,
@@ -100,4 +109,19 @@ interface ITransformERC20 {
         external
         payable
         returns (uint256 outputTokenAmount);
+
+    /// @dev Return the current puppet instance that will serve as the execution
+    ///      context for transformations.
+    /// @return puppet The puppet instance.
+    function getTransformPuppet()
+        external
+        view
+        returns (IPuppet puppet);
+
+    /// @dev Return the allowed deployer for transformers.
+    /// @return deployer The transform deployer address.
+    function getTransformerDeployer()
+        external
+        view
+        returns (address deployer);
 }

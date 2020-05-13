@@ -44,25 +44,22 @@ library LibPuppetRichErrors {
         );
     }
 
-    function InvalidPuppetInstanceError(address puppet)
+    function PuppetExecuteWithFailedError(
+        address puppet,
+        address callTarget,
+        bytes memory callData,
+        bytes memory errorData
+    )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("InvalidPuppetInstanceError(address)")),
-            puppet
-        );
-    }
-
-    function PuppetNotAcquiredError(address puppet)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("PuppetNotAcquiredError(address)")),
-            puppet
+            bytes4(keccak256("PuppetExecuteWithFailedError(address,address,bytes,bytes)")),
+            puppet,
+            callTarget,
+            callData,
+            errorData
         );
     }
 }

@@ -22,86 +22,112 @@ pragma experimental ABIEncoderV2;
 import "../ZeroEx.sol";
 import "../features/IOwnable.sol";
 import "../features/TokenSpender.sol";
-import "../features/PuppetPool.sol";
 import "../features/TransformERC20.sol";
-import "../puppets/TokenSpenderPuppet.sol";
+import "../external/AllowanceTarget.sol";
 import "./InitialMigration.sol";
 
 
 /// @dev A contract for deploying and configuring the full ZeroEx contract.
-contract FullMigration is
-    InitialMigration
-{
+contract FullMigration {
+
     // solhint-disable no-empty-blocks,indent
 
     /// @dev Features to add the the proxy contract.
     struct Features {
+        SimpleFunctionRegistry registry;
+        Ownable ownable;
         TokenSpender tokenSpender;
-        PuppetPool puppetPool;
         TransformERC20 transformERC20;
     }
 
-    Features public features;
+    /// @dev The allowed caller of `deploy()`.
+    address public immutable deployer;
+    /// @dev The initial migration contract.
+    InitialMigration private _initialMigration;
 
     /// @dev Instantiate this contract and set the allowed caller of `deploy()`
     ///      to `deployer`.
-    /// @param deployer The allowed caller of `deploy()`.
-    /// @param features_ Deployed addresses of the features to register.
-    constructor(
-        address payable deployer,
-        Features memory features_
-    )
+    /// @param deployer_ The allowed caller of `deploy()`.
+    constructor(address payable deployer_)
         public
-        InitialMigration(deployer)
     {
-        features = features_;
+        deployer = deployer_;
+        // Create an initial migration contract with this contract set to the
+        // allowed deployer.
+        _initialMigration = new InitialMigration(address(this));
     }
 
     /// @dev Deploy the `ZeroEx` contract with the full feature set,
     ///      transfer ownership to `owner`, then self-destruct.
     /// @param owner The owner of the contract.
+    /// @param features Features to add to the proxy.
     /// @return zeroEx The deployed and configured `ZeroEx` contract.
-    function deploy(address payable owner) public override returns (ZeroEx zeroEx) {
+    function deploy(
+        address payable owner,
+        Features memory features
+    )
+        public
+        returns (ZeroEx zeroEx)
+    {
+        require(msg.sender == deployer, "FullMigration/INVALID_SENDER");
+
         // Perform the initial migration with the owner set to this contract.
-        zeroEx = InitialMigration.deploy(address(uint160(address(this))));
+        zeroEx = _initialMigration.deploy(
+            address(uint160(address(this))),
+            InitialMigration.BootstrapFeatures({
+                registry: features.registry,
+                ownable: features.ownable
+            })
+        );
 
         // Add features.
-        _addFeatures(zeroEx, owner);
+        _addFeatures(zeroEx, owner, features);
 
         // Transfer ownership to the real owner.
         IOwnable(address(zeroEx)).transferOwnership(owner);
+
+        // Self-destruct.
+        this.die(owner);
+    }
+
+    /// @dev Destroy this contract. Only callable from ourselves (from `deploy()`).
+    /// @param ethRecipient Receiver of any ETH in this contract.
+    function die(address payable ethRecipient)
+        external
+        virtual
+    {
+        require(msg.sender == address(this), "FullMigration/INVALID_SENDER");
+        // This contract should not hold any funds but we send
+        // them to the ethRecipient just in case.
+        selfdestruct(ethRecipient);
     }
 
     /// @dev Deploy and register features to the ZeroEx contract.
     /// @param zeroEx The bootstrapped ZeroEx contract.
     /// @param owner The ultimate owner of the ZeroEx contract.
-    function _addFeatures(ZeroEx zeroEx, address owner) private {
+    /// @param features Features to add to the proxy.
+    function _addFeatures(
+        ZeroEx zeroEx,
+        address owner,
+        Features memory features
+    )
+        private
+    {
         IOwnable ownable = IOwnable(address(zeroEx));
         // TokenSpender
         {
-            // Create the puppet spender.
-            TokenSpenderPuppet spenderPuppet = new TokenSpenderPuppet();
-            // Let the ZeroEx contract use the puppet.
-            spenderPuppet.addAuthorizedAddress(address(zeroEx));
+            // Create the allowance target.
+            AllowanceTarget allowanceTarget = new AllowanceTarget();
+            // Let the ZeroEx contract use the allowance target.
+            allowanceTarget.addAuthorizedAddress(address(zeroEx));
             // Transfer ownership of the puppet to the (real) owner.
-            spenderPuppet.transferOwnership(owner);
+            allowanceTarget.transferOwnership(owner);
             // Register the feature.
             ownable.migrate(
                 address(features.tokenSpender),
                 abi.encodeWithSelector(
                     TokenSpender.migrate.selector,
-                    spenderPuppet
-                ),
-                address(this)
-            );
-        }
-        // PuppetPool
-        {
-            // Register the feature.
-            ownable.migrate(
-                address(features.puppetPool),
-                abi.encodeWithSelector(
-                    PuppetPool.migrate.selector
+                    allowanceTarget
                 ),
                 address(this)
             );

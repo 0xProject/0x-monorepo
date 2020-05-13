@@ -19,6 +19,7 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "../src/transformers/IERC20Transformer.sol";
 import "../src/transformers/LibERC20Transformer.sol";
 import "./TestMintableERC20Token.sol";
@@ -28,25 +29,26 @@ contract TestMintTokenERC20Transformer is
     IERC20Transformer
 {
     struct TransformData {
-        TestMintableERC20Token tokenToMint;
+        IERC20TokenV06 inputToken;
+        TestMintableERC20Token outputToken;
+        uint256 burnAmount;
         uint256 mintAmount;
-        address mintTo;
+        address payable mintTo;
     }
 
     event MintTransform(
+        address context,
         address caller,
         bytes32 callDataHash,
         address taker,
-        IERC20TokenV06[] tokens,
-        uint256[] amounts,
-        bytes data
+        bytes data,
+        uint256 inputTokenBalance,
+        uint256 ethBalance
     );
 
     function transform(
         bytes32 callDataHash,
         address payable taker,
-        IERC20TokenV06[] calldata tokens,
-        uint256[] calldata amounts,
         bytes calldata data_
     )
         external
@@ -54,47 +56,27 @@ contract TestMintTokenERC20Transformer is
         payable
         returns (bytes4 success)
     {
-        _assertBalances(tokens, amounts);
+        TransformData memory data = abi.decode(data_, (TransformData));
         emit MintTransform(
+            address(this),
             msg.sender,
             callDataHash,
             taker,
-            tokens,
-            amounts,
-            data_
+            data_,
+            data.inputToken.balanceOf(address(this)),
+            address(this).balance
         );
-        TransformData memory data = abi.decode(data_, (TransformData));
-        // Return input tokens.
-        for (uint256 i = 0; i < tokens.length; ++i) {
-            LibERC20Transformer.transformerTransfer(tokens[i], msg.sender, amounts[i]);
-        }
+        // Burn input tokens.
+        data.inputToken.transfer(address(0), data.burnAmount);
         // Mint output tokens.
-        require(
-            !LibERC20Transformer.isTokenETH(IERC20TokenV06(address(data.tokenToMint))),
-            "TestMintTokenERC20Transformer/INVALID_MINT_TOKEN"
-        );
-        data.tokenToMint.mint(
-            data.mintTo == address(0) ? msg.sender : data.mintTo,
-            data.mintAmount
-        );
-        return LibERC20Transformer.TRANSFORMER_SUCCESS;
-    }
-
-    function _assertBalances(
-        IERC20TokenV06[] memory tokens,
-        uint256[] memory amounts
-    )
-        private
-        view
-    {
-        for (uint256 i = 0; i < tokens.length; ++i) {
-            // Technically a zero amount is perfectly legal, but the tests should
-            // never result in a zero amount transfer.
-            require(amounts[i] != 0, "TestMintTokenERC20Transformer/ZERO_AMOUNT");
-            uint256 bal = LibERC20Transformer.getTokenBalanceOf(tokens[i], address(this));
-            require(amounts[i] == bal,
-                "TestMintTokenERC20Transformer/AMOUNT_BALANCE_MISMATCH"
+        if (LibERC20Transformer.isTokenETH(IERC20TokenV06(address(data.outputToken)))) {
+            data.mintTo.transfer(data.mintAmount);
+        } else {
+            data.outputToken.mint(
+                data.mintTo == address(0) ? msg.sender : data.mintTo,
+                data.mintAmount
             );
         }
+        return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }
 }

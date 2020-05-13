@@ -29,6 +29,12 @@ import "./LibBootstrap.sol";
 /// @dev A contract for deploying and configuring a minimal ZeroEx contract.
 contract InitialMigration {
 
+    /// @dev Features to bootstrap into the the proxy contract.
+    struct BootstrapFeatures {
+        SimpleFunctionRegistry registry;
+        Ownable ownable;
+    }
+
     /// @dev The allowed caller of `deploy()`. In production, this would be
     ///      the governor.
     address public immutable deployer;
@@ -47,8 +53,13 @@ contract InitialMigration {
     ///      transfers ownership to `owner`, then self-destructs.
     ///      Only callable by `deployer` set in the contstructor.
     /// @param owner The owner of the contract.
+    /// @param features Features to bootstrap into the proxy.
     /// @return zeroEx The deployed and configured `ZeroEx` contract.
-    function deploy(address payable owner) public virtual returns (ZeroEx zeroEx) {
+    function deploy(address payable owner, BootstrapFeatures memory features)
+        public
+        virtual
+        returns (ZeroEx zeroEx)
+    {
         // Must be called by the allowed deployer.
         require(msg.sender == deployer, "InitialMigration/INVALID_SENDER");
 
@@ -58,7 +69,7 @@ contract InitialMigration {
         // Bootstrap the initial feature set.
         IBootstrap(address(zeroEx)).bootstrap(
             address(this),
-            abi.encodeWithSelector(this.bootstrap.selector, owner)
+            abi.encodeWithSelector(this.bootstrap.selector, owner, features)
         );
 
         // Self-destruct. This contract should not hold any funds but we send
@@ -69,23 +80,30 @@ contract InitialMigration {
     /// @dev Sets up the initial state of the `ZeroEx` contract.
     ///      The `ZeroEx` contract will delegatecall into this function.
     /// @param owner The new owner of the ZeroEx contract.
+    /// @param features Features to bootstrap into the proxy.
     /// @return success Magic bytes if successful.
-    function bootstrap(address owner) public virtual returns (bytes4 success) {
+    function bootstrap(address owner, BootstrapFeatures memory features)
+        public
+        virtual
+        returns (bytes4 success)
+    {
         // Deploy and migrate the initial features.
         // Order matters here.
 
         // Initialize Registry.
-        SimpleFunctionRegistry registry = new SimpleFunctionRegistry();
         LibBootstrap.delegatecallBootstrapFunction(
-            address(registry),
-            abi.encodeWithSelector(registry.bootstrap.selector, address(registry))
+            address(features.registry),
+            abi.encodeWithSelector(
+                SimpleFunctionRegistry.bootstrap.selector
+            )
         );
 
         // Initialize Ownable.
-        Ownable ownable = new Ownable();
         LibBootstrap.delegatecallBootstrapFunction(
-            address(ownable),
-            abi.encodeWithSelector(ownable.bootstrap.selector, address(ownable))
+            address(features.ownable),
+            abi.encodeWithSelector(
+                Ownable.bootstrap.selector
+            )
         );
 
         // Transfer ownership to the real owner.

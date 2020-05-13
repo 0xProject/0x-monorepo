@@ -55,16 +55,15 @@ contract SimpleFunctionRegistry is
     }
 
     /// @dev Initializes this feature.
-    /// @param impl The actual address of this feature contract.
     /// @return success Magic bytes if successful.
-    function bootstrap(address impl) external returns (bytes4 success) {
+    function bootstrap() external returns (bytes4 success) {
         // Register the registration functions (inception vibes).
-        _extend(this.extend.selector, impl);
+        _extend(this.extend.selector, _implementation);
         // Register the rollback function.
-        _extend(this.rollback.selector, impl);
+        _extend(this.rollback.selector, _implementation);
         // Register getters.
-        _extend(this.getRollbackLength.selector, impl);
-        _extend(this.getRollbackEntryAtIndex.selector, impl);
+        _extend(this.getRollbackLength.selector, _implementation);
+        _extend(this.getRollbackEntryAtIndex.selector, _implementation);
         return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
 

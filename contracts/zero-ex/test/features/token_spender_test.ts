@@ -1,6 +1,5 @@
 import {
     blockchainTests,
-    constants,
     expect,
     getRandomInteger,
     randomAddress,
@@ -28,12 +27,12 @@ blockchainTests.resets('TokenSpender feature', env => {
     before(async () => {
         const [owner] = await env.getAccountAddressesAsync();
         zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults, {
-            tokenSpender: (await TokenSpenderContract.deployFrom0xArtifactAsync(
+            tokenSpender: await TokenSpenderContract.deployFrom0xArtifactAsync(
                 artifacts.TestTokenSpender,
                 env.provider,
                 env.txDefaults,
                 artifacts,
-            )).address,
+            ),
         });
         feature = new TokenSpenderContract(zeroEx.address, env.provider, env.txDefaults, abis);
         token = await TestTokenSpenderERC20TokenContract.deployFrom0xArtifactAsync(
@@ -109,13 +108,7 @@ blockchainTests.resets('TokenSpender feature', env => {
                 tokenFrom,
                 tokenTo,
                 tokenAmount,
-                new ZeroExRevertErrors.Puppet.PuppetExecuteFailedError(
-                    puppetSpender.address,
-                    token.address,
-                    hexUtils.concat(token.transferFrom(tokenFrom, tokenTo, tokenAmount).getABIEncodedTransactionData()),
-                    constants.ZERO_AMOUNT,
-                    new StringRevertError('TestTokenSpenderERC20Token/Revert').encode(),
-                ).encode(),
+                new StringRevertError('TestTokenSpenderERC20Token/Revert').encode(),
             );
             return expect(tx).to.revertWith(expectedError);
         });

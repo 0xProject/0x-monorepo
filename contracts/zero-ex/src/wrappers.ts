@@ -6,7 +6,6 @@
 export * from '../generated-wrappers/full_migration';
 export * from '../generated-wrappers/i_erc20_transformer';
 export * from '../generated-wrappers/i_ownable';
-export * from '../generated-wrappers/i_puppet_pool';
 export * from '../generated-wrappers/i_simple_function_registry';
 export * from '../generated-wrappers/i_token_spender';
 export * from '../generated-wrappers/i_transform_erc20';

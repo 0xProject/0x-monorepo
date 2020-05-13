@@ -9,7 +9,6 @@ import * as FullMigration from '../generated-artifacts/FullMigration.json';
 import * as IERC20Transformer from '../generated-artifacts/IERC20Transformer.json';
 import * as InitialMigration from '../generated-artifacts/InitialMigration.json';
 import * as IOwnable from '../generated-artifacts/IOwnable.json';
-import * as IPuppetPool from '../generated-artifacts/IPuppetPool.json';
 import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITokenSpender from '../generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../generated-artifacts/ITransformERC20.json';
@@ -24,6 +23,5 @@ export const artifacts = {
     IOwnable: IOwnable as ContractArtifact,
     ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
     ITokenSpender: ITokenSpender as ContractArtifact,
-    IPuppetPool: IPuppetPool as ContractArtifact,
     ITransformERC20: ITransformERC20 as ContractArtifact,
 };

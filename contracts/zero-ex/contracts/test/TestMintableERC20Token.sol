@@ -54,6 +54,14 @@ contract TestMintableERC20Token {
         virtual
         returns (bool)
     {
+        if (from != msg.sender) {
+            require(
+                allowance[from][msg.sender] >= amount,
+                "TestMintableERC20Token/INSUFFICIENT_ALLOWANCE"
+            );
+            allowance[from][msg.sender] -= amount;
+        }
+        require(balanceOf[from] >= amount, "TestMintableERC20Token/INSUFFICIENT_FUNDS");
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
         return true;

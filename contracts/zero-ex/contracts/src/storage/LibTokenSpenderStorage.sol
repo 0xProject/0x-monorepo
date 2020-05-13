@@ -20,7 +20,7 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "./LibStorage.sol";
-import "../puppets/ITokenSpenderPuppet.sol";
+import "../external/IAllowanceTarget.sol";
 
 
 /// @dev Storage helpers for the `TokenSpender` feature.
@@ -28,8 +28,8 @@ library LibTokenSpenderStorage {
 
     /// @dev Storage bucket for this feature.
     struct Storage {
-        // Fixed spender puppet contract. The target of allowances.
-        ITokenSpenderPuppet spenderPuppet;
+        // Allowance target contract.
+        IAllowanceTarget allowanceTarget;
     }
 
     /// @dev Get the storage bucket for this contract.

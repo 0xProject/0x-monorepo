@@ -26,8 +26,7 @@ import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "../errors/LibSpenderRichErrors.sol";
 import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
-import "../puppets/IPuppet.sol";
-import "../puppets/ITokenSpenderPuppet.sol";
+import "../external/IAllowanceTarget.sol";
 import "../storage/LibTokenSpenderStorage.sol";
 import "./ITokenSpender.sol";
 import "./IFeature.sol";
@@ -62,8 +61,8 @@ contract TokenSpender is
     ///        allowances, configured to have the ZeroeEx contract as an
     ///        authority.
     /// @return success `MIGRATE_SUCCESS` on success.
-    function migrate(ITokenSpenderPuppet puppet) external returns (bytes4 success) {
-        LibTokenSpenderStorage.getStorage().spenderPuppet = puppet;
+    function migrate(IAllowanceTarget puppet) external returns (bytes4 success) {
+        LibTokenSpenderStorage.getStorage().allowanceTarget = puppet;
         ISimpleFunctionRegistry(address(this))
             .extend(this.getAllowanceTarget.selector, _impl);
         ISimpleFunctionRegistry(address(this))
@@ -88,19 +87,18 @@ contract TokenSpender is
         override
         onlySelf
     {
-        ITokenSpenderPuppet spender = LibTokenSpenderStorage.getStorage().spenderPuppet;
+        IAllowanceTarget spender = LibTokenSpenderStorage.getStorage().allowanceTarget;
         // Have the puppet spender execute an ERC20 `transferFrom()`.
         (bool didSucceed, bytes memory resultData) = address(spender).call(
             abi.encodeWithSelector(
-                IPuppet.execute.selector,
+                IAllowanceTarget.execute.selector,
                 address(token),
                 abi.encodeWithSelector(
                     IERC20TokenV06.transferFrom.selector,
                     owner,
                     to,
                     amount
-                ),
-                0
+                )
             )
         );
         if (didSucceed) {
@@ -129,7 +127,7 @@ contract TokenSpender is
         returns (uint256 amount)
     {
         return LibSafeMathV06.min256(
-            token.allowance(owner, address(LibTokenSpenderStorage.getStorage().spenderPuppet)),
+            token.allowance(owner, address(LibTokenSpenderStorage.getStorage().allowanceTarget)),
             token.balanceOf(owner)
         );
     }
@@ -142,6 +140,6 @@ contract TokenSpender is
         view
         returns (address target)
     {
-        return address(LibTokenSpenderStorage.getStorage().spenderPuppet);
+        return address(LibTokenSpenderStorage.getStorage().allowanceTarget);
     }
 }

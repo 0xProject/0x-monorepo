@@ -55,44 +55,36 @@ library LibTransformERC20RichErrors {
         );
     }
 
-    function TransferERC20FailedError(
-        address token,
-        address to,
-        uint256 amount
+    function UnauthorizedTransformerError(
+        address transformer,
+        bytes memory rlpNonce
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("TransferERC20FailedError(address,address,uint256)")),
-            token,
-            to,
-            amount
+            bytes4(keccak256("UnauthorizedTransformerError(address,bytes)")),
+            transformer,
+            rlpNonce
+        );
+    }
+
+    function InvalidRLPNonceError(
+        bytes memory rlpNonce
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("InvalidRLPNonceError(bytes)")),
+            rlpNonce
         );
     }
 
     function ERC20TransformerFailedError(
         address transformer,
-        address[] memory tokens,
-        uint256[] memory amounts
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("ERC20TransformerFailedError(address,address[],uint256[])")),
-            transformer,
-            tokens,
-            amounts
-        );
-    }
-
-    function InvalidTransformationError(
-        address transformer,
-        address[] memory tokens,
-        uint256[] memory amounts,
         bytes memory data
     )
         internal
@@ -100,10 +92,8 @@ library LibTransformERC20RichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("InvalidTransformationError(address,address[],uint256[],bytes)")),
+            bytes4(keccak256("ERC20TransformerFailedError(address,bytes)")),
             transformer,
-            tokens,
-            amounts,
             data
         );
     }

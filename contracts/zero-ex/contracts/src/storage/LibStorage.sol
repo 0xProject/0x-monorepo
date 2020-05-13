@@ -34,7 +34,7 @@ library LibStorage {
         SimpleFunctionRegistry,
         Ownable,
         TokenSpender,
-        PuppetPool
+        TransformERC20
     }
 
     /// @dev Get the storage slot given a storage ID. We assign unique, well-spaced

@@ -19,12 +19,22 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "./IPuppet.sol";
+import "@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol";
 
 
-/// @dev An alias for IPuppet, to differentiate from puppets used by PuppetPool.
-interface ITokenSpenderPuppet is
-    IPuppet
+/// @dev The allowance target for the TokenSpender feature.
+interface IAllowanceTarget is
+    IAuthorizableV06
 {
-    // solhint-disable no-empty-blocks
+    /// @dev Execute an arbitrary call. Only an authority can call this.
+    /// @param target The call target.
+    /// @param callData The call data.
+    /// @return resultData The data returned by the call.
+    function execute(
+        address payable target,
+        bytes calldata callData
+    )
+        external
+        payable
+        returns (bytes memory resultData);
 }

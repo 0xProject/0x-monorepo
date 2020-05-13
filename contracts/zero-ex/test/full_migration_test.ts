@@ -4,14 +4,15 @@ import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { artifacts } from './artifacts';
 import { abis } from './utils/abis';
-import { fullMigrateAsync } from './utils/migration';
+import { deployFullFeaturesAsync, FullFeatures, toFeatureAdddresses } from './utils/migration';
 import {
+    AllowanceTargetContract,
     IOwnableContract,
-    IPuppetPoolContract,
     ITokenSpenderContract,
     ITransformERC20Contract,
-    PuppetContract,
+    TestFullMigrationContract,
     ZeroExContract,
 } from './wrappers';
 
@@ -20,10 +21,22 @@ const { NULL_ADDRESS } = constants;
 blockchainTests.resets('Full migration', env => {
     let owner: string;
     let zeroEx: ZeroExContract;
+    let features: FullFeatures;
+    let migrator: TestFullMigrationContract;
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-        zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults);
+        features = await deployFullFeaturesAsync(env.provider, env.txDefaults);
+        migrator = await TestFullMigrationContract.deployFrom0xArtifactAsync(
+            artifacts.TestFullMigration,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            env.txDefaults.from as string,
+        );
+        const deployCall = migrator.deploy(owner, toFeatureAdddresses(features));
+        zeroEx = new ZeroExContract(await deployCall.callAsync(), env.provider, env.txDefaults);
+        await deployCall.awaitTransactionSuccessAsync();
     });
 
     it('ZeroEx has the correct owner', async () => {
@@ -32,18 +45,25 @@ blockchainTests.resets('Full migration', env => {
         expect(actualOwner).to.eq(owner);
     });
 
+    it('FullMigration contract self-destructs', async () => {
+        const dieRecipient = await migrator.dieRecipient().callAsync();
+        expect(dieRecipient).to.eq(owner);
+    });
+
+    it('Non-deployer cannot call deploy()', async () => {
+        const notDeployer = randomAddress();
+        const tx = migrator.deploy(owner, toFeatureAdddresses(features)).callAsync({ from: notDeployer });
+        return expect(tx).to.revertWith('FullMigration/INVALID_SENDER');
+    });
+
     const FEATURE_FNS = {
         TokenSpender: {
             contractType: ITokenSpenderContract,
             fns: ['_spendERC20Tokens'],
         },
-        PuppetPool: {
-            contractType: IPuppetPoolContract,
-            fns: ['getFreePuppetsCount', 'isPuppet', '_acquirePuppet', '_releasePuppet'],
-        },
         TransformERC20: {
             contractType: ITransformERC20Contract,
-            fns: ['transformERC20', '_transformERC20'],
+            fns: ['transformERC20', '_transformERC20', 'createTransformPuppet', 'getTransformPuppet'],
         },
     };
 
@@ -123,11 +143,15 @@ blockchainTests.resets('Full migration', env => {
     }
 
     describe("TokenSpender's puppet", () => {
-        let puppet: PuppetContract;
+        let puppet: AllowanceTargetContract;
 
         before(async () => {
             const contract = new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults);
-            puppet = new PuppetContract(await contract.getAllowanceTarget().callAsync(), env.provider, env.txDefaults);
+            puppet = new AllowanceTargetContract(
+                await contract.getAllowanceTarget().callAsync(),
+                env.provider,
+                env.txDefaults,
+            );
         });
 
         it('is owned by owner', async () => {

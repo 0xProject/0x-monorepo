@@ -19,13 +19,24 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "../src/features/PuppetPool.sol";
+import "./LibStorage.sol";
+import "../external/IPuppet.sol";
 
 
-contract TestPuppetPool is
-    PuppetPool
-{
-    modifier onlySelf() override {
-        _;
+/// @dev Storage helpers for the `TokenSpender` feature.
+library LibTransformERC20Storage {
+
+    /// @dev Storage bucket for this feature.
+    struct Storage {
+        // The current puppet instance.
+        IPuppet puppet;
+    }
+
+    /// @dev Get the storage bucket for this contract.
+    function getStorage() internal pure returns (Storage storage stor) {
+        uint256 storageSlot = LibStorage.getStorageSlot(
+            LibStorage.StorageId.TransformERC20
+        );
+        assembly { stor_slot := storageSlot }
     }
 }

@@ -25,6 +25,12 @@ import "../src/features/TransformERC20.sol";
 contract TestTransformERC20 is
     TransformERC20
 {
+    // solhint-disable no-empty-blocks
+    constructor(address trustedDeployer)
+        TransformERC20(trustedDeployer)
+        public
+    {}
+
     modifier onlySelf() override {
         _;
     }

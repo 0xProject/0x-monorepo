@@ -19,15 +19,20 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "./ITokenSpenderPuppet.sol";
-import "./Puppet.sol";
+import "../src/ZeroEx.sol";
+import "../src/features/IBootstrap.sol";
+import "../src/migrations/FullMigration.sol";
 
 
-/// @dev A specialized puppet for use exclusively by the TokenSpender.
-///      Essentially an alias to differentiate from puppets in PuppetPool.
-contract TokenSpenderPuppet is
-    ITokenSpenderPuppet,
-    Puppet
+contract TestFullMigration is
+    FullMigration
 {
-    // solhint-disable no-empty-blocks
+    address public dieRecipient;
+
+    // solhint-disable-next-line no-empty-blocks
+    constructor(address payable deployer) public FullMigration(deployer) {}
+
+    function die(address payable ethRecipient) external override {
+        dieRecipient = ethRecipient;
+    }
 }

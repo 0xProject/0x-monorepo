@@ -20,21 +20,20 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
-import "@0x/contracts-utils/contracts/src/v06/AuthorizableV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/OwnableV06.sol";
 import "../errors/LibPuppetRichErrors.sol";
 import "./IPuppet.sol";
 
 
-/// @dev A contract that can execute arbitrary calls from an authority.
+/// @dev A contract that can execute arbitrary calls from its owner.
 contract Puppet is
     IPuppet,
-    AuthorizableV06
+    OwnableV06
 {
     // solhint-disable no-unused-vars,indent,no-empty-blocks
     using LibRichErrorsV06 for bytes;
 
-    /// @dev Execute an arbitrary call, forwarding any ether attached and
-    ///      refunding any remaining ether. Only an authority can call this.
+    /// @dev Execute an arbitrary call. Only an authority can call this.
     /// @param target The call target.
     /// @param callData The call data.
     /// @param value Ether to attach to the call.
@@ -47,7 +46,7 @@ contract Puppet is
         external
         payable
         override
-        onlyAuthorized
+        onlyOwner
         returns (bytes memory resultData)
     {
         bool success;
@@ -65,16 +64,39 @@ contract Puppet is
         }
     }
 
-    // solhint-disable state-visibility
+    /// @dev Execute an arbitrary delegatecall, in the context of this puppet.
+    ///      Only an authority can call this.
+    /// @param target The call target.
+    /// @param callData The call data.
+    /// @return resultData The data returned by the call.
+    function executeWith(
+        address payable target,
+        bytes calldata callData
+    )
+        external
+        payable
+        override
+        onlyOwner
+        returns (bytes memory resultData)
+    {
+        bool success;
+        (success, resultData) = target.delegatecall(callData);
+        if (!success) {
+            LibPuppetRichErrors
+                .PuppetExecuteWithFailedError(
+                    address(this),
+                    target,
+                    callData,
+                    resultData
+                )
+                .rrevert();
+        }
+    }
+
+    // solhint-disable
     /// @dev Allows this contract to receive ether.
     receive() external override payable {}
-    // solhint-enable state-visibility
-
-    /// @dev Destroy this contract. Only callable by the owner.
-    /// @param ethReceiver A payable recipient of any ETH in this contract.
-    function die(address payable ethReceiver) external onlyOwner {
-        selfdestruct(ethReceiver);
-    }
+    // solhint-enable
 
     /// @dev Signal support for receiving ERC1155 tokens.
     /// @param interfaceID The interface ID, as per ERC-165 rules.
@@ -88,6 +110,7 @@ contract Puppet is
                 interfaceID == this.onERC1155Received.selector ^ this.onERC1155BatchReceived.selector ||
                 interfaceID == this.tokenFallback.selector;
     }
+
     ///  @dev Allow this contract to receive ERC1155 tokens.
     ///  @return success  `bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"))`
     function onERC1155Received(

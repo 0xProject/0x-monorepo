@@ -19,27 +19,38 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/AuthorizableV06.sol";
+import "../errors/LibSpenderRichErrors.sol";
+import "./IAllowanceTarget.sol";
 
 
-/// @dev A contract that can execute arbitrary calls from an authority.
-interface IPuppet is
-    IAuthorizableV06
+/// @dev The allowance target for the TokenSpender feature.
+contract AllowanceTarget is
+    IAllowanceTarget,
+    AuthorizableV06
 {
-    /// @dev Execute an arbitrary call.
+    // solhint-disable no-unused-vars,indent,no-empty-blocks
+    using LibRichErrorsV06 for bytes;
+
+    /// @dev Execute an arbitrary call. Only an authority can call this.
     /// @param target The call target.
     /// @param callData The call data.
-    /// @param value Ether to attach to the call.
     /// @return resultData The data returned by the call.
     function execute(
         address payable target,
-        bytes calldata callData,
-        uint256 value
+        bytes calldata callData
     )
         external
         payable
-        returns (bytes memory resultData);
-
-    /// @dev Allows the puppet to receive ETH.
-    receive() external payable;
+        override
+        onlyAuthorized
+        returns (bytes memory resultData)
+    {
+        bool success;
+        (success, resultData) = target.call(callData);
+        if (!success) {
+            resultData.rrevert();
+        }
+    }
 }

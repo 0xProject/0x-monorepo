@@ -24,7 +24,6 @@ import "../errors/LibCommonRichErrors.sol";
 import "../errors/LibOwnableRichErrors.sol";
 import "../errors/LibPuppetRichErrors.sol";
 import "../features/IOwnable.sol";
-import "../features/IPuppetPool.sol";
 import "../storage/LibOwnableStorage.sol";
 
 
