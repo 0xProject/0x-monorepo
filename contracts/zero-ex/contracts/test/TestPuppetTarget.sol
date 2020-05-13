@@ -23,6 +23,7 @@ pragma experimental ABIEncoderV2;
 contract TestPuppetTarget {
 
     event PuppetTargetCalled(
+        address context,
         address sender,
         bytes data,
         uint256 value
@@ -36,6 +37,7 @@ contract TestPuppetTarget {
             revert("TestPuppetTarget/REVERT");
         }
         emit PuppetTargetCalled(
+            address(this),
             msg.sender,
             msg.data,
             msg.value

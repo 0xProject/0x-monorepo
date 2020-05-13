@@ -19,14 +19,14 @@
 pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/v06/interfaces/IAuthorizableV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol";
 
 
-/// @dev A contract that can execute arbitrary calls from an authority.
+/// @dev A contract that can execute arbitrary calls from its owner.
 interface IPuppet is
-    IAuthorizableV06
+    IOwnableV06
 {
-    /// @dev Execute an arbitrary call.
+    /// @dev Execute an arbitrary call. Only an authority can call this.
     /// @param target The call target.
     /// @param callData The call data.
     /// @param value Ether to attach to the call.
@@ -35,6 +35,19 @@ interface IPuppet is
         address payable target,
         bytes calldata callData,
         uint256 value
+    )
+        external
+        payable
+        returns (bytes memory resultData);
+
+    /// @dev Execute an arbitrary delegatecall, in the context of this puppet.
+    ///      Only an authority can call this.
+    /// @param target The call target.
+    /// @param callData The call data.
+    /// @return resultData The data returned by the call.
+    function executeWith(
+        address payable target,
+        bytes calldata callData
     )
         external
         payable
