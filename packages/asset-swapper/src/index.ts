@@ -70,5 +70,5 @@ export {
 } from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
-export { QuoteRequestor, RfqtIndicativeQuoteResponse } from './utils/quote_requestor';
+export { QuoteRequestor, IndicativeQuote } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';

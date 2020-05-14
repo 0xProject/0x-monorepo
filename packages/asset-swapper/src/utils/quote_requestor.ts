@@ -1,5 +1,6 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
+import { FirmQuote, IndicativeQuote } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
@@ -7,17 +8,12 @@ import Axios, { AxiosResponse } from 'axios';
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
 
+export { SignedOrder } from '@0x/order-utils';
+export { IndicativeQuote } from '@0x/quote-server';
+
 /**
  * Request quotes from RFQ-T providers
  */
-
-export interface RfqtIndicativeQuoteResponse {
-    makerAssetData: string;
-    makerAssetAmount: BigNumber;
-    takerAssetData: string;
-    takerAssetAmount: BigNumber;
-    expirationTimeSeconds: BigNumber;
-}
 
 function getTokenAddressOrThrow(assetData: string): string {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
@@ -112,7 +108,7 @@ export class QuoteRequestor {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const ordersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
+        const firmQuotes = await this._getQuotesAsync<FirmQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -120,6 +116,8 @@ export class QuoteRequestor {
             _opts,
             'firm',
         );
+
+        const ordersWithStringInts = firmQuotes.map(quote => quote.signedOrder);
 
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
             const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
@@ -177,11 +175,11 @@ export class QuoteRequestor {
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
-    ): Promise<RfqtIndicativeQuoteResponse[]> {
+    ): Promise<IndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const responsesWithStringInts = await this._getQuotesAsync<RfqtIndicativeQuoteResponse>( // not yet BigNumber
+        const responsesWithStringInts = await this._getQuotesAsync<IndicativeQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -224,7 +222,7 @@ export class QuoteRequestor {
         return responses;
     }
 
-    private _isValidRfqtIndicativeQuoteResponse(response: RfqtIndicativeQuoteResponse): boolean {
+    private _isValidRfqtIndicativeQuoteResponse(response: IndicativeQuote): boolean {
         const hasValidMakerAssetAmount =
             response.makerAssetAmount !== undefined &&
             this._schemaValidator.isValid(response.makerAssetAmount, schemas.wholeNumberSchema);

@@ -4,7 +4,7 @@ import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
-import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
+import { IndicativeQuote } from '../quote_requestor';
 import { getCurveInfo, isCurveSource } from '../source_utils';
 
 import {
@@ -352,7 +352,7 @@ function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
 }
 
 export function createSignedOrdersFromRfqtIndicativeQuotes(
-    quotes: RfqtIndicativeQuoteResponse[],
+    quotes: IndicativeQuote[],
 ): SignedOrderWithFillableAmounts[] {
     return quotes.map(quote => {
         return {
