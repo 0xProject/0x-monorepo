@@ -73,6 +73,14 @@ describe('QuoteRequestor', async () => {
                 responseData: { makerAssetData: '123' },
                 responseCode: StatusCodes.Success,
             });
+            // ensure that a non-JSON response doesn't throw an error when trying to parse
+            mockedRequests.push({
+                endpoint: 'https://421.1.0.1',
+                requestApiKey: apiKey,
+                requestParams: expectedParams,
+                responseData: 'this is not JSON!',
+                responseCode: StatusCodes.Success,
+            });
             // A successful response code and valid order, but for wrong maker asset data
             const wrongMakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
@@ -159,6 +167,7 @@ describe('QuoteRequestor', async () => {
                     'https://1337.0.0.1': [[makerToken, takerToken]],
                     'https://420.0.0.1': [[makerToken, takerToken]],
                     'https://421.0.0.1': [[makerToken, takerToken]],
+                    'https://421.1.0.1': [[makerToken, takerToken]],
                     'https://422.0.0.1': [[makerToken, takerToken]],
                     'https://423.0.0.1': [[makerToken, takerToken]],
                     'https://424.0.0.1': [[makerToken, takerToken]],

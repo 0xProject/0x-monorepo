@@ -120,9 +120,13 @@ export class QuoteRequestor {
         const ordersWithStringInts = firmQuotes.map(quote => quote.signedOrder);
 
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
-            const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
-            if (!hasValidSchema) {
-                this._warningLogger(order, 'Invalid RFQ-t order received, filtering out');
+            try {
+                const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
+                if (!hasValidSchema) {
+                    throw new Error('order not valid');
+                }
+            } catch (err) {
+                this._warningLogger(order, `Invalid RFQ-t order received, filtering out. ${err.message}`);
                 return false;
             }
 
