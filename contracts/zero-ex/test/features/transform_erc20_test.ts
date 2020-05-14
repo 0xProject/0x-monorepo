@@ -85,7 +85,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             const nonce = await env.web3Wrapper.getAccountNonceAsync(transformerDeployer);
             if (nonce === 0) {
                 rlpNonce = '0x80';
-            } else if (nonce <= 0x7F) {
+            } else if (nonce <= 0x7f) {
                 rlpNonce = ethjs.bufferToHex(ethjs.toBuffer(nonce));
             } else {
                 rlpNonce = ethjs.bufferToHex(ethjs.toBuffer(nonce));

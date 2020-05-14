@@ -53,7 +53,6 @@ contract TestMintTokenERC20Transformer is
     )
         external
         override
-        payable
         returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));

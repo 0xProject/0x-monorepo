@@ -37,6 +37,5 @@ interface IERC20Transformer {
         bytes calldata data
     )
         external
-        payable
         returns (bytes4 success);
 }
