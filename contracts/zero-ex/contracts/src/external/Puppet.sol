@@ -20,18 +20,38 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
-import "@0x/contracts-utils/contracts/src/v06/OwnableV06.sol";
+import "@0x/contracts-utils/contracts/src/v06/errors/LibOwnableRichErrorsV06.sol";
 import "../errors/LibPuppetRichErrors.sol";
 import "./IPuppet.sol";
 
 
 /// @dev A contract that can execute arbitrary calls from its owner.
 contract Puppet is
-    IPuppet,
-    OwnableV06
+    IPuppet
 {
     // solhint-disable no-unused-vars,indent,no-empty-blocks
     using LibRichErrorsV06 for bytes;
+
+    // solhint-disable
+    /// @dev Store the owner/deployer as an immutable to make this contract stateless.
+    address public override immutable owner;
+    // solhint-enable
+
+    constructor() public {
+        // The deployer is the owner.
+        owner = msg.sender;
+    }
+
+    /// @dev Allows only the (immutable) owner to call a function.
+    modifier onlyOwner() virtual {
+        if (msg.sender != owner) {
+            LibOwnableRichErrorsV06.OnlyOwnerError(
+                msg.sender,
+                owner
+            ).rrevert();
+        }
+        _;
+    }
 
     /// @dev Execute an arbitrary call. Only an authority can call this.
     /// @param target The call target.

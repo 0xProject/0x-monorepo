@@ -23,9 +23,8 @@ import "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol";
 
 
 /// @dev A contract that can execute arbitrary calls from its owner.
-interface IPuppet is
-    IOwnableV06
-{
+interface IPuppet {
+
     /// @dev Execute an arbitrary call. Only an authority can call this.
     /// @param target The call target.
     /// @param callData The call data.
@@ -55,4 +54,8 @@ interface IPuppet is
 
     /// @dev Allows the puppet to receive ETH.
     receive() external payable;
+
+    /// @dev Fetch the immutable owner/deployer of this contract.
+    /// @return owner_ The immutable owner/deployer/
+    function owner() external view returns (address owner_);
 }
