@@ -19,12 +19,12 @@
 pragma solidity ^0.6.5;
 
 
-library LibPuppetRichErrors {
+library LibWalletRichErrors {
 
     // solhint-disable func-name-mixedcase
 
-    function PuppetExecuteFailedError(
-        address puppet,
+    function WalletExecuteCallFailedError(
+        address wallet,
         address callTarget,
         bytes memory callData,
         uint256 callValue,
@@ -35,8 +35,8 @@ library LibPuppetRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("PuppetExecuteFailedError(address,address,bytes,uint256,bytes)")),
-            puppet,
+            bytes4(keccak256("WalletExecuteCallFailedError(address,address,bytes,uint256,bytes)")),
+            wallet,
             callTarget,
             callData,
             callValue,
@@ -44,8 +44,8 @@ library LibPuppetRichErrors {
         );
     }
 
-    function PuppetExecuteWithFailedError(
-        address puppet,
+    function WalletExecuteDelegateCallFailedError(
+        address wallet,
         address callTarget,
         bytes memory callData,
         bytes memory errorData
@@ -55,8 +55,8 @@ library LibPuppetRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("PuppetExecuteWithFailedError(address,address,bytes,bytes)")),
-            puppet,
+            bytes4(keccak256("WalletExecuteDelegateCallFailedError(address,address,bytes,bytes)")),
+            wallet,
             callTarget,
             callData,
             errorData

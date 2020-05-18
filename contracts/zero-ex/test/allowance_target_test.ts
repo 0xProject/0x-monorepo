@@ -2,13 +2,13 @@ import { blockchainTests, constants, expect, randomAddress, verifyEventsFromLogs
 import { AuthorizableRevertErrors, hexUtils, StringRevertError } from '@0x/utils';
 
 import { artifacts } from './artifacts';
-import { AllowanceTargetContract, TestPuppetTargetContract, TestPuppetTargetEvents } from './wrappers';
+import { AllowanceTargetContract, TestCallTargetContract, TestCallTargetEvents } from './wrappers';
 
 blockchainTests.resets('AllowanceTarget', env => {
     let owner: string;
     let authority: string;
     let allowanceTarget: AllowanceTargetContract;
-    let puppetTarget: TestPuppetTargetContract;
+    let callTarget: TestCallTargetContract;
 
     before(async () => {
         [owner, authority] = await env.getAccountAddressesAsync();
@@ -19,8 +19,8 @@ blockchainTests.resets('AllowanceTarget', env => {
             artifacts,
         );
         await allowanceTarget.addAuthorizedAddress(authority).awaitTransactionSuccessAsync();
-        puppetTarget = await TestPuppetTargetContract.deployFrom0xArtifactAsync(
-            artifacts.TestPuppetTarget,
+        callTarget = await TestCallTargetContract.deployFrom0xArtifactAsync(
+            artifacts.TestCallTarget,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -30,42 +30,44 @@ blockchainTests.resets('AllowanceTarget', env => {
     const TARGET_RETURN_VALUE = hexUtils.rightPad('0x12345678');
     const REVERTING_DATA = '0x1337';
 
-    describe('execute()', () => {
-        it('non-authority cannot call execute()', async () => {
+    describe('executeCall()', () => {
+        it('non-authority cannot call executeCall()', async () => {
             const notAuthority = randomAddress();
-            const tx = allowanceTarget.execute(randomAddress(), hexUtils.random()).callAsync({ from: notAuthority });
+            const tx = allowanceTarget
+                .executeCall(randomAddress(), hexUtils.random())
+                .callAsync({ from: notAuthority });
             return expect(tx).to.revertWith(new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthority));
         });
 
-        it('authority can call execute()', async () => {
+        it('authority can call executeCall()', async () => {
             const targetData = hexUtils.random(128);
             const receipt = await allowanceTarget
-                .execute(puppetTarget.address, targetData)
+                .executeCall(callTarget.address, targetData)
                 .awaitTransactionSuccessAsync({ from: authority });
             verifyEventsFromLogs(
                 receipt.logs,
                 [
                     {
-                        context: puppetTarget.address,
+                        context: callTarget.address,
                         sender: allowanceTarget.address,
                         data: targetData,
                         value: constants.ZERO_AMOUNT,
                     },
                 ],
-                TestPuppetTargetEvents.PuppetTargetCalled,
+                TestCallTargetEvents.CallTargetCalled,
             );
         });
 
         it('AllowanceTarget returns call result', async () => {
             const result = await allowanceTarget
-                .execute(puppetTarget.address, hexUtils.random(128))
+                .executeCall(callTarget.address, hexUtils.random(128))
                 .callAsync({ from: authority });
             expect(result).to.eq(TARGET_RETURN_VALUE);
         });
 
         it('AllowanceTarget returns raw call revert', async () => {
-            const tx = allowanceTarget.execute(puppetTarget.address, REVERTING_DATA).callAsync({ from: authority });
-            return expect(tx).to.revertWith(new StringRevertError('TestPuppetTarget/REVERT'));
+            const tx = allowanceTarget.executeCall(callTarget.address, REVERTING_DATA).callAsync({ from: authority });
+            return expect(tx).to.revertWith(new StringRevertError('TestCallTarget/REVERT'));
         });
 
         it('AllowanceTarget cannot receive ETH', async () => {

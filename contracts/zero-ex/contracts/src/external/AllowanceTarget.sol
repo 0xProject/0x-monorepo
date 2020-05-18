@@ -37,7 +37,7 @@ contract AllowanceTarget is
     /// @param target The call target.
     /// @param callData The call data.
     /// @return resultData The data returned by the call.
-    function execute(
+    function executeCall(
         address payable target,
         bytes calldata callData
     )

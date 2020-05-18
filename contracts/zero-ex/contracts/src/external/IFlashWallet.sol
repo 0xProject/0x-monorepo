@@ -23,14 +23,14 @@ import "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol";
 
 
 /// @dev A contract that can execute arbitrary calls from its owner.
-interface IPuppet {
+interface IFlashWallet {
 
     /// @dev Execute an arbitrary call. Only an authority can call this.
     /// @param target The call target.
     /// @param callData The call data.
     /// @param value Ether to attach to the call.
     /// @return resultData The data returned by the call.
-    function execute(
+    function executeCall(
         address payable target,
         bytes calldata callData,
         uint256 value
@@ -44,7 +44,7 @@ interface IPuppet {
     /// @param target The call target.
     /// @param callData The call data.
     /// @return resultData The data returned by the call.
-    function executeWith(
+    function executeDelegateCall(
         address payable target,
         bytes calldata callData
     )

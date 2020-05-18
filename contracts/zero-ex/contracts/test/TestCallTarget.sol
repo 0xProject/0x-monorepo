@@ -20,9 +20,9 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 
-contract TestPuppetTarget {
+contract TestCallTarget {
 
-    event PuppetTargetCalled(
+    event CallTargetCalled(
         address context,
         address sender,
         bytes data,
@@ -34,9 +34,9 @@ contract TestPuppetTarget {
 
     fallback() external payable {
         if (keccak256(msg.data) == keccak256(REVERTING_DATA)) {
-            revert("TestPuppetTarget/REVERT");
+            revert("TestCallTarget/REVERT");
         }
-        emit PuppetTargetCalled(
+        emit CallTargetCalled(
             address(this),
             msg.sender,
             msg.data,

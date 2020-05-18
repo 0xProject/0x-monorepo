@@ -63,7 +63,7 @@ blockchainTests.resets('Full migration', env => {
         },
         TransformERC20: {
             contractType: ITransformERC20Contract,
-            fns: ['transformERC20', '_transformERC20', 'createTransformPuppet', 'getTransformPuppet'],
+            fns: ['transformERC20', '_transformERC20', 'createTransformWallet', 'getTransformWallet'],
         },
     };
 
@@ -142,12 +142,12 @@ blockchainTests.resets('Full migration', env => {
         });
     }
 
-    describe("TokenSpender's puppet", () => {
-        let puppet: AllowanceTargetContract;
+    describe("TokenSpender's allowance target", () => {
+        let allowanceTarget: AllowanceTargetContract;
 
         before(async () => {
             const contract = new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults);
-            puppet = new AllowanceTargetContract(
+            allowanceTarget = new AllowanceTargetContract(
                 await contract.getAllowanceTarget().callAsync(),
                 env.provider,
                 env.txDefaults,
@@ -155,11 +155,11 @@ blockchainTests.resets('Full migration', env => {
         });
 
         it('is owned by owner', async () => {
-            return expect(puppet.owner().callAsync()).to.become(owner);
+            return expect(allowanceTarget.owner().callAsync()).to.become(owner);
         });
 
         it('Proxy is authorized', async () => {
-            return expect(puppet.authorized(zeroEx.address).callAsync()).to.become(true);
+            return expect(allowanceTarget.authorized(zeroEx.address).callAsync()).to.become(true);
         });
     });
 });

@@ -20,7 +20,7 @@ pragma solidity ^0.6.5;
 pragma experimental ABIEncoderV2;
 
 import "./LibStorage.sol";
-import "../external/IPuppet.sol";
+import "../external/IFlashWallet.sol";
 
 
 /// @dev Storage helpers for the `TokenSpender` feature.
@@ -28,8 +28,8 @@ library LibTransformERC20Storage {
 
     /// @dev Storage bucket for this feature.
     struct Storage {
-        // The current puppet instance.
-        IPuppet puppet;
+        // The current wallet instance.
+        IFlashWallet wallet;
     }
 
     /// @dev Get the storage bucket for this contract.

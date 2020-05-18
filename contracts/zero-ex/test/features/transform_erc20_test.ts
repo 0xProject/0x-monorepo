@@ -15,8 +15,8 @@ import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import {
+    FlashWalletContract,
     ITokenSpenderContract,
-    PuppetContract,
     TestMintableERC20TokenContract,
     TestMintTokenERC20TransformerContract,
     TestMintTokenERC20TransformerEvents,
@@ -30,7 +30,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
     let transformerDeployer: string;
     let zeroEx: ZeroExContract;
     let feature: TransformERC20Contract;
-    let puppet: PuppetContract;
+    let wallet: FlashWalletContract;
     let allowanceTarget: string;
 
     before(async () => {
@@ -46,7 +46,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             ),
         });
         feature = new TransformERC20Contract(zeroEx.address, env.provider, env.txDefaults, abis);
-        puppet = new PuppetContract(await feature.getTransformPuppet().callAsync(), env.provider, env.txDefaults);
+        wallet = new FlashWalletContract(await feature.getTransformWallet().callAsync(), env.provider, env.txDefaults);
         allowanceTarget = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults)
             .getAllowanceTarget()
             .callAsync();
@@ -54,12 +54,12 @@ blockchainTests.resets('TransformERC20 feature', env => {
 
     const { MAX_UINT256, ZERO_AMOUNT } = constants;
 
-    describe('puppets', () => {
-        it('createTransformPuppet() replaces the current puppet', async () => {
-            const newPuppetAddress = await feature.createTransformPuppet().callAsync();
-            expect(newPuppetAddress).to.not.eq(puppet.address);
-            await feature.createTransformPuppet().awaitTransactionSuccessAsync();
-            return expect(feature.getTransformPuppet().callAsync()).to.eventually.eq(newPuppetAddress);
+    describe('wallets', () => {
+        it('createTransformWallet() replaces the current wallet', async () => {
+            const newWalletAddress = await feature.createTransformWallet().callAsync();
+            expect(newWalletAddress).to.not.eq(wallet.address);
+            await feature.createTransformWallet().awaitTransactionSuccessAsync();
+            return expect(feature.getTransformWallet().callAsync()).to.eventually.eq(newWalletAddress);
         });
     });
 
@@ -187,7 +187,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     {
                         callDataHash,
                         taker,
-                        context: puppet.address,
+                        context: wallet.address,
                         caller: zeroEx.address,
                         data: transformation.data,
                         inputTokenBalance: inputTokenAmount,
@@ -244,7 +244,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     {
                         callDataHash,
                         taker,
-                        context: puppet.address,
+                        context: wallet.address,
                         caller: zeroEx.address,
                         data: transformation.data,
                         inputTokenBalance: inputTokenAmount,
@@ -302,7 +302,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     {
                         callDataHash,
                         taker,
-                        context: puppet.address,
+                        context: wallet.address,
                         caller: zeroEx.address,
                         data: transformation.data,
                         inputTokenBalance: inputTokenAmount,
@@ -384,7 +384,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     {
                         callDataHash,
                         taker,
-                        context: puppet.address,
+                        context: wallet.address,
                         caller: zeroEx.address,
                         data: transformations[0].data,
                         inputTokenBalance: inputTokenAmount,
@@ -393,7 +393,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     {
                         callDataHash,
                         taker,
-                        context: puppet.address,
+                        context: wallet.address,
                         caller: zeroEx.address,
                         data: transformations[1].data,
                         inputTokenBalance: inputTokenAmount.minus(1),

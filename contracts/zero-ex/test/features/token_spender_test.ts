@@ -11,7 +11,7 @@ import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
 import {
-    IPuppetContract,
+    IFlashWalletContract,
     TestTokenSpenderERC20TokenContract,
     TestTokenSpenderERC20TokenEvents,
     TokenSpenderContract,
@@ -22,7 +22,7 @@ blockchainTests.resets('TokenSpender feature', env => {
     let zeroEx: ZeroExContract;
     let feature: TokenSpenderContract;
     let token: TestTokenSpenderERC20TokenContract;
-    let puppetSpender: IPuppetContract;
+    let allowanceTarget: IFlashWalletContract;
 
     before(async () => {
         const [owner] = await env.getAccountAddressesAsync();
@@ -41,7 +41,7 @@ blockchainTests.resets('TokenSpender feature', env => {
             env.txDefaults,
             artifacts,
         );
-        puppetSpender = new IPuppetContract(
+        allowanceTarget = new IFlashWalletContract(
             await feature.getAllowanceTarget().callAsync(),
             env.provider,
             env.txDefaults,
@@ -65,7 +65,7 @@ blockchainTests.resets('TokenSpender feature', env => {
                 receipt.logs,
                 [
                     {
-                        sender: puppetSpender.address,
+                        sender: allowanceTarget.address,
                         from: tokenFrom,
                         to: tokenTo,
                         amount: tokenAmount,
@@ -86,7 +86,7 @@ blockchainTests.resets('TokenSpender feature', env => {
                 receipt.logs,
                 [
                     {
-                        sender: puppetSpender.address,
+                        sender: allowanceTarget.address,
                         from: tokenFrom,
                         to: tokenTo,
                         amount: tokenAmount,
@@ -138,7 +138,7 @@ blockchainTests.resets('TokenSpender feature', env => {
             const allowance = getRandomInteger(1, '1e18');
             const tokenOwner = randomAddress();
             await token
-                .setBalanceAndAllowanceOf(tokenOwner, balance, puppetSpender.address, allowance)
+                .setBalanceAndAllowanceOf(tokenOwner, balance, allowanceTarget.address, allowance)
                 .awaitTransactionSuccessAsync();
             const spendableBalance = await feature.getSpendableERC20BalanceOf(token.address, tokenOwner).callAsync();
             expect(spendableBalance).to.bignumber.eq(BigNumber.min(balance, allowance));
@@ -146,9 +146,9 @@ blockchainTests.resets('TokenSpender feature', env => {
     });
 
     describe('getAllowanceTarget()', () => {
-        it('returns the puppet spender address', async () => {
-            const puppetSpenderAddress = await feature.getAllowanceTarget().callAsync();
-            expect(puppetSpenderAddress).to.eq(puppetSpender.address);
+        it('returns the allowance target address', async () => {
+            const allowanceTargetAddress = await feature.getAllowanceTarget().callAsync();
+            expect(allowanceTargetAddress).to.eq(allowanceTarget.address);
         });
     });
 });

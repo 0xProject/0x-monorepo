@@ -39,36 +39,34 @@ contract TokenSpender is
     ITokenSpender,
     FixinCommon
 {
-    // solhint-disable const-name-snakecase,indent
+    // solhint-disable
     /// @dev Name of this feature.
-    string constant public override FEATURE_NAME = "TokenSpender";
+    string public constant override FEATURE_NAME = "TokenSpender";
     /// @dev Version of this feature.
-    uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
-    // solhint-enable const-name-snakecase
-
+    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
     /// @dev The implementation address of this feature.
-    address private immutable _impl;
+    address private immutable _implementation;
+    // solhint-enable
 
     using LibRichErrorsV06 for bytes;
 
     constructor() public {
-        _impl = address(this);
+        _implementation = address(this);
     }
 
     /// @dev Initialize and register this feature. Should be delegatecalled
     ///      into during a `Migrate.migrate()`.
-    /// @param puppet A `Puppet` contract, which will be the target of user
-    ///        allowances, configured to have the ZeroeEx contract as an
-    ///        authority.
+    /// @param allowanceTarget An `allowanceTarget` instance, configured to have
+    ///        the ZeroeEx contract as an authority.
     /// @return success `MIGRATE_SUCCESS` on success.
-    function migrate(IAllowanceTarget puppet) external returns (bytes4 success) {
-        LibTokenSpenderStorage.getStorage().allowanceTarget = puppet;
+    function migrate(IAllowanceTarget allowanceTarget) external returns (bytes4 success) {
+        LibTokenSpenderStorage.getStorage().allowanceTarget = allowanceTarget;
         ISimpleFunctionRegistry(address(this))
-            .extend(this.getAllowanceTarget.selector, _impl);
+            .extend(this.getAllowanceTarget.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
-            .extend(this._spendERC20Tokens.selector, _impl);
+            .extend(this._spendERC20Tokens.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
-            .extend(this.getSpendableERC20BalanceOf.selector, _impl);
+            .extend(this.getSpendableERC20BalanceOf.selector, _implementation);
         return LibMigrate.MIGRATE_SUCCESS;
     }
 
@@ -88,10 +86,10 @@ contract TokenSpender is
         onlySelf
     {
         IAllowanceTarget spender = LibTokenSpenderStorage.getStorage().allowanceTarget;
-        // Have the puppet spender execute an ERC20 `transferFrom()`.
+        // Have the allowance target execute an ERC20 `transferFrom()`.
         (bool didSucceed, bytes memory resultData) = address(spender).call(
             abi.encodeWithSelector(
-                IAllowanceTarget.execute.selector,
+                IAllowanceTarget.executeCall.selector,
                 address(token),
                 abi.encodeWithSelector(
                     IERC20TokenV06.transferFrom.selector,

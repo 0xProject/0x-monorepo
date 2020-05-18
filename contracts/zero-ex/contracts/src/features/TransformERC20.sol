@@ -26,8 +26,8 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../fixins/FixinCommon.sol";
 import "../migrations/LibMigrate.sol";
-import "../external/IPuppet.sol";
-import "../external/Puppet.sol";
+import "../external/IFlashWallet.sol";
+import "../external/FlashWallet.sol";
 import "../storage/LibTransformERC20Storage.sol";
 import "../transformers/IERC20Transformer.sol";
 import "../transformers/LibERC20Transformer.sol";
@@ -43,23 +43,23 @@ contract TransformERC20 is
     ITransformERC20,
     FixinCommon
 {
-    // solhint-disable const-name-snakecase
-    /// @dev Name of this feature.
-    string constant public override FEATURE_NAME = "TransformERC20";
-    /// @dev Version of this feature.
-    uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
-    // solhint-enable const-name-snakecase
 
+    // solhint-disable
+    /// @dev Name of this feature.
+    string public constant override FEATURE_NAME = "TransformERC20";
+    /// @dev Version of this feature.
+    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
     /// @dev The trusted deployer for all transformers.
     address public immutable transformDeployer;
     /// @dev The implementation address of this feature.
-    address private immutable _impl;
+    address private immutable _implementation;
+    // solhint-enable
 
     using LibSafeMathV06 for uint256;
     using LibRichErrorsV06 for bytes;
 
     constructor(address trustedDeployer_) public {
-        _impl = address(this);
+        _implementation = address(this);
         transformDeployer = trustedDeployer_;
     }
 
@@ -67,16 +67,16 @@ contract TransformERC20 is
     ///      Should be delegatecalled by `Migrate.migrate()`.
     function migrate() external returns (bytes4 success) {
         ISimpleFunctionRegistry(address(this))
-            .extend(this.getTransformerDeployer.selector, _impl);
+            .extend(this.getTransformerDeployer.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
-            .extend(this.createTransformPuppet.selector, _impl);
+            .extend(this.createTransformWallet.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
-            .extend(this.getTransformPuppet.selector, _impl);
+            .extend(this.getTransformWallet.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
-            .extend(this.transformERC20.selector, _impl);
+            .extend(this.transformERC20.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
-            .extend(this._transformERC20.selector, _impl);
-        createTransformPuppet();
+            .extend(this._transformERC20.selector, _implementation);
+        createTransformWallet();
         return LibMigrate.MIGRATE_SUCCESS;
     }
 
@@ -91,18 +91,17 @@ contract TransformERC20 is
         return transformDeployer;
     }
 
-
-    /// @dev Deploy a new puppet instance and replace the current one with it.
-    ///      Useful if we somehow break the current puppet instance.
+    /// @dev Deploy a new wallet instance and replace the current one with it.
+    ///      Useful if we somehow break the current wallet instance.
     ///      Anyone can call this.
-    /// @return puppet The new puppet instance.
-    function createTransformPuppet()
+    /// @return wallet The new wallet instance.
+    function createTransformWallet()
         public
         override
-        returns (IPuppet puppet)
+        returns (IFlashWallet wallet)
     {
-        puppet = new Puppet();
-        LibTransformERC20Storage.getStorage().puppet = puppet;
+        wallet = new FlashWallet();
+        LibTransformERC20Storage.getStorage().wallet = wallet;
     }
 
     /// @dev Executes a series of transformations to convert an ERC20 `inputToken`
@@ -112,8 +111,13 @@ contract TransformERC20 is
     /// @param outputToken The token to be acquired by the sender.
     ///        `0xeee...` implies ETH.
     /// @param inputTokenAmount The amount of `inputToken` to take from the sender.
+    ///        If set to `uint256(-1)`, the entire spendable balance of the taker
+    ///        will be solt.
     /// @param minOutputTokenAmount The minimum amount of `outputToken` the sender
-    ///        must receive for the entire transformation to succeed.
+    ///        must receive for the entire transformation to succeed. If set to zero,
+    ///        the minimum output token transfer will not be asserted.
+    /// @param transformations The transformations to execute on the token balance(s)
+    ///        in sequence.
     /// @return outputTokenAmount The amount of `outputToken` received by the sender.
     function transformERC20(
         IERC20TokenV06 inputToken,
@@ -146,8 +150,13 @@ contract TransformERC20 is
     /// @param outputToken The token to be acquired by the taker.
     ///        `0xeee...` implies ETH.
     /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
+    ///        If set to `uint256(-1)`, the entire spendable balance of the taker
+    ///        will be solt.
     /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
-    ///        must receive for the entire transformation to succeed.
+    ///        must receive for the entire transformation to succeed. If set to zero,
+    ///        the minimum output token transfer will not be asserted.
+    /// @param transformations The transformations to execute on the token balance(s)
+    ///        in sequence.
     /// @return outputTokenAmount The amount of `outputToken` received by the taker.
     function _transformERC20(
         bytes32 callDataHash,
@@ -183,8 +192,13 @@ contract TransformERC20 is
     /// @param outputToken The token to be acquired by the taker.
     ///        `0xeee...` implies ETH.
     /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
+    ///        If set to `uint256(-1)`, the entire spendable balance of the taker
+    ///        will be solt.
     /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
-    ///        must receive for the entire transformation to succeed.
+    ///        must receive for the entire transformation to succeed. If set to zero,
+    ///        the minimum output token transfer will not be asserted.
+    /// @param transformations The transformations to execute on the token balance(s)
+    ///        in sequence.
     /// @return outputTokenAmount The amount of `outputToken` received by the taker.
     function _transformERC20Private(
         bytes32 callDataHash,
@@ -206,37 +220,35 @@ contract TransformERC20 is
                 .getSpendableERC20BalanceOf(inputToken, taker);
         }
 
-        IPuppet puppet = getTransformPuppet();
+        IFlashWallet wallet = getTransformWallet();
 
         // Remember the initial output token balance of the taker.
-        uint256 takerOutputTokenBalanceBefore = minOutputTokenAmount == 0
-            ? 0 : LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
+        uint256 takerOutputTokenBalanceBefore =
+            LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
 
-        // Pull input tokens from the taker to the puppet and transfer attached ETH.
-        _transferInputTokensAndAttachedEth(inputToken, taker, address(puppet), inputTokenAmount);
+        // Pull input tokens from the taker to the wallet and transfer attached ETH.
+        _transferInputTokensAndAttachedEth(inputToken, taker, address(wallet), inputTokenAmount);
 
         // Perform transformations.
         for (uint256 i = 0; i < transformations.length; ++i) {
-            _executeTransformation(puppet, transformations[i], taker, callDataHash);
+            _executeTransformation(wallet, transformations[i], taker, callDataHash);
         }
 
+        // Compute how much output token has been transferred to the taker.
+        uint256 takerOutputTokenBalanceAfter =
+            LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
+        if (takerOutputTokenBalanceAfter > takerOutputTokenBalanceBefore) {
+            outputTokenAmount = takerOutputTokenBalanceAfter.safeSub(
+                takerOutputTokenBalanceBefore
+            );
+        }
         // Ensure enough output token has been sent to the taker.
-        if (minOutputTokenAmount != 0) {
-            // Compute how much output token has been transferred to the taker.
-            uint256 takerOutputTokenBalanceAfter =
-                LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
-            if (takerOutputTokenBalanceAfter > takerOutputTokenBalanceBefore) {
-                outputTokenAmount = takerOutputTokenBalanceAfter.safeSub(
-                    takerOutputTokenBalanceBefore
-                );
-            }
-            if (outputTokenAmount < minOutputTokenAmount) {
-                LibTransformERC20RichErrors.IncompleteERC20TransformError(
-                    address(outputToken),
-                    outputTokenAmount,
-                    minOutputTokenAmount
-                ).rrevert();
-            }
+        if (outputTokenAmount < minOutputTokenAmount) {
+            LibTransformERC20RichErrors.IncompleteERC20TransformError(
+                address(outputToken),
+                outputTokenAmount,
+                minOutputTokenAmount
+            ).rrevert();
         }
 
         // Emit an event.
@@ -249,26 +261,26 @@ contract TransformERC20 is
         );
     }
 
-    /// @dev Return the current puppet instance that will serve as the execution
+    /// @dev Return the current wallet instance that will serve as the execution
     ///      context for transformations.
-    /// @return puppet The puppet instance.
-    function getTransformPuppet()
+    /// @return wallet The wallet instance.
+    function getTransformWallet()
         public
         override
         view
-        returns (IPuppet puppet)
+        returns (IFlashWallet wallet)
     {
-        return LibTransformERC20Storage.getStorage().puppet;
+        return LibTransformERC20Storage.getStorage().wallet;
     }
 
     /// @dev Transfer input tokens from the taker and any attached ETH to `to`
     /// @param inputToken The token to pull from the taker.
-    /// @param taker The taker address.
-    /// @param to The recipient of taker tokens and ETH.
+    /// @param from The from (taker) address.
+    /// @param to The recipient of tokens and ETH.
     /// @param amount Amount of `inputToken` tokens to transfer.
     function _transferInputTokensAndAttachedEth(
         IERC20TokenV06 inputToken,
-        address taker,
+        address from,
         address payable to,
         uint256 amount
     )
@@ -280,31 +292,29 @@ contract TransformERC20 is
         }
         // Transfer input tokens.
         if (!LibERC20Transformer.isTokenETH(inputToken)) {
-            // Token is not ETH, so pull the ERC20 from the taker.
+            // Token is not ETH, so pull ERC20 tokens.
             ITokenSpender(address(this))._spendERC20Tokens(
                 inputToken,
-                taker,
+                from,
                 to,
                 amount
             );
-        } else {
-            // Token is ETH, so the caller must attach enough ETH to the call.
-            if (msg.value < amount) {
-                LibTransformERC20RichErrors.InsufficientEthAttachedError(
-                    msg.value,
-                    amount
-                ).rrevert();
-            }
+        } else if (msg.value < amount) {
+             // Token is ETH, so the caller must attach enough ETH to the call.
+            LibTransformERC20RichErrors.InsufficientEthAttachedError(
+                msg.value,
+                amount
+            ).rrevert();
         }
     }
 
-    /// @dev Executs a transformer in the context of `puppet`.
-    /// @param puppet The puppet instance.
+    /// @dev Executs a transformer in the context of `wallet`.
+    /// @param wallet The wallet instance.
     /// @param transformation The transformation.
     /// @param taker The taker address.
     /// @param callDataHash Hash of the calldata.
     function _executeTransformation(
-        IPuppet puppet,
+        IFlashWallet wallet,
         Transformation memory transformation,
         address payable taker,
         bytes32 callDataHash
@@ -318,8 +328,8 @@ contract TransformERC20 is
                 transformation.rlpNonce
             ).rrevert();
         }
-        // Call `transformer.transform()` as the puppet.
-        bytes memory resultData = puppet.executeWith(
+        // Call `transformer.transform()` as the wallet.
+        bytes memory resultData = wallet.executeDelegateCall(
             // Call target.
             address(uint160(address(transformation.transformer))),
             // Call data.

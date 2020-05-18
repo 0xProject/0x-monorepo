@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "../transformers/IERC20Transformer.sol";
-import "../external/IPuppet.sol";
+import "../external/IFlashWallet.sol";
 
 
 /// @dev Feature to composably transform between ERC20 tokens.
@@ -57,13 +57,13 @@ interface ITransformERC20 {
         uint256 outputTokenAmount
     );
 
-    /// @dev Deploy a new puppet instance and replace the current one with it.
-    ///      Useful if we somehow break the current puppet instance.
+    /// @dev Deploy a new flash wallet instance and replace the current one with it.
+    ///      Useful if we somehow break the current wallet instance.
     ///      Anyone can call this.
-    /// @return puppet The new puppet instance.
-    function createTransformPuppet()
+    /// @return wallet The new wallet instance.
+    function createTransformWallet()
         external
-        returns (IPuppet puppet);
+        returns (IFlashWallet wallet);
 
     /// @dev Executes a series of transformations to convert an ERC20 `inputToken`
     ///      to an ERC20 `outputToken`.
@@ -110,13 +110,13 @@ interface ITransformERC20 {
         payable
         returns (uint256 outputTokenAmount);
 
-    /// @dev Return the current puppet instance that will serve as the execution
+    /// @dev Return the current wallet instance that will serve as the execution
     ///      context for transformations.
-    /// @return puppet The puppet instance.
-    function getTransformPuppet()
+    /// @return wallet The wallet instance.
+    function getTransformWallet()
         external
         view
-        returns (IPuppet puppet);
+        returns (IFlashWallet wallet);
 
     /// @dev Return the allowed deployer for transformers.
     /// @return deployer The transform deployer address.

@@ -26,7 +26,7 @@ import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 interface IERC20Transformer {
 
     /// @dev Called from `TransformERC20.transformERC20()`. This will be
-    ///      delegatecalled in the context of the Puppet instance being used.
+    ///      delegatecalled in the context of the FlashWallet instance being used.
     /// @param callDataHash The hash of the `TransformERC20.transformERC20()` calldata.
     /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).
     /// @param data Arbitrary data to pass to the transformer.

@@ -9,17 +9,17 @@ import {
 import { hexUtils, OwnableRevertErrors, StringRevertError, ZeroExRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
-import { PuppetContract, TestPuppetTargetContract, TestPuppetTargetEvents } from './wrappers';
+import { FlashWalletContract, TestCallTargetContract, TestCallTargetEvents } from './wrappers';
 
-blockchainTests.resets('Puppets', env => {
+blockchainTests.resets('FlashWallet', env => {
     let owner: string;
-    let puppet: PuppetContract;
-    let puppetTarget: TestPuppetTargetContract;
+    let wallet: FlashWalletContract;
+    let callTarget: TestCallTargetContract;
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-        puppet = await PuppetContract.deployFrom0xArtifactAsync(
-            artifacts.Puppet,
+        wallet = await FlashWalletContract.deployFrom0xArtifactAsync(
+            artifacts.FlashWallet,
             env.provider,
             {
                 ...env.txDefaults,
@@ -27,8 +27,8 @@ blockchainTests.resets('Puppets', env => {
             },
             artifacts,
         );
-        puppetTarget = await TestPuppetTargetContract.deployFrom0xArtifactAsync(
-            artifacts.TestPuppetTarget,
+        callTarget = await TestCallTargetContract.deployFrom0xArtifactAsync(
+            artifacts.TestCallTarget,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -39,171 +39,171 @@ blockchainTests.resets('Puppets', env => {
     const REVERTING_DATA = '0x1337';
 
     it('owned by deployer', () => {
-        return expect(puppet.owner().callAsync()).to.eventually.eq(owner);
+        return expect(wallet.owner().callAsync()).to.eventually.eq(owner);
     });
 
-    describe('execute()', () => {
-        it('non-owner cannot call execute()', async () => {
+    describe('executeCall()', () => {
+        it('non-owner cannot call executeCall()', async () => {
             const notOwner = randomAddress();
-            const tx = puppet
-                .execute(randomAddress(), hexUtils.random(), getRandomInteger(0, '100e18'))
+            const tx = wallet
+                .executeCall(randomAddress(), hexUtils.random(), getRandomInteger(0, '100e18'))
                 .callAsync({ from: notOwner });
             return expect(tx).to.revertWith(new OwnableRevertErrors.OnlyOwnerError(notOwner));
         });
 
-        it('owner can call execute()', async () => {
+        it('owner can call executeCall()', async () => {
             const targetData = hexUtils.random(128);
-            const receipt = await puppet
-                .execute(puppetTarget.address, targetData, constants.ZERO_AMOUNT)
+            const receipt = await wallet
+                .executeCall(callTarget.address, targetData, constants.ZERO_AMOUNT)
                 .awaitTransactionSuccessAsync({ from: owner });
             verifyEventsFromLogs(
                 receipt.logs,
                 [
                     {
-                        context: puppetTarget.address,
-                        sender: puppet.address,
+                        context: callTarget.address,
+                        sender: wallet.address,
                         data: targetData,
                         value: constants.ZERO_AMOUNT,
                     },
                 ],
-                TestPuppetTargetEvents.PuppetTargetCalled,
+                TestCallTargetEvents.CallTargetCalled,
             );
         });
 
-        it('owner can call execute() with attached ETH', async () => {
+        it('owner can call executeCall() with attached ETH', async () => {
             const targetData = hexUtils.random(128);
             const callValue = getRandomInteger(1, '1e18');
-            const receipt = await puppet
-                .execute(puppetTarget.address, targetData, callValue)
+            const receipt = await wallet
+                .executeCall(callTarget.address, targetData, callValue)
                 .awaitTransactionSuccessAsync({ from: owner, value: callValue });
             verifyEventsFromLogs(
                 receipt.logs,
                 [
                     {
-                        context: puppetTarget.address,
-                        sender: puppet.address,
+                        context: callTarget.address,
+                        sender: wallet.address,
                         data: targetData,
                         value: callValue,
                     },
                 ],
-                TestPuppetTargetEvents.PuppetTargetCalled,
+                TestCallTargetEvents.CallTargetCalled,
             );
         });
 
-        it('owner can call execute() can transfer less ETH than attached', async () => {
+        it('owner can call executeCall() can transfer less ETH than attached', async () => {
             const targetData = hexUtils.random(128);
             const callValue = getRandomInteger(1, '1e18');
-            const receipt = await puppet
-                .execute(puppetTarget.address, targetData, callValue.minus(1))
+            const receipt = await wallet
+                .executeCall(callTarget.address, targetData, callValue.minus(1))
                 .awaitTransactionSuccessAsync({ from: owner, value: callValue });
             verifyEventsFromLogs(
                 receipt.logs,
                 [
                     {
-                        context: puppetTarget.address,
-                        sender: puppet.address,
+                        context: callTarget.address,
+                        sender: wallet.address,
                         data: targetData,
                         value: callValue.minus(1),
                     },
                 ],
-                TestPuppetTargetEvents.PuppetTargetCalled,
+                TestCallTargetEvents.CallTargetCalled,
             );
         });
 
-        it('puppet returns call result', async () => {
-            const result = await puppet
-                .execute(puppetTarget.address, hexUtils.random(128), constants.ZERO_AMOUNT)
+        it('wallet returns call result', async () => {
+            const result = await wallet
+                .executeCall(callTarget.address, hexUtils.random(128), constants.ZERO_AMOUNT)
                 .callAsync({ from: owner });
             expect(result).to.eq(TARGET_RETURN_VALUE);
         });
 
-        it('puppet wraps call revert', async () => {
-            const tx = puppet
-                .execute(puppetTarget.address, REVERTING_DATA, constants.ZERO_AMOUNT)
+        it('wallet wraps call revert', async () => {
+            const tx = wallet
+                .executeCall(callTarget.address, REVERTING_DATA, constants.ZERO_AMOUNT)
                 .callAsync({ from: owner });
             return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.Puppet.PuppetExecuteFailedError(
-                    puppet.address,
-                    puppetTarget.address,
+                new ZeroExRevertErrors.Wallet.WalletExecuteCallFailedError(
+                    wallet.address,
+                    callTarget.address,
                     REVERTING_DATA,
                     constants.ZERO_AMOUNT,
-                    new StringRevertError('TestPuppetTarget/REVERT').encode(),
+                    new StringRevertError('TestCallTarget/REVERT').encode(),
                 ),
             );
         });
 
-        it('puppet can receive ETH', async () => {
+        it('wallet can receive ETH', async () => {
             await env.web3Wrapper.sendTransactionAsync({
-                to: puppet.address,
+                to: wallet.address,
                 from: owner,
                 value: 1,
             });
-            const bal = await env.web3Wrapper.getBalanceInWeiAsync(puppet.address);
+            const bal = await env.web3Wrapper.getBalanceInWeiAsync(wallet.address);
             expect(bal).to.bignumber.eq(1);
         });
     });
 
-    describe('executeWith()', () => {
-        it('non-owner cannot call executeWith()', async () => {
+    describe('executeDelegateCall()', () => {
+        it('non-owner cannot call executeDelegateCall()', async () => {
             const notOwner = randomAddress();
-            const tx = puppet.executeWith(randomAddress(), hexUtils.random()).callAsync({ from: notOwner });
+            const tx = wallet.executeDelegateCall(randomAddress(), hexUtils.random()).callAsync({ from: notOwner });
             return expect(tx).to.revertWith(new OwnableRevertErrors.OnlyOwnerError(notOwner));
         });
 
-        it('owner can call executeWith()', async () => {
+        it('owner can call executeDelegateCall()', async () => {
             const targetData = hexUtils.random(128);
-            const receipt = await puppet
-                .executeWith(puppetTarget.address, targetData)
+            const receipt = await wallet
+                .executeDelegateCall(callTarget.address, targetData)
                 .awaitTransactionSuccessAsync({ from: owner });
             verifyEventsFromLogs(
                 receipt.logs,
                 [
                     {
-                        context: puppet.address,
+                        context: wallet.address,
                         sender: owner,
                         data: targetData,
                         value: constants.ZERO_AMOUNT,
                     },
                 ],
-                TestPuppetTargetEvents.PuppetTargetCalled,
+                TestCallTargetEvents.CallTargetCalled,
             );
         });
 
-        it('executeWith() is payable', async () => {
+        it('executeDelegateCall() is payable', async () => {
             const targetData = hexUtils.random(128);
             const callValue = getRandomInteger(1, '1e18');
-            const receipt = await puppet
-                .executeWith(puppetTarget.address, targetData)
+            const receipt = await wallet
+                .executeDelegateCall(callTarget.address, targetData)
                 .awaitTransactionSuccessAsync({ from: owner, value: callValue });
             verifyEventsFromLogs(
                 receipt.logs,
                 [
                     {
-                        context: puppet.address,
+                        context: wallet.address,
                         sender: owner,
                         data: targetData,
                         value: callValue,
                     },
                 ],
-                TestPuppetTargetEvents.PuppetTargetCalled,
+                TestCallTargetEvents.CallTargetCalled,
             );
         });
 
-        it('puppet returns call result', async () => {
-            const result = await puppet
-                .executeWith(puppetTarget.address, hexUtils.random(128))
+        it('wallet returns call result', async () => {
+            const result = await wallet
+                .executeDelegateCall(callTarget.address, hexUtils.random(128))
                 .callAsync({ from: owner });
             expect(result).to.eq(TARGET_RETURN_VALUE);
         });
 
-        it('puppet wraps call revert', async () => {
-            const tx = puppet.executeWith(puppetTarget.address, REVERTING_DATA).callAsync({ from: owner });
+        it('wallet wraps call revert', async () => {
+            const tx = wallet.executeDelegateCall(callTarget.address, REVERTING_DATA).callAsync({ from: owner });
             return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.Puppet.PuppetExecuteWithFailedError(
-                    puppet.address,
-                    puppetTarget.address,
+                new ZeroExRevertErrors.Wallet.WalletExecuteDelegateCallFailedError(
+                    wallet.address,
+                    callTarget.address,
                     REVERTING_DATA,
-                    new StringRevertError('TestPuppetTarget/REVERT').encode(),
+                    new StringRevertError('TestCallTarget/REVERT').encode(),
                 ),
             );
         });

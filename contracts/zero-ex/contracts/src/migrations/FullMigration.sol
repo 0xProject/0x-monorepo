@@ -120,7 +120,7 @@ contract FullMigration {
             AllowanceTarget allowanceTarget = new AllowanceTarget();
             // Let the ZeroEx contract use the allowance target.
             allowanceTarget.addAuthorizedAddress(address(zeroEx));
-            // Transfer ownership of the puppet to the (real) owner.
+            // Transfer ownership of the allowance target to the (real) owner.
             allowanceTarget.transferOwnership(owner);
             // Register the feature.
             ownable.migrate(

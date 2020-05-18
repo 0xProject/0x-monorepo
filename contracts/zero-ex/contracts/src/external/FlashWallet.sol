@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/errors/LibOwnableRichErrorsV06.sol";
-import "../errors/LibPuppetRichErrors.sol";
-import "./IPuppet.sol";
+import "../errors/LibWalletRichErrors.sol";
+import "./IFlashWallet.sol";
 
 
 /// @dev A contract that can execute arbitrary calls from its owner.
-contract Puppet is
-    IPuppet
+contract FlashWallet is
+    IFlashWallet
 {
     // solhint-disable no-unused-vars,indent,no-empty-blocks
     using LibRichErrorsV06 for bytes;
@@ -58,7 +58,7 @@ contract Puppet is
     /// @param callData The call data.
     /// @param value Ether to attach to the call.
     /// @return resultData The data returned by the call.
-    function execute(
+    function executeCall(
         address payable target,
         bytes calldata callData,
         uint256 value
@@ -72,8 +72,8 @@ contract Puppet is
         bool success;
         (success, resultData) = target.call{value: value}(callData);
         if (!success) {
-            LibPuppetRichErrors
-                .PuppetExecuteFailedError(
+            LibWalletRichErrors
+                .WalletExecuteCallFailedError(
                     address(this),
                     target,
                     callData,
@@ -89,7 +89,7 @@ contract Puppet is
     /// @param target The call target.
     /// @param callData The call data.
     /// @return resultData The data returned by the call.
-    function executeWith(
+    function executeDelegateCall(
         address payable target,
         bytes calldata callData
     )
@@ -102,8 +102,8 @@ contract Puppet is
         bool success;
         (success, resultData) = target.delegatecall(callData);
         if (!success) {
-            LibPuppetRichErrors
-                .PuppetExecuteWithFailedError(
+            LibWalletRichErrors
+                .WalletExecuteDelegateCallFailedError(
                     address(this),
                     target,
                     callData,
