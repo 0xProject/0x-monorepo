@@ -32,11 +32,6 @@ interface ITransformERC20 {
         // The transformation handler.
         // Can receive the entire balance of `tokens`.
         IERC20Transformer transformer;
-        // RLP-encoded deployment nonce of the deployer when `transformer`
-        // was deployed.
-        // This is used to verify that the transformer was deployed
-        // by a contract we trust.
-        bytes rlpNonce;
         // Arbitrary data to pass to the transformer.
         bytes data;
     }

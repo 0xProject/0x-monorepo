@@ -25,10 +25,6 @@ import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 
 library LibERC20Transformer {
 
-    /// @dev Magic bytes to be returned by `IERC20Transformer.transform()` on success.
-    ///      This is `keccak('TRANSFORMER_SUCCESS')`.
-    bytes4 constant internal TRANSFORMER_SUCCESS = 0x13c9929e;
-
     /// @dev ETH pseudo-token address.
     address constant internal ETH_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 

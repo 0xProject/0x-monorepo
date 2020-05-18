@@ -321,13 +321,6 @@ contract TransformERC20 is
     )
         private
     {
-        // Ensure that the target was deployed by the permitted deployer.
-        if (_getExpectedDeployment(transformation.rlpNonce) != address(transformation.transformer)) {
-            LibTransformERC20RichErrors.UnauthorizedTransformerError(
-                address(transformation.transformer),
-                transformation.rlpNonce
-            ).rrevert();
-        }
         // Call `transformer.transform()` as the wallet.
         bytes memory resultData = wallet.executeDelegateCall(
             // Call target.
@@ -340,11 +333,12 @@ contract TransformERC20 is
                 transformation.data
             )
         );
-        // Ensure the transformer returned the magic bytes.
-        if (abi.decode(resultData, (bytes4)) != LibERC20Transformer.TRANSFORMER_SUCCESS) {
-            LibTransformERC20RichErrors.ERC20TransformerFailedError(
+        // Ensure the transformer returned its valid nonce.
+        bytes memory rlpNonce = abi.decode(resultData, (bytes));
+        if (_getExpectedDeployment(rlpNonce) != address(transformation.transformer)) {
+            LibTransformERC20RichErrors.UnauthorizedTransformerError(
                 address(transformation.transformer),
-                transformation.data
+                rlpNonce
             ).rrevert();
         }
     }

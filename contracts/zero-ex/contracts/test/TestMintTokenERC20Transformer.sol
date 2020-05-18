@@ -28,6 +28,12 @@ import "./TestMintableERC20Token.sol";
 contract TestMintTokenERC20Transformer is
     IERC20Transformer
 {
+    bytes constant private _deploymentNonce;
+
+    constructor(bytes memory deploymentNonce) public {
+        _deploymentNonce = deploymentNonce;
+    }
+
     struct TransformData {
         IERC20TokenV06 inputToken;
         TestMintableERC20Token outputToken;
@@ -46,6 +52,12 @@ contract TestMintTokenERC20Transformer is
         uint256 ethBalance
     );
 
+    function setDeploymentNonce(bytes memory deploymentNonce)
+        external
+    {
+        _deploymentNonce = deploymentNonce;
+    }
+
     function transform(
         bytes32 callDataHash,
         address payable taker,
@@ -53,7 +65,7 @@ contract TestMintTokenERC20Transformer is
     )
         external
         override
-        returns (bytes4 success)
+        returns (bytes memory rlpDeploymentNonce)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
         emit MintTransform(
@@ -76,6 +88,6 @@ contract TestMintTokenERC20Transformer is
                 data.mintAmount
             );
         }
-        return LibERC20Transformer.TRANSFORMER_SUCCESS;
+        return _deploymentNonce;
     }
 }

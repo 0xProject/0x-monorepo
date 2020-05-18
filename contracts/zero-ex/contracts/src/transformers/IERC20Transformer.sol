@@ -30,12 +30,15 @@ interface IERC20Transformer {
     /// @param callDataHash The hash of the `TransformERC20.transformERC20()` calldata.
     /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).
     /// @param data Arbitrary data to pass to the transformer.
-    /// @return success `0x13c9929e` on success.
+    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
+    ///         when this transformer was deployed. This is used to verify that
+    ///         this transformer was deployed by a trusted contract.
+        bytes rlpNonce;
     function transform(
         bytes32 callDataHash,
         address payable taker,
         bytes calldata data
     )
         external
-        returns (bytes4 success);
+        returns (bytes memory rlpDeploymentNonce);
 }

@@ -83,21 +83,6 @@ library LibTransformERC20RichErrors {
         );
     }
 
-    function ERC20TransformerFailedError(
-        address transformer,
-        bytes memory data
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("ERC20TransformerFailedError(address,bytes)")),
-            transformer,
-            data
-        );
-    }
-
     // FillQuoteTransformer errors /////////////////////////////////////////////
 
     function IncompleteFillSellQuoteError(

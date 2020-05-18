@@ -40,15 +40,6 @@ export class InvalidRLPNonceError extends RevertError {
     }
 }
 
-export class ERC20TransformerFailedError extends RevertError {
-    constructor(transformer?: string, data?: string) {
-        super('ERC20TransformerFailedError', 'ERC20TransformerFailedError(address transformer, bytes data)', {
-            transformer,
-            data,
-        });
-    }
-}
-
 export class IncompleteFillSellQuoteError extends RevertError {
     constructor(sellToken?: string, soldAmount?: Numberish, sellAmount?: Numberish) {
         super(
@@ -133,7 +124,6 @@ const types = [
     IncompleteERC20TransformError,
     UnauthorizedTransformerError,
     InvalidRLPNonceError,
-    ERC20TransformerFailedError,
     IncompleteFillSellQuoteError,
     IncompleteFillBuyQuoteError,
     InsufficientTakerTokenError,
