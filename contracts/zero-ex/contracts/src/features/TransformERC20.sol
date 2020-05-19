@@ -333,8 +333,10 @@ contract TransformERC20 is
                 transformation.data
             )
         );
-        // Ensure the transformer returned its valid nonce.
-        bytes memory rlpNonce = abi.decode(resultData, (bytes));
+        // Ensure the transformer returned its valid rlp-encoded deployment nonce.
+        bytes memory rlpNonce = resultData.length == 0
+            ? new bytes(0)
+            : abi.decode(resultData, (bytes));
         if (_getExpectedDeployment(rlpNonce) != address(transformation.transformer)) {
             LibTransformERC20RichErrors.UnauthorizedTransformerError(
                 address(transformation.transformer),

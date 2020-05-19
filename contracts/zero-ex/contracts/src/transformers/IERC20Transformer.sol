@@ -33,7 +33,6 @@ interface IERC20Transformer {
     /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
     ///         when this transformer was deployed. This is used to verify that
     ///         this transformer was deployed by a trusted contract.
-        bytes rlpNonce;
     function transform(
         bytes32 callDataHash,
         address payable taker,
