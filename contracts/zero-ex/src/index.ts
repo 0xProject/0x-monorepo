@@ -36,4 +36,4 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
-export { getRLPEncodedAccountNonceAsync, rlpEncodeNonce } from './nonce_utils';
+export { rlpEncodeNonce } from './nonce_utils';
