@@ -100,6 +100,36 @@ library LibTransformERC20RichErrors {
 
     // Common Transformer errors ///////////////////////////////////////////////
 
+    function OnlyCallableByDeployerError(
+        address caller,
+        address deployer
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("OnlyCallableByDeployerError(address,address)")),
+            caller,
+            deployer
+        );
+    }
+
+    function InvalidExecutionContextError(
+        address actualContext,
+        address expectedContext
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("InvalidExecutionContextError(address,address)")),
+            actualContext,
+            expectedContext
+        );
+    }
+
     function InvalidTransformDataError(
         bytes memory transformData
     )

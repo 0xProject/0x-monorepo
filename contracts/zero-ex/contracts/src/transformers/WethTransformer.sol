@@ -23,13 +23,13 @@ import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IEtherTokenV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
-import "./IERC20Transformer.sol";
+import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 
 
 /// @dev A transformer that wraps or unwraps WETH.
 contract WethTransformer is
-    IERC20Transformer
+    Transformer
 {
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
@@ -42,8 +42,6 @@ contract WethTransformer is
 
     /// @dev The WETH contract address.
     IEtherTokenV06 public immutable weth;
-    /// @dev The nonce of the deployer when deploying this contract.
-    uint256 public immutable deploymentNonce;
 
     using LibRichErrorsV06 for bytes;
     using LibSafeMathV06 for uint256;
@@ -53,9 +51,11 @@ contract WethTransformer is
     /// @param weth_ The weth token.
     /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
     /// @dev Construct the transformer and store the WETH address in an immutable.
-    constructor(IEtherTokenV06 weth_, uint256 deploymentNonce_) public {
+    constructor(IEtherTokenV06 weth_, uint256 deploymentNonce_)
+        public
+        Transformer(deploymentNonce_)
+    {
         weth = weth_;
-        deploymentNonce = deploymentNonce_;
     }
 
     /// @dev Wraps and unwraps WETH.
@@ -91,6 +91,6 @@ contract WethTransformer is
                 weth.withdraw(amount);
             }
         }
-        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
+        return _getRLPEncodedDeploymentNonce();
     }
 }

@@ -37,7 +37,7 @@ contract TestTransformerHost {
         bytes calldata data
     )
         external
-        returns (bytes memory rlpDeploymentNonce)
+        returns (bytes memory)
     {
         (bool success, bytes memory resultData) =
             address(transformer).delegatecall(abi.encodeWithSelector(

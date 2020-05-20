@@ -55,6 +55,7 @@
         "test/generated-artifacts/PayTakerTransformer.json",
         "test/generated-artifacts/SimpleFunctionRegistry.json",
         "test/generated-artifacts/TestCallTarget.json",
+        "test/generated-artifacts/TestDelegateCaller.json",
         "test/generated-artifacts/TestFillQuoteTransformerExchange.json",
         "test/generated-artifacts/TestFillQuoteTransformerHost.json",
         "test/generated-artifacts/TestFullMigration.json",
@@ -67,6 +68,7 @@
         "test/generated-artifacts/TestTokenSpender.json",
         "test/generated-artifacts/TestTokenSpenderERC20Token.json",
         "test/generated-artifacts/TestTransformERC20.json",
+        "test/generated-artifacts/TestTransformerBase.json",
         "test/generated-artifacts/TestTransformerHost.json",
         "test/generated-artifacts/TestWeth.json",
         "test/generated-artifacts/TestWethTransformerHost.json",
@@ -74,6 +76,7 @@
         "test/generated-artifacts/TokenSpender.json",
         "test/generated-artifacts/TokenSpenderPuppet.json",
         "test/generated-artifacts/TransformERC20.json",
+        "test/generated-artifacts/Transformer.json",
         "test/generated-artifacts/WethTransformer.json",
         "test/generated-artifacts/ZeroEx.json"
     ],

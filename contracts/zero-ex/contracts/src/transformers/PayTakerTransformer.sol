@@ -24,14 +24,16 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol";
 import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
-import "./IERC20Transformer.sol";
+import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 
 
 /// @dev A transformer that transfers tokens to the taker.
 contract PayTakerTransformer is
-    IERC20Transformer
+    Transformer
 {
+    // solhint-disable no-empty-blocks
+
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
         // The tokens to transfer to the taker.
@@ -45,14 +47,13 @@ contract PayTakerTransformer is
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
 
-    /// @dev The nonce of the deployer when deploying this contract.
-    uint256 public immutable deploymentNonce;
-
     /// @dev Create this contract.
     /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    constructor(uint256 deploymentNonce_) public {
-        deploymentNonce = deploymentNonce_;
-    }
+    /// @dev Construct the transformer and store the WETH address in an immutable.
+    constructor(uint256 deploymentNonce_)
+        public
+        Transformer(deploymentNonce_)
+    {}
 
     /// @dev Forwards tokens to the taker.
     /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).
@@ -83,6 +84,6 @@ contract PayTakerTransformer is
                 data.tokens[i].transformerTransfer(taker, amount);
             }
         }
-        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
+        return _getRLPEncodedDeploymentNonce();
     }
 }

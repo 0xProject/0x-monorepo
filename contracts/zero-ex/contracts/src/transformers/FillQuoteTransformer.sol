@@ -27,13 +27,13 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
-import "./IERC20Transformer.sol";
+import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
 contract FillQuoteTransformer is
-    IERC20Transformer
+    Transformer
 {
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
@@ -74,8 +74,6 @@ contract FillQuoteTransformer is
 
     /// @dev The Exchange contract.
     IExchange public immutable exchange;
-    /// @dev The nonce of the deployer when deploying this contract.
-    uint256 public immutable deploymentNonce;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
 
@@ -87,10 +85,12 @@ contract FillQuoteTransformer is
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
     /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    constructor(IExchange exchange_, uint256 deploymentNonce_) public {
+    constructor(IExchange exchange_, uint256 deploymentNonce_)
+        public
+        Transformer(deploymentNonce_)
+    {
         exchange = exchange_;
         erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
-        deploymentNonce = deploymentNonce_;
     }
 
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
@@ -217,7 +217,7 @@ contract FillQuoteTransformer is
                     ).rrevert();
             }
         }
-        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
+        return _getRLPEncodedDeploymentNonce();
     }
 
     /// @dev Try to sell up to `sellAmount` from an order.
