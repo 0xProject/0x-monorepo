@@ -53,6 +53,28 @@ export class InvalidRLPNonceError extends RevertError {
     }
 }
 
+export class OnlyCallableByDeployerError extends RevertError {
+    constructor(caller?: string, deployer?: string) {
+        super('OnlyCallableByDeployerError', 'OnlyCallableByDeployerError(address caller, address deployer)', {
+            caller,
+            deployer,
+        });
+    }
+}
+
+export class InvalidExecutionContextError extends RevertError {
+    constructor(actualContext?: string, expectedContext?: string) {
+        super(
+            'InvalidExecutionContextError',
+            'InvalidExecutionContextError(address actualContext, address expectedContext)',
+            {
+                actualContext,
+                expectedContext,
+            },
+        );
+    }
+}
+
 export class InvalidTransformDataError extends RevertError {
     constructor(transformData?: string) {
         super('InvalidTransformDataError', 'InvalidTransformDataError(bytes transformData)', {
@@ -163,6 +185,8 @@ const types = [
     InvalidTokenReceivedError,
     InvalidTransformDataError,
     InvalidTakerFeeTokenError,
+    OnlyCallableByDeployerError,
+    InvalidExecutionContextError,
 ];
 
 // Register the types we've defined.
