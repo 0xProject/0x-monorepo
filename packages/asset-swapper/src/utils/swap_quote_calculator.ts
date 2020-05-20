@@ -176,6 +176,7 @@ function createSwapQuote(
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
     gasSchedule: { [source: string]: number },
+    gasTokenSupply: BigNumber = new BigNumber(10000000000000000000000),
 ): SwapQuote {
     const bestCaseFillResult = simulateBestCaseFill({
         gasPrice,
@@ -200,8 +201,7 @@ function createSwapQuote(
         bestCaseQuoteInfo: fillResultsToQuoteInfo(bestCaseFillResult),
         worstCaseQuoteInfo: fillResultsToQuoteInfo(worstCaseFillResult),
         sourceBreakdown: getSwapQuoteOrdersBreakdown(bestCaseFillResult.fillAmountBySource),
-        // Remove fill metadata.
-        orders: resultOrders.map(o => _.omit(o, 'fills')) as SignedOrderWithFillableAmounts[],
+        orders: resultOrders,
     };
 
     if (operation === MarketOperation.Buy) {
