@@ -8,7 +8,6 @@ import {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
-    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteBase,
     SwapQuoteInfo,
