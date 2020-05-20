@@ -36,7 +36,7 @@ interface ITransformERC20 {
         bytes data;
     }
 
-    /// @dev Raised upon a successufl `transformERC20`.
+    /// @dev Raised upon a successful `transformERC20`.
     /// @param taker The taker (caller) address.
     /// @param inputToken The token being provided by the taker.
     ///        If `0xeee...`, ETH is implied and should be provided with the call.`
@@ -69,6 +69,8 @@ interface ITransformERC20 {
     /// @param inputTokenAmount The amount of `inputToken` to take from the sender.
     /// @param minOutputTokenAmount The minimum amount of `outputToken` the sender
     ///        must receive for the entire transformation to succeed.
+    /// @param transformations The transformations to execute on the token balance(s)
+    ///        in sequence.
     /// @return outputTokenAmount The amount of `outputToken` received by the sender.
     function transformERC20(
         IERC20TokenV06 inputToken,
@@ -91,6 +93,8 @@ interface ITransformERC20 {
     /// @param inputTokenAmount The amount of `inputToken` to take from the taker.
     /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker
     ///        must receive for the entire transformation to succeed.
+    /// @param transformations The transformations to execute on the token balance(s)
+    ///        in sequence.
     /// @return outputTokenAmount The amount of `outputToken` received by the taker.
     function _transformERC20(
         bytes32 callDataHash,

@@ -162,7 +162,7 @@ library LibTransformERC20RichErrors {
         );
     }
 
-    // WethTransformer rors ////////////////////////////////////////////////////
+    // WethTransformer errors ////////////////////////////////////////////////////
 
     function WrongNumberOfTokensReceivedError(
         uint256 actual,
