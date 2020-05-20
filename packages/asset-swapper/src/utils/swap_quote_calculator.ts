@@ -176,7 +176,6 @@ function createSwapQuote(
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
     gasSchedule: { [source: string]: number },
-    gasTokenSupply: BigNumber = new BigNumber(10000000000000000000000),
 ): SwapQuote {
     const bestCaseFillResult = simulateBestCaseFill({
         gasPrice,
