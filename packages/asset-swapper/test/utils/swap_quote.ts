@@ -34,7 +34,7 @@ export async function getFullyFillableSwapQuoteWithNoFeesAsync(
     const quoteBase = {
         makerAssetData,
         takerAssetData,
-        orders: orders.map(order => ({...order, fills: [] })),
+        orders: orders.map(order => ({ ...order, fills: [] })),
         gasPrice,
         bestCaseQuoteInfo: quoteInfo,
         worstCaseQuoteInfo: quoteInfo,
