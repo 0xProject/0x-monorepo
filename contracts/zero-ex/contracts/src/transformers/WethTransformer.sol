@@ -40,24 +40,29 @@ contract WethTransformer is
         uint256 amount;
     }
 
-    // solhint-disable
     /// @dev The WETH contract address.
     IEtherTokenV06 public immutable weth;
-    // solhint-enable
+    /// @dev The nonce of the deployer when deploying this contract.
+    uint256 public immutable deploymentNonce;
 
     using LibRichErrorsV06 for bytes;
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
 
-    /// @dev Construct the transformer and store the WETH address in an immutable.
+    /// @dev Create this contract.
     /// @param weth_ The weth token.
-    constructor(IEtherTokenV06 weth_) public {
+    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
+    /// @dev Construct the transformer and store the WETH address in an immutable.
+    constructor(IEtherTokenV06 weth_, uint256 deploymentNonce_) public {
         weth = weth_;
+        deploymentNonce = deploymentNonce_;
     }
 
     /// @dev Wraps and unwraps WETH.
     /// @param data_ ABI-encoded `TransformData`, indicating which token to wrap/umwrap.
-    /// @return success `TRANSFORMER_SUCCESS` on success.
+    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
+    ///         when this transformer was deployed. This is used to verify that
+    ///         this transformer was deployed by a trusted contract.
     function transform(
         bytes32, // callDataHash,
         address payable, // taker,
@@ -65,7 +70,7 @@ contract WethTransformer is
     )
         external
         override
-        returns (bytes4 success)
+        returns (bytes memory rlpDeploymentNonce)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
         if (!data.token.isTokenETH() && data.token != weth) {
@@ -86,6 +91,6 @@ contract WethTransformer is
                 weth.withdraw(amount);
             }
         }
-        return LibERC20Transformer.TRANSFORMER_SUCCESS;
+        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
     }
 }

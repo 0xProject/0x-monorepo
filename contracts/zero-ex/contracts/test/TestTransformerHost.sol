@@ -37,6 +37,7 @@ contract TestTransformerHost {
         bytes calldata data
     )
         external
+        returns (bytes memory rlpDeploymentNonce)
     {
         (bool success, bytes memory resultData) =
             address(transformer).delegatecall(abi.encodeWithSelector(
@@ -48,10 +49,7 @@ contract TestTransformerHost {
         if (!success) {
             resultData.rrevert();
         }
-        require(
-            abi.decode(resultData, (bytes4)) == LibERC20Transformer.TRANSFORMER_SUCCESS,
-            "TestFillQuoteTransformerTaker/UNSUCCESSFUL_RESULT"
-        );
+        assembly { return(add(resultData, 32), mload(resultData)) }
     }
 
     // solhint-disable

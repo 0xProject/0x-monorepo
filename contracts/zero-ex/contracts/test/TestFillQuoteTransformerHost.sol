@@ -35,11 +35,12 @@ contract TestFillQuoteTransformerHost is
     )
         external
         payable
+        returns (bytes memory rlpDeploymentNonce)
     {
         if (inputTokenAmount != 0) {
             inputToken.mint(address(this), inputTokenAmount);
         }
         // Have to make this call externally because transformers aren't payable.
-        this.rawExecuteTransform(transformer, bytes32(0), msg.sender, data);
+        return this.rawExecuteTransform(transformer, bytes32(0), msg.sender, data);
     }
 }

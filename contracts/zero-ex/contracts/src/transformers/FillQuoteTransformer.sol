@@ -35,8 +35,6 @@ import "./LibERC20Transformer.sol";
 contract FillQuoteTransformer is
     IERC20Transformer
 {
-    // solhint-disable indent,no-empty-blocks,no-unused-vars
-
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
         // The token being sold.
@@ -76,6 +74,8 @@ contract FillQuoteTransformer is
 
     /// @dev The Exchange contract.
     IExchange public immutable exchange;
+    /// @dev The nonce of the deployer when deploying this contract.
+    uint256 public immutable deploymentNonce;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
 
@@ -84,9 +84,13 @@ contract FillQuoteTransformer is
     using LibSafeMathV06 for uint256;
     using LibRichErrorsV06 for bytes;
 
-    constructor(IExchange exchange_) public {
+    /// @dev Create this contract.
+    /// @param exchange_ The Exchange V3 instance.
+    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
+    constructor(IExchange exchange_, uint256 deploymentNonce_) public {
         exchange = exchange_;
         erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
+        deploymentNonce = deploymentNonce_;
     }
 
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
@@ -94,7 +98,9 @@ contract FillQuoteTransformer is
     ///      to this call. `buyToken` and excess ETH will be transferred back to the caller.
     ///      This function cannot be re-entered.
     /// @param data_ ABI-encoded `TransformData`.
-    /// @return success `TRANSFORMER_SUCCESS` on success.
+    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
+    ///         when this transformer was deployed. This is used to verify that
+    ///         this transformer was deployed by a trusted contract.
     function transform(
         bytes32, // callDataHash,
         address payable, // taker,
@@ -102,7 +108,7 @@ contract FillQuoteTransformer is
     )
         external
         override
-        returns (bytes4 success)
+        returns (bytes memory rlpDeploymentNonce)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
 
@@ -211,7 +217,7 @@ contract FillQuoteTransformer is
                     ).rrevert();
             }
         }
-        return LibERC20Transformer.TRANSFORMER_SUCCESS;
+        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
     }
 
     /// @dev Try to sell up to `sellAmount` from an order.

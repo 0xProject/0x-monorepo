@@ -3,6 +3,7 @@ import { BigNumber, ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ETH_TOKEN_ADDRESS } from '../../src/constants';
+import { rlpEncodeNonce } from '../../src/nonce_utils';
 import { encodeWethTransformerData } from '../../src/transformer_data_encoders';
 import { artifacts } from '../artifacts';
 import { TestWethContract, TestWethTransformerHostContract, WethTransformerContract } from '../wrappers';
@@ -10,6 +11,7 @@ import { TestWethContract, TestWethTransformerHostContract, WethTransformerContr
 const { MAX_UINT256, ZERO_AMOUNT } = constants;
 
 blockchainTests.resets('WethTransformer', env => {
+    const deploymentNonce = _.random(0, 0xffffffff);
     let weth: TestWethContract;
     let transformer: WethTransformerContract;
     let host: TestWethTransformerHostContract;
@@ -27,6 +29,7 @@ blockchainTests.resets('WethTransformer', env => {
             env.txDefaults,
             artifacts,
             weth.address,
+            new BigNumber(deploymentNonce),
         );
         host = await TestWethTransformerHostContract.deployFrom0xArtifactAsync(
             artifacts.TestWethTransformerHost,
@@ -143,5 +146,15 @@ blockchainTests.resets('WethTransformer', env => {
             ethBalance: amount.minus(amount.dividedToIntegerBy(2)),
             wethBalance: amount.dividedToIntegerBy(2),
         });
+    });
+
+    it('returns the RLP-encoded nonce', async () => {
+        const amount = getRandomInteger(1, '1e18');
+        const data = encodeWethTransformerData({
+            amount,
+            token: weth.address,
+        });
+        const r = await host.executeTransform(amount, transformer.address, data).callAsync({ value: amount });
+        expect(r).to.eq(rlpEncodeNonce(deploymentNonce));
     });
 });

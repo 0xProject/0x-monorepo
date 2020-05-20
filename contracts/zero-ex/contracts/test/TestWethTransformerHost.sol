@@ -43,11 +43,12 @@ contract TestWethTransformerHost is
     )
         external
         payable
+        returns (bytes memory rlpDeploymentNonce)
     {
         if (wethAmount != 0) {
             _weth.deposit{value: wethAmount}();
         }
         // Have to make this call externally because transformers aren't payable.
-        this.rawExecuteTransform(transformer, bytes32(0), msg.sender, data);
+        return this.rawExecuteTransform(transformer, bytes32(0), msg.sender, data);
     }
 }

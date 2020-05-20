@@ -45,10 +45,21 @@ contract PayTakerTransformer is
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
 
+    /// @dev The nonce of the deployer when deploying this contract.
+    uint256 public immutable deploymentNonce;
+
+    /// @dev Create this contract.
+    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
+    constructor(uint256 deploymentNonce_) public {
+        deploymentNonce = deploymentNonce_;
+    }
+
     /// @dev Forwards tokens to the taker.
     /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).
     /// @param data_ ABI-encoded `TransformData`, indicating which tokens to transfer.
-    /// @return success `TRANSFORMER_SUCCESS` on success.
+    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
+    ///         when this transformer was deployed. This is used to verify that
+    ///         this transformer was deployed by a trusted contract.
     function transform(
         bytes32, // callDataHash,
         address payable taker,
@@ -56,7 +67,7 @@ contract PayTakerTransformer is
     )
         external
         override
-        returns (bytes4 success)
+        returns (bytes memory rlpDeploymentNonce)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
 
@@ -72,6 +83,6 @@ contract PayTakerTransformer is
                 data.tokens[i].transformerTransfer(taker, amount);
             }
         }
-        return LibERC20Transformer.TRANSFORMER_SUCCESS;
+        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
     }
 }
