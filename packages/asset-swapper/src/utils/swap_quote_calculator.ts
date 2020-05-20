@@ -8,7 +8,6 @@ import {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
-    SignedOrderWithFillableAmounts,
     SwapQuote,
     SwapQuoteBase,
     SwapQuoteInfo,
@@ -200,8 +199,7 @@ function createSwapQuote(
         bestCaseQuoteInfo: fillResultsToQuoteInfo(bestCaseFillResult),
         worstCaseQuoteInfo: fillResultsToQuoteInfo(worstCaseFillResult),
         sourceBreakdown: getSwapQuoteOrdersBreakdown(bestCaseFillResult.fillAmountBySource),
-        // Remove fill metadata.
-        orders: resultOrders.map(o => _.omit(o, 'fills')) as SignedOrderWithFillableAmounts[],
+        orders: resultOrders,
     };
 
     if (operation === MarketOperation.Buy) {

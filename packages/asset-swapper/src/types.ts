@@ -2,7 +2,7 @@ import { ContractAddresses } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import { GetMarketOrdersOpts } from './utils/market_operation_utils/types';
+import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
 import { LogFunction } from './utils/quote_requestor';
 
 /**
@@ -132,7 +132,7 @@ export interface GetExtensionContractTypeOpts {
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * gasPrice: gas price used to determine protocolFee amount, default to ethGasStation fast amount.
- * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
+ * orders: An array of objects conforming to OptimizedMarketOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * bestCaseQuoteInfo: Info about the best case price for the asset.
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
@@ -140,7 +140,7 @@ export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
     gasPrice: BigNumber;
-    orders: SignedOrder[];
+    orders: OptimizedMarketOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
     sourceBreakdown: SwapQuoteOrdersBreakdown;

@@ -69,6 +69,10 @@
             {
                 "note": "Remove Kyber exclusion when Uniswap/Eth2Dai is present",
                 "pr": 2575
+            },
+            {
+                "note": "Expose fills object in asset-swapper quote orders",
+                "pr": 2583
             }
         ]
     },
