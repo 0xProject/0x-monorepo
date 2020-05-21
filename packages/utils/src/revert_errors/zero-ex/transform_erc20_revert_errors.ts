@@ -11,15 +11,28 @@ export class InsufficientEthAttachedError extends RevertError {
     }
 }
 
-export class IncompleteERC20TransformError extends RevertError {
+export class IncompleteTransformERC20Error extends RevertError {
     constructor(outputToken?: string, outputTokenAmount?: Numberish, minOutputTokenAmount?: Numberish) {
         super(
-            'IncompleteERC20TransformError',
-            'IncompleteERC20TransformError(address outputToken, uint256 outputTokenAmount, uint256 minOutputTokenAmount)',
+            'IncompleteTransformERC20Error',
+            'IncompleteTransformERC20Error(address outputToken, uint256 outputTokenAmount, uint256 minOutputTokenAmount)',
             {
                 outputToken,
                 outputTokenAmount,
                 minOutputTokenAmount,
+            },
+        );
+    }
+}
+
+export class NegativeTransformERC20OutputError extends RevertError {
+    constructor(outputToken?: string, outputTokenLostAmount?: Numberish) {
+        super(
+            'NegativeTransformERC20OutputError',
+            'NegativeTransformERC20OutputError(address outputToken, uint256 outputTokenLostAmount)',
+            {
+                outputToken,
+                outputTokenLostAmount,
             },
         );
     }
@@ -121,7 +134,8 @@ export class InvalidTokenReceivedError extends RevertError {
 
 const types = [
     InsufficientEthAttachedError,
-    IncompleteERC20TransformError,
+    IncompleteTransformERC20Error,
+    NegativeTransformERC20OutputError,
     UnauthorizedTransformerError,
     InvalidRLPNonceError,
     IncompleteFillSellQuoteError,
