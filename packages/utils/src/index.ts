@@ -49,4 +49,7 @@ export const ZeroExRevertErrors = {
     Proxy: require('./revert_errors/zero-ex/proxy_revert_errors'),
     SimpleFunctionRegistry: require('./revert_errors/zero-ex/simple_function_registry_revert_errors'),
     Ownable: require('./revert_errors/zero-ex/ownable_revert_errors'),
+    Spender: require('./revert_errors/zero-ex/spender_revert_errors'),
+    TransformERC20: require('./revert_errors/zero-ex/transform_erc20_revert_errors'),
+    Wallet: require('./revert_errors/zero-ex/wallet_revert_errors'),
 };

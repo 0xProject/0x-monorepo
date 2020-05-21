@@ -36,3 +36,4 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+export { rlpEncodeNonce } from './nonce_utils';

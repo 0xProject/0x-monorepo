@@ -37,14 +37,11 @@ contract Ownable is
     FixinCommon
 {
 
-    // solhint-disable const-name-snakecase
-    /// @dev Name of this feature.
-    string constant public override FEATURE_NAME = "Ownable";
-    /// @dev Version of this feature.
-    uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
-    // solhint-enable const-name-snakecase
-
     // solhint-disable
+    /// @dev Name of this feature.
+    string public constant override FEATURE_NAME = "Ownable";
+    /// @dev Version of this feature.
+    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
     /// @dev The deployed address of this contract.
     address immutable private _implementation;
     // solhint-enable
