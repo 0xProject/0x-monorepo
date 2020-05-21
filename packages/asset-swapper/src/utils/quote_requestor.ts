@@ -288,6 +288,7 @@ export class QuoteRequestor {
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const requestParams = {
+                        apiKey: options.apiKey,
                         takerAddress: options.takerAddress,
                         ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
                     };

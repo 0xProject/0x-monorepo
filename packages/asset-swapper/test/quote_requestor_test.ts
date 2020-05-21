@@ -1,5 +1,6 @@
 import { tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
+import { TakerRequest } from '@0x/quote-server';
 import { StatusCodes } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -35,10 +36,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequest = {
+                apiKey,
                 sellToken: takerToken,
                 buyToken: makerToken,
-                sellAmount: '10000',
+                sellAmount: new BigNumber('10000'),
                 buyAmount: undefined,
                 takerAddress,
             };
@@ -199,10 +201,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequest = {
+                apiKey,
                 sellToken: takerToken,
                 buyToken: makerToken,
-                sellAmount: '10000',
+                sellAmount: new BigNumber('10000'),
                 buyAmount: undefined,
                 takerAddress,
             };
@@ -293,10 +296,11 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams = {
+            const expectedParams: TakerRequest = {
+                apiKey,
                 sellToken: takerToken,
                 buyToken: makerToken,
-                buyAmount: '10000',
+                buyAmount: new BigNumber('10000'),
                 sellAmount: undefined,
                 takerAddress,
             };
