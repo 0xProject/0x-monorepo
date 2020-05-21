@@ -109,7 +109,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     { name: 'outputToken', type: 'address' },
                     { name: 'burnAmount', type: 'uint256' },
                     { name: 'mintAmount', type: 'uint256' },
-                    { name: 'mintTo', type: 'address' },
+                    { name: 'feeAmount', type: 'uint256' },
                     { name: 'deploymentNonce', type: 'bytes' },
                 ],
             },
@@ -122,7 +122,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 inputTokenAddress: string;
                 inputTokenBurnAmunt: Numberish;
                 outputTokenMintAmount: Numberish;
-                mintRecipient: string;
+                outputTokenFeeAmount: Numberish;
                 rlpNonce: string;
             }> = {},
         ): Transformation {
@@ -132,7 +132,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 inputTokenAddress: inputToken.address,
                 inputTokenBurnAmunt: ZERO_AMOUNT,
                 outputTokenMintAmount: ZERO_AMOUNT,
-                mintRecipient: taker,
+                outputTokenFeeAmount: ZERO_AMOUNT,
                 transformer: mintTransformer.address,
                 ...opts,
             };
@@ -144,7 +144,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                         outputToken: _opts.outputTokenAddress,
                         burnAmount: _opts.inputTokenBurnAmunt,
                         mintAmount: _opts.outputTokenMintAmount,
-                        mintTo: _opts.mintRecipient,
+                        feeAmount: _opts.outputTokenFeeAmount,
                         deploymentNonce: _opts.rlpNonce,
                     },
                 ]),
@@ -346,10 +346,42 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     ],
                 )
                 .awaitTransactionSuccessAsync({ value: callValue });
-            const expectedError = new ZeroExRevertErrors.TransformERC20.IncompleteERC20TransformError(
+            const expectedError = new ZeroExRevertErrors.TransformERC20.IncompleteTransformERC20Error(
                 outputToken.address,
                 outputTokenMintAmount,
                 minOutputTokenAmount,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it("throws if taker's output token balance decreases", async () => {
+            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
+            const startingInputTokenBalance = getRandomInteger(0, '100e18');
+            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
+            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
+            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
+            const minOutputTokenAmount = ZERO_AMOUNT;
+            const outputTokenFeeAmount = 1;
+            const callValue = getRandomInteger(1, '1e18');
+            const tx = feature
+                ._transformERC20(
+                    hexUtils.random(),
+                    taker,
+                    inputToken.address,
+                    outputToken.address,
+                    inputTokenAmount,
+                    minOutputTokenAmount,
+                    [
+                        createMintTokenTransformation({
+                            outputTokenFeeAmount,
+                            inputTokenBurnAmunt: inputTokenAmount,
+                        }),
+                    ],
+                )
+                .awaitTransactionSuccessAsync({ value: callValue });
+            const expectedError = new ZeroExRevertErrors.TransformERC20.NegativeTransformERC20OutputError(
+                outputToken.address,
+                outputTokenFeeAmount,
             );
             return expect(tx).to.revertWith(expectedError);
         });

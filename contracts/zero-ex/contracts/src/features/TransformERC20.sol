@@ -241,10 +241,15 @@ contract TransformERC20 is
             outputTokenAmount = takerOutputTokenBalanceAfter.safeSub(
                 takerOutputTokenBalanceBefore
             );
+        } else if (takerOutputTokenBalanceAfter < takerOutputTokenBalanceBefore) {
+            LibTransformERC20RichErrors.NegativeTransformERC20OutputError(
+                address(outputToken),
+                takerOutputTokenBalanceBefore - takerOutputTokenBalanceAfter
+            ).rrevert();
         }
         // Ensure enough output token has been sent to the taker.
         if (outputTokenAmount < minOutputTokenAmount) {
-            LibTransformERC20RichErrors.IncompleteERC20TransformError(
+            LibTransformERC20RichErrors.IncompleteTransformERC20Error(
                 address(outputToken),
                 outputTokenAmount,
                 minOutputTokenAmount

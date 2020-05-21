@@ -49,6 +49,14 @@ contract TestMintableERC20Token {
         balanceOf[owner] += amount;
     }
 
+    function burn(address owner, uint256 amount)
+        external
+        virtual
+    {
+        require(balanceOf[owner] >= amount, "TestMintableERC20Token/INSUFFICIENT_FUNDS");
+        balanceOf[owner] -= amount;
+    }
+
     function transferFrom(address from, address to, uint256 amount)
         public
         virtual
@@ -66,5 +74,4 @@ contract TestMintableERC20Token {
         balanceOf[to] += amount;
         return true;
     }
-
 }

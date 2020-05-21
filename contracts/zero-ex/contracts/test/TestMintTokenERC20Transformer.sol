@@ -33,7 +33,7 @@ contract TestMintTokenERC20Transformer is
         TestMintableERC20Token outputToken;
         uint256 burnAmount;
         uint256 mintAmount;
-        address payable mintTo;
+        uint256 feeAmount;
         bytes deploymentNonce;
     }
 
@@ -66,16 +66,18 @@ contract TestMintTokenERC20Transformer is
             data.inputToken.balanceOf(address(this)),
             address(this).balance
         );
-        // Burn input tokens.
+        // "Burn" input tokens.
         data.inputToken.transfer(address(0), data.burnAmount);
         // Mint output tokens.
         if (LibERC20Transformer.isTokenETH(IERC20TokenV06(address(data.outputToken)))) {
-            data.mintTo.transfer(data.mintAmount);
+            taker.transfer(data.mintAmount);
         } else {
             data.outputToken.mint(
-                data.mintTo == address(0) ? msg.sender : data.mintTo,
+                taker,
                 data.mintAmount
             );
+            // Burn fees from output.
+            data.outputToken.burn(taker, data.feeAmount);
         }
         return data.deploymentNonce;
     }

@@ -38,7 +38,7 @@ library LibTransformERC20RichErrors {
         );
     }
 
-    function IncompleteERC20TransformError(
+    function IncompleteTransformERC20Error(
         address outputToken,
         uint256 outputTokenAmount,
         uint256 minOutputTokenAmount
@@ -48,10 +48,25 @@ library LibTransformERC20RichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("IncompleteERC20TransformError(address,uint256,uint256)")),
+            bytes4(keccak256("IncompleteTransformERC20Error(address,uint256,uint256)")),
             outputToken,
             outputTokenAmount,
             minOutputTokenAmount
+        );
+    }
+
+    function NegativeTransformERC20OutputError(
+        address outputToken,
+        uint256 outputTokenLostAmount
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("NegativeTransformERC20OutputError(address,uint256)")),
+            outputToken,
+            outputTokenLostAmount
         );
     }
 
