@@ -37,6 +37,9 @@ library LibTransformERC20Storage {
         uint256 storageSlot = LibStorage.getStorageSlot(
             LibStorage.StorageId.TransformERC20
         );
+        // Dip into assembly to change the slot pointed to by the local
+        // variable `stor`.
+        // See https://solidity.readthedocs.io/en/v0.6.8/assembly.html?highlight=slot#access-to-external-variables-functions-and-libraries
         assembly { stor_slot := storageSlot }
     }
 }

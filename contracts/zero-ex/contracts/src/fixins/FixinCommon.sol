@@ -23,10 +23,9 @@ import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibCommonRichErrors.sol";
 import "../errors/LibOwnableRichErrors.sol";
 import "../features/IOwnable.sol";
-import "../storage/LibOwnableStorage.sol";
 
 
-/// @dev Common utilities.
+/// @dev Common feature utilities.
 contract FixinCommon {
 
     using LibRichErrorsV06 for bytes;
@@ -42,7 +41,7 @@ contract FixinCommon {
     /// @dev The caller of this function must be the owner.
     modifier onlyOwner() virtual {
         {
-            address owner = _getOwner();
+            address owner = IOwnable(address(this)).owner();
             if (msg.sender != owner) {
                 LibOwnableRichErrors.OnlyOwnerError(
                     msg.sender,
@@ -51,14 +50,6 @@ contract FixinCommon {
             }
         }
         _;
-    }
-
-    /// @dev Get the owner of this contract.
-    /// @return owner The owner of this contract.
-    function _getOwner() internal virtual view returns (address owner) {
-        // We access Ownable's storage directly here instead of using the external
-        // API because `onlyOwner` needs to function during bootstrapping.
-        return LibOwnableStorage.getStorage().owner;
     }
 
     /// @dev Encode a feature version as a `uint256`.

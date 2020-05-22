@@ -106,6 +106,12 @@ contract InitialMigration {
             )
         );
 
+        // De-register `SimpleFunctionRegistry._extendSelf`.
+        SimpleFunctionRegistry(address(this)).rollback(
+            SimpleFunctionRegistry._extendSelf.selector,
+            address(0)
+        );
+
         // Transfer ownership to the real owner.
         Ownable(address(this)).transferOwnership(owner);
 

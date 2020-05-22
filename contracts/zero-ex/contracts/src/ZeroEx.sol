@@ -30,13 +30,9 @@ import "./errors/LibProxyRichErrors.sol";
 ///      interacting with the 0x protocol.
 contract ZeroEx {
     // solhint-disable separate-by-one-line-in-contract,indent,var-name-mixedcase
-
     using LibBytesV06 for bytes;
 
-    /// @dev Magic bytes returned by the bootstrapper to indicate success.
-    bytes4 internal constant BOOTSTRAP_SUCCESS = 0xd150751b;
-
-    /// @dev Construct this contract and set the bootstrap migration contract.
+    /// @dev Construct this contract and register the `Bootstrap` feature.
     ///      After constructing this contract, `bootstrap()` should be called
     ///      to seed the initial feature set.
     constructor() public {
