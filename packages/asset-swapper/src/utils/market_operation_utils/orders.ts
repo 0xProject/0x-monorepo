@@ -1,10 +1,10 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { assetDataUtils, ERC20AssetData, generatePseudoRandomSalt, orderCalculationUtils } from '@0x/order-utils';
+import { IndicativeQuote } from '@0x/quote-server';
 import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
-import { IndicativeQuote } from '../quote_requestor';
 import { getCurveInfo, isCurveSource } from '../source_utils';
 
 import {

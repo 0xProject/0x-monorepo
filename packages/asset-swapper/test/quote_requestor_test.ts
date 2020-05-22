@@ -38,10 +38,10 @@ describe('QuoteRequestor', async () => {
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
             const expectedParams: TakerRequest = {
                 apiKey,
-                sellToken: takerToken,
-                buyToken: makerToken,
-                sellAmount: new BigNumber('10000'),
-                buyAmount: undefined,
+                sellTokenAddress: takerToken,
+                buyTokenAddress: makerToken,
+                sellAmountBaseUnits: new BigNumber('10000'),
+                buyAmountBaseUnits: undefined,
                 takerAddress,
             };
             // Successful response
@@ -203,18 +203,18 @@ describe('QuoteRequestor', async () => {
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
             const expectedParams: TakerRequest = {
                 apiKey,
-                sellToken: takerToken,
-                buyToken: makerToken,
-                sellAmount: new BigNumber('10000'),
-                buyAmount: undefined,
+                sellTokenAddress: takerToken,
+                buyTokenAddress: makerToken,
+                sellAmountBaseUnits: new BigNumber('10000'),
+                buyAmountBaseUnits: undefined,
                 takerAddress,
             };
             // Successful response
             const successfulQuote1 = {
                 makerAssetData,
                 takerAssetData,
-                makerAssetAmount: new BigNumber(expectedParams.sellAmount),
-                takerAssetAmount: new BigNumber(expectedParams.sellAmount),
+                makerAssetAmount: new BigNumber(expectedParams.sellAmountBaseUnits),
+                takerAssetAmount: new BigNumber(expectedParams.sellAmountBaseUnits),
                 expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({
@@ -298,18 +298,18 @@ describe('QuoteRequestor', async () => {
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
             const expectedParams: TakerRequest = {
                 apiKey,
-                sellToken: takerToken,
-                buyToken: makerToken,
-                buyAmount: new BigNumber('10000'),
-                sellAmount: undefined,
+                sellTokenAddress: takerToken,
+                buyTokenAddress: makerToken,
+                buyAmountBaseUnits: new BigNumber('10000'),
+                sellAmountBaseUnits: undefined,
                 takerAddress,
             };
             // Successful response
             const successfulQuote1 = {
                 makerAssetData,
                 takerAssetData,
-                makerAssetAmount: new BigNumber(expectedParams.buyAmount),
-                takerAssetAmount: new BigNumber(expectedParams.buyAmount),
+                makerAssetAmount: new BigNumber(expectedParams.buyAmountBaseUnits),
+                takerAssetAmount: new BigNumber(expectedParams.buyAmountBaseUnits),
                 expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({

@@ -12,6 +12,7 @@ export {
     SRAPollingOrderProviderOpts,
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
+export { IndicativeQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {
@@ -70,5 +71,5 @@ export {
 } from './utils/market_operation_utils/types';
 export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
-export { QuoteRequestor, IndicativeQuote } from './utils/quote_requestor';
+export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';

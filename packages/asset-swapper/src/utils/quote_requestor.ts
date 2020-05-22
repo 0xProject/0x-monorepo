@@ -1,15 +1,12 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
-import { FirmQuote, IndicativeQuote } from '@0x/quote-server';
+import { FirmQuote, IndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
-
-export { SignedOrder } from '@0x/order-utils';
-export { IndicativeQuote } from '@0x/quote-server';
 
 /**
  * Request quotes from RFQ-T providers
@@ -47,20 +44,20 @@ function inferQueryParams(
     makerAssetData: string,
     takerAssetData: string,
     assetFillAmount: BigNumber,
-): { buyToken: string; sellToken: string; buyAmount?: string; sellAmount?: string } {
+): Pick<TakerRequest, 'buyTokenAddress' | 'sellTokenAddress' | 'buyAmountBaseUnits' | 'sellAmountBaseUnits'> {
     if (marketOperation === MarketOperation.Buy) {
         return {
-            buyToken: getTokenAddressOrThrow(makerAssetData),
-            sellToken: getTokenAddressOrThrow(takerAssetData),
-            buyAmount: assetFillAmount.toString(),
-            sellAmount: undefined,
+            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
+            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
+            buyAmountBaseUnits: assetFillAmount,
+            sellAmountBaseUnits: undefined,
         };
     } else {
         return {
-            buyToken: getTokenAddressOrThrow(makerAssetData),
-            sellToken: getTokenAddressOrThrow(takerAssetData),
-            sellAmount: assetFillAmount.toString(),
-            buyAmount: undefined,
+            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
+            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
+            sellAmountBaseUnits: assetFillAmount,
+            buyAmountBaseUnits: undefined,
         };
     }
 }

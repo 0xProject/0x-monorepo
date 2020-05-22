@@ -1,9 +1,9 @@
 import { ContractAddresses } from '@0x/contract-addresses';
+import { IndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
 import { MarketOperation } from '../../types';
-import { IndicativeQuote } from '../quote_requestor';
 import { difference } from '../utils';
 
 import { BUY_SOURCES, DEFAULT_GET_MARKET_ORDERS_OPTS, FEE_QUOTE_SOURCES, ONE_ETHER, SELL_SOURCES } from './constants';

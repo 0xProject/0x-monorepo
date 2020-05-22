@@ -1,8 +1,9 @@
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
+import { IndicativeQuote } from '@0x/quote-server';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
-import { IndicativeQuote, QuoteRequestor } from '../../utils/quote_requestor';
+import { QuoteRequestor } from '../../utils/quote_requestor';
 
 /**
  * Order domain keys: chainId and exchange
