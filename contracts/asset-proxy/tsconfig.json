@@ -26,6 +26,7 @@
         "generated-artifacts/IKyberNetworkProxy.json",
         "generated-artifacts/IUniswapExchange.json",
         "generated-artifacts/IUniswapExchangeFactory.json",
+        "generated-artifacts/IUniswapV2Router01.json",
         "generated-artifacts/KyberBridge.json",
         "generated-artifacts/MixinAssetProxyDispatcher.json",
         "generated-artifacts/MixinAuthorizable.json",
@@ -42,6 +43,7 @@
         "generated-artifacts/TestStaticCallTarget.json",
         "generated-artifacts/TestUniswapBridge.json",
         "generated-artifacts/UniswapBridge.json",
+        "generated-artifacts/UniswapV2Bridge.json",
         "test/generated-artifacts/ChaiBridge.json",
         "test/generated-artifacts/CurveBridge.json",
         "test/generated-artifacts/DexForwarderBridge.json",
@@ -65,6 +67,7 @@
         "test/generated-artifacts/IKyberNetworkProxy.json",
         "test/generated-artifacts/IUniswapExchange.json",
         "test/generated-artifacts/IUniswapExchangeFactory.json",
+        "test/generated-artifacts/IUniswapV2Router01.json",
         "test/generated-artifacts/KyberBridge.json",
         "test/generated-artifacts/MixinAssetProxyDispatcher.json",
         "test/generated-artifacts/MixinAuthorizable.json",
@@ -80,7 +83,8 @@
         "test/generated-artifacts/TestKyberBridge.json",
         "test/generated-artifacts/TestStaticCallTarget.json",
         "test/generated-artifacts/TestUniswapBridge.json",
-        "test/generated-artifacts/UniswapBridge.json"
+        "test/generated-artifacts/UniswapBridge.json",
+        "test/generated-artifacts/UniswapV2Bridge.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

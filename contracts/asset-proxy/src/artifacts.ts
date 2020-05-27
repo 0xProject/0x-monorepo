@@ -28,6 +28,7 @@ import * as IGasToken from '../generated-artifacts/IGasToken.json';
 import * as IKyberNetworkProxy from '../generated-artifacts/IKyberNetworkProxy.json';
 import * as IUniswapExchange from '../generated-artifacts/IUniswapExchange.json';
 import * as IUniswapExchangeFactory from '../generated-artifacts/IUniswapExchangeFactory.json';
+import * as IUniswapV2Router01 from '../generated-artifacts/IUniswapV2Router01.json';
 import * as KyberBridge from '../generated-artifacts/KyberBridge.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
@@ -44,6 +45,7 @@ import * as TestKyberBridge from '../generated-artifacts/TestKyberBridge.json';
 import * as TestStaticCallTarget from '../generated-artifacts/TestStaticCallTarget.json';
 import * as TestUniswapBridge from '../generated-artifacts/TestUniswapBridge.json';
 import * as UniswapBridge from '../generated-artifacts/UniswapBridge.json';
+import * as UniswapV2Bridge from '../generated-artifacts/UniswapV2Bridge.json';
 export const artifacts = {
     MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
@@ -62,6 +64,7 @@ export const artifacts = {
     KyberBridge: KyberBridge as ContractArtifact,
     MixinGasToken: MixinGasToken as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
+    UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
@@ -76,6 +79,7 @@ export const artifacts = {
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
+    IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
     TestChaiBridge: TestChaiBridge as ContractArtifact,
     TestDexForwarderBridge: TestDexForwarderBridge as ContractArtifact,
     TestDydxBridge: TestDydxBridge as ContractArtifact,

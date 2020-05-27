@@ -32,6 +32,10 @@ contract DeploymentConstants {
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     // /// @dev Kovan address of the `UniswapExchangeFactory` contract.
     // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30;
+    /// @dev Mainnet address of the `UniswapV2Router01` contract.
+    address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // /// @dev Kovan address of the `UniswapV2Router01` contract.
+    // address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a; // FIXME (xianny): https://uniswap.org/docs/v2/smart-contracts/router/
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
     address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
     // /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.

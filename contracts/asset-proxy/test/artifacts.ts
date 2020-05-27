@@ -28,6 +28,7 @@ import * as IGasToken from '../test/generated-artifacts/IGasToken.json';
 import * as IKyberNetworkProxy from '../test/generated-artifacts/IKyberNetworkProxy.json';
 import * as IUniswapExchange from '../test/generated-artifacts/IUniswapExchange.json';
 import * as IUniswapExchangeFactory from '../test/generated-artifacts/IUniswapExchangeFactory.json';
+import * as IUniswapV2Router01 from '../test/generated-artifacts/IUniswapV2Router01.json';
 import * as KyberBridge from '../test/generated-artifacts/KyberBridge.json';
 import * as MixinAssetProxyDispatcher from '../test/generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinAuthorizable from '../test/generated-artifacts/MixinAuthorizable.json';
@@ -44,6 +45,7 @@ import * as TestKyberBridge from '../test/generated-artifacts/TestKyberBridge.js
 import * as TestStaticCallTarget from '../test/generated-artifacts/TestStaticCallTarget.json';
 import * as TestUniswapBridge from '../test/generated-artifacts/TestUniswapBridge.json';
 import * as UniswapBridge from '../test/generated-artifacts/UniswapBridge.json';
+import * as UniswapV2Bridge from '../test/generated-artifacts/UniswapV2Bridge.json';
 export const artifacts = {
     MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
@@ -62,6 +64,7 @@ export const artifacts = {
     KyberBridge: KyberBridge as ContractArtifact,
     MixinGasToken: MixinGasToken as ContractArtifact,
     UniswapBridge: UniswapBridge as ContractArtifact,
+    UniswapV2Bridge: UniswapV2Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
@@ -76,6 +79,7 @@ export const artifacts = {
     IKyberNetworkProxy: IKyberNetworkProxy as ContractArtifact,
     IUniswapExchange: IUniswapExchange as ContractArtifact,
     IUniswapExchangeFactory: IUniswapExchangeFactory as ContractArtifact,
+    IUniswapV2Router01: IUniswapV2Router01 as ContractArtifact,
     TestChaiBridge: TestChaiBridge as ContractArtifact,
     TestDexForwarderBridge: TestDexForwarderBridge as ContractArtifact,
     TestDydxBridge: TestDydxBridge as ContractArtifact,
