@@ -1,5 +1,5 @@
 import { blockchainTests, expect, randomAddress } from '@0x/contracts-test-utils';
-import { ZeroExRevertErrors } from '@0x/utils';
+import { hexUtils, ZeroExRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
 import { BootstrapFeatures, deployBootstrapFeaturesAsync, toFeatureAdddresses } from './utils/migration';
@@ -7,6 +7,7 @@ import {
     IBootstrapContract,
     InitialMigrationContract,
     IOwnableContract,
+    SimpleFunctionRegistryContract,
     TestInitialMigrationContract,
     ZeroExContract,
 } from './wrappers';
@@ -85,6 +86,20 @@ blockchainTests.resets('Initial migration', env => {
         it('has the correct owner', async () => {
             const actualOwner = await ownable.owner().callAsync();
             expect(actualOwner).to.eq(owner);
+        });
+    });
+
+    describe('SimpleFunctionRegistry feature', () => {
+        let registry: SimpleFunctionRegistryContract;
+
+        before(async () => {
+            registry = new SimpleFunctionRegistryContract(zeroEx.address, env.provider, env.txDefaults);
+        });
+
+        it('_extendSelf() is deregistered', async () => {
+            const selector = registry.getSelector('_extendSelf');
+            const tx = registry._extendSelf(hexUtils.random(4), randomAddress()).callAsync({ from: zeroEx.address });
+            return expect(tx).to.revertWith(new ZeroExRevertErrors.Proxy.NotImplementedError(selector));
         });
     });
 });

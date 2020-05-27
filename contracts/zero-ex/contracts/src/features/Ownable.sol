@@ -27,7 +27,7 @@ import "../migrations/LibBootstrap.sol";
 import "../migrations/LibMigrate.sol";
 import "./IFeature.sol";
 import "./IOwnable.sol";
-import "./ISimpleFunctionRegistry.sol";
+import "./SimpleFunctionRegistry.sol";
 
 
 /// @dev Owner management features.
@@ -62,9 +62,9 @@ contract Ownable is
         LibOwnableStorage.getStorage().owner = address(this);
 
         // Register feature functions.
-        ISimpleFunctionRegistry(address(this)).extend(this.transferOwnership.selector, _implementation);
-        ISimpleFunctionRegistry(address(this)).extend(this.owner.selector, _implementation);
-        ISimpleFunctionRegistry(address(this)).extend(this.migrate.selector, _implementation);
+        SimpleFunctionRegistry(address(this))._extendSelf(this.transferOwnership.selector, _implementation);
+        SimpleFunctionRegistry(address(this))._extendSelf(this.owner.selector, _implementation);
+        SimpleFunctionRegistry(address(this))._extendSelf(this.migrate.selector, _implementation);
         return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
 
@@ -89,7 +89,7 @@ contract Ownable is
     /// @dev Execute a migration function in the context of the ZeroEx contract.
     ///      The result of the function being called should be the magic bytes
     ///      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.
-    ///      The owner will be temporarily set to `address(this)` inside the call.
+    ///      Temporarily sets the owner to ourselves so we can perform admin functions.
     ///      Before returning, the owner will be set to `newOwner`.
     /// @param target The migrator contract address.
     /// @param data The call data.
@@ -99,13 +99,12 @@ contract Ownable is
         override
         onlyOwner
     {
-        LibOwnableStorage.Storage storage stor = LibOwnableStorage.getStorage();
-        address prevOwner = stor.owner;
-        if (prevOwner == address(this)) {
-            // If the owner is already set to ourselves then we've reentered.
-            LibOwnableRichErrors.AlreadyMigratingError().rrevert();
+        if (newOwner == address(0)) {
+            LibOwnableRichErrors.TransferOwnerToZeroError().rrevert();
         }
-        // Temporarily set the owner to ourselves so we can perform admin functions.
+
+        LibOwnableStorage.Storage storage stor = LibOwnableStorage.getStorage();
+        // The owner will be temporarily set to `address(this)` inside the call.
         stor.owner = address(this);
 
         // Perform the migration.

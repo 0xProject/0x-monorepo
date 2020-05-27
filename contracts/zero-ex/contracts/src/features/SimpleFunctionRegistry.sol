@@ -50,11 +50,15 @@ contract SimpleFunctionRegistry is
         _implementation = address(this);
     }
 
-    /// @dev Initializes this feature.
+    /// @dev Initializes this feature, registering its own functions.
     /// @return success Magic bytes if successful.
-    function bootstrap() external returns (bytes4 success) {
+    function bootstrap()
+        external
+        returns (bytes4 success)
+    {
         // Register the registration functions (inception vibes).
         _extend(this.extend.selector, _implementation);
+        _extend(this._extendSelf.selector, _implementation);
         // Register the rollback function.
         _extend(this.rollback.selector, _implementation);
         // Register getters.
@@ -110,6 +114,20 @@ contract SimpleFunctionRegistry is
         external
         override
         onlyOwner
+    {
+        _extend(selector, impl);
+    }
+
+    /// @dev Register or replace a function.
+    ///      Only callable from within.
+    ///      This function is only used during the bootstrap process and
+    ///      should be deregistered by the deployer after bootstrapping is
+    ///      complete.
+    /// @param selector The function selector.
+    /// @param impl The implementation contract for the function.
+    function _extendSelf(bytes4 selector, address impl)
+        external
+        onlySelf
     {
         _extend(selector, impl);
     }
