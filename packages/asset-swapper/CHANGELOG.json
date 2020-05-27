@@ -73,6 +73,10 @@
             {
                 "note": "Expose fills object in asset-swapper quote orders",
                 "pr": 2583
+            },
+            {
+                "note": "Increase timeout for tests",
+                "pr": 2587
             }
         ]
     },
