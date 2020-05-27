@@ -324,7 +324,7 @@ export class QuoteRequestor {
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
                                 response: {
-                                    statusCode: err.response.status,
+                                    statusCode: err.response ? err.response.status : undefined,
                                     latencyMs: Date.now() - timeBeforeAwait,
                                 },
                             },
