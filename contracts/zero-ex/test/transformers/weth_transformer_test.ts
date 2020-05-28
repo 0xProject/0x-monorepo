@@ -61,7 +61,12 @@ blockchainTests.resets('WethTransformer', env => {
         const tx = host
             .executeTransform(amount, transformer.address, data)
             .awaitTransactionSuccessAsync({ value: amount });
-        return expect(tx).to.revertWith(new ZeroExRevertErrors.TransformERC20.InvalidTransformDataError(data));
+        return expect(tx).to.revertWith(
+            new ZeroExRevertErrors.TransformERC20.InvalidTransformDataError(
+                ZeroExRevertErrors.TransformERC20.InvalidTransformDataErrorCode.InvalidTokens,
+                data,
+            ),
+        );
     });
 
     it('can unwrap WETH', async () => {

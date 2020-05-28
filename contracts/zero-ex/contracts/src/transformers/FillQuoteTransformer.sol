@@ -35,8 +35,16 @@ import "./LibERC20Transformer.sol";
 contract FillQuoteTransformer is
     Transformer
 {
+    /// @dev Whether we are performing a market sell or buy.
+    enum Side {
+        Sell,
+        Buy
+    }
+
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
+        // Whether we aer performing a market sell or buy.
+        Side side;
         // The token being sold.
         // This should be an actual token, not the ETH pseudo-token.
         IERC20TokenV06 sellToken;
@@ -52,11 +60,10 @@ contract FillQuoteTransformer is
         // For sells, this will be the maximum sell amount (taker asset).
         // For buys, this will be the maximum buy amount (maker asset).
         uint256[] maxOrderFillAmounts;
-        // Amount of `sellToken` to sell. May be `uint256(-1)` to sell entire
-        // amount of `sellToken` received. Zero if performing a market buy.
-        uint256 sellAmount;
-        // Amount of `buyToken` to buy. Zero if performing a market sell.
-        uint256 buyAmount;
+        // Amount of `sellToken` to sell or `buyToken` to buy.
+        // For sells, this may be `uint256(-1)` to sell the entire balance of
+        // `sellToken`.
+        uint256 fillAmount;
     }
 
     /// @dev Results of a call to `_fillOrder()`.
@@ -96,7 +103,6 @@ contract FillQuoteTransformer is
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
     ///      for `buyToken` by filling `orders`. Protocol fees should be attached
     ///      to this call. `buyToken` and excess ETH will be transferred back to the caller.
-    ///      This function cannot be re-entered.
     /// @param data_ ABI-encoded `TransformData`.
     /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
     ///         when this transformer was deployed. This is used to verify that
@@ -113,23 +119,29 @@ contract FillQuoteTransformer is
         TransformData memory data = abi.decode(data_, (TransformData));
 
         // Validate data fields.
-        if (data.sellToken.isTokenETH() ||
-            data.buyToken.isTokenETH() ||
-            data.orders.length != data.signatures.length)
-        {
-            LibTransformERC20RichErrors.InvalidTransformDataError(data_).rrevert();
+        if (data.sellToken.isTokenETH() || data.buyToken.isTokenETH()) {
+            LibTransformERC20RichErrors.InvalidTransformDataError(
+                LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_TOKENS,
+                data_
+            ).rrevert();
+        }
+        if (data.orders.length != data.signatures.length) {
+            LibTransformERC20RichErrors.InvalidTransformDataError(
+                LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_ARRAY_LENGTH,
+                data_
+            ).rrevert();
         }
 
-        // If `sellAmount == -1` and `buyAmount == 0` then we are selling
-        // the entire balance of `sellToken`. This is useful in cases where
-        // the exact sell amount is not exactly known in advance, like when
-        // unwrapping Chai/cUSDC/cDAI.
-        if (data.sellAmount == uint256(-1) && data.buyAmount == 0) {
-            data.sellAmount = data.sellToken.getTokenBalanceOf(address(this));
+        if (data.side == Side.Sell && data.fillAmount == uint256(-1)) {
+            // If `sellAmount == -1 then we are selling
+            // the entire balance of `sellToken`. This is useful in cases where
+            // the exact sell amount is not exactly known in advance, like when
+            // unwrapping Chai/cUSDC/cDAI.
+            data.fillAmount = data.sellToken.getTokenBalanceOf(address(this));
         }
 
         // Approve the ERC20 proxy to spend `sellToken`.
-        data.sellToken.approveIfBelow(erc20Proxy, data.sellAmount);
+        data.sellToken.approveIfBelow(erc20Proxy, data.fillAmount);
 
         // Fill the orders.
         uint256 singleProtocolFee = exchange.protocolFeeMultiplier().safeMul(tx.gasprice);
@@ -138,14 +150,14 @@ contract FillQuoteTransformer is
         uint256 soldAmount = 0;
         for (uint256 i = 0; i < data.orders.length; ++i) {
             // Check if we've hit our targets.
-            if (data.buyAmount == 0) {
+            if (data.side == Side.Sell) {
                 // Market sell check.
-                if (soldAmount >= data.sellAmount) {
+                if (soldAmount >= data.fillAmount) {
                     break;
                 }
             } else {
                 // Market buy check.
-                if (boughtAmount >= data.buyAmount) {
+                if (boughtAmount >= data.fillAmount) {
                     break;
                 }
             }
@@ -159,14 +171,14 @@ contract FillQuoteTransformer is
 
             // Fill the order.
             FillOrderResults memory results;
-            if (data.buyAmount == 0) {
+            if (data.side == Side.Sell) {
                 // Market sell.
                 results = _sellToOrder(
                     data.buyToken,
                     data.sellToken,
                     data.orders[i],
                     data.signatures[i],
-                    data.sellAmount.safeSub(soldAmount).min256(
+                    data.fillAmount.safeSub(soldAmount).min256(
                         data.maxOrderFillAmounts.length > i
                         ? data.maxOrderFillAmounts[i]
                         : uint256(-1)
@@ -180,7 +192,7 @@ contract FillQuoteTransformer is
                     data.sellToken,
                     data.orders[i],
                     data.signatures[i],
-                    data.buyAmount.safeSub(boughtAmount).min256(
+                    data.fillAmount.safeSub(boughtAmount).min256(
                         data.maxOrderFillAmounts.length > i
                         ? data.maxOrderFillAmounts[i]
                         : uint256(-1)
@@ -196,24 +208,24 @@ contract FillQuoteTransformer is
         }
 
         // Ensure we hit our targets.
-        if (data.buyAmount == 0) {
+        if (data.side == Side.Sell) {
             // Market sell check.
-            if (soldAmount < data.sellAmount) {
+            if (soldAmount < data.fillAmount) {
                 LibTransformERC20RichErrors
                     .IncompleteFillSellQuoteError(
                         address(data.sellToken),
                         soldAmount,
-                        data.sellAmount
+                        data.fillAmount
                     ).rrevert();
             }
         } else {
             // Market buy check.
-            if (boughtAmount < data.buyAmount) {
+            if (boughtAmount < data.fillAmount) {
                 LibTransformERC20RichErrors
                     .IncompleteFillBuyQuoteError(
                         address(data.buyToken),
                         boughtAmount,
-                        data.buyAmount
+                        data.fillAmount
                     ).rrevert();
             }
         }
@@ -238,9 +250,8 @@ contract FillQuoteTransformer is
         private
         returns (FillOrderResults memory results)
     {
-        IERC20TokenV06 takerFeeToken = order.takerFeeAssetData.length == 0
-            ? IERC20TokenV06(address(0))
-            : _getTokenFromERC20AssetData(order.takerFeeAssetData);
+        IERC20TokenV06 takerFeeToken =
+            _getTokenFromERC20AssetData(order.takerFeeAssetData);
 
         uint256 takerTokenFillAmount = sellAmount;
 
@@ -261,7 +272,7 @@ contract FillQuoteTransformer is
                 takerTokenFillAmount = LibMathV06.getPartialAmountCeil(
                     order.takerAssetAmount,
                     order.takerAssetAmount.safeAdd(order.takerFee),
-                    takerTokenFillAmount
+                    sellAmount
                 );
             } else {
                 //  Only support taker or maker asset denominated taker fees.
@@ -306,24 +317,27 @@ contract FillQuoteTransformer is
         private
         returns (FillOrderResults memory results)
     {
-        IERC20TokenV06 takerFeeToken = order.takerFeeAssetData.length == 0
-            ? IERC20TokenV06(address(0))
-            : _getTokenFromERC20AssetData(order.takerFeeAssetData);
-
-        uint256 makerTokenFillAmount = buyAmount;
+        IERC20TokenV06 takerFeeToken =
+            _getTokenFromERC20AssetData(order.takerFeeAssetData);
+        // Compute the default taker token fill amount.
+        uint256 takerTokenFillAmount = LibMathV06.getPartialAmountCeil(
+            buyAmount,
+            order.makerAssetAmount,
+            order.takerAssetAmount
+        );
 
         if (order.takerFee != 0) {
             if (takerFeeToken == makerToken) {
                 // Taker fee is payable in the maker token.
-                // Increase the fill amount to account for maker tokens being
-                // lost to the taker fee.
-                // makerTokenFillAmount' =
-                //  (order.makerAssetAmount * makerTokenFillAmount) /
+                // Adjust the taker token fill amount to account for maker
+                // tokens being lost to the taker fee.
+                // takerTokenFillAmount' =
+                //  (order.takerAssetAmount * buyAmount) /
                 //  (order.makerAssetAmount - order.takerFee)
-                makerTokenFillAmount = LibMathV06.getPartialAmountCeil(
-                    order.makerAssetAmount,
+                takerTokenFillAmount = LibMathV06.getPartialAmountCeil(
+                    buyAmount,
                     order.makerAssetAmount.safeSub(order.takerFee),
-                    makerTokenFillAmount
+                    order.takerAssetAmount
                 );
                 // Approve the proxy to spend the maker token.
                 // It isn't worth computing the actual taker fee
@@ -338,14 +352,10 @@ contract FillQuoteTransformer is
             }
         }
 
-        // Convert maker fill amount to taker fill amount.
-        uint256 takerTokenFillAmount = LibSafeMathV06.min256(
+        // Clamp to order size.
+        takerTokenFillAmount = LibSafeMathV06.min256(
             order.takerAssetAmount,
-            LibMathV06.getPartialAmountCeil(
-                makerTokenFillAmount,
-                order.makerAssetAmount,
-                order.takerAssetAmount
-            )
+            takerTokenFillAmount
         );
 
         // Perform the fill.
@@ -380,7 +390,7 @@ contract FillQuoteTransformer is
         returns (FillOrderResults memory results)
     {
         // Track changes in the maker token balance.
-        results.makerTokenBoughtAmount = makerToken.balanceOf(address(this));
+        uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
         try
             exchange.fillOrder
                 {value: protocolFee}
@@ -389,7 +399,7 @@ contract FillQuoteTransformer is
         {
             // Update maker quantity based on changes in token balances.
             results.makerTokenBoughtAmount = makerToken.balanceOf(address(this))
-                .safeSub(results.makerTokenBoughtAmount);
+                .safeSub(initialMakerTokenBalance);
             // We can trust the other fill result quantities.
             results.protocolFeePaid = fillResults.protocolFeePaid;
             results.takerTokenSoldAmount = fillResults.takerAssetFilledAmount;
@@ -400,18 +410,21 @@ contract FillQuoteTransformer is
                     results.takerTokenSoldAmount.safeAdd(fillResults.takerFeePaid);
             }
         } catch (bytes memory) {
-            // If the fill fails, zero out fill quantities.
-            results.makerTokenBoughtAmount = 0;
+            // Swallow failures, leaving all results as zero.
         }
     }
 
     /// @dev Extract the token from plain ERC20 asset data.
+    ///      If the asset-data is empty, a zero token address will be returned.
     /// @param assetData The order asset data.
     function _getTokenFromERC20AssetData(bytes memory assetData)
         private
         pure
         returns (IERC20TokenV06 token)
     {
+        if (assetData.length == 0) {
+            return IERC20TokenV06(address(0));
+        }
         if (assetData.length != 36 ||
             LibBytesV06.readBytes4(assetData, 0) != ERC20_ASSET_PROXY_ID)
         {

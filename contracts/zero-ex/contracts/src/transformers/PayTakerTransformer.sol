@@ -49,7 +49,6 @@ contract PayTakerTransformer is
 
     /// @dev Create this contract.
     /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    /// @dev Construct the transformer and store the WETH address in an immutable.
     constructor(uint256 deploymentNonce_)
         public
         Transformer(deploymentNonce_)

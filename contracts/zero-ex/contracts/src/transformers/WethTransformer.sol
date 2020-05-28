@@ -47,10 +47,9 @@ contract WethTransformer is
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
 
-    /// @dev Create this contract.
+    /// @dev Construct the transformer and store the WETH address in an immutable.
     /// @param weth_ The weth token.
     /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    /// @dev Construct the transformer and store the WETH address in an immutable.
     constructor(IEtherTokenV06 weth_, uint256 deploymentNonce_)
         public
         Transformer(deploymentNonce_)
@@ -74,7 +73,10 @@ contract WethTransformer is
     {
         TransformData memory data = abi.decode(data_, (TransformData));
         if (!data.token.isTokenETH() && data.token != weth) {
-            LibTransformERC20RichErrors.InvalidTransformDataError(data_).rrevert();
+            LibTransformERC20RichErrors.InvalidTransformDataError(
+                LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_TOKENS,
+                data_
+            ).rrevert();
         }
 
         uint256 amount = data.amount;

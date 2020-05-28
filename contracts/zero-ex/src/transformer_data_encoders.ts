@@ -26,6 +26,7 @@ export const fillQuoteTransformerDataEncoder = AbiEncoder.create([
         name: 'data',
         type: 'tuple',
         components: [
+            { name: 'side', type: 'uint8' },
             { name: 'sellToken', type: 'address' },
             { name: 'buyToken', type: 'address' },
             {
@@ -35,23 +36,30 @@ export const fillQuoteTransformerDataEncoder = AbiEncoder.create([
             },
             { name: 'signatures', type: 'bytes[]' },
             { name: 'maxOrderFillAmounts', type: 'uint256[]' },
-            { name: 'sellAmount', type: 'uint256' },
-            { name: 'buyAmount', type: 'uint256' },
+            { name: 'fillAmount', type: 'uint256' },
         ],
     },
 ]);
 
 /**
+ * Market operation for `FillQuoteTransformerData`.
+ */
+export enum FillQuoteTransformerSide {
+    Sell,
+    Buy,
+}
+
+/**
  * `FillQuoteTransformer.TransformData`
  */
 export interface FillQuoteTransformerData {
+    side: FillQuoteTransformerSide;
     sellToken: string;
     buyToken: string;
     orders: Array<Exclude<Order, ['signature', 'exchangeAddress', 'chainId']>>;
     signatures: string[];
     maxOrderFillAmounts: BigNumber[];
-    sellAmount: BigNumber;
-    buyAmount: BigNumber;
+    fillAmount: BigNumber;
 }
 
 /**

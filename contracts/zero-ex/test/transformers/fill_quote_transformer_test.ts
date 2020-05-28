@@ -13,7 +13,11 @@ import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { rlpEncodeNonce } from '../../src/nonce_utils';
-import { encodeFillQuoteTransformerData, FillQuoteTransformerData } from '../../src/transformer_data_encoders';
+import {
+    encodeFillQuoteTransformerData,
+    FillQuoteTransformerData,
+    FillQuoteTransformerSide,
+} from '../../src/transformer_data_encoders';
 import { artifacts } from '../artifacts';
 import {
     FillQuoteTransformerContract,
@@ -217,13 +221,13 @@ blockchainTests.resets('FillQuoteTransformer', env => {
 
     function encodeTransformData(fields: Partial<FillQuoteTransformerData> = {}): string {
         return encodeFillQuoteTransformerData({
+            side: FillQuoteTransformerSide.Sell,
             sellToken: takerToken.address,
             buyToken: makerToken.address,
             orders: [],
             signatures: [],
             maxOrderFillAmounts: [],
-            sellAmount: MAX_UINT256,
-            buyAmount: ZERO_AMOUNT,
+            fillAmount: MAX_UINT256,
             ...fields,
         });
     }
@@ -455,7 +459,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        sellAmount: qfr.takerAssetSpent,
+                        fillAmount: qfr.takerAssetSpent,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -479,7 +483,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        sellAmount: qfr.takerAssetSpent,
+                        fillAmount: qfr.takerAssetSpent,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -614,7 +618,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -636,7 +641,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -661,7 +667,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -684,7 +691,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: maxProtocolFees });
@@ -709,7 +717,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -736,7 +745,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -760,7 +770,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought.plus(1),
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought.plus(1),
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -789,7 +800,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -812,7 +824,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -835,7 +848,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .awaitTransactionSuccessAsync({ value: qfr.protocolFeePaid });
@@ -855,7 +869,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
-                        buyAmount: qfr.makerAssetBought,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                         // Skip the first order.
                         maxOrderFillAmounts: [ZERO_AMOUNT],
                     }),
@@ -879,6 +894,8 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                     encodeTransformData({
                         orders,
                         signatures,
+                        side: FillQuoteTransformerSide.Buy,
+                        fillAmount: qfr.makerAssetBought,
                     }),
                 )
                 .callAsync({ value: qfr.protocolFeePaid });
