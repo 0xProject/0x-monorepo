@@ -75,9 +75,15 @@ export class InvalidExecutionContextError extends RevertError {
     }
 }
 
+export enum InvalidTransformDataErrorCode {
+    InvalidTokens,
+    InvalidArrayLength,
+}
+
 export class InvalidTransformDataError extends RevertError {
-    constructor(transformData?: string) {
-        super('InvalidTransformDataError', 'InvalidTransformDataError(bytes transformData)', {
+    constructor(errorCode?: InvalidTransformDataErrorCode, transformData?: string) {
+        super('InvalidTransformDataError', 'InvalidTransformDataError(uint8 errorCode, bytes transformData)', {
+            errorCode,
             transformData,
         });
     }
