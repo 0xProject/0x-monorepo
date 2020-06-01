@@ -33,6 +33,10 @@
             {
                 "note": "Added `ERC20BridgeSampler.sampleSellsFromMultiBridge",
                 "pr": 2593
+            },
+            {
+                "note": "Add `ITransformERC20`",
+                "pr": "TODO"
             }
         ]
     },
