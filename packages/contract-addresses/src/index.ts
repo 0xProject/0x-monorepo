@@ -34,6 +34,13 @@ export interface ContractAddresses {
     maximumGasPrice: string;
     dexForwarderBridge: string;
     multiBridge: string;
+    exchangeProxy: string;
+    exchangeProxyAllowanceTarget: string;
+    transformers: {
+        wethTransformer: string;
+        payTakerTransformer: string;
+        fillQuoteTransformer: string;
+    };
 }
 
 export enum ChainId {
