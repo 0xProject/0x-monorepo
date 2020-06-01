@@ -34,6 +34,7 @@ import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
 import "./ILiquidityProviderRegistry.sol";
+import "./IUniswapV2Pair.sol";
 
 
 contract ERC20BridgeSampler is
@@ -342,6 +343,83 @@ contract ERC20BridgeSampler is
             }
             takerTokenAmounts[i] = sellAmount;
         }
+    }
+
+    /// @dev Sample sell quotes from Uniswap V2.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromUniswapV2(
+        address takerToken,
+        address makerToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+
+        // get reserves for the token pair
+        IUniswapV2Pair pair = _getUniswapV2Pair(takerToken, makerToken);
+        (bool didSucceed, bytes memory resultData) =
+            address(pair).staticcall.gas(UNISWAP_CALL_GAS)(abi.encodeWithSelector(pair.getReserves.selector));
+            
+        if (didSucceed) {
+            (uint112 takerTokenReserves, uint112 makerTokenReserves, uint32 blockTimestamp) = abi.decode(resultData, (uint112, uint112, uint32));
+        }
+
+        // // pseudo-code: sample using reserves
+        // for (uint256 i = 0; i < numSamples; i++) {
+        //     takerTokenAmount = takerTokenAmounts[i];
+        //     makerTokenAmounts[i] = uniswapRouter.quote(takerTokenAmount, takerTokenReserves, makerTokenReserves)
+        // }
+    }
+
+    function sampleSellsFromUniswapV2ViaEth(
+        address takerToken,
+        address makerToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+    }
+
+    function sampleBuysFromUniswapV2(
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
+    }
+
+    function sampleBuysFromUniswapV2ViaEth(
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        _assertValidPair(makerToken, takerToken);
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
     }
 
     /// @dev Sample sell quotes from Uniswap.
@@ -654,6 +732,27 @@ contract ERC20BridgeSampler is
         returns (uint8 decimals)
     {
         return LibERC20Token.decimals(tokenAddress);
+    }
+
+    // from https://uniswap.org/docs/v2/technical-considerations/pair-addresses/#create2
+    function _getUniswapV2Pair(
+        address takerToken,
+        address makerToken
+    )
+        private
+        pure
+        returns (IUniswapV2Pair pair)
+    {
+        address factory = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f; // fixme(xianny): change into a param
+
+        address addr = address(uint(keccak256(abi.encodePacked(
+        hex'ff',
+        factory,
+        keccak256(abi.encodePacked(takerToken, makerToken)),
+        hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f'
+        ))));
+
+        pair = IUniswapV2Pair(addr);
     }
 
     /// @dev Gracefully calls a Uniswap pricing function.

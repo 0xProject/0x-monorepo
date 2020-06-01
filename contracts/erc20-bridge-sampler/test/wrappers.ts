@@ -15,4 +15,5 @@ export * from '../test/generated-wrappers/i_kyber_network_proxy';
 export * from '../test/generated-wrappers/i_liquidity_provider';
 export * from '../test/generated-wrappers/i_liquidity_provider_registry';
 export * from '../test/generated-wrappers/i_uniswap_exchange_quotes';
+export * from '../test/generated-wrappers/i_uniswap_v2_pair';
 export * from '../test/generated-wrappers/test_erc20_bridge_sampler';
