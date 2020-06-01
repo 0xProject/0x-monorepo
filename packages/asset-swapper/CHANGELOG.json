@@ -89,6 +89,10 @@
             {
                 "note": "Fix Uniswap V2 path ordering",
                 "pr": 2601
+            },
+            {
+                "note": "Add exchange proxy support",
+                "pr": 2591
             }
         ]
     },

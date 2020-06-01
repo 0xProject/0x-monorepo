@@ -19,16 +19,17 @@ import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
+const { NULL_ADDRESS } = constants;
+
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
     public readonly chainId: number;
 
-    private readonly _contractAddresses: ContractAddresses;
     private readonly _forwarder: ForwarderContract;
 
     constructor(
         supportedProvider: SupportedProvider,
-        contractAddresses: ContractAddresses,
+        public readonly contractAddresses: ContractAddresses,
         options: Partial<SwapQuoteConsumerOpts> = {},
     ) {
         const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
@@ -36,7 +37,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
         this.chainId = chainId;
-        this._contractAddresses = contractAddresses;
         this._forwarder = new ForwarderContract(contractAddresses.forwarder, supportedProvider);
     }
 
@@ -90,6 +90,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
             calldataHexString,
             toAddress: this._forwarder.address,
             ethAmount: ethAmountWithFees,
+            allowanceTarget: NULL_ADDRESS,
         };
     }
 
@@ -160,6 +161,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
     }
 
     private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.encodeERC20AssetData(this._contractAddresses.etherToken);
+        return assetDataUtils.encodeERC20AssetData(this.contractAddresses.etherToken);
     }
 }
