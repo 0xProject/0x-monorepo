@@ -78,18 +78,19 @@ contract UniswapV2Bridge is
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
 
-        // // Grant the Uniswap router an allowance. //  FIXME: REVERTING
-        // LibERC20Token.approve(
-        //     state.fromTokenAddress,
-        //     _getUniswapV2Router01Address(),
-        //     // state.fromTokenBalance
-        //     uint256(-1)
-        // );
+        require(state.fromTokenBalance > 0, 'must have balance');
+
+        // Grant the Uniswap router an allowance.
+        LibERC20Token.approve(
+            state.fromTokenAddress,
+            _getUniswapV2Router01Address(),
+            state.fromTokenBalance
+        );
 
         // Convert directly from fromTokenAddress to toTokenAddress
         address[] memory path = new address[](2);
-        path = path.append(state.fromTokenAddress);
-        path = path.append(toTokenAddress);
+        path[0] = state.fromTokenAddress;
+        path[1] = toTokenAddress;
 
         // Buy as much `toTokenAddress` token with `fromTokenAddress` token
         // and transfer it to `to`.
@@ -107,7 +108,7 @@ contract UniswapV2Bridge is
             block.timestamp
         );
 
-        state.boughtAmount = amounts[1];
+        state.boughtAmount = amounts[0];
 
         emit ERC20BridgeTransfer(
             // input token

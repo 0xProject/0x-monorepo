@@ -25,15 +25,8 @@ import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
 import "../src/bridges/UniswapV2Bridge.sol";
 import "../src/interfaces/IUniswapV2Router01.sol";
 
-
-/// @dev A minimalist ERC20/WETH token.
-contract TestToken {
-
-    using LibSafeMath for uint256;
-
-    mapping (address => uint256) public balances;
-    string private _nextRevertReason;
-
+contract TestEventsRaiser {
+    
     event TokenTransfer(
         address token,
         address from,
@@ -46,20 +39,65 @@ contract TestToken {
         uint256 allowance
     );
 
+    event SwapExactTokensForTokens(
+        uint amountIn,
+        uint amountOutMin,
+        address toTokenAddress,
+        address to,
+        uint deadline
+    );
+
+    function raiseTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    )
+        external
+    {
+        emit TokenTransfer(
+            msg.sender,
+            from,
+            to,
+            amount
+        );
+    }
+
+    function raiseTokenApprove(address spender, uint256 allowance) external {
+        emit TokenApprove(spender, allowance);
+    }
+
+    function raiseSwapExactTokensForTokens(
+        uint amountIn,
+        uint amountOutMin,
+        address toTokenAddress,
+        address to,
+        uint deadline
+    ) external
+    {
+        emit SwapExactTokensForTokens(
+            amountIn,
+            amountOutMin,
+            toTokenAddress,
+            to,
+            deadline
+        );
+    }
+}
+
+/// @dev A minimalist ERC20 token.
+contract TestToken {
+
+    using LibSafeMath for uint256;
+
+    mapping (address => uint256) public balances;
+    string private _nextRevertReason;
+
     /// @dev Set the balance for `owner`.
-    function setBalance(address owner)
+    function setBalance(address owner, uint256 balance)
         external
         payable
     {
-        balances[owner] = msg.value;
-    }
-
-    /// @dev Set the revert reason for `transfer()`,
-    ///      `deposit()`, and `withdraw()`.
-    function setRevertReason(string calldata reason)
-        external
-    {
-        _nextRevertReason = reason;
+        balances[owner] = balance;
     }
 
     /// @dev Just emits a TokenTransfer event on the caller
@@ -67,8 +105,7 @@ contract TestToken {
         external
         returns (bool)
     {
-        _revertIfReasonExists();
-        emit TokenTransfer(msg.sender, msg.sender, to, amount);
+        TestEventsRaiser(msg.sender).raiseTokenTransfer(msg.sender, to, amount);
         return true;
     }
 
@@ -77,30 +114,8 @@ contract TestToken {
         external
         returns (bool)
     {
-        emit TokenApprove(spender, allowance);
+        TestEventsRaiser(msg.sender).raiseTokenApprove(spender, allowance);
         return true;
-    }
-
-    /// @dev `IWETH.deposit()` that increases balances and calls
-    ///     `raiseWethDeposit()` on the caller.
-    function deposit()
-        external
-        payable
-    {
-        _revertIfReasonExists();
-        balances[msg.sender] += balances[msg.sender].safeAdd(msg.value);
-        // TestEventsRaiser(msg.sender).raiseWethDeposit(msg.value);
-    }
-
-    /// @dev `IWETH.withdraw()` that just reduces balances and calls
-    ///       `raiseWethWithdraw()` on the caller.
-    function withdraw(uint256 amount)
-        external
-    {
-        _revertIfReasonExists();
-        balances[msg.sender] = balances[msg.sender].safeSub(amount);
-        msg.sender.transfer(amount);
-        // TestEventsRaiser(msg.sender).raiseWethWithdraw(amount);
     }
 
     function allowance(address, address) external view returns (uint256) {
@@ -115,30 +130,20 @@ contract TestToken {
     {
         return balances[owner];
     }
-
-    function _revertIfReasonExists()
-        private
-        view
-    {
-        if (bytes(_nextRevertReason).length != 0) {
-            revert(_nextRevertReason);
-        }
-    }
 }
 
 
 contract TestRouter is
     IUniswapV2Router01
 {
+    string private _nextRevertReason;
 
-    event TokenToTokenTransferInput(
-        address exchange,
-        uint256 tokensSold,
-        uint256 minTokensBought,
-        uint256 deadline,
-        address recipient,
-        address toTokenAddress
-    );
+    /// @dev Set the revert reason for `swapExactTokensForTokens`.
+    function setRevertReason(string calldata reason)
+        external
+    {
+        _nextRevertReason = reason;
+    }
 
     function swapExactTokensForTokens(
         uint amountIn,
@@ -148,24 +153,32 @@ contract TestRouter is
         uint deadline
     ) external returns (uint[] memory amounts)
     {
-        amounts = new uint[](2);
-        amounts[0] = amountIn;
-        // amounts[1] = address(this).balance;
-        amounts[1] = amountOutMin;
+        _revertIfReasonExists();
 
-        emit TokenToTokenTransferInput(
-            msg.sender,
+        amounts = new uint[](1);
+        amounts[0] = amountOutMin;
+
+        TestEventsRaiser(msg.sender).raiseSwapExactTokensForTokens(
             // tokens sold
             amountIn,
             // tokens bought
             amountOutMin,
-            // deadline
-            deadline,
+            // output token (toTokenAddress)
+            path[1],
             // recipient
             to,
-            // output token (toTokenAddress)
-            path[1]
+            // deadline
+            deadline
         );
+    }
+
+    function _revertIfReasonExists()
+        private
+        view
+    {
+        if (bytes(_nextRevertReason).length != 0) {
+            revert(_nextRevertReason);
+        }
     }
 
 }
@@ -173,7 +186,8 @@ contract TestRouter is
 
 /// @dev UniswapV2Bridge overridden to mock tokens and Uniswap router
 contract TestUniswapV2Bridge is
-    UniswapV2Bridge
+    UniswapV2Bridge,
+    TestEventsRaiser
 {
 
     // Token address to TestToken instance.
@@ -185,22 +199,27 @@ contract TestUniswapV2Bridge is
         _testRouter = new TestRouter();
     }
 
-    /// @dev Sets the balance of this contract for an existing token.
-    ///      The wei attached will be the balance.
-    function setTokenBalance(address tokenAddress)
+    function getRouterAddress()
         external
-        payable
+        view
+        returns (address)
     {
-        TestToken token = _testTokens[tokenAddress];
-        token.deposit.value(msg.value)();
+        return address(_testRouter);
     }
 
-    /// @dev Sets the revert reason for an existing token.
-    function setTokenRevertReason(address tokenAddress, string calldata revertReason)
+    function setRouterRevertReason(string calldata revertReason)
+        external
+    {
+        _testRouter.setRevertReason(revertReason);
+    }
+
+    /// @dev Sets the balance of this contract for an existing token.
+    ///      The wei attached will be the balance.
+    function setTokenBalance(address tokenAddress, uint256 balance)
         external
     {
         TestToken token = _testTokens[tokenAddress];
-        token.setRevertReason(revertReason);
+        token.setBalance(address(this), balance);
     }
 
     /// @dev Create a new token
@@ -209,7 +228,6 @@ contract TestUniswapV2Bridge is
         address tokenAddress
     )
         external
-        payable
         returns (TestToken token)
     {
         token = TestToken(tokenAddress);
