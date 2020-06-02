@@ -153,10 +153,15 @@ export function registerPythonHelpers(): void {
         }
         return '';
     });
-    Handlebars.registerHelper(
-        'toPythonClassname',
-        (sourceName: string) => new Handlebars.SafeString(changeCase.pascal(sourceName)),
-    );
+    Handlebars.registerHelper('toPythonClassname', (sourceName: string) => {
+        let pascalCased = changeCase.pascal(sourceName);
+        // Retain trailing underscores.
+        const m = /^.+?(_*)$/.exec(sourceName);
+        if (m) {
+            pascalCased = `${pascalCased}${m[1]}`;
+        }
+        return new Handlebars.SafeString(pascalCased);
+    });
     Handlebars.registerHelper(
         'makeOutputsValue',
         /**

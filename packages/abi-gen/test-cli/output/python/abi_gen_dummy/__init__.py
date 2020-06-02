@@ -178,7 +178,9 @@ class AbiGenDummyNestedStruct(TypedDict):
     description: str
 
 
-class AcceptsAnArrayOfBytesMethod(ContractMethod):
+class AcceptsAnArrayOfBytesMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the acceptsAnArrayOfBytes method."""
 
     def __init__(
@@ -225,7 +227,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
-class AcceptsBytesMethod(ContractMethod):
+class AcceptsBytesMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the acceptsBytes method."""
 
     def __init__(
@@ -267,7 +269,9 @@ class AcceptsBytesMethod(ContractMethod):
         return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
-class ComplexInputComplexOutputMethod(ContractMethod):
+class ComplexInputComplexOutputMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the complexInputComplexOutput method."""
 
     def __init__(
@@ -329,7 +333,7 @@ class ComplexInputComplexOutputMethod(ContractMethod):
         )
 
 
-class EcrecoverFnMethod(ContractMethod):
+class EcrecoverFnMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the ecrecoverFn method."""
 
     def __init__(
@@ -414,7 +418,7 @@ class EcrecoverFnMethod(ContractMethod):
         )
 
 
-class EmitSimpleEventMethod(ContractMethod):
+class EmitSimpleEventMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the emitSimpleEvent method."""
 
     def __init__(
@@ -457,7 +461,9 @@ class EmitSimpleEventMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class MethodAcceptingArrayOfArrayOfStructsMethod(ContractMethod):
+class MethodAcceptingArrayOfArrayOfStructsMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the methodAcceptingArrayOfArrayOfStructs method."""
 
     def __init__(
@@ -509,7 +515,9 @@ class MethodAcceptingArrayOfArrayOfStructsMethod(ContractMethod):
         )
 
 
-class MethodAcceptingArrayOfStructsMethod(ContractMethod):
+class MethodAcceptingArrayOfStructsMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the methodAcceptingArrayOfStructs method."""
 
     def __init__(
@@ -559,7 +567,9 @@ class MethodAcceptingArrayOfStructsMethod(ContractMethod):
         )
 
 
-class MethodReturningArrayOfStructsMethod(ContractMethod):
+class MethodReturningArrayOfStructsMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the methodReturningArrayOfStructs method."""
 
     def __init__(
@@ -598,7 +608,9 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class MethodReturningMultipleValuesMethod(ContractMethod):
+class MethodReturningMultipleValuesMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the methodReturningMultipleValues method."""
 
     def __init__(
@@ -632,7 +644,7 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
 
 class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
     ContractMethod
-):
+):  # pylint: disable=invalid-name
     """Various interfaces to the methodUsingNestedStructWithInnerStructNotUsedElsewhere method."""
 
     def __init__(
@@ -665,7 +677,9 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class MultiInputMultiOutputMethod(ContractMethod):
+class MultiInputMultiOutputMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the multiInputMultiOutput method."""
 
     def __init__(
@@ -747,7 +761,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
         )
 
 
-class NestedStructInputMethod(ContractMethod):
+class NestedStructInputMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the nestedStructInput method."""
 
     def __init__(
@@ -791,7 +805,7 @@ class NestedStructInputMethod(ContractMethod):
         return self._underlying_method(n).estimateGas(tx_params.as_dict())
 
 
-class NestedStructOutputMethod(ContractMethod):
+class NestedStructOutputMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the nestedStructOutput method."""
 
     def __init__(
@@ -824,7 +838,7 @@ class NestedStructOutputMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class NoInputNoOutputMethod(ContractMethod):
+class NoInputNoOutputMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the noInputNoOutput method."""
 
     def __init__(
@@ -854,7 +868,9 @@ class NoInputNoOutputMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class NoInputSimpleOutputMethod(ContractMethod):
+class NoInputSimpleOutputMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the noInputSimpleOutput method."""
 
     def __init__(
@@ -885,7 +901,7 @@ class NoInputSimpleOutputMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class NonPureMethodMethod(ContractMethod):
+class NonPureMethodMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the nonPureMethod method."""
 
     def __init__(
@@ -929,7 +945,9 @@ class NonPureMethodMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class NonPureMethodThatReturnsNothingMethod(ContractMethod):
+class NonPureMethodThatReturnsNothingMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
 
     def __init__(
@@ -972,7 +990,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class OverloadedMethod2Method(ContractMethod):
+class OverloadedMethod2Method(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the overloadedMethod method."""
 
     def __init__(
@@ -1014,7 +1032,7 @@ class OverloadedMethod2Method(ContractMethod):
         return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
-class OverloadedMethod1Method(ContractMethod):
+class OverloadedMethod1Method(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the overloadedMethod method."""
 
     def __init__(
@@ -1056,7 +1074,9 @@ class OverloadedMethod1Method(ContractMethod):
         return self._underlying_method(a).estimateGas(tx_params.as_dict())
 
 
-class PureFunctionWithConstantMethod(ContractMethod):
+class PureFunctionWithConstantMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the pureFunctionWithConstant method."""
 
     def __init__(
@@ -1085,7 +1105,9 @@ class PureFunctionWithConstantMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class RequireWithConstantMethod(ContractMethod):
+class RequireWithConstantMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the requireWithConstant method."""
 
     def __init__(
@@ -1113,7 +1135,7 @@ class RequireWithConstantMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class RevertWithConstantMethod(ContractMethod):
+class RevertWithConstantMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the revertWithConstant method."""
 
     def __init__(
@@ -1141,7 +1163,9 @@ class RevertWithConstantMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class SimpleInputNoOutputMethod(ContractMethod):
+class SimpleInputNoOutputMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the simpleInputNoOutput method."""
 
     def __init__(
@@ -1189,7 +1213,9 @@ class SimpleInputNoOutputMethod(ContractMethod):
         )
 
 
-class SimpleInputSimpleOutputMethod(ContractMethod):
+class SimpleInputSimpleOutputMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the simpleInputSimpleOutput method."""
 
     def __init__(
@@ -1238,7 +1264,7 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
         )
 
 
-class SimplePureFunctionMethod(ContractMethod):
+class SimplePureFunctionMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the simplePureFunction method."""
 
     def __init__(
@@ -1267,7 +1293,9 @@ class SimplePureFunctionMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class SimplePureFunctionWithInputMethod(ContractMethod):
+class SimplePureFunctionWithInputMethod(
+    ContractMethod
+):  # pylint: disable=invalid-name
     """Various interfaces to the simplePureFunctionWithInput method."""
 
     def __init__(
@@ -1312,7 +1340,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         return self._underlying_method(x).estimateGas(tx_params.as_dict())
 
 
-class SimpleRequireMethod(ContractMethod):
+class SimpleRequireMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the simpleRequire method."""
 
     def __init__(
@@ -1340,7 +1368,7 @@ class SimpleRequireMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class SimpleRevertMethod(ContractMethod):
+class SimpleRevertMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the simpleRevert method."""
 
     def __init__(
@@ -1368,7 +1396,7 @@ class SimpleRevertMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class StructInputMethod(ContractMethod):
+class StructInputMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the structInput method."""
 
     def __init__(
@@ -1410,7 +1438,7 @@ class StructInputMethod(ContractMethod):
         return self._underlying_method(s).estimateGas(tx_params.as_dict())
 
 
-class StructOutputMethod(ContractMethod):
+class StructOutputMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the structOutput method."""
 
     def __init__(
@@ -1446,7 +1474,7 @@ class StructOutputMethod(ContractMethod):
         return self._underlying_method().estimateGas(tx_params.as_dict())
 
 
-class WithAddressInputMethod(ContractMethod):
+class WithAddressInputMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the withAddressInput method."""
 
     def __init__(
@@ -1537,7 +1565,7 @@ class WithAddressInputMethod(ContractMethod):
         )
 
 
-class WithdrawMethod(ContractMethod):
+class WithdrawMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the withdraw method."""
 
     def __init__(

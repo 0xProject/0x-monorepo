@@ -146,7 +146,16 @@ if (args.language === 'TypeScript') {
 registerPartials();
 
 function makeLanguageSpecificName(methodName: string): string {
-    return args.language === 'Python' ? changeCase.snake(methodName) : methodName;
+    if (args.language === 'Python') {
+        let snakeCased = changeCase.snake(methodName);
+        // Move leading underscores to the end.
+        const m = /^(_*).+?(_*)$/.exec(methodName);
+        if (m) {
+            snakeCased = `${snakeCased}${m[1] || m[2]}`;
+        }
+        return snakeCased;
+    }
+    return methodName;
 }
 
 if (_.isEmpty(abiFileNames)) {

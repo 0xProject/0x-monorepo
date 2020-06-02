@@ -1,5 +1,5 @@
 
-class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
+class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod): # pylint: disable=invalid-name
     """Various interfaces to the {{this.name}} method."""
 
     def __init__(self, web3_or_provider: Union[Web3, BaseProvider], contract_address: str, contract_function: ContractFunction{{#if inputs}}, validator: Validator=None{{/if}}):

@@ -46,7 +46,7 @@ except ImportError:
     pass
 
 
-class PublicAddConstantMethod(ContractMethod):
+class PublicAddConstantMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the publicAddConstant method."""
 
     def __init__(
@@ -91,7 +91,7 @@ class PublicAddConstantMethod(ContractMethod):
         return self._underlying_method(x).estimateGas(tx_params.as_dict())
 
 
-class PublicAddOneMethod(ContractMethod):
+class PublicAddOneMethod(ContractMethod):  # pylint: disable=invalid-name
     """Various interfaces to the publicAddOne method."""
 
     def __init__(
