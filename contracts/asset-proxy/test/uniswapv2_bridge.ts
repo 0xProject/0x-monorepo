@@ -16,12 +16,9 @@ import { artifacts } from './artifacts';
 import {
     TestUniswapV2BridgeContract,
     TestUniswapV2BridgeEvents as ContractEvents,
-    TestUniswapV2BridgeSwapExactTokensForTokensEventArgs as SwapExactTokensForTokensArgs,
-    // TestUniswapV2BridgeTokenToEthSwapInputEventArgs as TokenToEthSwapInputArgs,
+    TestUniswapV2BridgeSwapExactTokensForTokensInputEventArgs as SwapExactTokensForTokensArgs,
     TestUniswapV2BridgeTokenApproveEventArgs as TokenApproveArgs,
     TestUniswapV2BridgeTokenTransferEventArgs as TokenTransferArgs,
-    // TestUniswapV2BridgeWethDepositEventArgs as WethDepositArgs,
-    // TestUniswapV2BridgeWethWithdrawEventArgs as WethWithdrawArgs,
 } from './wrappers';
 
 blockchainTests.resets('UniswapV2 unit tests', env => {
@@ -157,7 +154,7 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
                 expect(result).to.eq(AssetProxyId.ERC20Bridge, 'asset proxy id');
                 const transfers = filterLogsToArguments<SwapExactTokensForTokensArgs>(
                     logs,
-                    ContractEvents.SwapExactTokensForTokens,
+                    ContractEvents.SwapExactTokensForTokensInput,
                 );
 
                 expect(transfers.length).to.eq(1);

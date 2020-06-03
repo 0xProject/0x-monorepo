@@ -78,8 +78,6 @@ contract UniswapV2Bridge is
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(state.fromTokenAddress).balanceOf(address(this));
 
-        require(state.fromTokenBalance > 0, 'must have balance');
-
         // Grant the Uniswap router an allowance.
         LibERC20Token.approve(
             state.fromTokenAddress,

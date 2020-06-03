@@ -25,8 +25,9 @@ import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
 import "../src/bridges/UniswapV2Bridge.sol";
 import "../src/interfaces/IUniswapV2Router01.sol";
 
+
 contract TestEventsRaiser {
-    
+
     event TokenTransfer(
         address token,
         address from,
@@ -39,7 +40,7 @@ contract TestEventsRaiser {
         uint256 allowance
     );
 
-    event SwapExactTokensForTokens(
+    event SwapExactTokensForTokensInput(
         uint amountIn,
         uint amountOutMin,
         address toTokenAddress,
@@ -66,7 +67,7 @@ contract TestEventsRaiser {
         emit TokenApprove(spender, allowance);
     }
 
-    function raiseSwapExactTokensForTokens(
+    function raiseSwapExactTokensForTokensInput(
         uint amountIn,
         uint amountOutMin,
         address toTokenAddress,
@@ -74,7 +75,7 @@ contract TestEventsRaiser {
         uint deadline
     ) external
     {
-        emit SwapExactTokensForTokens(
+        emit SwapExactTokensForTokensInput(
             amountIn,
             amountOutMin,
             toTokenAddress,
@@ -83,6 +84,7 @@ contract TestEventsRaiser {
         );
     }
 }
+
 
 /// @dev A minimalist ERC20 token.
 contract TestToken {
@@ -133,6 +135,7 @@ contract TestToken {
 }
 
 
+/// @dev Mock the UniswapV2Router01 contract
 contract TestRouter is
     IUniswapV2Router01
 {
@@ -158,7 +161,7 @@ contract TestRouter is
         amounts = new uint[](1);
         amounts[0] = amountOutMin;
 
-        TestEventsRaiser(msg.sender).raiseSwapExactTokensForTokens(
+        TestEventsRaiser(msg.sender).raiseSwapExactTokensForTokensInput(
             // tokens sold
             amountIn,
             // tokens bought
@@ -199,14 +202,6 @@ contract TestUniswapV2Bridge is
         _testRouter = new TestRouter();
     }
 
-    function getRouterAddress()
-        external
-        view
-        returns (address)
-    {
-        return address(_testRouter);
-    }
-
     function setRouterRevertReason(string calldata revertReason)
         external
     {
@@ -237,6 +232,14 @@ contract TestUniswapV2Bridge is
         _testTokens[address(token)] = token;
 
         return token;
+    }
+
+    function getRouterAddress()
+        external
+        view
+        returns (address)
+    {
+        return address(_testRouter);
     }
 
     function _getUniswapV2Router01Address()
