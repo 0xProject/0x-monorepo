@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 
 
-interface IUniswapV2Router {
+interface IUniswapV2Router01 {
 
     function getAmountsOut(uint256 amountIn, address[] calldata path)
         external

@@ -34,7 +34,7 @@ import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
 import "./ILiquidityProviderRegistry.sol";
-import "./IUniswapV2Router.sol";
+import "./IUniswapV2Router01.sol";
 
 
 contract ERC20BridgeSampler is
@@ -665,9 +665,9 @@ contract ERC20BridgeSampler is
         makerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
-                _getUniswapV2RouterAddress().staticcall.gas(UNISWAPV2_CALL_GAS)(
+                _getUniswapV2Router01Address().staticcall.gas(UNISWAPV2_CALL_GAS)(
                     abi.encodeWithSelector(
-                        IUniswapV2Router(0).getAmountsOut.selector,
+                        IUniswapV2Router01(0).getAmountsOut.selector,
                         takerTokenAmounts[i],
                         path
                     ));
@@ -699,9 +699,9 @@ contract ERC20BridgeSampler is
         takerTokenAmounts = new uint256[](numSamples);
         for (uint256 i = 0; i < numSamples; i++) {
             (bool didSucceed, bytes memory resultData) =
-                _getUniswapV2RouterAddress().staticcall.gas(UNISWAPV2_CALL_GAS)(
+                _getUniswapV2Router01Address().staticcall.gas(UNISWAPV2_CALL_GAS)(
                     abi.encodeWithSelector(
-                        IUniswapV2Router(0).getAmountsIn.selector,
+                        IUniswapV2Router01(0).getAmountsIn.selector,
                         makerTokenAmounts[i],
                         path
                     ));

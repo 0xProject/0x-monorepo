@@ -32,10 +32,10 @@ contract DeploymentConstants {
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     // /// @dev Kovan address of the `UniswapExchangeFactory` contract.
     // address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30;
-    /// @dev Mainnet address of the `IIUniswapV2Router` contract.
-    address constant private UNISWAP_V2_ROUTER_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
-    // /// @dev Kovan address of the `IIUniswapV2Router` contract.
-    // address constant private UNISWAP_V2_ROUTER_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    /// @dev Mainnet address of the `UniswapV2Router01` contract.
+    address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // /// @dev Kovan address of the `UniswapV2Router01` contract.
+    // address constant private UNISWAP_V2_ROUTER_01ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
     address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
     // /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.
@@ -97,14 +97,14 @@ contract DeploymentConstants {
         return UNISWAP_EXCHANGE_FACTORY_ADDRESS;
     }
 
-    /// @dev Overridable way to get the `IUniswapV2Router` address.
-    /// @return uniswapRouterAddress The `IUniswapV2Router` address.
-    function _getUniswapV2RouterAddress()
+    /// @dev Overridable way to get the `UniswapV2Router01` address.
+    /// @return uniswapRouterAddress The `UniswapV2Router01` address.
+    function _getUniswapV2Router01Address()
         internal
         view
         returns (address uniswapRouterAddress)
     {
-        return UNISWAP_V2_ROUTER_ADDRESS;
+        return UNISWAP_V2_ROUTER_01_ADDRESS;
     }
 
     /// @dev An overridable way to retrieve the Eth2Dai `MatchingMarket` contract.
