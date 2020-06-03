@@ -25,6 +25,7 @@ import "../src/ERC20BridgeSampler.sol";
 import "../src/IEth2Dai.sol";
 import "../src/IDevUtils.sol";
 import "../src/IKyberNetworkProxy.sol";
+import "../src/IUniswapV2Router.sol";
 
 
 library LibDeterministicQuotes {
@@ -194,6 +195,55 @@ contract TestERC20BridgeSamplerUniswapExchange is
 }
 
 
+contract TestERC20BridgeSamplerUniswapV2Router is
+    IUniswapV2Router,
+    DeploymentConstants,
+    FailTrigger
+{
+    bytes32 constant private SALT = 0xadc7fcb33c735913b8635927e66896b356a53a912ab2ceff929e60a04b53b3c1;
+
+    // Deterministic `IUniswapV2Router.getAmountsOut()`.
+    function getAmountsOut(uint256 amountIn, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts)
+    {
+        require(path.length >= 2, "PATH_TOO_SHORT");
+        _revertIfShouldFail();
+        amounts = new uint256[](path.length);
+        amounts[0] = amountIn;
+        for (uint256 i = 0; i < path.length - 1; ++i) {
+            amounts[i + 1] = LibDeterministicQuotes.getDeterministicSellQuote(
+                SALT,
+                path[i],
+                path[i + 1],
+                amounts[i]
+            );
+        }
+    }
+
+    // Deterministic `IUniswapV2Router.getAmountsInt()`.
+    function getAmountsIn(uint256 amountOut, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts)
+    {
+        require(path.length >= 2, "PATH_TOO_SHORT");
+        _revertIfShouldFail();
+        amounts = new uint256[](path.length);
+        amounts[0] = amountOut;
+        for (uint256 i = 0; i < path.length - 1; ++i) {
+            amounts[i + 1] = LibDeterministicQuotes.getDeterministicBuyQuote(
+                SALT,
+                path[i],
+                path[i + 1],
+                amounts[i]
+            );
+        }
+    }
+}
+
+
 contract TestERC20BridgeSamplerKyberNetwork is
     IKyberNetwork,
     DeploymentConstants,
@@ -325,6 +375,7 @@ contract TestERC20BridgeSampler is
     FailTrigger
 {
     TestERC20BridgeSamplerUniswapExchangeFactory public uniswap;
+    TestERC20BridgeSamplerUniswapV2Router public uniswapV2Router;
     TestERC20BridgeSamplerEth2Dai public eth2Dai;
     TestERC20BridgeSamplerKyberNetwork public kyber;
 
@@ -332,6 +383,7 @@ contract TestERC20BridgeSampler is
 
     constructor() public ERC20BridgeSampler(address(this)) {
         uniswap = new TestERC20BridgeSamplerUniswapExchangeFactory();
+        uniswapV2Router = new TestERC20BridgeSamplerUniswapV2Router();
         eth2Dai = new TestERC20BridgeSamplerEth2Dai();
         kyber = new TestERC20BridgeSamplerKyberNetwork();
     }
@@ -397,6 +449,15 @@ contract TestERC20BridgeSampler is
         returns (address uniswapAddress)
     {
         return address(uniswap);
+    }
+
+    // Overriden to point to a custom contract.
+    function _getUniswapV2RouterAddress()
+        internal
+        view
+        returns (address uniswapV2RouterAddress)
+    {
+        return address(uniswapV2Router);
     }
 
     // Overriden to point to a custom contract.

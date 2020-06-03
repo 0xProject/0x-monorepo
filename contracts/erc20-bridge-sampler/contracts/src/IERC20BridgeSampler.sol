@@ -240,4 +240,30 @@ interface IERC20BridgeSampler {
         external
         view
         returns (address providerAddress);
+
+    /// @dev Sample sell quotes from UniswapV2.
+    /// @param path Token route.
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromUniswapV2(
+        address[] calldata path,
+        uint256[] calldata takerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory makerTokenAmounts);
+
+    /// @dev Sample buy quotes from UniswapV2.
+    /// @param path Token route.
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromUniswapV2(
+        address[] calldata path,
+        uint256[] calldata makerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory takerTokenAmounts);
 }

@@ -17,6 +17,10 @@
             {
                 "note": "Use `searchBestRate` in Kyber samples. Return 0 when Uniswap/Eth2Dai reserve",
                 "pr": 2575
+            },
+            {
+                "note": "Add UniswapV2",
+                "pr": 2595
             }
         ]
     },

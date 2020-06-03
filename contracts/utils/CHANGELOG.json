@@ -20,7 +20,7 @@
             },
             {
                 "note": "Add UniswapV2 addresses to `DeploymentConstants`",
-                "pr": "TODO"
+                "pr": 2595
             }
         ]
     },

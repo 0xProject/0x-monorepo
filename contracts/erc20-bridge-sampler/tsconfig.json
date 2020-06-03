@@ -21,6 +21,7 @@
         "test/generated-artifacts/ILiquidityProvider.json",
         "test/generated-artifacts/ILiquidityProviderRegistry.json",
         "test/generated-artifacts/IUniswapExchangeQuotes.json",
+        "test/generated-artifacts/IUniswapV2Router.json",
         "test/generated-artifacts/TestERC20BridgeSampler.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

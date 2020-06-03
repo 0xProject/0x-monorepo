@@ -28,6 +28,7 @@ blockchainTests('erc20-bridge-sampler', env => {
     const KYBER_SALT = '0x0ff3ca9d46195c39f9a12afb74207b4970349fb3cfb1e459bbf170298d326bc7';
     const ETH2DAI_SALT = '0xb713b61bb9bb2958a0f5d1534b21e94fc68c4c0c034b0902ed844f2f6cd1b4f7';
     const UNISWAP_BASE_SALT = '0x1d6a6a0506b0b4a554b907a4c29d9f4674e461989d9c1921feb17b26716385ab';
+    const UNISWAP_V2_SALT = '0xadc7fcb33c735913b8635927e66896b356a53a912ab2ceff929e60a04b53b3c1';
     const ERC20_PROXY_ID = '0xf47261b0';
     const INVALID_TOKEN_PAIR_ERROR = 'ERC20BridgeSampler/INVALID_TOKEN_PAIR';
     const MAKER_TOKEN = randomAddress();
@@ -189,6 +190,22 @@ blockchainTests('erc20-bridge-sampler', env => {
             quotes.push(sampleOutputs);
         }
         return quotes;
+    }
+
+    function getDeterministicUniswapV2SellQuote(path: string[], sellAmount: BigNumber): BigNumber {
+        let bought = sellAmount;
+        for (let i = 0; i < path.length - 1; ++i) {
+            bought = getDeterministicSellQuote(UNISWAP_V2_SALT, path[i], path[i + 1], bought);
+        }
+        return bought;
+    }
+
+    function getDeterministicUniswapV2BuyQuote(path: string[], buyAmount: BigNumber): BigNumber {
+        let sold = buyAmount;
+        for (let i = 0; i < path.length - 1; ++i) {
+            sold = getDeterministicBuyQuote(UNISWAP_V2_SALT, path[i], path[i + 1], sold);
+        }
+        return sold;
     }
 
     function getDeterministicFillableTakerAssetAmount(order: Order): BigNumber {
@@ -923,6 +940,86 @@ blockchainTests('erc20-bridge-sampler', env => {
             result.forEach(value => {
                 expect(value).is.bignumber.eql(constants.ZERO_AMOUNT);
             });
+        });
+    });
+
+    blockchainTests.resets('sampleSellsFromUniswapV2()', () => {
+        function predictSellQuotes(path: string[], sellAmounts: BigNumber[]): BigNumber[] {
+            return sellAmounts.map(a => getDeterministicUniswapV2SellQuote(path, a));
+        }
+
+        it('can return no quotes', async () => {
+            const quotes = await testContract.sampleSellsFromUniswapV2([TAKER_TOKEN, MAKER_TOKEN], []).callAsync();
+            expect(quotes).to.deep.eq([]);
+        });
+
+        it('can quote token -> token', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const expectedQuotes = predictSellQuotes([TAKER_TOKEN, MAKER_TOKEN], sampleAmounts);
+            const quotes = await testContract
+                .sampleSellsFromUniswapV2([TAKER_TOKEN, MAKER_TOKEN], sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+
+        it('returns zero if token -> token fails', async () => {
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const expectedQuotes = _.times(sampleAmounts.length, () => constants.ZERO_AMOUNT);
+            await enableFailTriggerAsync();
+            const quotes = await testContract
+                .sampleSellsFromUniswapV2([TAKER_TOKEN, MAKER_TOKEN], sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+
+        it('can quote token -> token -> token', async () => {
+            const intermediateToken = randomAddress();
+            const sampleAmounts = getSampleAmounts(TAKER_TOKEN);
+            const expectedQuotes = predictSellQuotes([TAKER_TOKEN, intermediateToken, MAKER_TOKEN], sampleAmounts);
+            const quotes = await testContract
+                .sampleSellsFromUniswapV2([TAKER_TOKEN, intermediateToken, MAKER_TOKEN], sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+    });
+
+    blockchainTests.resets('sampleBuysFromUniswapV2()', () => {
+        function predictBuyQuotes(path: string[], buyAmounts: BigNumber[]): BigNumber[] {
+            return buyAmounts.map(a => getDeterministicUniswapV2BuyQuote(path, a));
+        }
+
+        it('can return no quotes', async () => {
+            const quotes = await testContract.sampleBuysFromUniswapV2([TAKER_TOKEN, MAKER_TOKEN], []).callAsync();
+            expect(quotes).to.deep.eq([]);
+        });
+
+        it('can quote token -> token', async () => {
+            const sampleAmounts = getSampleAmounts(MAKER_TOKEN);
+            const expectedQuotes = predictBuyQuotes([TAKER_TOKEN, MAKER_TOKEN], sampleAmounts);
+            const quotes = await testContract
+                .sampleBuysFromUniswapV2([TAKER_TOKEN, MAKER_TOKEN], sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+
+        it('returns zero if token -> token fails', async () => {
+            const sampleAmounts = getSampleAmounts(MAKER_TOKEN);
+            const expectedQuotes = _.times(sampleAmounts.length, () => constants.ZERO_AMOUNT);
+            await enableFailTriggerAsync();
+            const quotes = await testContract
+                .sampleBuysFromUniswapV2([TAKER_TOKEN, MAKER_TOKEN], sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
+        });
+
+        it('can quote token -> token -> token', async () => {
+            const intermediateToken = randomAddress();
+            const sampleAmounts = getSampleAmounts(MAKER_TOKEN);
+            const expectedQuotes = predictBuyQuotes([TAKER_TOKEN, intermediateToken, MAKER_TOKEN], sampleAmounts);
+            const quotes = await testContract
+                .sampleBuysFromUniswapV2([TAKER_TOKEN, intermediateToken, MAKER_TOKEN], sampleAmounts)
+                .callAsync();
+            expect(quotes).to.deep.eq(expectedQuotes);
         });
     });
 
