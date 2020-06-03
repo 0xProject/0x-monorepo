@@ -181,6 +181,18 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address[]", "name": "path", "type": "address[]" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromUniswapV2",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "curveAddress", "type": "address" },
                     { "internalType": "int128", "name": "fromTokenIdx", "type": "int128" },
                     { "internalType": "int128", "name": "toTokenIdx", "type": "int128" },
@@ -240,6 +252,18 @@
                     { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
                 ],
                 "name": "sampleSellsFromUniswap",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address[]", "name": "path", "type": "address[]" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromUniswapV2",
                 "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
                 "payable": false,
                 "stateMutability": "view",
@@ -326,6 +350,14 @@
                     },
                     "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
                 },
+                "sampleBuysFromUniswapV2(address[],uint256[])": {
+                    "details": "Sample buy quotes from UniswapV2.",
+                    "params": {
+                        "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "path": "Token route."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
                 "sampleSellsFromCurve(address,int128,int128,uint256[])": {
                     "details": "Sample sell quotes from Curve.",
                     "params": {
@@ -369,6 +401,14 @@
                     "params": {
                         "makerToken": "Address of the maker token (what to buy).",
                         "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromUniswapV2(address[],uint256[])": {
+                    "details": "Sample sell quotes from UniswapV2.",
+                    "params": {
+                        "path": "Token route.",
                         "takerTokenAmounts": "Taker token sell amount for each sample."
                     },
                     "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
