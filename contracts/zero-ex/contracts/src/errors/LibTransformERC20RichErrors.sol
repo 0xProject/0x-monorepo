@@ -230,5 +230,4 @@ library LibTransformERC20RichErrors {
             token
         );
     }
-
 }

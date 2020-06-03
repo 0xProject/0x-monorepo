@@ -16,6 +16,7 @@
         "generated-artifacts/PayTakerTransformer.json",
         "generated-artifacts/WethTransformer.json",
         "generated-artifacts/ZeroEx.json",
+        "test/generated-artifacts/AffiliateFeeTransformer.json",
         "test/generated-artifacts/AllowanceTarget.json",
         "test/generated-artifacts/Bootstrap.json",
         "test/generated-artifacts/FillQuoteTransformer.json",
