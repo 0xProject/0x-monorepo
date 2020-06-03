@@ -31,6 +31,10 @@ import "./LibERC20Transformer.sol";
 contract WethTransformer is
     Transformer
 {
+    using LibRichErrorsV06 for bytes;
+    using LibSafeMathV06 for uint256;
+    using LibERC20Transformer for IERC20TokenV06;
+
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
         // The token to wrap/unwrap. Must be either ETH or WETH.
@@ -42,10 +46,8 @@ contract WethTransformer is
 
     /// @dev The WETH contract address.
     IEtherTokenV06 public immutable weth;
-
-    using LibRichErrorsV06 for bytes;
-    using LibSafeMathV06 for uint256;
-    using LibERC20Transformer for IERC20TokenV06;
+    /// @dev Maximum uint256 value.
+    uint256 private constant MAX_UINT256 = uint256(-1);
 
     /// @dev Construct the transformer and store the WETH address in an immutable.
     /// @param weth_ The weth token.
@@ -80,7 +82,7 @@ contract WethTransformer is
         }
 
         uint256 amount = data.amount;
-        if (amount == uint256(-1)) {
+        if (amount == MAX_UINT256) {
             amount = data.token.getTokenBalanceOf(address(this));
         }
 

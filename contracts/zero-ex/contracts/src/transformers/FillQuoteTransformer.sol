@@ -35,6 +35,11 @@ import "./LibERC20Transformer.sol";
 contract FillQuoteTransformer is
     Transformer
 {
+    using LibERC20TokenV06 for IERC20TokenV06;
+    using LibERC20Transformer for IERC20TokenV06;
+    using LibSafeMathV06 for uint256;
+    using LibRichErrorsV06 for bytes;
+
     /// @dev Whether we are performing a market sell or buy.
     enum Side {
         Sell,
@@ -77,17 +82,14 @@ contract FillQuoteTransformer is
     }
 
     /// @dev The Exchange ERC20Proxy ID.
-    bytes4 constant private ERC20_ASSET_PROXY_ID = 0xf47261b0;
+    bytes4 private constant ERC20_ASSET_PROXY_ID = 0xf47261b0;
+    /// @dev Maximum uint256 value.
+    uint256 private constant MAX_UINT256 = uint256(-1);
 
     /// @dev The Exchange contract.
     IExchange public immutable exchange;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
-
-    using LibERC20TokenV06 for IERC20TokenV06;
-    using LibERC20Transformer for IERC20TokenV06;
-    using LibSafeMathV06 for uint256;
-    using LibRichErrorsV06 for bytes;
 
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
@@ -132,7 +134,7 @@ contract FillQuoteTransformer is
             ).rrevert();
         }
 
-        if (data.side == Side.Sell && data.fillAmount == uint256(-1)) {
+        if (data.side == Side.Sell && data.fillAmount == MAX_UINT256) {
             // If `sellAmount == -1 then we are selling
             // the entire balance of `sellToken`. This is useful in cases where
             // the exact sell amount is not exactly known in advance, like when
@@ -181,7 +183,7 @@ contract FillQuoteTransformer is
                     data.fillAmount.safeSub(soldAmount).min256(
                         data.maxOrderFillAmounts.length > i
                         ? data.maxOrderFillAmounts[i]
-                        : uint256(-1)
+                        : MAX_UINT256
                     ),
                     singleProtocolFee
                 );
@@ -195,7 +197,7 @@ contract FillQuoteTransformer is
                     data.fillAmount.safeSub(boughtAmount).min256(
                         data.maxOrderFillAmounts.length > i
                         ? data.maxOrderFillAmounts[i]
-                        : uint256(-1)
+                        : MAX_UINT256
                     ),
                     singleProtocolFee
                 );

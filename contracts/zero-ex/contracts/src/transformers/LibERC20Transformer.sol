@@ -25,10 +25,10 @@ import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 
 library LibERC20Transformer {
 
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     /// @dev ETH pseudo-token address.
     address constant internal ETH_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-
-    using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Transfer ERC20 tokens and ETH.
     /// @param token An ERC20 or the ETH pseudo-token address (`ETH_TOKEN_ADDRESS`).

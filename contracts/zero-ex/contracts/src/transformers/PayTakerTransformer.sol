@@ -33,6 +33,9 @@ contract PayTakerTransformer is
     Transformer
 {
     // solhint-disable no-empty-blocks
+    using LibRichErrorsV06 for bytes;
+    using LibSafeMathV06 for uint256;
+    using LibERC20Transformer for IERC20TokenV06;
 
     /// @dev Transform data to ABI-encode and pass into `transform()`.
     struct TransformData {
@@ -43,9 +46,8 @@ contract PayTakerTransformer is
         uint256[] amounts;
     }
 
-    using LibRichErrorsV06 for bytes;
-    using LibSafeMathV06 for uint256;
-    using LibERC20Transformer for IERC20TokenV06;
+    /// @dev Maximum uint256 value.
+    uint256 private constant MAX_UINT256 = uint256(-1);
 
     /// @dev Create this contract.
     /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
@@ -76,7 +78,7 @@ contract PayTakerTransformer is
             // The `amounts` array can be shorter than the `tokens` array.
             // Missing elements are treated as `uint256(-1)`.
             uint256 amount = data.amounts.length > i ? data.amounts[i] : uint256(-1);
-            if (amount == uint256(-1)) {
+            if (amount == MAX_UINT256) {
                 amount = data.tokens[i].getTokenBalanceOf(address(this));
             }
             if (amount != 0) {
