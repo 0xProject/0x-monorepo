@@ -5,6 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as FillQuoteTransformer from '../generated-artifacts/FillQuoteTransformer.json';
 import * as FullMigration from '../generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../generated-artifacts/IAllowanceTarget.json';
 import * as IERC20Transformer from '../generated-artifacts/IERC20Transformer.json';
@@ -14,6 +15,8 @@ import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITokenSpender from '../generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../generated-artifacts/ITransformERC20.json';
+import * as PayTakerTransformer from '../generated-artifacts/PayTakerTransformer.json';
+import * as WethTransformer from '../generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../generated-artifacts/ZeroEx.json';
 export const artifacts = {
     ZeroEx: ZeroEx as ContractArtifact,
@@ -26,4 +29,7 @@ export const artifacts = {
     ISimpleFunctionRegistry: ISimpleFunctionRegistry as ContractArtifact,
     ITokenSpender: ITokenSpender as ContractArtifact,
     ITransformERC20: ITransformERC20 as ContractArtifact,
+    FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
+    PayTakerTransformer: PayTakerTransformer as ContractArtifact,
+    WethTransformer: WethTransformer as ContractArtifact,
 };

@@ -98,6 +98,58 @@ library LibTransformERC20RichErrors {
         );
     }
 
+    // Common Transformer errors ///////////////////////////////////////////////
+
+    function OnlyCallableByDeployerError(
+        address caller,
+        address deployer
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("OnlyCallableByDeployerError(address,address)")),
+            caller,
+            deployer
+        );
+    }
+
+    function InvalidExecutionContextError(
+        address actualContext,
+        address expectedContext
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("InvalidExecutionContextError(address,address)")),
+            actualContext,
+            expectedContext
+        );
+    }
+
+    enum InvalidTransformDataErrorCode {
+        INVALID_TOKENS,
+        INVALID_ARRAY_LENGTH
+    }
+
+    function InvalidTransformDataError(
+        InvalidTransformDataErrorCode errorCode,
+        bytes memory transformData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("InvalidTransformDataError(uint8,bytes)")),
+            errorCode,
+            transformData
+        );
+    }
+
     // FillQuoteTransformer errors /////////////////////////////////////////////
 
     function IncompleteFillSellQuoteError(
@@ -177,24 +229,7 @@ library LibTransformERC20RichErrors {
         );
     }
 
-    // WethTransformer errors ////////////////////////////////////////////////////
-
-    function WrongNumberOfTokensReceivedError(
-        uint256 actual,
-        uint256 expected
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("WrongNumberOfTokensReceivedError(uint256,uint256)")),
-            actual,
-            expected
-        );
-    }
-
-    function InvalidTokenReceivedError(
+    function InvalidTakerFeeTokenError(
         address token
     )
         internal
@@ -202,8 +237,9 @@ library LibTransformERC20RichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("InvalidTokenReceivedError(address)")),
+            bytes4(keccak256("InvalidTakerFeeTokenError(address)")),
             token
         );
     }
+
 }

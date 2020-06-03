@@ -74,4 +74,14 @@ contract TestMintableERC20Token {
         balanceOf[to] += amount;
         return true;
     }
+
+    function getSpendableAmount(address owner, address spender)
+        external
+        view
+        returns (uint256)
+    {
+        return balanceOf[owner] < allowance[owner][spender]
+            ? balanceOf[owner]
+            : allowance[owner][spender];
+    }
 }

@@ -53,11 +53,47 @@ export class InvalidRLPNonceError extends RevertError {
     }
 }
 
+export class OnlyCallableByDeployerError extends RevertError {
+    constructor(caller?: string, deployer?: string) {
+        super('OnlyCallableByDeployerError', 'OnlyCallableByDeployerError(address caller, address deployer)', {
+            caller,
+            deployer,
+        });
+    }
+}
+
+export class InvalidExecutionContextError extends RevertError {
+    constructor(actualContext?: string, expectedContext?: string) {
+        super(
+            'InvalidExecutionContextError',
+            'InvalidExecutionContextError(address actualContext, address expectedContext)',
+            {
+                actualContext,
+                expectedContext,
+            },
+        );
+    }
+}
+
+export enum InvalidTransformDataErrorCode {
+    InvalidTokens,
+    InvalidArrayLength,
+}
+
+export class InvalidTransformDataError extends RevertError {
+    constructor(errorCode?: InvalidTransformDataErrorCode, transformData?: string) {
+        super('InvalidTransformDataError', 'InvalidTransformDataError(uint8 errorCode, bytes transformData)', {
+            errorCode,
+            transformData,
+        });
+    }
+}
+
 export class IncompleteFillSellQuoteError extends RevertError {
     constructor(sellToken?: string, soldAmount?: Numberish, sellAmount?: Numberish) {
         super(
             'IncompleteFillSellQuoteError',
-            'IncompleteFillSellQuoteError(address sellToken, address[] soldAmount, uint256[] sellAmount)',
+            'IncompleteFillSellQuoteError(address sellToken, uint256 soldAmount, uint256 sellAmount)',
             {
                 sellToken,
                 soldAmount,
@@ -71,7 +107,7 @@ export class IncompleteFillBuyQuoteError extends RevertError {
     constructor(buyToken?: string, boughtAmount?: Numberish, buyAmount?: Numberish) {
         super(
             'IncompleteFillBuyQuoteError',
-            'IncompleteFillBuyQuoteError(address buyToken, address[] boughtAmount, uint256[] buyAmount)',
+            'IncompleteFillBuyQuoteError(address buyToken, uint256 boughtAmount, uint256 buyAmount)',
             {
                 buyToken,
                 boughtAmount,
@@ -132,6 +168,14 @@ export class InvalidTokenReceivedError extends RevertError {
     }
 }
 
+export class InvalidTakerFeeTokenError extends RevertError {
+    constructor(token?: string) {
+        super('InvalidTakerFeeTokenError', 'InvalidTakerFeeTokenError(address token)', {
+            token,
+        });
+    }
+}
+
 const types = [
     InsufficientEthAttachedError,
     IncompleteTransformERC20Error,
@@ -145,6 +189,10 @@ const types = [
     InvalidERC20AssetDataError,
     WrongNumberOfTokensReceivedError,
     InvalidTokenReceivedError,
+    InvalidTransformDataError,
+    InvalidTakerFeeTokenError,
+    OnlyCallableByDeployerError,
+    InvalidExecutionContextError,
 ];
 
 // Register the types we've defined.
