@@ -35,6 +35,5 @@ interface IAllowanceTarget is
         bytes calldata callData
     )
         external
-        payable
         returns (bytes memory resultData);
 }

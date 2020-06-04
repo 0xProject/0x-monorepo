@@ -37,19 +37,21 @@ contract TestTransformerHost {
         bytes calldata data
     )
         external
-        returns (bytes memory)
     {
-        (bool success, bytes memory resultData) =
+        (bool _success, bytes memory resultData) =
             address(transformer).delegatecall(abi.encodeWithSelector(
                 transformer.transform.selector,
                 callDataHash,
                 taker,
                 data
             ));
-        if (!success) {
+        if (!_success) {
             resultData.rrevert();
         }
-        assembly { return(add(resultData, 32), mload(resultData)) }
+        require(
+            abi.decode(resultData, (bytes4)) == LibERC20Transformer.TRANSFORMER_SUCCESS,
+            "TestTransformerHost/INVALID_TRANSFORMER_RESULT"
+        );
     }
 
     // solhint-disable

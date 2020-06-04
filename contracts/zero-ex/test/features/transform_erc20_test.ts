@@ -8,10 +8,9 @@ import {
     randomAddress,
     verifyEventsFromLogs,
 } from '@0x/contracts-test-utils';
-import { AbiEncoder, hexUtils, ZeroExRevertErrors } from '@0x/utils';
+import { AbiEncoder, hexUtils, OwnableRevertErrors, ZeroExRevertErrors } from '@0x/utils';
 
 import { ETH_TOKEN_ADDRESS } from '../../src/constants';
-import { getRLPEncodedAccountNonceAsync } from '../../src/nonce_utils';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
@@ -27,6 +26,7 @@ import {
 } from '../wrappers';
 
 blockchainTests.resets('TransformERC20 feature', env => {
+    let owner: string;
     let taker: string;
     let transformerDeployer: string;
     let zeroEx: ZeroExContract;
@@ -35,17 +35,21 @@ blockchainTests.resets('TransformERC20 feature', env => {
     let allowanceTarget: string;
 
     before(async () => {
-        let owner;
         [owner, taker, transformerDeployer] = await env.getAccountAddressesAsync();
-        zeroEx = await fullMigrateAsync(owner, env.provider, env.txDefaults, {
-            transformERC20: await TransformERC20Contract.deployFrom0xArtifactAsync(
-                artifacts.TestTransformERC20,
-                env.provider,
-                env.txDefaults,
-                artifacts,
-                transformerDeployer,
-            ),
-        });
+        zeroEx = await fullMigrateAsync(
+            owner,
+            env.provider,
+            env.txDefaults,
+            {
+                transformERC20: await TransformERC20Contract.deployFrom0xArtifactAsync(
+                    artifacts.TestTransformERC20,
+                    env.provider,
+                    env.txDefaults,
+                    artifacts,
+                ),
+            },
+            { transformerDeployer },
+        );
         feature = new TransformERC20Contract(zeroEx.address, env.provider, env.txDefaults, abis);
         wallet = new FlashWalletContract(await feature.getTransformWallet().callAsync(), env.provider, env.txDefaults);
         allowanceTarget = await new ITokenSpenderContract(zeroEx.address, env.provider, env.txDefaults)
@@ -53,7 +57,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             .callAsync();
     });
 
-    const { MAX_UINT256, NULL_BYTES, ZERO_AMOUNT } = constants;
+    const { MAX_UINT256, ZERO_AMOUNT } = constants;
 
     describe('wallets', () => {
         it('createTransformWallet() replaces the current wallet', async () => {
@@ -64,11 +68,39 @@ blockchainTests.resets('TransformERC20 feature', env => {
         });
     });
 
+    describe('transformer deployer', () => {
+        it('`getTransformerDeployer()` returns the transformer deployer', async () => {
+            const actualDeployer = await feature.getTransformerDeployer().callAsync();
+            expect(actualDeployer).to.eq(transformerDeployer);
+        });
+
+        it('owner can set the transformer deployer with `setTransformerDeployer()`', async () => {
+            const newDeployer = randomAddress();
+            const receipt = await feature
+                .setTransformerDeployer(newDeployer)
+                .awaitTransactionSuccessAsync({ from: owner });
+            verifyEventsFromLogs(
+                receipt.logs,
+                [{ transformerDeployer: newDeployer }],
+                TransformERC20Events.TransformerDeployerUpdated,
+            );
+            const actualDeployer = await feature.getTransformerDeployer().callAsync();
+            expect(actualDeployer).to.eq(newDeployer);
+        });
+
+        it('non-owner cannot set the transformer deployer with `setTransformerDeployer()`', async () => {
+            const newDeployer = randomAddress();
+            const notOwner = randomAddress();
+            const tx = feature.setTransformerDeployer(newDeployer).callAsync({ from: notOwner });
+            return expect(tx).to.revertWith(new OwnableRevertErrors.OnlyOwnerError(notOwner, owner));
+        });
+    });
+
     describe('_transformERC20()', () => {
         let inputToken: TestMintableERC20TokenContract;
         let outputToken: TestMintableERC20TokenContract;
         let mintTransformer: TestMintTokenERC20TransformerContract;
-        let rlpNonce: string;
+        let transformerNonce: number;
 
         before(async () => {
             inputToken = await TestMintableERC20TokenContract.deployFrom0xArtifactAsync(
@@ -83,7 +115,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 env.txDefaults,
                 artifacts,
             );
-            rlpNonce = await getRLPEncodedAccountNonceAsync(env.web3Wrapper, transformerDeployer);
+            transformerNonce = await env.web3Wrapper.getAccountNonceAsync(transformerDeployer);
             mintTransformer = await TestMintTokenERC20TransformerContract.deployFrom0xArtifactAsync(
                 artifacts.TestMintTokenERC20Transformer,
                 env.provider,
@@ -97,7 +129,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
         });
 
         interface Transformation {
-            transformer: string;
+            deploymentNonce: number;
             data: string;
         }
 
@@ -111,7 +143,6 @@ blockchainTests.resets('TransformERC20 feature', env => {
                     { name: 'burnAmount', type: 'uint256' },
                     { name: 'mintAmount', type: 'uint256' },
                     { name: 'feeAmount', type: 'uint256' },
-                    { name: 'deploymentNonce', type: 'bytes' },
                 ],
             },
         ]);
@@ -124,21 +155,21 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 inputTokenBurnAmunt: Numberish;
                 outputTokenMintAmount: Numberish;
                 outputTokenFeeAmount: Numberish;
-                rlpNonce: string;
+                deploymentNonce: number;
             }> = {},
         ): Transformation {
             const _opts = {
-                rlpNonce,
                 outputTokenAddress: outputToken.address,
                 inputTokenAddress: inputToken.address,
                 inputTokenBurnAmunt: ZERO_AMOUNT,
                 outputTokenMintAmount: ZERO_AMOUNT,
                 outputTokenFeeAmount: ZERO_AMOUNT,
                 transformer: mintTransformer.address,
+                deploymentNonce: transformerNonce,
                 ...opts,
             };
             return {
-                transformer: _opts.transformer,
+                deploymentNonce: _opts.deploymentNonce,
                 data: transformDataEncoder.encode([
                     {
                         inputToken: _opts.inputTokenAddress,
@@ -146,7 +177,6 @@ blockchainTests.resets('TransformERC20 feature', env => {
                         burnAmount: _opts.inputTokenBurnAmunt,
                         mintAmount: _opts.outputTokenMintAmount,
                         feeAmount: _opts.outputTokenFeeAmount,
-                        deploymentNonce: _opts.rlpNonce,
                     },
                 ]),
             };
@@ -443,7 +473,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             );
         });
 
-        it('fails with third-party transformer', async () => {
+        it('fails with invalid transformer nonce', async () => {
             const startingOutputTokenBalance = getRandomInteger(0, '100e18');
             const startingInputTokenBalance = getRandomInteger(2, '100e18');
             await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
@@ -452,32 +482,7 @@ blockchainTests.resets('TransformERC20 feature', env => {
             const minOutputTokenAmount = getRandomInteger(2, '1e18');
             const callValue = getRandomInteger(1, '1e18');
             const callDataHash = hexUtils.random();
-            const transformations = [createMintTokenTransformation({ transformer: randomAddress() })];
-            const tx = feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
-                    inputToken.address,
-                    outputToken.address,
-                    inputTokenAmount,
-                    minOutputTokenAmount,
-                    transformations,
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            return expect(tx).to.revertWith(new ZeroExRevertErrors.TransformERC20.InvalidRLPNonceError(NULL_BYTES));
-        });
-
-        it('fails with incorrect transformer RLP nonce', async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(2, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(2, '1e18');
-            const callValue = getRandomInteger(1, '1e18');
-            const callDataHash = hexUtils.random();
-            const badRlpNonce = '0x00';
-            const transformations = [createMintTokenTransformation({ rlpNonce: badRlpNonce })];
+            const transformations = [createMintTokenTransformation({ deploymentNonce: 1337 })];
             const tx = feature
                 ._transformERC20(
                     callDataHash,
@@ -490,36 +495,12 @@ blockchainTests.resets('TransformERC20 feature', env => {
                 )
                 .awaitTransactionSuccessAsync({ value: callValue });
             return expect(tx).to.revertWith(
-                new ZeroExRevertErrors.TransformERC20.UnauthorizedTransformerError(
-                    transformations[0].transformer,
-                    badRlpNonce,
+                new ZeroExRevertErrors.TransformERC20.TransformerFailedError(
+                    undefined,
+                    transformations[0].data,
+                    constants.NULL_BYTES,
                 ),
             );
-        });
-
-        it('fails with invalid transformer RLP nonce', async () => {
-            const startingOutputTokenBalance = getRandomInteger(0, '100e18');
-            const startingInputTokenBalance = getRandomInteger(2, '100e18');
-            await outputToken.mint(taker, startingOutputTokenBalance).awaitTransactionSuccessAsync();
-            await inputToken.mint(taker, startingInputTokenBalance).awaitTransactionSuccessAsync();
-            const inputTokenAmount = getRandomPortion(startingInputTokenBalance);
-            const minOutputTokenAmount = getRandomInteger(2, '1e18');
-            const callValue = getRandomInteger(1, '1e18');
-            const callDataHash = hexUtils.random();
-            const badRlpNonce = '0x010203040506';
-            const transformations = [createMintTokenTransformation({ rlpNonce: badRlpNonce })];
-            const tx = feature
-                ._transformERC20(
-                    callDataHash,
-                    taker,
-                    inputToken.address,
-                    outputToken.address,
-                    inputTokenAmount,
-                    minOutputTokenAmount,
-                    transformations,
-                )
-                .awaitTransactionSuccessAsync({ value: callValue });
-            return expect(tx).to.revertWith(new ZeroExRevertErrors.TransformERC20.InvalidRLPNonceError(badRlpNonce));
         });
     });
 });

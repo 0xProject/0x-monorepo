@@ -1,13 +1,11 @@
 import { blockchainTests, constants, expect, randomAddress } from '@0x/contracts-test-utils';
-import { BigNumber, ZeroExRevertErrors } from '@0x/utils';
+import { ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { rlpEncodeNonce } from '../../src/nonce_utils';
 import { artifacts } from '../artifacts';
 import { TestDelegateCallerContract, TestTransformerBaseContract } from '../wrappers';
 
 blockchainTests.resets('Transformer (base)', env => {
-    const deploymentNonce = _.random(0, 0xffffffff);
     let deployer: string;
     let delegateCaller: TestDelegateCallerContract;
     let transformer: TestTransformerBaseContract;
@@ -28,15 +26,7 @@ blockchainTests.resets('Transformer (base)', env => {
                 from: deployer,
             },
             artifacts,
-            new BigNumber(deploymentNonce),
         );
-    });
-
-    describe('_getRLPEncodedDeploymentNonce()', () => {
-        it('returns the RLP encoded deployment nonce', async () => {
-            const r = await transformer.getRLPEncodedDeploymentNonce().callAsync();
-            expect(r).to.eq(rlpEncodeNonce(deploymentNonce));
-        });
     });
 
     describe('die()', () => {

@@ -42,7 +42,6 @@ contract AllowanceTarget is
         bytes calldata callData
     )
         external
-        payable
         override
         onlyAuthorized
         returns (bytes memory resultData)

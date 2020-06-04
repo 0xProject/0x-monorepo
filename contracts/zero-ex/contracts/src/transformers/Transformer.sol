@@ -22,7 +22,6 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "./IERC20Transformer.sol";
-import "./LibERC20Transformer.sol";
 
 
 /// @dev Abstract base class for transformers.
@@ -33,15 +32,11 @@ abstract contract Transformer is
 
     /// @dev The address of the deployer.
     address public immutable deployer;
-    /// @dev The nonce of the deployer when deploying this contract.
-    uint256 public immutable deploymentNonce;
     /// @dev The original address of this contract.
     address private immutable _implementation;
 
     /// @dev Create this contract.
-    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    constructor(uint256 deploymentNonce_) public {
-        deploymentNonce = deploymentNonce_;
+    constructor() public {
         deployer = msg.sender;
         _implementation = address(this);
     }
@@ -66,15 +61,5 @@ abstract contract Transformer is
                 .rrevert();
         }
         selfdestruct(ethRecipient);
-    }
-
-    /// @dev Get the RLP-encoded deployment nonce of this contract.
-    /// @return rlpEncodedNonce The RLP-encoded deployment nonce.
-    function _getRLPEncodedDeploymentNonce()
-        internal
-        view
-        returns (bytes memory rlpEncodedNonce)
-    {
-        return LibERC20Transformer.rlpEncodeNonce(deploymentNonce);
     }
 }

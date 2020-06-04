@@ -26,8 +26,8 @@ contract TestTransformERC20 is
     TransformERC20
 {
     // solhint-disable no-empty-blocks
-    constructor(address trustedDeployer)
-        TransformERC20(trustedDeployer)
+    constructor()
+        TransformERC20()
         public
     {}
 

@@ -70,31 +70,20 @@ library LibTransformERC20RichErrors {
         );
     }
 
-    function UnauthorizedTransformerError(
+    function TransformerFailedError(
         address transformer,
-        bytes memory rlpNonce
+        bytes memory transformerData,
+        bytes memory resultData
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            bytes4(keccak256("UnauthorizedTransformerError(address,bytes)")),
+            bytes4(keccak256("TransformerFailedError(address,bytes,bytes)")),
             transformer,
-            rlpNonce
-        );
-    }
-
-    function InvalidRLPNonceError(
-        bytes memory rlpNonce
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("InvalidRLPNonceError(bytes)")),
-            rlpNonce
+            transformerData,
+            resultData
         );
     }
 
