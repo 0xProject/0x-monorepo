@@ -25,6 +25,10 @@
             {
                 "note": "Add more `ZeroExRevertErrors`",
                 "pr": 2576
+            },
+            {
+                "note": "Update `ZeroExRevertErrors`",
+                "pr": "TODO"
             }
         ]
     },
