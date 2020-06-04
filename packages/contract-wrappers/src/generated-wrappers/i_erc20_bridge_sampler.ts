@@ -544,6 +544,29 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
+                        name: 'path',
+                        type: 'address[]',
+                    },
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'sampleBuysFromUniswapV2',
+                outputs: [
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
                         name: 'curveAddress',
                         type: 'address',
                     },
@@ -673,6 +696,29 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     },
                 ],
                 name: 'sampleSellsFromUniswap',
+                outputs: [
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'path',
+                        type: 'address[]',
+                    },
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'sampleSellsFromUniswapV2',
                 outputs: [
                     {
                         name: 'makerTokenAmounts',
@@ -1129,6 +1175,34 @@ export class IERC20BridgeSamplerContract extends BaseContract {
         };
     }
     /**
+     * Sample buy quotes from UniswapV2.
+     * @param path Token route.
+     * @param makerTokenAmounts Maker token buy amount for each sample.
+     * @returns takerTokenAmounts Taker amounts sold at each maker token         amount.
+     */
+    public sampleBuysFromUniswapV2(path: string[], makerTokenAmounts: BigNumber[]): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('path', path);
+        assert.isArray('makerTokenAmounts', makerTokenAmounts);
+        const functionSignature = 'sampleBuysFromUniswapV2(address[],uint256[])';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [path, makerTokenAmounts]);
+            },
+        };
+    }
+    /**
      * Sample sell quotes from Curve.
      * @param curveAddress Address of the Curve contract.
      * @param fromTokenIdx Index of the taker token (what to sell).
@@ -1323,6 +1397,34 @@ export class IERC20BridgeSamplerContract extends BaseContract {
                     makerToken.toLowerCase(),
                     takerTokenAmounts,
                 ]);
+            },
+        };
+    }
+    /**
+     * Sample sell quotes from UniswapV2.
+     * @param path Token route.
+     * @param takerTokenAmounts Taker token sell amount for each sample.
+     * @returns makerTokenAmounts Maker amounts bought at each taker token         amount.
+     */
+    public sampleSellsFromUniswapV2(path: string[], takerTokenAmounts: BigNumber[]): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as IERC20BridgeSamplerContract;
+        assert.isArray('path', path);
+        assert.isArray('takerTokenAmounts', takerTokenAmounts);
+        const functionSignature = 'sampleSellsFromUniswapV2(address[],uint256[])';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [path, takerTokenAmounts]);
             },
         };
     }
