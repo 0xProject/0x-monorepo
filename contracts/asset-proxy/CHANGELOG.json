@@ -102,7 +102,7 @@
             },
             {
                 "note": "Add `setOperators()` to `IDydx`",
-                "pr": "TODO"
+                "pr": 2462
             }
         ],
         "timestamp": 1581204851
