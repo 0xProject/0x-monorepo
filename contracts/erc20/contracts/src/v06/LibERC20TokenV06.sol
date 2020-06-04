@@ -27,8 +27,7 @@ library LibERC20TokenV06 {
     bytes constant private DECIMALS_CALL_DATA = hex"313ce567";
 
     /// @dev Calls `IERC20TokenV06(token).approve()`.
-    ///      Reverts if `false` is returned or if the return
-    ///      data length is nonzero and not 32 bytes.
+    ///      Reverts if the result fails `isSuccessfulResult()` or the call reverts.
     /// @param token The address of the token contract.
     /// @param spender The address that receives an allowance.
     /// @param allowance The allowance to set.
@@ -49,8 +48,7 @@ library LibERC20TokenV06 {
 
     /// @dev Calls `IERC20TokenV06(token).approve()` and sets the allowance to the
     ///      maximum if the current approval is not already >= an amount.
-    ///      Reverts if `false` is returned or if the return
-    ///      data length is nonzero and not 32 bytes.
+    ///      Reverts if the result fails `isSuccessfulResult()` or the call reverts.
     /// @param token The address of the token contract.
     /// @param spender The address that receives an allowance.
     /// @param amount The minimum allowance needed.
@@ -67,8 +65,7 @@ library LibERC20TokenV06 {
     }
 
     /// @dev Calls `IERC20TokenV06(token).transfer()`.
-    ///      Reverts if `false` is returned or if the return
-    ///      data length is nonzero and not 32 bytes.
+    ///      Reverts if the result fails `isSuccessfulResult()` or the call reverts.
     /// @param token The address of the token contract.
     /// @param to The address that receives the tokens
     /// @param amount Number of tokens to transfer.
@@ -88,8 +85,7 @@ library LibERC20TokenV06 {
     }
 
     /// @dev Calls `IERC20TokenV06(token).transferFrom()`.
-    ///      Reverts if `false` is returned or if the return
-    ///      data length is nonzero and not 32 bytes.
+    ///      Reverts if the result fails `isSuccessfulResult()` or the call reverts.
     /// @param token The address of the token contract.
     /// @param from The owner of the tokens.
     /// @param to The address that receives the tokens
