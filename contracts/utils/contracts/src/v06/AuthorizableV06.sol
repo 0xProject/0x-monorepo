@@ -35,13 +35,13 @@ contract AuthorizableV06 is
         _;
     }
 
-    /// @dev Whether an address is authorized to call privileged functions.
-    /// @param 0 Address to query.
-    /// @return 0 Whether the address is authorized.
+    // @dev Whether an address is authorized to call privileged functions.
+    // @param 0 Address to query.
+    // @return 0 Whether the address is authorized.
     mapping (address => bool) public override authorized;
-    /// @dev Whether an address is authorized to call privileged functions.
-    /// @param 0 Index of authorized address.
-    /// @return 0 Authorized address.
+    // @dev Whether an address is authorized to call privileged functions.
+    // @param 0 Index of authorized address.
+    // @return 0 Authorized address.
     address[] public override authorities;
 
     /// @dev Initializes the `owner` address.

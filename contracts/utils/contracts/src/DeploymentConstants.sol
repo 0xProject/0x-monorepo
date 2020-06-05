@@ -35,7 +35,7 @@ contract DeploymentConstants {
     /// @dev Mainnet address of the `UniswapV2Router01` contract.
     address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
     // /// @dev Kovan address of the `UniswapV2Router01` contract.
-    // address constant private UNISWAP_V2_ROUTER_01ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    // address constant private UNISWAP_V2_ROUTER_01_ADDRESS = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
     /// @dev Mainnet address of the Eth2Dai `MatchingMarket` contract.
     address constant private ETH2DAI_ADDRESS = 0x794e6e91555438aFc3ccF1c5076A74F42133d08D;
     // /// @dev Kovan address of the Eth2Dai `MatchingMarket` contract.

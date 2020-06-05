@@ -23,7 +23,11 @@
                 "pr": 2525
             },
             {
-                "note": "Add Gas Token freeing to `DexForwaderBridge` contract.",
+                "note": "Add `UniswapV2Bridge` bridge contract.",
+                "pr": 2590
+            },
+            {
+                "note": "Add Gas Token freeing to `DexForwarderBridge` contract.",
                 "pr": 2536
             }
         ]
