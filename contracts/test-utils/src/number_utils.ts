@@ -96,7 +96,12 @@ export function assertRoughlyEquals(actual: Numberish, expected: Numberish, prec
 /**
  * Asserts that two numbers are equal with up to `maxError` difference between them.
  */
-export function assertIntegerRoughlyEquals(actual: Numberish, expected: Numberish, maxError: number = 1): void {
+export function assertIntegerRoughlyEquals(
+    actual: Numberish,
+    expected: Numberish,
+    maxError: number = 1,
+    msg?: string,
+): void {
     const diff = new BigNumber(actual)
         .minus(expected)
         .abs()
@@ -104,7 +109,7 @@ export function assertIntegerRoughlyEquals(actual: Numberish, expected: Numberis
     if (diff <= maxError) {
         return;
     }
-    expect(actual).to.bignumber.eq(expected);
+    expect(actual, msg).to.bignumber.eq(expected);
 }
 
 /**

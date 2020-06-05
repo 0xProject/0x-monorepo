@@ -17,6 +17,14 @@
             {
                 "note": "Added `ERC20BridgeSampler.sampleBuysFromKyberNetwork`",
                 "pr": 2551
+            },
+            {
+                "note": "Added `ERC20BridgeSampler.sampleBuysFromUniswapV2",
+                "pr": 2595
+            },
+            {
+                "note": "Added `ERC20BridgeSampler.sampleSellsFromUniswapV2",
+                "pr": 2595
             }
         ]
     },

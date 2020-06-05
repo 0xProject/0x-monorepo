@@ -19,7 +19,7 @@ export function rlpEncodeNonce(nonce: number): string {
     } else if (nonce <= 0x7f) {
         return ethjs.bufferToHex(ethjs.toBuffer(nonce));
     } else {
-        const rlpNonce = ethjs.bufferToHex(ethjs.toBuffer(nonce));
-        return hexUtils.concat(rlpNonce.length + 0x80, rlpNonce);
+        const rlpNonce = ethjs.toBuffer(nonce);
+        return hexUtils.concat(rlpNonce.length + 0x80, ethjs.bufferToHex(rlpNonce));
     }
 }

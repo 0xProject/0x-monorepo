@@ -97,10 +97,12 @@ contract DeploymentConstants {
         return UNISWAP_EXCHANGE_FACTORY_ADDRESS;
     }
 
+    /// @dev Overridable way to get the `UniswapV2Router01` address.
+    /// @return uniswapRouterAddress The `UniswapV2Router01` address.
     function _getUniswapV2Router01Address()
         internal
         view
-        returns (address uniswapV2Address)
+        returns (address uniswapRouterAddress)
     {
         return UNISWAP_V2_ROUTER_01_ADDRESS;
     }

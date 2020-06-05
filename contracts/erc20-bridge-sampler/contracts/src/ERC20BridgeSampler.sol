@@ -34,6 +34,7 @@ import "./IUniswapExchangeQuotes.sol";
 import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
 import "./ILiquidityProviderRegistry.sol";
+import "./IUniswapV2Router01.sol";
 
 
 contract ERC20BridgeSampler is
@@ -46,6 +47,8 @@ contract ERC20BridgeSampler is
     uint256 constant internal KYBER_CALL_GAS = 1500e3; // 1.5m
     /// @dev Gas limit for Uniswap calls.
     uint256 constant internal UNISWAP_CALL_GAS = 150e3; // 150k
+    /// @dev Gas limit for UniswapV2 calls.
+    uint256 constant internal UNISWAPV2_CALL_GAS = 150e3; // 150k
     /// @dev Base gas limit for Eth2Dai calls.
     uint256 constant internal ETH2DAI_CALL_GAS = 1000e3; // 1m
     /// @dev Base gas limit for Curve calls. Some Curves have multiple tokens
@@ -642,6 +645,74 @@ contract ERC20BridgeSampler is
         (bool didSucceed, bytes memory returnData) = registryAddress.staticcall(callData);
         if (didSucceed && returnData.length == 32) {
             return LibBytes.readAddress(returnData, 12);
+        }
+    }
+
+    /// @dev Sample sell quotes from UniswapV2.
+    /// @param path Token route.
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromUniswapV2(
+        address[] memory path,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                _getUniswapV2Router01Address().staticcall.gas(UNISWAPV2_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IUniswapV2Router01(0).getAmountsOut.selector,
+                        takerTokenAmounts[i],
+                        path
+                    ));
+            uint256 buyAmount = 0;
+            if (didSucceed) {
+                // solhint-disable-next-line indent
+                buyAmount = abi.decode(resultData, (uint256[]))[path.length - 1];
+            } else {
+                break;
+            }
+            makerTokenAmounts[i] = buyAmount;
+        }
+    }
+
+    /// @dev Sample buy quotes from UniswapV2.
+    /// @param path Token route.
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromUniswapV2(
+        address[] memory path,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        uint256 numSamples = makerTokenAmounts.length;
+        takerTokenAmounts = new uint256[](numSamples);
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                _getUniswapV2Router01Address().staticcall.gas(UNISWAPV2_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IUniswapV2Router01(0).getAmountsIn.selector,
+                        makerTokenAmounts[i],
+                        path
+                    ));
+            uint256 sellAmount = 0;
+            if (didSucceed) {
+                // solhint-disable-next-line indent
+                sellAmount = abi.decode(resultData, (uint256[]))[path.length - 1];
+            } else {
+                break;
+            }
+            takerTokenAmounts[i] = sellAmount;
         }
     }
 

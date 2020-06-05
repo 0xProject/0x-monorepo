@@ -25,10 +25,10 @@ import "@0x/contracts-erc20/contracts/src/v06/LibERC20TokenV06.sol";
 
 library LibERC20Transformer {
 
+    using LibERC20TokenV06 for IERC20TokenV06;
+
     /// @dev ETH pseudo-token address.
     address constant internal ETH_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-
-    using LibERC20TokenV06 for IERC20TokenV06;
 
     /// @dev Transfer ERC20 tokens and ETH.
     /// @param token An ERC20 or the ETH pseudo-token address (`ETH_TOKEN_ADDRESS`).
@@ -69,5 +69,46 @@ library LibERC20Transformer {
         returns (uint256 tokenBalance)
     {
         return isTokenETH(token) ? owner.balance : token.balanceOf(owner);
+    }
+
+    /// @dev RLP-encode a 32-bit or less account nonce.
+    /// @param nonce A positive integer in the range 0 <= nonce < 2^32.
+    /// @return rlpNonce The RLP encoding.
+    function rlpEncodeNonce(uint256 nonce)
+        internal
+        pure
+        returns (bytes memory rlpNonce)
+    {
+        if (nonce == 0) {
+            rlpNonce = new bytes(1);
+            rlpNonce[0] = 0x80;
+        } else if (nonce < 0x80) {
+            rlpNonce = new bytes(1);
+            rlpNonce[0] = byte(uint8(nonce));
+        } else if (nonce <= 0xFF) {
+            rlpNonce = new bytes(2);
+            rlpNonce[0] = 0x81;
+            rlpNonce[1] = byte(uint8(nonce));
+        } else if (nonce <= 0xFFFF) {
+            rlpNonce = new bytes(3);
+            rlpNonce[0] = 0x82;
+            rlpNonce[1] = byte(uint8((nonce & 0xFF00) >> 8));
+            rlpNonce[2] = byte(uint8(nonce));
+        } else if (nonce <= 0xFFFFFF) {
+            rlpNonce = new bytes(4);
+            rlpNonce[0] = 0x83;
+            rlpNonce[1] = byte(uint8((nonce & 0xFF0000) >> 16));
+            rlpNonce[2] = byte(uint8((nonce & 0xFF00) >> 8));
+            rlpNonce[3] = byte(uint8(nonce));
+        } else if (nonce <= 0xFFFFFFFF) {
+            rlpNonce = new bytes(5);
+            rlpNonce[0] = 0x84;
+            rlpNonce[1] = byte(uint8((nonce & 0xFF000000) >> 24));
+            rlpNonce[2] = byte(uint8((nonce & 0xFF0000) >> 16));
+            rlpNonce[3] = byte(uint8((nonce & 0xFF00) >> 8));
+            rlpNonce[4] = byte(uint8(nonce));
+        } else {
+            revert("LibERC20Transformer/INVALID_ENCODE_NONCE");
+        }
     }
 }
