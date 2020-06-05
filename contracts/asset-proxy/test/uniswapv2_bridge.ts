@@ -7,7 +7,7 @@ import {
     randomAddress,
 } from '@0x/contracts-test-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, hexUtils } from '@0x/utils';
+import { AbiEncoder, BigNumber, hexUtils } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -49,8 +49,7 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
 
     describe('bridgeTransferFrom()', () => {
         interface TransferFromOpts {
-            toTokenAddress: string;
-            fromTokenAddress: string;
+            tokenAddressesPath: string[];
             toAddress: string;
             // Amount to pass into `bridgeTransferFrom()`
             amount: BigNumber;
@@ -70,8 +69,7 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
         function createTransferFromOpts(opts?: Partial<TransferFromOpts>): TransferFromOpts {
             const amount = getRandomInteger(1, TO_TOKEN_BASE.times(100));
             return {
-                fromTokenAddress: constants.NULL_ADDRESS,
-                toTokenAddress: constants.NULL_ADDRESS,
+                tokenAddressesPath: Array(2).fill(constants.NULL_ADDRESS),
                 amount,
                 toAddress: randomAddress(),
                 fromTokenBalance: getRandomInteger(1, FROM_TOKEN_BASE.times(100)),
@@ -80,22 +78,20 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
             };
         }
 
+        const bridgeDataEncoder = AbiEncoder.create('(address[])');
+
         async function transferFromAsync(opts?: Partial<TransferFromOpts>): Promise<TransferFromResult> {
             const _opts = createTransferFromOpts(opts);
 
-            // Create the "from" token.
-            const createFromTokenFn = testContract.createToken(_opts.fromTokenAddress);
-            _opts.fromTokenAddress = await createFromTokenFn.callAsync();
-            await createFromTokenFn.awaitTransactionSuccessAsync();
-
-            // Create the "to" token.
-            const createToTokenFn = testContract.createToken(_opts.toTokenAddress);
-            _opts.toTokenAddress = await createToTokenFn.callAsync();
-            await createToTokenFn.awaitTransactionSuccessAsync();
+            for (let i = 0; i < _opts.tokenAddressesPath.length; i++) {
+                const createFromTokenFn = testContract.createToken(_opts.tokenAddressesPath[i]);
+                _opts.tokenAddressesPath[i] = await createFromTokenFn.callAsync();
+                await createFromTokenFn.awaitTransactionSuccessAsync();
+            }
 
             // Set the token balance for the token we're converting from.
             await testContract
-                .setTokenBalance(_opts.fromTokenAddress, _opts.fromTokenBalance)
+                .setTokenBalance(_opts.tokenAddressesPath[0], _opts.fromTokenBalance)
                 .awaitTransactionSuccessAsync();
 
             // Set revert reason for the router.
@@ -104,15 +100,15 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
             // Call bridgeTransferFrom().
             const bridgeTransferFromFn = testContract.bridgeTransferFrom(
                 // Output token
-                _opts.toTokenAddress,
+                _opts.tokenAddressesPath[_opts.tokenAddressesPath.length - 1],
                 // Random maker address.
                 randomAddress(),
                 // Recipient address.
                 _opts.toAddress,
                 // Transfer amount.
                 _opts.amount,
-                // ABI-encode the input token address as the bridge data.
-                hexUtils.leftPad(_opts.fromTokenAddress),
+                // ABI-encode the input token address as the bridge data. // FIXME
+                bridgeDataEncoder.encode([_opts.tokenAddressesPath]),
             );
             const result = await bridgeTransferFromFn.callAsync();
             const receipt = await bridgeTransferFromFn.awaitTransactionSuccessAsync();
@@ -135,8 +131,7 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
             await createTokenFn.awaitTransactionSuccessAsync();
 
             const { opts, result, logs } = await transferFromAsync({
-                fromTokenAddress: tokenAddress,
-                toTokenAddress: tokenAddress,
+                tokenAddressesPath: [tokenAddress, tokenAddress],
             });
             expect(result).to.eq(AssetProxyId.ERC20Bridge, 'asset proxy id');
             const transfers = filterLogsToArguments<TokenTransferArgs>(logs, ContractEvents.TokenTransfer);
@@ -158,7 +153,10 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
                 );
 
                 expect(transfers.length).to.eq(1);
-                expect(transfers[0].toTokenAddress).to.eq(opts.toTokenAddress, 'output token address');
+                expect(transfers[0].toTokenAddress).to.eq(
+                    opts.tokenAddressesPath[opts.tokenAddressesPath.length - 1],
+                    'output token address',
+                );
                 expect(transfers[0].to).to.eq(opts.toAddress, 'recipient address');
                 expect(transfers[0].amountIn).to.bignumber.eq(opts.fromTokenBalance, 'input token amount');
                 expect(transfers[0].amountOutMin).to.bignumber.eq(opts.amount, 'output token amount');
@@ -166,12 +164,12 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
             });
 
             it('sets allowance for "from" token', async () => {
-                const { opts, logs } = await transferFromAsync();
+                const { logs } = await transferFromAsync();
                 const approvals = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
                 const routerAddress = await testContract.getRouterAddress().callAsync();
                 expect(approvals.length).to.eq(1);
                 expect(approvals[0].spender).to.eq(routerAddress);
-                expect(approvals[0].allowance).to.bignumber.eq(opts.fromTokenBalance);
+                expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
             });
 
             it('sets allowance for "from" token on subsequent calls', async () => {
@@ -181,7 +179,7 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
                 const routerAddress = await testContract.getRouterAddress().callAsync();
                 expect(approvals.length).to.eq(1);
                 expect(approvals[0].spender).to.eq(routerAddress);
-                expect(approvals[0].allowance).to.bignumber.eq(opts.fromTokenBalance);
+                expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
             });
 
             it('fails if the router fails', async () => {
@@ -190,6 +188,28 @@ blockchainTests.resets('UniswapV2 unit tests', env => {
                     routerRevertReason: revertReason,
                 });
                 return expect(tx).to.eventually.be.rejectedWith(revertReason);
+            });
+        });
+        describe('token -> token -> token', async () => {
+            it('calls UniswapV2Router01.swapExactTokensForTokens()', async () => {
+                const { opts, result, logs, blocktime } = await transferFromAsync({
+                    tokenAddressesPath: Array(3).fill(constants.NULL_ADDRESS),
+                });
+                expect(result).to.eq(AssetProxyId.ERC20Bridge, 'asset proxy id');
+                const transfers = filterLogsToArguments<SwapExactTokensForTokensArgs>(
+                    logs,
+                    ContractEvents.SwapExactTokensForTokensInput,
+                );
+
+                expect(transfers.length).to.eq(1);
+                expect(transfers[0].toTokenAddress).to.eq(
+                    opts.tokenAddressesPath[opts.tokenAddressesPath.length - 1],
+                    'output token address',
+                );
+                expect(transfers[0].to).to.eq(opts.toAddress, 'recipient address');
+                expect(transfers[0].amountIn).to.bignumber.eq(opts.fromTokenBalance, 'input token amount');
+                expect(transfers[0].amountOutMin).to.bignumber.eq(opts.amount, 'output token amount');
+                expect(transfers[0].deadline).to.bignumber.eq(blocktime, 'deadline');
             });
         });
     });

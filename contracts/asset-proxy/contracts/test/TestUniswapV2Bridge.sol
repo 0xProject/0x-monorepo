@@ -158,8 +158,9 @@ contract TestRouter is
     {
         _revertIfReasonExists();
 
-        amounts = new uint[](1);
-        amounts[0] = amountOutMin;
+        amounts = new uint[](path.length);
+        amounts[0] = amountIn;
+        amounts[amounts.length - 1] = amountOutMin;
 
         TestEventsRaiser(msg.sender).raiseSwapExactTokensForTokensInput(
             // tokens sold
@@ -167,7 +168,7 @@ contract TestRouter is
             // tokens bought
             amountOutMin,
             // output token (toTokenAddress)
-            path[1],
+            path[path.length - 1],
             // recipient
             to,
             // deadline
