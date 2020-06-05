@@ -36,11 +36,9 @@ contract UniswapV2Bridge is
     IWallet,
     DeploymentConstants
 {
-
     struct TransferState {
         address[] path;
         uint256 fromTokenBalance;
-        uint256 boughtAmount;
     }
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
@@ -67,17 +65,18 @@ contract UniswapV2Bridge is
 
         // Decode the bridge data to get the `fromTokenAddress`.
         // solhint-disable indent
-        (state.path) = abi.decode(bridgeData, (address[]));
+        state.path = abi.decode(bridgeData, (address[]));
         // solhint-enable indent
 
-        require(state.path.length >= 2, "PATH_LENGTH_MUST_BE_AT_LEAST_TWO");
-        require(state.path[state.path.length - 1] == toTokenAddress, "LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
+        require(state.path.length >= 2, "UniswapV2Bridge/PATH_LENGTH_MUST_BE_AT_LEAST_TWO");
+        require(state.path[state.path.length - 1] == toTokenAddress, "UniswapV2Bridge/LAST_ELEMENT_OF_PATH_MUST_MATCH_OUTPUT_TOKEN");
 
         // Just transfer the tokens if they're the same.
         if (state.path[0] == toTokenAddress) {
             LibERC20Token.transfer(state.path[0], to, amount);
             return BRIDGE_SUCCESS;
         }
+
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(state.path[0]).balanceOf(address(this));
 
@@ -104,8 +103,6 @@ contract UniswapV2Bridge is
             block.timestamp
         );
 
-        state.boughtAmount = amounts[amounts.length - 1];
-
         emit ERC20BridgeTransfer(
             // input token
             state.path[0],
@@ -114,7 +111,7 @@ contract UniswapV2Bridge is
             // input token amount
             state.fromTokenBalance,
             // output token amount
-            state.boughtAmount,
+            amounts[amounts.length - 1],
             from,
             to
         );
