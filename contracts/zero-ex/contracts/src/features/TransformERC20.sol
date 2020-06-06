@@ -71,6 +71,7 @@ contract TransformERC20 is
     /// @dev Initialize and register this feature.
     ///      Should be delegatecalled by `Migrate.migrate()`.
     /// @param transformerDeployer The trusted deployer for transformers.
+    /// @return success `LibMigrate.SUCCESS` on success.
     function migrate(address transformerDeployer) external returns (bytes4 success) {
         ISimpleFunctionRegistry(address(this))
             .extend(this.getTransformerDeployer.selector, _implementation);
@@ -91,6 +92,7 @@ contract TransformERC20 is
 
     /// @dev Replace the allowed deployer for transformers.
     ///      Only callable by the owner.
+    /// @param transformerDeployer The address of the trusted deployer for transformers.
     function setTransformerDeployer(address transformerDeployer)
         external
         override

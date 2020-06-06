@@ -72,7 +72,7 @@ library LibERC20Transformer {
         returns (uint256 tokenBalance)
     {
         if (isTokenETH(token)) {
-            return owner.balance
+            return owner.balance;
         }
         return token.balanceOf(owner);
     }

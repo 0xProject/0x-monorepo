@@ -59,6 +59,7 @@ interface ITransformERC20 {
 
     /// @dev Replace the allowed deployer for transformers.
     ///      Only callable by the owner.
+    /// @param transformerDeployer The address of the trusted deployer for transformers.
     function setTransformerDeployer(address transformerDeployer)
         external;
 
