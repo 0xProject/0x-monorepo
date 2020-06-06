@@ -57,6 +57,7 @@ import * as TestTokenSpender from '../test/generated-artifacts/TestTokenSpender.
 import * as TestTokenSpenderERC20Token from '../test/generated-artifacts/TestTokenSpenderERC20Token.json';
 import * as TestTransformerBase from '../test/generated-artifacts/TestTransformerBase.json';
 import * as TestTransformERC20 from '../test/generated-artifacts/TestTransformERC20.json';
+import * as TestTransformerDeployerTransformer from '../test/generated-artifacts/TestTransformerDeployerTransformer.json';
 import * as TestTransformerHost from '../test/generated-artifacts/TestTransformerHost.json';
 import * as TestWeth from '../test/generated-artifacts/TestWeth.json';
 import * as TestWethTransformerHost from '../test/generated-artifacts/TestWethTransformerHost.json';
@@ -64,6 +65,7 @@ import * as TestZeroExFeature from '../test/generated-artifacts/TestZeroExFeatur
 import * as TokenSpender from '../test/generated-artifacts/TokenSpender.json';
 import * as Transformer from '../test/generated-artifacts/Transformer.json';
 import * as TransformERC20 from '../test/generated-artifacts/TransformERC20.json';
+import * as TransformerDeployer from '../test/generated-artifacts/TransformerDeployer.json';
 import * as WethTransformer from '../test/generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../test/generated-artifacts/ZeroEx.json';
 export const artifacts = {
@@ -79,6 +81,7 @@ export const artifacts = {
     FlashWallet: FlashWallet as ContractArtifact,
     IAllowanceTarget: IAllowanceTarget as ContractArtifact,
     IFlashWallet: IFlashWallet as ContractArtifact,
+    TransformerDeployer: TransformerDeployer as ContractArtifact,
     Bootstrap: Bootstrap as ContractArtifact,
     IBootstrap: IBootstrap as ContractArtifact,
     IFeature: IFeature as ContractArtifact,
@@ -124,6 +127,7 @@ export const artifacts = {
     TestTokenSpenderERC20Token: TestTokenSpenderERC20Token as ContractArtifact,
     TestTransformERC20: TestTransformERC20 as ContractArtifact,
     TestTransformerBase: TestTransformerBase as ContractArtifact,
+    TestTransformerDeployerTransformer: TestTransformerDeployerTransformer as ContractArtifact,
     TestTransformerHost: TestTransformerHost as ContractArtifact,
     TestWeth: TestWeth as ContractArtifact,
     TestWethTransformerHost: TestWethTransformerHost as ContractArtifact,

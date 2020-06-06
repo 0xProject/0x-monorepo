@@ -68,6 +68,7 @@
         "test/generated-artifacts/TestTokenSpenderERC20Token.json",
         "test/generated-artifacts/TestTransformERC20.json",
         "test/generated-artifacts/TestTransformerBase.json",
+        "test/generated-artifacts/TestTransformerDeployerTransformer.json",
         "test/generated-artifacts/TestTransformerHost.json",
         "test/generated-artifacts/TestWeth.json",
         "test/generated-artifacts/TestWethTransformerHost.json",
@@ -75,6 +76,7 @@
         "test/generated-artifacts/TokenSpender.json",
         "test/generated-artifacts/TransformERC20.json",
         "test/generated-artifacts/Transformer.json",
+        "test/generated-artifacts/TransformerDeployer.json",
         "test/generated-artifacts/WethTransformer.json",
         "test/generated-artifacts/ZeroEx.json"
     ],
