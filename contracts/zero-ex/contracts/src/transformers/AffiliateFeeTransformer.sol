@@ -37,14 +37,16 @@ contract AffiliateFeeTransformer is
     using LibSafeMathV06 for uint256;
     using LibERC20Transformer for IERC20TokenV06;
 
-    /// @dev Transform data to ABI-encode and pass into `transform()`.
-    struct TransformData {
-        // The tokens to transfer to each respective address in `recipients`.
-        IERC20TokenV06[] tokens;
-        // Amount of each token in `tokens` to transfer to the affiliate.
-        uint256[] amounts;
-        // Recipient of each token in `tokens`.
-        address payable[] recipients;
+    /// @dev Information for a single fee.
+    struct TokenFee {
+        // The token to transfer to `recipient`.
+        IERC20TokenV06 token;
+        // Amount of each `token` to transfer to `recipient`.
+        // If `amount == uint256(-1)`, the entire balance of `token` will be
+        // transferred.
+        uint256 amount;
+        // Recipient of `token`.
+        address payable recipient;
     }
 
     /// @dev Create this contract.
@@ -55,34 +57,24 @@ contract AffiliateFeeTransformer is
     {}
 
     /// @dev Transfers tokens to recipients.
-    /// @param data_ ABI-encoded `TransformData`, indicating which tokens to transfer.
+    /// @param data ABI-encoded `TokenFee[]`, indicating which tokens to transfer.
     /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
     ///         when this transformer was deployed. This is used to verify that
     ///         this transformer was deployed by a trusted contract.
     function transform(
         bytes32, // callDataHash,
         address payable, // taker,
-        bytes calldata data_
+        bytes calldata data
     )
         external
         override
         returns (bytes memory rlpDeploymentNonce)
     {
-        TransformData memory data = abi.decode(data_, (TransformData));
-
-        // All arrays must be the same length.
-        if (data.tokens.length != data.amounts.length ||
-            data.tokens.length != data.recipients.length)
-        {
-            LibTransformERC20RichErrors.InvalidTransformDataError(
-                LibTransformERC20RichErrors.InvalidTransformDataErrorCode.INVALID_ARRAY_LENGTH,
-                data_
-            ).rrevert();
-        }
+        TokenFee[] memory fees = abi.decode(data, (TokenFee[]));
 
         // Transfer tokens to recipients.
-        for (uint256 i = 0; i < data.tokens.length; ++i) {
-            data.tokens[i].transformerTransfer(data.recipients[i], data.amounts[i]);
+        for (uint256 i = 0; i < fees.length; ++i) {
+            fees[i].token.transformerTransfer(fees[i].recipient, fees[i].amount);
         }
 
         return _getRLPEncodedDeploymentNonce();
