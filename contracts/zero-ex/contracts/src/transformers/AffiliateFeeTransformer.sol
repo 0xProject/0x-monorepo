@@ -49,6 +49,8 @@ contract AffiliateFeeTransformer is
         address payable recipient;
     }
 
+    uint256 private constant MAX_UINT256 = uint256(-1);
+
     /// @dev Create this contract.
     constructor()
         public
@@ -71,7 +73,12 @@ contract AffiliateFeeTransformer is
 
         // Transfer tokens to recipients.
         for (uint256 i = 0; i < fees.length; ++i) {
-            fees[i].token.transformerTransfer(fees[i].recipient, fees[i].amount);
+            uint256 amount = fees[i].amount == MAX_UINT256
+                ? LibERC20Transformer.getTokenBalanceOf(fees[i].token, address(this))
+                : fees[i].amount;
+            if (amount != 0) {
+                fees[i].token.transformerTransfer(fees[i].recipient, amount);
+            }
         }
 
         return LibERC20Transformer.TRANSFORMER_SUCCESS;

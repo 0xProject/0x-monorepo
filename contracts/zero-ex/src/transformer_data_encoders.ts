@@ -120,3 +120,40 @@ export interface PayTakerTransformerData {
 export function encodePayTakerTransformerData(data: PayTakerTransformerData): string {
     return payTakerTransformerDataEncoder.encode([data]);
 }
+
+/**
+ * ABI encoder for `PayTakerTransformer.TransformData`
+ */
+export const affiliateFeeTransformerDataEncoder = AbiEncoder.create({
+    name: 'data',
+    type: 'tuple',
+    components: [
+        {
+            name: 'fees',
+            type: 'tuple[]',
+            components: [
+                { name: 'token', type: 'address' },
+                { name: 'amount', type: 'uint256' },
+                { name: 'recipient', type: 'address' },
+            ],
+        },
+    ],
+});
+
+/**
+ * `AffiliateFeeTransformer.TransformData`
+ */
+export interface AffiliateFeeTransformerData {
+    fees: Array<{
+        token: string;
+        amount: BigNumber;
+        recipient: string;
+    }>;
+}
+
+/**
+ * ABI-encode a `AffiliateFeeTransformer.TransformData` type.
+ */
+export function encodeAffiliateFeeTransformerData(data: AffiliateFeeTransformerData): string {
+    return affiliateFeeTransformerDataEncoder.encode(data);
+}
