@@ -50,17 +50,14 @@ contract AffiliateFeeTransformer is
     }
 
     /// @dev Create this contract.
-    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    constructor(uint256 deploymentNonce_)
+    constructor()
         public
-        Transformer(deploymentNonce_)
+        Transformer()
     {}
 
     /// @dev Transfers tokens to recipients.
     /// @param data ABI-encoded `TokenFee[]`, indicating which tokens to transfer.
-    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
-    ///         when this transformer was deployed. This is used to verify that
-    ///         this transformer was deployed by a trusted contract.
+    /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
     function transform(
         bytes32, // callDataHash,
         address payable, // taker,
@@ -68,7 +65,7 @@ contract AffiliateFeeTransformer is
     )
         external
         override
-        returns (bytes memory rlpDeploymentNonce)
+        returns (bytes4 success)
     {
         TokenFee[] memory fees = abi.decode(data, (TokenFee[]));
 
@@ -77,6 +74,6 @@ contract AffiliateFeeTransformer is
             fees[i].token.transformerTransfer(fees[i].recipient, fees[i].amount);
         }
 
-        return _getRLPEncodedDeploymentNonce();
+        return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }
 }
