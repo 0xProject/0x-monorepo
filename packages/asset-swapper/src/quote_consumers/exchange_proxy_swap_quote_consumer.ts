@@ -125,9 +125,14 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             )
             .getABIEncodedTransactionData();
 
+        let ethAmount = quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
+        if (exchangeProxyOpts.isFromETH) {
+            ethAmount = ethAmount.plus(quote.worstCaseQuoteInfo.takerAssetAmount);
+        }
+
         return {
             calldataHexString,
-            ethAmount: quote.worstCaseQuoteInfo.protocolFeeInWeiAmount,
+            ethAmount,
             toAddress: this._transformFeature.address,
             allowanceTarget: this.contractAddresses.exchangeProxyAllowanceTarget,
         };
