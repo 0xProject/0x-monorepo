@@ -57,6 +57,14 @@
             {
                 "note": "Redeploy ERC20BridgeSampler on Mainnet using `Kyber.searchBestRate`",
                 "pr": 2575
+            },
+            {
+                "note": "Redeploy ERC20BridgeSampler on Mainnet and Kovan using UniswapV2",
+                "pr": 2599
+            },
+            {
+                "note": "Added `uniswapV2Bridge` field",
+                "pr": 2599
             }
         ]
     },

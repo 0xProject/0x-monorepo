@@ -9,6 +9,10 @@
             {
                 "note": "Add `ERC20BridgeSampler` deployment",
                 "pr": 2541
+            },
+            {
+                "note": "Added `UniswapV2Bridge` address (null)",
+                "pr": 2599
             }
         ]
     },
