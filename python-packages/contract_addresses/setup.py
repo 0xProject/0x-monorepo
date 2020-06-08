@@ -178,7 +178,7 @@ setup(
             "black",
             "coverage",
             "coveralls",
-            "mypy",
+            "mypy<=0.770",  # see https://github.com/python/mypy/issues/8953
             "mypy_extensions",
             "pycodestyle",
             "pydocstyle",
