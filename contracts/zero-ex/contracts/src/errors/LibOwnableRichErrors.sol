@@ -48,16 +48,6 @@ library LibOwnableRichErrors {
         );
     }
 
-    function AlreadyMigratingError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            bytes4(keccak256("AlreadyMigratingError()"))
-        );
-    }
-
     function MigrateCallFailedError(address target, bytes memory resultData)
         internal
         pure

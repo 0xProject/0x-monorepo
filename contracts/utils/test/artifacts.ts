@@ -6,15 +6,18 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as Authorizable from '../test/generated-artifacts/Authorizable.json';
+import * as AuthorizableV06 from '../test/generated-artifacts/AuthorizableV06.json';
 import * as D18 from '../test/generated-artifacts/D18.json';
 import * as DeploymentConstants from '../test/generated-artifacts/DeploymentConstants.json';
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
+import * as IAuthorizableV06 from '../test/generated-artifacts/IAuthorizableV06.json';
 import * as IOwnable from '../test/generated-artifacts/IOwnable.json';
 import * as IOwnableV06 from '../test/generated-artifacts/IOwnableV06.json';
 import * as LibAddress from '../test/generated-artifacts/LibAddress.json';
 import * as LibAddressArray from '../test/generated-artifacts/LibAddressArray.json';
 import * as LibAddressArrayRichErrors from '../test/generated-artifacts/LibAddressArrayRichErrors.json';
 import * as LibAuthorizableRichErrors from '../test/generated-artifacts/LibAuthorizableRichErrors.json';
+import * as LibAuthorizableRichErrorsV06 from '../test/generated-artifacts/LibAuthorizableRichErrorsV06.json';
 import * as LibBytes from '../test/generated-artifacts/LibBytes.json';
 import * as LibBytesRichErrors from '../test/generated-artifacts/LibBytesRichErrors.json';
 import * as LibBytesRichErrorsV06 from '../test/generated-artifacts/LibBytesRichErrorsV06.json';
@@ -22,14 +25,22 @@ import * as LibBytesV06 from '../test/generated-artifacts/LibBytesV06.json';
 import * as LibEIP1271 from '../test/generated-artifacts/LibEIP1271.json';
 import * as LibEIP712 from '../test/generated-artifacts/LibEIP712.json';
 import * as LibFractions from '../test/generated-artifacts/LibFractions.json';
+import * as LibMathRichErrorsV06 from '../test/generated-artifacts/LibMathRichErrorsV06.json';
+import * as LibMathV06 from '../test/generated-artifacts/LibMathV06.json';
 import * as LibOwnableRichErrors from '../test/generated-artifacts/LibOwnableRichErrors.json';
+import * as LibOwnableRichErrorsV06 from '../test/generated-artifacts/LibOwnableRichErrorsV06.json';
 import * as LibReentrancyGuardRichErrors from '../test/generated-artifacts/LibReentrancyGuardRichErrors.json';
+import * as LibReentrancyGuardRichErrorsV06 from '../test/generated-artifacts/LibReentrancyGuardRichErrorsV06.json';
 import * as LibRichErrors from '../test/generated-artifacts/LibRichErrors.json';
 import * as LibRichErrorsV06 from '../test/generated-artifacts/LibRichErrorsV06.json';
 import * as LibSafeMath from '../test/generated-artifacts/LibSafeMath.json';
 import * as LibSafeMathRichErrors from '../test/generated-artifacts/LibSafeMathRichErrors.json';
+import * as LibSafeMathRichErrorsV06 from '../test/generated-artifacts/LibSafeMathRichErrorsV06.json';
+import * as LibSafeMathV06 from '../test/generated-artifacts/LibSafeMathV06.json';
 import * as Ownable from '../test/generated-artifacts/Ownable.json';
+import * as OwnableV06 from '../test/generated-artifacts/OwnableV06.json';
 import * as ReentrancyGuard from '../test/generated-artifacts/ReentrancyGuard.json';
+import * as ReentrancyGuardV06 from '../test/generated-artifacts/ReentrancyGuardV06.json';
 import * as Refundable from '../test/generated-artifacts/Refundable.json';
 import * as TestAuthorizable from '../test/generated-artifacts/TestAuthorizable.json';
 import * as TestLibAddress from '../test/generated-artifacts/TestLibAddress.json';
@@ -67,9 +78,20 @@ export const artifacts = {
     Refundable: Refundable as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
+    AuthorizableV06: AuthorizableV06 as ContractArtifact,
     LibBytesV06: LibBytesV06 as ContractArtifact,
+    LibMathV06: LibMathV06 as ContractArtifact,
+    LibSafeMathV06: LibSafeMathV06 as ContractArtifact,
+    OwnableV06: OwnableV06 as ContractArtifact,
+    ReentrancyGuardV06: ReentrancyGuardV06 as ContractArtifact,
+    LibAuthorizableRichErrorsV06: LibAuthorizableRichErrorsV06 as ContractArtifact,
     LibBytesRichErrorsV06: LibBytesRichErrorsV06 as ContractArtifact,
+    LibMathRichErrorsV06: LibMathRichErrorsV06 as ContractArtifact,
+    LibOwnableRichErrorsV06: LibOwnableRichErrorsV06 as ContractArtifact,
+    LibReentrancyGuardRichErrorsV06: LibReentrancyGuardRichErrorsV06 as ContractArtifact,
     LibRichErrorsV06: LibRichErrorsV06 as ContractArtifact,
+    LibSafeMathRichErrorsV06: LibSafeMathRichErrorsV06 as ContractArtifact,
+    IAuthorizableV06: IAuthorizableV06 as ContractArtifact,
     IOwnableV06: IOwnableV06 as ContractArtifact,
     TestAuthorizable: TestAuthorizable as ContractArtifact,
     TestLibAddress: TestLibAddress as ContractArtifact,

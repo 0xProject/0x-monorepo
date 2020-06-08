@@ -13,6 +13,14 @@
             {
                 "note": "Add solidity 0.6 contracts",
                 "pr": 2540
+            },
+            {
+                "note": "Add more solidity 0.6 contracts",
+                "pr": 2545
+            },
+            {
+                "note": "Add UniswapV2 addresses to `DeploymentConstants`",
+                "pr": 2595
             }
         ]
     },

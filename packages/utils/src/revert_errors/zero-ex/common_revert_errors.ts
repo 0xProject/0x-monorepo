@@ -9,6 +9,13 @@ export class OnlyCallableBySelfError extends RevertError {
     }
 }
 
+// This is identical to the one in utils.
+// export class IllegalReentrancyError extends RevertError {
+//     constructor() {
+//         super('IllegalReentrancyError', 'IllegalReentrancyError()', {});
+//     }
+// }
+
 const types = [OnlyCallableBySelfError];
 
 // Register the types we've defined.

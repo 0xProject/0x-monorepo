@@ -361,6 +361,27 @@ export class Web3Wrapper {
         return blockNumber as number;
     }
     /**
+     * Fetches the nonce for an account (transaction count for EOAs).
+     * @param address Address of account.
+     * @param defaultBlock Block height at which to make the call. Defaults to `latest`
+     * @returns Account nonce.
+     */
+    public async getAccountNonceAsync(address: string, defaultBlock?: BlockParam): Promise<number> {
+        assert.isETHAddressHex('address', address);
+        if (defaultBlock !== undefined) {
+            Web3Wrapper._assertBlockParam(defaultBlock);
+        }
+        const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
+        const encodedAddress = marshaller.marshalAddress(address);
+        const nonceHex = await this.sendRawPayloadAsync<string>({
+            method: 'eth_getTransactionCount',
+            params: [encodedAddress, marshalledDefaultBlock],
+        });
+        assert.isHexString('nonce', nonceHex);
+        // tslint:disable-next-line:custom-no-magic-numbers
+        return parseInt(nonceHex.substr(2), 16);
+    }
+    /**
      * Fetch a specific Ethereum block without transaction data
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
      * @returns The requested block without transaction data, or undefined if block was not found

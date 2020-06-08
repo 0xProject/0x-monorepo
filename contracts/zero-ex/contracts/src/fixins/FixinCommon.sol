@@ -22,16 +22,16 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol";
 import "../errors/LibCommonRichErrors.sol";
 import "../errors/LibOwnableRichErrors.sol";
-import "../storage/LibOwnableStorage.sol";
+import "../features/IOwnable.sol";
 
 
-/// @dev Common utilities.
+/// @dev Common feature utilities.
 contract FixinCommon {
 
     using LibRichErrorsV06 for bytes;
 
     /// @dev The caller must be this contract.
-    modifier onlySelf() {
+    modifier onlySelf() virtual {
         if (msg.sender != address(this)) {
             LibCommonRichErrors.OnlyCallableBySelfError(msg.sender).rrevert();
         }
@@ -39,9 +39,9 @@ contract FixinCommon {
     }
 
     /// @dev The caller of this function must be the owner.
-    modifier onlyOwner() {
+    modifier onlyOwner() virtual {
         {
-            address owner = _getOwner();
+            address owner = IOwnable(address(this)).owner();
             if (msg.sender != owner) {
                 LibOwnableRichErrors.OnlyOwnerError(
                     msg.sender,
@@ -52,9 +52,16 @@ contract FixinCommon {
         _;
     }
 
-    /// @dev Get the owner of this contract.
-    /// @return owner The owner of this contract.
-    function _getOwner() internal view returns (address owner) {
-        return LibOwnableStorage.getStorage().owner;
+    /// @dev Encode a feature version as a `uint256`.
+    /// @param major The major version number of the feature.
+    /// @param minor The minor version number of the feature.
+    /// @param revision The revision number of the feature.
+    /// @return encodedVersion The encoded version number.
+    function _encodeVersion(uint32 major, uint32 minor, uint32 revision)
+        internal
+        pure
+        returns (uint256 encodedVersion)
+    {
+        return (major << 64) | (minor << 32) | revision;
     }
 }

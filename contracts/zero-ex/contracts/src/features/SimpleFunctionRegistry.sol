@@ -35,17 +35,13 @@ contract SimpleFunctionRegistry is
     ISimpleFunctionRegistry,
     FixinCommon
 {
-
-    // solhint-disable const-name-snakecase
-    /// @dev Name of this feature.
-    string constant public override FEATURE_NAME = "SimpleFunctionRegistry";
-    /// @dev Version of this feature.
-    uint256 constant public override FEATURE_VERSION = (1 << 64) | (0 << 32) | (0);
-    // solhint-enable const-name-snakecase
-
     // solhint-disable
+    /// @dev Name of this feature.
+    string public constant override FEATURE_NAME = "SimpleFunctionRegistry";
+    /// @dev Version of this feature.
+    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
     /// @dev The deployed address of this contract.
-    address immutable private _implementation;
+    address private immutable _implementation;
     // solhint-enable
 
     using LibRichErrorsV06 for bytes;
@@ -54,17 +50,20 @@ contract SimpleFunctionRegistry is
         _implementation = address(this);
     }
 
-    /// @dev Initializes this feature.
-    /// @param impl The actual address of this feature contract.
+    /// @dev Initializes this feature, registering its own functions.
     /// @return success Magic bytes if successful.
-    function bootstrap(address impl) external returns (bytes4 success) {
+    function bootstrap()
+        external
+        returns (bytes4 success)
+    {
         // Register the registration functions (inception vibes).
-        _extend(this.extend.selector, impl);
+        _extend(this.extend.selector, _implementation);
+        _extend(this._extendSelf.selector, _implementation);
         // Register the rollback function.
-        _extend(this.rollback.selector, impl);
+        _extend(this.rollback.selector, _implementation);
         // Register getters.
-        _extend(this.getRollbackLength.selector, impl);
-        _extend(this.getRollbackEntryAtIndex.selector, impl);
+        _extend(this.getRollbackLength.selector, _implementation);
+        _extend(this.getRollbackEntryAtIndex.selector, _implementation);
         return LibBootstrap.BOOTSTRAP_SUCCESS;
     }
 
@@ -115,6 +114,20 @@ contract SimpleFunctionRegistry is
         external
         override
         onlyOwner
+    {
+        _extend(selector, impl);
+    }
+
+    /// @dev Register or replace a function.
+    ///      Only callable from within.
+    ///      This function is only used during the bootstrap process and
+    ///      should be deregistered by the deployer after bootstrapping is
+    ///      complete.
+    /// @param selector The function selector.
+    /// @param impl The implementation contract for the function.
+    function _extendSelf(bytes4 selector, address impl)
+        external
+        onlySelf
     {
         _extend(selector, impl);
     }

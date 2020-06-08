@@ -1,11 +1,6 @@
 import { RevertError } from '../../revert_error';
 
 // tslint:disable:max-classes-per-file
-export class AlreadyMigratingError extends RevertError {
-    constructor() {
-        super('AlreadyMigratingError', 'AlreadyMigratingError()', {});
-    }
-}
 
 export class MigrateCallFailedError extends RevertError {
     constructor(target?: string, resultData?: string) {
@@ -16,7 +11,23 @@ export class MigrateCallFailedError extends RevertError {
     }
 }
 
-const types = [AlreadyMigratingError, MigrateCallFailedError];
+export class OnlyOwnerError extends RevertError {
+    constructor(sender?: string, owner?: string) {
+        super('OnlyOwnerError', 'OnlyOwnerError(address sender, bytes owner)', {
+            sender,
+            owner,
+        });
+    }
+}
+
+// This is identical to the one in utils.
+// export class TransferOwnerToZeroError extends RevertError {
+//     constructor() {
+//         super('TransferOwnerToZeroError', 'TransferOwnerToZeroError()', {});
+//     }
+// }
+
+const types = [MigrateCallFailedError, OnlyOwnerError];
 
 // Register the types we've defined.
 for (const type of types) {

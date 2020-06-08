@@ -1,5 +1,18 @@
 [
     {
+        "version": "7.1.0",
+        "changes": [
+            {
+                "note": "Add `getAccountNonce()` to `Web3Wrapper`",
+                "pr": 2545
+            },
+            {
+                "note": "Update ganache-core",
+                "pr": 2545
+            }
+        ]
+    },
+    {
         "timestamp": 1582623685,
         "version": "7.0.7",
         "changes": [

@@ -33,4 +33,14 @@ library LibCommonRichErrors {
             sender
         );
     }
+
+    function IllegalReentrancyError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            bytes4(keccak256("IllegalReentrancyError()"))
+        );
+    }
 }
