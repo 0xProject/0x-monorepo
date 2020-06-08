@@ -5,7 +5,7 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
-import { getCurveInfo, isCurveSource } from '../source_utils';
+import { getCurveInfo } from '../source_utils';
 
 import {
     ERC20_PROXY_ID,
