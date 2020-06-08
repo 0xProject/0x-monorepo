@@ -9,6 +9,8 @@ import { ERC20BridgeSource, FakeBuyOpts, GetMarketOrdersOpts } from './types';
  */
 export const SELL_SOURCES = [
     ERC20BridgeSource.Uniswap,
+    ERC20BridgeSource.UniswapV2,
+    ERC20BridgeSource.UniswapV2Eth,
     ERC20BridgeSource.Eth2Dai,
     ERC20BridgeSource.Kyber,
     // All Curve Sources
@@ -24,6 +26,8 @@ export const SELL_SOURCES = [
  */
 export const BUY_SOURCES = [
     ERC20BridgeSource.Uniswap,
+    ERC20BridgeSource.UniswapV2,
+    ERC20BridgeSource.UniswapV2Eth,
     ERC20BridgeSource.Eth2Dai,
     ERC20BridgeSource.Kyber,
     // All Curve sources

@@ -1,3 +1,4 @@
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import {
     constants,
     expect,
@@ -23,6 +24,8 @@ describe('DexSampler tests', () => {
     const TAKER_TOKEN = randomAddress();
     const MAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(MAKER_TOKEN);
     const TAKER_ASSET_DATA = assetDataUtils.encodeERC20AssetData(TAKER_TOKEN);
+
+    const wethAddress = getContractAddressesForChainOrThrow(CHAIN_ID).etherToken;
 
     describe('getSampleAmounts()', () => {
         const FILL_AMOUNT = getRandomInteger(1, 1e18);
@@ -160,6 +163,7 @@ describe('DexSampler tests', () => {
                     expectedMakerToken,
                     expectedTakerToken,
                     [toBaseUnitAmount(1000)],
+                    wethAddress,
                     registry,
                 ),
             );
@@ -193,6 +197,7 @@ describe('DexSampler tests', () => {
                     expectedMakerToken,
                     expectedTakerToken,
                     [toBaseUnitAmount(1000)],
+                    wethAddress,
                     registry,
                 ),
             );
@@ -344,6 +349,7 @@ describe('DexSampler tests', () => {
                     expectedMakerToken,
                     expectedTakerToken,
                     expectedTakerFillAmounts,
+                    wethAddress,
                 ),
             );
             expect(quotes).to.be.length(sources.length);
@@ -387,6 +393,7 @@ describe('DexSampler tests', () => {
                     expectedMakerToken,
                     expectedTakerToken,
                     expectedMakerFillAmounts,
+                    wethAddress,
                 ),
             );
             expect(quotes).to.be.length(sources.length);

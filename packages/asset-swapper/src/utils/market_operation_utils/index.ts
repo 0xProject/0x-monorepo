@@ -93,6 +93,7 @@ export class MarketOperationUtils {
                 makerToken,
                 this._wethAddress,
                 ONE_ETHER,
+                this._wethAddress,
                 this._liquidityProviderRegistry,
             ),
             // Get sell quotes for taker -> maker.
@@ -103,6 +104,7 @@ export class MarketOperationUtils {
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+                this._wethAddress,
                 this._liquidityProviderRegistry,
             ),
         );
@@ -173,6 +175,7 @@ export class MarketOperationUtils {
                 takerToken,
                 this._wethAddress,
                 ONE_ETHER,
+                this._wethAddress,
                 this._liquidityProviderRegistry,
             ),
             // Get buy quotes for taker -> maker.
@@ -183,6 +186,7 @@ export class MarketOperationUtils {
                 makerToken,
                 takerToken,
                 getSampleAmounts(makerAmount, _opts.numSamples, _opts.sampleDistributionBase),
+                this._wethAddress,
                 this._liquidityProviderRegistry,
             ),
         );
@@ -248,6 +252,7 @@ export class MarketOperationUtils {
                     getNativeOrderTokens(orders[0])[1],
                     this._wethAddress,
                     ONE_ETHER,
+                    this._wethAddress,
                 ),
             ),
             ...batchNativeOrders.map((orders, i) =>
@@ -256,6 +261,7 @@ export class MarketOperationUtils {
                     getNativeOrderTokens(orders[0])[0],
                     getNativeOrderTokens(orders[0])[1],
                     [makerAmounts[i]],
+                    this._wethAddress,
                 ),
             ),
         ];

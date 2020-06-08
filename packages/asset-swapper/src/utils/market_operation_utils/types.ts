@@ -28,6 +28,8 @@ export enum AggregationError {
 export enum ERC20BridgeSource {
     Native = 'Native',
     Uniswap = 'Uniswap',
+    UniswapV2 = 'UniswapV2',
+    UniswapV2Eth = 'UniswapV2Eth',
     Eth2Dai = 'Eth2Dai',
     Kyber = 'Kyber',
     CurveUsdcDai = 'Curve_USDC_DAI',
