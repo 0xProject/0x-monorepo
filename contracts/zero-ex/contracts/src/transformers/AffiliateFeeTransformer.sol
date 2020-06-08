@@ -73,9 +73,10 @@ contract AffiliateFeeTransformer is
 
         // Transfer tokens to recipients.
         for (uint256 i = 0; i < fees.length; ++i) {
-            uint256 amount = fees[i].amount == MAX_UINT256
-                ? LibERC20Transformer.getTokenBalanceOf(fees[i].token, address(this))
-                : fees[i].amount;
+            uint256 amount = fees[i].amount;
+            if (amount == MAX_UINT256) {
+                amount = LibERC20Transformer.getTokenBalanceOf(fees[i].token, address(this));
+            }
             if (amount != 0) {
                 fees[i].token.transformerTransfer(fees[i].recipient, amount);
             }
