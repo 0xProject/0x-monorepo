@@ -15,7 +15,10 @@ import * as _ from 'lodash';
 import 'mocha';
 
 import { constants } from '../src/constants';
-import { ExchangeProxySwapQuoteConsumer } from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
+import {
+    ExchangeProxySwapQuoteConsumer,
+    getTransformerAddress,
+} from '../src/quote_consumers/exchange_proxy_swap_quote_consumer';
 import { MarketBuySwapQuote, MarketOperation, MarketSellSwapQuote } from '../src/types';
 import { OptimizedMarketOrder } from '../src/utils/market_operation_utils/types';
 
@@ -33,14 +36,16 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
     const CHAIN_ID = 1;
     const TAKER_TOKEN = randomAddress();
     const MAKER_TOKEN = randomAddress();
+    const TRANSFORMER_DEPLOYER = randomAddress();
     const contractAddresses = {
         ...getContractAddressesForChainOrThrow(CHAIN_ID),
         exchangeProxy: randomAddress(),
         exchangeProxyAllowanceTarget: randomAddress(),
+        exchangeProxyTransformerDeployer: TRANSFORMER_DEPLOYER,
         transformers: {
-            wethTransformer: randomAddress(),
-            payTakerTransformer: randomAddress(),
-            fillQuoteTransformer: randomAddress(),
+            wethTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 1),
+            payTakerTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 2),
+            fillQuoteTransformer: getTransformerAddress(TRANSFORMER_DEPLOYER, 3),
         },
     };
     let consumer: ExchangeProxySwapQuoteConsumer;
@@ -150,7 +155,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         {
             type: 'tuple[]',
             name: 'transformations',
-            components: [{ type: 'address', name: 'transformer' }, { type: 'bytes', name: 'data' }],
+            components: [{ type: 'uint32', name: 'deploymentNonce' }, { type: 'bytes', name: 'data' }],
         },
     ]);
 
@@ -160,7 +165,7 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
         inputTokenAmount: BigNumber;
         minOutputTokenAmount: BigNumber;
         transformations: Array<{
-            transformer: string;
+            deploymentNonce: BigNumber;
             data: string;
         }>;
     }
@@ -175,8 +180,14 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
             expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
             expect(callArgs.transformations).to.be.length(2);
-            expect(callArgs.transformations[0].transformer === contractAddresses.transformers.fillQuoteTransformer);
-            expect(callArgs.transformations[1].transformer === contractAddresses.transformers.payTakerTransformer);
+            expect(
+                callArgs.transformations[0].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.fillQuoteTransformer,
+            );
+            expect(
+                callArgs.transformations[1].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.payTakerTransformer,
+            );
             const fillQuoteTransformerData = decodeFillQuoteTransformerData(callArgs.transformations[0].data);
             expect(fillQuoteTransformerData.side).to.eq(FillQuoteTransformerSide.Sell);
             expect(fillQuoteTransformerData.fillAmount).to.bignumber.eq(quote.takerAssetFillAmount);
@@ -198,8 +209,14 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             expect(callArgs.inputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
             expect(callArgs.minOutputTokenAmount).to.bignumber.eq(quote.worstCaseQuoteInfo.makerAssetAmount);
             expect(callArgs.transformations).to.be.length(2);
-            expect(callArgs.transformations[0].transformer === contractAddresses.transformers.fillQuoteTransformer);
-            expect(callArgs.transformations[1].transformer === contractAddresses.transformers.payTakerTransformer);
+            expect(
+                callArgs.transformations[0].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.fillQuoteTransformer,
+            );
+            expect(
+                callArgs.transformations[1].deploymentNonce.toNumber() ===
+                    consumer.transformerNonces.payTakerTransformer,
+            );
             const fillQuoteTransformerData = decodeFillQuoteTransformerData(callArgs.transformations[0].data);
             expect(fillQuoteTransformerData.side).to.eq(FillQuoteTransformerSide.Buy);
             expect(fillQuoteTransformerData.fillAmount).to.bignumber.eq(quote.makerAssetFillAmount);
@@ -216,8 +233,8 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
             const quote = getRandomSellQuote();
             const callInfo = await consumer.getCalldataOrThrowAsync(quote);
             const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
-            const transformers = callArgs.transformations.map(t => t.transformer);
-            expect(transformers).to.not.include(contractAddresses.transformers.wethTransformer);
+            const nonces = callArgs.transformations.map(t => t.deploymentNonce);
+            expect(nonces).to.not.include(consumer.transformerNonces.wethTransformer);
         });
 
         it('ETH -> ERC20 has a WETH transformer before the fill', async () => {
@@ -226,7 +243,9 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
                 extensionContractOpts: { isFromETH: true },
             });
             const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
-            expect(callArgs.transformations[0].transformer).to.eq(contractAddresses.transformers.wethTransformer);
+            expect(callArgs.transformations[0].deploymentNonce.toNumber()).to.eq(
+                consumer.transformerNonces.wethTransformer,
+            );
             const wethTransformerData = decodeWethTransformerData(callArgs.transformations[0].data);
             expect(wethTransformerData.amount).to.bignumber.eq(quote.worstCaseQuoteInfo.totalTakerAssetAmount);
             expect(wethTransformerData.token).to.eq(ETH_TOKEN_ADDRESS);
@@ -238,7 +257,9 @@ describe('ExchangeProxySwapQuoteConsumer', () => {
                 extensionContractOpts: { isToETH: true },
             });
             const callArgs = callDataEncoder.decode(callInfo.calldataHexString) as CallArgs;
-            expect(callArgs.transformations[1].transformer).to.eq(contractAddresses.transformers.wethTransformer);
+            expect(callArgs.transformations[1].deploymentNonce.toNumber()).to.eq(
+                consumer.transformerNonces.wethTransformer,
+            );
             const wethTransformerData = decodeWethTransformerData(callArgs.transformations[1].data);
             expect(wethTransformerData.amount).to.bignumber.eq(MAX_UINT256);
             expect(wethTransformerData.token).to.eq(contractAddresses.etherToken);
