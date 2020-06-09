@@ -3,7 +3,6 @@ import { BigNumber, hexUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ETH_TOKEN_ADDRESS } from '../../src/constants';
-import { rlpEncodeNonce } from '../../src/nonce_utils';
 import { encodePayTakerTransformerData } from '../../src/transformer_data_encoders';
 import { artifacts } from '../artifacts';
 import { PayTakerTransformerContract, TestMintableERC20TokenContract, TestTransformerHostContract } from '../wrappers';
@@ -12,7 +11,6 @@ const { MAX_UINT256, ZERO_AMOUNT } = constants;
 
 blockchainTests.resets('PayTakerTransformer', env => {
     const taker = randomAddress();
-    const deploymentNonce = _.random(0, 0xffffffff);
     let caller: string;
     let token: TestMintableERC20TokenContract;
     let transformer: PayTakerTransformerContract;
@@ -31,7 +29,6 @@ blockchainTests.resets('PayTakerTransformer', env => {
             env.provider,
             env.txDefaults,
             artifacts,
-            new BigNumber(deploymentNonce),
         );
         host = await TestTransformerHostContract.deployFrom0xArtifactAsync(
             artifacts.TestTransformerHost,
@@ -146,17 +143,5 @@ blockchainTests.resets('PayTakerTransformer', env => {
             tokenBalance: amounts[0].dividedToIntegerBy(2),
             ethBalance: amounts[1].dividedToIntegerBy(2),
         });
-    });
-
-    it('returns the RLP-encoded nonce', async () => {
-        const amounts = _.times(2, () => getRandomInteger(1, '1e18'));
-        const data = encodePayTakerTransformerData({
-            amounts,
-            tokens: [token.address, ETH_TOKEN_ADDRESS],
-        });
-        await mintHostTokensAsync(amounts[0]);
-        await sendEtherAsync(host.address, amounts[1]);
-        const r = await host.rawExecuteTransform(transformer.address, hexUtils.random(), taker, data).callAsync();
-        expect(r).to.eq(rlpEncodeNonce(deploymentNonce));
     });
 });

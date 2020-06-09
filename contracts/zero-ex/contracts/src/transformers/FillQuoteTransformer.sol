@@ -93,10 +93,9 @@ contract FillQuoteTransformer is
 
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
-    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    constructor(IExchange exchange_, uint256 deploymentNonce_)
+    constructor(IExchange exchange_)
         public
-        Transformer(deploymentNonce_)
+        Transformer()
     {
         exchange = exchange_;
         erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
@@ -106,9 +105,7 @@ contract FillQuoteTransformer is
     ///      for `buyToken` by filling `orders`. Protocol fees should be attached
     ///      to this call. `buyToken` and excess ETH will be transferred back to the caller.
     /// @param data_ ABI-encoded `TransformData`.
-    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
-    ///         when this transformer was deployed. This is used to verify that
-    ///         this transformer was deployed by a trusted contract.
+    /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
     function transform(
         bytes32, // callDataHash,
         address payable, // taker,
@@ -116,7 +113,7 @@ contract FillQuoteTransformer is
     )
         external
         override
-        returns (bytes memory rlpDeploymentNonce)
+        returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
 
@@ -231,7 +228,7 @@ contract FillQuoteTransformer is
                     ).rrevert();
             }
         }
-        return _getRLPEncodedDeploymentNonce();
+        return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }
 
     /// @dev Try to sell up to `sellAmount` from an order.

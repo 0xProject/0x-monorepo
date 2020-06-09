@@ -29,6 +29,9 @@ library LibERC20Transformer {
 
     /// @dev ETH pseudo-token address.
     address constant internal ETH_TOKEN_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    /// @dev Return value indicating success in `IERC20Transformer.transform()`.
+    ///      This is just `keccak256('TRANSFORMER_SUCCESS')`.
+    bytes4 constant internal TRANSFORMER_SUCCESS = 0x13c9929e;
 
     /// @dev Transfer ERC20 tokens and ETH.
     /// @param token An ERC20 or the ETH pseudo-token address (`ETH_TOKEN_ADDRESS`).
@@ -68,17 +71,21 @@ library LibERC20Transformer {
         view
         returns (uint256 tokenBalance)
     {
-        return isTokenETH(token) ? owner.balance : token.balanceOf(owner);
+        if (isTokenETH(token)) {
+            return owner.balance;
+        }
+        return token.balanceOf(owner);
     }
 
     /// @dev RLP-encode a 32-bit or less account nonce.
     /// @param nonce A positive integer in the range 0 <= nonce < 2^32.
     /// @return rlpNonce The RLP encoding.
-    function rlpEncodeNonce(uint256 nonce)
+    function rlpEncodeNonce(uint32 nonce)
         internal
         pure
         returns (bytes memory rlpNonce)
     {
+        // See https://github.com/ethereum/wiki/wiki/RLP for RLP encoding rules.
         if (nonce == 0) {
             rlpNonce = new bytes(1);
             rlpNonce[0] = 0x80;
@@ -100,15 +107,36 @@ library LibERC20Transformer {
             rlpNonce[1] = byte(uint8((nonce & 0xFF0000) >> 16));
             rlpNonce[2] = byte(uint8((nonce & 0xFF00) >> 8));
             rlpNonce[3] = byte(uint8(nonce));
-        } else if (nonce <= 0xFFFFFFFF) {
+        } else {
             rlpNonce = new bytes(5);
             rlpNonce[0] = 0x84;
             rlpNonce[1] = byte(uint8((nonce & 0xFF000000) >> 24));
             rlpNonce[2] = byte(uint8((nonce & 0xFF0000) >> 16));
             rlpNonce[3] = byte(uint8((nonce & 0xFF00) >> 8));
             rlpNonce[4] = byte(uint8(nonce));
-        } else {
-            revert("LibERC20Transformer/INVALID_ENCODE_NONCE");
         }
+    }
+
+    /// @dev Compute the expected deployment address by `deployer` at
+    ///      the nonce given by `deploymentNonce`.
+    /// @param deployer The address of the deployer.
+    /// @param deploymentNonce The nonce that the deployer had when deploying
+    ///        a contract.
+    /// @return deploymentAddress The deployment address.
+    function getDeployedAddress(address deployer, uint32 deploymentNonce)
+        internal
+        pure
+        returns (address payable deploymentAddress)
+    {
+        // The address of if a deployed contract is the lower 20 bytes of the
+        // hash of the RLP-encoded deployer's account address + account nonce.
+        // See: https://ethereum.stackexchange.com/questions/760/how-is-the-address-of-an-ethereum-contract-computed
+        bytes memory rlpNonce = rlpEncodeNonce(deploymentNonce);
+        return address(uint160(uint256(keccak256(abi.encodePacked(
+            byte(uint8(0xC0 + 21 + rlpNonce.length)),
+            byte(uint8(0x80 + 20)),
+            deployer,
+            rlpNonce
+        )))));
     }
 }

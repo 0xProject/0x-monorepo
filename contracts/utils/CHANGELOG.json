@@ -21,6 +21,10 @@
             {
                 "note": "Add UniswapV2 addresses to `DeploymentConstants`",
                 "pr": 2595
+            },
+            {
+                "note": "Update V06 contracts to get around 0.6.9 docstring errors",
+                "pr": 2597
             }
         ]
     },

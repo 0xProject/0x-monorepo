@@ -40,6 +40,11 @@ contract FullMigration {
         TransformERC20 transformERC20;
     }
 
+    /// @dev Parameters needed to initialize features.
+    struct MigrateOpts {
+        address transformerDeployer;
+    }
+
     /// @dev The allowed caller of `deploy()`.
     address public immutable deployer;
     /// @dev The initial migration contract.
@@ -62,9 +67,11 @@ contract FullMigration {
     /// @param owner The owner of the contract.
     /// @param features Features to add to the proxy.
     /// @return zeroEx The deployed and configured `ZeroEx` contract.
+    /// @param migrateOpts Parameters needed to initialize features.
     function deploy(
         address payable owner,
-        Features memory features
+        Features memory features,
+        MigrateOpts memory migrateOpts
     )
         public
         returns (ZeroEx zeroEx)
@@ -81,7 +88,7 @@ contract FullMigration {
         );
 
         // Add features.
-        _addFeatures(zeroEx, owner, features);
+        _addFeatures(zeroEx, owner, features, migrateOpts);
 
         // Transfer ownership to the real owner.
         IOwnable(address(zeroEx)).transferOwnership(owner);
@@ -106,10 +113,12 @@ contract FullMigration {
     /// @param zeroEx The bootstrapped ZeroEx contract.
     /// @param owner The ultimate owner of the ZeroEx contract.
     /// @param features Features to add to the proxy.
+    /// @param migrateOpts Parameters needed to initialize features.
     function _addFeatures(
         ZeroEx zeroEx,
         address owner,
-        Features memory features
+        Features memory features,
+        MigrateOpts memory migrateOpts
     )
         private
     {
@@ -138,7 +147,8 @@ contract FullMigration {
             ownable.migrate(
                 address(features.transformERC20),
                 abi.encodeWithSelector(
-                    TransformERC20.migrate.selector
+                    TransformERC20.migrate.selector,
+                    migrateOpts.transformerDeployer
                 ),
                 address(this)
             );

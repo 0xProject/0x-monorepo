@@ -29,9 +29,10 @@ interface ITransformERC20 {
 
     /// @dev Defines a transformation to run in `transformERC20()`.
     struct Transformation {
-        // The transformation handler.
-        // Can receive the entire balance of `tokens`.
-        IERC20Transformer transformer;
+        // The deployment nonce for the transformer.
+        // The address of the transformer contract will be derived from this
+        // value.
+        uint32 deploymentNonce;
         // Arbitrary data to pass to the transformer.
         bytes data;
     }
@@ -51,6 +52,16 @@ interface ITransformERC20 {
         uint256 inputTokenAmount,
         uint256 outputTokenAmount
     );
+
+    /// @dev Raised when `setTransformerDeployer()` is called.
+    /// @param transformerDeployer The new deployer address.
+    event TransformerDeployerUpdated(address transformerDeployer);
+
+    /// @dev Replace the allowed deployer for transformers.
+    ///      Only callable by the owner.
+    /// @param transformerDeployer The address of the trusted deployer for transformers.
+    function setTransformerDeployer(address transformerDeployer)
+        external;
 
     /// @dev Deploy a new flash wallet instance and replace the current one with it.
     ///      Useful if we somehow break the current wallet instance.

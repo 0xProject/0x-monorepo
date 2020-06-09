@@ -30,6 +30,8 @@ library LibTransformERC20Storage {
     struct Storage {
         // The current wallet instance.
         IFlashWallet wallet;
+        // The transformer deployer address.
+        address transformerDeployer;
     }
 
     /// @dev Get the storage bucket for this contract.

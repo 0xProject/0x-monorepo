@@ -34,7 +34,6 @@ contract TestMintTokenERC20Transformer is
         uint256 burnAmount;
         uint256 mintAmount;
         uint256 feeAmount;
-        bytes deploymentNonce;
     }
 
     event MintTransform(
@@ -54,7 +53,7 @@ contract TestMintTokenERC20Transformer is
     )
         external
         override
-        returns (bytes memory rlpDeploymentNonce)
+        returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
         emit MintTransform(
@@ -79,6 +78,6 @@ contract TestMintTokenERC20Transformer is
             // Burn fees from output.
             data.outputToken.burn(taker, data.feeAmount);
         }
-        return data.deploymentNonce;
+        return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }
 }
