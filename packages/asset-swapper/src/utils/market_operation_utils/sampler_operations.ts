@@ -415,9 +415,9 @@ export const samplerOperations = {
                 } else if (source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
                 } else if (source === ERC20BridgeSource.UniswapV2) {
-                    batchedOperation = samplerOperations.getUniswapV2BuyQuotes([makerToken, takerToken], makerFillAmounts);
+                    batchedOperation = samplerOperations.getUniswapV2BuyQuotes([takerToken, makerToken], makerFillAmounts);
                 } else if (source === ERC20BridgeSource.UniswapV2Eth) {
-                    batchedOperation = samplerOperations.getUniswapV2BuyQuotes([makerToken, wethAddress, takerToken], makerFillAmounts);
+                    batchedOperation = samplerOperations.getUniswapV2BuyQuotes([takerToken, wethAddress, makerToken], makerFillAmounts);
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberBuyQuotes(
                         makerToken,

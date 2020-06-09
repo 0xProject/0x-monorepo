@@ -227,10 +227,13 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             );
             break;
         case ERC20BridgeSource.UniswapV2Eth:
+            if (opts.contractAddresses.etherToken === NULL_ADDRESS) {
+                throw new Error(`Cannot create a ${ERC20BridgeSource.UniswapV2Eth.toString()} order without a WETH address`);
+            }
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createUniswapV2BridgeData([makerToken, takerToken]),
+                createUniswapV2BridgeData([makerToken, opts.contractAddresses.etherToken, takerToken]),
             );
             break;
         default:
