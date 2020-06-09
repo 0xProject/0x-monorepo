@@ -21,20 +21,14 @@ export type SampleBuysHandler = (
     makerToken: string,
     makerTokenAmounts: BigNumber[],
 ) => SampleResults;
-export type SampleBuysMultihopHandler = (
-    path: string[],
-    takerTokenAmounts: BigNumber[],
-) => SampleResults;
+export type SampleBuysMultihopHandler = (path: string[], takerTokenAmounts: BigNumber[]) => SampleResults;
 export type SampleSellsLPHandler = (
     registryAddress: string,
     takerToken: string,
     makerToken: string,
     takerTokenAmounts: BigNumber[],
 ) => SampleResults;
-export type SampleSellsMultihopHandler = (
-    path: string[],
-    takerTokenAmounts: BigNumber[],
-) => SampleResults;
+export type SampleSellsMultihopHandler = (path: string[], takerTokenAmounts: BigNumber[]) => SampleResults;
 
 const DUMMY_PROVIDER = {
     sendAsync: (...args: any[]): any => {

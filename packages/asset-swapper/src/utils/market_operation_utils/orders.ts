@@ -212,7 +212,11 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
         case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
         case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
         case ERC20BridgeSource.CurveUsdcDaiUsdtSusd:
-            const { curveAddress, fromTokenIdx, toTokenIdx, version } = getCurveInfo(fill.source, takerToken, makerToken);
+            const { curveAddress, fromTokenIdx, toTokenIdx, version } = getCurveInfo(
+                fill.source,
+                takerToken,
+                makerToken,
+            );
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
@@ -228,7 +232,9 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             break;
         case ERC20BridgeSource.UniswapV2Eth:
             if (opts.contractAddresses.etherToken === NULL_ADDRESS) {
-                throw new Error(`Cannot create a ${ERC20BridgeSource.UniswapV2Eth.toString()} order without a WETH address`);
+                throw new Error(
+                    `Cannot create a ${ERC20BridgeSource.UniswapV2Eth.toString()} order without a WETH address`,
+                );
             }
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
