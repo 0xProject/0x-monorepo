@@ -87,6 +87,7 @@ export {
     ITransformERC20Contract,
     ITransformERC20EventArgs,
     ITransformERC20Events,
+    ITransformERC20TransformerDeployerUpdatedEventArgs,
     ITransformERC20TransformedERC20EventArgs,
 } from './generated-wrappers/i_transform_erc20';
 export {

@@ -16,6 +16,14 @@
                 "type": "event"
             },
             {
+                "anonymous": false,
+                "inputs": [
+                    { "indexed": false, "internalType": "address", "name": "transformerDeployer", "type": "address" }
+                ],
+                "name": "TransformerDeployerUpdated",
+                "type": "event"
+            },
+            {
                 "inputs": [
                     { "internalType": "bytes32", "name": "callDataHash", "type": "bytes32" },
                     { "internalType": "address payable", "name": "taker", "type": "address" },
@@ -25,7 +33,7 @@
                     { "internalType": "uint256", "name": "minOutputTokenAmount", "type": "uint256" },
                     {
                         "components": [
-                            { "internalType": "contract IERC20Transformer", "name": "transformer", "type": "address" },
+                            { "internalType": "uint32", "name": "deploymentNonce", "type": "uint32" },
                             { "internalType": "bytes", "name": "data", "type": "bytes" }
                         ],
                         "internalType": "struct ITransformERC20.Transformation[]",
@@ -60,6 +68,13 @@
                 "type": "function"
             },
             {
+                "inputs": [{ "internalType": "address", "name": "transformerDeployer", "type": "address" }],
+                "name": "setTransformerDeployer",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
                 "inputs": [
                     { "internalType": "contract IERC20TokenV06", "name": "inputToken", "type": "address" },
                     { "internalType": "contract IERC20TokenV06", "name": "outputToken", "type": "address" },
@@ -67,7 +82,7 @@
                     { "internalType": "uint256", "name": "minOutputTokenAmount", "type": "uint256" },
                     {
                         "components": [
-                            { "internalType": "contract IERC20Transformer", "name": "transformer", "type": "address" },
+                            { "internalType": "uint32", "name": "deploymentNonce", "type": "uint32" },
                             { "internalType": "bytes", "name": "data", "type": "bytes" }
                         ],
                         "internalType": "struct ITransformERC20.Transformation[]",
@@ -84,7 +99,7 @@
         "devdoc": {
             "details": "Feature to composably transform between ERC20 tokens.",
             "methods": {
-                "_transformERC20(bytes32,address,address,address,uint256,uint256,(address,bytes)[])": {
+                "_transformERC20(bytes32,address,address,address,uint256,uint256,(uint32,bytes)[])": {
                     "details": "Internal version of `transformERC20()`. Only callable from within.",
                     "params": {
                         "callDataHash": "Hash of the ingress calldata.",
@@ -109,7 +124,11 @@
                     "details": "Return the allowed deployer for transformers.",
                     "returns": { "deployer": "The transform deployer address." }
                 },
-                "transformERC20(address,address,uint256,uint256,(address,bytes)[])": {
+                "setTransformerDeployer(address)": {
+                    "details": "Replace the allowed deployer for transformers.      Only callable by the owner.",
+                    "params": { "transformerDeployer": "The address of the trusted deployer for transformers." }
+                },
+                "transformERC20(address,address,uint256,uint256,(uint32,bytes)[])": {
                     "details": "Executes a series of transformations to convert an ERC20 `inputToken`      to an ERC20 `outputToken`.",
                     "params": {
                         "inputToken": "The token being provided by the sender.        If `0xeee...`, ETH is implied and should be provided with the call.`",
@@ -126,7 +145,7 @@
     },
     "compiler": {
         "name": "solc",
-        "version": "0.6.8+commit.0bbfe453",
+        "version": "0.6.9+commit.3e3065ac",
         "settings": {
             "optimizer": {
                 "enabled": true,

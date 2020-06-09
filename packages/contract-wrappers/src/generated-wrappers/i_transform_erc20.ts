@@ -35,10 +35,13 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-export type ITransformERC20EventArgs = ITransformERC20TransformedERC20EventArgs;
+export type ITransformERC20EventArgs =
+    | ITransformERC20TransformedERC20EventArgs
+    | ITransformERC20TransformerDeployerUpdatedEventArgs;
 
 export enum ITransformERC20Events {
     TransformedERC20 = 'TransformedERC20',
+    TransformerDeployerUpdated = 'TransformerDeployerUpdated',
 }
 
 export interface ITransformERC20TransformedERC20EventArgs extends DecodedLogArgs {
@@ -47,6 +50,10 @@ export interface ITransformERC20TransformedERC20EventArgs extends DecodedLogArgs
     outputToken: string;
     inputTokenAmount: BigNumber;
     outputTokenAmount: BigNumber;
+}
+
+export interface ITransformERC20TransformerDeployerUpdatedEventArgs extends DecodedLogArgs {
+    transformerDeployer: string;
 }
 
 /* istanbul ignore next */
@@ -200,6 +207,19 @@ export class ITransformERC20Contract extends BaseContract {
                 type: 'event',
             },
             {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: 'transformerDeployer',
+                        type: 'address',
+                        indexed: false,
+                    },
+                ],
+                name: 'TransformerDeployerUpdated',
+                outputs: [],
+                type: 'event',
+            },
+            {
                 inputs: [
                     {
                         name: 'callDataHash',
@@ -230,8 +250,8 @@ export class ITransformERC20Contract extends BaseContract {
                         type: 'tuple[]',
                         components: [
                             {
-                                name: 'transformer',
-                                type: 'address',
+                                name: 'deploymentNonce',
+                                type: 'uint32',
                             },
                             {
                                 name: 'data',
@@ -289,6 +309,18 @@ export class ITransformERC20Contract extends BaseContract {
             {
                 inputs: [
                     {
+                        name: 'transformerDeployer',
+                        type: 'address',
+                    },
+                ],
+                name: 'setTransformerDeployer',
+                outputs: [],
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                inputs: [
+                    {
                         name: 'inputToken',
                         type: 'address',
                     },
@@ -309,8 +341,8 @@ export class ITransformERC20Contract extends BaseContract {
                         type: 'tuple[]',
                         components: [
                             {
-                                name: 'transformer',
-                                type: 'address',
+                                name: 'deploymentNonce',
+                                type: 'uint32',
                             },
                             {
                                 name: 'data',
@@ -429,7 +461,7 @@ export class ITransformERC20Contract extends BaseContract {
         outputToken: string,
         inputTokenAmount: BigNumber,
         minOutputTokenAmount: BigNumber,
-        transformations: Array<{ transformer: string; data: string }>,
+        transformations: Array<{ deploymentNonce: number | BigNumber; data: string }>,
     ): ContractTxFunctionObj<BigNumber> {
         const self = (this as any) as ITransformERC20Contract;
         assert.isString('callDataHash', callDataHash);
@@ -439,7 +471,7 @@ export class ITransformERC20Contract extends BaseContract {
         assert.isBigNumber('inputTokenAmount', inputTokenAmount);
         assert.isBigNumber('minOutputTokenAmount', minOutputTokenAmount);
         assert.isArray('transformations', transformations);
-        const functionSignature = '_transformERC20(bytes32,address,address,address,uint256,uint256,(address,bytes)[])';
+        const functionSignature = '_transformERC20(bytes32,address,address,address,uint256,uint256,(uint32,bytes)[])';
 
         return {
             async sendTransactionAsync(
@@ -642,6 +674,59 @@ export class ITransformERC20Contract extends BaseContract {
         };
     }
     /**
+     * Replace the allowed deployer for transformers.
+     * Only callable by the owner.
+     * @param transformerDeployer The address of the trusted deployer for
+     *     transformers.
+     */
+    public setTransformerDeployer(transformerDeployer: string): ContractTxFunctionObj<void> {
+        const self = (this as any) as ITransformERC20Contract;
+        assert.isString('transformerDeployer', transformerDeployer);
+        const functionSignature = 'setTransformerDeployer(address)';
+
+        return {
+            async sendTransactionAsync(
+                txData?: Partial<TxData> | undefined,
+                opts: SendTransactionOpts = { shouldValidate: true },
+            ): Promise<string> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync(
+                    { ...txData, data: this.getABIEncodedTransactionData() },
+                    this.estimateGasAsync.bind(this),
+                );
+                if (opts.shouldValidate !== false) {
+                    await this.callAsync(txDataWithDefaults);
+                }
+                return self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            },
+            awaitTransactionSuccessAsync(
+                txData?: Partial<TxData>,
+                opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+            ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+                return self._promiseWithTransactionHash(this.sendTransactionAsync(txData, opts), opts);
+            },
+            async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+                const txDataWithDefaults = await self._applyDefaultsToTxDataAsync({
+                    ...txData,
+                    data: this.getABIEncodedTransactionData(),
+                });
+                return self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            },
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [transformerDeployer.toLowerCase()]);
+            },
+        };
+    }
+    /**
      * Executes a series of transformations to convert an ERC20 `inputToken`
      * to an ERC20 `outputToken`.
      * @param inputToken The token being provided by the sender.        If
@@ -659,7 +744,7 @@ export class ITransformERC20Contract extends BaseContract {
         outputToken: string,
         inputTokenAmount: BigNumber,
         minOutputTokenAmount: BigNumber,
-        transformations: Array<{ transformer: string; data: string }>,
+        transformations: Array<{ deploymentNonce: number | BigNumber; data: string }>,
     ): ContractTxFunctionObj<BigNumber> {
         const self = (this as any) as ITransformERC20Contract;
         assert.isString('inputToken', inputToken);
@@ -667,7 +752,7 @@ export class ITransformERC20Contract extends BaseContract {
         assert.isBigNumber('inputTokenAmount', inputTokenAmount);
         assert.isBigNumber('minOutputTokenAmount', minOutputTokenAmount);
         assert.isArray('transformations', transformations);
-        const functionSignature = 'transformERC20(address,address,uint256,uint256,(address,bytes)[])';
+        const functionSignature = 'transformERC20(address,address,uint256,uint256,(uint32,bytes)[])';
 
         return {
             async sendTransactionAsync(

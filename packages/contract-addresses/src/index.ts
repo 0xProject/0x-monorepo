@@ -36,6 +36,7 @@ export interface ContractAddresses {
     multiBridge: string;
     exchangeProxy: string;
     exchangeProxyAllowanceTarget: string;
+    exchangeProxyTransformerDeployer: string;
     transformers: {
         wethTransformer: string;
         payTakerTransformer: string;
