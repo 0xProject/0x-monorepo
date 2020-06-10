@@ -189,13 +189,13 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
 
     public sampleBuysFromUniswapV2(
         path: string[],
-        takerAssetAmounts: BigNumber[],
+        makerAssetAmounts: BigNumber[],
     ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
         return this._wrapCall(
             super.sampleBuysFromUniswapV2,
             this._handlers.sampleBuysFromUniswapV2,
             path,
-            takerAssetAmounts,
+            makerAssetAmounts,
         );
     }
 

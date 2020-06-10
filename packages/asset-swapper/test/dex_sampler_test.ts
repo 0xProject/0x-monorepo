@@ -370,7 +370,7 @@ describe('DexSampler tests', () => {
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.Eth2Dai]).integerValue());
                 },
                 sampleSellsFromUniswapV2: (path, fillAmounts) => {
-                    expect(path).to.deep.eq([expectedMakerToken, expectedTakerToken]);
+                    expect(path).to.deep.eq([expectedTakerToken, expectedMakerToken]);
                     expect(fillAmounts).to.deep.eq(expectedTakerFillAmounts);
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.UniswapV2]).integerValue());
                 },
@@ -406,7 +406,7 @@ describe('DexSampler tests', () => {
             const expectedTakerFillAmounts = getSampleAmounts(new BigNumber(100e18), 3);
             const sampler = new MockSamplerContract({
                 sampleSellsFromUniswapV2: (path, fillAmounts) => {
-                    expect(path).to.deep.eq([expectedMakerToken, wethAddress, expectedTakerToken]);
+                    expect(path).to.deep.eq([expectedTakerToken, wethAddress, expectedMakerToken]);
                     expect(fillAmounts).to.deep.eq(expectedTakerFillAmounts);
                     return fillAmounts.map(a => a.times(ratesBySource[ERC20BridgeSource.UniswapV2Eth]).integerValue());
                 },

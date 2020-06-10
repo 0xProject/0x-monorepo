@@ -335,12 +335,12 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.UniswapV2) {
                     batchedOperation = samplerOperations.getUniswapV2SellQuotes(
-                        [makerToken, takerToken],
+                        [takerToken, makerToken],
                         takerFillAmounts,
                     );
                 } else if (source === ERC20BridgeSource.UniswapV2Eth) {
                     batchedOperation = samplerOperations.getUniswapV2SellQuotes(
-                        [makerToken, wethAddress, takerToken],
+                        [takerToken, wethAddress, makerToken],
                         takerFillAmounts,
                     );
                 } else if (source === ERC20BridgeSource.Kyber) {

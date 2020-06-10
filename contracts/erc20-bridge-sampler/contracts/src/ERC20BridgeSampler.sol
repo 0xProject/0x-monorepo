@@ -649,7 +649,7 @@ contract ERC20BridgeSampler is
     }
 
     /// @dev Sample sell quotes from UniswapV2.
-    /// @param path Token route.
+    /// @param path Token route. Should be takerToken -> makerToken
     /// @param takerTokenAmounts Taker token sell amount for each sample.
     /// @return makerTokenAmounts Maker amounts bought at each taker token
     ///         amount.
@@ -683,7 +683,7 @@ contract ERC20BridgeSampler is
     }
 
     /// @dev Sample buy quotes from UniswapV2.
-    /// @param path Token route.
+    /// @param path Token route. Should be takerToken -> makerToken.
     /// @param makerTokenAmounts Maker token buy amount for each sample.
     /// @return takerTokenAmounts Taker amounts sold at each maker token
     ///         amount.
