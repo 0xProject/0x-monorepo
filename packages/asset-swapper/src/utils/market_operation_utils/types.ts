@@ -38,6 +38,7 @@ export enum ERC20BridgeSource {
     CurveUsdcDaiUsdtBusd = 'Curve_USDC_DAI_USDT_BUSD',
     CurveUsdcDaiUsdtSusd = 'Curve_USDC_DAI_USDT_SUSD',
     LiquidityProvider = 'LiquidityProvider',
+    MultiBridge = 'MultiBridge',
 }
 
 // Internal `fillData` field for `Fill` objects.
@@ -67,6 +68,8 @@ export interface DexSample {
 export enum FillFlags {
     ConflictsWithKyber = 0x1,
     Kyber = 0x2,
+    ConflictsWithMultiBridge = 0x4,
+    MultiBridge = 0x8,
 }
 
 /**

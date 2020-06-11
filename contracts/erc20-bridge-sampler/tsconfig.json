@@ -20,6 +20,7 @@
         "test/generated-artifacts/IKyberNetworkProxy.json",
         "test/generated-artifacts/ILiquidityProvider.json",
         "test/generated-artifacts/ILiquidityProviderRegistry.json",
+        "test/generated-artifacts/IMultiBridge.json",
         "test/generated-artifacts/IUniswapExchangeQuotes.json",
         "test/generated-artifacts/IUniswapV2Router01.json",
         "test/generated-artifacts/TestERC20BridgeSampler.json"

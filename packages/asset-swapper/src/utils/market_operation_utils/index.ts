@@ -47,6 +47,7 @@ async function getRfqtIndicativeQuotesAsync(
 
 export class MarketOperationUtils {
     private readonly _wethAddress: string;
+    private readonly _multiBridge: string;
 
     constructor(
         private readonly _sampler: DexOrderSampler,
@@ -55,6 +56,7 @@ export class MarketOperationUtils {
         private readonly _liquidityProviderRegistry: string = NULL_ADDRESS,
     ) {
         this._wethAddress = contractAddresses.etherToken.toLowerCase();
+        this._multiBridge = contractAddresses.multiBridge.toLowerCase();
     }
 
     /**
@@ -75,6 +77,11 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+        const optionalSources = (this._liquidityProviderRegistry !== NULL_ADDRESS
+            ? [ERC20BridgeSource.LiquidityProvider]
+            : []
+        ).concat(this._multiBridge !== NULL_ADDRESS ? [ERC20BridgeSource.MultiBridge] : []);
+
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
@@ -87,25 +94,23 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> maker token price.
             DexOrderSampler.ops.getMedianSellRate(
-                difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                ),
+                difference(FEE_QUOTE_SOURCES.concat(optionalSources), _opts.excludedSources),
                 makerToken,
                 this._wethAddress,
                 ONE_ETHER,
                 this._wethAddress,
                 this._liquidityProviderRegistry,
+                this._multiBridge,
             ),
             // Get sell quotes for taker -> maker.
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES, _opts.excludedSources).concat(
-                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                ),
+                difference(SELL_SOURCES.concat(optionalSources), _opts.excludedSources),
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
                 this._wethAddress,
                 this._liquidityProviderRegistry,
+                this._multiBridge,
             ),
         );
         const rfqtPromise = getRfqtIndicativeQuotesAsync(
@@ -125,6 +130,7 @@ export class MarketOperationUtils {
             dexQuotes,
             rfqtIndicativeQuotes,
             liquidityProviderAddress,
+            multiBridgeAddress: this._multiBridge,
             inputToken: takerToken,
             outputToken: makerToken,
             side: MarketOperation.Sell,
@@ -157,6 +163,10 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
+        const optionalSources = (this._liquidityProviderRegistry !== NULL_ADDRESS
+            ? [ERC20BridgeSource.LiquidityProvider]
+            : []
+        ).concat(this._multiBridge !== NULL_ADDRESS ? [ERC20BridgeSource.MultiBridge] : []);
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
@@ -169,19 +179,21 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> taker token price.
             DexOrderSampler.ops.getMedianSellRate(
-                difference(FEE_QUOTE_SOURCES, _opts.excludedSources).concat(
-                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
-                ),
+                difference(FEE_QUOTE_SOURCES.concat(optionalSources), _opts.excludedSources),
                 takerToken,
                 this._wethAddress,
                 ONE_ETHER,
                 this._wethAddress,
                 this._liquidityProviderRegistry,
+                this._multiBridge,
             ),
             // Get buy quotes for taker -> maker.
             DexOrderSampler.ops.getBuyQuotes(
-                difference(BUY_SOURCES, _opts.excludedSources).concat(
-                    this._liquidityProviderSourceIfAvailable(_opts.excludedSources),
+                difference(
+                    BUY_SOURCES.concat(
+                        this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [],
+                    ),
+                    _opts.excludedSources,
                 ),
                 makerToken,
                 takerToken,
@@ -208,6 +220,7 @@ export class MarketOperationUtils {
             dexQuotes,
             rfqtIndicativeQuotes,
             liquidityProviderAddress,
+            multiBridgeAddress: this._multiBridge,
             inputToken: makerToken,
             outputToken: takerToken,
             side: MarketOperation.Buy,
@@ -324,6 +337,7 @@ export class MarketOperationUtils {
         allowFallback?: boolean;
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
+        multiBridgeAddress?: string;
     }): OptimizedMarketOrder[] {
         const { inputToken, outputToken, side, inputAmount } = opts;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
@@ -385,15 +399,9 @@ export class MarketOperationUtils {
             contractAddresses: this.contractAddresses,
             bridgeSlippage: opts.bridgeSlippage || 0,
             liquidityProviderAddress: opts.liquidityProviderAddress,
+            multiBridgeAddress: opts.multiBridgeAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
-    }
-
-    private _liquidityProviderSourceIfAvailable(excludedSources: ERC20BridgeSource[]): ERC20BridgeSource[] {
-        return this._liquidityProviderRegistry !== NULL_ADDRESS &&
-            !excludedSources.includes(ERC20BridgeSource.LiquidityProvider)
-            ? [ERC20BridgeSource.LiquidityProvider]
-            : [];
     }
 }
 

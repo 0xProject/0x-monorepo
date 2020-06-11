@@ -29,6 +29,13 @@ export type SampleSellsLPHandler = (
     takerTokenAmounts: BigNumber[],
 ) => SampleResults;
 export type SampleSellsMultihopHandler = (path: string[], takerTokenAmounts: BigNumber[]) => SampleResults;
+export type SampleSellsMBHandler = (
+    multiBridgeAddress: string,
+    takerToken: string,
+    intermediateToken: string,
+    makerToken: string,
+    takerTokenAmounts: BigNumber[],
+) => SampleResults;
 
 const DUMMY_PROVIDER = {
     sendAsync: (...args: any[]): any => {
@@ -41,6 +48,7 @@ interface Handlers {
     getOrderFillableTakerAssetAmounts: GetOrderFillableAssetAmountHandler;
     sampleSellsFromKyberNetwork: SampleSellsHandler;
     sampleSellsFromLiquidityProviderRegistry: SampleSellsLPHandler;
+    sampleSellsFromMultiBridge: SampleSellsMBHandler;
     sampleSellsFromEth2Dai: SampleSellsHandler;
     sampleSellsFromUniswap: SampleSellsHandler;
     sampleSellsFromUniswapV2: SampleSellsMultihopHandler;
@@ -154,6 +162,24 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.sampleSellsFromLiquidityProviderRegistry,
             registryAddress,
             takerToken,
+            makerToken,
+            takerAssetAmounts,
+        );
+    }
+
+    public sampleSellsFromMultiBridge(
+        multiBridgeAddress: string,
+        takerToken: string,
+        intermediateToken: string,
+        makerToken: string,
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromMultiBridge,
+            this._handlers.sampleSellsFromMultiBridge,
+            multiBridgeAddress,
+            takerToken,
+            intermediateToken,
             makerToken,
             takerAssetAmounts,
         );
