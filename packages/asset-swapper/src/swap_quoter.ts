@@ -536,31 +536,50 @@ export class SwapQuoter {
         } else {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
-        // get batches of orders from different sources, awaiting sources in parallel
-        const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];
-        orderBatchPromises.push(this._getSignedOrdersAsync(makerAssetData, takerAssetData)); // order book
-        if (
+        // Get batches of orders from different sources, awaiting sources in parallel
+        const orderFetchPromises: Array<Promise<SignedOrder[]>> = [];
+
+        // Fetch from orderbook
+        const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData); // order book
+        orderFetchPromises.push(orderbookPromise);
+
+        // If applicable, fetch from RFQT
+        const shouldFetchRfqtFirmQuotes =
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
             opts.rfqt.apiKey &&
             this._rfqtTakerApiKeyWhitelist.includes(opts.rfqt.apiKey) &&
-            !(marketOperation === MarketOperation.Buy && this._rfqtSkipBuyRequests)
-        ) {
+            !(marketOperation === MarketOperation.Buy && this._rfqtSkipBuyRequests);
+        if (shouldFetchRfqtFirmQuotes && opts.rfqt) {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
-            orderBatchPromises.push(
-                this._quoteRequestor.requestRfqtFirmQuotesAsync(
-                    makerAssetData,
-                    takerAssetData,
-                    assetFillAmount,
-                    marketOperation,
-                    opts.rfqt,
-                ),
+            const rfqtPromise = this._quoteRequestor.requestRfqtFirmQuotesAsync(
+                makerAssetData,
+                takerAssetData,
+                assetFillAmount,
+                marketOperation,
+                opts.rfqt,
             );
+            orderFetchPromises.push(rfqtPromise);
         }
 
-        const orderBatches: SignedOrder[][] = await Promise.all(orderBatchPromises);
+        const orderBatches: SignedOrder[][] = await Promise.all(orderFetchPromises);
+
+        if (opts.orderReporter) {
+            opts.orderReporter.trackOrderbookSamples(orderBatches[0]);
+
+            if (orderBatches[1]) {
+                // TODO: use real RFQT urls
+                const rfqtSamples = orderBatches[1].map(o => {
+                    return {
+                        order: o,
+                        makerUri: 'todo',
+                    };
+                });
+                opts.orderReporter.trackRfqtSamples(rfqtSamples);
+            }
+        }
 
         const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
 

@@ -38,6 +38,8 @@ export class OrderReporter {
     public reportQuote(paths: CollapsedFill[]) {
         const sanitizedPaths = paths.map(p => _.omit(p, 'subFills'));
         console.log('dex samples:', JSON.stringify(this._dexSamples, undefined, 2));
+        console.log('orderbook samples:', JSON.stringify(this._orderbookSamples, undefined, 2));
+        console.log('rfqt samples:', JSON.stringify(this._rfqtSamples, undefined, 2));
         console.log('quote report:', JSON.stringify(sanitizedPaths, undefined, 2));
         return;
     }
