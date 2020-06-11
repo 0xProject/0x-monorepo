@@ -12,7 +12,7 @@ export {
     SRAPollingOrderProviderOpts,
     SRAWebsocketOrderProviderOpts,
 } from '@0x/orderbook';
-export { IndicativeQuote } from '@0x/quote-server';
+export { RFQTIndicativeQuote, RFQTFirmQuote } from '@0x/quote-server';
 export { APIOrder, Asset, AssetPairsItem, SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 export {

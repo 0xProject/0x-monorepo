@@ -188,7 +188,9 @@ describe('QuoteRequestor', async () => {
                         intentOnFilling: true,
                     },
                 );
-                expect(resp.sort()).to.eql([successfulOrder1, successfulOrder2].sort());
+                expect(resp.sort()).to.eql(
+                    [{ signedOrder: successfulOrder1 }, { signedOrder: successfulOrder2 }].sort(),
+                );
             });
         });
     });
