@@ -30,7 +30,7 @@ import { DexSample, ERC20BridgeSource, NativeFillData } from '../src/utils/marke
 // tslint:disable: custom-no-magic-numbers
 describe('MarketOperationUtils tests', () => {
     const CHAIN_ID = 1;
-    const contractAddresses = getContractAddressesForChainOrThrow(CHAIN_ID);
+    const contractAddresses = { ...getContractAddressesForChainOrThrow(CHAIN_ID), multiBridge: NULL_ADDRESS };
     const ETH2DAI_BRIDGE_ADDRESS = contractAddresses.eth2DaiBridge;
     const KYBER_BRIDGE_ADDRESS = contractAddresses.kyberBridge;
     const UNISWAP_BRIDGE_ADDRESS = contractAddresses.uniswapBridge;
@@ -259,7 +259,9 @@ describe('MarketOperationUtils tests', () => {
         const fn = (registryAddress: string, takerToken: string, makerToken: string): string => {
             callArgs.makerToken = makerToken;
             callArgs.takerToken = takerToken;
-            callArgs.registryAddress = registryAddress;
+            if (registryAddress !== constants.NULL_ADDRESS) {
+                callArgs.registryAddress = registryAddress;
+            }
             return liquidityProviderAddress;
         };
         return [callArgs, fn];
@@ -294,6 +296,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.CurveUsdcDaiUsdtBusd]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.CurveUsdcDaiUsdtSusd]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.MultiBridge]: _.times(NUM_SAMPLES, () => 0),
     };
 
     const DEFAULT_OPS = {

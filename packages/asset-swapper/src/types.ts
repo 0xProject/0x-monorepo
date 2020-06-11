@@ -233,6 +233,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
     liquidityProviderRegistryAddress?: string;
+    multiBridgeAddress?: string;
     rfqt?: {
         takerApiKeyWhitelist: string[];
         makerAssetOfferings: RfqtMakerAssetOfferings;

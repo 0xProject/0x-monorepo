@@ -35,6 +35,7 @@ import "./ICurve.sol";
 import "./ILiquidityProvider.sol";
 import "./ILiquidityProviderRegistry.sol";
 import "./IUniswapV2Router01.sol";
+import "./IMultiBridge.sol";
 
 
 contract ERC20BridgeSampler is
@@ -55,7 +56,7 @@ contract ERC20BridgeSampler is
     ///      So a reasonable ceil is 150k per token. Biggest Curve has 4 tokens.
     uint256 constant internal CURVE_CALL_GAS = 600e3; // 600k
     /// @dev Default gas limit for liquidity provider calls.
-    uint256 constant internal DEFAULT_CALL_GAS = 200e3; // 200k
+    uint256 constant internal DEFAULT_CALL_GAS = 400e3; // 400k
     /// @dev The Kyber Uniswap Reserve address
     address constant internal KYBER_UNIWAP_RESERVE = 0x31E085Afd48a1d6e51Cc193153d625e8f0514C7F;
     /// @dev The Kyber Eth2Dai Reserve address
@@ -579,6 +580,56 @@ contract ERC20BridgeSampler is
                     abi.encodeWithSelector(
                         ILiquidityProvider(0).getSellQuote.selector,
                         takerToken,
+                        makerToken,
+                        takerTokenAmounts[i]
+                    ));
+            uint256 buyAmount = 0;
+            if (didSucceed) {
+                buyAmount = abi.decode(resultData, (uint256));
+            } else {
+                // Exit early if the amount is too high for the liquidity provider to serve
+                break;
+            }
+            makerTokenAmounts[i] = buyAmount;
+        }
+    }
+
+    /// @dev Sample sell quotes from MultiBridge.
+    /// @param multibridge Address of the MultiBridge contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param intermediateToken The address of the intermediate token to
+    ///        use in an indirect route.
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromMultiBridge(
+        address multibridge,
+        address takerToken,
+        address intermediateToken,
+        address makerToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        // Initialize array of maker token amounts.
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+
+        // If no address provided, return all zeros.
+        if (multibridge == address(0)) {
+            return makerTokenAmounts;
+        }
+
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                multibridge.staticcall.gas(DEFAULT_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IMultiBridge(0).getSellQuote.selector,
+                        takerToken,
+                        intermediateToken,
                         makerToken,
                         takerTokenAmounts[i]
                     ));

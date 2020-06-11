@@ -17,6 +17,7 @@ import {
     ZERO_AMOUNT,
 } from './constants';
 import { collapsePath } from './fills';
+import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
     AggregationError,
     CollapsedFill,
@@ -141,6 +142,7 @@ export interface CreateOrderFromPathOpts {
     bridgeSlippage: number;
     shouldBatchBridgeOrders: boolean;
     liquidityProviderAddress?: string;
+    multiBridgeAddress?: string;
 }
 
 // Convert sell fills into orders.
@@ -195,6 +197,11 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
                 throw new Error('Cannot create a LiquidityProvider order without a LiquidityProvider pool address.');
             }
             return opts.liquidityProviderAddress;
+        case ERC20BridgeSource.MultiBridge:
+            if (opts.multiBridgeAddress === undefined) {
+                throw new Error('Cannot create a MultiBridge order without a MultiBridge address.');
+            }
+            return opts.multiBridgeAddress;
         default:
             break;
     }
@@ -240,6 +247,13 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                 makerToken,
                 bridgeAddress,
                 createUniswapV2BridgeData([makerToken, opts.contractAddresses.etherToken, takerToken]),
+            );
+            break;
+        case ERC20BridgeSource.MultiBridge:
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createMultiBridgeData(takerToken, makerToken),
             );
             break;
         default:
@@ -313,6 +327,15 @@ function getMakerTakerTokens(opts: CreateOrderFromPathOpts): [string, string] {
 function createBridgeData(tokenAddress: string): string {
     const encoder = AbiEncoder.create([{ name: 'tokenAddress', type: 'address' }]);
     return encoder.encode({ tokenAddress });
+}
+
+function createMultiBridgeData(takerToken: string, makerToken: string): string {
+    const intermediateToken = getMultiBridgeIntermediateToken(takerToken, makerToken);
+    const encoder = AbiEncoder.create([
+        { name: 'takerToken', type: 'address' },
+        { name: 'intermediateToken', type: 'address' },
+    ]);
+    return encoder.encode({ takerToken, intermediateToken });
 }
 
 function createCurveBridgeData(

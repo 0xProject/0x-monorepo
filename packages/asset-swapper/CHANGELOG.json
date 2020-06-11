@@ -81,6 +81,10 @@
             {
                 "note": "Add support for Uniswap V2",
                 "pr": 2599
+            },
+            {
+                "note": "Add support for MultiBridge",
+                "pr": 2593
             }
         ]
     },

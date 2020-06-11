@@ -2,6 +2,7 @@ import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 import { getCurveInfo, isCurveSource } from '../source_utils';
 
 import { DEFAULT_FAKE_BUY_OPTS } from './constants';
+import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import { BatchedOperation, DexSample, FakeBuyOpts } from './types';
 
 /**
@@ -123,7 +124,7 @@ export const samplerOperations = {
         };
     },
     getLiquidityProviderSellQuotes(
-        liquidityProviderRegistryAddress: string,
+        registryAddress: string,
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
@@ -131,9 +132,31 @@ export const samplerOperations = {
         return {
             encodeCall: contract => {
                 return contract
-                    .sampleSellsFromLiquidityProviderRegistry(
-                        liquidityProviderRegistryAddress,
+                    .sampleSellsFromLiquidityProviderRegistry(registryAddress, takerToken, makerToken, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>(
+                    'sampleSellsFromLiquidityProviderRegistry',
+                    callResults,
+                );
+            },
+        };
+    },
+    getMultiBridgeSellQuotes(
+        multiBridgeAddress: string,
+        makerToken: string,
+        intermediateToken: string,
+        takerToken: string,
+        takerFillAmounts: BigNumber[],
+    ): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromMultiBridge(
+                        multiBridgeAddress,
                         takerToken,
+                        intermediateToken,
                         makerToken,
                         takerFillAmounts,
                     )
@@ -148,7 +171,7 @@ export const samplerOperations = {
         };
     },
     getLiquidityProviderBuyQuotes(
-        liquidityProviderRegistryAddress: string,
+        registryAddress: string,
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
@@ -158,7 +181,7 @@ export const samplerOperations = {
             encodeCall: contract => {
                 return contract
                     .sampleBuysFromLiquidityProviderRegistry(
-                        liquidityProviderRegistryAddress,
+                        registryAddress,
                         takerToken,
                         makerToken,
                         makerFillAmounts,
@@ -256,7 +279,8 @@ export const samplerOperations = {
         takerToken: string,
         takerFillAmount: BigNumber,
         wethAddress: string,
-        liquidityProviderRegistryAddress?: string | undefined,
+        liquidityProviderRegistryAddress?: string,
+        multiBridgeAddress?: string,
     ): BatchedOperation<BigNumber> {
         if (makerToken.toLowerCase() === takerToken.toLowerCase()) {
             return samplerOperations.constant(new BigNumber(1));
@@ -268,6 +292,7 @@ export const samplerOperations = {
             [takerFillAmount],
             wethAddress,
             liquidityProviderRegistryAddress,
+            multiBridgeAddress,
         );
         return {
             encodeCall: contract => {
@@ -324,7 +349,8 @@ export const samplerOperations = {
         takerToken: string,
         takerFillAmounts: BigNumber[],
         wethAddress: string,
-        liquidityProviderRegistryAddress?: string | undefined,
+        liquidityProviderRegistryAddress?: string,
+        multiBridgeAddress?: string,
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources
             .map(source => {
@@ -367,6 +393,18 @@ export const samplerOperations = {
                         takerToken,
                         takerFillAmounts,
                     );
+                } else if (source === ERC20BridgeSource.MultiBridge) {
+                    if (multiBridgeAddress === undefined) {
+                        throw new Error('Cannot sample liquidity from MultiBridge if an address is not provided.');
+                    }
+                    const intermediateToken = getMultiBridgeIntermediateToken(takerToken, makerToken);
+                    batchedOperation = samplerOperations.getMultiBridgeSellQuotes(
+                        multiBridgeAddress,
+                        makerToken,
+                        intermediateToken,
+                        takerToken,
+                        takerFillAmounts,
+                    );
                 } else {
                     throw new Error(`Unsupported sell sample source: ${source}`);
                 }
@@ -404,7 +442,7 @@ export const samplerOperations = {
         takerToken: string,
         makerFillAmounts: BigNumber[],
         wethAddress: string,
-        liquidityProviderRegistryAddress?: string | undefined,
+        liquidityProviderRegistryAddress?: string,
         fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources
@@ -486,3 +524,4 @@ export const samplerOperations = {
         };
     },
 };
+// tslint:disable max-file-line-count

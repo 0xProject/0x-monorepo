@@ -206,6 +206,26 @@ interface IERC20BridgeSampler {
         view
         returns (uint256[] memory makerTokenAmounts);
 
+    /// @dev Sample sell quotes from MultiBridge.
+    /// @param multibridge Address of the MultiBridge contract.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param intermediateToken The address of the intermediate token to
+    ///        use in an indirect route.
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromMultiBridge(
+        address multibridge,
+        address takerToken,
+        address intermediateToken,
+        address makerToken,
+        uint256[] calldata takerTokenAmounts
+    )
+        external
+        view
+        returns (uint256[] memory makerTokenAmounts);
+
     /// @dev Sample buy quotes from an arbitrary on-chain liquidity provider.
     /// @param registryAddress Address of the liquidity provider registry contract.
     /// @param takerToken Address of the taker token (what to sell).
