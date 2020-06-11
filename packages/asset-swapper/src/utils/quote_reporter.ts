@@ -9,13 +9,12 @@ export interface AnnotatedRfqtFirmQuote {
     makerUri: string;
 }
 
-export class OrderReporter {
+export class QuoteReporter {
     private readonly _metadataIdentifier: string;
     private _dexSamples: DexSample[];
     private _orderbookSamples: SignedOrder[];
     private _rfqtSamples: AnnotatedRfqtFirmQuote[];
 
-    // todo: take in request opts, like sell or buy and amount
     constructor(metadataIdentifier: string) {
         this._metadataIdentifier = metadataIdentifier;
         this._dexSamples = [];

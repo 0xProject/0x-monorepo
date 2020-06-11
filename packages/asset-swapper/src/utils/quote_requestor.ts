@@ -110,7 +110,7 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
     ): Promise<SignedOrder[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
-        const { orderReporter } = _opts;
+        const { quoteReporter } = _opts;
         assertTakerAddressOrThrow(_opts.takerAddress);
 
         const reponsesContainingOrdersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
@@ -123,14 +123,14 @@ export class QuoteRequestor {
         );
 
         // Report signed orders and maker URIs
-        if (orderReporter) {
+        if (quoteReporter) {
             const responsesToReport = reponsesContainingOrdersWithStringInts.map(r => {
                 return {
                     signedOrder: r.response,
                     makerUri: r.makerUri,
                 };
             });
-            orderReporter.trackRfqtSamples(responsesToReport);
+            quoteReporter.trackRfqtSamples(responsesToReport);
         }
         const ordersWithStringInts = reponsesContainingOrdersWithStringInts.map(r => r.response);
 

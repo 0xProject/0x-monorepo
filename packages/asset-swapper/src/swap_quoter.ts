@@ -541,8 +541,8 @@ export class SwapQuoter {
 
         // Fetch from orderbook
         const trackOrderbookOrders = (orderbookOrders: SignedOrder[]) => {
-            if (opts.orderReporter) {
-                opts.orderReporter.trackOrderbookSamples(orderbookOrders);
+            if (opts.quoteReporter) {
+                opts.quoteReporter.trackOrderbookSamples(orderbookOrders);
             }
             return orderbookOrders;
         };
@@ -566,7 +566,7 @@ export class SwapQuoter {
                 takerAssetData,
                 assetFillAmount,
                 marketOperation,
-                { ...opts.rfqt, orderReporter: opts.orderReporter },
+                { ...opts.rfqt, quoteReporter: opts.quoteReporter },
             );
             orderFetchPromises.push(rfqtPromise);
         }

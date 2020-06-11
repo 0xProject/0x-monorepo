@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
 import { LogFunction } from './utils/quote_requestor';
-import { OrderReporter } from './utils/order_reporter';
+import { QuoteReporter } from './utils/quote_reporter';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -195,7 +195,7 @@ export interface RfqtRequestOpts {
     intentOnFilling: boolean;
     isIndicative?: boolean;
     makerEndpointMaxResponseTimeMs?: number;
-    orderReporter?: OrderReporter;
+    quoteReporter?: QuoteReporter;
 }
 
 /**

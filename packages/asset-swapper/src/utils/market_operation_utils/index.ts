@@ -4,7 +4,7 @@ import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { MarketOperation } from '../../types';
-import { OrderReporter } from '../order_reporter';
+import { QuoteReporter } from '../quote_reporter';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { difference } from '../utils';
 
@@ -120,8 +120,8 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes,
         ] = await Promise.all([samplerPromise, rfqtPromise]);
 
-        if (_opts.orderReporter) {
-            _opts.orderReporter.trackDexSamples(_.flatten(dexQuotes));
+        if (_opts.quoteReporter) {
+            _opts.quoteReporter.trackDexSamples(_.flatten(dexQuotes));
         }
 
         return this._generateOptimizedOrders({
@@ -141,7 +141,7 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-            orderReporter: _opts.orderReporter,
+            quoteReporter: _opts.quoteReporter,
         });
     }
 
@@ -326,7 +326,7 @@ export class MarketOperationUtils {
         allowFallback?: boolean;
         shouldBatchBridgeOrders?: boolean;
         liquidityProviderAddress?: string;
-        orderReporter?: OrderReporter;
+        quoteReporter?: QuoteReporter;
     }): OptimizedMarketOrder[] {
         const { inputToken, outputToken, side, inputAmount } = opts;
         const maxFallbackSlippage = opts.maxFallbackSlippage || 0;
@@ -389,7 +389,7 @@ export class MarketOperationUtils {
             bridgeSlippage: opts.bridgeSlippage || 0,
             liquidityProviderAddress: opts.liquidityProviderAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
-            orderReporter: opts.orderReporter,
+            quoteReporter: opts.quoteReporter,
         });
     }
 

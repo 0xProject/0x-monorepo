@@ -4,7 +4,7 @@ import { ERC20BridgeAssetData, SignedOrder } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
-import { OrderReporter } from '../order_reporter';
+import { QuoteReporter } from '../quote_reporter';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
 import { getCurveInfo, isCurveSource } from '../source_utils';
 
@@ -142,7 +142,7 @@ export interface CreateOrderFromPathOpts {
     bridgeSlippage: number;
     shouldBatchBridgeOrders: boolean;
     liquidityProviderAddress?: string;
-    orderReporter?: OrderReporter;
+    quoteReporter?: QuoteReporter;
 }
 
 // Convert sell fills into orders.
@@ -173,8 +173,8 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
         }
     }
 
-    if (opts.orderReporter) {
-        opts.orderReporter.reportQuote(collapsedPath);
+    if (opts.quoteReporter) {
+        opts.quoteReporter.reportQuote(collapsedPath);
     }
     return orders;
 }
