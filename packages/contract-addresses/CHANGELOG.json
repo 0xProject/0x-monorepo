@@ -63,7 +63,7 @@
                 "pr": 2599
             },
             {
-                "note": "Added `uniswapV2Bridge` field",
+                "note": "Add UniswapV2Bridge address on Mainnet (new field)",
                 "pr": 2599
             }
         ]
