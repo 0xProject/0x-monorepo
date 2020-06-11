@@ -4,8 +4,8 @@ import * as _ from 'lodash';
 
 import { CollapsedFill, DexSample } from './market_operation_utils/types';
 
-interface RfqtSample {
-    order: SignedOrder;
+export interface AnnotatedRfqtFirmQuote {
+    signedOrder: SignedOrder;
     makerUri: string;
 }
 
@@ -13,7 +13,7 @@ export class OrderReporter {
     private readonly _metadataIdentifier: string;
     private _dexSamples: DexSample[];
     private _orderbookSamples: SignedOrder[];
-    private _rfqtSamples: RfqtSample[];
+    private _rfqtSamples: AnnotatedRfqtFirmQuote[];
 
     // todo: take in request opts, like sell or buy and amount
     constructor(metadataIdentifier: string) {
@@ -31,7 +31,7 @@ export class OrderReporter {
         this._orderbookSamples = orderbookSamples;
     }
 
-    public trackRfqtSamples(rfqtSamples: RfqtSample[]) {
+    public trackRfqtSamples(rfqtSamples: AnnotatedRfqtFirmQuote[]) {
         this._rfqtSamples = rfqtSamples;
     }
 

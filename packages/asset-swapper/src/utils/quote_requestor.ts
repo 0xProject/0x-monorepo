@@ -2,7 +2,7 @@ import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
-import Axios, { AxiosResponse } from 'axios';
+import Axios from 'axios';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
@@ -110,9 +110,10 @@ export class QuoteRequestor {
         options: RfqtRequestOpts,
     ): Promise<SignedOrder[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
+        const { orderReporter } = _opts;
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const ordersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
+        const reponsesContainingOrdersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -120,6 +121,18 @@ export class QuoteRequestor {
             _opts,
             'firm',
         );
+
+        // Report signed orders and maker URIs
+        if (orderReporter) {
+            const responsesToReport = reponsesContainingOrdersWithStringInts.map(r => {
+                return {
+                    signedOrder: r.response,
+                    makerUri: r.makerUri,
+                };
+            });
+            orderReporter.trackRfqtSamples(responsesToReport);
+        }
+        const ordersWithStringInts = reponsesContainingOrdersWithStringInts.map(r => r.response);
 
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
             const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
@@ -149,7 +162,7 @@ export class QuoteRequestor {
         });
 
         const validatedOrders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
-            return {
+            const orderWithBigNumbers = {
                 ...orderWithStringInts,
                 makerAssetAmount: new BigNumber(orderWithStringInts.makerAssetAmount),
                 takerAssetAmount: new BigNumber(orderWithStringInts.takerAssetAmount),
@@ -158,17 +171,16 @@ export class QuoteRequestor {
                 expirationTimeSeconds: new BigNumber(orderWithStringInts.expirationTimeSeconds),
                 salt: new BigNumber(orderWithStringInts.salt),
             };
+            return orderWithBigNumbers;
         });
 
-        const orders = validatedOrders.filter(order => {
-            if (orderCalculationUtils.willOrderExpire(order, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
-                this._warningLogger(order, 'Expiry too soon in RFQ-T order, filtering out');
+        return validatedOrders.filter(signedOrder => {
+            if (orderCalculationUtils.willOrderExpire(signedOrder, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
+                this._warningLogger(signedOrder, 'Expiry too soon in RFQ-T order, filtering out');
                 return false;
             }
             return true;
         });
-
-        return orders;
     }
 
     public async requestRfqtIndicativeQuotesAsync(
@@ -181,14 +193,14 @@ export class QuoteRequestor {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const responsesWithStringInts = await this._getQuotesAsync<RfqtIndicativeQuoteResponse>( // not yet BigNumber
+        const responsesWithStringInts = (await this._getQuotesAsync<RfqtIndicativeQuoteResponse>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
             marketOperation,
             _opts,
             'indicative',
-        );
+        )).map(r => r.response);
 
         const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
             if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
@@ -279,10 +291,10 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
-    ): Promise<ResponseT[]> {
+    ): Promise<Array<{ makerUri: string; response: ResponseT }>> {
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
-        const responsesIfDefined: Array<undefined | AxiosResponse<ResponseT>> = await Promise.all(
+        const rawResponses: Array<undefined | { makerUri: string; response: ResponseT }> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
                     const requestParams = {
@@ -304,7 +316,7 @@ export class QuoteRequestor {
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }
                         })();
-                        const response = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
+                        const axiosResponse = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
                             timeout: options.makerEndpointMaxResponseTimeMs,
@@ -313,12 +325,12 @@ export class QuoteRequestor {
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
                                 response: {
-                                    statusCode: response.status,
+                                    statusCode: axiosResponse.status,
                                     latencyMs: Date.now() - timeBeforeAwait,
                                 },
                             },
                         });
-                        return response;
+                        return { makerUri: url, response: axiosResponse.data };
                     } catch (err) {
                         this._infoLogger({
                             rfqtMakerInteraction: {
@@ -342,10 +354,13 @@ export class QuoteRequestor {
             }),
         );
 
-        const responses = responsesIfDefined.filter(
-            (respIfDefd): respIfDefd is AxiosResponse<ResponseT> => respIfDefd !== undefined,
-        );
-
-        return responses.map(response => response.data);
+        // Filter out null responses
+        const finalResult: Array<{ makerUri: string; response: ResponseT }> = [];
+        for (const rawResponse of rawResponses) {
+            if (rawResponse) {
+                finalResult.push(rawResponse);
+            }
+        }
+        return finalResult;
     }
 }

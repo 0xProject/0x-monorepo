@@ -540,7 +540,13 @@ export class SwapQuoter {
         const orderFetchPromises: Array<Promise<SignedOrder[]>> = [];
 
         // Fetch from orderbook
-        const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData); // order book
+        const trackOrderbookOrders = (orderbookOrders: SignedOrder[]) => {
+            if (opts.orderReporter) {
+                opts.orderReporter.trackOrderbookSamples(orderbookOrders);
+            }
+            return orderbookOrders;
+        };
+        const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData).then(trackOrderbookOrders);
         orderFetchPromises.push(orderbookPromise);
 
         // If applicable, fetch from RFQT
@@ -554,35 +560,20 @@ export class SwapQuoter {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
+
             const rfqtPromise = this._quoteRequestor.requestRfqtFirmQuotesAsync(
                 makerAssetData,
                 takerAssetData,
                 assetFillAmount,
                 marketOperation,
-                opts.rfqt,
+                { ...opts.rfqt, orderReporter: opts.orderReporter },
             );
             orderFetchPromises.push(rfqtPromise);
         }
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderFetchPromises);
 
-        if (opts.orderReporter) {
-            opts.orderReporter.trackOrderbookSamples(orderBatches[0]);
-
-            if (orderBatches[1]) {
-                // TODO: use real RFQT urls
-                const rfqtSamples = orderBatches[1].map(o => {
-                    return {
-                        order: o,
-                        makerUri: 'todo',
-                    };
-                });
-                opts.orderReporter.trackRfqtSamples(rfqtSamples);
-            }
-        }
-
         const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
-
         const orders = sortingUtils.sortOrders(unsortedOrders);
 
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
