@@ -34,6 +34,7 @@ export interface ContractAddresses {
     maximumGasPrice: string;
     dexForwarderBridge: string;
     multiBridge: string;
+    exchangeProxyGovernor: string;
     exchangeProxy: string;
     exchangeProxyAllowanceTarget: string;
     exchangeProxyTransformerDeployer: string;
