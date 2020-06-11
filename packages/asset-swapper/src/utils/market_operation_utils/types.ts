@@ -3,6 +3,7 @@ import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
 import { QuoteRequestor, RfqtIndicativeQuoteResponse } from '../../utils/quote_requestor';
+import { OrderReporter } from '../order_reporter';
 
 /**
  * Order domain keys: chainId and exchange
@@ -194,6 +195,7 @@ export interface GetMarketOrdersOpts {
      */
     allowFallback: boolean;
     rfqt?: GetMarketOrdersRfqtOpts;
+    orderReporter?: OrderReporter;
     /**
      * Whether to combine contiguous bridge orders into a single DexForwarderBridge
      * order. Defaults to `true`.
