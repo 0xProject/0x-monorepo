@@ -22,6 +22,7 @@ export interface ContractAddresses {
     erc20BridgeProxy: string;
     erc20BridgeSampler: string;
     uniswapBridge: string;
+    uniswapV2Bridge: string;
     eth2DaiBridge: string;
     kyberBridge: string;
     chaiBridge: string;

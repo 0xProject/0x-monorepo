@@ -98,6 +98,30 @@ export const samplerOperations = {
             },
         };
     },
+    getUniswapV2SellQuotes(tokenAddressPath: string[], takerFillAmounts: BigNumber[]): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleSellsFromUniswapV2(tokenAddressPath, takerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromUniswapV2', callResults);
+            },
+        };
+    },
+    getUniswapV2BuyQuotes(tokenAddressPath: string[], makerFillAmounts: BigNumber[]): BatchedOperation<BigNumber[]> {
+        return {
+            encodeCall: contract => {
+                return contract
+                    .sampleBuysFromUniswapV2(tokenAddressPath, makerFillAmounts)
+                    .getABIEncodedTransactionData();
+            },
+            handleCallResultsAsync: async (contract, callResults) => {
+                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromUniswapV2', callResults);
+            },
+        };
+    },
     getLiquidityProviderSellQuotes(
         liquidityProviderRegistryAddress: string,
         makerToken: string,
@@ -231,6 +255,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         takerFillAmount: BigNumber,
+        wethAddress: string,
         liquidityProviderRegistryAddress?: string | undefined,
     ): BatchedOperation<BigNumber> {
         if (makerToken.toLowerCase() === takerToken.toLowerCase()) {
@@ -241,6 +266,7 @@ export const samplerOperations = {
             makerToken,
             takerToken,
             [takerFillAmount],
+            wethAddress,
             liquidityProviderRegistryAddress,
         );
         return {
@@ -297,6 +323,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         takerFillAmounts: BigNumber[],
+        wethAddress: string,
         liquidityProviderRegistryAddress?: string | undefined,
     ): BatchedOperation<DexSample[][]> {
         const subOps = sources
@@ -306,6 +333,16 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getEth2DaiSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapSellQuotes(makerToken, takerToken, takerFillAmounts);
+                } else if (source === ERC20BridgeSource.UniswapV2) {
+                    batchedOperation = samplerOperations.getUniswapV2SellQuotes(
+                        [takerToken, makerToken],
+                        takerFillAmounts,
+                    );
+                } else if (source === ERC20BridgeSource.UniswapV2Eth) {
+                    batchedOperation = samplerOperations.getUniswapV2SellQuotes(
+                        [takerToken, wethAddress, makerToken],
+                        takerFillAmounts,
+                    );
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberSellQuotes(makerToken, takerToken, takerFillAmounts);
                 } else if (isCurveSource(source)) {
@@ -366,6 +403,7 @@ export const samplerOperations = {
         makerToken: string,
         takerToken: string,
         makerFillAmounts: BigNumber[],
+        wethAddress: string,
         liquidityProviderRegistryAddress?: string | undefined,
         fakeBuyOpts: FakeBuyOpts = DEFAULT_FAKE_BUY_OPTS,
     ): BatchedOperation<DexSample[][]> {
@@ -376,6 +414,16 @@ export const samplerOperations = {
                     batchedOperation = samplerOperations.getEth2DaiBuyQuotes(makerToken, takerToken, makerFillAmounts);
                 } else if (source === ERC20BridgeSource.Uniswap) {
                     batchedOperation = samplerOperations.getUniswapBuyQuotes(makerToken, takerToken, makerFillAmounts);
+                } else if (source === ERC20BridgeSource.UniswapV2) {
+                    batchedOperation = samplerOperations.getUniswapV2BuyQuotes(
+                        [takerToken, makerToken],
+                        makerFillAmounts,
+                    );
+                } else if (source === ERC20BridgeSource.UniswapV2Eth) {
+                    batchedOperation = samplerOperations.getUniswapV2BuyQuotes(
+                        [takerToken, wethAddress, makerToken],
+                        makerFillAmounts,
+                    );
                 } else if (source === ERC20BridgeSource.Kyber) {
                     batchedOperation = samplerOperations.getKyberBuyQuotes(
                         makerToken,

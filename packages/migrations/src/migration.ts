@@ -311,6 +311,7 @@ export async function runMigrationsAsync(
         staking: stakingLogic.address,
         stakingProxy: stakingProxy.address,
         uniswapBridge: constants.NULL_ADDRESS,
+        uniswapV2Bridge: constants.NULL_ADDRESS,
         eth2DaiBridge: constants.NULL_ADDRESS,
         kyberBridge: constants.NULL_ADDRESS,
         erc20BridgeSampler: erc20BridgeSampler.address,

@@ -5,7 +5,7 @@ import { AbiEncoder, BigNumber } from '@0x/utils';
 
 import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { RfqtIndicativeQuoteResponse } from '../quote_requestor';
-import { getCurveInfo, isCurveSource } from '../source_utils';
+import { getCurveInfo } from '../source_utils';
 
 import {
     ERC20_PROXY_ID,
@@ -181,6 +181,9 @@ function getBridgeAddressFromSource(source: ERC20BridgeSource, opts: CreateOrder
             return opts.contractAddresses.kyberBridge;
         case ERC20BridgeSource.Uniswap:
             return opts.contractAddresses.uniswapBridge;
+        case ERC20BridgeSource.UniswapV2:
+        case ERC20BridgeSource.UniswapV2Eth:
+            return opts.contractAddresses.uniswapV2Bridge;
         case ERC20BridgeSource.CurveUsdcDai:
         case ERC20BridgeSource.CurveUsdcDaiUsdt:
         case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
@@ -203,19 +206,48 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
     const bridgeAddress = getBridgeAddressFromSource(fill.source, opts);
 
     let makerAssetData;
-    if (isCurveSource(fill.source)) {
-        const { curveAddress, fromTokenIdx, toTokenIdx, version } = getCurveInfo(fill.source, takerToken, makerToken);
-        makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
-            makerToken,
-            bridgeAddress,
-            createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx, version),
-        );
-    } else {
-        makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
-            makerToken,
-            bridgeAddress,
-            createBridgeData(takerToken),
-        );
+    switch (fill.source) {
+        case ERC20BridgeSource.CurveUsdcDai:
+        case ERC20BridgeSource.CurveUsdcDaiUsdt:
+        case ERC20BridgeSource.CurveUsdcDaiUsdtTusd:
+        case ERC20BridgeSource.CurveUsdcDaiUsdtBusd:
+        case ERC20BridgeSource.CurveUsdcDaiUsdtSusd:
+            const { curveAddress, fromTokenIdx, toTokenIdx, version } = getCurveInfo(
+                fill.source,
+                takerToken,
+                makerToken,
+            );
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createCurveBridgeData(curveAddress, fromTokenIdx, toTokenIdx, version),
+            );
+            break;
+        case ERC20BridgeSource.UniswapV2:
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createUniswapV2BridgeData([makerToken, takerToken]),
+            );
+            break;
+        case ERC20BridgeSource.UniswapV2Eth:
+            if (opts.contractAddresses.etherToken === NULL_ADDRESS) {
+                throw new Error(
+                    `Cannot create a ${ERC20BridgeSource.UniswapV2Eth.toString()} order without a WETH address`,
+                );
+            }
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createUniswapV2BridgeData([makerToken, opts.contractAddresses.etherToken, takerToken]),
+            );
+            break;
+        default:
+            makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
+                makerToken,
+                bridgeAddress,
+                createBridgeData(takerToken),
+            );
     }
     const [slippedMakerAssetAmount, slippedTakerAssetAmount] = getSlippedBridgeAssetAmounts(fill, opts);
     return {
@@ -296,6 +328,11 @@ function createCurveBridgeData(
         { name: 'version', type: 'int128' },
     ]);
     return curveBridgeDataEncoder.encode([curveAddress, fromTokenIdx, toTokenIdx, version]);
+}
+
+function createUniswapV2BridgeData(tokenAddressPath: string[]): string {
+    const uniswapV2BridgeDataEncoder = AbiEncoder.create('(address[])');
+    return uniswapV2BridgeDataEncoder.encode([tokenAddressPath]);
 }
 
 function getSlippedBridgeAssetAmounts(fill: CollapsedFill, opts: CreateOrderFromPathOpts): [BigNumber, BigNumber] {
