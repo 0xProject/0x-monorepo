@@ -77,10 +77,6 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-        const optionalSources = (this._liquidityProviderRegistry !== NULL_ADDRESS
-            ? [ERC20BridgeSource.LiquidityProvider]
-            : []
-        ).concat(this._multiBridge !== NULL_ADDRESS ? [ERC20BridgeSource.MultiBridge] : []);
 
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
@@ -94,7 +90,7 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> maker token price.
             DexOrderSampler.ops.getMedianSellRate(
-                difference(FEE_QUOTE_SOURCES.concat(optionalSources), _opts.excludedSources),
+                difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
                 makerToken,
                 this._wethAddress,
                 ONE_ETHER,
@@ -104,7 +100,7 @@ export class MarketOperationUtils {
             ),
             // Get sell quotes for taker -> maker.
             DexOrderSampler.ops.getSellQuotes(
-                difference(SELL_SOURCES.concat(optionalSources), _opts.excludedSources),
+                difference(SELL_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
                 makerToken,
                 takerToken,
                 getSampleAmounts(takerAmount, _opts.numSamples, _opts.sampleDistributionBase),
@@ -163,10 +159,6 @@ export class MarketOperationUtils {
         }
         const _opts = { ...DEFAULT_GET_MARKET_ORDERS_OPTS, ...opts };
         const [makerToken, takerToken] = getNativeOrderTokens(nativeOrders[0]);
-        const optionalSources = (this._liquidityProviderRegistry !== NULL_ADDRESS
-            ? [ERC20BridgeSource.LiquidityProvider]
-            : []
-        ).concat(this._multiBridge !== NULL_ADDRESS ? [ERC20BridgeSource.MultiBridge] : []);
         // Call the sampler contract.
         const samplerPromise = this._sampler.executeAsync(
             // Get native order fillable amounts.
@@ -179,7 +171,7 @@ export class MarketOperationUtils {
             ),
             // Get ETH -> taker token price.
             DexOrderSampler.ops.getMedianSellRate(
-                difference(FEE_QUOTE_SOURCES.concat(optionalSources), _opts.excludedSources),
+                difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
                 takerToken,
                 this._wethAddress,
                 ONE_ETHER,
@@ -402,6 +394,12 @@ export class MarketOperationUtils {
             multiBridgeAddress: opts.multiBridgeAddress,
             shouldBatchBridgeOrders: !!opts.shouldBatchBridgeOrders,
         });
+    }
+
+    private _optionalSources(): ERC20BridgeSource[] {
+        return (this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : []).concat(
+            this._multiBridge !== NULL_ADDRESS ? [ERC20BridgeSource.MultiBridge] : [],
+        );
     }
 }
 

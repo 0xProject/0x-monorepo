@@ -735,6 +735,41 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
+                        name: 'multibridge',
+                        type: 'address',
+                    },
+                    {
+                        name: 'takerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'intermediateToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'makerToken',
+                        type: 'address',
+                    },
+                    {
+                        name: 'takerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'sampleSellsFromMultiBridge',
+                outputs: [
+                    {
+                        name: 'makerTokenAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
                         name: 'takerToken',
                         type: 'address',
                     },
@@ -1230,7 +1265,7 @@ export class ERC20BridgeSamplerContract extends BaseContract {
     }
     /**
      * Sample buy quotes from UniswapV2.
-     * @param path Token route.
+     * @param path Token route. Should be takerToken -> makerToken.
      * @param makerTokenAmounts Maker token buy amount for each sample.
      * @returns takerTokenAmounts Taker amounts sold at each maker token         amount.
      */
@@ -1460,6 +1495,53 @@ export class ERC20BridgeSamplerContract extends BaseContract {
         };
     }
     /**
+     * Sample sell quotes from MultiBridge.
+     * @param multibridge Address of the MultiBridge contract.
+     * @param takerToken Address of the taker token (what to sell).
+     * @param intermediateToken The address of the intermediate token to        use
+     *     in an indirect route.
+     * @param makerToken Address of the maker token (what to buy).
+     * @param takerTokenAmounts Taker token sell amount for each sample.
+     * @returns makerTokenAmounts Maker amounts bought at each taker token         amount.
+     */
+    public sampleSellsFromMultiBridge(
+        multibridge: string,
+        takerToken: string,
+        intermediateToken: string,
+        makerToken: string,
+        takerTokenAmounts: BigNumber[],
+    ): ContractFunctionObj<BigNumber[]> {
+        const self = (this as any) as ERC20BridgeSamplerContract;
+        assert.isString('multibridge', multibridge);
+        assert.isString('takerToken', takerToken);
+        assert.isString('intermediateToken', intermediateToken);
+        assert.isString('makerToken', makerToken);
+        assert.isArray('takerTokenAmounts', takerTokenAmounts);
+        const functionSignature = 'sampleSellsFromMultiBridge(address,address,address,address,uint256[])';
+
+        return {
+            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
+                BaseContract._assertCallParams(callData, defaultBlock);
+                const rawCallResult = await self._performCallAsync(
+                    { ...callData, data: this.getABIEncodedTransactionData() },
+                    defaultBlock,
+                );
+                const abiEncoder = self._lookupAbiEncoder(functionSignature);
+                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
+                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            },
+            getABIEncodedTransactionData(): string {
+                return self._strictEncodeArguments(functionSignature, [
+                    multibridge.toLowerCase(),
+                    takerToken.toLowerCase(),
+                    intermediateToken.toLowerCase(),
+                    makerToken.toLowerCase(),
+                    takerTokenAmounts,
+                ]);
+            },
+        };
+    }
+    /**
      * Sample sell quotes from Uniswap.
      * @param takerToken Address of the taker token (what to sell).
      * @param makerToken Address of the maker token (what to buy).
@@ -1499,7 +1581,7 @@ export class ERC20BridgeSamplerContract extends BaseContract {
     }
     /**
      * Sample sell quotes from UniswapV2.
-     * @param path Token route.
+     * @param path Token route. Should be takerToken -> makerToken
      * @param takerTokenAmounts Taker token sell amount for each sample.
      * @returns makerTokenAmounts Maker amounts bought at each taker token         amount.
      */
