@@ -44,13 +44,13 @@ blockchainTests.resets('GodsUnchainedValidator unit tests', env => {
             const tokenId = getRandomInteger(0, constants.MAX_UINT256);
             await godsUnchained.setTokenProperties(tokenId, proto.plus(1), quality).awaitTransactionSuccessAsync();
             const tx = validator.checkBrokerAsset(tokenId, propertyData).callAsync();
-            expect(tx).to.revertWith('PROTO_MISMATCH');
+            expect(tx).to.revertWith('GodsUnchainedValidator/PROTO_MISMATCH');
         });
         it("reverts if assetData quality doesn't match proeprtyData", async () => {
             const tokenId = getRandomInteger(0, constants.MAX_UINT256);
             await godsUnchained.setTokenProperties(tokenId, proto, quality.plus(1)).awaitTransactionSuccessAsync();
             const tx = validator.checkBrokerAsset(tokenId, propertyData).callAsync();
-            expect(tx).to.revertWith('QUALITY_MISMATCH');
+            expect(tx).to.revertWith('GodsUnchainedValidator/QUALITY_MISMATCH');
         });
     });
 });

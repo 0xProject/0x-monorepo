@@ -65,6 +65,10 @@
             {
                 "note": "Add UniswapV2Bridge address on Mainnet (new field)",
                 "pr": 2599
+            },
+            {
+                "note": "Add Exchange Proxy addresses",
+                "pr": 2591
             }
         ]
     },
