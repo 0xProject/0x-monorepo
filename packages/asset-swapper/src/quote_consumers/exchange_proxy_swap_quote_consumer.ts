@@ -17,7 +17,6 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    ExchangeProxyContractOpts,
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
