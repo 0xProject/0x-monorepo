@@ -759,7 +759,7 @@ contract ERC20BridgeSampler is
             uint256 sellAmount = 0;
             if (didSucceed) {
                 // solhint-disable-next-line indent
-                sellAmount = abi.decode(resultData, (uint256[]))[path.length - 1];
+                sellAmount = abi.decode(resultData, (uint256[]))[0];
             } else {
                 break;
             }
