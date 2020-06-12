@@ -319,6 +319,7 @@ export async function runMigrationsAsync(
         chaiBridge: NULL_ADDRESS,
         dydxBridge: NULL_ADDRESS,
         curveBridge: NULL_ADDRESS,
+        uniswapV2Bridge: NULL_ADDRESS,
         godsUnchainedValidator: NULL_ADDRESS,
         broker: NULL_ADDRESS,
         chainlinkStopLimit: NULL_ADDRESS,
