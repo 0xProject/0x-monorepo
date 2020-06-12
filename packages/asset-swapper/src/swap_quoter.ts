@@ -28,6 +28,7 @@ import { DexOrderSampler } from './utils/market_operation_utils/sampler';
 import { orderPrunerUtils } from './utils/order_prune_utils';
 import { OrderStateUtils } from './utils/order_state_utils';
 import { ProtocolFeeUtils } from './utils/protocol_fee_utils';
+import { QuoteReporter } from './utils/quote_reporter';
 import { QuoteRequestor } from './utils/quote_requestor';
 import { sortingUtils } from './utils/sorting_utils';
 import { SwapQuoteCalculator } from './utils/swap_quote_calculator';
@@ -536,14 +537,16 @@ export class SwapQuoter {
         } else {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
+
+        // Create QuoteReporter
+        const quoteReporter = new QuoteReporter();
+
         // Get batches of orders from different sources, awaiting sources in parallel
         const orderFetchPromises: Array<Promise<SignedOrder[]>> = [];
 
         // Fetch from orderbook
         const trackOrderbookOrders = (orderbookOrders: SignedOrder[]) => {
-            if (opts.quoteReporter) {
-                opts.quoteReporter.trackOrderbookOrders(orderbookOrders);
-            }
+            quoteReporter.trackOrderbookOrders(orderbookOrders);
             return orderbookOrders;
         };
         const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData).then(trackOrderbookOrders);
@@ -566,7 +569,7 @@ export class SwapQuoter {
                 takerAssetData,
                 assetFillAmount,
                 marketOperation,
-                { ...opts.rfqt, quoteReporter: opts.quoteReporter },
+                { ...opts.rfqt, quoteReporter },
             );
             orderFetchPromises.push(rfqtPromise);
         }
@@ -592,6 +595,7 @@ export class SwapQuoter {
         }
 
         if (marketOperation === MarketOperation.Buy) {
+            // TODO: do for buy
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 orders,
                 assetFillAmount,
@@ -604,10 +608,11 @@ export class SwapQuoter {
                 assetFillAmount,
                 gasPrice,
                 calcOpts,
+                quoteReporter,
             );
         }
 
-        return swapQuote;
+        return { ...swapQuote, quoteReport: quoteReporter.getReport() };
     }
     private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {
         return (

@@ -9,17 +9,24 @@ export interface AnnotatedRfqtFirmQuote {
     makerUri: string;
 }
 
+export interface QuoteReport {
+    dexSamples: DexSample[];
+    orderbookOrders: SignedOrder[];
+    rfqtOrders: AnnotatedRfqtFirmQuote[];
+    paths: CollapsedFill[];
+}
+
 export class QuoteReporter {
-    private readonly _metadataIdentifier: string;
     private _dexSamples: DexSample[];
     private _orderbookOrders: SignedOrder[];
     private _rfqtOrders: AnnotatedRfqtFirmQuote[];
+    private _paths: CollapsedFill[];
 
-    constructor(metadataIdentifier: string) {
-        this._metadataIdentifier = metadataIdentifier;
+    constructor() {
         this._dexSamples = [];
         this._orderbookOrders = [];
         this._rfqtOrders = [];
+        this._paths = [];
     }
 
     public trackDexSamples(dexSamples: DexSample[]) {
@@ -34,12 +41,16 @@ export class QuoteReporter {
         this._rfqtOrders = rfqtOrders;
     }
 
-    public reportQuote(paths: CollapsedFill[]) {
-        const sanitizedPaths = paths.map(p => _.omit(p, 'subFills'));
-        console.log('dex samples:', JSON.stringify(this._dexSamples, undefined, 2));
-        console.log('orderbook orders:', JSON.stringify(this._orderbookOrders, undefined, 2));
-        console.log('rfqt orders:', JSON.stringify(this._rfqtOrders, undefined, 2));
-        console.log('quote report:', JSON.stringify(sanitizedPaths, undefined, 2));
-        return;
+    public trackPaths(paths: CollapsedFill[]) {
+        this._paths = paths;
+    }
+
+    public getReport(): QuoteReport {
+        return {
+            dexSamples: this._dexSamples,
+            orderbookOrders: this._orderbookOrders,
+            rfqtOrders: this._rfqtOrders,
+            paths: this._paths,
+        }
     }
 }

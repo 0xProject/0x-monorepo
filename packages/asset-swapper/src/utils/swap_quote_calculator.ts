@@ -20,6 +20,7 @@ import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_opera
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
+import { QuoteReporter } from './quote_reporter';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?
@@ -35,6 +36,7 @@ export class SwapQuoteCalculator {
         takerAssetFillAmount: BigNumber,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
+        quoteReporter: QuoteReporter,
     ): Promise<MarketSellSwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
@@ -42,6 +44,7 @@ export class SwapQuoteCalculator {
             gasPrice,
             MarketOperation.Sell,
             opts,
+            quoteReporter,
         )) as MarketSellSwapQuote;
     }
 
@@ -51,12 +54,16 @@ export class SwapQuoteCalculator {
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
     ): Promise<MarketBuySwapQuote> {
+        // TODO: do properly
+        const quoteReporter = new QuoteReporter();
+
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,
             gasPrice,
             MarketOperation.Buy,
             opts,
+            quoteReporter,
         )) as MarketBuySwapQuote;
     }
 
@@ -113,6 +120,7 @@ export class SwapQuoteCalculator {
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
+        quoteReporter: QuoteReporter,
     ): Promise<SwapQuote> {
         // checks if maker asset is ERC721 or ERC20 and taker asset is ERC20
         if (!isSupportedAssetDataInOrders(prunedOrders)) {
@@ -138,6 +146,7 @@ export class SwapQuoteCalculator {
                 resultOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
             } else {
                 if (operation === MarketOperation.Buy) {
+                    // TODO: do for buy
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
@@ -147,6 +156,7 @@ export class SwapQuoteCalculator {
                     resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
+                        quoteReporter,
                         _opts,
                     );
                 }

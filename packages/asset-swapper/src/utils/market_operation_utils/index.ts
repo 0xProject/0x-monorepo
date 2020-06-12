@@ -70,6 +70,7 @@ export class MarketOperationUtils {
     public async getMarketSellOrdersAsync(
         nativeOrders: SignedOrder[],
         takerAmount: BigNumber,
+        quoteReporter: QuoteReporter,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizedMarketOrder[]> {
         if (nativeOrders.length === 0) {
@@ -120,9 +121,7 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes,
         ] = await Promise.all([samplerPromise, rfqtPromise]);
 
-        if (_opts.quoteReporter) {
-            _opts.quoteReporter.trackDexSamples(_.flatten(dexQuotes));
-        }
+        quoteReporter.trackDexSamples(_.flatten(dexQuotes));
 
         return this._generateOptimizedOrders({
             orderFillableAmounts,
@@ -141,7 +140,7 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
-            quoteReporter: _opts.quoteReporter,
+            quoteReporter,
         });
     }
 
@@ -370,8 +369,8 @@ export class MarketOperationUtils {
                 const [last, penultimateIfExists] = optimalPath.slice().reverse();
                 const lastNativeFillIfExists =
                     last.source === ERC20BridgeSource.Native &&
-                    penultimateIfExists &&
-                    penultimateIfExists.source !== ERC20BridgeSource.Native
+                        penultimateIfExists &&
+                        penultimateIfExists.source !== ERC20BridgeSource.Native
                         ? last
                         : undefined;
                 // By prepending native paths to the front they cannot split on-chain sources and incur

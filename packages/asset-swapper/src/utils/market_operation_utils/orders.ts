@@ -149,7 +149,7 @@ export interface CreateOrderFromPathOpts {
 export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts): OptimizedMarketOrder[] {
     const collapsedPath = collapsePath(path);
     const orders: OptimizedMarketOrder[] = [];
-    for (let i = 0; i < collapsedPath.length; ) {
+    for (let i = 0; i < collapsedPath.length;) {
         if (collapsedPath[i].source === ERC20BridgeSource.Native) {
             orders.push(createNativeOrder(collapsedPath[i]));
             ++i;
@@ -174,7 +174,7 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
     }
 
     if (opts.quoteReporter) {
-        opts.quoteReporter.reportQuote(collapsedPath);
+        opts.quoteReporter.trackPaths(collapsedPath);
     }
     return orders;
 }

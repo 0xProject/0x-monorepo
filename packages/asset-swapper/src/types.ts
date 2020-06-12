@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
 import { LogFunction } from './utils/quote_requestor';
-import { QuoteReporter } from './utils/quote_reporter';
+import { QuoteReporter, QuoteReport } from './utils/quote_reporter';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
@@ -145,6 +145,8 @@ export interface SwapQuoteBase {
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
     sourceBreakdown: SwapQuoteOrdersBreakdown;
+    // TODO: make required
+    quoteReport?: QuoteReport;
 }
 
 /**
@@ -209,7 +211,7 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 /**
  * Opts required to generate a SwapQuote with SwapQuoteCalculator
  */
-export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts { }
 
 /**
  * A mapping from RFQ-T quote provider URLs to the trading pairs they support.
