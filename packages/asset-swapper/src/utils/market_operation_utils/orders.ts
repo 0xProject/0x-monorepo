@@ -234,7 +234,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createUniswapV2BridgeData([makerToken, takerToken]),
+                createUniswapV2BridgeData([takerToken, makerToken]),
             );
             break;
         case ERC20BridgeSource.UniswapV2Eth:
@@ -246,7 +246,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
             makerAssetData = assetDataUtils.encodeERC20BridgeAssetData(
                 makerToken,
                 bridgeAddress,
-                createUniswapV2BridgeData([makerToken, opts.contractAddresses.etherToken, takerToken]),
+                createUniswapV2BridgeData([takerToken, opts.contractAddresses.etherToken, makerToken]),
             );
             break;
         case ERC20BridgeSource.MultiBridge:
