@@ -1,0 +1,141 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "TestMigrator",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "bytes",
+                        "name": "callData",
+                        "type": "bytes"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "TestMigrateCalled",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "failingMigrate",
+                "outputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "success",
+                        "type": "bytes4"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "revertingMigrate",
+                "outputs": [],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "succeedingMigrate",
+                "outputs": [
+                    {
+                        "internalType": "bytes4",
+                        "name": "success",
+                        "type": "bytes4"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "methods": {}
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b506103b2806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80637bed0d4614610046578063d3a80e0014610064578063e9dd3b5e1461006c575b600080fd5b61004e610076565b60405161005b91906102ac565b60405180910390f35b61004e610156565b610074610236565b005b60007fe47925e33e8d756f6e7b37949af1b9aa319f06d1e2a77e9975c524eb2dfc62946000363073ffffffffffffffffffffffffffffffffffffffff16638da5cb5b6040518163ffffffff1660e01b815260040160206040518083038186803b1580156100e257600080fd5b505afa1580156100f6573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061011a9190610271565b604051610129939291906102d9565b60405180910390a1507fdeadbeef0000000000000000000000000000000000000000000000000000000090565b60007fe47925e33e8d756f6e7b37949af1b9aa319f06d1e2a77e9975c524eb2dfc62946000363073ffffffffffffffffffffffffffffffffffffffff16638da5cb5b6040518163ffffffff1660e01b815260040160206040518083038186803b1580156101c257600080fd5b505afa1580156101d6573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101fa9190610271565b604051610209939291906102d9565b60405180910390a1507f2c64c5ef0000000000000000000000000000000000000000000000000000000090565b6040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161026890610345565b60405180910390fd5b600060208284031215610282578081fd5b815173ffffffffffffffffffffffffffffffffffffffff811681146102a5578182fd5b9392505050565b7fffffffff0000000000000000000000000000000000000000000000000000000091909116815260200190565b60006040825283604083015283856060840137806060858401015260607fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0601f860116830101905073ffffffffffffffffffffffffffffffffffffffff83166020830152949350505050565b60208082526006908201527f4f4f50534945000000000000000000000000000000000000000000000000000060408201526060019056fea264697066735822122048cf996f092d52db6500a41dda7040db2fadc5556ffa334170acb87e903c57e064736f6c634300060a0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH2 0x3B2 DUP1 PUSH2 0x20 PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x41 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x7BED0D46 EQ PUSH2 0x46 JUMPI DUP1 PUSH4 0xD3A80E00 EQ PUSH2 0x64 JUMPI DUP1 PUSH4 0xE9DD3B5E EQ PUSH2 0x6C JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x4E PUSH2 0x76 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x5B SWAP2 SWAP1 PUSH2 0x2AC JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x4E PUSH2 0x156 JUMP JUMPDEST PUSH2 0x74 PUSH2 0x236 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x0 PUSH32 0xE47925E33E8D756F6E7B37949AF1B9AA319F06D1E2A77E9975C524EB2DFC6294 PUSH1 0x0 CALLDATASIZE ADDRESS PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x8DA5CB5B PUSH1 0x40 MLOAD DUP2 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 DUP7 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0xE2 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS STATICCALL ISZERO DUP1 ISZERO PUSH2 0xF6 JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x1F NOT PUSH1 0x1F DUP3 ADD AND DUP3 ADD DUP1 PUSH1 0x40 MSTORE POP DUP2 ADD SWAP1 PUSH2 0x11A SWAP2 SWAP1 PUSH2 0x271 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x129 SWAP4 SWAP3 SWAP2 SWAP1 PUSH2 0x2D9 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP PUSH32 0xDEADBEEF00000000000000000000000000000000000000000000000000000000 SWAP1 JUMP JUMPDEST PUSH1 0x0 PUSH32 0xE47925E33E8D756F6E7B37949AF1B9AA319F06D1E2A77E9975C524EB2DFC6294 PUSH1 0x0 CALLDATASIZE ADDRESS PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x8DA5CB5B PUSH1 0x40 MLOAD DUP2 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 DUP7 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0x1C2 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS STATICCALL ISZERO DUP1 ISZERO PUSH2 0x1D6 JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x1F NOT PUSH1 0x1F DUP3 ADD AND DUP3 ADD DUP1 PUSH1 0x40 MSTORE POP DUP2 ADD SWAP1 PUSH2 0x1FA SWAP2 SWAP1 PUSH2 0x271 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x209 SWAP4 SWAP3 SWAP2 SWAP1 PUSH2 0x2D9 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP PUSH32 0x2C64C5EF00000000000000000000000000000000000000000000000000000000 SWAP1 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD PUSH2 0x268 SWAP1 PUSH2 0x345 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 DUP5 SUB SLT ISZERO PUSH2 0x282 JUMPI DUP1 DUP2 REVERT JUMPDEST DUP2 MLOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND DUP2 EQ PUSH2 0x2A5 JUMPI DUP2 DUP3 REVERT JUMPDEST SWAP4 SWAP3 POP POP POP JUMP JUMPDEST PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 SWAP2 SWAP1 SWAP2 AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP JUMPDEST PUSH1 0x0 PUSH1 0x40 DUP3 MSTORE DUP4 PUSH1 0x40 DUP4 ADD MSTORE DUP4 DUP6 PUSH1 0x60 DUP5 ADD CALLDATACOPY DUP1 PUSH1 0x60 DUP6 DUP5 ADD ADD MSTORE PUSH1 0x60 PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0 PUSH1 0x1F DUP7 ADD AND DUP4 ADD ADD SWAP1 POP PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP4 AND PUSH1 0x20 DUP4 ADD MSTORE SWAP5 SWAP4 POP POP POP POP JUMP JUMPDEST PUSH1 0x20 DUP1 DUP3 MSTORE PUSH1 0x6 SWAP1 DUP3 ADD MSTORE PUSH32 0x4F4F505349450000000000000000000000000000000000000000000000000000 PUSH1 0x40 DUP3 ADD MSTORE PUSH1 0x60 ADD SWAP1 JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x48 0xCF SWAP10 PUSH16 0x92D52DB6500A41DDA7040DB2FADC555 PUSH16 0xFA334170ACB87E903C57E064736F6C63 NUMBER STOP MOD EXP STOP CALLER ",
+                "sourceMap": "723:625:50:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x608060405234801561001057600080fd5b50600436106100415760003560e01c80637bed0d4614610046578063d3a80e0014610064578063e9dd3b5e1461006c575b600080fd5b61004e610076565b60405161005b91906102ac565b60405180910390f35b61004e610156565b610074610236565b005b60007fe47925e33e8d756f6e7b37949af1b9aa319f06d1e2a77e9975c524eb2dfc62946000363073ffffffffffffffffffffffffffffffffffffffff16638da5cb5b6040518163ffffffff1660e01b815260040160206040518083038186803b1580156100e257600080fd5b505afa1580156100f6573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061011a9190610271565b604051610129939291906102d9565b60405180910390a1507fdeadbeef0000000000000000000000000000000000000000000000000000000090565b60007fe47925e33e8d756f6e7b37949af1b9aa319f06d1e2a77e9975c524eb2dfc62946000363073ffffffffffffffffffffffffffffffffffffffff16638da5cb5b6040518163ffffffff1660e01b815260040160206040518083038186803b1580156101c257600080fd5b505afa1580156101d6573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906101fa9190610271565b604051610209939291906102d9565b60405180910390a1507f2c64c5ef0000000000000000000000000000000000000000000000000000000090565b6040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161026890610345565b60405180910390fd5b600060208284031215610282578081fd5b815173ffffffffffffffffffffffffffffffffffffffff811681146102a5578182fd5b9392505050565b7fffffffff0000000000000000000000000000000000000000000000000000000091909116815260200190565b60006040825283604083015283856060840137806060858401015260607fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0601f860116830101905073ffffffffffffffffffffffffffffffffffffffff83166020830152949350505050565b60208082526006908201527f4f4f50534945000000000000000000000000000000000000000000000000000060408201526060019056fea264697066735822122048cf996f092d52db6500a41dda7040db2fadc5556ffa334170acb87e903c57e064736f6c634300060a0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH2 0x10 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH2 0x41 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x7BED0D46 EQ PUSH2 0x46 JUMPI DUP1 PUSH4 0xD3A80E00 EQ PUSH2 0x64 JUMPI DUP1 PUSH4 0xE9DD3B5E EQ PUSH2 0x6C JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH2 0x4E PUSH2 0x76 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x5B SWAP2 SWAP1 PUSH2 0x2AC JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 RETURN JUMPDEST PUSH2 0x4E PUSH2 0x156 JUMP JUMPDEST PUSH2 0x74 PUSH2 0x236 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x0 PUSH32 0xE47925E33E8D756F6E7B37949AF1B9AA319F06D1E2A77E9975C524EB2DFC6294 PUSH1 0x0 CALLDATASIZE ADDRESS PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x8DA5CB5B PUSH1 0x40 MLOAD DUP2 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 DUP7 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0xE2 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS STATICCALL ISZERO DUP1 ISZERO PUSH2 0xF6 JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x1F NOT PUSH1 0x1F DUP3 ADD AND DUP3 ADD DUP1 PUSH1 0x40 MSTORE POP DUP2 ADD SWAP1 PUSH2 0x11A SWAP2 SWAP1 PUSH2 0x271 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x129 SWAP4 SWAP3 SWAP2 SWAP1 PUSH2 0x2D9 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP PUSH32 0xDEADBEEF00000000000000000000000000000000000000000000000000000000 SWAP1 JUMP JUMPDEST PUSH1 0x0 PUSH32 0xE47925E33E8D756F6E7B37949AF1B9AA319F06D1E2A77E9975C524EB2DFC6294 PUSH1 0x0 CALLDATASIZE ADDRESS PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF AND PUSH4 0x8DA5CB5B PUSH1 0x40 MLOAD DUP2 PUSH4 0xFFFFFFFF AND PUSH1 0xE0 SHL DUP2 MSTORE PUSH1 0x4 ADD PUSH1 0x20 PUSH1 0x40 MLOAD DUP1 DUP4 SUB DUP2 DUP7 DUP1 EXTCODESIZE ISZERO DUP1 ISZERO PUSH2 0x1C2 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP GAS STATICCALL ISZERO DUP1 ISZERO PUSH2 0x1D6 JUMPI RETURNDATASIZE PUSH1 0x0 DUP1 RETURNDATACOPY RETURNDATASIZE PUSH1 0x0 REVERT JUMPDEST POP POP POP POP PUSH1 0x40 MLOAD RETURNDATASIZE PUSH1 0x1F NOT PUSH1 0x1F DUP3 ADD AND DUP3 ADD DUP1 PUSH1 0x40 MSTORE POP DUP2 ADD SWAP1 PUSH2 0x1FA SWAP2 SWAP1 PUSH2 0x271 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH2 0x209 SWAP4 SWAP3 SWAP2 SWAP1 PUSH2 0x2D9 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 LOG1 POP PUSH32 0x2C64C5EF00000000000000000000000000000000000000000000000000000000 SWAP1 JUMP JUMPDEST PUSH1 0x40 MLOAD PUSH32 0x8C379A000000000000000000000000000000000000000000000000000000000 DUP2 MSTORE PUSH1 0x4 ADD PUSH2 0x268 SWAP1 PUSH2 0x345 JUMP JUMPDEST PUSH1 0x40 MLOAD DUP1 SWAP2 SUB SWAP1 REVERT JUMPDEST PUSH1 0x0 PUSH1 0x20 DUP3 DUP5 SUB SLT ISZERO PUSH2 0x282 JUMPI DUP1 DUP2 REVERT JUMPDEST DUP2 MLOAD PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP2 AND DUP2 EQ PUSH2 0x2A5 JUMPI DUP2 DUP3 REVERT JUMPDEST SWAP4 SWAP3 POP POP POP JUMP JUMPDEST PUSH32 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000 SWAP2 SWAP1 SWAP2 AND DUP2 MSTORE PUSH1 0x20 ADD SWAP1 JUMP JUMPDEST PUSH1 0x0 PUSH1 0x40 DUP3 MSTORE DUP4 PUSH1 0x40 DUP4 ADD MSTORE DUP4 DUP6 PUSH1 0x60 DUP5 ADD CALLDATACOPY DUP1 PUSH1 0x60 DUP6 DUP5 ADD ADD MSTORE PUSH1 0x60 PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0 PUSH1 0x1F DUP7 ADD AND DUP4 ADD ADD SWAP1 POP PUSH20 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF DUP4 AND PUSH1 0x20 DUP4 ADD MSTORE SWAP5 SWAP4 POP POP POP POP JUMP JUMPDEST PUSH1 0x20 DUP1 DUP3 MSTORE PUSH1 0x6 SWAP1 DUP3 ADD MSTORE PUSH32 0x4F4F505349450000000000000000000000000000000000000000000000000000 PUSH1 0x40 DUP3 ADD MSTORE PUSH1 0x60 ADD SWAP1 JUMP INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0x48 0xCF SWAP10 PUSH16 0x92D52DB6500A41DDA7040DB2FADC555 PUSH16 0xFA334170ACB87E903C57E064736F6C63 NUMBER STOP MOD EXP STOP CALLER ",
+                "sourceMap": "723:625:50:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1062:203;;;:::i;:::-;;;;;;;;;;;;;;;;834:222;;;:::i;1271:75::-;;;:::i;:::-;;1062:203;1106:14;1137:94;1168:8;;1207:4;1190:29;;;:31;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1137:94;;;;;;;;;;;;;;;;;-1:-1:-1;1241:17:50;1062:203;:::o;834:222::-;881:14;912:94;943:8;;982:4;965:29;;;:31;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;912:94;;;;;;;;;;;;;;;;;-1:-1:-1;1023:26:50;834:222;:::o;1271:75::-;1323:16;;;;;;;;;;;;;;;;;;;146:263:-1;;261:2;249:9;240:7;236:23;232:32;229:2;;;-1:-1;;267:12;229:2;89:6;83:13;3052:42;3453:5;3041:54;3428:5;3425:35;3415:2;;-1:-1;;3464:12;3415:2;319:74;223:186;-1:-1;;;223:186;1295:218;2900:66;2889:78;;;;605:36;;1420:2;1405:18;;1391:122;1520:437;;1703:2;1724:17;1717:47;2502:6;1703:2;1692:9;1688:18;2490:19;3189:6;3184:3;2530:14;1692:9;2530:14;3166:30;-1:-1;2530:14;3236:6;1692:9;3227:16;;3220:27;2530:14;3345:7;3349:2;959:6;3329:14;3325:28;1692:9;928:39;;1770:94;;3052:42;3045:5;3041:54;2539:4;1932:9;1928:18;487:37;1674:283;;;;;;;1964:416;2164:2;2178:47;;;1206:1;2149:18;;;2490:19;1241:8;2530:14;;;1221:29;1269:12;;;2135:245"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x2df1591d0e1f25e2b5c52f2317528af7031d6f593ed4c0ea8c0ae475e24d1b6f",
+    "sources": {
+        "./TestMigrator.sol": {
+            "id": 50
+        },
+        "../src/migrations/LibMigrate.sol": {
+            "id": 28
+        },
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": {
+            "id": 76
+        },
+        "../src/errors/LibOwnableRichErrors.sol": {
+            "id": 2
+        },
+        "../src/features/IOwnable.sol": {
+            "id": 16
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 79
+        }
+    },
+    "sourceCodes": {
+        "./TestMigrator.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"../src/migrations/LibMigrate.sol\";\nimport \"../src/features/IOwnable.sol\";\n\n\ncontract TestMigrator {\n    event TestMigrateCalled(\n        bytes callData,\n        address owner\n    );\n\n    function succeedingMigrate() external returns (bytes4 success) {\n        emit TestMigrateCalled(\n            msg.data,\n            IOwnable(address(this)).owner()\n        );\n        return LibMigrate.MIGRATE_SUCCESS;\n    }\n\n    function failingMigrate() external returns (bytes4 success) {\n        emit TestMigrateCalled(\n            msg.data,\n            IOwnable(address(this)).owner()\n        );\n        return 0xdeadbeef;\n    }\n\n    function revertingMigrate() external pure {\n        revert(\"OOPSIE\");\n    }\n}\n",
+        "../src/migrations/LibMigrate.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol\";\nimport \"../errors/LibOwnableRichErrors.sol\";\n\n\nlibrary LibMigrate {\n\n    /// @dev Magic bytes returned by a migrator to indicate success.\n    ///      This is `keccack('MIGRATE_SUCCESS')`.\n    bytes4 internal constant MIGRATE_SUCCESS = 0x2c64c5ef;\n\n    using LibRichErrorsV06 for bytes;\n\n    /// @dev Perform a delegatecall and ensure it returns the magic bytes.\n    /// @param target The call target.\n    /// @param data The call data.\n    function delegatecallMigrateFunction(\n        address target,\n        bytes memory data\n    )\n        internal\n    {\n        (bool success, bytes memory resultData) = target.delegatecall(data);\n        if (!success ||\n            resultData.length != 32 ||\n            abi.decode(resultData, (bytes4)) != MIGRATE_SUCCESS)\n        {\n            LibOwnableRichErrors.MigrateCallFailedError(target, resultData).rrevert();\n        }\n    }\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibRichErrorsV06 {\n\n    // bytes4(keccak256(\"Error(string)\"))\n    bytes4 internal constant STANDARD_ERROR_SELECTOR = 0x08c379a0;\n\n    // solhint-disable func-name-mixedcase\n    /// @dev ABI encode a standard, string revert error payload.\n    ///      This is the same payload that would be included by a `revert(string)`\n    ///      solidity statement. It has the function signature `Error(string)`.\n    /// @param message The error string.\n    /// @return The ABI encoded error.\n    function StandardError(string memory message)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            STANDARD_ERROR_SELECTOR,\n            bytes(message)\n        );\n    }\n    // solhint-enable func-name-mixedcase\n\n    /// @dev Reverts an encoded rich revert reason `errorData`.\n    /// @param errorData ABI encoded error data.\n    function rrevert(bytes memory errorData)\n        internal\n        pure\n    {\n        assembly {\n            revert(add(errorData, 0x20), mload(errorData))\n        }\n    }\n}\n",
+        "../src/errors/LibOwnableRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibOwnableRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyOwnerError(\n        address sender,\n        address owner\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyOwnerError(address,address)\")),\n            sender,\n            owner\n        );\n    }\n\n    function TransferOwnerToZeroError()\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"TransferOwnerToZeroError()\"))\n        );\n    }\n\n    function MigrateCallFailedError(address target, bytes memory resultData)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MigrateCallFailedError(address,bytes)\")),\n            target,\n            resultData\n        );\n    }\n}\n",
+        "../src/features/IOwnable.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n// solhint-disable no-empty-blocks\n/// @dev Owner management and migration features.\ninterface IOwnable is\n    IOwnableV06\n{\n    /// @dev Emitted when `migrate()` is called.\n    /// @param caller The caller of `migrate()`.\n    /// @param migrator The migration contract.\n    /// @param newOwner The address of the new owner.\n    event Migrated(address caller, address migrator, address newOwner);\n\n    /// @dev Execute a migration function in the context of the ZeroEx contract.\n    ///      The result of the function being called should be the magic bytes\n    ///      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.\n    ///      The owner will be temporarily set to `address(this)` inside the call.\n    ///      Before returning, the owner will be set to `newOwner`.\n    /// @param target The migrator contract address.\n    /// @param newOwner The address of the new owner.\n    /// @param data The call data.\n    function migrate(address target, bytes calldata data, address newOwner) external;\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

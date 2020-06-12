@@ -1,0 +1,168 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IFlashWallet",
+    "compilerOutput": {
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address payable",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "callData",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "executeCall",
+                "outputs": [
+                    {
+                        "internalType": "bytes",
+                        "name": "resultData",
+                        "type": "bytes"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address payable",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "callData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "executeDelegateCall",
+                "outputs": [
+                    {
+                        "internalType": "bytes",
+                        "name": "resultData",
+                        "type": "bytes"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner_",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "A contract that can execute arbitrary calls from its owner.",
+            "methods": {
+                "executeCall(address,bytes,uint256)": {
+                    "details": "Execute an arbitrary call. Only an authority can call this.",
+                    "params": {
+                        "callData": "The call data.",
+                        "target": "The call target.",
+                        "value": "Ether to attach to the call."
+                    },
+                    "returns": {
+                        "resultData": "The data returned by the call."
+                    }
+                },
+                "executeDelegateCall(address,bytes)": {
+                    "details": "Execute an arbitrary delegatecall, in the context of this puppet.      Only an authority can call this.",
+                    "params": {
+                        "callData": "The call data.",
+                        "target": "The call target."
+                    },
+                    "returns": {
+                        "resultData": "The data returned by the call."
+                    }
+                },
+                "owner()": {
+                    "details": "Fetch the immutable owner/deployer of this contract.",
+                    "returns": {
+                        "owner_": "The immutable owner/deployer/"
+                    }
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xe47b995f620df5d7190ce9925b00b96951522c9bad4eb4da4fd17f256e2cb933",
+    "sources": {
+        "./IFlashWallet.sol": {
+            "id": 11
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 79
+        }
+    },
+    "sourceCodes": {
+        "./IFlashWallet.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n/// @dev A contract that can execute arbitrary calls from its owner.\ninterface IFlashWallet {\n\n    /// @dev Execute an arbitrary call. Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @param value Ether to attach to the call.\n    /// @return resultData The data returned by the call.\n    function executeCall(\n        address payable target,\n        bytes calldata callData,\n        uint256 value\n    )\n        external\n        payable\n        returns (bytes memory resultData);\n\n    /// @dev Execute an arbitrary delegatecall, in the context of this puppet.\n    ///      Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @return resultData The data returned by the call.\n    function executeDelegateCall(\n        address payable target,\n        bytes calldata callData\n    )\n        external\n        payable\n        returns (bytes memory resultData);\n\n    /// @dev Allows the puppet to receive ETH.\n    receive() external payable;\n\n    /// @dev Fetch the immutable owner/deployer of this contract.\n    /// @return owner_ The immutable owner/deployer/\n    function owner() external view returns (address owner_);\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

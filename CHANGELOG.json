@@ -1,0 +1,15 @@
+[
+    {
+        "version": "0.1.0",
+        "changes": [
+            {
+                "note": "Create this package",
+                "pr": 2540
+            },
+            {
+                "note": "Introduce fill `TransformERC20` feature.",
+                "pr": 2545
+            }
+        ]
+    }
+]

@@ -1,0 +1,89 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "FixinCommon",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "details": "Common feature utilities.",
+            "methods": {}
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122011fac8b1b76824c7603e472e9aaa2ba8d446ed17a6dff72758d492dcc532a30764736f6c634300060a0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x3F DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 GT STATICCALL 0xC8 0xB1 0xB7 PUSH9 0x24C7603E472E9AAA2B 0xA8 0xD4 CHAINID 0xED OR 0xA6 0xDF 0xF7 0x27 PC 0xD4 SWAP3 0xDC 0xC5 ORIGIN LOG3 SMOD PUSH5 0x736F6C6343 STOP MOD EXP STOP CALLER ",
+                "sourceMap": "876:1192:24:-:0;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x6080604052600080fdfea264697066735822122011fac8b1b76824c7603e472e9aaa2ba8d446ed17a6dff72758d492dcc532a30764736f6c634300060a0033",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 GT STATICCALL 0xC8 0xB1 0xB7 PUSH9 0x24C7603E472E9AAA2B 0xA8 0xD4 CHAINID 0xED OR 0xA6 0xDF 0xF7 0x27 PC 0xD4 SWAP3 0xDC 0xC5 ORIGIN LOG3 SMOD PUSH5 0x736F6C6343 STOP MOD EXP STOP CALLER ",
+                "sourceMap": "876:1192:24:-:0;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x6dbdf4d7d6a1a0ca6bc9223693f315f79d0d10555f4595dba4b5f781cc9bbc08",
+    "sources": {
+        "./FixinCommon.sol": {
+            "id": 24
+        },
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": {
+            "id": 76
+        },
+        "../errors/LibCommonRichErrors.sol": {
+            "id": 1
+        },
+        "../errors/LibOwnableRichErrors.sol": {
+            "id": 2
+        },
+        "../features/IOwnable.sol": {
+            "id": 16
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 79
+        }
+    },
+    "sourceCodes": {
+        "./FixinCommon.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol\";\nimport \"../errors/LibCommonRichErrors.sol\";\nimport \"../errors/LibOwnableRichErrors.sol\";\nimport \"../features/IOwnable.sol\";\n\n\n/// @dev Common feature utilities.\ncontract FixinCommon {\n\n    using LibRichErrorsV06 for bytes;\n\n    /// @dev The caller must be this contract.\n    modifier onlySelf() virtual {\n        if (msg.sender != address(this)) {\n            LibCommonRichErrors.OnlyCallableBySelfError(msg.sender).rrevert();\n        }\n        _;\n    }\n\n    /// @dev The caller of this function must be the owner.\n    modifier onlyOwner() virtual {\n        {\n            address owner = IOwnable(address(this)).owner();\n            if (msg.sender != owner) {\n                LibOwnableRichErrors.OnlyOwnerError(\n                    msg.sender,\n                    owner\n                ).rrevert();\n            }\n        }\n        _;\n    }\n\n    /// @dev Encode a feature version as a `uint256`.\n    /// @param major The major version number of the feature.\n    /// @param minor The minor version number of the feature.\n    /// @param revision The revision number of the feature.\n    /// @return encodedVersion The encoded version number.\n    function _encodeVersion(uint32 major, uint32 minor, uint32 revision)\n        internal\n        pure\n        returns (uint256 encodedVersion)\n    {\n        return (major << 64) | (minor << 32) | revision;\n    }\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibRichErrorsV06 {\n\n    // bytes4(keccak256(\"Error(string)\"))\n    bytes4 internal constant STANDARD_ERROR_SELECTOR = 0x08c379a0;\n\n    // solhint-disable func-name-mixedcase\n    /// @dev ABI encode a standard, string revert error payload.\n    ///      This is the same payload that would be included by a `revert(string)`\n    ///      solidity statement. It has the function signature `Error(string)`.\n    /// @param message The error string.\n    /// @return The ABI encoded error.\n    function StandardError(string memory message)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            STANDARD_ERROR_SELECTOR,\n            bytes(message)\n        );\n    }\n    // solhint-enable func-name-mixedcase\n\n    /// @dev Reverts an encoded rich revert reason `errorData`.\n    /// @param errorData ABI encoded error data.\n    function rrevert(bytes memory errorData)\n        internal\n        pure\n    {\n        assembly {\n            revert(add(errorData, 0x20), mload(errorData))\n        }\n    }\n}\n",
+        "../errors/LibCommonRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibCommonRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyCallableBySelfError(address sender)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyCallableBySelfError(address)\")),\n            sender\n        );\n    }\n\n    function IllegalReentrancyError()\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"IllegalReentrancyError()\"))\n        );\n    }\n}\n",
+        "../errors/LibOwnableRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibOwnableRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyOwnerError(\n        address sender,\n        address owner\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyOwnerError(address,address)\")),\n            sender,\n            owner\n        );\n    }\n\n    function TransferOwnerToZeroError()\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"TransferOwnerToZeroError()\"))\n        );\n    }\n\n    function MigrateCallFailedError(address target, bytes memory resultData)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MigrateCallFailedError(address,bytes)\")),\n            target,\n            resultData\n        );\n    }\n}\n",
+        "../features/IOwnable.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n// solhint-disable no-empty-blocks\n/// @dev Owner management and migration features.\ninterface IOwnable is\n    IOwnableV06\n{\n    /// @dev Emitted when `migrate()` is called.\n    /// @param caller The caller of `migrate()`.\n    /// @param migrator The migration contract.\n    /// @param newOwner The address of the new owner.\n    event Migrated(address caller, address migrator, address newOwner);\n\n    /// @dev Execute a migration function in the context of the ZeroEx contract.\n    ///      The result of the function being called should be the magic bytes\n    ///      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.\n    ///      The owner will be temporarily set to `address(this)` inside the call.\n    ///      Before returning, the owner will be set to `newOwner`.\n    /// @param target The migrator contract address.\n    /// @param newOwner The address of the new owner.\n    /// @param data The call data.\n    function migrate(address target, bytes calldata data, address newOwner) external;\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

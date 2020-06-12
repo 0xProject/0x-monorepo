@@ -1,0 +1,188 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "IOwnable",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "caller",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "migrator",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "Migrated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "migrate",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "ownerAddress",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Owner management and migration features.",
+            "methods": {
+                "migrate(address,bytes,address)": {
+                    "details": "Execute a migration function in the context of the ZeroEx contract.      The result of the function being called should be the magic bytes      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.      The owner will be temporarily set to `address(this)` inside the call.      Before returning, the owner will be set to `newOwner`.",
+                    "params": {
+                        "data": "The call data.",
+                        "newOwner": "The address of the new owner.",
+                        "target": "The migrator contract address."
+                    }
+                },
+                "owner()": {
+                    "details": "The owner of this contract.",
+                    "returns": {
+                        "ownerAddress": "The owner address."
+                    }
+                },
+                "transferOwnership(address)": {
+                    "details": "Transfers ownership of the contract to a new address.",
+                    "params": {
+                        "newOwner": "The address that will become the owner."
+                    }
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x10563bb4a5d58214aad85dd3d0d7fd2e7a4a1f97e07978a5696512113cb4a805",
+    "sources": {
+        "./IOwnable.sol": {
+            "id": 16
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 79
+        }
+    },
+    "sourceCodes": {
+        "./IOwnable.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n// solhint-disable no-empty-blocks\n/// @dev Owner management and migration features.\ninterface IOwnable is\n    IOwnableV06\n{\n    /// @dev Emitted when `migrate()` is called.\n    /// @param caller The caller of `migrate()`.\n    /// @param migrator The migration contract.\n    /// @param newOwner The address of the new owner.\n    event Migrated(address caller, address migrator, address newOwner);\n\n    /// @dev Execute a migration function in the context of the ZeroEx contract.\n    ///      The result of the function being called should be the magic bytes\n    ///      0x2c64c5ef (`keccack('MIGRATE_SUCCESS')`). Only callable by the owner.\n    ///      The owner will be temporarily set to `address(this)` inside the call.\n    ///      Before returning, the owner will be set to `newOwner`.\n    /// @param target The migrator contract address.\n    /// @param newOwner The address of the new owner.\n    /// @param data The call data.\n    function migrate(address target, bytes calldata data, address newOwner) external;\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

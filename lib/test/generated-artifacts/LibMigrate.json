@@ -1,0 +1,81 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibMigrate",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "methods": {},
+            "stateVariables": {
+                "MIGRATE_SUCCESS": {
+                    "details": "Magic bytes returned by a migrator to indicate success.      This is `keccack('MIGRATE_SUCCESS')`."
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220b5d5683bd379b82f8bfc555e76afa1c3380dce1d9738facd2d1271a8a9caae2c64736f6c634300060a0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xB5 0xD5 PUSH9 0x3BD379B82F8BFC555E PUSH23 0xAFA1C3380DCE1D9738FACD2D1271A8A9CAAE2C64736F6C PUSH4 0x4300060A STOP CALLER ",
+                "sourceMap": "762:830:28:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220b5d5683bd379b82f8bfc555e76afa1c3380dce1d9738facd2d1271a8a9caae2c64736f6c634300060a0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 0xB5 0xD5 PUSH9 0x3BD379B82F8BFC555E PUSH23 0xAFA1C3380DCE1D9738FACD2D1271A8A9CAAE2C64736F6C PUSH4 0x4300060A STOP CALLER ",
+                "sourceMap": "762:830:28:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xa3e48ec8e8e6c20550d23ecbda397c22d82ae50b2a77adb1a4f63e02ed1ec63d",
+    "sources": {
+        "./LibMigrate.sol": {
+            "id": 28
+        },
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": {
+            "id": 76
+        },
+        "../errors/LibOwnableRichErrors.sol": {
+            "id": 2
+        }
+    },
+    "sourceCodes": {
+        "./LibMigrate.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol\";\nimport \"../errors/LibOwnableRichErrors.sol\";\n\n\nlibrary LibMigrate {\n\n    /// @dev Magic bytes returned by a migrator to indicate success.\n    ///      This is `keccack('MIGRATE_SUCCESS')`.\n    bytes4 internal constant MIGRATE_SUCCESS = 0x2c64c5ef;\n\n    using LibRichErrorsV06 for bytes;\n\n    /// @dev Perform a delegatecall and ensure it returns the magic bytes.\n    /// @param target The call target.\n    /// @param data The call data.\n    function delegatecallMigrateFunction(\n        address target,\n        bytes memory data\n    )\n        internal\n    {\n        (bool success, bytes memory resultData) = target.delegatecall(data);\n        if (!success ||\n            resultData.length != 32 ||\n            abi.decode(resultData, (bytes4)) != MIGRATE_SUCCESS)\n        {\n            LibOwnableRichErrors.MigrateCallFailedError(target, resultData).rrevert();\n        }\n    }\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/errors/LibRichErrorsV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibRichErrorsV06 {\n\n    // bytes4(keccak256(\"Error(string)\"))\n    bytes4 internal constant STANDARD_ERROR_SELECTOR = 0x08c379a0;\n\n    // solhint-disable func-name-mixedcase\n    /// @dev ABI encode a standard, string revert error payload.\n    ///      This is the same payload that would be included by a `revert(string)`\n    ///      solidity statement. It has the function signature `Error(string)`.\n    /// @param message The error string.\n    /// @return The ABI encoded error.\n    function StandardError(string memory message)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            STANDARD_ERROR_SELECTOR,\n            bytes(message)\n        );\n    }\n    // solhint-enable func-name-mixedcase\n\n    /// @dev Reverts an encoded rich revert reason `errorData`.\n    /// @param errorData ABI encoded error data.\n    function rrevert(bytes memory errorData)\n        internal\n        pure\n    {\n        assembly {\n            revert(add(errorData, 0x20), mload(errorData))\n        }\n    }\n}\n",
+        "../errors/LibOwnableRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibOwnableRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function OnlyOwnerError(\n        address sender,\n        address owner\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyOwnerError(address,address)\")),\n            sender,\n            owner\n        );\n    }\n\n    function TransferOwnerToZeroError()\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"TransferOwnerToZeroError()\"))\n        );\n    }\n\n    function MigrateCallFailedError(address target, bytes memory resultData)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"MigrateCallFailedError(address,bytes)\")),\n            target,\n            resultData\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}
