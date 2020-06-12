@@ -130,7 +130,7 @@ export class QuoteRequestor {
                     makerUri: r.makerUri,
                 };
             });
-            quoteReporter.trackRfqtSamples(responsesToReport);
+            quoteReporter.trackRfqtOrders(responsesToReport);
         }
         const ordersWithStringInts = reponsesContainingOrdersWithStringInts.map(r => r.response);
 

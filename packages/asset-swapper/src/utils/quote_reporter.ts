@@ -12,33 +12,33 @@ export interface AnnotatedRfqtFirmQuote {
 export class QuoteReporter {
     private readonly _metadataIdentifier: string;
     private _dexSamples: DexSample[];
-    private _orderbookSamples: SignedOrder[];
-    private _rfqtSamples: AnnotatedRfqtFirmQuote[];
+    private _orderbookOrders: SignedOrder[];
+    private _rfqtOrders: AnnotatedRfqtFirmQuote[];
 
     constructor(metadataIdentifier: string) {
         this._metadataIdentifier = metadataIdentifier;
         this._dexSamples = [];
-        this._orderbookSamples = [];
-        this._rfqtSamples = [];
+        this._orderbookOrders = [];
+        this._rfqtOrders = [];
     }
 
     public trackDexSamples(dexSamples: DexSample[]) {
         this._dexSamples = dexSamples;
     }
 
-    public trackOrderbookSamples(orderbookSamples: SignedOrder[]) {
-        this._orderbookSamples = orderbookSamples;
+    public trackOrderbookOrders(_orderbookOrders: SignedOrder[]) {
+        this._orderbookOrders = _orderbookOrders;
     }
 
-    public trackRfqtSamples(rfqtSamples: AnnotatedRfqtFirmQuote[]) {
-        this._rfqtSamples = rfqtSamples;
+    public trackRfqtOrders(rfqtOrders: AnnotatedRfqtFirmQuote[]) {
+        this._rfqtOrders = rfqtOrders;
     }
 
     public reportQuote(paths: CollapsedFill[]) {
         const sanitizedPaths = paths.map(p => _.omit(p, 'subFills'));
         console.log('dex samples:', JSON.stringify(this._dexSamples, undefined, 2));
-        console.log('orderbook samples:', JSON.stringify(this._orderbookSamples, undefined, 2));
-        console.log('rfqt samples:', JSON.stringify(this._rfqtSamples, undefined, 2));
+        console.log('orderbook orders:', JSON.stringify(this._orderbookOrders, undefined, 2));
+        console.log('rfqt orders:', JSON.stringify(this._rfqtOrders, undefined, 2));
         console.log('quote report:', JSON.stringify(sanitizedPaths, undefined, 2));
         return;
     }

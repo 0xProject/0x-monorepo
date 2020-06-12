@@ -542,7 +542,7 @@ export class SwapQuoter {
         // Fetch from orderbook
         const trackOrderbookOrders = (orderbookOrders: SignedOrder[]) => {
             if (opts.quoteReporter) {
-                opts.quoteReporter.trackOrderbookSamples(orderbookOrders);
+                opts.quoteReporter.trackOrderbookOrders(orderbookOrders);
             }
             return orderbookOrders;
         };
