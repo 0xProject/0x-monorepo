@@ -231,12 +231,12 @@ contract TestERC20BridgeSamplerUniswapV2Router01 is
         require(path.length >= 2, "PATH_TOO_SHORT");
         _revertIfShouldFail();
         amounts = new uint256[](path.length);
-        amounts[0] = amountOut;
-        for (uint256 i = 0; i < path.length - 1; ++i) {
-            amounts[i + 1] = LibDeterministicQuotes.getDeterministicBuyQuote(
+        amounts[path.length - 1] = amountOut;
+        for (uint256 i = path.length - 1; i > 0; --i) {
+            amounts[i - 1] = LibDeterministicQuotes.getDeterministicBuyQuote(
                 SALT,
+                path[i - 1],
                 path[i],
-                path[i + 1],
                 amounts[i]
             );
         }
