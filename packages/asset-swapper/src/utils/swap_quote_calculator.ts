@@ -53,10 +53,8 @@ export class SwapQuoteCalculator {
         takerAssetFillAmount: BigNumber,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
+        quoteReporter: QuoteReporter,
     ): Promise<MarketBuySwapQuote> {
-        // TODO: do properly
-        const quoteReporter = new QuoteReporter();
-
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
             takerAssetFillAmount,

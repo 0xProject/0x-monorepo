@@ -595,12 +595,12 @@ export class SwapQuoter {
         }
 
         if (marketOperation === MarketOperation.Buy) {
-            // TODO: do for buy
             swapQuote = await this._swapQuoteCalculator.calculateMarketBuySwapQuoteAsync(
                 orders,
                 assetFillAmount,
                 gasPrice,
                 calcOpts,
+                quoteReporter,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
