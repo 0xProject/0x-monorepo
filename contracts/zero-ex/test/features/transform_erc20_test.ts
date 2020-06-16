@@ -61,10 +61,16 @@ blockchainTests.resets('TransformERC20 feature', env => {
 
     describe('wallets', () => {
         it('createTransformWallet() replaces the current wallet', async () => {
-            const newWalletAddress = await feature.createTransformWallet().callAsync();
+            const newWalletAddress = await feature.createTransformWallet().callAsync({ from: owner });
             expect(newWalletAddress).to.not.eq(wallet.address);
             await feature.createTransformWallet().awaitTransactionSuccessAsync();
             return expect(feature.getTransformWallet().callAsync()).to.eventually.eq(newWalletAddress);
+        });
+
+        it('createTransformWallet() cannot be called by non-owner', async () => {
+            const notOwner = randomAddress();
+            const tx = feature.createTransformWallet().callAsync({ from: notOwner });
+            return expect(tx).to.revertWith(new OwnableRevertErrors.OnlyOwnerError(notOwner, owner));
         });
     });
 
