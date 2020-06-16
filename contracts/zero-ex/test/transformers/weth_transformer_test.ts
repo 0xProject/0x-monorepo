@@ -2,8 +2,7 @@ import { blockchainTests, constants, expect, getRandomInteger, randomAddress } f
 import { BigNumber, ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ETH_TOKEN_ADDRESS } from '../../src/constants';
-import { encodeWethTransformerData } from '../../src/transformer_data_encoders';
+import { encodeWethTransformerData, ETH_TOKEN_ADDRESS } from '@0x/order-utils';
 import { artifacts } from '../artifacts';
 import { TestWethContract, TestWethTransformerHostContract, WethTransformerContract } from '../wrappers';
 
