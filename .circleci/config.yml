@@ -91,6 +91,8 @@ jobs:
             - run:
                   command: yarn test:publish:circleci
                   no_output_timeout: 1800
+            - store_artifacts:
+                  path: ~/.npm/_logs
     test-doc-generation:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
