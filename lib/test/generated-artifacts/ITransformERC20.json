@@ -1,0 +1,353 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ITransformERC20",
+    "compilerOutput": {
+        "abi": [
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "taker",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "inputToken",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "outputToken",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "inputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "outputTokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "TransformedERC20",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "transformerDeployer",
+                        "type": "address"
+                    }
+                ],
+                "name": "TransformerDeployerUpdated",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "callDataHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "address payable",
+                        "name": "taker",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "inputToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "outputToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "inputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "minOutputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint32",
+                                "name": "deploymentNonce",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "data",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct ITransformERC20.Transformation[]",
+                        "name": "transformations",
+                        "type": "tuple[]"
+                    }
+                ],
+                "name": "_transformERC20",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "outputTokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "createTransformWallet",
+                "outputs": [
+                    {
+                        "internalType": "contract IFlashWallet",
+                        "name": "wallet",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTransformWallet",
+                "outputs": [
+                    {
+                        "internalType": "contract IFlashWallet",
+                        "name": "wallet",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getTransformerDeployer",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "deployer",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "transformerDeployer",
+                        "type": "address"
+                    }
+                ],
+                "name": "setTransformerDeployer",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "inputToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "contract IERC20TokenV06",
+                        "name": "outputToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "inputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "minOutputTokenAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint32",
+                                "name": "deploymentNonce",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "data",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct ITransformERC20.Transformation[]",
+                        "name": "transformations",
+                        "type": "tuple[]"
+                    }
+                ],
+                "name": "transformERC20",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "outputTokenAmount",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "details": "Feature to composably transform between ERC20 tokens.",
+            "methods": {
+                "_transformERC20(bytes32,address,address,address,uint256,uint256,(uint32,bytes)[])": {
+                    "details": "Internal version of `transformERC20()`. Only callable from within.",
+                    "params": {
+                        "callDataHash": "Hash of the ingress calldata.",
+                        "inputToken": "The token being provided by the taker.        If `0xeee...`, ETH is implied and should be provided with the call.`",
+                        "inputTokenAmount": "The amount of `inputToken` to take from the taker.",
+                        "minOutputTokenAmount": "The minimum amount of `outputToken` the taker        must receive for the entire transformation to succeed.",
+                        "outputToken": "The token to be acquired by the taker.        `0xeee...` implies ETH.",
+                        "taker": "The taker address.",
+                        "transformations": "The transformations to execute on the token balance(s)        in sequence."
+                    },
+                    "returns": {
+                        "outputTokenAmount": "The amount of `outputToken` received by the taker."
+                    }
+                },
+                "createTransformWallet()": {
+                    "details": "Deploy a new flash wallet instance and replace the current one with it.      Useful if we somehow break the current wallet instance.      Anyone can call this.",
+                    "returns": {
+                        "wallet": "The new wallet instance."
+                    }
+                },
+                "getTransformWallet()": {
+                    "details": "Return the current wallet instance that will serve as the execution      context for transformations.",
+                    "returns": {
+                        "wallet": "The wallet instance."
+                    }
+                },
+                "getTransformerDeployer()": {
+                    "details": "Return the allowed deployer for transformers.",
+                    "returns": {
+                        "deployer": "The transform deployer address."
+                    }
+                },
+                "setTransformerDeployer(address)": {
+                    "details": "Replace the allowed deployer for transformers.      Only callable by the owner.",
+                    "params": {
+                        "transformerDeployer": "The address of the trusted deployer for transformers."
+                    }
+                },
+                "transformERC20(address,address,uint256,uint256,(uint32,bytes)[])": {
+                    "details": "Executes a series of transformations to convert an ERC20 `inputToken`      to an ERC20 `outputToken`.",
+                    "params": {
+                        "inputToken": "The token being provided by the sender.        If `0xeee...`, ETH is implied and should be provided with the call.`",
+                        "inputTokenAmount": "The amount of `inputToken` to take from the sender.",
+                        "minOutputTokenAmount": "The minimum amount of `outputToken` the sender        must receive for the entire transformation to succeed.",
+                        "outputToken": "The token to be acquired by the sender.        `0xeee...` implies ETH.",
+                        "transformations": "The transformations to execute on the token balance(s)        in sequence."
+                    },
+                    "returns": {
+                        "outputTokenAmount": "The amount of `outputToken` received by the sender."
+                    }
+                }
+            }
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sourceTreeHashHex": "0x996122937fc96b611624d52dc74b036fb6934eae989b1f7cbcf4b0c4da721872",
+    "sources": {
+        "./ITransformERC20.sol": {
+            "id": 19
+        },
+        "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol": {
+            "id": 64
+        },
+        "../transformers/IERC20Transformer.sol": {
+            "id": 37
+        },
+        "../external/IFlashWallet.sol": {
+            "id": 11
+        },
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": {
+            "id": 79
+        }
+    },
+    "sourceCodes": {
+        "./ITransformERC20.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol\";\nimport \"../transformers/IERC20Transformer.sol\";\nimport \"../external/IFlashWallet.sol\";\n\n\n/// @dev Feature to composably transform between ERC20 tokens.\ninterface ITransformERC20 {\n\n    /// @dev Defines a transformation to run in `transformERC20()`.\n    struct Transformation {\n        // The deployment nonce for the transformer.\n        // The address of the transformer contract will be derived from this\n        // value.\n        uint32 deploymentNonce;\n        // Arbitrary data to pass to the transformer.\n        bytes data;\n    }\n\n    /// @dev Raised upon a successful `transformERC20`.\n    /// @param taker The taker (caller) address.\n    /// @param inputToken The token being provided by the taker.\n    ///        If `0xeee...`, ETH is implied and should be provided with the call.`\n    /// @param outputToken The token to be acquired by the taker.\n    ///        `0xeee...` implies ETH.\n    /// @param inputTokenAmount The amount of `inputToken` to take from the taker.\n    /// @param outputTokenAmount The amount of `outputToken` received by the taker.\n    event TransformedERC20(\n        address indexed taker,\n        address inputToken,\n        address outputToken,\n        uint256 inputTokenAmount,\n        uint256 outputTokenAmount\n    );\n\n    /// @dev Raised when `setTransformerDeployer()` is called.\n    /// @param transformerDeployer The new deployer address.\n    event TransformerDeployerUpdated(address transformerDeployer);\n\n    /// @dev Replace the allowed deployer for transformers.\n    ///      Only callable by the owner.\n    /// @param transformerDeployer The address of the trusted deployer for transformers.\n    function setTransformerDeployer(address transformerDeployer)\n        external;\n\n    /// @dev Deploy a new flash wallet instance and replace the current one with it.\n    ///      Useful if we somehow break the current wallet instance.\n    ///      Anyone can call this.\n    /// @return wallet The new wallet instance.\n    function createTransformWallet()\n        external\n        returns (IFlashWallet wallet);\n\n    /// @dev Executes a series of transformations to convert an ERC20 `inputToken`\n    ///      to an ERC20 `outputToken`.\n    /// @param inputToken The token being provided by the sender.\n    ///        If `0xeee...`, ETH is implied and should be provided with the call.`\n    /// @param outputToken The token to be acquired by the sender.\n    ///        `0xeee...` implies ETH.\n    /// @param inputTokenAmount The amount of `inputToken` to take from the sender.\n    /// @param minOutputTokenAmount The minimum amount of `outputToken` the sender\n    ///        must receive for the entire transformation to succeed.\n    /// @param transformations The transformations to execute on the token balance(s)\n    ///        in sequence.\n    /// @return outputTokenAmount The amount of `outputToken` received by the sender.\n    function transformERC20(\n        IERC20TokenV06 inputToken,\n        IERC20TokenV06 outputToken,\n        uint256 inputTokenAmount,\n        uint256 minOutputTokenAmount,\n        Transformation[] calldata transformations\n    )\n        external\n        payable\n        returns (uint256 outputTokenAmount);\n\n    /// @dev Internal version of `transformERC20()`. Only callable from within.\n    /// @param callDataHash Hash of the ingress calldata.\n    /// @param taker The taker address.\n    /// @param inputToken The token being provided by the taker.\n    ///        If `0xeee...`, ETH is implied and should be provided with the call.`\n    /// @param outputToken The token to be acquired by the taker.\n    ///        `0xeee...` implies ETH.\n    /// @param inputTokenAmount The amount of `inputToken` to take from the taker.\n    /// @param minOutputTokenAmount The minimum amount of `outputToken` the taker\n    ///        must receive for the entire transformation to succeed.\n    /// @param transformations The transformations to execute on the token balance(s)\n    ///        in sequence.\n    /// @return outputTokenAmount The amount of `outputToken` received by the taker.\n    function _transformERC20(\n        bytes32 callDataHash,\n        address payable taker,\n        IERC20TokenV06 inputToken,\n        IERC20TokenV06 outputToken,\n        uint256 inputTokenAmount,\n        uint256 minOutputTokenAmount,\n        Transformation[] calldata transformations\n    )\n        external\n        payable\n        returns (uint256 outputTokenAmount);\n\n    /// @dev Return the current wallet instance that will serve as the execution\n    ///      context for transformations.\n    /// @return wallet The wallet instance.\n    function getTransformWallet()\n        external\n        view\n        returns (IFlashWallet wallet);\n\n    /// @dev Return the allowed deployer for transformers.\n    /// @return deployer The transform deployer address.\n    function getTransformerDeployer()\n        external\n        view\n        returns (address deployer);\n}\n",
+        "@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IERC20TokenV06 {\n\n    // solhint-disable no-simple-event-func-name\n    event Transfer(\n        address indexed from,\n        address indexed to,\n        uint256 value\n    );\n\n    event Approval(\n        address indexed owner,\n        address indexed spender,\n        uint256 value\n    );\n\n    /// @dev send `value` token to `to` from `msg.sender`\n    /// @param to The address of the recipient\n    /// @param value The amount of token to be transferred\n    /// @return True if transfer was successful\n    function transfer(address to, uint256 value)\n        external\n        returns (bool);\n\n    /// @dev send `value` token to `to` from `from` on the condition it is approved by `from`\n    /// @param from The address of the sender\n    /// @param to The address of the recipient\n    /// @param value The amount of token to be transferred\n    /// @return True if transfer was successful\n    function transferFrom(\n        address from,\n        address to,\n        uint256 value\n    )\n        external\n        returns (bool);\n\n    /// @dev `msg.sender` approves `spender` to spend `value` tokens\n    /// @param spender The address of the account able to transfer the tokens\n    /// @param value The amount of wei to be approved for transfer\n    /// @return Always true if the call has enough gas to complete execution\n    function approve(address spender, uint256 value)\n        external\n        returns (bool);\n\n    /// @dev Query total supply of token\n    /// @return Total supply of token\n    function totalSupply()\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the balance of `owner`.\n    /// @param owner The address from which the balance will be retrieved\n    /// @return Balance of owner\n    function balanceOf(address owner)\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the allowance for `spender` to spend from `owner`.\n    /// @param owner The address of the account owning tokens\n    /// @param spender The address of the account able to transfer the tokens\n    /// @return Amount of remaining tokens allowed to spent\n    function allowance(address owner, address spender)\n        external\n        view\n        returns (uint256);\n\n    /// @dev Get the number of decimals this token has.\n    function decimals()\n        external\n        view\n        returns (uint8);\n}\n",
+        "../transformers/IERC20Transformer.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-erc20/contracts/src/v06/IERC20TokenV06.sol\";\n\n\n/// @dev A transformation callback used in `TransformERC20.transformERC20()`.\ninterface IERC20Transformer {\n\n    /// @dev Called from `TransformERC20.transformERC20()`. This will be\n    ///      delegatecalled in the context of the FlashWallet instance being used.\n    /// @param callDataHash The hash of the `TransformERC20.transformERC20()` calldata.\n    /// @param taker The taker address (caller of `TransformERC20.transformERC20()`).\n    /// @param data Arbitrary data to pass to the transformer.\n    /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).\n    function transform(\n        bytes32 callDataHash,\n        address payable taker,\n        bytes calldata data\n    )\n        external\n        returns (bytes4 success);\n}\n",
+        "../external/IFlashWallet.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\npragma experimental ABIEncoderV2;\n\nimport \"@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol\";\n\n\n/// @dev A contract that can execute arbitrary calls from its owner.\ninterface IFlashWallet {\n\n    /// @dev Execute an arbitrary call. Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @param value Ether to attach to the call.\n    /// @return resultData The data returned by the call.\n    function executeCall(\n        address payable target,\n        bytes calldata callData,\n        uint256 value\n    )\n        external\n        payable\n        returns (bytes memory resultData);\n\n    /// @dev Execute an arbitrary delegatecall, in the context of this puppet.\n    ///      Only an authority can call this.\n    /// @param target The call target.\n    /// @param callData The call data.\n    /// @return resultData The data returned by the call.\n    function executeDelegateCall(\n        address payable target,\n        bytes calldata callData\n    )\n        external\n        payable\n        returns (bytes memory resultData);\n\n    /// @dev Allows the puppet to receive ETH.\n    receive() external payable;\n\n    /// @dev Fetch the immutable owner/deployer of this contract.\n    /// @return owner_ The immutable owner/deployer/\n    function owner() external view returns (address owner_);\n}\n",
+        "@0x/contracts-utils/contracts/src/v06/interfaces/IOwnableV06.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\ninterface IOwnableV06 {\n\n    /// @dev Emitted by Ownable when ownership is transferred.\n    /// @param previousOwner The previous owner of the contract.\n    /// @param newOwner The new owner of the contract.\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /// @dev Transfers ownership of the contract to a new address.\n    /// @param newOwner The address that will become the owner.\n    function transferOwnership(address newOwner) external;\n\n    /// @dev The owner of this contract.\n    /// @return ownerAddress The owner address.\n    function owner() external view returns (address ownerAddress);\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

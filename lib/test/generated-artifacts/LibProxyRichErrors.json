@@ -1,0 +1,68 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibProxyRichErrors",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "methods": {}
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122000d9346df7d53d254311a84beaec4347680b93cd3b8db0ca3f32fb6bc18d49eb64736f6c634300060a0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 STOP 0xD9 CALLVALUE PUSH14 0xF7D53D254311A84BEAEC4347680B SWAP4 0xCD EXTCODESIZE DUP14 0xB0 0xCA EXTCODEHASH ORIGIN 0xFB PUSH12 0xC18D49EB64736F6C63430006 EXP STOP CALLER ",
+                "sourceMap": "606:1277:3:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122000d9346df7d53d254311a84beaec4347680b93cd3b8db0ca3f32fb6bc18d49eb64736f6c634300060a0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 STOP 0xD9 CALLVALUE PUSH14 0xF7D53D254311A84BEAEC4347680B SWAP4 0xCD EXTCODESIZE DUP14 0xB0 0xCA EXTCODEHASH ORIGIN 0xFB PUSH12 0xC18D49EB64736F6C63430006 EXP STOP CALLER ",
+                "sourceMap": "606:1277:3:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xfb111f2d82b5ccbe8c4605545e880a90304740078ff12610a0a7affb178138d7",
+    "sources": {
+        "./LibProxyRichErrors.sol": {
+            "id": 3
+        }
+    },
+    "sourceCodes": {
+        "./LibProxyRichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibProxyRichErrors {\n\n    // solhint-disable func-name-mixedcase\n\n    function NotImplementedError(bytes4 selector)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"NotImplementedError(bytes4)\")),\n            selector\n        );\n    }\n\n    function InvalidBootstrapCallerError(address actual, address expected)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidBootstrapCallerError(address,address)\")),\n            actual,\n            expected\n        );\n    }\n\n    function InvalidDieCallerError(address actual, address expected)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidDieCallerError(address,address)\")),\n            actual,\n            expected\n        );\n    }\n\n    function BootstrapCallFailedError(address target, bytes memory resultData)\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"BootstrapCallFailedError(address,bytes)\")),\n            target,\n            resultData\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}

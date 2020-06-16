@@ -1,0 +1,68 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "LibTransformERC20RichErrors",
+    "compilerOutput": {
+        "abi": [],
+        "devdoc": {
+            "methods": {}
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122044a1b50f16fccbac76275dc4c1aa7783722e1fa676891c58eedfc53ff063fade64736f6c634300060a0033",
+                "opcodes": "PUSH1 0x56 PUSH1 0x23 PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH1 0x0 BYTE PUSH1 0x73 EQ PUSH1 0x16 JUMPI INVALID JUMPDEST ADDRESS PUSH1 0x0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 DIFFICULTY LOG1 0xB5 0xF AND 0xFC 0xCB 0xAC PUSH23 0x275DC4C1AA7783722E1FA676891C58EEDFC53FF063FADE PUSH5 0x736F6C6343 STOP MOD EXP STOP CALLER ",
+                "sourceMap": "606:5196:6:-:0;;;;;;;;;;;;;;;;;;;;;;;;;"
+            },
+            "deployedBytecode": {
+                "immutableReferences": {},
+                "linkReferences": {},
+                "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122044a1b50f16fccbac76275dc4c1aa7783722e1fa676891c58eedfc53ff063fade64736f6c634300060a0033",
+                "opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 DIFFICULTY LOG1 0xB5 0xF AND 0xFC 0xCB 0xAC PUSH23 0x275DC4C1AA7783722E1FA676891C58EEDFC53FF063FADE PUSH5 0x736F6C6343 STOP MOD EXP STOP CALLER ",
+                "sourceMap": "606:5196:6:-:0;;;;;;;;"
+            }
+        }
+    },
+    "sourceTreeHashHex": "0xcb333dd43d05da15507676d05064883eea475003c7928893565957de8657c09c",
+    "sources": {
+        "./LibTransformERC20RichErrors.sol": {
+            "id": 6
+        }
+    },
+    "sourceCodes": {
+        "./LibTransformERC20RichErrors.sol": "/*\n\n  Copyright 2020 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.6.5;\n\n\nlibrary LibTransformERC20RichErrors {\n\n    // solhint-disable func-name-mixedcase,separate-by-one-line-in-contract\n\n    function InsufficientEthAttachedError(\n        uint256 ethAttached,\n        uint256 ethNeeded\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InsufficientEthAttachedError(uint256,uint256)\")),\n            ethAttached,\n            ethNeeded\n        );\n    }\n\n    function IncompleteTransformERC20Error(\n        address outputToken,\n        uint256 outputTokenAmount,\n        uint256 minOutputTokenAmount\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"IncompleteTransformERC20Error(address,uint256,uint256)\")),\n            outputToken,\n            outputTokenAmount,\n            minOutputTokenAmount\n        );\n    }\n\n    function NegativeTransformERC20OutputError(\n        address outputToken,\n        uint256 outputTokenLostAmount\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"NegativeTransformERC20OutputError(address,uint256)\")),\n            outputToken,\n            outputTokenLostAmount\n        );\n    }\n\n    function TransformerFailedError(\n        address transformer,\n        bytes memory transformerData,\n        bytes memory resultData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"TransformerFailedError(address,bytes,bytes)\")),\n            transformer,\n            transformerData,\n            resultData\n        );\n    }\n\n    // Common Transformer errors ///////////////////////////////////////////////\n\n    function OnlyCallableByDeployerError(\n        address caller,\n        address deployer\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"OnlyCallableByDeployerError(address,address)\")),\n            caller,\n            deployer\n        );\n    }\n\n    function InvalidExecutionContextError(\n        address actualContext,\n        address expectedContext\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidExecutionContextError(address,address)\")),\n            actualContext,\n            expectedContext\n        );\n    }\n\n    enum InvalidTransformDataErrorCode {\n        INVALID_TOKENS,\n        INVALID_ARRAY_LENGTH\n    }\n\n    function InvalidTransformDataError(\n        InvalidTransformDataErrorCode errorCode,\n        bytes memory transformData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidTransformDataError(uint8,bytes)\")),\n            errorCode,\n            transformData\n        );\n    }\n\n    // FillQuoteTransformer errors /////////////////////////////////////////////\n\n    function IncompleteFillSellQuoteError(\n        address sellToken,\n        uint256 soldAmount,\n        uint256 sellAmount\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"IncompleteFillSellQuoteError(address,uint256,uint256)\")),\n            sellToken,\n            soldAmount,\n            sellAmount\n        );\n    }\n\n    function IncompleteFillBuyQuoteError(\n        address buyToken,\n        uint256 boughtAmount,\n        uint256 buyAmount\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"IncompleteFillBuyQuoteError(address,uint256,uint256)\")),\n            buyToken,\n            boughtAmount,\n            buyAmount\n        );\n    }\n\n    function InsufficientTakerTokenError(\n        uint256 tokenBalance,\n        uint256 tokensNeeded\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InsufficientTakerTokenError(uint256,uint256)\")),\n            tokenBalance,\n            tokensNeeded\n        );\n    }\n\n    function InsufficientProtocolFeeError(\n        uint256 ethBalance,\n        uint256 ethNeeded\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InsufficientProtocolFeeError(uint256,uint256)\")),\n            ethBalance,\n            ethNeeded\n        );\n    }\n\n    function InvalidERC20AssetDataError(\n        bytes memory assetData\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidERC20AssetDataError(bytes)\")),\n            assetData\n        );\n    }\n\n    function InvalidTakerFeeTokenError(\n        address token\n    )\n        internal\n        pure\n        returns (bytes memory)\n    {\n        return abi.encodeWithSelector(\n            bytes4(keccak256(\"InvalidTakerFeeTokenError(address)\")),\n            token\n        );\n    }\n}\n"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.6.10+commit.00c0fcaf",
+        "settings": {
+            "remappings": [
+                "@0x/contracts-utils=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-erc20=/Users/jacob/projects/ethdev/0x/workspace-remote/workspace/0x-monorepo/node_modules/@0x/contracts-erc20"
+            ],
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "istanbul"
+        }
+    },
+    "chains": {}
+}
