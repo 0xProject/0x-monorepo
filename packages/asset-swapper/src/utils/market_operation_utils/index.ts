@@ -155,6 +155,7 @@ export class MarketOperationUtils {
     public async getMarketBuyOrdersAsync(
         nativeOrders: SignedOrder[],
         makerAmount: BigNumber,
+        quoteReporter: QuoteReporter,
         opts?: Partial<GetMarketOrdersOpts>,
     ): Promise<OptimizedMarketOrder[]> {
         if (nativeOrders.length === 0) {
@@ -205,6 +206,8 @@ export class MarketOperationUtils {
             rfqtIndicativeQuotes,
         ] = await Promise.all([samplerPromise, rfqtPromise]);
 
+        quoteReporter.trackDexSamples(_.flatten(dexQuotes));
+
         return this._generateOptimizedOrders({
             orderFillableAmounts,
             nativeOrders,
@@ -222,6 +225,7 @@ export class MarketOperationUtils {
             feeSchedule: _opts.feeSchedule,
             allowFallback: _opts.allowFallback,
             shouldBatchBridgeOrders: _opts.shouldBatchBridgeOrders,
+            quoteReporter,
         });
     }
 

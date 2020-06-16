@@ -144,10 +144,10 @@ export class SwapQuoteCalculator {
                 resultOrders = prunedOrders.map(o => convertNativeOrderToFullyFillableOptimizedOrders(o));
             } else {
                 if (operation === MarketOperation.Buy) {
-                    // TODO: do for buy
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
+                        quoteReporter,
                         _opts,
                     );
                 } else {

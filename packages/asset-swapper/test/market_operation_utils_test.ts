@@ -737,7 +737,7 @@ describe('MarketOperationUtils tests', () => {
                         return DEFAULT_OPS.getBuyQuotes(sources, makerToken, takerToken, amounts);
                     },
                 });
-                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, new QuoteReporter(), {
                     ...DEFAULT_OPTS,
                     numSamples,
                 });
@@ -752,7 +752,7 @@ describe('MarketOperationUtils tests', () => {
                         return DEFAULT_OPS.getBuyQuotes(sources, makerToken, takerToken, amounts);
                     },
                 });
-                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, new QuoteReporter(), {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
@@ -774,7 +774,7 @@ describe('MarketOperationUtils tests', () => {
                     ORDER_DOMAIN,
                     registryAddress,
                 );
-                await newMarketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                await newMarketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, new QuoteReporter(), {
                     ...DEFAULT_OPTS,
                     excludedSources: [],
                 });
@@ -793,7 +793,7 @@ describe('MarketOperationUtils tests', () => {
                         return DEFAULT_OPS.getBuyQuotes(sources, makerToken, takerToken, amounts);
                     },
                 });
-                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, {
+                await marketOperationUtils.getMarketBuyOrdersAsync(ORDERS, FILL_AMOUNT, new QuoteReporter(), {
                     ...DEFAULT_OPTS,
                     excludedSources,
                 });
@@ -805,6 +805,7 @@ describe('MarketOperationUtils tests', () => {
                     // Pass in empty orders to prevent native orders from being used.
                     ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     DEFAULT_OPTS,
                 );
                 expect(improvedOrders).to.not.be.length(0);
@@ -829,6 +830,7 @@ describe('MarketOperationUtils tests', () => {
                     // Pass in empty orders to prevent native orders from being used.
                     ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     DEFAULT_OPTS,
                 );
                 const totalMakerAssetAmount = BigNumber.sum(...improvedOrders.map(o => o.makerAssetAmount));
@@ -841,6 +843,7 @@ describe('MarketOperationUtils tests', () => {
                     // Pass in empty orders to prevent native orders from being used.
                     ORDERS.map(o => ({ ...o, makerAssetAmount: constants.ZERO_AMOUNT })),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     { ...DEFAULT_OPTS, bridgeSlippage },
                 );
                 expect(improvedOrders).to.not.be.length(0);
@@ -862,6 +865,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     { ...DEFAULT_OPTS, numSamples: 4 },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
@@ -898,6 +902,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     { ...DEFAULT_OPTS, numSamples: 4, feeSchedule },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
@@ -932,6 +937,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     { ...DEFAULT_OPTS, numSamples: 4, feeSchedule },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
@@ -954,6 +960,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
@@ -979,6 +986,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     { ...DEFAULT_OPTS, numSamples: 4, allowFallback: true, maxFallbackSlippage: 0.25 },
                 );
                 const orderSources = improvedOrders.map(o => o.fills[0].source);
@@ -999,6 +1007,7 @@ describe('MarketOperationUtils tests', () => {
                 const improvedOrders = await marketOperationUtils.getMarketBuyOrdersAsync(
                     createOrdersFromBuyRates(FILL_AMOUNT, rates[ERC20BridgeSource.Native]),
                     FILL_AMOUNT,
+                    new QuoteReporter(),
                     {
                         ...DEFAULT_OPTS,
                         numSamples: 4,
