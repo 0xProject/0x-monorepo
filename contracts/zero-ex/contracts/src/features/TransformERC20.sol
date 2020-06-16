@@ -44,13 +44,19 @@ contract TransformERC20 is
     FixinCommon
 {
 
+    /// @dev Stack vars for `_transformERC20Private()`.
+    struct TransformERC20PrivateState {
+        IFlashWallet wallet;
+        address transformerDeployer;
+        uint256 takerOutputTokenBalanceBefore;
+        uint256 takerOutputTokenBalanceAfter;
+    }
+
     // solhint-disable
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "TransformERC20";
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
-    /// @dev The trusted deployer for all transformers.
-    address public immutable transformDeployer;
     /// @dev The implementation address of this feature.
     address private immutable _implementation;
     // solhint-enable
@@ -58,14 +64,15 @@ contract TransformERC20 is
     using LibSafeMathV06 for uint256;
     using LibRichErrorsV06 for bytes;
 
-    constructor(address trustedDeployer_) public {
+    constructor() public {
         _implementation = address(this);
-        transformDeployer = trustedDeployer_;
     }
 
     /// @dev Initialize and register this feature.
     ///      Should be delegatecalled by `Migrate.migrate()`.
-    function migrate() external returns (bytes4 success) {
+    /// @param transformerDeployer The trusted deployer for transformers.
+    /// @return success `LibMigrate.SUCCESS` on success.
+    function migrate(address transformerDeployer) external returns (bytes4 success) {
         ISimpleFunctionRegistry(address(this))
             .extend(this.getTransformerDeployer.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
@@ -73,22 +80,37 @@ contract TransformERC20 is
         ISimpleFunctionRegistry(address(this))
             .extend(this.getTransformWallet.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
+            .extend(this.setTransformerDeployer.selector, _implementation);
+        ISimpleFunctionRegistry(address(this))
             .extend(this.transformERC20.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
             .extend(this._transformERC20.selector, _implementation);
         createTransformWallet();
+        LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
         return LibMigrate.MIGRATE_SUCCESS;
+    }
+
+    /// @dev Replace the allowed deployer for transformers.
+    ///      Only callable by the owner.
+    /// @param transformerDeployer The address of the trusted deployer for transformers.
+    function setTransformerDeployer(address transformerDeployer)
+        external
+        override
+        onlyOwner
+    {
+        LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
+        emit TransformerDeployerUpdated(transformerDeployer);
     }
 
     /// @dev Return the allowed deployer for transformers.
     /// @return deployer The transform deployer address.
     function getTransformerDeployer()
-        external
+        public
         override
         view
         returns (address deployer)
     {
-        return transformDeployer;
+        return LibTransformERC20Storage.getStorage().transformerDeployer;
     }
 
     /// @dev Deploy a new wallet instance and replace the current one with it.
@@ -209,8 +231,7 @@ contract TransformERC20 is
         uint256 minOutputTokenAmount,
         Transformation[] memory transformations
     )
-        public
-        payable
+        private
         returns (uint256 outputTokenAmount)
     {
         // If the input token amount is -1, transform the taker's entire
@@ -220,31 +241,44 @@ contract TransformERC20 is
                 .getSpendableERC20BalanceOf(inputToken, taker);
         }
 
-        IFlashWallet wallet = getTransformWallet();
+        TransformERC20PrivateState memory state;
+        state.wallet = getTransformWallet();
+        state.transformerDeployer = getTransformerDeployer();
 
         // Remember the initial output token balance of the taker.
-        uint256 takerOutputTokenBalanceBefore =
+        state.takerOutputTokenBalanceBefore =
             LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
 
         // Pull input tokens from the taker to the wallet and transfer attached ETH.
-        _transferInputTokensAndAttachedEth(inputToken, taker, address(wallet), inputTokenAmount);
+        _transferInputTokensAndAttachedEth(
+            inputToken,
+            taker,
+            address(state.wallet),
+            inputTokenAmount
+        );
 
         // Perform transformations.
         for (uint256 i = 0; i < transformations.length; ++i) {
-            _executeTransformation(wallet, transformations[i], taker, callDataHash);
+            _executeTransformation(
+                state.wallet,
+                transformations[i],
+                state.transformerDeployer,
+                taker,
+                callDataHash
+            );
         }
 
         // Compute how much output token has been transferred to the taker.
-        uint256 takerOutputTokenBalanceAfter =
+        state.takerOutputTokenBalanceAfter =
             LibERC20Transformer.getTokenBalanceOf(outputToken, taker);
-        if (takerOutputTokenBalanceAfter > takerOutputTokenBalanceBefore) {
-            outputTokenAmount = takerOutputTokenBalanceAfter.safeSub(
-                takerOutputTokenBalanceBefore
+        if (state.takerOutputTokenBalanceAfter > state.takerOutputTokenBalanceBefore) {
+            outputTokenAmount = state.takerOutputTokenBalanceAfter.safeSub(
+                state.takerOutputTokenBalanceBefore
             );
-        } else if (takerOutputTokenBalanceAfter < takerOutputTokenBalanceBefore) {
+        } else if (state.takerOutputTokenBalanceAfter < state.takerOutputTokenBalanceBefore) {
             LibTransformERC20RichErrors.NegativeTransformERC20OutputError(
                 address(outputToken),
-                takerOutputTokenBalanceBefore - takerOutputTokenBalanceAfter
+                state.takerOutputTokenBalanceBefore - state.takerOutputTokenBalanceAfter
             ).rrevert();
         }
         // Ensure enough output token has been sent to the taker.
@@ -316,20 +350,27 @@ contract TransformERC20 is
     /// @dev Executs a transformer in the context of `wallet`.
     /// @param wallet The wallet instance.
     /// @param transformation The transformation.
+    /// @param transformerDeployer The address of the transformer deployer.
     /// @param taker The taker address.
     /// @param callDataHash Hash of the calldata.
     function _executeTransformation(
         IFlashWallet wallet,
         Transformation memory transformation,
+        address transformerDeployer,
         address payable taker,
         bytes32 callDataHash
     )
         private
     {
+        // Derive the transformer address from the deployment nonce.
+        address payable transformer = LibERC20Transformer.getDeployedAddress(
+            transformerDeployer,
+            transformation.deploymentNonce
+        );
         // Call `transformer.transform()` as the wallet.
         bytes memory resultData = wallet.executeDelegateCall(
-            // Call target.
-            address(uint160(address(transformation.transformer))),
+            // The call target.
+            transformer,
             // Call data.
             abi.encodeWithSelector(
                 IERC20Transformer.transform.selector,
@@ -338,39 +379,15 @@ contract TransformERC20 is
                 transformation.data
             )
         );
-        // Ensure the transformer returned its valid rlp-encoded deployment nonce.
-        bytes memory rlpNonce = resultData.length == 0
-            ? new bytes(0)
-            : abi.decode(resultData, (bytes));
-        if (_getExpectedDeployment(rlpNonce) != address(transformation.transformer)) {
-            LibTransformERC20RichErrors.UnauthorizedTransformerError(
-                address(transformation.transformer),
-                rlpNonce
+        // Ensure the transformer returned the magic bytes.
+        if (resultData.length != 32 ||
+            abi.decode(resultData, (bytes4)) != LibERC20Transformer.TRANSFORMER_SUCCESS
+        ) {
+            LibTransformERC20RichErrors.TransformerFailedError(
+                transformer,
+                transformation.data,
+                resultData
             ).rrevert();
         }
-    }
-
-    /// @dev Compute the expected deployment address by `transformDeployer` at
-    ///      the nonce given by `rlpNonce`.
-    /// @param rlpNonce The RLP-encoded nonce that
-    ///        the deployer had when deploying a contract.
-    /// @return deploymentAddress The deployment address.
-    function _getExpectedDeployment(bytes memory rlpNonce)
-        private
-        view
-        returns (address deploymentAddress)
-    {
-        // See https://github.com/ethereum/wiki/wiki/RLP for RLP encoding rules.
-        // The RLP-encoded nonce may be prefixed with a length byte.
-        // We only support nonces up to 32-bits.
-        if (rlpNonce.length == 0 || rlpNonce.length > 5) {
-            LibTransformERC20RichErrors.InvalidRLPNonceError(rlpNonce).rrevert();
-        }
-        return address(uint160(uint256(keccak256(abi.encodePacked(
-            byte(uint8(0xC0 + 21 + rlpNonce.length)),
-            byte(uint8(0x80 + 20)),
-            transformDeployer,
-            rlpNonce
-        )))));
     }
 }

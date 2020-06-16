@@ -67,14 +67,13 @@ export interface FullFeatures extends BootstrapFeatures {
 }
 
 export interface FullMigrationOpts {
-    transformDeployer: string;
+    transformerDeployer: string;
 }
 
 export async function deployFullFeaturesAsync(
     provider: SupportedProvider,
     txDefaults: Partial<TxData>,
     features: Partial<FullFeatures> = {},
-    opts: Partial<FullMigrationOpts> = {},
 ): Promise<FullFeatures> {
     return {
         ...(await deployBootstrapFeaturesAsync(provider, txDefaults)),
@@ -93,7 +92,6 @@ export async function deployFullFeaturesAsync(
                 provider,
                 txDefaults,
                 artifacts,
-                opts.transformDeployer || (txDefaults.from as string),
             )),
     };
 }
@@ -105,7 +103,7 @@ export async function fullMigrateAsync(
     features: Partial<FullFeatures> = {},
     opts: Partial<FullMigrationOpts> = {},
 ): Promise<ZeroExContract> {
-    const _features = await deployFullFeaturesAsync(provider, txDefaults, features, opts);
+    const _features = await deployFullFeaturesAsync(provider, txDefaults, features);
     const migrator = await FullMigrationContract.deployFrom0xArtifactAsync(
         artifacts.FullMigration,
         provider,
@@ -113,7 +111,11 @@ export async function fullMigrateAsync(
         artifacts,
         txDefaults.from as string,
     );
-    const deployCall = migrator.deploy(owner, toFeatureAdddresses(_features));
+    const _opts = {
+        transformerDeployer: txDefaults.from as string,
+        ...opts,
+    };
+    const deployCall = migrator.deploy(owner, toFeatureAdddresses(_features), _opts);
     const zeroEx = new ZeroExContract(await deployCall.callAsync(), provider, {});
     await deployCall.awaitTransactionSuccessAsync();
     return zeroEx;

@@ -331,12 +331,13 @@ export const utils = {
             'max',
             'round',
         ];
-        if (
-            pythonReservedWords.includes(snakeCased) ||
-            pythonBuiltins.includes(snakeCased) ||
-            /*changeCase strips leading underscores :(*/ input[0] === '_'
-        ) {
+        if (pythonReservedWords.includes(snakeCased) || pythonBuiltins.includes(snakeCased)) {
             snakeCased = `_${snakeCased}`;
+        }
+        // Retain trailing underscores.
+        const m = /^.+?(_*)$/.exec(input);
+        if (m) {
+            snakeCased = `${snakeCased}${m[1]}`;
         }
         return snakeCased;
     },

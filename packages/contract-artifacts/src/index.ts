@@ -26,6 +26,7 @@ import * as ZRXToken from '../artifacts/ZRXToken.json';
 import * as ERC20BridgeProxy from '../artifacts/ERC20BridgeProxy.json';
 import * as ZrxVault from '../artifacts/ZrxVault.json';
 import * as IERC20BridgeSampler from '../artifacts/IERC20BridgeSampler.json';
+import * as ITransformERC20 from '../artifacts/ITransformERC20.json';
 
 export {
     AssetProxyOwner,
@@ -56,4 +57,5 @@ export {
     StakingProxy,
     ZrxVault,
     IERC20BridgeSampler,
+    ITransformERC20,
 };

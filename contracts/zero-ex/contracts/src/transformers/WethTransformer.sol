@@ -51,19 +51,16 @@ contract WethTransformer is
 
     /// @dev Construct the transformer and store the WETH address in an immutable.
     /// @param weth_ The weth token.
-    /// @param deploymentNonce_ The nonce of the deployer when deploying this contract.
-    constructor(IEtherTokenV06 weth_, uint256 deploymentNonce_)
+    constructor(IEtherTokenV06 weth_)
         public
-        Transformer(deploymentNonce_)
+        Transformer()
     {
         weth = weth_;
     }
 
     /// @dev Wraps and unwraps WETH.
     /// @param data_ ABI-encoded `TransformData`, indicating which token to wrap/umwrap.
-    /// @return rlpDeploymentNonce RLP-encoded deployment nonce of the deployer
-    ///         when this transformer was deployed. This is used to verify that
-    ///         this transformer was deployed by a trusted contract.
+    /// @return success The success bytes (`LibERC20Transformer.TRANSFORMER_SUCCESS`).
     function transform(
         bytes32, // callDataHash,
         address payable, // taker,
@@ -71,7 +68,7 @@ contract WethTransformer is
     )
         external
         override
-        returns (bytes memory rlpDeploymentNonce)
+        returns (bytes4 success)
     {
         TransformData memory data = abi.decode(data_, (TransformData));
         if (!data.token.isTokenETH() && data.token != weth) {
@@ -95,6 +92,6 @@ contract WethTransformer is
                 weth.withdraw(amount);
             }
         }
-        return _getRLPEncodedDeploymentNonce();
+        return LibERC20Transformer.TRANSFORMER_SUCCESS;
     }
 }

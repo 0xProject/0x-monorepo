@@ -9,6 +9,14 @@
             {
                 "note": "Add `ERC20BridgeSampler` deployment",
                 "pr": 2541
+            },
+            {
+                "note": "Added `UniswapV2Bridge` address on Mainnet",
+                "pr": 2599
+            },
+            {
+                "note": "Return empty Exchange Proxy addresses",
+                "pr": 2591
             }
         ]
     },

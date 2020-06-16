@@ -29,6 +29,14 @@
             {
                 "note": "Added `ERC20BridgeSampler.sampleSellsFromUniswapV2",
                 "pr": 2595
+            },
+            {
+                "note": "Added `ERC20BridgeSampler.sampleSellsFromMultiBridge",
+                "pr": 2593
+            },
+            {
+                "note": "Add `ITransformERC20`",
+                "pr": 2591
             }
         ]
     },

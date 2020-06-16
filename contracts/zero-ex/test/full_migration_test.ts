@@ -23,6 +23,7 @@ blockchainTests.resets('Full migration', env => {
     let zeroEx: ZeroExContract;
     let features: FullFeatures;
     let migrator: TestFullMigrationContract;
+    const transformerDeployer = randomAddress();
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
@@ -34,7 +35,7 @@ blockchainTests.resets('Full migration', env => {
             artifacts,
             env.txDefaults.from as string,
         );
-        const deployCall = migrator.deploy(owner, toFeatureAdddresses(features));
+        const deployCall = migrator.deploy(owner, toFeatureAdddresses(features), { transformerDeployer });
         zeroEx = new ZeroExContract(await deployCall.callAsync(), env.provider, env.txDefaults);
         await deployCall.awaitTransactionSuccessAsync();
     });
@@ -52,7 +53,9 @@ blockchainTests.resets('Full migration', env => {
 
     it('Non-deployer cannot call deploy()', async () => {
         const notDeployer = randomAddress();
-        const tx = migrator.deploy(owner, toFeatureAdddresses(features)).callAsync({ from: notDeployer });
+        const tx = migrator
+            .deploy(owner, toFeatureAdddresses(features), { transformerDeployer })
+            .callAsync({ from: notDeployer });
         return expect(tx).to.revertWith('FullMigration/INVALID_SENDER');
     });
 
@@ -63,7 +66,13 @@ blockchainTests.resets('Full migration', env => {
         },
         TransformERC20: {
             contractType: ITransformERC20Contract,
-            fns: ['transformERC20', '_transformERC20', 'createTransformWallet', 'getTransformWallet'],
+            fns: [
+                'transformERC20',
+                '_transformERC20',
+                'createTransformWallet',
+                'getTransformWallet',
+                'setTransformerDeployer',
+            ],
         },
     };
 
@@ -160,6 +169,18 @@ blockchainTests.resets('Full migration', env => {
 
         it('Proxy is authorized', async () => {
             return expect(allowanceTarget.authorized(zeroEx.address).callAsync()).to.become(true);
+        });
+    });
+
+    describe('TransformERC20', () => {
+        let feature: ITransformERC20Contract;
+
+        before(async () => {
+            feature = new ITransformERC20Contract(zeroEx.address, env.provider, env.txDefaults);
+        });
+
+        it('has the correct transformer deployer', async () => {
+            return expect(feature.getTransformerDeployer().callAsync()).to.become(transformerDeployer);
         });
     });
 });

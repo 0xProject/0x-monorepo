@@ -77,6 +77,22 @@
             {
                 "note": "Increase timeout for tests",
                 "pr": 2587
+            },
+            {
+                "note": "Add support for Uniswap V2",
+                "pr": 2599
+            },
+            {
+                "note": "Add support for MultiBridge",
+                "pr": 2593
+            },
+            {
+                "note": "Fix Uniswap V2 path ordering",
+                "pr": 2601
+            },
+            {
+                "note": "Add exchange proxy support",
+                "pr": 2591
             }
         ]
     },

@@ -22,6 +22,7 @@ export interface ContractAddresses {
     erc20BridgeProxy: string;
     erc20BridgeSampler: string;
     uniswapBridge: string;
+    uniswapV2Bridge: string;
     eth2DaiBridge: string;
     kyberBridge: string;
     chaiBridge: string;
@@ -32,6 +33,16 @@ export interface ContractAddresses {
     chainlinkStopLimit: string;
     maximumGasPrice: string;
     dexForwarderBridge: string;
+    multiBridge: string;
+    exchangeProxyGovernor: string;
+    exchangeProxy: string;
+    exchangeProxyAllowanceTarget: string;
+    exchangeProxyTransformerDeployer: string;
+    transformers: {
+        wethTransformer: string;
+        payTakerTransformer: string;
+        fillQuoteTransformer: string;
+    };
 }
 
 export enum ChainId {

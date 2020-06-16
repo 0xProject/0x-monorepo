@@ -49,6 +49,7 @@
         "@0x/assert": "^3.0.7",
         "@0x/contract-addresses": "^4.9.0",
         "@0x/contract-wrappers": "^13.6.3",
+        "@0x/contracts-zero-ex": "^0.1.0",
         "@0x/json-schemas": "^5.0.7",
         "@0x/order-utils": "^10.2.4",
         "@0x/orderbook": "^2.2.5",
@@ -57,6 +58,7 @@
         "@0x/web3-wrapper": "^7.0.7",
         "axios": "^0.19.2",
         "axios-mock-adapter": "^1.18.1",
+        "ethereumjs-util": "^5.1.1",
         "heartbeats": "^5.0.1",
         "lodash": "^4.17.11"
     },

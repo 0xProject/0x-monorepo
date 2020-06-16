@@ -12,7 +12,6 @@ import { Order } from '@0x/types';
 import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { rlpEncodeNonce } from '../../src/nonce_utils';
 import {
     encodeFillQuoteTransformerData,
     FillQuoteTransformerData,
@@ -29,7 +28,6 @@ import {
 const { NULL_ADDRESS, NULL_BYTES, MAX_UINT256, ZERO_AMOUNT } = constants;
 
 blockchainTests.resets('FillQuoteTransformer', env => {
-    const deploymentNonce = _.random(0, 0xffffffff);
     let maker: string;
     let feeRecipient: string;
     let exchange: TestFillQuoteTransformerExchangeContract;
@@ -56,7 +54,6 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             env.txDefaults,
             artifacts,
             exchange.address,
-            new BigNumber(deploymentNonce),
         );
         host = await TestFillQuoteTransformerHostContract.deployFrom0xArtifactAsync(
             artifacts.TestFillQuoteTransformerHost,
@@ -585,24 +582,6 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 makerAssetBalance: qfr.makerAssetBought,
             });
         });
-
-        it('returns the RLP-encoded nonce', async () => {
-            const orders = _.times(1, () => createOrder());
-            const signatures = orders.map(() => encodeExchangeBehavior());
-            const qfr = getExpectedSellQuoteFillResults(orders);
-            const r = await host
-                .executeTransform(
-                    transformer.address,
-                    takerToken.address,
-                    qfr.takerAssetSpent,
-                    encodeTransformData({
-                        orders,
-                        signatures,
-                    }),
-                )
-                .callAsync({ value: qfr.protocolFeePaid });
-            expect(r).to.eq(rlpEncodeNonce(deploymentNonce));
-        });
     });
 
     describe('buy quotes', () => {
@@ -880,26 +859,6 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 ...ZERO_BALANCES,
                 makerAssetBalance: qfr.makerAssetBought,
             });
-        });
-
-        it('returns the RLP-encoded nonce', async () => {
-            const orders = _.times(1, () => createOrder());
-            const signatures = orders.map(() => encodeExchangeBehavior());
-            const qfr = getExpectedBuyQuoteFillResults(orders);
-            const r = await host
-                .executeTransform(
-                    transformer.address,
-                    takerToken.address,
-                    qfr.takerAssetSpent,
-                    encodeTransformData({
-                        orders,
-                        signatures,
-                        side: FillQuoteTransformerSide.Buy,
-                        fillAmount: qfr.makerAssetBought,
-                    }),
-                )
-                .callAsync({ value: qfr.protocolFeePaid });
-            expect(r).to.eq(rlpEncodeNonce(deploymentNonce));
         });
     });
 });

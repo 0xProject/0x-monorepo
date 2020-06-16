@@ -25,7 +25,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
 
     constructor(
         supportedProvider: SupportedProvider,
-        contractAddresses: ContractAddresses,
+        public readonly contractAddresses: ContractAddresses,
         options: Partial<SwapQuoteConsumerOpts> = {},
     ) {
         const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
@@ -59,6 +59,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase {
             calldataHexString,
             ethAmount: quote.worstCaseQuoteInfo.protocolFeeInWeiAmount,
             toAddress: this._exchangeContract.address,
+            allowanceTarget: this.contractAddresses.erc20Proxy,
         };
     }
 

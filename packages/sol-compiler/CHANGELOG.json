@@ -9,6 +9,10 @@
             {
                 "note": "Filter `receive` functions from 0.6 ABIs",
                 "pr": 2540
+            },
+            {
+                "note": "Fix `CompilerOptions` schema",
+                "pr": 2591
             }
         ]
     },

@@ -202,8 +202,8 @@ blockchainTests('erc20-bridge-sampler', env => {
 
     function getDeterministicUniswapV2BuyQuote(path: string[], buyAmount: BigNumber): BigNumber {
         let sold = buyAmount;
-        for (let i = 0; i < path.length - 1; ++i) {
-            sold = getDeterministicBuyQuote(UNISWAP_V2_SALT, path[i], path[i + 1], sold);
+        for (let i = path.length - 1; i > 0; --i) {
+            sold = getDeterministicBuyQuote(UNISWAP_V2_SALT, path[i - 1], path[i], sold);
         }
         return sold;
     }
