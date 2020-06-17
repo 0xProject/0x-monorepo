@@ -7,6 +7,7 @@ import 'mocha';
 
 import { constants } from '../src/constants';
 import { MarketOperation, MockedRfqtFirmQuoteResponse, MockedRfqtIndicativeQuoteResponse } from '../src/types';
+import { QuoteReporter } from '../src/utils/quote_reporter';
 import { QuoteRequestor } from '../src/utils/quote_requestor';
 import { rfqtMocker } from '../src/utils/rfqt_mocker';
 

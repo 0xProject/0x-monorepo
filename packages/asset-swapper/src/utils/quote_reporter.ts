@@ -51,6 +51,6 @@ export class QuoteReporter {
             orderbookOrders: this._orderbookOrders,
             rfqtOrders: this._rfqtOrders,
             paths: this._paths,
-        }
+        };
     }
 }

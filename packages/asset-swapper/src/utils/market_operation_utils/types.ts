@@ -43,7 +43,7 @@ export enum ERC20BridgeSource {
 }
 
 // Internal `fillData` field for `Fill` objects.
-export interface FillData { }
+export interface FillData {}
 
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
