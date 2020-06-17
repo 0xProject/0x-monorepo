@@ -2,10 +2,10 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { ITransformERC20Contract } from '@0x/contract-wrappers';
 import {
     assetDataUtils,
-    ERC20AssetData,
     encodeFillQuoteTransformerData,
     encodePayTakerTransformerData,
     encodeWethTransformerData,
+    ERC20AssetData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
 } from '@0x/order-utils';
