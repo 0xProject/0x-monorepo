@@ -26,7 +26,6 @@ import {
 import { createFillPaths } from '../src/utils/market_operation_utils/fills';
 import { DexOrderSampler } from '../src/utils/market_operation_utils/sampler';
 import { DexSample, ERC20BridgeSource, NativeFillData } from '../src/utils/market_operation_utils/types';
-import { QuoteReporter } from '../src/utils/quote_reporter';
 
 // tslint:disable: custom-no-magic-numbers
 describe('MarketOperationUtils tests', () => {

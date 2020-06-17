@@ -20,7 +20,6 @@ import { convertNativeOrderToFullyFillableOptimizedOrders } from './market_opera
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './market_operation_utils/types';
 import { isSupportedAssetDataInOrders } from './utils';
 
-import { QuoteReporter } from './quote_reporter';
 import { QuoteFillResult, simulateBestCaseFill, simulateWorstCaseFill } from './quote_simulation';
 
 // TODO(dave4506) How do we want to reintroduce InsufficientAssetLiquidityError?

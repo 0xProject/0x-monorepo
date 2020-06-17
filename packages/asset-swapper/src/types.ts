@@ -3,8 +3,8 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
+import { QuoteReport } from './utils/quote_reporter';
 import { LogFunction } from './utils/quote_requestor';
-import { QuoteReporter, QuoteReport } from './utils/quote_reporter';
 
 /**
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
