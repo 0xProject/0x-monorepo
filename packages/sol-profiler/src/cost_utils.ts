@@ -5,7 +5,7 @@ import { stripHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 const ZERO_BYTE_CALL_DATA_COST = 4;
-const NON_ZERO_BYTE_CALL_DATA_COST = 68;
+const NON_ZERO_BYTE_CALL_DATA_COST = 16;
 const WORD_SIZE = 32;
 const G_MEMORY = 3;
 const G_QUAD_COEF = 512;
@@ -29,7 +29,7 @@ export const costUtils = {
         const callDataCost = zeroBytesCost + nonZeroBytesCost;
         logUtils.header('Call data breakdown', '-');
         logUtils.table({
-            'call data size (bytes)': callData.length,
+            'call data size (bytes)': callDataBuf.byteLength,
             callDataCost,
             zeroBytesCost,
             nonZeroBytesCost,
