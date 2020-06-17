@@ -156,7 +156,6 @@ export interface SwapQuoteBase {
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
     sourceBreakdown: SwapQuoteOrdersBreakdown;
-    // TODO: make required
     quoteReport?: QuoteReport;
 }
 
