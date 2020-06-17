@@ -43,7 +43,7 @@ export enum ERC20BridgeSource {
 }
 
 // Internal `fillData` field for `Fill` objects.
-export interface FillData {}
+export interface FillData { }
 
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
@@ -200,6 +200,7 @@ export interface GetMarketOrdersOpts {
      */
     allowFallback: boolean;
     rfqt?: GetMarketOrdersRfqtOpts;
+    quoteReporter?: QuoteReporter;
     /**
      * Whether to combine contiguous bridge orders into a single DexForwarderBridge
      * order. Defaults to `true`.

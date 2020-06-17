@@ -540,6 +540,7 @@ export class SwapQuoter {
 
         // Create QuoteReporter
         const quoteReporter = new QuoteReporter();
+        opts.quoteReporter = quoteReporter;
 
         // Get batches of orders from different sources, awaiting sources in parallel
         const orderFetchPromises: Array<Promise<SignedOrder[]>> = [];
@@ -600,7 +601,6 @@ export class SwapQuoter {
                 assetFillAmount,
                 gasPrice,
                 calcOpts,
-                quoteReporter,
             );
         } else {
             swapQuote = await this._swapQuoteCalculator.calculateMarketSellSwapQuoteAsync(
@@ -608,7 +608,6 @@ export class SwapQuoter {
                 assetFillAmount,
                 gasPrice,
                 calcOpts,
-                quoteReporter,
             );
         }
 

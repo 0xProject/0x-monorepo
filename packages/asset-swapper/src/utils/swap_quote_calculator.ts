@@ -36,7 +36,6 @@ export class SwapQuoteCalculator {
         takerAssetFillAmount: BigNumber,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
-        quoteReporter: QuoteReporter,
     ): Promise<MarketSellSwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
@@ -44,7 +43,6 @@ export class SwapQuoteCalculator {
             gasPrice,
             MarketOperation.Sell,
             opts,
-            quoteReporter,
         )) as MarketSellSwapQuote;
     }
 
@@ -53,7 +51,6 @@ export class SwapQuoteCalculator {
         takerAssetFillAmount: BigNumber,
         gasPrice: BigNumber,
         opts: CalculateSwapQuoteOpts,
-        quoteReporter: QuoteReporter,
     ): Promise<MarketBuySwapQuote> {
         return (await this._calculateSwapQuoteAsync(
             prunedOrders,
@@ -61,7 +58,6 @@ export class SwapQuoteCalculator {
             gasPrice,
             MarketOperation.Buy,
             opts,
-            quoteReporter,
         )) as MarketBuySwapQuote;
     }
 
@@ -118,7 +114,6 @@ export class SwapQuoteCalculator {
         gasPrice: BigNumber,
         operation: MarketOperation,
         opts: CalculateSwapQuoteOpts,
-        quoteReporter: QuoteReporter,
     ): Promise<SwapQuote> {
         // checks if maker asset is ERC721 or ERC20 and taker asset is ERC20
         if (!isSupportedAssetDataInOrders(prunedOrders)) {
@@ -147,14 +142,12 @@ export class SwapQuoteCalculator {
                     resultOrders = await this._marketOperationUtils.getMarketBuyOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
-                        quoteReporter,
                         _opts,
                     );
                 } else {
                     resultOrders = await this._marketOperationUtils.getMarketSellOrdersAsync(
                         prunedOrders,
                         assetFillAmount,
-                        quoteReporter,
                         _opts,
                     );
                 }
