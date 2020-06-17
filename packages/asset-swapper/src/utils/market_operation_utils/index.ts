@@ -1,5 +1,5 @@
 import { ContractAddresses } from '@0x/contract-addresses';
-import { IndicativeQuote } from '@0x/quote-server';
+import { RFQTIndicativeQuote } from '@0x/quote-server';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, NULL_ADDRESS } from '@0x/utils';
 
@@ -31,7 +31,7 @@ async function getRfqtIndicativeQuotesAsync(
     marketOperation: MarketOperation,
     assetFillAmount: BigNumber,
     opts: Partial<GetMarketOrdersOpts>,
-): Promise<IndicativeQuote[]> {
+): Promise<RFQTIndicativeQuote[]> {
     if (opts.rfqt && opts.rfqt.isIndicative === true && opts.rfqt.quoteRequestor) {
         return opts.rfqt.quoteRequestor.requestRfqtIndicativeQuotesAsync(
             makerAssetData,
@@ -41,7 +41,7 @@ async function getRfqtIndicativeQuotesAsync(
             opts.rfqt,
         );
     } else {
-        return Promise.resolve<IndicativeQuote[]>([]);
+        return Promise.resolve<RFQTIndicativeQuote[]>([]);
     }
 }
 
@@ -319,7 +319,7 @@ export class MarketOperationUtils {
         nativeOrders: SignedOrder[];
         orderFillableAmounts: BigNumber[];
         dexQuotes: DexSample[][];
-        rfqtIndicativeQuotes: IndicativeQuote[];
+        rfqtIndicativeQuotes: RFQTIndicativeQuote[];
         runLimit?: number;
         ethToOutputRate?: BigNumber;
         bridgeSlippage?: number;
