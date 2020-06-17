@@ -158,10 +158,16 @@ function dexQuotesToPaths(
 }
 
 function sourceToFillFlags(source: ERC20BridgeSource): number {
-    if (source === ERC20BridgeSource.Kyber) {
-        return FillFlags.Kyber;
+    switch (source) {
+        case ERC20BridgeSource.Uniswap:
+            return FillFlags.ConflictsWithMultiBridge;
+        case ERC20BridgeSource.LiquidityProvider:
+            return FillFlags.ConflictsWithMultiBridge;
+        case ERC20BridgeSource.MultiBridge:
+            return FillFlags.MultiBridge;
+        default:
+            return 0;
     }
-    return 0;
 }
 
 export function getPathSize(path: Fill[], targetInput: BigNumber = POSITIVE_INF): [BigNumber, BigNumber] {
@@ -217,8 +223,8 @@ export function isValidPath(path: Fill[], skipDuplicateCheck: boolean = false): 
         }
         flags |= path[i].flags;
     }
-    const conflictFlags = FillFlags.Kyber | FillFlags.ConflictsWithKyber;
-    return (flags & conflictFlags) !== conflictFlags;
+    const multiBridgeConflict = FillFlags.MultiBridge | FillFlags.ConflictsWithMultiBridge;
+    return (flags & multiBridgeConflict) !== multiBridgeConflict;
 }
 
 export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_INF): Fill[] {

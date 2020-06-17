@@ -7,16 +7,16 @@ import {
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import {
+    assetDataUtils,
+    encodeFillQuoteTransformerData,
+    FillQuoteTransformerData,
+    FillQuoteTransformerSide,
+} from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import {
-    encodeFillQuoteTransformerData,
-    FillQuoteTransformerData,
-    FillQuoteTransformerSide,
-} from '../../src/transformer_data_encoders';
 import { artifacts } from '../artifacts';
 import {
     FillQuoteTransformerContract,

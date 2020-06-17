@@ -49,6 +49,8 @@ const allArtifacts = {
     ...erc20BridgeSamplerArtifacts,
 };
 
+const { NULL_ADDRESS } = constants;
+
 /**
  * Creates and deploys all the contracts that are required for the latest
  * version of the 0x protocol.
@@ -202,8 +204,8 @@ export async function runMigrationsAsync(
         txDefaults,
         allArtifacts,
         exchange.address,
-        constants.NULL_ADDRESS,
-        constants.NULL_ADDRESS,
+        NULL_ADDRESS,
+        NULL_ADDRESS,
     );
 
     // tslint:disable-next-line:no-unused-variable
@@ -278,7 +280,7 @@ export async function runMigrationsAsync(
         txDefaults,
         allArtifacts,
         exchange.address,
-        exchangeV2Address || constants.NULL_ADDRESS,
+        exchangeV2Address || NULL_ADDRESS,
         etherToken.address,
     );
 
@@ -297,31 +299,42 @@ export async function runMigrationsAsync(
         zrxToken: zrxToken.address,
         etherToken: etherToken.address,
         exchange: exchange.address,
-        assetProxyOwner: constants.NULL_ADDRESS,
+        assetProxyOwner: NULL_ADDRESS,
         erc20BridgeProxy: erc20BridgeProxy.address,
-        zeroExGovernor: constants.NULL_ADDRESS,
+        zeroExGovernor: NULL_ADDRESS,
         forwarder: forwarder.address,
         coordinatorRegistry: coordinatorRegistry.address,
         coordinator: coordinator.address,
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
         devUtils: devUtils.address,
-        exchangeV2: exchangeV2Address || constants.NULL_ADDRESS,
+        exchangeV2: exchangeV2Address || NULL_ADDRESS,
         zrxVault: zrxVault.address,
         staking: stakingLogic.address,
         stakingProxy: stakingProxy.address,
-        uniswapBridge: constants.NULL_ADDRESS,
-        eth2DaiBridge: constants.NULL_ADDRESS,
-        kyberBridge: constants.NULL_ADDRESS,
+        uniswapBridge: NULL_ADDRESS,
+        eth2DaiBridge: NULL_ADDRESS,
+        kyberBridge: NULL_ADDRESS,
         erc20BridgeSampler: erc20BridgeSampler.address,
-        chaiBridge: constants.NULL_ADDRESS,
-        dydxBridge: constants.NULL_ADDRESS,
-        curveBridge: constants.NULL_ADDRESS,
-        godsUnchainedValidator: constants.NULL_ADDRESS,
-        broker: constants.NULL_ADDRESS,
-        chainlinkStopLimit: constants.NULL_ADDRESS,
-        maximumGasPrice: constants.NULL_ADDRESS,
-        dexForwarderBridge: constants.NULL_ADDRESS,
+        chaiBridge: NULL_ADDRESS,
+        dydxBridge: NULL_ADDRESS,
+        curveBridge: NULL_ADDRESS,
+        uniswapV2Bridge: NULL_ADDRESS,
+        godsUnchainedValidator: NULL_ADDRESS,
+        broker: NULL_ADDRESS,
+        chainlinkStopLimit: NULL_ADDRESS,
+        maximumGasPrice: NULL_ADDRESS,
+        dexForwarderBridge: NULL_ADDRESS,
+        multiBridge: NULL_ADDRESS,
+        exchangeProxyGovernor: NULL_ADDRESS,
+        exchangeProxy: NULL_ADDRESS,
+        exchangeProxyAllowanceTarget: NULL_ADDRESS,
+        exchangeProxyTransformerDeployer: NULL_ADDRESS,
+        transformers: {
+            wethTransformer: NULL_ADDRESS,
+            payTakerTransformer: NULL_ADDRESS,
+            fillQuoteTransformer: NULL_ADDRESS,
+        },
     };
     return contractAddresses;
 }

@@ -51,19 +51,22 @@ export interface SignedOrderWithFillableAmounts extends SignedOrder {
  * calldataHexString: The hexstring of the calldata.
  * toAddress: The contract address to call.
  * ethAmount: The eth amount in wei to send with the smart contract call.
+ * allowanceTarget: The address the taker should grant an allowance to.
  */
 export interface CalldataInfo {
     calldataHexString: string;
     toAddress: string;
     ethAmount: BigNumber;
+    allowanceTarget: string;
 }
 
 /**
  * Represents the varying smart contracts that can consume a valid swap quote
  */
 export enum ExtensionContractType {
-    Forwarder = 'FORWARDER',
     None = 'NONE',
+    Forwarder = 'FORWARDER',
+    ExchangeProxy = 'EXCHANGE_PROXY',
 }
 
 /**
@@ -98,7 +101,7 @@ export interface SwapQuoteConsumerOpts {
  */
 export interface SwapQuoteGetOutputOpts {
     useExtensionContract: ExtensionContractType;
-    extensionContractOpts?: ForwarderExtensionContractOpts | any;
+    extensionContractOpts?: ForwarderExtensionContractOpts | ExchangeProxyContractOpts | any;
 }
 
 /**
@@ -113,13 +116,21 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
 }
 
 /**
- * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  */
 export interface ForwarderExtensionContractOpts {
     feePercentage: number;
     feeRecipient: string;
+}
+
+/**
+ * @param isFromETH Whether the input token is ETH.
+ * @param isToETH Whether the output token is ETH.
+ */
+export interface ExchangeProxyContractOpts {
+    isFromETH: boolean;
+    isToETH: boolean;
 }
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
@@ -237,6 +248,7 @@ export interface SwapQuoterOpts extends OrderPrunerOpts {
     contractAddresses?: ContractAddresses;
     samplerGasLimit?: number;
     liquidityProviderRegistryAddress?: string;
+    multiBridgeAddress?: string;
     rfqt?: {
         takerApiKeyWhitelist: string[];
         makerAssetOfferings: RfqtMakerAssetOfferings;

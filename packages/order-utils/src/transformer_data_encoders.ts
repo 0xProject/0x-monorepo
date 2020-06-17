@@ -70,6 +70,13 @@ export function encodeFillQuoteTransformerData(data: FillQuoteTransformerData): 
 }
 
 /**
+ * ABI-decode a `FillQuoteTransformer.TransformData` type.
+ */
+export function decodeFillQuoteTransformerData(encoded: string): FillQuoteTransformerData {
+    return fillQuoteTransformerDataEncoder.decode(encoded).data;
+}
+
+/**
  * ABI encoder for `WethTransformer.TransformData`
  */
 export const wethTransformerDataEncoder = AbiEncoder.create([
@@ -96,6 +103,13 @@ export function encodeWethTransformerData(data: WethTransformerData): string {
 }
 
 /**
+ * ABI-decode a `WethTransformer.TransformData` type.
+ */
+export function decodeWethTransformerData(encoded: string): WethTransformerData {
+    return wethTransformerDataEncoder.decode(encoded).data;
+}
+
+/**
  * ABI encoder for `PayTakerTransformer.TransformData`
  */
 export const payTakerTransformerDataEncoder = AbiEncoder.create([
@@ -119,6 +133,13 @@ export interface PayTakerTransformerData {
  */
 export function encodePayTakerTransformerData(data: PayTakerTransformerData): string {
     return payTakerTransformerDataEncoder.encode([data]);
+}
+
+/**
+ * ABI-decode a `PayTakerTransformer.TransformData` type.
+ */
+export function decodePayTakerTransformerData(encoded: string): PayTakerTransformerData {
+    return payTakerTransformerDataEncoder.decode(encoded).data;
 }
 
 /**
@@ -156,4 +177,11 @@ export interface AffiliateFeeTransformerData {
  */
 export function encodeAffiliateFeeTransformerData(data: AffiliateFeeTransformerData): string {
     return affiliateFeeTransformerDataEncoder.encode(data);
+}
+
+/**
+ * ABI-decode a `AffiliateFeeTransformer.TransformData` type.
+ */
+export function decodeAffiliateFeeTransformerData(encoded: string): AffiliateFeeTransformerData {
+    return affiliateFeeTransformerDataEncoder.decode(encoded).data;
 }

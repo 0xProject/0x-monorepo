@@ -21,9 +21,18 @@ export type SampleBuysHandler = (
     makerToken: string,
     makerTokenAmounts: BigNumber[],
 ) => SampleResults;
+export type SampleBuysMultihopHandler = (path: string[], takerTokenAmounts: BigNumber[]) => SampleResults;
 export type SampleSellsLPHandler = (
     registryAddress: string,
     takerToken: string,
+    makerToken: string,
+    takerTokenAmounts: BigNumber[],
+) => SampleResults;
+export type SampleSellsMultihopHandler = (path: string[], takerTokenAmounts: BigNumber[]) => SampleResults;
+export type SampleSellsMBHandler = (
+    multiBridgeAddress: string,
+    takerToken: string,
+    intermediateToken: string,
     makerToken: string,
     takerTokenAmounts: BigNumber[],
 ) => SampleResults;
@@ -39,10 +48,13 @@ interface Handlers {
     getOrderFillableTakerAssetAmounts: GetOrderFillableAssetAmountHandler;
     sampleSellsFromKyberNetwork: SampleSellsHandler;
     sampleSellsFromLiquidityProviderRegistry: SampleSellsLPHandler;
+    sampleSellsFromMultiBridge: SampleSellsMBHandler;
     sampleSellsFromEth2Dai: SampleSellsHandler;
     sampleSellsFromUniswap: SampleSellsHandler;
+    sampleSellsFromUniswapV2: SampleSellsMultihopHandler;
     sampleBuysFromEth2Dai: SampleBuysHandler;
     sampleBuysFromUniswap: SampleBuysHandler;
+    sampleBuysFromUniswapV2: SampleBuysMultihopHandler;
     sampleBuysFromLiquidityProviderRegistry: SampleSellsLPHandler;
 }
 
@@ -127,6 +139,18 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
         );
     }
 
+    public sampleSellsFromUniswapV2(
+        path: string[],
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromUniswapV2,
+            this._handlers.sampleSellsFromUniswapV2,
+            path,
+            takerAssetAmounts,
+        );
+    }
+
     public sampleSellsFromLiquidityProviderRegistry(
         registryAddress: string,
         takerToken: string,
@@ -138,6 +162,24 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.sampleSellsFromLiquidityProviderRegistry,
             registryAddress,
             takerToken,
+            makerToken,
+            takerAssetAmounts,
+        );
+    }
+
+    public sampleSellsFromMultiBridge(
+        multiBridgeAddress: string,
+        takerToken: string,
+        intermediateToken: string,
+        makerToken: string,
+        takerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleSellsFromMultiBridge,
+            this._handlers.sampleSellsFromMultiBridge,
+            multiBridgeAddress,
+            takerToken,
+            intermediateToken,
             makerToken,
             takerAssetAmounts,
         );
@@ -167,6 +209,18 @@ export class MockSamplerContract extends IERC20BridgeSamplerContract {
             this._handlers.sampleBuysFromUniswap,
             takerToken,
             makerToken,
+            makerAssetAmounts,
+        );
+    }
+
+    public sampleBuysFromUniswapV2(
+        path: string[],
+        makerAssetAmounts: BigNumber[],
+    ): ContractFunctionObj<GetOrderFillableAssetAmountResult> {
+        return this._wrapCall(
+            super.sampleBuysFromUniswapV2,
+            this._handlers.sampleBuysFromUniswapV2,
+            path,
             makerAssetAmounts,
         );
     }

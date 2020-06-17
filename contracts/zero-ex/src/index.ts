@@ -41,6 +41,3 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
-
-export * from './constants';
-export * from './transformer_data_encoders';

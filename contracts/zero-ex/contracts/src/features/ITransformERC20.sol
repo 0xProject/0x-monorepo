@@ -65,7 +65,7 @@ interface ITransformERC20 {
 
     /// @dev Deploy a new flash wallet instance and replace the current one with it.
     ///      Useful if we somehow break the current wallet instance.
-    ///      Anyone can call this.
+    ///       Only callable by the owner.
     /// @return wallet The new wallet instance.
     function createTransformWallet()
         external

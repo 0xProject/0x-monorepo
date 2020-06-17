@@ -157,4 +157,8 @@ export const constants = {
     STATIC_CALL_METHOD_ABI,
     IS_VALID_WALLET_SIGNATURE_MAGIC_VALUE: '0xb0671381',
     IS_VALID_VALIDATOR_SIGNATURE_MAGIC_VALUE: '0x42b38674',
+    /*
+     * The pseudo-token address for ETH used by the Exchange Proxy's `tranformERC20()`.
+     */
+    ETH_TOKEN_ADDRESS: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
 };

@@ -247,6 +247,21 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "multibridge", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "intermediateToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromMultiBridge",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "takerToken", "type": "address" },
                     { "internalType": "address", "name": "makerToken", "type": "address" },
                     { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
@@ -391,6 +406,17 @@
                     "params": {
                         "makerToken": "Address of the maker token (what to buy).",
                         "registryAddress": "Address of the liquidity provider registry contract.",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
+                },
+                "sampleSellsFromMultiBridge(address,address,address,address,uint256[])": {
+                    "details": "Sample sell quotes from MultiBridge.",
+                    "params": {
+                        "intermediateToken": "The address of the intermediate token to        use in an indirect route.",
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "multibridge": "Address of the MultiBridge contract.",
                         "takerToken": "Address of the taker token (what to sell).",
                         "takerTokenAmounts": "Taker token sell amount for each sample."
                     },
