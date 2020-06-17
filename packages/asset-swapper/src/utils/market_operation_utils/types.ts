@@ -1,5 +1,4 @@
 import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
-import { IndicativeQuote } from '@0x/quote-server';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
@@ -48,10 +47,6 @@ export interface FillData {}
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
     order: SignedOrderWithFillableAmounts;
-}
-
-export interface RfqtFillData extends FillData {
-    quote: IndicativeQuote;
 }
 
 /**
