@@ -1,13 +1,14 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ITransformERC20Contract } from '@0x/contract-wrappers';
 import {
+    assetDataUtils,
     encodeFillQuoteTransformerData,
     encodePayTakerTransformerData,
     encodeWethTransformerData,
+    ERC20AssetData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
-} from '@0x/contracts-zero-ex';
-import { assetDataUtils, ERC20AssetData } from '@0x/order-utils';
+} from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';

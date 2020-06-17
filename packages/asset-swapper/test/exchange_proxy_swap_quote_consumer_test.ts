@@ -1,13 +1,13 @@
 import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { constants as contractConstants, getRandomInteger, Numberish, randomAddress } from '@0x/contracts-test-utils';
 import {
+    assetDataUtils,
     decodeFillQuoteTransformerData,
     decodePayTakerTransformerData,
     decodeWethTransformerData,
     ETH_TOKEN_ADDRESS,
     FillQuoteTransformerSide,
-} from '@0x/contracts-zero-ex';
-import { assetDataUtils } from '@0x/order-utils';
+} from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { AbiEncoder, BigNumber, hexUtils } from '@0x/utils';
 import * as chai from 'chai';

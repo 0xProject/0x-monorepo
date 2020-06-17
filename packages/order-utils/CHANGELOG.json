@@ -1,5 +1,14 @@
 [
     {
+        "version": "10.3.0",
+        "changes": [
+            {
+                "note": "Add ERC20 Transformer utils and export useful constants.",
+                "pr": 2604
+            }
+        ]
+    },
+    {
         "timestamp": 1583220306,
         "version": "10.2.4",
         "changes": [

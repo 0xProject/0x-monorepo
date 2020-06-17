@@ -60,3 +60,26 @@ export {
     OrdersAndRemainingTakerFillAmount,
     OrdersAndRemainingMakerFillAmount,
 } from './types';
+
+export {
+    FillQuoteTransformerSide,
+    FillQuoteTransformerData,
+    encodeFillQuoteTransformerData,
+    decodeFillQuoteTransformerData,
+    WethTransformerData,
+    encodeWethTransformerData,
+    decodeWethTransformerData,
+    PayTakerTransformerData,
+    encodePayTakerTransformerData,
+    decodePayTakerTransformerData,
+    AffiliateFeeTransformerData,
+    encodeAffiliateFeeTransformerData,
+    decodeAffiliateFeeTransformerData,
+} from './transformer_data_encoders';
+
+import { constants } from './constants';
+export const NULL_ADDRESS = constants.NULL_ADDRESS;
+export const NULL_BYTES = constants.NULL_BYTES;
+export const ZERO_AMOUNT = constants.ZERO_AMOUNT;
+export const NULL_ERC20_ASSET_DATA = constants.NULL_ERC20_ASSET_DATA;
+export const ETH_TOKEN_ADDRESS = constants.ETH_TOKEN_ADDRESS;
