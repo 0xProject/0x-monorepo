@@ -570,7 +570,8 @@ export class SwapQuoter {
                 takerAssetData,
                 assetFillAmount,
                 marketOperation,
-                { ...opts.rfqt, quoteReporter },
+                quoteReporter,
+                opts.rfqt,
             );
             orderFetchPromises.push(rfqtPromise);
         }

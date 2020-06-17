@@ -6,6 +6,7 @@ import Axios from 'axios';
 
 import { constants } from '../constants';
 import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../types';
+import { QuoteReporter } from './quote_reporter';
 
 /**
  * Request quotes from RFQ-T providers
@@ -100,17 +101,17 @@ export class QuoteRequestor {
         private readonly _infoLogger: LogFunction = (obj, msg) =>
             logUtils.log(`${msg ? `${msg}: ` : ''}${JSON.stringify(obj)}`),
         private readonly _expiryBufferMs: number = constants.DEFAULT_SWAP_QUOTER_OPTS.expiryBufferMs,
-    ) {}
+    ) { }
 
     public async requestRfqtFirmQuotesAsync(
         makerAssetData: string,
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
+        quoteReporter: QuoteReporter,
         options: RfqtRequestOpts,
     ): Promise<SignedOrder[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
-        const { quoteReporter } = _opts;
         assertTakerAddressOrThrow(_opts.takerAddress);
 
         const reponsesContainingOrdersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
@@ -344,7 +345,7 @@ export class QuoteRequestor {
                         this._warningLogger(
                             convertIfAxiosError(err),
                             `Failed to get RFQ-T ${quoteType} quote from market maker endpoint ${url} for API key ${
-                                options.apiKey
+                            options.apiKey
                             } for taker address ${options.takerAddress}`,
                         );
                         return undefined;

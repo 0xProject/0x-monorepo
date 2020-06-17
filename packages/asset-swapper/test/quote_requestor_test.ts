@@ -12,6 +12,7 @@ import { rfqtMocker } from '../src/utils/rfqt_mocker';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';
+import { QuoteReporter } from '../src/utils/quote_reporter';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -163,6 +164,7 @@ describe('QuoteRequestor', async () => {
                     takerAssetData,
                     new BigNumber(10000),
                     MarketOperation.Sell,
+                    new QuoteReporter(),
                     {
                         apiKey,
                         takerAddress,

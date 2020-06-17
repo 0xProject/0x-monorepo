@@ -208,7 +208,6 @@ export interface RfqtRequestOpts {
     intentOnFilling: boolean;
     isIndicative?: boolean;
     makerEndpointMaxResponseTimeMs?: number;
-    quoteReporter?: QuoteReporter;
 }
 
 /**
