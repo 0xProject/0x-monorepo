@@ -12,7 +12,6 @@ import {
     encodeFillQuoteTransformerData,
     FillQuoteTransformerData,
     FillQuoteTransformerSide,
-    ETH_TOKEN_ADDRESS,
 } from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { BigNumber, hexUtils, ZeroExRevertErrors } from '@0x/utils';
