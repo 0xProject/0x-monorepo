@@ -100,6 +100,7 @@ export class SwapQuoteCalculator {
                         assetFillAmounts[i],
                         gasPrice,
                         opts.gasSchedule,
+                        opts.quoteReporter,
                     );
                 } else {
                     return undefined;
@@ -164,6 +165,7 @@ export class SwapQuoteCalculator {
             assetFillAmount,
             gasPrice,
             opts.gasSchedule,
+            opts.quoteReporter,
         );
     }
 }
@@ -176,6 +178,7 @@ function createSwapQuote(
     assetFillAmount: BigNumber,
     gasPrice: BigNumber,
     gasSchedule: { [source: string]: number },
+    quoteReporter: QuoteReporter,
 ): SwapQuote {
     const bestCaseFillResult = simulateBestCaseFill({
         gasPrice,
@@ -201,6 +204,7 @@ function createSwapQuote(
         worstCaseQuoteInfo: fillResultsToQuoteInfo(worstCaseFillResult),
         sourceBreakdown: getSwapQuoteOrdersBreakdown(bestCaseFillResult.fillAmountBySource),
         orders: resultOrders,
+        quoteReport: quoteReporter.getReport(),
     };
 
     if (operation === MarketOperation.Buy) {

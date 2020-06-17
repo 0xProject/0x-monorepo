@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { ERC20BridgeSource } from '../../src';
 import { constants } from '../../src/constants';
 import { MarketOperation, SignedOrderWithFillableAmounts, SwapQuote } from '../../src/types';
+import { QuoteReport } from '../../src/utils/quote_reporter';
 
 /**
  * Creates a swap quote given orders.
@@ -41,17 +42,27 @@ export async function getFullyFillableSwapQuoteWithNoFeesAsync(
         sourceBreakdown: breakdown,
     };
 
+    // dummy quote report
+    const quoteReport: QuoteReport = {
+        dexSamples: [],
+        orderbookOrders: [],
+        rfqtOrders: [],
+        paths: [],
+    };
+
     if (operation === MarketOperation.Buy) {
         return {
             ...quoteBase,
             type: MarketOperation.Buy,
             makerAssetFillAmount,
+            quoteReport,
         };
     } else {
         return {
             ...quoteBase,
             type: MarketOperation.Sell,
             takerAssetFillAmount: totalTakerAssetAmount,
+            quoteReport,
         };
     }
 }

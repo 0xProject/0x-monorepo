@@ -200,7 +200,7 @@ export interface GetMarketOrdersOpts {
      */
     allowFallback: boolean;
     rfqt?: GetMarketOrdersRfqtOpts;
-    quoteReporter?: QuoteReporter;
+    quoteReporter: QuoteReporter;
     /**
      * Whether to combine contiguous bridge orders into a single DexForwarderBridge
      * order. Defaults to `true`.
