@@ -56,7 +56,7 @@ contract TransformERC20 is
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "TransformERC20";
     /// @dev Version of this feature.
-    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
+    uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 1, 0);
     /// @dev The implementation address of this feature.
     address private immutable _implementation;
     // solhint-enable
@@ -85,7 +85,7 @@ contract TransformERC20 is
             .extend(this.transformERC20.selector, _implementation);
         ISimpleFunctionRegistry(address(this))
             .extend(this._transformERC20.selector, _implementation);
-        createTransformWallet();
+        this.createTransformWallet();
         LibTransformERC20Storage.getStorage().transformerDeployer = transformerDeployer;
         return LibMigrate.MIGRATE_SUCCESS;
     }
@@ -115,11 +115,12 @@ contract TransformERC20 is
 
     /// @dev Deploy a new wallet instance and replace the current one with it.
     ///      Useful if we somehow break the current wallet instance.
-    ///      Anyone can call this.
+    ///      Only callable by the owner.
     /// @return wallet The new wallet instance.
     function createTransformWallet()
         public
         override
+        onlyOwner
         returns (IFlashWallet wallet)
     {
         wallet = new FlashWallet();
