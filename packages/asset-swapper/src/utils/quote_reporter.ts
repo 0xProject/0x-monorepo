@@ -27,7 +27,7 @@ interface RfqtReportSource extends ReportSourceBase {
     nativeOrder: SignedOrder;
     makerUri: string;
 }
-type QuoteReportSource = BridgeReportSource | OrderbookReportSource | RfqtReportSource;
+export type QuoteReportSource = BridgeReportSource | OrderbookReportSource | RfqtReportSource;
 
 export interface QuoteReport {
     sourcesConsidered: QuoteReportSource[];
