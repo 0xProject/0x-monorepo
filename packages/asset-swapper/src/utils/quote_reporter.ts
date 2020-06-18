@@ -6,15 +6,15 @@ import { ERC20BridgeSource, SignedOrder } from '..';
 import { MarketOperation } from './../types';
 import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operation_utils/types';
 
-interface ReportSourceBase {
-    makerAmount: BigNumber;
-    takerAmount: BigNumber;
-}
-enum NativeOrderSource {
+export enum NativeOrderSource {
     Rfqt = 'Rfqt',
     Orderbook = 'Orderbook',
 }
 
+interface ReportSourceBase {
+    makerAmount: BigNumber;
+    takerAmount: BigNumber;
+}
 interface BridgeReportSource extends ReportSourceBase {
     liquiditySource: ERC20BridgeSource;
 }
