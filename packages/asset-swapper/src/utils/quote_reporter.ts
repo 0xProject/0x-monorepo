@@ -1,19 +1,16 @@
+import { MarketOperation } from './../types';
+// TODO: remove
 // tslint:disable
-import { SignedOrder } from '..';
+import { SignedOrder, ERC20BridgeSource } from '..';
 import * as _ from 'lodash';
 
 import { CollapsedFill, DexSample } from './market_operation_utils/types';
+import { BigNumber } from '@0x/utils';
+import { QuoteReport, QuoteReportGenerator } from './quote_report_generator';
 
 export interface AnnotatedRfqtFirmQuote {
     signedOrder: SignedOrder;
     makerUri: string;
-}
-
-export interface QuoteReport {
-    dexSamples: DexSample[];
-    orderbookOrders: SignedOrder[];
-    rfqtOrders: AnnotatedRfqtFirmQuote[];
-    paths: CollapsedFill[];
 }
 
 export class QuoteReporter {
@@ -45,12 +42,8 @@ export class QuoteReporter {
         this._paths = paths;
     }
 
-    public getReport(): QuoteReport {
-        return {
-            dexSamples: this._dexSamples,
-            orderbookOrders: this._orderbookOrders,
-            rfqtOrders: this._rfqtOrders,
-            paths: this._paths,
-        };
+    public getReport(marketOperation: MarketOperation): QuoteReport {
+        const generator = new QuoteReportGenerator(this._dexSamples, this._orderbookOrders, this._rfqtOrders, this._paths, marketOperation);
+        return generator.generateReport();
     }
 }

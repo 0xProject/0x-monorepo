@@ -3,7 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
-import { QuoteReport } from './utils/quote_reporter';
+import { QuoteReport } from './utils/quote_report_generator';
 import { LogFunction } from './utils/quote_requestor';
 
 /**
@@ -220,7 +220,7 @@ export interface SwapQuoteRequestOpts extends CalculateSwapQuoteOpts {
 /**
  * Opts required to generate a SwapQuote with SwapQuoteCalculator
  */
-export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts {}
+export interface CalculateSwapQuoteOpts extends GetMarketOrdersOpts { }
 
 /**
  * A mapping from RFQ-T quote provider URLs to the trading pairs they support.

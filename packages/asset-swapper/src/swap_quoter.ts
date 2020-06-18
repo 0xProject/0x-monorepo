@@ -612,7 +612,7 @@ export class SwapQuoter {
             );
         }
 
-        return { ...swapQuote, quoteReport: quoteReporter.getReport() };
+        return { ...swapQuote, quoteReport: quoteReporter.getReport(marketOperation) };
     }
     private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {
         return (
