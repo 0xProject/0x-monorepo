@@ -37,19 +37,15 @@ contract Ownable is
     FixinCommon
 {
 
-    // solhint-disable
     /// @dev Name of this feature.
     string public constant override FEATURE_NAME = "Ownable";
     /// @dev Version of this feature.
     uint256 public immutable override FEATURE_VERSION = _encodeVersion(1, 0, 0);
-    /// @dev The deployed address of this contract.
-    address immutable private _implementation;
-    // solhint-enable
 
     using LibRichErrorsV06 for bytes;
 
-    constructor() public {
-        _implementation = address(this);
+    constructor() public FixinCommon() {
+        // solhint-disable-next-line no-empty-blocks
     }
 
     /// @dev Initializes this feature. The intial owner will be set to this (ZeroEx)

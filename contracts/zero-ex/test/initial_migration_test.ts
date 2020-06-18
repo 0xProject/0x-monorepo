@@ -2,7 +2,7 @@ import { blockchainTests, expect, randomAddress } from '@0x/contracts-test-utils
 import { hexUtils, ZeroExRevertErrors } from '@0x/utils';
 
 import { artifacts } from './artifacts';
-import { BootstrapFeatures, deployBootstrapFeaturesAsync, toFeatureAdddresses } from './utils/migration';
+import { BootstrapFeatures, deployBootstrapFeaturesAsync } from './utils/migration';
 import {
     IBootstrapContract,
     InitialMigrationContract,
@@ -35,9 +35,14 @@ blockchainTests.resets('Initial migration', env => {
             env.txDefaults,
             {},
         );
-        const deployCall = migrator.deploy(owner, toFeatureAdddresses(features));
-        zeroEx = new ZeroExContract(await deployCall.callAsync(), env.provider, env.txDefaults);
-        await deployCall.awaitTransactionSuccessAsync();
+        zeroEx = await ZeroExContract.deployFrom0xArtifactAsync(
+            artifacts.ZeroEx,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            migrator.address,
+        );
+        await migrator.deploy(owner, zeroEx.address, features).awaitTransactionSuccessAsync();
     });
 
     it('Self-destructs after deployment', async () => {
@@ -47,7 +52,7 @@ blockchainTests.resets('Initial migration', env => {
 
     it('Non-deployer cannot call deploy()', async () => {
         const notDeployer = randomAddress();
-        const tx = migrator.deploy(owner, toFeatureAdddresses(features)).callAsync({ from: notDeployer });
+        const tx = migrator.deploy(owner, zeroEx.address, features).callAsync({ from: notDeployer });
         return expect(tx).to.revertWith('InitialMigration/INVALID_SENDER');
     });
 

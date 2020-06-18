@@ -6,10 +6,12 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 import { abis } from './utils/abis';
-import { deployFullFeaturesAsync, FullFeatures, toFeatureAdddresses } from './utils/migration';
+import { deployFullFeaturesAsync, FullFeatures } from './utils/migration';
 import {
     AllowanceTargetContract,
+    IMetaTransactionsContract,
     IOwnableContract,
+    ISignatureValidatorContract,
     ITokenSpenderContract,
     ITransformERC20Contract,
     TestFullMigrationContract,
@@ -27,7 +29,6 @@ blockchainTests.resets('Full migration', env => {
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-        features = await deployFullFeaturesAsync(env.provider, env.txDefaults);
         migrator = await TestFullMigrationContract.deployFrom0xArtifactAsync(
             artifacts.TestFullMigration,
             env.provider,
@@ -35,9 +36,15 @@ blockchainTests.resets('Full migration', env => {
             artifacts,
             env.txDefaults.from as string,
         );
-        const deployCall = migrator.deploy(owner, toFeatureAdddresses(features), { transformerDeployer });
-        zeroEx = new ZeroExContract(await deployCall.callAsync(), env.provider, env.txDefaults);
-        await deployCall.awaitTransactionSuccessAsync();
+        zeroEx = await ZeroExContract.deployFrom0xArtifactAsync(
+            artifacts.ZeroEx,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+            await migrator.getBootstrapper().callAsync(),
+        );
+        features = await deployFullFeaturesAsync(env.provider, env.txDefaults, zeroEx.address);
+        await migrator.deploy(owner, zeroEx.address, features, { transformerDeployer }).awaitTransactionSuccessAsync();
     });
 
     it('ZeroEx has the correct owner', async () => {
@@ -54,7 +61,7 @@ blockchainTests.resets('Full migration', env => {
     it('Non-deployer cannot call deploy()', async () => {
         const notDeployer = randomAddress();
         const tx = migrator
-            .deploy(owner, toFeatureAdddresses(features), { transformerDeployer })
+            .deploy(owner, zeroEx.address, features, { transformerDeployer })
             .callAsync({ from: notDeployer });
         return expect(tx).to.revertWith('FullMigration/INVALID_SENDER');
     });
@@ -72,6 +79,21 @@ blockchainTests.resets('Full migration', env => {
                 'createTransformWallet',
                 'getTransformWallet',
                 'setTransformerDeployer',
+            ],
+        },
+        SignatureValidator: {
+            contractType: ISignatureValidatorContract,
+            fns: ['isValidHashSignature', 'validateHashSignature'],
+        },
+        MetaTransactions: {
+            contractType: IMetaTransactionsContract,
+            fns: [
+                'executeMetaTransaction',
+                'executeMetaTransactions',
+                '_executeMetaTransaction',
+                'getMetaTransactionExecutedBlock',
+                'getMetaTransactionHashExecutedBlock',
+                'getMetaTransactionHash',
             ],
         },
     };

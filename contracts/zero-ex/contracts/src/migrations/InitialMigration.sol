@@ -53,18 +53,21 @@ contract InitialMigration {
     ///      transfers ownership to `owner`, then self-destructs.
     ///      Only callable by `deployer` set in the contstructor.
     /// @param owner The owner of the contract.
+    /// @param zeroEx The instance of the ZeroEx contract. ZeroEx should
+    ///        been constructed with this contract as the bootstrapper.
     /// @param features Features to bootstrap into the proxy.
-    /// @return zeroEx The deployed and configured `ZeroEx` contract.
-    function deploy(address payable owner, BootstrapFeatures memory features)
+    /// @return _zeroEx The configured ZeroEx contract. Same as the `zeroEx` parameter.
+    function deploy(
+        address payable owner,
+        ZeroEx zeroEx,
+        BootstrapFeatures memory features
+    )
         public
         virtual
-        returns (ZeroEx zeroEx)
+        returns (ZeroEx _zeroEx)
     {
         // Must be called by the allowed deployer.
         require(msg.sender == deployer, "InitialMigration/INVALID_SENDER");
-
-        // Deploy the ZeroEx contract, setting ourselves as the bootstrapper.
-        zeroEx = new ZeroEx();
 
         // Bootstrap the initial feature set.
         IBootstrap(address(zeroEx)).bootstrap(
@@ -75,6 +78,8 @@ contract InitialMigration {
         // Self-destruct. This contract should not hold any funds but we send
         // them to the owner just in case.
         this.die(owner);
+
+        return zeroEx;
     }
 
     /// @dev Sets up the initial state of the `ZeroEx` contract.

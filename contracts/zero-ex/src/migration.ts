@@ -1,4 +1,3 @@
-import { BaseContract } from '@0x/base-contract';
 import { SupportedProvider } from '@0x/subproviders';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -7,7 +6,9 @@ import { artifacts } from './artifacts';
 import {
     FullMigrationContract,
     InitialMigrationContract,
+    MetaTransactionsContract,
     OwnableContract,
+    SignatureValidatorContract,
     SimpleFunctionRegistryContract,
     TokenSpenderContract,
     TransformERC20Contract,
@@ -16,11 +17,17 @@ import {
 
 // tslint:disable: completed-docs
 
+/**
+ * Addresses of minimum features for a deployment of the Exchange Proxy.
+ */
 export interface BootstrapFeatures {
-    registry: SimpleFunctionRegistryContract;
-    ownable: OwnableContract;
+    registry: string;
+    ownable: string;
 }
 
+/**
+ * Deploy the minimum features of the Exchange Proxy.
+ */
 export async function deployBootstrapFeaturesAsync(
     provider: SupportedProvider,
     txDefaults: Partial<TxData>,
@@ -34,20 +41,23 @@ export async function deployBootstrapFeaturesAsync(
                 provider,
                 txDefaults,
                 artifacts,
-            )),
+            )).address,
         ownable:
             features.ownable ||
-            (await OwnableContract.deployFrom0xArtifactAsync(artifacts.Ownable, provider, txDefaults, artifacts)),
+            (await OwnableContract.deployFrom0xArtifactAsync(artifacts.Ownable, provider, txDefaults, artifacts))
+                .address,
     };
 }
 
+/**
+ * Migrate an instance of the Exchange proxy with minimum viable features.
+ */
 export async function initialMigrateAsync(
     owner: string,
     provider: SupportedProvider,
     txDefaults: Partial<TxData>,
     features: Partial<BootstrapFeatures> = {},
 ): Promise<ZeroExContract> {
-    const _features = await deployBootstrapFeaturesAsync(provider, txDefaults, features);
     const migrator = await InitialMigrationContract.deployFrom0xArtifactAsync(
         artifacts.InitialMigration,
         provider,
@@ -55,24 +65,42 @@ export async function initialMigrateAsync(
         artifacts,
         txDefaults.from as string,
     );
-    const deployCall = migrator.deploy(owner, toFeatureAdddresses(_features));
-    const zeroEx = new ZeroExContract(await deployCall.callAsync(), provider, {});
-    await deployCall.awaitTransactionSuccessAsync();
+    const zeroEx = await ZeroExContract.deployFrom0xArtifactAsync(
+        artifacts.ZeroEx,
+        provider,
+        txDefaults,
+        artifacts,
+        migrator.address,
+    );
+    const _features = await deployBootstrapFeaturesAsync(provider, txDefaults, features);
+    await migrator.deploy(owner, zeroEx.address, _features).awaitTransactionSuccessAsync();
     return zeroEx;
 }
 
+/**
+ * Addresses of features for a full deployment of the Exchange Proxy.
+ */
 export interface FullFeatures extends BootstrapFeatures {
-    tokenSpender: TokenSpenderContract;
-    transformERC20: TransformERC20Contract;
+    tokenSpender: string;
+    transformERC20: string;
+    signatureValidator: string;
+    metaTransactions: string;
 }
 
+/**
+ * Extra configuration options for a full migration of the Exchange Proxy.
+ */
 export interface FullMigrationOpts {
     transformerDeployer: string;
 }
 
+/**
+ * Deploy all the features for a full Exchange Proxy.
+ */
 export async function deployFullFeaturesAsync(
     provider: SupportedProvider,
     txDefaults: Partial<TxData>,
+    zeroExAddress: string,
     features: Partial<FullFeatures> = {},
 ): Promise<FullFeatures> {
     return {
@@ -84,7 +112,7 @@ export async function deployFullFeaturesAsync(
                 provider,
                 txDefaults,
                 artifacts,
-            )),
+            )).address,
         transformERC20:
             features.transformERC20 ||
             (await TransformERC20Contract.deployFrom0xArtifactAsync(
@@ -92,10 +120,30 @@ export async function deployFullFeaturesAsync(
                 provider,
                 txDefaults,
                 artifacts,
-            )),
+            )).address,
+        signatureValidator:
+            features.signatureValidator ||
+            (await SignatureValidatorContract.deployFrom0xArtifactAsync(
+                artifacts.SignatureValidator,
+                provider,
+                txDefaults,
+                artifacts,
+            )).address,
+        metaTransactions:
+            features.metaTransactions ||
+            (await MetaTransactionsContract.deployFrom0xArtifactAsync(
+                artifacts.MetaTransactions,
+                provider,
+                txDefaults,
+                artifacts,
+                zeroExAddress,
+            )).address,
     };
 }
 
+/**
+ * Deploy a fully featured instance of the Exchange Proxy.
+ */
 export async function fullMigrateAsync(
     owner: string,
     provider: SupportedProvider,
@@ -103,7 +151,6 @@ export async function fullMigrateAsync(
     features: Partial<FullFeatures> = {},
     opts: Partial<FullMigrationOpts> = {},
 ): Promise<ZeroExContract> {
-    const _features = await deployFullFeaturesAsync(provider, txDefaults, features);
     const migrator = await FullMigrationContract.deployFrom0xArtifactAsync(
         artifacts.FullMigration,
         provider,
@@ -111,20 +158,18 @@ export async function fullMigrateAsync(
         artifacts,
         txDefaults.from as string,
     );
+    const zeroEx = await ZeroExContract.deployFrom0xArtifactAsync(
+        artifacts.ZeroEx,
+        provider,
+        txDefaults,
+        artifacts,
+        await migrator.getBootstrapper().callAsync(),
+    );
+    const _features = await deployFullFeaturesAsync(provider, txDefaults, zeroEx.address, features);
     const _opts = {
         transformerDeployer: txDefaults.from as string,
         ...opts,
     };
-    const deployCall = migrator.deploy(owner, toFeatureAdddresses(_features), _opts);
-    const zeroEx = new ZeroExContract(await deployCall.callAsync(), provider, {});
-    await deployCall.awaitTransactionSuccessAsync();
+    await migrator.deploy(owner, zeroEx.address, _features, _opts).awaitTransactionSuccessAsync();
     return zeroEx;
-}
-
-// tslint:disable:space-before-function-parent one-line
-export function toFeatureAdddresses<T extends BootstrapFeatures | FullFeatures | (BootstrapFeatures & FullFeatures)>(
-    features: T,
-): { [name in keyof T]: string } {
-    // TS can't figure this out.
-    return _.mapValues(features, (c: BaseContract) => c.address) as any;
 }

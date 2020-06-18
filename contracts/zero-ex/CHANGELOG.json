@@ -9,6 +9,10 @@
             {
                 "note": "Export `AffiliateFeeTransformerContract`",
                 "pr": 2622
+            },
+            {
+                "note": "Add `MetaTransactions` and `SignatureValidator` features",
+                "pr": 2610
             }
         ]
     },

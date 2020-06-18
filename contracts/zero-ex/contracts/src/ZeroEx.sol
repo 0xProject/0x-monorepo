@@ -34,11 +34,12 @@ contract ZeroEx {
 
     /// @dev Construct this contract and register the `Bootstrap` feature.
     ///      After constructing this contract, `bootstrap()` should be called
-    ///      to seed the initial feature set.
-    constructor() public {
+    ///      by `bootstrap()` to seed the initial feature set.
+    /// @param bootstrapper Who can call `bootstrap()`.
+    constructor(address bootstrapper) public {
         // Temporarily create and register the bootstrap feature.
         // It will deregister itself after `bootstrap()` has been called.
-        Bootstrap bootstrap = new Bootstrap(msg.sender);
+        Bootstrap bootstrap = new Bootstrap(bootstrapper);
         LibProxyStorage.getStorage().impls[bootstrap.bootstrap.selector] =
             address(bootstrap);
     }

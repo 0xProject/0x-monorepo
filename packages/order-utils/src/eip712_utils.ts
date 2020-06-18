@@ -143,7 +143,10 @@ export const eip712Utils = {
                 // tslint:disable-next-line: custom-no-magic-numbers
                 v => (BigNumber.isBigNumber(v) ? v.toString(10) : v),
             ) as EIP712Object,
-            _domain,
+            {
+                ...constants.MAINNET_EXCHANGE_PROXY_DOMAIN,
+                ...mtx.domain,
+            },
         );
     },
 };
