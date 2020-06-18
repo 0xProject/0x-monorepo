@@ -1,11 +1,10 @@
-import { MarketOperation } from './../types';
-// TODO: remove
-// tslint:disable
-import { SignedOrder, ERC20BridgeSource } from '..';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { ERC20BridgeSource, SignedOrder } from '..';
+
+import { MarketOperation } from './../types';
 import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operation_utils/types';
-import { BigNumber } from '@0x/utils';
 
 interface ReportSourceBase {
     makerAmount: BigNumber;
@@ -13,7 +12,7 @@ interface ReportSourceBase {
 }
 enum NativeOrderSource {
     Rfqt = 'Rfqt',
-    Orderbook = 'Orderbook'
+    Orderbook = 'Orderbook',
 }
 
 interface BridgeReportSource extends ReportSourceBase {
@@ -36,7 +35,7 @@ export interface QuoteReport {
 }
 
 export class QuoteReporter {
-    private _marketOperation: MarketOperation;
+    private readonly _marketOperation: MarketOperation;
     private _orderbookReportSources: OrderbookReportSource[];
     private _rfqtReportSources: RfqtReportSource[];
     private _bridgeReportSources: BridgeReportSource[];
@@ -50,23 +49,23 @@ export class QuoteReporter {
         this._marketOperation = marketOperation;
     }
 
-    public trackDexSamples(dexSamples: DexSample[]) {
+    public trackDexSamples(dexSamples: DexSample[]): void {
         this._bridgeReportSources = dexSamples.map(ds => this._dexSampleToBridgeReportSource(ds));
     }
 
-    public trackOrderbookOrders(orderbookOrders: SignedOrder[]) {
+    public trackOrderbookOrders(orderbookOrders: SignedOrder[]): void {
         this._orderbookReportSources = orderbookOrders.map(oo => {
             const orderbookReportSource: OrderbookReportSource = {
                 makerAmount: oo.makerAssetAmount,
                 takerAmount: oo.takerAssetAmount,
                 liquiditySource: NativeOrderSource.Orderbook,
-                nativeOrder: oo
+                nativeOrder: oo,
             };
             return orderbookReportSource;
-        })
+        });
     }
 
-    public trackRfqtOrders(rfqtOrders: { signedOrder: SignedOrder, makerUri: string }[]) {
+    public trackRfqtOrders(rfqtOrders: Array<{ signedOrder: SignedOrder; makerUri: string }>): void {
         this._rfqtReportSources = rfqtOrders.map(ro => {
             const { signedOrder, makerUri } = ro;
             const rfqtOrder: RfqtReportSource = {
@@ -74,13 +73,13 @@ export class QuoteReporter {
                 makerAmount: signedOrder.makerAssetAmount,
                 takerAmount: signedOrder.takerAssetAmount,
                 nativeOrder: signedOrder,
-                makerUri
+                makerUri,
             };
             return rfqtOrder;
-        })
+        });
     }
 
-    public trackPaths(paths: CollapsedFill[]) {
+    public trackPaths(paths: CollapsedFill[]): void {
         this._pathGenerated = paths.map(p => {
             if ((p as NativeCollapsedFill).nativeOrder) {
                 const nativeFill: NativeCollapsedFill = p as NativeCollapsedFill;
@@ -88,9 +87,9 @@ export class QuoteReporter {
 
                 // if it's an rfqt order, try to associate it & find it
                 if (nativeOrder.takerAddress !== undefined) {
-                    const foundRfqtSource = (this._rfqtReportSources.find((ro) =>
-                        ro.nativeOrder.signature === nativeOrder.signature
-                    ));
+                    const foundRfqtSource = this._rfqtReportSources.find(
+                        ro => ro.nativeOrder.signature === nativeOrder.signature,
+                    );
                     if (foundRfqtSource) {
                         return foundRfqtSource;
                     }
@@ -100,13 +99,13 @@ export class QuoteReporter {
                     makerAmount: nativeOrder.makerAssetAmount,
                     takerAmount: nativeOrder.takerAssetAmount,
                     liquiditySource: NativeOrderSource.Orderbook,
-                    nativeOrder: nativeOrder
+                    nativeOrder,
                 };
                 return orderbookOrder;
             } else {
                 return this._dexSampleToBridgeReportSource(p);
             }
-        })
+        });
     }
 
     public getReport(): QuoteReport {
@@ -118,7 +117,7 @@ export class QuoteReporter {
         return {
             sourcesConsidered,
             pathGenerated: this._pathGenerated,
-        }
+        };
     }
 
     private _dexSampleToBridgeReportSource(ds: DexSample): BridgeReportSource {
@@ -129,14 +128,14 @@ export class QuoteReporter {
             return {
                 makerAmount: ds.input,
                 takerAmount: ds.output,
-                liquiditySource
-            }
+                liquiditySource,
+            };
         } else if (this._marketOperation === MarketOperation.Sell) {
             return {
                 makerAmount: ds.output,
                 takerAmount: ds.input,
-                liquiditySource
-            }
+                liquiditySource,
+            };
         } else {
             throw new Error(`Unexpected marketOperation ${this._marketOperation}`);
         }
