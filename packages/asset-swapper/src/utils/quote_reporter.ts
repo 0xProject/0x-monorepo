@@ -4,46 +4,141 @@ import { MarketOperation } from './../types';
 import { SignedOrder, ERC20BridgeSource } from '..';
 import * as _ from 'lodash';
 
-import { CollapsedFill, DexSample } from './market_operation_utils/types';
+import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operation_utils/types';
 import { BigNumber } from '@0x/utils';
-import { QuoteReport, QuoteReportGenerator } from './quote_report_generator';
 
-export interface AnnotatedRfqtFirmQuote {
-    signedOrder: SignedOrder;
+interface ReportSourceBase {
+    makerAmount: BigNumber;
+    takerAmount: BigNumber;
+}
+enum NativeOrderSource {
+    Rfqt = 'Rfqt',
+    Orderbook = 'Orderbook'
+}
+
+interface BridgeReportSource extends ReportSourceBase {
+    liquiditySource: ERC20BridgeSource;
+}
+interface OrderbookReportSource extends ReportSourceBase {
+    liquiditySource: NativeOrderSource.Orderbook;
+    nativeOrder: SignedOrder;
+}
+interface RfqtReportSource extends ReportSourceBase {
+    liquiditySource: NativeOrderSource.Rfqt;
+    nativeOrder: SignedOrder;
     makerUri: string;
+}
+type QuoteReportSource = BridgeReportSource | OrderbookReportSource | RfqtReportSource;
+
+export interface QuoteReport {
+    sourcesConsidered: QuoteReportSource[];
+    pathGenerated: QuoteReportSource[];
 }
 
 export class QuoteReporter {
-    private _dexSamples: DexSample[];
-    private _orderbookOrders: SignedOrder[];
-    private _rfqtOrders: AnnotatedRfqtFirmQuote[];
-    private _paths: CollapsedFill[];
+    private _marketOperation: MarketOperation;
+    private _orderbookReportSources: OrderbookReportSource[];
+    private _rfqtReportSources: RfqtReportSource[];
+    private _bridgeReportSources: BridgeReportSource[];
+    private _pathGenerated: QuoteReportSource[];
 
-    constructor() {
-        this._dexSamples = [];
-        this._orderbookOrders = [];
-        this._rfqtOrders = [];
-        this._paths = [];
+    constructor(marketOperation: MarketOperation) {
+        this._orderbookReportSources = [];
+        this._rfqtReportSources = [];
+        this._bridgeReportSources = [];
+        this._pathGenerated = [];
+        this._marketOperation = marketOperation;
     }
 
     public trackDexSamples(dexSamples: DexSample[]) {
-        this._dexSamples = dexSamples;
+        this._bridgeReportSources = dexSamples.map(ds => this._dexSampleToBridgeReportSource(ds));
     }
 
-    public trackOrderbookOrders(_orderbookOrders: SignedOrder[]) {
-        this._orderbookOrders = _orderbookOrders;
+    public trackOrderbookOrders(orderbookOrders: SignedOrder[]) {
+        this._orderbookReportSources = orderbookOrders.map(oo => {
+            const orderbookReportSource: OrderbookReportSource = {
+                makerAmount: oo.makerAssetAmount,
+                takerAmount: oo.takerAssetAmount,
+                liquiditySource: NativeOrderSource.Orderbook,
+                nativeOrder: oo
+            };
+            return orderbookReportSource;
+        })
     }
 
-    public trackRfqtOrders(rfqtOrders: AnnotatedRfqtFirmQuote[]) {
-        this._rfqtOrders = rfqtOrders;
+    public trackRfqtOrders(rfqtOrders: { signedOrder: SignedOrder, makerUri: string }[]) {
+        this._rfqtReportSources = rfqtOrders.map(ro => {
+            const { signedOrder, makerUri } = ro;
+            const rfqtOrder: RfqtReportSource = {
+                liquiditySource: NativeOrderSource.Rfqt,
+                makerAmount: signedOrder.makerAssetAmount,
+                takerAmount: signedOrder.takerAssetAmount,
+                nativeOrder: signedOrder,
+                makerUri
+            };
+            return rfqtOrder;
+        })
     }
 
     public trackPaths(paths: CollapsedFill[]) {
-        this._paths = paths;
+        this._pathGenerated = paths.map(p => {
+            if ((p as NativeCollapsedFill).nativeOrder) {
+                const nativeFill: NativeCollapsedFill = p as NativeCollapsedFill;
+                const nativeOrder = nativeFill.nativeOrder;
+
+                // if it's an rfqt order, try to associate it & find it
+                if (nativeOrder.takerAddress !== undefined) {
+                    const foundRfqtSource = (this._rfqtReportSources.find((ro) =>
+                        ro.nativeOrder.signature === nativeOrder.signature
+                    ));
+                    if (foundRfqtSource) {
+                        return foundRfqtSource;
+                    }
+                }
+                // otherwise, assume its an orderbook order
+                const orderbookOrder: OrderbookReportSource = {
+                    makerAmount: nativeOrder.makerAssetAmount,
+                    takerAmount: nativeOrder.takerAssetAmount,
+                    liquiditySource: NativeOrderSource.Orderbook,
+                    nativeOrder: nativeOrder
+                };
+                return orderbookOrder;
+            } else {
+                return this._dexSampleToBridgeReportSource(p);
+            }
+        })
     }
 
-    public getReport(marketOperation: MarketOperation): QuoteReport {
-        const generator = new QuoteReportGenerator(this._dexSamples, this._orderbookOrders, this._rfqtOrders, this._paths, marketOperation);
-        return generator.generateReport();
+    public getReport(): QuoteReport {
+        const sourcesConsidered: QuoteReportSource[] = [];
+        sourcesConsidered.push(...this._bridgeReportSources);
+        sourcesConsidered.push(...this._orderbookReportSources);
+        sourcesConsidered.push(...this._rfqtReportSources);
+
+        return {
+            sourcesConsidered,
+            pathGenerated: this._pathGenerated,
+        }
+    }
+
+    private _dexSampleToBridgeReportSource(ds: DexSample): BridgeReportSource {
+        const liquiditySource = ds.source;
+        // input and output map to different values
+        // based on the market operation
+        if (this._marketOperation === MarketOperation.Buy) {
+            return {
+                makerAmount: ds.input,
+                takerAmount: ds.output,
+                liquiditySource
+            }
+        } else if (this._marketOperation === MarketOperation.Sell) {
+            return {
+                makerAmount: ds.output,
+                takerAmount: ds.input,
+                liquiditySource
+            }
+        } else {
+            throw new Error(`Unexpected marketOperation ${this._marketOperation}`);
+        }
     }
 }

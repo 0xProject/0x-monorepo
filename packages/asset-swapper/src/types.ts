@@ -3,7 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { GetMarketOrdersOpts, OptimizedMarketOrder } from './utils/market_operation_utils/types';
-import { QuoteReport } from './utils/quote_report_generator';
+import { QuoteReport } from './utils/quote_reporter';
 import { LogFunction } from './utils/quote_requestor';
 
 /**

@@ -164,7 +164,7 @@ describe('QuoteRequestor', async () => {
                     takerAssetData,
                     new BigNumber(10000),
                     MarketOperation.Sell,
-                    new QuoteReporter(),
+                    new QuoteReporter(MarketOperation.Sell),
                     {
                         apiKey,
                         takerAddress,

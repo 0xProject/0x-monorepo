@@ -539,7 +539,7 @@ export class SwapQuoter {
         }
 
         // Create QuoteReporter
-        const quoteReporter = new QuoteReporter();
+        const quoteReporter = new QuoteReporter(marketOperation);
         opts.quoteReporter = quoteReporter;
 
         // Get batches of orders from different sources, awaiting sources in parallel
@@ -612,7 +612,7 @@ export class SwapQuoter {
             );
         }
 
-        return { ...swapQuote, quoteReport: quoteReporter.getReport(marketOperation) };
+        return { ...swapQuote, quoteReport: quoteReporter.getReport() };
     }
     private _shouldEnableIndicativeRfqt(opts: CalculateSwapQuoteOpts['rfqt'], op: MarketOperation): boolean {
         return (
