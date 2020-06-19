@@ -284,10 +284,23 @@ export class QuoteRequestor {
         const responsesIfDefined: Array<undefined | AxiosResponse<ResponseT>> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
-                    const requestParams = {
+                    const requestParamsWithBigNumbers = {
                         takerAddress: options.takerAddress,
                         ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
                     };
+
+                    // convert BigNumbers to strings
+                    // so they are digestible by axios
+                    const requestParams = {
+                        ...requestParamsWithBigNumbers,
+                        sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
+                            ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
+                            : undefined,
+                        buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
+                            ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
+                            : undefined,
+                    };
+
                     const partialLogEntry = { url, quoteType, requestParams };
                     const timeBeforeAwait = Date.now();
                     try {

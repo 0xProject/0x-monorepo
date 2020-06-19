@@ -1,6 +1,5 @@
 import { tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { TakerRequest } from '@0x/quote-server';
 import { StatusCodes } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -36,10 +35,10 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
-            const expectedParams: TakerRequest = {
+            const expectedParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
-                sellAmountBaseUnits: new BigNumber('10000'),
+                sellAmountBaseUnits: '10000',
                 buyAmountBaseUnits: undefined,
                 takerAddress,
             };
@@ -193,10 +192,10 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams: TakerRequest = {
+            const expectedParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
-                sellAmountBaseUnits: new BigNumber('10000'),
+                sellAmountBaseUnits: '10000',
                 buyAmountBaseUnits: undefined,
                 takerAddress,
             };
@@ -287,10 +286,10 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams: TakerRequest = {
+            const expectedParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
-                buyAmountBaseUnits: new BigNumber('10000'),
+                buyAmountBaseUnits: '10000',
                 sellAmountBaseUnits: undefined,
                 takerAddress,
             };
