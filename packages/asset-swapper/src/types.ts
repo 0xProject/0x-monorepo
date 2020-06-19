@@ -329,3 +329,6 @@ export interface MockedRfqtIndicativeQuoteResponse {
     responseData: any;
     responseCode: number;
 }
+
+// https://stackoverflow.com/a/48216010
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

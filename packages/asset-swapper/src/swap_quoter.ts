@@ -14,6 +14,7 @@ import {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
+    Omit,
     OrderPrunerPermittedFeeTypes,
     SignedOrderWithFillableAmounts,
     SwapQuote,
@@ -214,7 +215,7 @@ export class SwapQuoter {
         makerAssetData: string,
         takerAssetData: string,
         takerAssetSellAmount: BigNumber,
-        options: Partial<SwapQuoteRequestOpts> = {},
+        options: Partial<Omit<SwapQuoteRequestOpts, 'quoteReporter'>> = {},
     ): Promise<MarketSellSwapQuote> {
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         return (await this._getSwapQuoteAsync(
@@ -240,7 +241,7 @@ export class SwapQuoter {
         makerAssetData: string,
         takerAssetData: string,
         makerAssetBuyAmount: BigNumber,
-        options: Partial<SwapQuoteRequestOpts> = {},
+        options: Partial<Omit<SwapQuoteRequestOpts, 'quoteReporter'>> = {},
     ): Promise<MarketBuySwapQuote> {
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         return (await this._getSwapQuoteAsync(
@@ -525,7 +526,7 @@ export class SwapQuoter {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        options: Partial<SwapQuoteRequestOpts>,
+        options: Partial<Omit<SwapQuoteRequestOpts, 'quoteReporter'>>,
     ): Promise<SwapQuote> {
         const opts = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
@@ -538,7 +539,8 @@ export class SwapQuoter {
             gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
         }
 
-        // Create QuoteReporter
+        // Create QuoteReporter for keeping track of all
+        // liquidity sources considered and path generated for swapQuote
         const quoteReporter = new QuoteReporter(marketOperation);
         opts.quoteReporter = quoteReporter;
 
@@ -546,14 +548,18 @@ export class SwapQuoter {
         const orderFetchPromises: Array<Promise<SignedOrder[]>> = [];
 
         // Fetch from orderbook
+        // Track after fetching
         const trackOrderbookOrders = (orderbookOrders: SignedOrder[]) => {
-            quoteReporter.trackOrderbookOrders(orderbookOrders);
+            const ordersToReport = sortingUtils
+                .sortOrders(orderbookOrders)
+                .slice(0, constants.NUM_ORDERBOOK_ORDERS_TO_REPORT);
+            quoteReporter.trackOrderbookOrders(ordersToReport);
             return orderbookOrders;
         };
         const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData).then(trackOrderbookOrders);
         orderFetchPromises.push(orderbookPromise);
 
-        // If applicable, fetch from RFQT
+        // If applicable, fetch firm quotes from RFQT
         const shouldFetchRfqtFirmQuotes =
             opts.rfqt &&
             opts.rfqt.intentOnFilling &&
