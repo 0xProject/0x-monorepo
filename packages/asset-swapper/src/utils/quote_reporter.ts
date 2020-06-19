@@ -10,23 +10,23 @@ import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operatio
  * Differentiates different sources of native 0x order
  */
 export enum NativeOrderSource {
-    Rfqt = 'Rfqt',
-    Orderbook = 'Orderbook',
+    RfqtSource = 'Rfqt',
+    OrderbookSource = 'Orderbook',
 }
 
 interface ReportSourceBase {
     makerAmount: BigNumber;
     takerAmount: BigNumber;
 }
-interface BridgeReportSource extends ReportSourceBase {
+export interface BridgeReportSource extends ReportSourceBase {
     liquiditySource: ERC20BridgeSource;
 }
-interface OrderbookReportSource extends ReportSourceBase {
-    liquiditySource: NativeOrderSource.Orderbook;
+export interface OrderbookReportSource extends ReportSourceBase {
+    liquiditySource: NativeOrderSource.OrderbookSource;
     nativeOrder: SignedOrder;
 }
-interface RfqtReportSource extends ReportSourceBase {
-    liquiditySource: NativeOrderSource.Rfqt;
+export interface RfqtReportSource extends ReportSourceBase {
+    liquiditySource: NativeOrderSource.RfqtSource;
     nativeOrder: SignedOrder;
     makerUri: string;
 }
@@ -73,7 +73,7 @@ export class QuoteReporter {
             const orderbookReportSource: OrderbookReportSource = {
                 makerAmount: oo.makerAssetAmount,
                 takerAmount: oo.takerAssetAmount,
-                liquiditySource: NativeOrderSource.Orderbook,
+                liquiditySource: NativeOrderSource.OrderbookSource,
                 nativeOrder: oo,
             };
             return orderbookReportSource;
@@ -84,7 +84,7 @@ export class QuoteReporter {
         this._rfqtReportSources = rfqtOrders.map(ro => {
             const { signedOrder, makerUri } = ro;
             const rfqtOrder: RfqtReportSource = {
-                liquiditySource: NativeOrderSource.Rfqt,
+                liquiditySource: NativeOrderSource.RfqtSource,
                 makerAmount: signedOrder.makerAssetAmount,
                 takerAmount: signedOrder.takerAssetAmount,
                 nativeOrder: signedOrder,
@@ -113,7 +113,7 @@ export class QuoteReporter {
                 const orderbookOrder: OrderbookReportSource = {
                     makerAmount: nativeOrder.makerAssetAmount,
                     takerAmount: nativeOrder.takerAssetAmount,
-                    liquiditySource: NativeOrderSource.Orderbook,
+                    liquiditySource: NativeOrderSource.OrderbookSource,
                     nativeOrder,
                 };
                 return orderbookOrder;
