@@ -396,11 +396,22 @@ contract FillQuoteTransformer is
         // If it is a Bridge order we fill this directly
         // rather than filling via 0x Exchange
         if (makerAssetProxyId == ERC20_BRIDGE_PROXY_ID) {
-            return _fillBridgeOrder(order,
-                    signature,
+            uint256 outputTokenAmount = LibMathV06.getPartialAmountFloor(
+                takerAssetFillAmount,
+                order.takerAssetAmount,
+                order.makerAssetAmount
+            );
+            try
+                this.fillBridgeOrder(order,
                     takerAssetFillAmount,
-                    makerToken,
-                    isTakerFeeInTakerToken);
+                    outputTokenAmount,
+                    makerToken)
+            returns (FillOrderResults memory fillResults)
+            {
+                results = fillResults;
+            } catch (bytes memory) {
+                // Swallow failures, leaving all results as zero.
+            }
         } else {
             // Track changes in the maker token balance.
             uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
@@ -429,23 +440,21 @@ contract FillQuoteTransformer is
     }
 
     /// @dev Attempt to fill a ERC20 Bridge order. If the fill reverts,
-    ///      the revert will be swallowed and `results` will be zeroed out.
+    ///      or the amount filled was not sufficient this reverts.
     /// @param order The bridge order to fill.
-    /// @param signature The order signature.
-    /// @param takerAssetFillAmount How much taker asset to fill.
+    /// @param inputTokenAmount How much taker asset to fill.
+    /// @param outputTokenAmount How much maker asset to receive.
     /// @param makerToken The maker token.
-    /// @param isTakerFeeInTakerToken Whether the taker fee token is the same as the
-    ///        taker token.
-    function _fillBridgeOrder(
-        IExchange.Order memory order,
-        bytes memory signature,
-        uint256 takerAssetFillAmount,
-        IERC20TokenV06 makerToken,
-        bool isTakerFeeInTakerToken
+    function fillBridgeOrder(
+        IExchange.Order calldata order,
+        uint256 inputTokenAmount,
+        uint256 outputTokenAmount,
+        IERC20TokenV06 makerToken
     )
-        private
+        external
         returns (FillOrderResults memory results)
     {
+        require(msg.sender == address(this), "SENDER_NOT_AUTHORIZED");
         // Track changes in the maker token balance.
         uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
         (
@@ -459,29 +468,31 @@ contract FillQuoteTransformer is
                 order.makerAssetData.length),
             (address, address, bytes)
         );
-        uint256 outputTokenAmount = LibMathV06.getPartialAmountFloor(
-            takerAssetFillAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount
+        require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
+        // Transfer the tokens to the bridge to perform the work
+        LibERC20TokenV06.compatTransfer(
+            _getTokenFromERC20AssetData(order.takerAssetData),
+            bridgeAddress,
+            inputTokenAmount
         );
-        try
-            IERC20Bridge(bridgeAddress).bridgeTransferFrom(
-                tokenAddress,
-                order.makerAddress,
-                address(this),
-                takerAssetFillAmount,
-                bridgeData
-            )
-        returns (bytes4 success)
-        {
-            results.makerTokenBoughtAmount = afterMakerTokenBalance.safeSub(
-                makerToken.balanceOf(address(this))
-            );
-            results.takerTokenSoldAmount = takerAssetFillAmount;
-            // protocol fee paid remains 0
-        } catch (bytes memory)  {
-            // Swallow failures, leaving all results as zero.
-        }
+        bytes4 success = IERC20Bridge(bridgeAddress).bridgeTransferFrom(
+            tokenAddress,
+            order.makerAddress,
+            address(this),
+            outputTokenAmount, // amount to transfer back from the bridge
+            bridgeData
+        );
+        // Bridge must return the proxy ID to indicate success.
+        require(success == ERC20_BRIDGE_PROXY_ID, "BRIDGE_FAILED");
+        uint256 afterMakerTokenBalance = makerToken.balanceOf(address(this));
+        // Ensure that the maker token balance has increased by the expected amount
+        require(
+            afterMakerTokenBalance >= initialMakerTokenBalance.safeAdd(outputTokenAmount),
+            "BRIDGE_UNDERPAY"
+        );
+        results.makerTokenBoughtAmount = afterMakerTokenBalance.safeSub(initialMakerTokenBalance);
+        results.takerTokenSoldAmount = inputTokenAmount;
+        // protocol fee paid remains 0
     }
 
     /// @dev Extract the token from plain ERC20 asset data.
