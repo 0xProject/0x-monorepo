@@ -290,6 +290,7 @@ export class QuoteRequestor {
                     };
 
                     // convert BigNumbers to strings
+                    // so they are digestible by axios
                     const requestParams = {
                         ...requestParamsWithBigNumbers,
                         sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
