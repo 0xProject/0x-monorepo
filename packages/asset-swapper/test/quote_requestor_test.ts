@@ -36,10 +36,10 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
-            const expectedParams: TakerRequest = {
+            const expectedParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
-                sellAmountBaseUnits: new BigNumber('10000'),
+                sellAmountBaseUnits: '10000',
                 buyAmountBaseUnits: undefined,
                 takerAddress,
             };
@@ -193,10 +193,10 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams: TakerRequest = {
+            const expectedParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
-                sellAmountBaseUnits: new BigNumber('10000'),
+                sellAmountBaseUnits: '10000',
                 buyAmountBaseUnits: undefined,
                 takerAddress,
             };
@@ -287,10 +287,10 @@ describe('QuoteRequestor', async () => {
             // Set up RFQT responses
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
-            const expectedParams: TakerRequest = {
+            const expectedParams = {
                 sellTokenAddress: takerToken,
                 buyTokenAddress: makerToken,
-                buyAmountBaseUnits: new BigNumber('10000'),
+                buyAmountBaseUnits: '10000',
                 sellAmountBaseUnits: undefined,
                 takerAddress,
             };
