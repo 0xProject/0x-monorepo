@@ -6,6 +6,9 @@ import { ERC20BridgeSource, SignedOrder } from '..';
 import { MarketOperation } from './../types';
 import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operation_utils/types';
 
+/**
+ * Differentiates different sources of native 0x order
+ */
 export enum NativeOrderSource {
     Rfqt = 'Rfqt',
     Orderbook = 'Orderbook',
@@ -27,13 +30,25 @@ interface RfqtReportSource extends ReportSourceBase {
     nativeOrder: SignedOrder;
     makerUri: string;
 }
+/**
+ * Standardized representation of liquidity sources used in QuoteReport
+ */
 export type QuoteReportSource = BridgeReportSource | OrderbookReportSource | RfqtReportSource;
 
+/**
+ * Ojbect representing a report of all liquidity sources
+ * considered during SwapQuote generation, as well as the path that
+ * was ultimately generated.
+ */
 export interface QuoteReport {
     sourcesConsidered: QuoteReportSource[];
     pathGenerated: QuoteReportSource[];
 }
 
+/**
+ * Class responsible for keeping track of all liquidity sources considered
+ * and the actual path generated while generating a SwapQuote
+ */
 export class QuoteReporter {
     private readonly _marketOperation: MarketOperation;
     private _orderbookReportSources: OrderbookReportSource[];
