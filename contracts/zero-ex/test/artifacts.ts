@@ -8,12 +8,14 @@ import { ContractArtifact } from 'ethereum-types';
 import * as AffiliateFeeTransformer from '../test/generated-artifacts/AffiliateFeeTransformer.json';
 import * as AllowanceTarget from '../test/generated-artifacts/AllowanceTarget.json';
 import * as Bootstrap from '../test/generated-artifacts/Bootstrap.json';
+import * as FillOrdersTransformer from '../test/generated-artifacts/FillOrdersTransformer.json';
 import * as FillQuoteTransformer from '../test/generated-artifacts/FillQuoteTransformer.json';
 import * as FixinCommon from '../test/generated-artifacts/FixinCommon.json';
 import * as FlashWallet from '../test/generated-artifacts/FlashWallet.json';
 import * as FullMigration from '../test/generated-artifacts/FullMigration.json';
 import * as IAllowanceTarget from '../test/generated-artifacts/IAllowanceTarget.json';
 import * as IBootstrap from '../test/generated-artifacts/IBootstrap.json';
+import * as IERC20Bridge from '../test/generated-artifacts/IERC20Bridge.json';
 import * as IERC20Transformer from '../test/generated-artifacts/IERC20Transformer.json';
 import * as IExchange from '../test/generated-artifacts/IExchange.json';
 import * as IFeature from '../test/generated-artifacts/IFeature.json';
@@ -106,12 +108,14 @@ export const artifacts = {
     LibTokenSpenderStorage: LibTokenSpenderStorage as ContractArtifact,
     LibTransformERC20Storage: LibTransformERC20Storage as ContractArtifact,
     AffiliateFeeTransformer: AffiliateFeeTransformer as ContractArtifact,
+    FillOrdersTransformer: FillOrdersTransformer as ContractArtifact,
     FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
     IERC20Transformer: IERC20Transformer as ContractArtifact,
     LibERC20Transformer: LibERC20Transformer as ContractArtifact,
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     Transformer: Transformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,
+    IERC20Bridge: IERC20Bridge as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,

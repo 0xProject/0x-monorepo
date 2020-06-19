@@ -27,14 +27,12 @@ import "@0x/contracts-utils/contracts/src/v06/LibSafeMathV06.sol";
 import "@0x/contracts-utils/contracts/src/v06/LibMathV06.sol";
 import "../errors/LibTransformERC20RichErrors.sol";
 import "../vendor/v3/IExchange.sol";
-import "../vendor/v3/IERC20Bridge.sol";
 import "./Transformer.sol";
 import "./LibERC20Transformer.sol";
 
 
 /// @dev A transformer that fills an ERC20 market sell/buy quote.
-///      This transformer shortcuts bridge orders and fills them directly
-contract FillQuoteTransformer is
+contract FillOrdersTransformer is
     Transformer
 {
     using LibERC20TokenV06 for IERC20TokenV06;
@@ -85,8 +83,6 @@ contract FillQuoteTransformer is
 
     /// @dev The Exchange ERC20Proxy ID.
     bytes4 private constant ERC20_ASSET_PROXY_ID = 0xf47261b0;
-    /// @dev The Exchange ERC20BridgeProxy ID.
-    bytes4 private constant ERC20_BRIDGE_PROXY_ID = 0xdc1600f3;
     /// @dev Maximum uint256 value.
     uint256 private constant MAX_UINT256 = uint256(-1);
 
@@ -392,94 +388,27 @@ contract FillQuoteTransformer is
         private
         returns (FillOrderResults memory results)
     {
-        bytes4 makerAssetProxyId = LibBytesV06.readBytes4(order.makerAssetData, 0);
-        // If it is a Bridge order we fill this directly
-        // rather than filling via 0x Exchange
-        if (makerAssetProxyId == ERC20_BRIDGE_PROXY_ID) {
-            return _fillBridgeOrder(order,
-                    signature,
-                    takerAssetFillAmount,
-                    makerToken,
-                    isTakerFeeInTakerToken);
-        } else {
-            // Track changes in the maker token balance.
-            uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
-            try
-                exchange.fillOrder
-                    {value: protocolFee}
-                    (order, takerAssetFillAmount, signature)
-                returns (IExchange.FillResults memory fillResults)
-            {
-                // Update maker quantity based on changes in token balances.
-                results.makerTokenBoughtAmount = makerToken.balanceOf(address(this))
-                    .safeSub(initialMakerTokenBalance);
-                // We can trust the other fill result quantities.
-                results.protocolFeePaid = fillResults.protocolFeePaid;
-                results.takerTokenSoldAmount = fillResults.takerAssetFilledAmount;
-                // If the taker fee is payable in the taker asset, include the
-                // taker fee in the total amount sold.
-                if (isTakerFeeInTakerToken) {
-                    results.takerTokenSoldAmount =
-                        results.takerTokenSoldAmount.safeAdd(fillResults.takerFeePaid);
-                }
-            } catch (bytes memory) {
-                // Swallow failures, leaving all results as zero.
-            }
-        }
-    }
-
-    /// @dev Attempt to fill a ERC20 Bridge order. If the fill reverts,
-    ///      the revert will be swallowed and `results` will be zeroed out.
-    /// @param order The bridge order to fill.
-    /// @param signature The order signature.
-    /// @param takerAssetFillAmount How much taker asset to fill.
-    /// @param makerToken The maker token.
-    /// @param isTakerFeeInTakerToken Whether the taker fee token is the same as the
-    ///        taker token.
-    function _fillBridgeOrder(
-        IExchange.Order memory order,
-        bytes memory signature,
-        uint256 takerAssetFillAmount,
-        IERC20TokenV06 makerToken,
-        bool isTakerFeeInTakerToken
-    )
-        private
-        returns (FillOrderResults memory results)
-    {
         // Track changes in the maker token balance.
         uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
-        (
-            address tokenAddress,
-            address bridgeAddress,
-            bytes memory bridgeData
-        ) = abi.decode(
-            LibBytesV06.sliceDestructive(
-                order.makerAssetData,
-                4,
-                order.makerAssetData.length),
-            (address, address, bytes)
-        );
-        uint256 outputTokenAmount = LibMathV06.getPartialAmountFloor(
-            takerAssetFillAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount
-        );
         try
-            IERC20Bridge(bridgeAddress).bridgeTransferFrom(
-                tokenAddress,
-                order.makerAddress,
-                address(this),
-                takerAssetFillAmount,
-                bridgeData
-            )
-        returns (bytes4 success)
+            exchange.fillOrder
+                {value: protocolFee}
+                (order, takerAssetFillAmount, signature)
+            returns (IExchange.FillResults memory fillResults)
         {
-            results.makerTokenBoughtAmount = afterMakerTokenBalance.safeSub(
-                makerToken.balanceOf(address(this))
-            );
-            results.takerTokenSoldAmount = takerAssetFillAmount;
-            // protocol fee paid remains 0
-        } catch (bytes memory)  {
+            // Update maker quantity based on changes in token balances.
+            results.makerTokenBoughtAmount = makerToken.balanceOf(address(this))
+                .safeSub(initialMakerTokenBalance);
+            // We can trust the other fill result quantities.
+            results.protocolFeePaid = fillResults.protocolFeePaid;
+            results.takerTokenSoldAmount = fillResults.takerAssetFilledAmount;
+            // If the taker fee is payable in the taker asset, include the
+            // taker fee in the total amount sold.
+            if (isTakerFeeInTakerToken) {
+                results.takerTokenSoldAmount =
+                    results.takerTokenSoldAmount.safeAdd(fillResults.takerFeePaid);
+            }
+        } catch (bytes memory) {
             // Swallow failures, leaving all results as zero.
         }
     }
