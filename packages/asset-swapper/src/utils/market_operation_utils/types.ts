@@ -2,7 +2,7 @@ import { IERC20BridgeSamplerContract } from '@0x/contract-wrappers';
 import { BigNumber } from '@0x/utils';
 
 import { RfqtRequestOpts, SignedOrderWithFillableAmounts } from '../../types';
-import { QuoteRequestor, RfqtIndicativeQuoteResponse } from '../../utils/quote_requestor';
+import { QuoteRequestor } from '../../utils/quote_requestor';
 
 /**
  * Order domain keys: chainId and exchange
@@ -47,10 +47,6 @@ export interface FillData {}
 // `FillData` for native fills.
 export interface NativeFillData extends FillData {
     order: SignedOrderWithFillableAmounts;
-}
-
-export interface RfqtFillData extends FillData {
-    quote: RfqtIndicativeQuoteResponse;
 }
 
 /**

@@ -550,13 +550,15 @@ export class SwapQuoter {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
             orderBatchPromises.push(
-                this._quoteRequestor.requestRfqtFirmQuotesAsync(
-                    makerAssetData,
-                    takerAssetData,
-                    assetFillAmount,
-                    marketOperation,
-                    opts.rfqt,
-                ),
+                this._quoteRequestor
+                    .requestRfqtFirmQuotesAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        assetFillAmount,
+                        marketOperation,
+                        opts.rfqt,
+                    )
+                    .then(firmQuotes => firmQuotes.map(quote => quote.signedOrder)),
             );
         }
 

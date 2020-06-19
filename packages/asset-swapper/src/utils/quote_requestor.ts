@@ -1,5 +1,6 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
+import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios, { AxiosResponse } from 'axios';
@@ -10,14 +11,6 @@ import { MarketOperation, RfqtMakerAssetOfferings, RfqtRequestOpts } from '../ty
 /**
  * Request quotes from RFQ-T providers
  */
-
-export interface RfqtIndicativeQuoteResponse {
-    makerAssetData: string;
-    makerAssetAmount: BigNumber;
-    takerAssetData: string;
-    takerAssetAmount: BigNumber;
-    expirationTimeSeconds: BigNumber;
-}
 
 function getTokenAddressOrThrow(assetData: string): string {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
@@ -51,20 +44,20 @@ function inferQueryParams(
     makerAssetData: string,
     takerAssetData: string,
     assetFillAmount: BigNumber,
-): { buyToken: string; sellToken: string; buyAmount?: string; sellAmount?: string } {
+): Pick<TakerRequest, 'buyTokenAddress' | 'sellTokenAddress' | 'buyAmountBaseUnits' | 'sellAmountBaseUnits'> {
     if (marketOperation === MarketOperation.Buy) {
         return {
-            buyToken: getTokenAddressOrThrow(makerAssetData),
-            sellToken: getTokenAddressOrThrow(takerAssetData),
-            buyAmount: assetFillAmount.toString(),
-            sellAmount: undefined,
+            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
+            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
+            buyAmountBaseUnits: assetFillAmount,
+            sellAmountBaseUnits: undefined,
         };
     } else {
         return {
-            buyToken: getTokenAddressOrThrow(makerAssetData),
-            sellToken: getTokenAddressOrThrow(takerAssetData),
-            sellAmount: assetFillAmount.toString(),
-            buyAmount: undefined,
+            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
+            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
+            sellAmountBaseUnits: assetFillAmount,
+            buyAmountBaseUnits: undefined,
         };
     }
 }
@@ -108,11 +101,11 @@ export class QuoteRequestor {
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
-    ): Promise<SignedOrder[]> {
+    ): Promise<RFQTFirmQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const ordersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
+        const firmQuotes = await this._getQuotesAsync<RFQTFirmQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -121,10 +114,16 @@ export class QuoteRequestor {
             'firm',
         );
 
+        const ordersWithStringInts = firmQuotes.map(quote => quote.signedOrder);
+
         const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
-            const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
-            if (!hasValidSchema) {
-                this._warningLogger(order, 'Invalid RFQ-t order received, filtering out');
+            try {
+                const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
+                if (!hasValidSchema) {
+                    throw new Error('order not valid');
+                }
+            } catch (err) {
+                this._warningLogger(order, `Invalid RFQ-t order received, filtering out. ${err.message}`);
                 return false;
             }
 
@@ -168,7 +167,7 @@ export class QuoteRequestor {
             return true;
         });
 
-        return orders;
+        return orders.map(order => ({ signedOrder: order }));
     }
 
     public async requestRfqtIndicativeQuotesAsync(
@@ -177,11 +176,11 @@ export class QuoteRequestor {
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
-    ): Promise<RfqtIndicativeQuoteResponse[]> {
+    ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const responsesWithStringInts = await this._getQuotesAsync<RfqtIndicativeQuoteResponse>( // not yet BigNumber
+        const responsesWithStringInts = await this._getQuotesAsync<RFQTIndicativeQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -224,7 +223,7 @@ export class QuoteRequestor {
         return responses;
     }
 
-    private _isValidRfqtIndicativeQuoteResponse(response: RfqtIndicativeQuoteResponse): boolean {
+    private _isValidRfqtIndicativeQuoteResponse(response: RFQTIndicativeQuote): boolean {
         const hasValidMakerAssetAmount =
             response.makerAssetAmount !== undefined &&
             this._schemaValidator.isValid(response.makerAssetAmount, schemas.wholeNumberSchema);
