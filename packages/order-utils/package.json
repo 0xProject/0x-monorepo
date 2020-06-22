@@ -64,6 +64,7 @@
     },
     "dependencies": {
         "@0x/assert": "^3.0.8",
+        "@0x/contract-addresses": "^4.10.0",
         "@0x/contract-wrappers": "^13.7.0",
         "@0x/json-schemas": "^5.0.8",
         "@0x/utils": "^5.5.0",

@@ -1,3 +1,4 @@
+import { getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import { BigNumber, NULL_ADDRESS, NULL_BYTES } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
@@ -148,6 +149,27 @@ export const constants = {
             { name: 'txOrigin', type: 'address' },
             { name: 'transactionHash', type: 'bytes32' },
             { name: 'transactionSignature', type: 'bytes' },
+        ],
+    },
+    MAINNET_EXCHANGE_PROXY_DOMAIN: {
+        name: 'ZeroEx',
+        version: '1.0.0',
+        chainId: 1,
+        verifyingContract: getContractAddressesForChainOrThrow(1).exchangeProxy,
+    },
+    EXCHANGE_PROXY_MTX_SCEHMA: {
+        name: 'MetaTransactionData',
+        parameters: [
+            { name: 'signer', type: 'address' },
+            { name: 'sender', type: 'address' },
+            { name: 'minGasPrice', type: 'uint256' },
+            { name: 'maxGasPrice', type: 'uint256' },
+            { name: 'expirationTime', type: 'uint256' },
+            { name: 'salt', type: 'uint256' },
+            { name: 'callData', type: 'bytes' },
+            { name: 'value', type: 'uint256' },
+            { name: 'feeToken', type: 'address' },
+            { name: 'feeAmount', type: 'uint256' },
         ],
     },
     ERC20_METHOD_ABI,
