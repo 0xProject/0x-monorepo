@@ -14,12 +14,13 @@ export class NameResolver extends EnumerableResolver {
         this._contractsDir = contractsDir;
     }
     public resolveIfExists(lookupContractName: string): ContractSource | undefined {
+        const lookupContractNameNormalized = path.basename(lookupContractName, SOLIDITY_FILE_EXTENSION);
         let contractSource: ContractSource | undefined;
         const onFile = (filePath: string) => {
             const contractName = path.basename(filePath, SOLIDITY_FILE_EXTENSION);
-            if (contractName === lookupContractName) {
+            if (contractName === lookupContractNameNormalized) {
                 const absoluteContractPath = path.join(this._contractsDir, filePath);
-                const source = fs.readFileSync(absoluteContractPath).toString();
+                const source = fs.readFileSync(absoluteContractPath).toString('ascii');
                 contractSource = { source, path: filePath, absolutePath: absoluteContractPath };
                 return true;
             }
@@ -32,7 +33,7 @@ export class NameResolver extends EnumerableResolver {
         const contractSources: ContractSource[] = [];
         const onFile = (filePath: string) => {
             const absoluteContractPath = path.join(this._contractsDir, filePath);
-            const source = fs.readFileSync(absoluteContractPath).toString();
+            const source = fs.readFileSync(absoluteContractPath).toString('ascii');
             const contractSource = { source, path: filePath, absolutePath: absoluteContractPath };
             contractSources.push(contractSource);
         };

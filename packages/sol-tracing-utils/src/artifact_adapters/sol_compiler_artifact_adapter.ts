@@ -1,4 +1,11 @@
-import { FallthroughResolver, FSResolver, NPMResolver, RelativeFSResolver, URLResolver } from '@0x/sol-resolver';
+import {
+    FallthroughResolver,
+    FSResolver,
+    NameResolver,
+    NPMResolver,
+    RelativeFSResolver,
+    URLResolver,
+} from '@0x/sol-resolver';
 import { logUtils } from '@0x/utils';
 import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import * as fs from 'fs';
@@ -40,6 +47,7 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
         this._resolver.appendResolver(new NPMResolver(packagePath));
         this._resolver.appendResolver(new RelativeFSResolver(this._sourcesPath));
         this._resolver.appendResolver(new FSResolver());
+        this._resolver.appendResolver(new NameResolver(this._sourcesPath));
     }
     public async collectContractsDataAsync(): Promise<ContractData[]> {
         const artifactsGlob = `${this._artifactsPath}/**/*.json`;
@@ -47,7 +55,7 @@ export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
         const contractsData: ContractData[] = [];
         for (const artifactFileName of artifactFileNames) {
             const artifact: ContractArtifact = JSON.parse(fs.readFileSync(artifactFileName).toString());
-            if (artifact.compilerOutput.evm === undefined) {
+            if (artifact.compilerOutput === undefined || artifact.compilerOutput.evm === undefined) {
                 logUtils.warn(`${artifactFileName} doesn't contain bytecode. Skipping...`);
                 continue;
             }

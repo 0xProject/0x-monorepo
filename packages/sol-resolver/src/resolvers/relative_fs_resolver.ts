@@ -15,7 +15,7 @@ export class RelativeFSResolver extends Resolver {
     public resolveIfExists(importPath: string): ContractSource | undefined {
         const filePath = path.resolve(path.join(this._contractsDir, importPath));
         if (fs.existsSync(filePath) && !fs.lstatSync(filePath).isDirectory()) {
-            const fileContent = fs.readFileSync(filePath).toString();
+            const fileContent = fs.readFileSync(filePath).toString('ascii');
             return { source: fileContent, path: importPath, absolutePath: filePath };
         }
         return undefined;
