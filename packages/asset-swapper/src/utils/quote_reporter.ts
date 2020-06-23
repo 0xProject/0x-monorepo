@@ -36,7 +36,7 @@ export interface RfqtReportSource extends ReportSourceBase {
 export type QuoteReportSource = BridgeReportSource | OrderbookReportSource | RfqtReportSource;
 
 /**
- * Ojbect representing a report of all liquidity sources
+ * Object representing a report of all liquidity sources
  * considered during SwapQuote generation, as well as the path that
  * was ultimately generated.
  */
