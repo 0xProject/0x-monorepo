@@ -452,7 +452,7 @@ blockchainTests.resets('FillQuoteTransformer', env => {
             );
         });
 
-        it('fails if not enough protocol fee provided', async () => {
+        it.skip('fails if not enough protocol fee provided', async () => {
             const orders = _.times(3, () => createOrder());
             const signatures = orders.map(() => encodeExchangeBehavior());
             const qfr = getExpectedSellQuoteFillResults(orders);
@@ -963,6 +963,34 @@ blockchainTests.resets('FillQuoteTransformer', env => {
                 )
                 // Single protocol fee as all Native orders will fail
                 .awaitTransactionSuccessAsync({ value: singleProtocolFee });
+            assertBalances(await getBalancesAsync(host.address), {
+                ...ZERO_BALANCES,
+                makerAssetBalance: qfr.makerAssetBought,
+                protocolFeeBalance: singleProtocolFee,
+            });
+        });
+
+        it('can continue to the bridge order if the native order reverts', async () => {
+            const nativeOrders = [createOrder()];
+            const bridgeOrders = [createBridgeOrder()];
+            const orders = [...nativeOrders, ...bridgeOrders];
+            const signatures = [
+                ...nativeOrders.map(() => encodeExchangeBehavior()), // Valid Signatures
+                ...bridgeOrders.map(() => NULL_BYTES), // Valid Signatures
+            ];
+            const qfr = getExpectedSellQuoteFillResults(bridgeOrders);
+            await host
+                .executeTransform(
+                    transformer.address,
+                    takerToken.address,
+                    qfr.takerAssetSpent,
+                    encodeTransformData({
+                        orders,
+                        signatures,
+                    }),
+                )
+                // Insufficient single protocol fee
+                .awaitTransactionSuccessAsync({ value: singleProtocolFee.minus(1) });
             assertBalances(await getBalancesAsync(host.address), {
                 ...ZERO_BALANCES,
                 makerAssetBalance: qfr.makerAssetBought,
