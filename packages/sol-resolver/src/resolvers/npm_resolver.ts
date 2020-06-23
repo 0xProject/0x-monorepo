@@ -30,7 +30,7 @@ export class NPMResolver extends Resolver {
                     packageScopeIfExists === undefined ? packageName : path.join(packageScopeIfExists, packageName);
                 const lookupPath = path.join(currentPath, 'node_modules', packagePath, pathWithinPackage);
                 if (fs.existsSync(lookupPath) && fs.lstatSync(lookupPath).isFile()) {
-                    const fileContent = fs.readFileSync(lookupPath).toString();
+                    const fileContent = fs.readFileSync(lookupPath).toString('ascii');
                     return { source: fileContent, path: importPath, absolutePath: lookupPath };
                 }
                 currentPath = path.dirname(currentPath);

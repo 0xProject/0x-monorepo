@@ -570,16 +570,18 @@ export class SwapQuoter {
             if (!opts.rfqt.takerAddress || opts.rfqt.takerAddress === constants.NULL_ADDRESS) {
                 throw new Error('RFQ-T requests must specify a taker address');
             }
-
-            const rfqtPromise = this._quoteRequestor.requestRfqtFirmQuotesAsync(
-                makerAssetData,
-                takerAssetData,
-                assetFillAmount,
-                marketOperation,
-                quoteReporter,
-                opts.rfqt,
+            orderFetchPromises.push(
+                this._quoteRequestor
+                    .requestRfqtFirmQuotesAsync(
+                        makerAssetData,
+                        takerAssetData,
+                        assetFillAmount,
+                        marketOperation,
+                        quoteReporter,
+                        opts.rfqt,
+                    )
+                    .then(firmQuotes => firmQuotes.map(quote => quote.signedOrder)),
             );
-            orderFetchPromises.push(rfqtPromise);
         }
 
         const orderBatches: SignedOrder[][] = await Promise.all(orderFetchPromises);

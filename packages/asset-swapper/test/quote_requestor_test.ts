@@ -37,10 +37,10 @@ describe('QuoteRequestor', async () => {
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtFirmQuoteResponse[] = [];
             const expectedParams = {
-                sellToken: takerToken,
-                buyToken: makerToken,
-                sellAmount: '10000',
-                buyAmount: undefined,
+                sellTokenAddress: takerToken,
+                buyTokenAddress: makerToken,
+                sellAmountBaseUnits: '10000',
+                buyAmountBaseUnits: undefined,
                 takerAddress,
             };
             // Successful response
@@ -55,7 +55,7 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://1337.0.0.1',
                 requestApiKey: apiKey,
                 requestParams: expectedParams,
-                responseData: successfulOrder1,
+                responseData: { signedOrder: successfulOrder1 },
                 responseCode: StatusCodes.Success,
             });
             // Test out a bad response code, ensure it doesnt cause throw
@@ -74,6 +74,14 @@ describe('QuoteRequestor', async () => {
                 responseData: { makerAssetData: '123' },
                 responseCode: StatusCodes.Success,
             });
+            // ensure that a non-JSON response doesn't throw an error when trying to parse
+            mockedRequests.push({
+                endpoint: 'https://421.1.0.1',
+                requestApiKey: apiKey,
+                requestParams: expectedParams,
+                responseData: 'this is not JSON!',
+                responseCode: StatusCodes.Success,
+            });
             // A successful response code and valid order, but for wrong maker asset data
             const wrongMakerAssetDataOrder = testOrderFactory.generateTestSignedOrder({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(otherToken1),
@@ -84,7 +92,7 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://422.0.0.1',
                 requestApiKey: apiKey,
                 requestParams: expectedParams,
-                responseData: wrongMakerAssetDataOrder,
+                responseData: { signedOrder: wrongMakerAssetDataOrder },
                 responseCode: StatusCodes.Success,
             });
             // A successful response code and valid order, but for wrong taker asset data
@@ -97,7 +105,7 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://423.0.0.1',
                 requestApiKey: apiKey,
                 requestParams: expectedParams,
-                responseData: wrongTakerAssetDataOrder,
+                responseData: { signedOrder: wrongTakerAssetDataOrder },
                 responseCode: StatusCodes.Success,
             });
             // A successful response code and good order but its unsigned
@@ -112,7 +120,7 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://424.0.0.1',
                 requestApiKey: apiKey,
                 requestParams: expectedParams,
-                responseData: unsignedOrder,
+                responseData: { signedOrder: unsignedOrder },
                 responseCode: StatusCodes.Success,
             });
             // A successful response code and good order but for the wrong takerAddress
@@ -127,7 +135,7 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://425.0.0.1',
                 requestApiKey: apiKey,
                 requestParams: expectedParams,
-                responseData: orderWithNullTaker,
+                responseData: { signedOrder: orderWithNullTaker },
                 responseCode: StatusCodes.Success,
             });
 
@@ -142,7 +150,7 @@ describe('QuoteRequestor', async () => {
                 endpoint: 'https://37.0.0.1',
                 requestApiKey: apiKey,
                 requestParams: expectedParams,
-                responseData: successfulOrder2,
+                responseData: { signedOrder: successfulOrder2 },
                 responseCode: StatusCodes.Success,
             });
 
@@ -151,6 +159,7 @@ describe('QuoteRequestor', async () => {
                     'https://1337.0.0.1': [[makerToken, takerToken]],
                     'https://420.0.0.1': [[makerToken, takerToken]],
                     'https://421.0.0.1': [[makerToken, takerToken]],
+                    'https://421.1.0.1': [[makerToken, takerToken]],
                     'https://422.0.0.1': [[makerToken, takerToken]],
                     'https://423.0.0.1': [[makerToken, takerToken]],
                     'https://424.0.0.1': [[makerToken, takerToken]],
@@ -171,7 +180,9 @@ describe('QuoteRequestor', async () => {
                         intentOnFilling: true,
                     },
                 );
-                expect(resp.sort()).to.eql([successfulOrder1, successfulOrder2].sort());
+                expect(resp.sort()).to.eql(
+                    [{ signedOrder: successfulOrder1 }, { signedOrder: successfulOrder2 }].sort(),
+                );
             });
         });
     });
@@ -184,18 +195,18 @@ describe('QuoteRequestor', async () => {
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
             const expectedParams = {
-                sellToken: takerToken,
-                buyToken: makerToken,
-                sellAmount: '10000',
-                buyAmount: undefined,
+                sellTokenAddress: takerToken,
+                buyTokenAddress: makerToken,
+                sellAmountBaseUnits: '10000',
+                buyAmountBaseUnits: undefined,
                 takerAddress,
             };
             // Successful response
             const successfulQuote1 = {
                 makerAssetData,
                 takerAssetData,
-                makerAssetAmount: new BigNumber(expectedParams.sellAmount),
-                takerAssetAmount: new BigNumber(expectedParams.sellAmount),
+                makerAssetAmount: new BigNumber(expectedParams.sellAmountBaseUnits),
+                takerAssetAmount: new BigNumber(expectedParams.sellAmountBaseUnits),
                 expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({
@@ -278,18 +289,18 @@ describe('QuoteRequestor', async () => {
             // tslint:disable-next-line:array-type
             const mockedRequests: MockedRfqtIndicativeQuoteResponse[] = [];
             const expectedParams = {
-                sellToken: takerToken,
-                buyToken: makerToken,
-                buyAmount: '10000',
-                sellAmount: undefined,
+                sellTokenAddress: takerToken,
+                buyTokenAddress: makerToken,
+                buyAmountBaseUnits: '10000',
+                sellAmountBaseUnits: undefined,
                 takerAddress,
             };
             // Successful response
             const successfulQuote1 = {
                 makerAssetData,
                 takerAssetData,
-                makerAssetAmount: new BigNumber(expectedParams.buyAmount),
-                takerAssetAmount: new BigNumber(expectedParams.buyAmount),
+                makerAssetAmount: new BigNumber(expectedParams.buyAmountBaseUnits),
+                takerAssetAmount: new BigNumber(expectedParams.buyAmountBaseUnits),
                 expirationTimeSeconds: makeThreeMinuteExpiry(),
             };
             mockedRequests.push({

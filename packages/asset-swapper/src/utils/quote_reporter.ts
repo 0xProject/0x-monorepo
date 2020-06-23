@@ -52,7 +52,7 @@ export interface QuoteReport {
 export class QuoteReporter {
     private readonly _marketOperation: MarketOperation;
     private _orderbookReportSources: OrderbookReportSource[];
-    private _rfqtReportSources: RfqtReportSource[];
+    private readonly _rfqtReportSources: RfqtReportSource[];
     private _bridgeReportSources: BridgeReportSource[];
     private _pathGenerated: QuoteReportSource[];
 
@@ -80,18 +80,16 @@ export class QuoteReporter {
         });
     }
 
-    public trackRfqtOrders(rfqtOrders: Array<{ signedOrder: SignedOrder; makerUri: string }>): void {
-        this._rfqtReportSources = rfqtOrders.map(ro => {
-            const { signedOrder, makerUri } = ro;
-            const rfqtOrder: RfqtReportSource = {
-                liquiditySource: NativeOrderSource.RfqtSource,
-                makerAmount: signedOrder.makerAssetAmount,
-                takerAmount: signedOrder.takerAssetAmount,
-                nativeOrder: signedOrder,
-                makerUri,
-            };
-            return rfqtOrder;
-        });
+    public trackRfqtOrder(ro: { signedOrder: SignedOrder; makerUri: string }): void {
+        const { signedOrder, makerUri } = ro;
+        const rfqtReportSource: RfqtReportSource = {
+            liquiditySource: NativeOrderSource.RfqtSource,
+            makerAmount: signedOrder.makerAssetAmount,
+            takerAmount: signedOrder.takerAssetAmount,
+            nativeOrder: signedOrder,
+            makerUri,
+        };
+        this._rfqtReportSources.push(rfqtReportSource);
     }
 
     public trackPaths(paths: CollapsedFill[]): void {

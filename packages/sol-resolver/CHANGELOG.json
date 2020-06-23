@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.4",
+        "changes": [
+            {
+                "note": "Make sol-profiler (mostly) work again",
+                "pr": 2607
+            }
+        ]
+    },
+    {
         "timestamp": 1581204851,
         "version": "3.0.3",
         "changes": [

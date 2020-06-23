@@ -10,7 +10,7 @@ export class URLResolver extends Resolver {
         const FILE_URL_PREXIF = 'file://';
         if (importPath.startsWith(FILE_URL_PREXIF)) {
             const filePath = importPath.substr(FILE_URL_PREXIF.length);
-            const fileContent = fs.readFileSync(filePath).toString();
+            const fileContent = fs.readFileSync(filePath).toString('ascii');
             return { source: fileContent, path: importPath, absolutePath: filePath };
         }
         return undefined;

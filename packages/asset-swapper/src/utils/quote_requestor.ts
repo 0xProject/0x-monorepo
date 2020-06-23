@@ -1,5 +1,6 @@
 import { schemas, SchemaValidator } from '@0x/json-schemas';
 import { assetDataUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
+import { RFQTFirmQuote, RFQTIndicativeQuote, TakerRequest } from '@0x/quote-server';
 import { ERC20AssetData } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import Axios from 'axios';
@@ -12,14 +13,6 @@ import { QuoteReporter } from './quote_reporter';
 /**
  * Request quotes from RFQ-T providers
  */
-
-export interface RfqtIndicativeQuoteResponse {
-    makerAssetData: string;
-    makerAssetAmount: BigNumber;
-    takerAssetData: string;
-    takerAssetAmount: BigNumber;
-    expirationTimeSeconds: BigNumber;
-}
 
 function getTokenAddressOrThrow(assetData: string): string {
     const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
@@ -53,20 +46,20 @@ function inferQueryParams(
     makerAssetData: string,
     takerAssetData: string,
     assetFillAmount: BigNumber,
-): { buyToken: string; sellToken: string; buyAmount?: string; sellAmount?: string } {
+): Pick<TakerRequest, 'buyTokenAddress' | 'sellTokenAddress' | 'buyAmountBaseUnits' | 'sellAmountBaseUnits'> {
     if (marketOperation === MarketOperation.Buy) {
         return {
-            buyToken: getTokenAddressOrThrow(makerAssetData),
-            sellToken: getTokenAddressOrThrow(takerAssetData),
-            buyAmount: assetFillAmount.toString(),
-            sellAmount: undefined,
+            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
+            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
+            buyAmountBaseUnits: assetFillAmount,
+            sellAmountBaseUnits: undefined,
         };
     } else {
         return {
-            buyToken: getTokenAddressOrThrow(makerAssetData),
-            sellToken: getTokenAddressOrThrow(takerAssetData),
-            sellAmount: assetFillAmount.toString(),
-            buyAmount: undefined,
+            buyTokenAddress: getTokenAddressOrThrow(makerAssetData),
+            sellTokenAddress: getTokenAddressOrThrow(takerAssetData),
+            sellAmountBaseUnits: assetFillAmount,
+            buyAmountBaseUnits: undefined,
         };
     }
 }
@@ -111,11 +104,11 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         quoteReporter: QuoteReporter,
         options: RfqtRequestOpts,
-    ): Promise<SignedOrder[]> {
+    ): Promise<RFQTFirmQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const reponsesContainingOrdersWithStringInts = await this._getQuotesAsync<SignedOrder>( // not yet BigNumber
+        const firmQuotes = await this._getQuotesAsync<RFQTFirmQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
@@ -124,21 +117,15 @@ export class QuoteRequestor {
             'firm',
         );
 
-        // Report signed orders and maker URIs
-        const responsesToReport = reponsesContainingOrdersWithStringInts.map(r => {
-            return {
-                signedOrder: r.response,
-                makerUri: r.makerUri,
-            };
-        });
-        quoteReporter.trackRfqtOrders(responsesToReport);
-
-        const ordersWithStringInts = reponsesContainingOrdersWithStringInts.map(r => r.response);
-
-        const validatedOrdersWithStringInts = ordersWithStringInts.filter(order => {
-            const hasValidSchema = this._schemaValidator.isValid(order, schemas.signedOrderSchema);
-            if (!hasValidSchema) {
-                this._warningLogger(order, 'Invalid RFQ-t order received, filtering out');
+        const validatedOrdersWithStringInts = firmQuotes.filter(firmQuoteResponse => {
+            const returnedOrder = firmQuoteResponse.responseData.signedOrder;
+            try {
+                const hasValidSchema = this._schemaValidator.isValid(returnedOrder, schemas.signedOrderSchema);
+                if (!hasValidSchema) {
+                    throw new Error('order not valid');
+                }
+            } catch (err) {
+                this._warningLogger(returnedOrder, `Invalid RFQ-t order received, filtering out. ${err.message}`);
                 return false;
             }
 
@@ -146,23 +133,24 @@ export class QuoteRequestor {
                 !hasExpectedAssetData(
                     makerAssetData,
                     takerAssetData,
-                    order.makerAssetData.toLowerCase(),
-                    order.takerAssetData.toLowerCase(),
+                    returnedOrder.makerAssetData.toLowerCase(),
+                    returnedOrder.takerAssetData.toLowerCase(),
                 )
             ) {
-                this._warningLogger(order, 'Unexpected asset data in RFQ-T order, filtering out');
+                this._warningLogger(returnedOrder, 'Unexpected asset data in RFQ-T order, filtering out');
                 return false;
             }
 
-            if (order.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
-                this._warningLogger(order, 'Unexpected takerAddress in RFQ-T order, filtering out');
+            if (returnedOrder.takerAddress.toLowerCase() !== _opts.takerAddress.toLowerCase()) {
+                this._warningLogger(returnedOrder, 'Unexpected takerAddress in RFQ-T order, filtering out');
                 return false;
             }
 
             return true;
         });
 
-        const validatedOrders: SignedOrder[] = validatedOrdersWithStringInts.map(orderWithStringInts => {
+        const validatedOrders: SignedOrder[] = validatedOrdersWithStringInts.map(firmQuoteResponse => {
+            const orderWithStringInts = firmQuoteResponse.responseData.signedOrder;
             const orderWithBigNumbers = {
                 ...orderWithStringInts,
                 makerAssetAmount: new BigNumber(orderWithStringInts.makerAssetAmount),
@@ -172,16 +160,19 @@ export class QuoteRequestor {
                 expirationTimeSeconds: new BigNumber(orderWithStringInts.expirationTimeSeconds),
                 salt: new BigNumber(orderWithStringInts.salt),
             };
+            quoteReporter.trackRfqtOrder({ signedOrder: orderWithBigNumbers, makerUri: firmQuoteResponse.makerUri });
             return orderWithBigNumbers;
         });
 
-        return validatedOrders.filter(signedOrder => {
-            if (orderCalculationUtils.willOrderExpire(signedOrder, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
-                this._warningLogger(signedOrder, 'Expiry too soon in RFQ-T order, filtering out');
+        const orders = validatedOrders.filter(order => {
+            if (orderCalculationUtils.willOrderExpire(order, this._expiryBufferMs / constants.ONE_SECOND_MS)) {
+                this._warningLogger(order, 'Expiry too soon in RFQ-T order, filtering out');
                 return false;
             }
             return true;
         });
+
+        return orders.map(order => ({ signedOrder: order }));
     }
 
     public async requestRfqtIndicativeQuotesAsync(
@@ -190,20 +181,20 @@ export class QuoteRequestor {
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
-    ): Promise<RfqtIndicativeQuoteResponse[]> {
+    ): Promise<RFQTIndicativeQuote[]> {
         const _opts: RfqtRequestOpts = { ...constants.DEFAULT_RFQT_REQUEST_OPTS, ...options };
         assertTakerAddressOrThrow(_opts.takerAddress);
 
-        const responsesWithStringInts = (await this._getQuotesAsync<RfqtIndicativeQuoteResponse>( // not yet BigNumber
+        const indicativeQuotesWithStringInts = (await this._getQuotesAsync<RFQTIndicativeQuote>( // not yet BigNumber
             makerAssetData,
             takerAssetData,
             assetFillAmount,
             marketOperation,
             _opts,
             'indicative',
-        )).map(r => r.response);
+        )).map(iq => iq.responseData);
 
-        const validResponsesWithStringInts = responsesWithStringInts.filter(response => {
+        const validResponsesWithStringInts = indicativeQuotesWithStringInts.filter(response => {
             if (!this._isValidRfqtIndicativeQuoteResponse(response)) {
                 this._warningLogger(response, 'Invalid RFQ-T indicative quote received, filtering out');
                 return false;
@@ -237,7 +228,7 @@ export class QuoteRequestor {
         return responses;
     }
 
-    private _isValidRfqtIndicativeQuoteResponse(response: RfqtIndicativeQuoteResponse): boolean {
+    private _isValidRfqtIndicativeQuoteResponse(response: RFQTIndicativeQuote): boolean {
         const hasValidMakerAssetAmount =
             response.makerAssetAmount !== undefined &&
             this._schemaValidator.isValid(response.makerAssetAmount, schemas.wholeNumberSchema);
@@ -292,16 +283,29 @@ export class QuoteRequestor {
         marketOperation: MarketOperation,
         options: RfqtRequestOpts,
         quoteType: 'firm' | 'indicative',
-    ): Promise<Array<{ makerUri: string; response: ResponseT }>> {
+    ): Promise<Array<{ makerUri: string; responseData: ResponseT }>> {
         // create an array of promises for quote responses, using "undefined"
         // as a placeholder for failed requests.
-        const rawResponses: Array<undefined | { makerUri: string; response: ResponseT }> = await Promise.all(
+        const rawResponses: Array<undefined | { makerUri: string; responseData: ResponseT }> = await Promise.all(
             Object.keys(this._rfqtAssetOfferings).map(async url => {
                 if (this._makerSupportsPair(url, makerAssetData, takerAssetData)) {
-                    const requestParams = {
+                    const requestParamsWithBigNumbers = {
                         takerAddress: options.takerAddress,
                         ...inferQueryParams(marketOperation, makerAssetData, takerAssetData, assetFillAmount),
                     };
+
+                    // convert BigNumbers to strings
+                    // so they are digestible by axios
+                    const requestParams = {
+                        ...requestParamsWithBigNumbers,
+                        sellAmountBaseUnits: requestParamsWithBigNumbers.sellAmountBaseUnits
+                            ? requestParamsWithBigNumbers.sellAmountBaseUnits.toString()
+                            : undefined,
+                        buyAmountBaseUnits: requestParamsWithBigNumbers.buyAmountBaseUnits
+                            ? requestParamsWithBigNumbers.buyAmountBaseUnits.toString()
+                            : undefined,
+                    };
+
                     const partialLogEntry = { url, quoteType, requestParams };
                     const timeBeforeAwait = Date.now();
                     try {
@@ -317,7 +321,7 @@ export class QuoteRequestor {
                                     throw new Error(`Unexpected quote type ${quoteType}`);
                             }
                         })();
-                        const axiosResponse = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
+                        const response = await Axios.get<ResponseT>(`${url}/${quotePath}`, {
                             headers: { '0x-api-key': options.apiKey },
                             params: requestParams,
                             timeout: options.makerEndpointMaxResponseTimeMs,
@@ -326,12 +330,12 @@ export class QuoteRequestor {
                             rfqtMakerInteraction: {
                                 ...partialLogEntry,
                                 response: {
-                                    statusCode: axiosResponse.status,
+                                    statusCode: response.status,
                                     latencyMs: Date.now() - timeBeforeAwait,
                                 },
                             },
                         });
-                        return { makerUri: url, response: axiosResponse.data };
+                        return { makerUri: url, responseData: response.data };
                     } catch (err) {
                         this._infoLogger({
                             rfqtMakerInteraction: {
@@ -356,7 +360,7 @@ export class QuoteRequestor {
         );
 
         // Filter out null responses
-        const finalResult: Array<{ makerUri: string; response: ResponseT }> = [];
+        const finalResult: Array<{ makerUri: string; responseData: ResponseT }> = [];
         for (const rawResponse of rawResponses) {
             if (rawResponse) {
                 finalResult.push(rawResponse);
