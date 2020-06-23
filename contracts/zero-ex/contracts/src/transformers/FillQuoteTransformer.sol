@@ -412,9 +412,7 @@ contract FillQuoteTransformer is
         } else {
             // Ensure we have enough ETH to cover the protocol fee.
             if (address(this).balance < protocolFee) {
-                LibTransformERC20RichErrors
-                    .InsufficientProtocolFeeError(address(this).balance, protocolFee)
-                    .rrevert();
+                return results;
             }
             // Track changes in the maker token balance.
             uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
