@@ -45,6 +45,7 @@ export * from '../test/generated-wrappers/pay_taker_transformer';
 export * from '../test/generated-wrappers/simple_function_registry';
 export * from '../test/generated-wrappers/test_call_target';
 export * from '../test/generated-wrappers/test_delegate_caller';
+export * from '../test/generated-wrappers/test_fill_quote_transformer_bridge';
 export * from '../test/generated-wrappers/test_fill_quote_transformer_exchange';
 export * from '../test/generated-wrappers/test_fill_quote_transformer_host';
 export * from '../test/generated-wrappers/test_full_migration';

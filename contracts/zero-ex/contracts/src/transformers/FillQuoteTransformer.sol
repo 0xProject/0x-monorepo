@@ -41,6 +41,7 @@ contract FillQuoteTransformer is
     using LibERC20Transformer for IERC20TokenV06;
     using LibSafeMathV06 for uint256;
     using LibRichErrorsV06 for bytes;
+    using LibBytesV06 for bytes;
 
     /// @dev Whether we are performing a market sell or buy.
     enum Side {
@@ -94,6 +95,8 @@ contract FillQuoteTransformer is
     IExchange public immutable exchange;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
+    /// @dev The Transformer implementation (self) address.
+    address public immutable implementation;
 
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
@@ -103,6 +106,7 @@ contract FillQuoteTransformer is
     {
         exchange = exchange_;
         erc20Proxy = exchange_.getAssetProxy(ERC20_ASSET_PROXY_ID);
+        implementation = address(this);
     }
 
     /// @dev Sell this contract's entire balance of of `sellToken` in exchange
@@ -148,7 +152,6 @@ contract FillQuoteTransformer is
 
         // Fill the orders.
         uint256 singleProtocolFee = exchange.protocolFeeMultiplier().safeMul(tx.gasprice);
-        uint256 ethRemaining = address(this).balance;
         uint256 boughtAmount = 0;
         uint256 soldAmount = 0;
         for (uint256 i = 0; i < data.orders.length; ++i) {
@@ -163,13 +166,6 @@ contract FillQuoteTransformer is
                 if (boughtAmount >= data.fillAmount) {
                     break;
                 }
-            }
-
-            // Ensure we have enough ETH to cover the protocol fee.
-            if (ethRemaining < singleProtocolFee) {
-                LibTransformERC20RichErrors
-                    .InsufficientProtocolFeeError(ethRemaining, singleProtocolFee)
-                    .rrevert();
             }
 
             // Fill the order.
@@ -207,7 +203,6 @@ contract FillQuoteTransformer is
             // Accumulate totals.
             soldAmount = soldAmount.safeAdd(results.takerTokenSoldAmount);
             boughtAmount = boughtAmount.safeAdd(results.makerTokenBoughtAmount);
-            ethRemaining = ethRemaining.safeSub(results.protocolFeePaid);
         }
 
         // Ensure we hit our targets.
@@ -392,7 +387,7 @@ contract FillQuoteTransformer is
         private
         returns (FillOrderResults memory results)
     {
-        bytes4 makerAssetProxyId = LibBytesV06.readBytes4(order.makerAssetData, 0);
+        bytes4 makerAssetProxyId = order.makerAssetData.readBytes4(0);
         // If it is a Bridge order we fill this directly
         // rather than filling via 0x Exchange
         if (makerAssetProxyId == ERC20_BRIDGE_PROXY_ID) {
@@ -401,18 +396,26 @@ contract FillQuoteTransformer is
                 order.takerAssetAmount,
                 order.makerAssetAmount
             );
-            try
-                this.fillBridgeOrder(order,
+            (bool success, bytes memory data) = address(implementation).delegatecall(
+                abi.encodeWithSelector(
+                    this.fillBridgeOrder.selector,
+                    order,
                     takerAssetFillAmount,
                     outputTokenAmount,
-                    makerToken)
-            returns (FillOrderResults memory fillResults)
-            {
-                results = fillResults;
-            } catch (bytes memory) {
-                // Swallow failures, leaving all results as zero.
+                    makerToken
+                )
+            );
+            if (success) {
+                results = abi.decode(data, (FillOrderResults));
             }
+            // Swallow failures, leaving all results as zero.
         } else {
+            // Ensure we have enough ETH to cover the protocol fee.
+            if (address(this).balance < protocolFee) {
+                LibTransformERC20RichErrors
+                    .InsufficientProtocolFeeError(address(this).balance, protocolFee)
+                    .rrevert();
+            }
             // Track changes in the maker token balance.
             uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
             try
@@ -439,7 +442,7 @@ contract FillQuoteTransformer is
         }
     }
 
-    /// @dev Attempt to fill a ERC20 Bridge order. If the fill reverts,
+    /// @dev Attempt to fill an ERC20 Bridge order. If the fill reverts,
     ///      or the amount filled was not sufficient this reverts.
     /// @param order The bridge order to fill.
     /// @param inputTokenAmount How much taker asset to fill.
@@ -454,7 +457,6 @@ contract FillQuoteTransformer is
         external
         returns (FillOrderResults memory results)
     {
-        require(msg.sender == address(this), "SENDER_NOT_AUTHORIZED");
         // Track changes in the maker token balance.
         uint256 initialMakerTokenBalance = makerToken.balanceOf(address(this));
         (
@@ -462,28 +464,22 @@ contract FillQuoteTransformer is
             address bridgeAddress,
             bytes memory bridgeData
         ) = abi.decode(
-            LibBytesV06.sliceDestructive(
-                order.makerAssetData,
-                4,
-                order.makerAssetData.length),
+            order.makerAssetData.sliceDestructive(4, order.makerAssetData.length),
             (address, address, bytes)
         );
         require(bridgeAddress != address(this), "INVALID_BRIDGE_ADDRESS");
         // Transfer the tokens to the bridge to perform the work
-        LibERC20TokenV06.compatTransfer(
-            _getTokenFromERC20AssetData(order.takerAssetData),
+        _getTokenFromERC20AssetData(order.takerAssetData).compatTransfer(
             bridgeAddress,
             inputTokenAmount
         );
-        bytes4 success = IERC20Bridge(bridgeAddress).bridgeTransferFrom(
+        IERC20Bridge(bridgeAddress).bridgeTransferFrom(
             tokenAddress,
             order.makerAddress,
             address(this),
             outputTokenAmount, // amount to transfer back from the bridge
             bridgeData
         );
-        // Bridge must return the proxy ID to indicate success.
-        require(success == ERC20_BRIDGE_PROXY_ID, "BRIDGE_FAILED");
         uint256 afterMakerTokenBalance = makerToken.balanceOf(address(this));
         // Ensure that the maker token balance has increased by the expected amount
         require(

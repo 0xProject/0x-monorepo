@@ -47,6 +47,7 @@ import * as PayTakerTransformer from '../test/generated-artifacts/PayTakerTransf
 import * as SimpleFunctionRegistry from '../test/generated-artifacts/SimpleFunctionRegistry.json';
 import * as TestCallTarget from '../test/generated-artifacts/TestCallTarget.json';
 import * as TestDelegateCaller from '../test/generated-artifacts/TestDelegateCaller.json';
+import * as TestFillQuoteTransformerBridge from '../test/generated-artifacts/TestFillQuoteTransformerBridge.json';
 import * as TestFillQuoteTransformerExchange from '../test/generated-artifacts/TestFillQuoteTransformerExchange.json';
 import * as TestFillQuoteTransformerHost from '../test/generated-artifacts/TestFillQuoteTransformerHost.json';
 import * as TestFullMigration from '../test/generated-artifacts/TestFullMigration.json';
@@ -120,6 +121,7 @@ export const artifacts = {
     ITestSimpleFunctionRegistryFeature: ITestSimpleFunctionRegistryFeature as ContractArtifact,
     TestCallTarget: TestCallTarget as ContractArtifact,
     TestDelegateCaller: TestDelegateCaller as ContractArtifact,
+    TestFillQuoteTransformerBridge: TestFillQuoteTransformerBridge as ContractArtifact,
     TestFillQuoteTransformerExchange: TestFillQuoteTransformerExchange as ContractArtifact,
     TestFillQuoteTransformerHost: TestFillQuoteTransformerHost as ContractArtifact,
     TestFullMigration: TestFullMigration as ContractArtifact,

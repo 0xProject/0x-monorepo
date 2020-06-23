@@ -27,6 +27,10 @@
             {
                 "note": "Introduce fill `TransformERC20` feature.",
                 "pr": 2545
+            },
+            {
+                "note": "Fill Bridges directly in `FillQuoteTransformer`.",
+                "pr": 2608
             }
         ]
     }

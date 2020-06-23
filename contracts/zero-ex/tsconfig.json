@@ -62,6 +62,7 @@
         "test/generated-artifacts/SimpleFunctionRegistry.json",
         "test/generated-artifacts/TestCallTarget.json",
         "test/generated-artifacts/TestDelegateCaller.json",
+        "test/generated-artifacts/TestFillQuoteTransformerBridge.json",
         "test/generated-artifacts/TestFillQuoteTransformerExchange.json",
         "test/generated-artifacts/TestFillQuoteTransformerHost.json",
         "test/generated-artifacts/TestFullMigration.json",
