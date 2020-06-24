@@ -2,32 +2,39 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ERC20BridgeSource, SignedOrder } from '..';
+import { MarketOperation, Omit } from '../types';
 
-import { MarketOperation } from './../types';
 import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operation_utils/types';
 
 /**
  * Differentiates different sources of native 0x order
  */
-export enum NativeOrderSource {
-    RfqtSource = 'Rfqt',
-    OrderbookSource = 'Orderbook',
+export enum NativeOrderOrigin {
+    RfqtOrigin = 'Rfqt',
+    OrderbookOrigin = 'Orderbook',
 }
 
-interface ReportSourceBase {
+/**
+ * Represents a report of non-native liquidity source
+ */
+export interface BridgeReportSource {
+    liquiditySource: Exclude<ERC20BridgeSource, ERC20BridgeSource.Native>;
     makerAmount: BigNumber;
     takerAmount: BigNumber;
 }
-export interface BridgeReportSource extends ReportSourceBase {
-    liquiditySource: ERC20BridgeSource;
-}
-export interface OrderbookReportSource extends ReportSourceBase {
-    liquiditySource: NativeOrderSource.OrderbookSource;
+
+interface NativeLiquiditySource {
+    liquiditySource: ERC20BridgeSource.Native;
+    makerAmount: BigNumber;
+    takerAmount: BigNumber;
     nativeOrder: SignedOrder;
 }
-export interface RfqtReportSource extends ReportSourceBase {
-    liquiditySource: NativeOrderSource.RfqtSource;
-    nativeOrder: SignedOrder;
+
+export interface OrderbookReportSource extends NativeLiquiditySource {
+    nativeOrderOrigin: NativeOrderOrigin.OrderbookOrigin;
+}
+export interface RfqtReportSource extends NativeLiquiditySource {
+    nativeOrderOrigin: NativeOrderOrigin.RfqtOrigin;
     makerUri: string;
 }
 /**
@@ -73,7 +80,8 @@ export class QuoteReporter {
             const orderbookReportSource: OrderbookReportSource = {
                 makerAmount: oo.makerAssetAmount,
                 takerAmount: oo.takerAssetAmount,
-                liquiditySource: NativeOrderSource.OrderbookSource,
+                liquiditySource: ERC20BridgeSource.Native,
+                nativeOrderOrigin: NativeOrderOrigin.OrderbookOrigin,
                 nativeOrder: oo,
             };
             return orderbookReportSource;
@@ -83,7 +91,8 @@ export class QuoteReporter {
     public trackRfqtOrder(ro: { signedOrder: SignedOrder; makerUri: string }): void {
         const { signedOrder, makerUri } = ro;
         const rfqtReportSource: RfqtReportSource = {
-            liquiditySource: NativeOrderSource.RfqtSource,
+            liquiditySource: ERC20BridgeSource.Native,
+            nativeOrderOrigin: NativeOrderOrigin.RfqtOrigin,
             makerAmount: signedOrder.makerAssetAmount,
             takerAmount: signedOrder.takerAssetAmount,
             nativeOrder: signedOrder,
@@ -111,7 +120,8 @@ export class QuoteReporter {
                 const orderbookOrder: OrderbookReportSource = {
                     makerAmount: nativeOrder.makerAssetAmount,
                     takerAmount: nativeOrder.takerAssetAmount,
-                    liquiditySource: NativeOrderSource.OrderbookSource,
+                    liquiditySource: ERC20BridgeSource.Native,
+                    nativeOrderOrigin: NativeOrderOrigin.OrderbookOrigin,
                     nativeOrder,
                 };
                 return orderbookOrder;
@@ -135,6 +145,11 @@ export class QuoteReporter {
 
     private _dexSampleToBridgeReportSource(ds: DexSample): BridgeReportSource {
         const liquiditySource = ds.source;
+
+        if (liquiditySource === ERC20BridgeSource.Native) {
+            throw new Error(`Unexpected liquidity source Native`);
+        }
+
         // input and output map to different values
         // based on the market operation
         if (this._marketOperation === MarketOperation.Buy) {

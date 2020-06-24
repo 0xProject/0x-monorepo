@@ -76,7 +76,7 @@ export { affiliateFeeUtils } from './utils/affiliate_fee_utils';
 export { ProtocolFeeUtils } from './utils/protocol_fee_utils';
 export { QuoteRequestor } from './utils/quote_requestor';
 export { rfqtMocker } from './utils/rfqt_mocker';
-import { NativeOrderSource } from './utils/quote_reporter';
+import { NativeOrderOrigin } from './utils/quote_reporter';
 export {
     QuoteReport,
     QuoteReporter,
@@ -84,6 +84,7 @@ export {
     BridgeReportSource,
     OrderbookReportSource,
     RfqtReportSource,
+    NativeOrderOrigin,
 } from './utils/quote_reporter';
-export type RfqtSource = NativeOrderSource.RfqtSource;
-export type OrderbookSource = NativeOrderSource.OrderbookSource;
+export type RfqtOrigin = NativeOrderOrigin.RfqtOrigin;
+export type OrderbookOrigin = NativeOrderOrigin.OrderbookOrigin;
