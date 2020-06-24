@@ -84,7 +84,6 @@ export {
     BridgeReportSource,
     OrderbookReportSource,
     RfqtReportSource,
-    NativeOrderOrigin,
 } from './utils/quote_reporter';
 export type RfqtOrigin = NativeOrderOrigin.RfqtOrigin;
 export type OrderbookOrigin = NativeOrderOrigin.OrderbookOrigin;
