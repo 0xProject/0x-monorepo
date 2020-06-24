@@ -52,4 +52,6 @@ export const ZeroExRevertErrors = {
     Spender: require('./revert_errors/zero-ex/spender_revert_errors'),
     TransformERC20: require('./revert_errors/zero-ex/transform_erc20_revert_errors'),
     Wallet: require('./revert_errors/zero-ex/wallet_revert_errors'),
+    MetaTransactions: require('./revert_errors/zero-ex/meta_transaction_revert_errors'),
+    SignatureValidator: require('./revert_errors/zero-ex/signature_validator_revert_errors'),
 };
