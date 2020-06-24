@@ -52,7 +52,7 @@ export interface QuoteReport {
 export class QuoteReporter {
     private readonly _marketOperation: MarketOperation;
     private _orderbookReportSources: OrderbookReportSource[];
-    private readonly _rfqtReportSources: RfqtReportSource[];
+    private _rfqtReportSources: RfqtReportSource[];
     private _bridgeReportSources: BridgeReportSource[];
     private _pathGenerated: QuoteReportSource[];
 
@@ -89,7 +89,7 @@ export class QuoteReporter {
             nativeOrder: signedOrder,
             makerUri,
         };
-        this._rfqtReportSources.push(rfqtReportSource);
+        this._rfqtReportSources = this._rfqtReportSources.concat(rfqtReportSource);
     }
 
     public trackPaths(paths: CollapsedFill[]): void {
