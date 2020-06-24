@@ -29,6 +29,14 @@ import {
     TestStakingContract,
     ZrxVaultContract,
 } from '@0x/contracts-staking';
+import {
+    artifacts as exchangeProxyArtifacts,
+    FillQuoteTransformerContract,
+    fullMigrateAsync as fullMigrateExchangeProxyAsync,
+    ITokenSpenderContract,
+    PayTakerTransformerContract,
+    WethTransformerContract,
+} from '@0x/contracts-zero-ex';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, TxData } from 'ethereum-types';
@@ -47,6 +55,7 @@ const allArtifacts = {
     ...forwarderArtifacts,
     ...stakingArtifacts,
     ...erc20BridgeSamplerArtifacts,
+    ...exchangeProxyArtifacts,
 };
 
 const { NULL_ADDRESS } = constants;
@@ -292,6 +301,35 @@ export async function runMigrationsAsync(
         devUtils.address,
     );
 
+    // Exchange Proxy //////////////////////////////////////////////////////////
+
+    const exchangeProxy = await fullMigrateExchangeProxyAsync(txDefaults.from, provider, txDefaults);
+    const allowanceTargetAddress = await new ITokenSpenderContract(exchangeProxy.address, provider, txDefaults)
+        .getAllowanceTarget()
+        .callAsync();
+
+    // Deploy transformers.
+    const fillQuoteTransformer = await FillQuoteTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.FillQuoteTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+        exchange.address,
+    );
+    const payTakerTransformer = await PayTakerTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.PayTakerTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+    );
+    const wethTransformer = await WethTransformerContract.deployFrom0xArtifactAsync(
+        exchangeProxyArtifacts.WethTransformer,
+        provider,
+        txDefaults,
+        allArtifacts,
+        etherToken.address,
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -327,13 +365,13 @@ export async function runMigrationsAsync(
         dexForwarderBridge: NULL_ADDRESS,
         multiBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
-        exchangeProxy: NULL_ADDRESS,
-        exchangeProxyAllowanceTarget: NULL_ADDRESS,
-        exchangeProxyTransformerDeployer: NULL_ADDRESS,
+        exchangeProxy: exchangeProxy.address,
+        exchangeProxyAllowanceTarget: allowanceTargetAddress,
+        exchangeProxyTransformerDeployer: txDefaults.from,
         transformers: {
-            wethTransformer: NULL_ADDRESS,
-            payTakerTransformer: NULL_ADDRESS,
-            fillQuoteTransformer: NULL_ADDRESS,
+            wethTransformer: wethTransformer.address,
+            payTakerTransformer: payTakerTransformer.address,
+            fillQuoteTransformer: fillQuoteTransformer.address,
         },
     };
     return contractAddresses;

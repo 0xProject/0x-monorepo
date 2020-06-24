@@ -19,6 +19,6 @@ describe('addresses', () => {
         };
         const migrationAddresses = await runMigrationsAsync(provider, txDefaults);
         const expectedAddresses = getContractAddressesForChainOrThrow(ChainId.Ganache);
-        expect(migrationAddresses).to.include(expectedAddresses);
+        expect(migrationAddresses).to.deep.eq(expectedAddresses);
     });
 });
