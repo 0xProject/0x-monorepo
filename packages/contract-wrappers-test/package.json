@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-wrappers-test",
-    "version": "12.2.14",
+    "version": "12.2.15",
     "engines": {
         "node": ">=6.12"
     },
@@ -35,7 +35,7 @@
         "@0x/contracts-test-utils": "^5.3.3",
         "@0x/dev-utils": "^3.2.2",
         "@0x/migrations": "^6.3.0",
-        "@0x/order-utils": "^10.2.5",
+        "@0x/order-utils": "^10.3.0",
         "@0x/subproviders": "^6.1.0",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^4.0.0",
