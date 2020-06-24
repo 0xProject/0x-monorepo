@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.3.0 - _June 24, 2020_
+
+    * Allow identifiers with leading underscores in python wrappers (#2591)
+
 ## v5.2.2 - _February 26, 2020_
 
     * Include `bin` files

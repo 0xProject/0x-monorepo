@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _June 24, 2020_
+
+    * Add `LibERC20Token.approveIfBelow()` (#2512)
+    * Add solidity 0.6 contracts (#2545)
+    * Update `LibERC20TokenV06` comments. (#2597)
+
 ## v3.1.5 - _March 3, 2020_
 
     * Dependencies updated

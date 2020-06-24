@@ -94,7 +94,8 @@
                 "note": "Add exchange proxy support",
                 "pr": 2591
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "version": "4.4.0",

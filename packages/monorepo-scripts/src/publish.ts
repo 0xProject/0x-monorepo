@@ -69,7 +69,10 @@ async function confirmAsync(message: string): Promise<void> {
     });
 
     // Push changelogs changes and markdown docs to Github
-    if (!configs.IS_LOCAL_PUBLISH) {
+    const isDryRun = configs.IS_LOCAL_PUBLISH || configs.IS_CANARY_PUBLISH;
+    if (!isDryRun) {
+        console.log('bail');
+        process.exit(0);
         // Generate markdown docs for packages
         await generateDocMDAsync(packagesWithDocs);
         await pushChangelogsAndMDDocsToGithubAsync();
@@ -83,7 +86,6 @@ async function confirmAsync(message: string): Promise<void> {
     utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToNextVersion);
 
-    const isDryRun = configs.IS_LOCAL_PUBLISH;
     if (!isDryRun) {
         // Publish docker images to DockerHub
         await publishImagesToDockerHubAsync(allPackagesToPublish);
@@ -245,11 +247,15 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
             'publish',
             `--cdVersions=${cdVersionsFilepath}`,
             `--registry=${configs.NPM_REGISTRY_URL}`,
+            `--verify-access`,
             `--yes`,
         ];
-        if (configs.IS_LOCAL_PUBLISH) {
+        if (configs.IS_LOCAL_PUBLISH || configs.IS_CANARY_PUBLISH) {
             lernaPublishArgs.push('--no-git-tag-version');
             lernaPublishArgs.push('--no-push');
+        }
+        if (configs.IS_CANARY_PUBLISH) {
+            lernaPublishArgs.push('--canary');
         }
         if (configs.DIST_TAG !== '') {
             lernaPublishArgs.push(`--dist-tag=${configs.DIST_TAG}`);
