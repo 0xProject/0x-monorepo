@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { ERC20BridgeSource, SignedOrder } from '..';
-import { MarketOperation, Omit } from '../types';
+import { MarketOperation } from '../types';
 
 import { CollapsedFill, DexSample, NativeCollapsedFill } from './market_operation_utils/types';
 
