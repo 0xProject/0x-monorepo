@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-wrappers-test",
-    "version": "12.2.14",
+    "version": "12.2.15",
     "engines": {
         "node": ">=6.12"
     },
