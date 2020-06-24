@@ -82,6 +82,8 @@ export {
     EventCallback,
     IndexedFilterValues,
     DecodedLogEvent,
+    ExchangeProxyMetaTransaction,
+    SignedExchangeProxyMetaTransaction,
 } from '@0x/types';
 
 export {
