@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.2.0 - _June 24, 2020_
+
+    * Add MaximumGasPrice contract, tooling, and unit tests (#2511)
+
 ## v6.1.5 - _March 3, 2020_
 
     * Dependencies updated

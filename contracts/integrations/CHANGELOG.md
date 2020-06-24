@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.5.2 - _June 24, 2020_
+
+    * Update `ERC20BridgeSampler` tests (#2531)
+
 ## v2.5.1 - _March 3, 2020_
 
     * Dependencies updated

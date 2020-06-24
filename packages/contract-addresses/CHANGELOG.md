@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.10.0 - _June 24, 2020_
+
+    * Updated Kovan's ERC20BridgeSampler address (#2519)
+    * Added MaximumGasPrice addresses (#2511)
+    * Redeploy `KyberBridge`, `UniswapBridge`, `Eth2DaiBridge`, `CurveBridge`, `DydxBridge` on mainnet and kovan (#2512)
+    * Redeploy `KyberBridge`, `UniswapBridge`, `Eth2DaiBridge`, `CurveBridge`, `DydxBridge` on mainnet and kovan (#2529)
+    * Redeploy `CurveBridge` with GST support (#2530)
+    * Add `dexForwarderBridge` addresses (#2525)
+    * Redeploy `Forwarder` on all networks (#2521)
+    * Redeploy `DexForwarderBridge` on Mainnet with Gas Token freeing (#2536)
+    * Revert to older Curve Bridge (without Gas Tokens) (#2536)
+    * Updated Ganache's ERC20BridgeSampler address (#2541)
+    * Updated Mainnet ERC20BridgeSampler address (#2551)
+    * Updated Kovan ERC20BridgeSampler address (#2568)
+    * Redeploy ERC20BridgeSampler on kovan (#2570)
+    * Redeploy ERC20BridgeSampler on Mainnet using `Kyber.searchBestRate` (#2575)
+    * Redeploy ERC20BridgeSampler on Mainnet and Kovan using UniswapV2 (#2599)
+    * Add UniswapV2Bridge address on Mainnet (new field) (#2599)
+    * Add Exchange Proxy addresses (#2591)
+
 ## v4.9.0 - _March 3, 2020_
 
     * Redeploy `ERC20BridgeSampler` (#2503)

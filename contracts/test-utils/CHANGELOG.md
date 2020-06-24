@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.3.3 - _June 24, 2020_
+
+    * Add `msg` param to `assertIntegerRoughlyEquals` (#2576)
+
 ## v5.3.2 - _March 3, 2020_
 
     * Dependencies updated

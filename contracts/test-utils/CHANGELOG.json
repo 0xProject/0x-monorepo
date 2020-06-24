@@ -6,7 +6,8 @@
                 "note": "Add `msg` param to `assertIntegerRoughlyEquals`",
                 "pr": 2576
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "timestamp": 1583220306,

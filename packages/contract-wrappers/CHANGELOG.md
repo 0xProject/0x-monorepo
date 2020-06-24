@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v13.7.0 - _June 24, 2020_
+
+    * Regenerated wrappers for Broker and GodsUnchainedValidator (#2511)
+    * Added wrapper for MaximumGasPrice (#2511)
+    * Added `Forwarder.marketSellAmountWithEth` (#2521)
+    * Added `ERC20BridgeSampler.sampleBuysFromCurve` (#2551)
+    * Added `ERC20BridgeSampler.sampleBuysFromKyberNetwork` (#2551)
+    * Added `ERC20BridgeSampler.sampleBuysFromUniswapV2 (#2595)
+    * Added `ERC20BridgeSampler.sampleSellsFromUniswapV2 (#2595)
+    * Added `ERC20BridgeSampler.sampleSellsFromMultiBridge (#2593)
+    * Add `ITransformERC20` (#2591)
+
 ## v13.6.3 - _March 3, 2020_
 
     * Dependencies updated

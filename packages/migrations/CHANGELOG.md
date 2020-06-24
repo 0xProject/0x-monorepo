@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.3.0 - _June 24, 2020_
+
+    * Add `dexForwarderBridge` to migration output (#2525)
+    * Add `ERC20BridgeSampler` deployment (#2541)
+    * Added `UniswapV2Bridge` address on Mainnet (#2599)
+    * Return empty Exchange Proxy addresses (#2591)
+
 ## v6.2.4 - _March 3, 2020_
 
     * Dependencies updated

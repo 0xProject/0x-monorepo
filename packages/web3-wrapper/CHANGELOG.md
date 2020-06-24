@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.1.0 - _June 24, 2020_
+
+    * Add `getAccountNonce()` to `Web3Wrapper` (#2545)
+    * Update ganache-core (#2545)
+
 ## v7.0.7 - _February 25, 2020_
 
     * Dependencies updated

@@ -70,7 +70,8 @@
                 "note": "Add Exchange Proxy addresses",
                 "pr": 2591
             }
-        ]
+        ],
+        "timestamp": 1592969527
     },
     {
         "version": "4.9.0",

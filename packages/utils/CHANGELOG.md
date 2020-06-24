@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.5.0 - _June 24, 2020_
+
+    * Add `ZeroExRevertErrors` (#2540)
+    * Print full revert error in stack traces. (#2540)
+    * `ZeroExRevertErrors.Migrate` -> `ZeroExRevertErrors.Ownable` (#2564)
+    * `instanceof Array` => `Array.isArray` (#2567)
+    * Add more `ZeroExRevertErrors` (#2545)
+    * Add more `ZeroExRevertErrors` (#2576)
+    * Update `ZeroExRevertErrors` (#2597)
+
 ## v5.4.1 - _February 25, 2020_
 
     * Fix extra space in `provider.send` signature (#2428)
