@@ -49,7 +49,7 @@ export type QuoteReportSource = BridgeReportSource | OrderbookReportSource | Rfq
  */
 export interface QuoteReport {
     sourcesConsidered: QuoteReportSource[];
-    pathGenerated: QuoteReportSource[];
+    sourcesDelivered: QuoteReportSource[];
 }
 
 /**
@@ -61,13 +61,13 @@ export class QuoteReporter {
     private _orderbookReportSources: OrderbookReportSource[];
     private _rfqtReportSources: RfqtReportSource[];
     private _bridgeReportSources: BridgeReportSource[];
-    private _pathGenerated: QuoteReportSource[];
+    private _sourcesDelivered: QuoteReportSource[];
 
     constructor(marketOperation: MarketOperation) {
         this._orderbookReportSources = [];
         this._rfqtReportSources = [];
         this._bridgeReportSources = [];
-        this._pathGenerated = [];
+        this._sourcesDelivered = [];
         this._marketOperation = marketOperation;
     }
 
@@ -102,7 +102,7 @@ export class QuoteReporter {
     }
 
     public trackPaths(paths: CollapsedFill[]): void {
-        this._pathGenerated = paths.map(p => {
+        this._sourcesDelivered = paths.map(p => {
             if ((p as NativeCollapsedFill).nativeOrder) {
                 const nativeFill: NativeCollapsedFill = p as NativeCollapsedFill;
                 const nativeOrder = nativeFill.nativeOrder;
@@ -139,7 +139,7 @@ export class QuoteReporter {
 
         return {
             sourcesConsidered,
-            pathGenerated: this._pathGenerated,
+            sourcesDelivered: this._sourcesDelivered,
         };
     }
 
