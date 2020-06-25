@@ -21,6 +21,10 @@
             {
                 "note": "Redeploy DFB on kovan",
                 "pr": 2628
+            },
+            {
+                "note": "Update ganache snapshot Exchange Proxy addresses for MetaTransactions",
+                "pr": 2610
             }
         ]
     },
