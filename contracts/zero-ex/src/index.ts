@@ -41,3 +41,6 @@ export {
     TupleDataItem,
     StateMutability,
 } from 'ethereum-types';
+
+export * from './nonce_utils';
+export * from './migration';

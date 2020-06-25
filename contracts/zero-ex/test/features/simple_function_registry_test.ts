@@ -1,6 +1,7 @@
 import { blockchainTests, constants, expect, randomAddress, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { BigNumber, hexUtils, OwnableRevertErrors, ZeroExRevertErrors } from '@0x/utils';
 
+import { ZeroExContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { initialMigrateAsync } from '../utils/migration';
 import {
@@ -9,7 +10,6 @@ import {
     ITestSimpleFunctionRegistryFeatureContract,
     TestSimpleFunctionRegistryFeatureImpl1Contract,
     TestSimpleFunctionRegistryFeatureImpl2Contract,
-    ZeroExContract,
 } from '../wrappers';
 
 blockchainTests.resets('SimpleFunctionRegistry feature', env => {

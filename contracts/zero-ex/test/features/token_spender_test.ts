@@ -7,15 +7,11 @@ import {
 } from '@0x/contracts-test-utils';
 import { BigNumber, hexUtils, StringRevertError, ZeroExRevertErrors } from '@0x/utils';
 
+import { TokenSpenderContract, ZeroExContract } from '../../src/wrappers';
 import { artifacts } from '../artifacts';
 import { abis } from '../utils/abis';
 import { fullMigrateAsync } from '../utils/migration';
-import {
-    TestTokenSpenderERC20TokenContract,
-    TestTokenSpenderERC20TokenEvents,
-    TokenSpenderContract,
-    ZeroExContract,
-} from '../wrappers';
+import { TestTokenSpenderERC20TokenContract, TestTokenSpenderERC20TokenEvents } from '../wrappers';
 
 blockchainTests.resets('TokenSpender feature', env => {
     let zeroEx: ZeroExContract;

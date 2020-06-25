@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.11.0",
+        "changes": [
+            {
+                "note": "Update ganache snapshot Exchange Proxy addresses",
+                "pr": 2612
+            }
+        ]
+    },
+    {
         "version": "4.10.0",
         "changes": [
             {

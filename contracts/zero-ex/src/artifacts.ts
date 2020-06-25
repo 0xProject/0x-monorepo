@@ -15,7 +15,11 @@ import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as ISimpleFunctionRegistry from '../generated-artifacts/ISimpleFunctionRegistry.json';
 import * as ITokenSpender from '../generated-artifacts/ITokenSpender.json';
 import * as ITransformERC20 from '../generated-artifacts/ITransformERC20.json';
+import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as PayTakerTransformer from '../generated-artifacts/PayTakerTransformer.json';
+import * as SimpleFunctionRegistry from '../generated-artifacts/SimpleFunctionRegistry.json';
+import * as TokenSpender from '../generated-artifacts/TokenSpender.json';
+import * as TransformERC20 from '../generated-artifacts/TransformERC20.json';
 import * as WethTransformer from '../generated-artifacts/WethTransformer.json';
 import * as ZeroEx from '../generated-artifacts/ZeroEx.json';
 export const artifacts = {
@@ -32,4 +36,8 @@ export const artifacts = {
     FillQuoteTransformer: FillQuoteTransformer as ContractArtifact,
     PayTakerTransformer: PayTakerTransformer as ContractArtifact,
     WethTransformer: WethTransformer as ContractArtifact,
+    Ownable: Ownable as ContractArtifact,
+    SimpleFunctionRegistry: SimpleFunctionRegistry as ContractArtifact,
+    TransformERC20: TransformERC20 as ContractArtifact,
+    TokenSpender: TokenSpender as ContractArtifact,
 };

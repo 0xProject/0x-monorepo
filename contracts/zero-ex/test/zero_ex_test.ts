@@ -1,6 +1,8 @@
 import { blockchainTests, constants, expect, verifyEventsFromLogs } from '@0x/contracts-test-utils';
 import { BigNumber, ZeroExRevertErrors } from '@0x/utils';
 
+import { ZeroExContract } from '../src/wrappers';
+
 import { artifacts } from './artifacts';
 import { initialMigrateAsync } from './utils/migration';
 import {
@@ -9,7 +11,6 @@ import {
     ISimpleFunctionRegistryContract,
     TestZeroExFeatureContract,
     TestZeroExFeatureEvents,
-    ZeroExContract,
 } from './wrappers';
 
 blockchainTests.resets('ZeroEx contract', env => {
