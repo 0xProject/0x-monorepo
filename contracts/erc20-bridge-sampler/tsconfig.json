@@ -12,6 +12,7 @@
         "test/generated-artifacts/DummyLiquidityProvider.json",
         "test/generated-artifacts/DummyLiquidityProviderRegistry.json",
         "test/generated-artifacts/ERC20BridgeSampler.json",
+        "test/generated-artifacts/IBalancerPool.json",
         "test/generated-artifacts/ICurve.json",
         "test/generated-artifacts/IDevUtils.json",
         "test/generated-artifacts/IERC20BridgeSampler.json",

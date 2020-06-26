@@ -5,6 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as BalancerBridge from '../test/generated-artifacts/BalancerBridge.json';
 import * as ChaiBridge from '../test/generated-artifacts/ChaiBridge.json';
 import * as CurveBridge from '../test/generated-artifacts/CurveBridge.json';
 import * as DexForwarderBridge from '../test/generated-artifacts/DexForwarderBridge.json';
@@ -18,6 +19,7 @@ import * as IAssetData from '../test/generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../test/generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../test/generated-artifacts/IAssetProxyDispatcher.json';
 import * as IAuthorizable from '../test/generated-artifacts/IAuthorizable.json';
+import * as IBalancerPool from '../test/generated-artifacts/IBalancerPool.json';
 import * as IChai from '../test/generated-artifacts/IChai.json';
 import * as ICurve from '../test/generated-artifacts/ICurve.json';
 import * as IDydx from '../test/generated-artifacts/IDydx.json';
@@ -57,6 +59,7 @@ export const artifacts = {
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     StaticCallProxy: StaticCallProxy as ContractArtifact,
+    BalancerBridge: BalancerBridge as ContractArtifact,
     ChaiBridge: ChaiBridge as ContractArtifact,
     CurveBridge: CurveBridge as ContractArtifact,
     DexForwarderBridge: DexForwarderBridge as ContractArtifact,
@@ -70,6 +73,7 @@ export const artifacts = {
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
+    IBalancerPool: IBalancerPool as ContractArtifact,
     IChai: IChai as ContractArtifact,
     ICurve: ICurve as ContractArtifact,
     IDydx: IDydx as ContractArtifact,
