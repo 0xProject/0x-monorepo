@@ -36,6 +36,7 @@ import "./ILiquidityProvider.sol";
 import "./ILiquidityProviderRegistry.sol";
 import "./IUniswapV2Router01.sol";
 import "./IMultiBridge.sol";
+import "./IBalancerPool.sol";
 
 
 contract ERC20BridgeSampler is
@@ -764,6 +765,146 @@ contract ERC20BridgeSampler is
                 break;
             }
             takerTokenAmounts[i] = sellAmount;
+        }
+    }
+
+    struct BalancerPoolState {
+        uint256 takerTokenBalance;
+        uint256 takerTokenWeight;
+        uint256 makerTokenBalance;
+        uint256 makerTokenWeight;
+        uint256 swapFee;
+    }
+
+    function getBalancerPoolState(
+        IBalancerPool pool,
+        address takerToken,
+        address makerToken
+    )
+        public
+        view
+        returns (BalancerPoolState memory state)
+    {
+        state.takerTokenBalance = pool.getBalance(takerToken);
+        state.makerTokenBalance = pool.getBalance(makerToken);
+        state.takerTokenWeight = pool.getDenormalizedWeight(takerToken);
+        state.makerTokenWeight = pool.getDenormalizedWeight(makerToken);
+        state.swapFee = pool.getSwapFee();
+    }
+
+    /// @dev Sample sell quotes from Balancer.
+    /// @param poolAddress Address of the Balancer pool.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param takerTokenAmounts Taker token sell amount for each sample.
+    /// @return makerTokenAmounts Maker amounts bought at each taker token
+    ///         amount.
+    function sampleSellsFromBalancer(
+        address poolAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] memory takerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory makerTokenAmounts)
+    {
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+
+        (bool didSucceed, bytes memory returnData) =
+            address(this).staticcall.gas(DEFAULT_CALL_GAS)(
+                abi.encodeWithSelector(
+                    this.getBalancerPoolState.selector,
+                    poolAddress,
+                    takerToken,
+                    makerToken
+                ));
+        if (!didSucceed) {
+            return makerTokenAmounts;
+        }
+        BalancerPoolState memory state = abi.decode(
+            returnData,
+            (BalancerPoolState)
+        );
+
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                poolAddress.staticcall.gas(DEFAULT_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IBalancerPool(0).calcOutGivenIn.selector,
+                        state.takerTokenBalance,
+                        state.takerTokenWeight,
+                        state.makerTokenBalance,
+                        state.makerTokenWeight,
+                        takerTokenAmounts[i],
+                        state.swapFee
+                    ));
+            uint256 buyAmount = 0;
+            if (didSucceed) {
+                buyAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            makerTokenAmounts[i] = buyAmount;
+        }
+    }
+
+    /// @dev Sample buy quotes from Balancer.
+    /// @param poolAddress Address of the Balancer pool.
+    /// @param takerToken Address of the taker token (what to sell).
+    /// @param makerToken Address of the maker token (what to buy).
+    /// @param makerTokenAmounts Maker token buy amount for each sample.
+    /// @return takerTokenAmounts Taker amounts sold at each maker token
+    ///         amount.
+    function sampleBuysFromBalancer(
+        address poolAddress,
+        address takerToken,
+        address makerToken,
+        uint256[] memory makerTokenAmounts
+    )
+        public
+        view
+        returns (uint256[] memory takerTokenAmounts)
+    {
+        uint256 numSamples = takerTokenAmounts.length;
+        makerTokenAmounts = new uint256[](numSamples);
+
+        (bool didSucceed, bytes memory returnData) =
+            address(this).staticcall.gas(DEFAULT_CALL_GAS)(
+                abi.encodeWithSelector(
+                    this.getBalancerPoolState.selector,
+                    poolAddress,
+                    takerToken,
+                    makerToken
+                ));
+        if (!didSucceed) {
+            return makerTokenAmounts;
+        }
+        BalancerPoolState memory state = abi.decode(
+            returnData,
+            (BalancerPoolState)
+        );
+
+        for (uint256 i = 0; i < numSamples; i++) {
+            (bool didSucceed, bytes memory resultData) =
+                poolAddress.staticcall.gas(DEFAULT_CALL_GAS)(
+                    abi.encodeWithSelector(
+                        IBalancerPool(0).calcInGivenOut.selector,
+                        state.takerTokenBalance,
+                        state.takerTokenWeight,
+                        state.makerTokenBalance,
+                        state.makerTokenWeight,
+                        makerTokenAmounts[i],
+                        state.swapFee
+                    ));
+            uint256 sellAmount = 0;
+            if (didSucceed) {
+                sellAmount = abi.decode(resultData, (uint256));
+            } else {
+                break;
+            }
+            makerTokenAmounts[i] = sellAmount;
         }
     }
 
