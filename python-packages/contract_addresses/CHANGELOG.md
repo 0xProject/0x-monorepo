@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0 - 2020-06-27
+
+-   Updated existing addresses and added new ones. For full details see https://gist.github.com/feuGeneA/7546705fe8e620fb8e51021e1f5a14f4 .
+
 ## 3.0.0 - 2019-12-03
 
 -   Addresses are now indexed by chain ID rather than by network ID.

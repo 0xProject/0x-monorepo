@@ -4,6 +4,8 @@ Addresses at which the 0x smart contracts have been deployed.
 
 Read the [documentation](http://0x-contract-addresses-py.s3-website-us-east-1.amazonaws.com/)
 
+Note that this package is generated from https://github.com/0xProject/0x-monorepo/blob/development/packages/contract-addresses/addresses.json .  If that file is newer than the publication date of this package, then this package is out of date.
+
 ## Installing
 
 ```bash
