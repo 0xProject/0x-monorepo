@@ -84,19 +84,29 @@ contract FillQuoteTransformer is
         uint256 protocolFeePaid;
     }
 
+    /// @dev Emitted when a trade is skipped due to a lack of funds
+    ///      to pay the 0x Protocol fee.
+    /// @param ethBalance The current eth balance.
+    /// @param ethNeeded The current eth balance required to pay
+    ///        the protocol fee.
+    event ProtocolFeeUnfunded(
+        uint256 ethBalance,
+        uint256 ethNeeded
+    );
+
     /// @dev The Exchange ERC20Proxy ID.
     bytes4 private constant ERC20_ASSET_PROXY_ID = 0xf47261b0;
     /// @dev The Exchange ERC20BridgeProxy ID.
     bytes4 private constant ERC20_BRIDGE_PROXY_ID = 0xdc1600f3;
     /// @dev Maximum uint256 value.
     uint256 private constant MAX_UINT256 = uint256(-1);
+    /// @dev The Transformer implementation (self) address.
+    address private immutable implementation;
 
     /// @dev The Exchange contract.
     IExchange public immutable exchange;
     /// @dev The ERC20Proxy address.
     address public immutable erc20Proxy;
-    /// @dev The Transformer implementation (self) address.
-    address public immutable implementation;
 
     /// @dev Create this contract.
     /// @param exchange_ The Exchange V3 instance.
@@ -410,8 +420,10 @@ contract FillQuoteTransformer is
             }
             // Swallow failures, leaving all results as zero.
         } else {
-            // Ensure we have enough ETH to cover the protocol fee.
-            if (address(this).balance < protocolFee) {
+            // Emit an event if we do not have sufficient ETH to cover the protocol fee.
+            uint256 ethRemaining = address(this).balance;
+            if (ethRemaining < protocolFee) {
+                emit ProtocolFeeUnfunded(ethRemaining, protocolFee);
                 return results;
             }
             // Track changes in the maker token balance.
@@ -478,15 +490,14 @@ contract FillQuoteTransformer is
             outputTokenAmount, // amount to transfer back from the bridge
             bridgeData
         );
-        uint256 afterMakerTokenBalance = makerToken.balanceOf(address(this));
-        // Ensure that the maker token balance has increased by the expected amount
-        require(
-            afterMakerTokenBalance >= initialMakerTokenBalance.safeAdd(outputTokenAmount),
-            "BRIDGE_UNDERPAY"
-        );
-        results.makerTokenBoughtAmount = afterMakerTokenBalance.safeSub(initialMakerTokenBalance);
+        results.makerTokenBoughtAmount = makerToken
+            .balanceOf(address(this))
+            .safeSub(initialMakerTokenBalance);
         results.takerTokenSoldAmount = inputTokenAmount;
         // protocol fee paid remains 0
+        // TransformERC20 asserts the overall price is as expected. It is possible
+        // a subsequent fill can net out at the expected price so we do not assert
+        // the trade balance
     }
 
     /// @dev Extract the token from plain ERC20 asset data.
