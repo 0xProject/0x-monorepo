@@ -96,6 +96,20 @@
             {
                 "constant": true,
                 "inputs": [
+                    { "internalType": "address", "name": "poolAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleBuysFromBalancer",
+                "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
                     { "internalType": "address", "name": "curveAddress", "type": "address" },
                     { "internalType": "int128", "name": "fromTokenIdx", "type": "int128" },
                     { "internalType": "int128", "name": "toTokenIdx", "type": "int128" },
@@ -186,6 +200,20 @@
                 ],
                 "name": "sampleBuysFromUniswapV2",
                 "outputs": [{ "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    { "internalType": "address", "name": "poolAddress", "type": "address" },
+                    { "internalType": "address", "name": "takerToken", "type": "address" },
+                    { "internalType": "address", "name": "makerToken", "type": "address" },
+                    { "internalType": "uint256[]", "name": "takerTokenAmounts", "type": "uint256[]" }
+                ],
+                "name": "sampleSellsFromBalancer",
+                "outputs": [{ "internalType": "uint256[]", "name": "makerTokenAmounts", "type": "uint256[]" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -316,6 +344,16 @@
                     },
                     "return": "orderFillableTakerAssetAmounts How much taker asset can be filled         by each order in `orders`."
                 },
+                "sampleBuysFromBalancer(address,address,address,uint256[])": {
+                    "details": "Sample buy quotes from Balancer.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "makerTokenAmounts": "Maker token buy amount for each sample.",
+                        "poolAddress": "Address of the Balancer pool.",
+                        "takerToken": "Address of the taker token (what to sell)."
+                    },
+                    "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
                 "sampleBuysFromCurve(address,int128,int128,uint256[])": {
                     "details": "Sample buy quotes from Curve.",
                     "params": {
@@ -372,6 +410,16 @@
                         "path": "Token route."
                     },
                     "return": "takerTokenAmounts Taker amounts sold at each maker token         amount."
+                },
+                "sampleSellsFromBalancer(address,address,address,uint256[])": {
+                    "details": "Sample sell quotes from Balancer.",
+                    "params": {
+                        "makerToken": "Address of the maker token (what to buy).",
+                        "poolAddress": "Address of the Balancer pool.",
+                        "takerToken": "Address of the taker token (what to sell).",
+                        "takerTokenAmounts": "Taker token sell amount for each sample."
+                    },
+                    "return": "makerTokenAmounts Maker amounts bought at each taker token         amount."
                 },
                 "sampleSellsFromCurve(address,int128,int128,uint256[])": {
                     "details": "Sample sell quotes from Curve.",
