@@ -9,6 +9,10 @@
             {
                 "note": "Add EP flash wallet and affiliate fee transformer",
                 "pr": 2622
+            },
+            {
+                "note": "Update DFB addresses",
+                "pr": 2616
             }
         ]
     },
