@@ -947,5 +947,35 @@ describe('quote_simulation tests', async () => {
                 assertRoughlyEquals(result.totalTakerAssetAmount, slippedOutput);
             }
         });
+
+        it('expects worse price than the best case, even if orders are unsorted', async () => {
+            const side = randomSide();
+            const fillableInput = getRandomOrderSize();
+            const fillableOutput = getRandomOrderSize();
+            const orderSlippage = getRandomFeeRate();
+            let orders = createQuoteFillOrders({
+                fillableInput,
+                fillableOutput,
+                side,
+            }).map(fo => slipOrder(fo.order, orderSlippage, side));
+            orders = [...orders.slice(1), orders[0]];
+            const bestCase = simulateBestCaseFill({
+                orders,
+                side,
+                fillAmount: fillableInput,
+                gasPrice: ONE,
+                opts: { gasSchedule: GAS_SCHEDULE },
+            });
+            const worstCase = simulateWorstCaseFill({
+                orders,
+                side,
+                fillAmount: fillableInput,
+                gasPrice: ONE,
+                opts: { gasSchedule: GAS_SCHEDULE },
+            });
+            const bestPrice = bestCase.makerAssetAmount.div(bestCase.totalTakerAssetAmount);
+            const worstPrice = worstCase.makerAssetAmount.div(worstCase.totalTakerAssetAmount);
+            expect(worstPrice).to.be.bignumber.lt(bestPrice);
+        });
     });
 }); // tslint:disable: max-file-line-count

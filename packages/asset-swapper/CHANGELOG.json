@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.1",
+        "changes": [
+            {
+                "note": "Fix worst case asset amount calculations.",
+                "pr": 2615
+            }
+        ]
+    },
+    {
         "version": "4.5.0",
         "changes": [
             {
