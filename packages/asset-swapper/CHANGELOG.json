@@ -1,7 +1,15 @@
 [
     {
-        "version": "4.5.1",
+        "version": "4.6.0",
         "changes": [
+            {
+                "note": "Use internal Eth Gas Station proxy",
+                "pr": 2614
+            },
+            {
+                "note": "Renamed RFQT request parameters",
+                "pr": 2582
+            },
             {
                 "note": "Fix worst case asset amount calculations.",
                 "pr": 2615
