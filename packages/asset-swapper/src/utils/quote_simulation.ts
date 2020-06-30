@@ -238,18 +238,26 @@ function createBestCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrderC
 }
 
 function createWorstCaseFillOrderCalls(quoteInfo: QuoteFillInfo): QuoteFillOrderCall[] {
-    // Reuse best case fill orders.
-    return createBestCaseFillOrderCalls(quoteInfo)
-        .map(fo => ({
-            ...fo,
-            order: {
-                ...fo.order,
-                // Apply slippage to order fills and reverse them.
-                fills: getSlippedOrderFills(fo.order, quoteInfo.side).reverse(),
-            },
-            // Reverse the orders.
-        }))
-        .reverse();
+    // Reuse best case fill orders, but apply slippage.
+    return (
+        createBestCaseFillOrderCalls(quoteInfo)
+            .map(fo => ({
+                ...fo,
+                order: {
+                    ...fo.order,
+                    // Apply slippage to order fills and reverse them.
+                    fills: getSlippedOrderFills(fo.order, quoteInfo.side)
+                        .map(f => ({ ...f, subFills: f.subFills.slice().reverse() }))
+                        .reverse(),
+                },
+            }))
+            // Sort by ascending price.
+            .sort((a, b) =>
+                a.order.makerAssetAmount
+                    .div(a.order.takerAssetAmount)
+                    .comparedTo(b.order.makerAssetAmount.div(b.order.takerAssetAmount)),
+            )
+    );
 }
 
 // Apply order slippage to its fill paths.

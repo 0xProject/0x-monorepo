@@ -89,6 +89,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
         const sellToken = getTokenFromAssetData(quote.takerAssetData);
         const buyToken = getTokenFromAssetData(quote.makerAssetData);
+        const sellAmount = quote.worstCaseQuoteInfo.totalTakerAssetAmount;
 
         // Build up the transforms.
         const transforms = [];
@@ -98,7 +99,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
                 deploymentNonce: this.transformerNonces.wethTransformer,
                 data: encodeWethTransformerData({
                     token: ETH_TOKEN_ADDRESS,
-                    amount: quote.worstCaseQuoteInfo.totalTakerAssetAmount,
+                    amount: sellAmount,
                 }),
             });
         }
@@ -141,7 +142,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
             .transformERC20(
                 isFromETH ? ETH_TOKEN_ADDRESS : sellToken,
                 isToETH ? ETH_TOKEN_ADDRESS : buyToken,
-                quote.worstCaseQuoteInfo.totalTakerAssetAmount,
+                sellAmount,
                 quote.worstCaseQuoteInfo.makerAssetAmount,
                 transforms,
             )
@@ -149,7 +150,7 @@ export class ExchangeProxySwapQuoteConsumer implements SwapQuoteConsumerBase {
 
         let ethAmount = quote.worstCaseQuoteInfo.protocolFeeInWeiAmount;
         if (isFromETH) {
-            ethAmount = ethAmount.plus(quote.worstCaseQuoteInfo.takerAssetAmount);
+            ethAmount = ethAmount.plus(sellAmount);
         }
 
         return {
