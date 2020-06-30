@@ -13,7 +13,7 @@ import {
 } from './types';
 import { DEFAULT_GET_MARKET_ORDERS_OPTS } from './utils/market_operation_utils/constants';
 
-const ETH_GAS_STATION_API_URL = 'https://ethgasstation.api.0x.org/api/ethgasAPI.json';
+const ETH_GAS_STATION_API_URL = 'https://ethgasstation.info/api/ethgasAPI.json';
 const NULL_BYTES = '0x';
 const NULL_ERC20_ASSET_DATA = '0xf47261b00000000000000000000000000000000000000000000000000000000000000000';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
