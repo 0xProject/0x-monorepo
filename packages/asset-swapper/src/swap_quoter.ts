@@ -174,7 +174,10 @@ export class SwapQuoter {
                 : (r => r !== undefined && r.skipBuyRequests === true)(constants.DEFAULT_SWAP_QUOTER_OPTS.rfqt);
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
-        this._protocolFeeUtils = new ProtocolFeeUtils(constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS);
+        this._protocolFeeUtils = new ProtocolFeeUtils(
+            constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
+            options.ethGasStationUrl,
+        );
         this._orderStateUtils = new OrderStateUtils(this._devUtilsContract);
         this._quoteRequestor = new QuoteRequestor(
             rfqt ? rfqt.makerAssetOfferings || {} : {},

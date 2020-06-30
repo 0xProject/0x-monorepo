@@ -7,10 +7,16 @@ import { SwapQuoterError } from '../types';
 export class ProtocolFeeUtils {
     public gasPriceEstimation: BigNumber;
     private readonly _gasPriceHeart: any;
+    private readonly _ethGasStationUrl: string;
 
-    constructor(gasPricePollingIntervalInMs: number, initialGasPrice: BigNumber = constants.ZERO_AMOUNT) {
+    constructor(
+        gasPricePollingIntervalInMs: number,
+        ethGasStationUrl: string = constants.ETH_GAS_STATION_API_URL,
+        initialGasPrice: BigNumber = constants.ZERO_AMOUNT,
+    ) {
         this._gasPriceHeart = heartbeats.createHeart(gasPricePollingIntervalInMs);
         this.gasPriceEstimation = initialGasPrice;
+        this._ethGasStationUrl = ethGasStationUrl;
         this._initializeHeartBeat();
     }
 
@@ -35,7 +41,7 @@ export class ProtocolFeeUtils {
     // tslint:disable-next-line: prefer-function-over-method
     private async _getGasPriceFromGasStationOrThrowAsync(): Promise<BigNumber> {
         try {
-            const res = await fetch(constants.ETH_GAS_STATION_API_URL);
+            const res = await fetch(this._ethGasStationUrl);
             const gasInfo = await res.json();
             // Eth Gas Station result is gwei * 10
             // tslint:disable-next-line:custom-no-magic-numbers

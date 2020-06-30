@@ -13,6 +13,9 @@
             {
                 "note": "Fix worst case asset amount calculations.",
                 "pr": 2615
+            },
+            {
+                "note": "Specify EthGasStation url as an optional parameter"
             }
         ]
     },
