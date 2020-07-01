@@ -205,55 +205,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
-                        name: 'pool',
-                        type: 'address',
-                    },
-                    {
-                        name: 'takerToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'makerToken',
-                        type: 'address',
-                    },
-                ],
-                name: 'getBalancerPoolState',
-                outputs: [
-                    {
-                        name: 'state',
-                        type: 'tuple',
-                        components: [
-                            {
-                                name: 'takerTokenBalance',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'takerTokenWeight',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'makerTokenBalance',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'makerTokenWeight',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'swapFee',
-                                type: 'uint256',
-                            },
-                        ],
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
                         name: 'registryAddress',
                         type: 'address',
                     },
@@ -432,37 +383,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 outputs: [
                     {
                         name: 'orderFillableTakerAssetAmounts',
-                        type: 'uint256[]',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: 'poolAddress',
-                        type: 'address',
-                    },
-                    {
-                        name: 'takerToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'makerToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'makerTokenAmounts',
-                        type: 'uint256[]',
-                    },
-                ],
-                name: 'sampleBuysFromBalancer',
-                outputs: [
-                    {
-                        name: 'takerTokenAmounts',
                         type: 'uint256[]',
                     },
                 ],
@@ -657,37 +577,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
                 outputs: [
                     {
                         name: 'takerTokenAmounts',
-                        type: 'uint256[]',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: 'poolAddress',
-                        type: 'address',
-                    },
-                    {
-                        name: 'takerToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'makerToken',
-                        type: 'address',
-                    },
-                    {
-                        name: 'takerTokenAmounts',
-                        type: 'uint256[]',
-                    },
-                ],
-                name: 'sampleSellsFromBalancer',
-                outputs: [
-                    {
-                        name: 'makerTokenAmounts',
                         type: 'uint256[]',
                     },
                 ],
@@ -1032,58 +921,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             },
         };
     }
-    public getBalancerPoolState(
-        pool: string,
-        takerToken: string,
-        makerToken: string,
-    ): ContractFunctionObj<{
-        takerTokenBalance: BigNumber;
-        takerTokenWeight: BigNumber;
-        makerTokenBalance: BigNumber;
-        makerTokenWeight: BigNumber;
-        swapFee: BigNumber;
-    }> {
-        const self = (this as any) as ERC20BridgeSamplerContract;
-        assert.isString('pool', pool);
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
-        const functionSignature = 'getBalancerPoolState(address,address,address)';
-
-        return {
-            async callAsync(
-                callData: Partial<CallData> = {},
-                defaultBlock?: BlockParam,
-            ): Promise<{
-                takerTokenBalance: BigNumber;
-                takerTokenWeight: BigNumber;
-                makerTokenBalance: BigNumber;
-                makerTokenWeight: BigNumber;
-                swapFee: BigNumber;
-            }> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<{
-                    takerTokenBalance: BigNumber;
-                    takerTokenWeight: BigNumber;
-                    makerTokenBalance: BigNumber;
-                    makerTokenWeight: BigNumber;
-                    swapFee: BigNumber;
-                }>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    pool.toLowerCase(),
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
-                ]);
-            },
-        };
-    }
     /**
      * Returns the address of a liquidity provider for the given market
      * (takerToken, makerToken), from a registry of liquidity providers.
@@ -1217,48 +1054,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [orders, orderSignatures]);
-            },
-        };
-    }
-    /**
-     * Sample buy quotes from Balancer.
-     * @param poolAddress Address of the Balancer pool.
-     * @param takerToken Address of the taker token (what to sell).
-     * @param makerToken Address of the maker token (what to buy).
-     * @param makerTokenAmounts Maker token buy amount for each sample.
-     * @returns takerTokenAmounts Taker amounts sold at each maker token         amount.
-     */
-    public sampleBuysFromBalancer(
-        poolAddress: string,
-        takerToken: string,
-        makerToken: string,
-        makerTokenAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
-        const self = (this as any) as ERC20BridgeSamplerContract;
-        assert.isString('poolAddress', poolAddress);
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
-        assert.isArray('makerTokenAmounts', makerTokenAmounts);
-        const functionSignature = 'sampleBuysFromBalancer(address,address,address,uint256[])';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    poolAddress.toLowerCase(),
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
-                    makerTokenAmounts,
-                ]);
             },
         };
     }
@@ -1493,48 +1288,6 @@ export class ERC20BridgeSamplerContract extends BaseContract {
             },
             getABIEncodedTransactionData(): string {
                 return self._strictEncodeArguments(functionSignature, [path, makerTokenAmounts]);
-            },
-        };
-    }
-    /**
-     * Sample sell quotes from Balancer.
-     * @param poolAddress Address of the Balancer pool.
-     * @param takerToken Address of the taker token (what to sell).
-     * @param makerToken Address of the maker token (what to buy).
-     * @param takerTokenAmounts Taker token sell amount for each sample.
-     * @returns makerTokenAmounts Maker amounts bought at each taker token         amount.
-     */
-    public sampleSellsFromBalancer(
-        poolAddress: string,
-        takerToken: string,
-        makerToken: string,
-        takerTokenAmounts: BigNumber[],
-    ): ContractFunctionObj<BigNumber[]> {
-        const self = (this as any) as ERC20BridgeSamplerContract;
-        assert.isString('poolAddress', poolAddress);
-        assert.isString('takerToken', takerToken);
-        assert.isString('makerToken', makerToken);
-        assert.isArray('takerTokenAmounts', takerTokenAmounts);
-        const functionSignature = 'sampleSellsFromBalancer(address,address,address,uint256[])';
-
-        return {
-            async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber[]> {
-                BaseContract._assertCallParams(callData, defaultBlock);
-                const rawCallResult = await self._performCallAsync(
-                    { ...callData, data: this.getABIEncodedTransactionData() },
-                    defaultBlock,
-                );
-                const abiEncoder = self._lookupAbiEncoder(functionSignature);
-                BaseContract._throwIfUnexpectedEmptyCallResult(rawCallResult, abiEncoder);
-                return abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
-            },
-            getABIEncodedTransactionData(): string {
-                return self._strictEncodeArguments(functionSignature, [
-                    poolAddress.toLowerCase(),
-                    takerToken.toLowerCase(),
-                    makerToken.toLowerCase(),
-                    takerTokenAmounts,
-                ]);
             },
         };
     }

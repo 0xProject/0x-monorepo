@@ -1,32 +1,41 @@
-import Axios from 'axios';
-import { toChecksumAddress } from 'ethereumjs-util';
+import { BigNumber } from '@0x/utils';
+import { bmath, getPoolsWithTokens, parsePoolData } from '@balancer-labs/sor';
+import * as _ from 'lodash';
 
-const SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer';
+export interface BalancerPool {
+    id: string;
+    balanceIn: BigNumber;
+    balanceOut: BigNumber;
+    weightIn: BigNumber;
+    weightOut: BigNumber;
+    swapFee: BigNumber;
+    spotPrice?: BigNumber;
+    slippage?: BigNumber;
+    limitAmount?: BigNumber;
+}
 
-export const getBalancerAddressesForPairAsync = async (takerToken: string, makerToken: string): Promise<string[]> => {
-    const query = `
-      query ($tokens: [Bytes!]) {
-          pools (where: {tokensList_contains: $tokens, publicSwap: true}) {
-            id
-          }
-        }
-    `;
-    const variables = {
-        tokens: [takerToken, makerToken].map(toChecksumAddress),
-    };
-    try {
-        const response = await Axios.post(
-            SUBGRAPH_URL,
-            { query, variables },
-            {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            },
-        );
-        return response.data.pools.map((pool: { id: string }) => pool.id);
-    } catch (err) {
-        return [];
-    }
+export const getBalancerPoolsForPairAsync = async (takerToken: string, makerToken: string): Promise<BalancerPool[]> => {
+    return parsePoolData(await getPoolsWithTokens(takerToken, makerToken), takerToken, makerToken);
+};
+
+export const computeBalancerSellQuote = (pool: BalancerPool, takerFillAmount: BigNumber): BigNumber => {
+    return bmath.calcOutGivenIn(
+        pool.balanceIn,
+        pool.weightIn,
+        pool.balanceOut,
+        pool.weightOut,
+        takerFillAmount,
+        pool.swapFee,
+    );
+};
+
+export const computeBalancerBuyQuote = (pool: BalancerPool, makerFillAmount: BigNumber): BigNumber => {
+    return bmath.calcInGivenOut(
+        pool.balanceIn,
+        pool.weightIn,
+        pool.balanceOut,
+        pool.weightOut,
+        makerFillAmount,
+        pool.swapFee,
+    );
 };

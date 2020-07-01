@@ -136,9 +136,7 @@ export interface CollapsedFill<TFillData extends FillData = FillData> {
 /**
  * A `CollapsedFill` wrapping a native order.
  */
-export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> {
-    nativeOrder: SignedOrderWithFillableAmounts;
-}
+export interface NativeCollapsedFill extends CollapsedFill<NativeFillData> {}
 
 /**
  * Optimized orders to fill.

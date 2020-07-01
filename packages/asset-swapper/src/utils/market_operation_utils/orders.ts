@@ -153,7 +153,7 @@ export function createOrdersFromPath(path: Fill[], opts: CreateOrderFromPathOpts
     const orders: OptimizedMarketOrder[] = [];
     for (let i = 0; i < collapsedPath.length; ) {
         if (collapsedPath[i].source === ERC20BridgeSource.Native) {
-            orders.push(createNativeOrder(collapsedPath[i]));
+            orders.push(createNativeOrder(collapsedPath[i] as NativeCollapsedFill));
             ++i;
             continue;
         }
@@ -405,10 +405,10 @@ function createCommonBridgeOrderFields(opts: CreateOrderFromPathOpts): CommonBri
     };
 }
 
-function createNativeOrder(fill: CollapsedFill): OptimizedMarketOrder {
+function createNativeOrder(fill: NativeCollapsedFill): OptimizedMarketOrder {
     return {
         fills: [fill],
-        ...(fill as NativeCollapsedFill).nativeOrder,
+        ...fill.fillData!.order,
     };
 }
 
