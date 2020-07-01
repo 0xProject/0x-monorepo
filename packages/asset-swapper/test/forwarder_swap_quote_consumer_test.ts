@@ -197,6 +197,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
         swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, contractAddresses, {
             chainId,
         });
+        swapQuoteConsumer.buyQuoteSellAmountScalingFactor = 1;
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();

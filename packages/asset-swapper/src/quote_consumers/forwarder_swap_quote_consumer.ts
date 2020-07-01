@@ -24,6 +24,7 @@ const { NULL_ADDRESS } = constants;
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
     public readonly provider: ZeroExProvider;
     public readonly chainId: number;
+    public buyQuoteSellAmountScalingFactor = 1.0001; // 100% + 1 bps
 
     private readonly _forwarder: ForwarderContract;
 
@@ -58,7 +59,21 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();
         const signatures = _.map(orders, o => o.signature);
         const ethAmountWithFees = affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(
-            worstCaseQuoteInfo,
+            {
+                ...worstCaseQuoteInfo,
+                // HACK(dorothy-zbornak): The forwarder contract has a rounding bug
+                // that causes buys of low-decimal tokens to not complete.
+                // Scaling the max sell amount by 1bps seems to be sufficient to
+                // overcome this.
+                ...(quote.type === MarketOperation.Buy
+                    ? {
+                          // tslint:disable-next-line: custom-no-magic-numbers
+                          totalTakerAssetAmount: worstCaseQuoteInfo.totalTakerAssetAmount
+                              .times(this.buyQuoteSellAmountScalingFactor)
+                              .integerValue(),
+                      }
+                    : {}),
+            },
             feePercentage,
         );
         const feeAmount = affiliateFeeUtils.getFeeAmount(worstCaseQuoteInfo, feePercentage);
@@ -132,7 +147,24 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase {
         const ethAmountWithFees =
             providedEthAmount ||
             affiliateFeeUtils.getTotalEthAmountWithAffiliateFee(quote.worstCaseQuoteInfo, feePercentage);
-        const feeAmount = affiliateFeeUtils.getFeeAmount(quote.worstCaseQuoteInfo, feePercentage);
+        const feeAmount = affiliateFeeUtils.getFeeAmount(
+            {
+                ...quote.worstCaseQuoteInfo,
+                // HACK(dorothy-zbornak): The forwarder contract has a rounding bug
+                // that causes buys of low-decimal tokens to not complete.
+                // Scaling the max sell amount by 1bps seems to be sufficient to
+                // overcome this.
+                ...(quote.type === MarketOperation.Buy
+                    ? {
+                          // tslint:disable-next-line: custom-no-magic-numbers
+                          totalTakerAssetAmount: quote.worstCaseQuoteInfo.totalTakerAssetAmount
+                              .times(this.buyQuoteSellAmountScalingFactor)
+                              .integerValue(),
+                      }
+                    : {}),
+            },
+            feePercentage,
+        );
         let txHash: string;
         if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;

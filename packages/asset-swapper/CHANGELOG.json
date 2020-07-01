@@ -21,6 +21,10 @@
             {
                 "note": "Singleton Gas Price Oracle",
                 "pr": 2619
+            },
+            {
+                "note": "\"Fix\" forwarder buys of low decimal tokens.",
+                "pr": 2618
             }
         ]
     },
