@@ -174,7 +174,7 @@ export class SwapQuoter {
                 : (r => r !== undefined && r.skipBuyRequests === true)(constants.DEFAULT_SWAP_QUOTER_OPTS.rfqt);
         this._contractAddresses = options.contractAddresses || getContractAddressesForChainOrThrow(chainId);
         this._devUtilsContract = new DevUtilsContract(this._contractAddresses.devUtils, provider);
-        this._protocolFeeUtils = new ProtocolFeeUtils(
+        this._protocolFeeUtils = ProtocolFeeUtils.getInstance(
             constants.PROTOCOL_FEE_UTILS_POLLING_INTERVAL_IN_MS,
             options.ethGasStationUrl,
         );
@@ -267,7 +267,7 @@ export class SwapQuoter {
             gasPrice = options.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
         } else {
-            gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
+            gasPrice = await this.getGasPriceEstimationOrThrowAsync();
         }
 
         const apiOrders = await this.orderbook.getBatchOrdersAsync(makerAssetDatas, [takerAssetData]);
@@ -484,6 +484,13 @@ export class SwapQuoter {
     }
 
     /**
+     * Returns the recommended gas price for a fast transaction
+     */
+    public async getGasPriceEstimationOrThrowAsync(): Promise<BigNumber> {
+        return this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
+    }
+
+    /**
      * Destroys any subscriptions or connections.
      */
     public async destroyAsync(): Promise<void> {
@@ -537,7 +544,7 @@ export class SwapQuoter {
             gasPrice = opts.gasPrice;
             assert.isBigNumber('gasPrice', gasPrice);
         } else {
-            gasPrice = await this._protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
+            gasPrice = await this.getGasPriceEstimationOrThrowAsync();
         }
         // get batches of orders from different sources, awaiting sources in parallel
         const orderBatchPromises: Array<Promise<SignedOrder[]>> = [];

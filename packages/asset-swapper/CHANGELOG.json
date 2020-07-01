@@ -15,7 +15,12 @@
                 "pr": 2615
             },
             {
-                "note": "Specify EthGasStation url as an optional parameter"
+                "note": "Specify EthGasStation url as an optional parameter",
+                "pr": 2617
+            },
+            {
+                "note": "Singleton Gas Price Oracle",
+                "pr": 2619
             }
         ]
     },
