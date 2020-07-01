@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Add geth eth_call types",
+                "pr": 2620
+            }
+        ]
+    },
+    {
         "timestamp": 1592969527,
         "version": "3.1.1",
         "changes": [

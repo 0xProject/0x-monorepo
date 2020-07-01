@@ -85,6 +85,14 @@ export interface CallDataRPC extends CallTxDataBaseRPC {
     from?: string;
 }
 
+export interface GethCallOverridesRPC {
+    [address: string]: {
+        code?: string;
+        nonce?: string;
+        balance?: string;
+    };
+}
+
 // NodeType represents the type of the backing Ethereum node.
 export enum NodeType {
     Geth = 'GETH',

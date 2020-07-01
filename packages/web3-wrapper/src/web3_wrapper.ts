@@ -562,9 +562,10 @@ export class Web3Wrapper {
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
         const callDataHex = marshaller.marshalCallData(callData);
+        const overrides = marshaller.marshalCallOverrides(callData.overrides || {});
         const rawCallResult = await this.sendRawPayloadAsync<string>({
             method: 'eth_call',
-            params: [callDataHex, marshalledDefaultBlock],
+            params: [callDataHex, marshalledDefaultBlock, overrides],
         });
         return rawCallResult;
     }

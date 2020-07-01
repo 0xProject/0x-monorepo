@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.1.0",
+        "changes": [
+            {
+                "note": "Add geth eth_call properties to `CallData`",
+                "pr": 2620
+            }
+        ]
+    },
+    {
         "timestamp": 1592969527,
         "version": "5.0.8",
         "changes": [

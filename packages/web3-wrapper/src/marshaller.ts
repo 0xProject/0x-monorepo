@@ -6,6 +6,7 @@ import {
     BlockWithTransactionData,
     CallData,
     CallTxDataBase,
+    GethCallOverrides,
     LogEntry,
     RawLogEntry,
     Transaction,
@@ -22,6 +23,7 @@ import {
     BlockWithTransactionDataRPC,
     CallDataRPC,
     CallTxDataBaseRPC,
+    GethCallOverridesRPC,
     TransactionReceiptRPC,
     TransactionRPC,
     TxDataRPC,
@@ -167,6 +169,32 @@ export const marshaller = {
             from: callData.from === undefined ? undefined : marshaller.marshalAddress(callData.from),
         };
         return callDataRPC;
+    },
+    /**
+     * Marshall call overrides parameter for for a geth eth_call.
+     * @param overrides overrides to marshal
+     * @return marshalled overrides
+     */
+    marshalCallOverrides(overrides: GethCallOverrides): GethCallOverridesRPC {
+        const marshalled: GethCallOverridesRPC = {};
+        for (const address in overrides) {
+            if (address) {
+                const override = overrides[address];
+                const marshalledOverride: GethCallOverridesRPC[keyof GethCallOverridesRPC] = (marshalled[
+                    marshaller.marshalAddress(address)
+                ] = {});
+                if (override.code !== undefined) {
+                    marshalledOverride.code = override.code;
+                }
+                if (override.nonce !== undefined) {
+                    marshalledOverride.nonce = utils.encodeAmountAsHexString(override.nonce);
+                }
+                if (override.balance !== undefined) {
+                    marshalledOverride.balance = utils.encodeAmountAsHexString(override.balance);
+                }
+            }
+        }
+        return marshalled;
     },
     /**
      * Marshall address
