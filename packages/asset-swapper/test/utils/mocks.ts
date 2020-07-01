@@ -54,7 +54,13 @@ const partiallyMockedSwapQuoter = (provider: Web3ProviderEngine, orderbook: Orde
     return mockedSwapQuoter;
 };
 
-class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
+class ProtocolFeeUtilsClass {
+    public static getInstance(..._args: any[]): any {
+        return {
+            getGasPriceEstimationOrThrowAsync: async () =>
+                Promise.resolve(new BigNumber(devConstants.DEFAULT_GAS_PRICE)),
+        };
+    }
     // tslint:disable-next-line:prefer-function-over-method
     public async getGasPriceEstimationOrThrowAsync(_shouldHardRefresh?: boolean): Promise<BigNumber> {
         return new BigNumber(devConstants.DEFAULT_GAS_PRICE);
@@ -64,7 +70,7 @@ class ProtocolFeeUtilsClass extends ProtocolFeeUtils {
 export const protocolFeeUtilsMock = (): TypeMoq.IMock<ProtocolFeeUtils> => {
     const mockProtocolFeeUtils = TypeMoq.Mock.ofType(ProtocolFeeUtilsClass, TypeMoq.MockBehavior.Loose);
     mockProtocolFeeUtils.callBase = true;
-    return mockProtocolFeeUtils;
+    return mockProtocolFeeUtils as any;
 };
 
 const mockGetSignedOrdersWithFillableAmountsAsyncAsync = (
