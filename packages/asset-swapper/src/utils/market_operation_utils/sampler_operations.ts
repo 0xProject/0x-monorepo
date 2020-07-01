@@ -3,7 +3,12 @@ import * as _ from 'lodash';
 import { BigNumber, ERC20BridgeSource, SignedOrder } from '../..';
 
 import { DEFAULT_FAKE_BUY_OPTS, MAINNET_CURVE_CONTRACTS } from './constants';
-import { getBalancerAddressesForPairAsync } from './balancer_utils';
+import {
+    BalancerPool,
+    computeBalancerBuyQuote,
+    computeBalancerSellQuote,
+    getBalancerPoolsForPairAsync,
+} from './balancer_utils';
 import { getCurveAddressesForPair } from './curve_utils';
 import { getMultiBridgeIntermediateToken } from './multibridge_utils';
 import {
@@ -292,42 +297,18 @@ export const samplerOperations = {
             },
         };
     },
-    getBalancerSellQuotes(
-        balancerAddress: string,
-        makerToken: string,
-        takerToken: string,
-        takerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation<BalancerFillData> {
+    getBalancerSellQuotes(pool: BalancerPool, takerFillAmounts: BigNumber[]): SourceQuoteOperation<BalancerFillData> {
         return {
             source: ERC20BridgeSource.Balancer,
-            fillData: { poolAddress: balancerAddress },
-            encodeCall: contract => {
-                return contract
-                    .sampleSellsFromBalancer(balancerAddress, takerToken, makerToken, takerFillAmounts)
-                    .getABIEncodedTransactionData();
-            },
-            handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleSellsFromBalancer', callResults);
-            },
+            fillData: { poolAddress: pool.id },
+            ...samplerOperations.constant(takerFillAmounts.map(_.curry(computeBalancerSellQuote)(pool))),
         };
     },
-    getBalancerBuyQuotes(
-        balancerAddress: string,
-        makerToken: string,
-        takerToken: string,
-        makerFillAmounts: BigNumber[],
-    ): SourceQuoteOperation<BalancerFillData> {
+    getBalancerBuyQuotes(pool: BalancerPool, makerFillAmounts: BigNumber[]): SourceQuoteOperation<BalancerFillData> {
         return {
             source: ERC20BridgeSource.Balancer,
-            fillData: { poolAddress: balancerAddress },
-            encodeCall: contract => {
-                return contract
-                    .sampleBuysFromBalancer(balancerAddress, takerToken, makerToken, makerFillAmounts)
-                    .getABIEncodedTransactionData();
-            },
-            handleCallResultsAsync: async (contract, callResults) => {
-                return contract.getABIDecodedReturnData<BigNumber[]>('sampleBuysFromBalancer', callResults);
-            },
+            fillData: { poolAddress: pool.id },
+            ...samplerOperations.constant(makerFillAmounts.map(_.curry(computeBalancerBuyQuote)(pool))),
         };
     },
     getMedianSellRateAsync: async (
@@ -472,14 +453,9 @@ export const samplerOperations = {
                                     takerFillAmounts,
                                 );
                             case ERC20BridgeSource.Balancer:
-                                const pools = await getBalancerAddressesForPairAsync(takerToken, makerToken);
+                                const pools = await getBalancerPoolsForPairAsync(takerToken, makerToken);
                                 return pools.map(pool =>
-                                    samplerOperations.getBalancerSellQuotes(
-                                        pool,
-                                        makerToken,
-                                        takerToken,
-                                        takerFillAmounts,
-                                    ),
+                                    samplerOperations.getBalancerSellQuotes(pool, takerFillAmounts),
                                 );
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);
@@ -570,14 +546,9 @@ export const samplerOperations = {
                                     fakeBuyOpts,
                                 );
                             case ERC20BridgeSource.Balancer:
-                                const pools = await getBalancerAddressesForPairAsync(takerToken, makerToken);
+                                const pools = await getBalancerPoolsForPairAsync(takerToken, makerToken);
                                 return pools.map(pool =>
-                                    samplerOperations.getBalancerBuyQuotes(
-                                        pool,
-                                        makerToken,
-                                        takerToken,
-                                        makerFillAmounts,
-                                    ),
+                                    samplerOperations.getBalancerBuyQuotes(pool, makerFillAmounts),
                                 );
                             default:
                                 throw new Error(`Unsupported sell sample source: ${source}`);

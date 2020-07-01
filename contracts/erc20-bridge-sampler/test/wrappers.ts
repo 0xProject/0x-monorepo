@@ -6,7 +6,6 @@
 export * from '../test/generated-wrappers/dummy_liquidity_provider';
 export * from '../test/generated-wrappers/dummy_liquidity_provider_registry';
 export * from '../test/generated-wrappers/erc20_bridge_sampler';
-export * from '../test/generated-wrappers/i_balancer_pool';
 export * from '../test/generated-wrappers/i_curve';
 export * from '../test/generated-wrappers/i_dev_utils';
 export * from '../test/generated-wrappers/i_erc20_bridge_sampler';

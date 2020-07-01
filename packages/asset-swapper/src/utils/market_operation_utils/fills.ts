@@ -4,15 +4,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../../types';
 import { fillableAmountsUtils } from '../../utils/fillable_amounts_utils';
 
 import { POSITIVE_INF, ZERO_AMOUNT } from './constants';
-import {
-    CollapsedFill,
-    DexSample,
-    ERC20BridgeSource,
-    Fill,
-    FillFlags,
-    NativeCollapsedFill,
-    NativeFillData,
-} from './types';
+import { CollapsedFill, DexSample, ERC20BridgeSource, Fill, FillFlags } from './types';
 
 // tslint:disable: prefer-for-of no-bitwise completed-docs
 
@@ -129,7 +121,7 @@ function dexQuotesToPaths(
         for (let i = 0; i < quote.length; i++) {
             const sample = quote[i];
             const prevSample = i === 0 ? undefined : quote[i - 1];
-            const source = sample.source;
+            const { source, fillData } = sample;
             const input = sample.input.minus(prevSample ? prevSample.input : 0);
             const output = sample.output.minus(prevSample ? prevSample.output : 0);
             const penalty =
@@ -147,6 +139,7 @@ function dexQuotesToPaths(
                 adjustedRate,
                 adjustedOutput,
                 source,
+                fillData,
                 index: i,
                 parent: i !== 0 ? path[path.length - 1] : undefined,
                 flags: sourceToFillFlags(source),
@@ -241,7 +234,7 @@ export function clipPathToInput(path: Fill[], targetInput: BigNumber = POSITIVE_
 }
 
 export function collapsePath(path: Fill[]): CollapsedFill[] {
-    const collapsed: Array<CollapsedFill | NativeCollapsedFill> = [];
+    const collapsed: Array<CollapsedFill> = [];
     for (const fill of path) {
         const source = fill.source;
         if (collapsed.length !== 0 && source !== ERC20BridgeSource.Native) {
@@ -256,10 +249,10 @@ export function collapsePath(path: Fill[]): CollapsedFill[] {
         }
         collapsed.push({
             source: fill.source,
+            fillData: fill.fillData,
             input: fill.input,
             output: fill.output,
             subFills: [fill],
-            nativeOrder: fill.source === ERC20BridgeSource.Native ? (fill.fillData as NativeFillData).order : undefined,
         });
     }
     return collapsed;

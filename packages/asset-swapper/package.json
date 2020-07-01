@@ -55,6 +55,7 @@
         "@0x/quote-server": "^2.0.2",
         "@0x/utils": "^5.5.0",
         "@0x/web3-wrapper": "^7.1.0",
+        "@balancer-labs/sor": "^0.3.0",
         "axios": "^0.19.2",
         "axios-mock-adapter": "^1.18.1",
         "ethereumjs-util": "^5.1.1",
