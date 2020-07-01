@@ -89,7 +89,7 @@ export class MarketOperationUtils {
                 takerToken,
             ),
             // Get ETH -> maker token price.
-            DexOrderSampler.ops.getMedianSellRate(
+            await DexOrderSampler.ops.getMedianSellRateAsync(
                 difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
                 makerToken,
                 this._wethAddress,
@@ -99,7 +99,7 @@ export class MarketOperationUtils {
                 this._multiBridge,
             ),
             // Get sell quotes for taker -> maker.
-            DexOrderSampler.ops.getSellQuotes(
+            await DexOrderSampler.ops.getSellQuotesAsync(
                 difference(SELL_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
                 makerToken,
                 takerToken,
@@ -170,7 +170,7 @@ export class MarketOperationUtils {
                 takerToken,
             ),
             // Get ETH -> taker token price.
-            DexOrderSampler.ops.getMedianSellRate(
+            await DexOrderSampler.ops.getMedianSellRateAsync(
                 difference(FEE_QUOTE_SOURCES.concat(this._optionalSources()), _opts.excludedSources),
                 takerToken,
                 this._wethAddress,
@@ -180,7 +180,7 @@ export class MarketOperationUtils {
                 this._multiBridge,
             ),
             // Get buy quotes for taker -> maker.
-            DexOrderSampler.ops.getBuyQuotes(
+            await DexOrderSampler.ops.getBuyQuotesAsync(
                 difference(
                     BUY_SOURCES.concat(
                         this._liquidityProviderRegistry !== NULL_ADDRESS ? [ERC20BridgeSource.LiquidityProvider] : [],
@@ -251,24 +251,28 @@ export class MarketOperationUtils {
         const sources = difference(BUY_SOURCES, _opts.excludedSources);
         const ops = [
             ...batchNativeOrders.map(orders => DexOrderSampler.ops.getOrderFillableMakerAmounts(orders)),
-            ...batchNativeOrders.map(orders =>
-                DexOrderSampler.ops.getMedianSellRate(
-                    difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
-                    getNativeOrderTokens(orders[0])[1],
-                    this._wethAddress,
-                    ONE_ETHER,
-                    this._wethAddress,
+            ...(await Promise.all(
+                batchNativeOrders.map(orders =>
+                    DexOrderSampler.ops.getMedianSellRateAsync(
+                        difference(FEE_QUOTE_SOURCES, _opts.excludedSources),
+                        getNativeOrderTokens(orders[0])[1],
+                        this._wethAddress,
+                        ONE_ETHER,
+                        this._wethAddress,
+                    ),
                 ),
-            ),
-            ...batchNativeOrders.map((orders, i) =>
-                DexOrderSampler.ops.getBuyQuotes(
-                    sources,
-                    getNativeOrderTokens(orders[0])[0],
-                    getNativeOrderTokens(orders[0])[1],
-                    [makerAmounts[i]],
-                    this._wethAddress,
+            )),
+            ...(await Promise.all(
+                batchNativeOrders.map((orders, i) =>
+                    DexOrderSampler.ops.getBuyQuotesAsync(
+                        sources,
+                        getNativeOrderTokens(orders[0])[0],
+                        getNativeOrderTokens(orders[0])[1],
+                        [makerAmounts[i]],
+                        this._wethAddress,
+                    ),
                 ),
-            ),
+            )),
         ];
 
         const executeResults = await this._sampler.executeBatchAsync(ops);

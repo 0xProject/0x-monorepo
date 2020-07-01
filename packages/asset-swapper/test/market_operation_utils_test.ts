@@ -18,7 +18,7 @@ import { MarketOperation, SignedOrderWithFillableAmounts } from '../src';
 import { MarketOperationUtils } from '../src/utils/market_operation_utils/';
 import {
     BUY_SOURCES,
-    DEFAULT_CURVE_OPTS,
+    MAINNET_CURVE_CONTRACTS,
     POSITIVE_INF,
     SELL_SOURCES,
     ZERO_AMOUNT,
@@ -93,8 +93,8 @@ describe('MarketOperationUtils tests', () => {
             case UNISWAP_V2_BRIDGE_ADDRESS.toLowerCase():
                 return ERC20BridgeSource.UniswapV2;
             case CURVE_BRIDGE_ADDRESS.toLowerCase():
-                const curveSource = Object.keys(DEFAULT_CURVE_OPTS).filter(
-                    k => assetData.indexOf(DEFAULT_CURVE_OPTS[k].curveAddress.slice(2)) !== -1,
+                const curveSource = Object.keys(MAINNET_CURVE_CONTRACTS).filter(
+                    k => assetData.indexOf(MAINNET_CURVE_CONTRACTS[k].curveAddress.slice(2)) !== -1,
                 );
                 return curveSource[0] as ERC20BridgeSource;
             default:
@@ -349,7 +349,7 @@ describe('MarketOperationUtils tests', () => {
                 excludedSources: [
                     ERC20BridgeSource.Uniswap,
                     ERC20BridgeSource.UniswapV2Eth,
-                    ...(Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[]),
+                    ...(Object.keys(MAINNET_CURVE_CONTRACTS) as ERC20BridgeSource[]),
                 ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
@@ -748,7 +748,7 @@ describe('MarketOperationUtils tests', () => {
                 bridgeSlippage: 0,
                 maxFallbackSlippage: 100,
                 excludedSources: [
-                    ...(Object.keys(DEFAULT_CURVE_OPTS) as ERC20BridgeSource[]),
+                    ...(Object.keys(MAINNET_CURVE_CONTRACTS) as ERC20BridgeSource[]),
                     ERC20BridgeSource.Kyber,
                     ERC20BridgeSource.Uniswap,
                     ERC20BridgeSource.UniswapV2Eth,
