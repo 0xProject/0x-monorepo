@@ -93,10 +93,7 @@ describe('MarketOperationUtils tests', () => {
             case UNISWAP_V2_BRIDGE_ADDRESS.toLowerCase():
                 return ERC20BridgeSource.UniswapV2;
             case CURVE_BRIDGE_ADDRESS.toLowerCase():
-                const curveSource = Object.keys(MAINNET_CURVE_CONTRACTS).filter(
-                    k => assetData.indexOf(MAINNET_CURVE_CONTRACTS[k].curveAddress.slice(2)) !== -1,
-                );
-                return curveSource[0] as ERC20BridgeSource;
+                return ERC20BridgeSource.Curve;
             default:
                 break;
         }
@@ -161,10 +158,10 @@ describe('MarketOperationUtils tests', () => {
     function createGetMultipleSellQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
         return (
             sources: ERC20BridgeSource[],
-            makerToken: string,
-            takerToken: string,
+            _makerToken: string,
+            _takerToken: string,
             fillAmounts: BigNumber[],
-            wethAddress: string,
+            _wethAddress: string,
         ) => {
             return sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s]));
         };
@@ -203,10 +200,10 @@ describe('MarketOperationUtils tests', () => {
     function createGetMultipleBuyQuotesOperationFromRates(rates: RatesBySource): GetMultipleQuotesOperation {
         return (
             sources: ERC20BridgeSource[],
-            makerToken: string,
-            takerToken: string,
+            _makerToken: string,
+            _takerToken: string,
             fillAmounts: BigNumber[],
-            wethAddress: string,
+            _wethAddress: string,
         ) => {
             return sources.map(s => createSamplesFromRates(s, fillAmounts, rates[s].map(r => new BigNumber(1).div(r))));
         };
@@ -229,18 +226,18 @@ describe('MarketOperationUtils tests', () => {
 
     function createGetMedianSellRate(rate: Numberish): GetMedianRateOperation {
         return (
-            sources: ERC20BridgeSource[],
-            makerToken: string,
-            takerToken: string,
-            fillAmounts: BigNumber[],
-            wethAddress: string,
+            _sources: ERC20BridgeSource[],
+            _makerToken: string,
+            _takerToken: string,
+            _fillAmounts: BigNumber[],
+            _wethAddress: string,
         ) => {
             return new BigNumber(rate);
         };
     }
 
     function getLiquidityProviderFromRegistry(): GetLiquidityProviderFromRegistryOperation {
-        return (registryAddress: string, takerToken: string, makerToken: string): string => {
+        return (_registryAddress: string, _takerToken: string, _makerToken: string): string => {
             return NULL_ADDRESS;
         };
     }
@@ -289,12 +286,7 @@ describe('MarketOperationUtils tests', () => {
         [ERC20BridgeSource.Kyber]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.Uniswap]: createDecreasingRates(NUM_SAMPLES),
         [ERC20BridgeSource.UniswapV2]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.UniswapV2Eth]: createDecreasingRates(NUM_SAMPLES),
-        [ERC20BridgeSource.CurveUsdcDai]: _.times(NUM_SAMPLES, () => 0),
-        [ERC20BridgeSource.CurveUsdcDaiUsdt]: _.times(NUM_SAMPLES, () => 0),
-        [ERC20BridgeSource.CurveUsdcDaiUsdtTusd]: _.times(NUM_SAMPLES, () => 0),
-        [ERC20BridgeSource.CurveUsdcDaiUsdtBusd]: _.times(NUM_SAMPLES, () => 0),
-        [ERC20BridgeSource.CurveUsdcDaiUsdtSusd]: _.times(NUM_SAMPLES, () => 0),
+        [ERC20BridgeSource.Curve]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.LiquidityProvider]: _.times(NUM_SAMPLES, () => 0),
         [ERC20BridgeSource.MultiBridge]: _.times(NUM_SAMPLES, () => 0),
     };
@@ -348,7 +340,6 @@ describe('MarketOperationUtils tests', () => {
                 maxFallbackSlippage: 100,
                 excludedSources: [
                     ERC20BridgeSource.Uniswap,
-                    ERC20BridgeSource.UniswapV2Eth,
                     ...(Object.keys(MAINNET_CURVE_CONTRACTS) as ERC20BridgeSource[]),
                 ],
                 allowFallback: false,
@@ -709,7 +700,7 @@ describe('MarketOperationUtils tests', () => {
                 rates[ERC20BridgeSource.UniswapV2] = [1, 0.01, 0.01, 0.01];
                 rates[ERC20BridgeSource.Native] = [0.5, 0.01, 0.01, 0.01];
                 rates[ERC20BridgeSource.Eth2Dai] = [0.49, 0.01, 0.01, 0.01];
-                rates[ERC20BridgeSource.CurveUsdcDai] = [0.48, 0.01, 0.01, 0.01];
+                rates[ERC20BridgeSource.Curve] = [0.48, 0.01, 0.01, 0.01];
                 replaceSamplerOps({
                     getSellQuotes: createGetMultipleSellQuotesOperationFromRates(rates),
                 });
@@ -721,7 +712,7 @@ describe('MarketOperationUtils tests', () => {
                         numSamples: 4,
                         excludedSources: [
                             ERC20BridgeSource.Kyber,
-                            ..._.without(DEFAULT_OPTS.excludedSources, ERC20BridgeSource.CurveUsdcDai),
+                            ..._.without(DEFAULT_OPTS.excludedSources, ERC20BridgeSource.Curve),
                         ],
                         shouldBatchBridgeOrders: true,
                     },
@@ -731,7 +722,7 @@ describe('MarketOperationUtils tests', () => {
                 expect(orderFillSources).to.deep.eq([
                     [ERC20BridgeSource.UniswapV2],
                     [ERC20BridgeSource.Native],
-                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.CurveUsdcDai],
+                    [ERC20BridgeSource.Eth2Dai, ERC20BridgeSource.Curve],
                 ]);
             });
         });
@@ -751,7 +742,6 @@ describe('MarketOperationUtils tests', () => {
                     ...(Object.keys(MAINNET_CURVE_CONTRACTS) as ERC20BridgeSource[]),
                     ERC20BridgeSource.Kyber,
                     ERC20BridgeSource.Uniswap,
-                    ERC20BridgeSource.UniswapV2Eth,
                 ],
                 allowFallback: false,
                 shouldBatchBridgeOrders: false,
