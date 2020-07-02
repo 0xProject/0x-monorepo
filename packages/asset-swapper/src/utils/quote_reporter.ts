@@ -121,41 +121,26 @@ export class QuoteReporter {
         // Annotate RFQT & OO orders with fillable amounts
         this._rfqtReportSources = this._rfqtReportSources.map(ros => {
             const orderHash = orderHashUtils.getOrderHash(ros.nativeOrder);
-            return { ...ros, fillableAmount: orderHashesToFillableAmounts[orderHash] };
+            return { ...ros, fillableTakerAmount: orderHashesToFillableAmounts[orderHash] };
         });
         this._orderbookReportSources = this._orderbookReportSources.map(ors => {
             const orderHash = orderHashUtils.getOrderHash(ors.nativeOrder);
-            return { ...ors, fillableAmount: orderHashesToFillableAmounts[orderHash] };
+            return { ...ors, fillableTakerAmount: orderHashesToFillableAmounts[orderHash] };
         });
     }
 
     public trackPaths(paths: CollapsedFill[]): void {
-        const sourcesDelivered = paths.map(p => {
+        const pathSources: QuoteReportSource[] = paths.map(p => {
             if ((p as NativeCollapsedFill).nativeOrder) {
                 const nativeFill: NativeCollapsedFill = p as NativeCollapsedFill;
                 const nativeOrder = nativeFill.nativeOrder;
-
-                // if it's an rfqt order, try to associate it & find it
-                if (
-                    nativeOrder.takerAddress !== undefined &&
-                    nativeOrder.takerAddress.toLowerCase() !== NULL_ADDRESS.toLowerCase()
-                ) {
-                    const foundRfqtOrder = this._rfqtReportSources.find(
-                        ro => orderHashUtils.getOrderHash(ro.nativeOrder) === orderHashUtils.getOrderHash(nativeOrder),
-                    );
-                    return foundRfqtOrder;
-                }
-                // else, find & associate the orderbook source
-                const foundOrderbookOrder = this._orderbookReportSources.find(
-                    os => orderHashUtils.getOrderHash(os.nativeOrder) === orderHashUtils.getOrderHash(nativeOrder),
-                );
-                return foundOrderbookOrder;
+                return this._nativeOrderToReportSource(nativeOrder);
             } else {
                 return this._dexSampleToBridgeReportSource(p);
             }
         });
 
-        this._sourcesDelivered = _.compact(sourcesDelivered);
+        this._sourcesDelivered = pathSources;
     }
 
     public getReport(): QuoteReport {
@@ -193,6 +178,42 @@ export class QuoteReporter {
             };
         } else {
             throw new Error(`Unexpected marketOperation ${this._marketOperation}`);
+        }
+    }
+
+    /**
+     * Finds or create an appropriate NativeLiquiditySource for a given nativeOrder
+     */
+    private _nativeOrderToReportSource(nativeOrder: SignedOrder): QuoteReportSource {
+        // If it's an rfqt order, try to associate it & find it
+        if (
+            nativeOrder.takerAddress !== undefined &&
+            nativeOrder.takerAddress.toLowerCase() !== NULL_ADDRESS.toLowerCase()
+        ) {
+            const foundRfqtSource = this._rfqtReportSources.find(
+                ro => orderHashUtils.getOrderHash(ro.nativeOrder) === orderHashUtils.getOrderHash(nativeOrder),
+            );
+            if (foundRfqtSource) {
+                return foundRfqtSource;
+            }
+
+        }
+        // If we can't find an rfqt source for this order, assume it's an orderbook order
+        const foundOrderbookOrder = this._orderbookReportSources.find(
+            os => orderHashUtils.getOrderHash(os.nativeOrder) === orderHashUtils.getOrderHash(nativeOrder),
+        );
+        // if we found the orderbook source, track it.
+        if (foundOrderbookOrder) {
+            return foundOrderbookOrder;
+        } else {
+            // on the off-chance we haven't found the orderbook order, create a new one
+            return {
+                liquiditySource: ERC20BridgeSource.Native,
+                nativeOrderOrigin: NativeOrderOrigin.OrderbookOrigin,
+                makerAmount: nativeOrder.makerAssetAmount,
+                takerAmount: nativeOrder.takerAssetAmount,
+                nativeOrder,
+            };
         }
     }
 }
