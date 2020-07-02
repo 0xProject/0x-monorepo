@@ -593,9 +593,11 @@ export class SwapQuoter {
 
         // report orderbook orders
         if (quoteReporter) {
-            const orderboookOrders = orders.filter(
-                o => o.takerAddress === undefined || o.takerAddress.toLowerCase() === NULL_ADDRESS.toLowerCase(),
-            );
+            const orderboookOrders = orders
+                .filter(
+                    o => o.takerAddress === undefined || o.takerAddress.toLowerCase() === NULL_ADDRESS.toLowerCase(),
+                )
+                .slice(0, constants.NUM_ORDERBOOK_ORDERS_TO_REPORT);
             quoteReporter.trackOrderbookOrders(orderboookOrders);
         }
 
