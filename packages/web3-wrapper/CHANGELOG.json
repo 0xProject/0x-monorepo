@@ -1,5 +1,14 @@
 [
     {
+        "version": "7.2.0",
+        "changes": [
+            {
+                "note": "Add geth eth_call support",
+                "pr": 2620
+            }
+        ]
+    },
+    {
         "version": "7.1.0",
         "changes": [
             {

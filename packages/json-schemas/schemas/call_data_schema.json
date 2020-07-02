@@ -19,6 +19,24 @@
         "nonce": {
             "type": "number",
             "minimum": 0
+        },
+        "overrides": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "pattern": "^0x[0-9a-fA-F]*$"
+                    },
+                    "nonce": {
+                        "oneOf": [{ "$ref": "/wholeNumberSchema" }]
+                    },
+                    "balance": {
+                        "oneOf": [{ "$ref": "/wholeNumberSchema" }]
+                    }
+                }
+            }
         }
     },
     "required": [],

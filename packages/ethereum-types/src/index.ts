@@ -399,8 +399,17 @@ export interface TxData extends CallTxDataBase {
     from: string;
 }
 
+export interface GethCallOverrides {
+    [address: string]: {
+        code?: string;
+        nonce?: number;
+        balance?: number | string | BigNumber;
+    };
+}
+
 export interface CallData extends CallTxDataBase {
     from?: string;
+    overrides?: GethCallOverrides;
 }
 
 export interface FilterObject {
