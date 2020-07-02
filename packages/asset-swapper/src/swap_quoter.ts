@@ -3,7 +3,7 @@ import { DevUtilsContract, IERC20BridgeSamplerContract } from '@0x/contract-wrap
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { BigNumber, NULL_ADDRESS, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -548,15 +548,7 @@ export class SwapQuoter {
         const orderFetchPromises: Array<Promise<SignedOrder[]>> = [];
 
         // Fetch from orderbook
-        // Track after fetching
-        const trackOrderbookOrders = (orderbookOrders: SignedOrder[]) => {
-            const ordersToReport = sortingUtils
-                .sortOrders(orderbookOrders)
-                .slice(0, constants.NUM_ORDERBOOK_ORDERS_TO_REPORT);
-            quoteReporter.trackOrderbookOrders(ordersToReport);
-            return orderbookOrders;
-        };
-        const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData).then(trackOrderbookOrders);
+        const orderbookPromise = this._getSignedOrdersAsync(makerAssetData, takerAssetData);
         orderFetchPromises.push(orderbookPromise);
 
         // If applicable, fetch firm quotes from RFQT
@@ -586,6 +578,13 @@ export class SwapQuoter {
 
         const unsortedOrders: SignedOrder[] = orderBatches.reduce((_orders, batch) => _orders.concat(...batch));
         const orders = sortingUtils.sortOrders(unsortedOrders);
+
+        // report orderbook orders
+        if (quoteReporter) {
+            const orderboookOrders = orders.filter(o => o.takerAddress === undefined || o.takerAddress.toLowerCase() === NULL_ADDRESS.toLowerCase());
+            console.log('** oo', orderboookOrders.length);
+            quoteReporter.trackOrderbookOrders(orderboookOrders);
+        }
 
         // if no native orders, pass in a dummy order for the sampler to have required metadata for sampling
         if (orders.length === 0) {
