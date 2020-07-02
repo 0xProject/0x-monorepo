@@ -379,6 +379,7 @@ export async function runMigrationsAsync(
         maximumGasPrice: NULL_ADDRESS,
         dexForwarderBridge: NULL_ADDRESS,
         multiBridge: NULL_ADDRESS,
+        balancerBridge: NULL_ADDRESS,
         exchangeProxyGovernor: NULL_ADDRESS,
         exchangeProxy: exchangeProxy.address,
         exchangeProxyAllowanceTarget: exchangeProxyAllowanceTargetAddress,
