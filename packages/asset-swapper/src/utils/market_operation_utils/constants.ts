@@ -55,7 +55,6 @@ export const FEE_QUOTE_SOURCES = [
     ERC20BridgeSource.UniswapV2,
     ERC20BridgeSource.Eth2Dai,
     ERC20BridgeSource.Kyber,
-    ERC20BridgeSource.Curve,
 ];
 
 /**

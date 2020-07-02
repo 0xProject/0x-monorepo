@@ -222,7 +222,7 @@ function createBridgeOrder(fill: CollapsedFill, opts: CreateOrderFromPathOpts): 
                     curveFillData.poolAddress,
                     curveFillData.fromTokenIdx,
                     curveFillData.toTokenIdx,
-                    1,
+                    1, // "version"
                 ),
             );
             break;
